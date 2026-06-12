@@ -49,17 +49,6 @@ namespace polyfem::solver
 
 		time_steps_ = states_[0]->args["time"]["time_steps"].get<int>();
 
-		// Validates active selections.
-		std::string reason;
-		if (!is_active_dirichlet_boundary_ids_valid(active_boundary_ids_, states_, reason))
-		{
-			log_and_throw_adjoint_error("Fail to construct dirichlet boundary variable to simulation. Reason: {}", reason);
-		}
-		if (!is_active_time_slices_valid(active_time_slices_, states_, reason))
-		{
-			log_and_throw_adjoint_error("Fail to construct dirichlet boundary variable to simulation. Reason: {}", reason);
-		}
-
 		// Expand implicit all-active boundary id selection.
 		if (active_boundary_ids_.size() == 0)
 		{
@@ -81,6 +70,17 @@ namespace polyfem::solver
 		if (active_time_slices_.size() == 0)
 		{
 			active_time_slices_ = Eigen::VectorXi::LinSpaced(time_steps_, 0, time_steps_ - 1);
+		}
+
+		// Validate expanded active selections against every state.
+		std::string reason;
+		if (!is_active_dirichlet_boundary_ids_valid(active_boundary_ids_, states_, reason))
+		{
+			log_and_throw_adjoint_error("Fail to construct dirichlet boundary variable to simulation. Reason: {}", reason);
+		}
+		if (!is_active_time_slices_valid(active_time_slices_, states_, reason))
+		{
+			log_and_throw_adjoint_error("Fail to construct dirichlet boundary variable to simulation. Reason: {}", reason);
 		}
 
 		build_boundary_node_maps();

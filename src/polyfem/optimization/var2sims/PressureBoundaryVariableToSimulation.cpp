@@ -51,17 +51,6 @@ namespace polyfem::solver
 			time_steps_ = states_[0]->args["time"]["time_steps"].get<int>();
 		}
 
-		// Validate selections.
-		std::string reason;
-		if (!is_active_pressure_boundary_ids_valid(active_boundary_ids_, states_, reason))
-		{
-			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
-		}
-		if (is_transient_ && !is_active_time_slices_valid(active_time_slices_, states_, reason))
-		{
-			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
-		}
-
 		// Expand implicit all-active boundary id selection (keep JSON order; no sort/unique pass).
 		if (active_boundary_ids_.size() == 0)
 		{
@@ -84,6 +73,17 @@ namespace polyfem::solver
 		if (is_transient_ && active_time_slices_.size() == 0)
 		{
 			active_time_slices_ = Eigen::VectorXi::LinSpaced(time_steps_, 0, time_steps_ - 1);
+		}
+
+		// Validate expanded selections against every state.
+		std::string reason;
+		if (!is_active_pressure_boundary_ids_valid(active_boundary_ids_, states_, reason))
+		{
+			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
+		}
+		if (is_transient_ && !is_active_time_slices_valid(active_time_slices_, states_, reason))
+		{
+			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
 		}
 	}
 

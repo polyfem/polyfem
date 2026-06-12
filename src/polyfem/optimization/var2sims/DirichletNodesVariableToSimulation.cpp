@@ -43,12 +43,6 @@ namespace polyfem::solver
 			}
 		}
 
-		std::string reason;
-		if (!is_active_dirichlet_node_valid(active_geom_nodes_, states_, reason))
-		{
-			log_and_throw_adjoint_error("Fail to construct dirichlet nodes variable to simulation. Reason: {}", reason);
-		}
-
 		// Expand implicit all-active node selection.
 		if (active_geom_nodes_.size() == 0)
 		{
@@ -65,6 +59,13 @@ namespace polyfem::solver
 			}
 			std::sort(tmp.begin(), tmp.end());
 			active_geom_nodes_ = Eigen::Map<Eigen::VectorXi>(tmp.data(), tmp.size());
+		}
+
+		// Validate the expanded node selection against every state.
+		std::string reason;
+		if (!is_active_dirichlet_node_valid(active_geom_nodes_, states_, reason))
+		{
+			log_and_throw_adjoint_error("Fail to construct dirichlet nodes variable to simulation. Reason: {}", reason);
 		}
 	}
 
