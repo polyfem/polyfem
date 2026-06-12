@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <vector>
 
 namespace polyfem
 {
@@ -27,6 +28,16 @@ namespace polyfem
 			}
 			return out;
 		}
+
+		/// True if id is in selection. Empty selection implies all.
+		bool is_selected(const std::vector<int> &selection, int id)
+		{
+			if (selection.empty())
+			{
+				return true;
+			}
+			return (std::find(selection.begin(), selection.end(), id) != selection.end());
+		}
 	} // namespace
 
 	Eigen::VectorXi select_interior_nodes(
@@ -39,15 +50,17 @@ namespace polyfem
 		for (int e = 0; e < mesh->n_elements(); ++e)
 		{
 			int body_id = mesh->get_body_id(e);
-			if (std::find(volume_selection.begin(), volume_selection.end(), body_id) != volume_selection.end())
+			if (!is_selected(volume_selection, body_id))
 			{
-				for (int i = 0; i < mesh->dimension() + 1; ++i)
+				continue;
+			}
+
+			for (int i = 0; i < mesh->dimension() + 1; ++i)
+			{
+				const int vid = mesh->element_vertex(e, i);
+				if (!mesh->is_boundary_vertex(vid))
 				{
-					const int vid = mesh->element_vertex(e, i);
-					if (!mesh->is_boundary_vertex(vid))
-					{
-						node_ids.insert(vid);
-					}
+					node_ids.insert(vid);
 				}
 			}
 		}
@@ -71,12 +84,14 @@ namespace polyfem
 				int primitive_global_id = lb.global_primitive_id(i);
 				int boundary_id = mesh->get_boundary_id(primitive_global_id);
 
-				if (std::find(surface_selection.begin(), surface_selection.end(), boundary_id) != surface_selection.end())
+				if (!is_selected(surface_selection, boundary_id))
 				{
-					for (int n = 0; n < mesh->dimension(); ++n)
-					{
-						node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
-					}
+					continue;
+				}
+
+				for (int n = 0; n < mesh->dimension(); ++n)
+				{
+					node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
 				}
 			}
 		}
