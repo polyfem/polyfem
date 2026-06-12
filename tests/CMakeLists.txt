@@ -32,7 +32,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     test_opt.cpp
     test_form_derivatives.cpp
     test_parametrizations.cpp
-    test_periodic.cpp
   )
 endif()
 

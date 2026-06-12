@@ -7,6 +7,9 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+
+#include <polyfem/optimization/NodeSelectionUtils.hpp>
 
 #include <polyfem/optimization/forms/AMIPSForm.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
@@ -19,10 +22,24 @@
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 #include <polyfem/optimization/forms/TargetForms.hpp>
 #include <polyfem/optimization/forms/TransientForm.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
+#include <polyfem/optimization/var2sims/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
+#include <polyfem/optimization/var2sims/ShapeVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/ElasticVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/FrictionVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/DampingVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/InitialConditionVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/DirichletBoundaryVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/DirichletNodesVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/PressureBoundaryVariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
+
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
+
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <Eigen/Core>
 #include <spdlog/fmt/fmt.h>
@@ -54,6 +71,57 @@ namespace polyfem::from_json
 
 			return true;
 		}
+
+		Eigen::VectorXi eigen_vector_xi_from_json(const json &j)
+		{
+			auto tmp = j.get<std::vector<int>>();
+			Eigen::VectorXi out = Eigen::Map<Eigen::VectorXi>(tmp.data(), tmp.size());
+			return out;
+		}
+
+		Eigen::VectorXi eigen_vector_xi_from_file(const std::string &path)
+		{
+			Eigen::MatrixXi mat;
+			if (!io::read_matrix(path, mat))
+			{
+				log_and_throw_adjoint_error("Cannot read integer vector file {}", path);
+			}
+
+			return mat.reshaped();
+		}
+
+		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const State &state)
+		{
+			if (j.is_array())
+			{
+				return eigen_vector_xi_from_json(j);
+			}
+			if (j.is_string())
+			{
+				return eigen_vector_xi_from_file(state.resolve_input_path(j.get<std::string>()));
+			}
+
+			// Advanced selection.
+			std::string type = j["type"].get<std::string>();
+			auto selection = j["selection"].get<std::vector<int>>();
+			if (type == "interior")
+			{
+				return select_interior_nodes(state, selection);
+			}
+			else if (type == "boundary")
+			{
+				return select_boundary_nodes(state, selection);
+			}
+			else if (type == "boundary_excluding_surface")
+			{
+				return select_boundary_nodes_excluding_surfaces(state, selection);
+			}
+			else
+			{
+				log_and_throw_adjoint_error("Unknown advanced active geometry selection type name {}.", type);
+			}
+		}
+
 	} // namespace
 
 	std::shared_ptr<State> build_state(
@@ -65,18 +133,6 @@ namespace polyfem::from_json
 
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
-		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
-		{
-			const json tmp = R"({
-					"output": {
-						"log": {
-							"level": "error"
-						}
-					}
-				})"_json;
-
-			in_args.merge_patch(tmp);
-		}
 
 		state->optimization_enabled = true;
 		state->init(in_args, true);
@@ -123,9 +179,10 @@ namespace polyfem::from_json
 		}
 		else if (type == "per-body-to-per-node")
 		{
-			map = std::make_shared<PerBody2PerNode>(*(states[args["state"]]->mesh),
-													states[args["state"]]->bases,
-													states[args["state"]]->n_bases);
+			auto &s = states[args["state"]];
+			map = std::make_shared<PerBody2PerNode>(*(s->mesh),
+													s->bases,
+													s->n_bases - s->obstacle.n_vertices());
 		}
 		else if (type == "E-nu-to-lambda-mu")
 		{
@@ -202,7 +259,7 @@ namespace polyfem::from_json
 		return map;
 	}
 
-	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation(
+	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
@@ -236,51 +293,93 @@ namespace polyfem::from_json
 		}
 		CompositeParametrization compo{std::move(map_list)};
 
-		// Build VariableToSimulation based on type string.
-		std::string type = args["type"];
-		std::unique_ptr<VariableToSimulation> var2sim;
-		if (type == "shape")
+		// Build VariableToSimulation.
+		std::shared_ptr<VariableToSimulation> var2sim;
+		std::string var2sim_type = args["type"];
+		if (var2sim_type == "shape")
 		{
-			var2sim = std::make_unique<ShapeVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			Eigen::VectorXi active_dimensions = eigen_vector_xi_from_json(args["active_dimensions"]);
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *rel_states[0]);
+
+			var2sim = std::make_shared<ShapeVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo),
+				std::move(active_dimensions),
+				std::move(active_nodes));
 		}
-		else if (type == "elastic")
+		else if (var2sim_type == "elastic")
 		{
-			var2sim = std::make_unique<ElasticVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			var2sim = std::make_shared<ElasticVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo));
 		}
-		else if (type == "friction")
+		else if (var2sim_type == "friction")
 		{
-			var2sim = std::make_unique<FrictionCoeffientVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			var2sim = std::make_shared<FrictionVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo));
 		}
-		else if (type == "damping")
+		else if (var2sim_type == "damping")
 		{
-			var2sim = std::make_unique<DampingCoeffientVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			var2sim = std::make_shared<DampingVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo));
 		}
-		else if (type == "initial")
+		else if (var2sim_type == "initial")
 		{
-			var2sim = std::make_unique<InitialConditionVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			Eigen::VectorXi active_dofs = eigen_vector_xi_from_json(args["active_dofs"]);
+			var2sim = std::make_shared<InitialConditionVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo),
+				std::move(active_dofs));
 		}
-		else if (type == "dirichlet")
+		else if (var2sim_type == "dirichlet-boundary")
 		{
-			var2sim = std::make_unique<DirichletVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			Eigen::VectorXi active_boundary_ids = eigen_vector_xi_from_json(args["active_boundary_ids"]);
+			Eigen::VectorXi active_time_slices = eigen_vector_xi_from_json(args["active_time_slices"]);
+			var2sim = std::make_shared<DirichletBoundaryVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo),
+				std::move(active_boundary_ids),
+				std::move(active_time_slices));
 		}
-		else if (type == "dirichlet-nodes")
+		else if (var2sim_type == "dirichlet-nodes")
 		{
-			var2sim = std::make_unique<DirichletNodesVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *rel_states[0]);
+			var2sim = std::make_shared<DirichletNodesVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo),
+				std::move(active_nodes));
 		}
-		else if (type == "pressure")
+		else if (var2sim_type == "pressure")
 		{
-			var2sim = std::make_unique<PressureVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			Eigen::VectorXi active_boundary_ids = eigen_vector_xi_from_json(args["active_boundary_ids"]);
+			Eigen::VectorXi active_time_slices = eigen_vector_xi_from_json(args["active_time_slices"]);
+			var2sim = std::make_shared<PressureBoundaryVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo),
+				std::move(active_boundary_ids),
+				std::move(active_time_slices));
 		}
-		else if (type == "periodic-shape")
+		else if (var2sim_type == "periodic-shape")
 		{
-			var2sim = std::make_unique<PeriodicShapeVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
+			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(
+				std::move(rel_states),
+				std::move(rel_diff_caches),
+				std::move(compo));
 		}
 		else
 		{
-			log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
+			log_and_throw_adjoint_error("Unknown variable to simulation name {}.", var2sim_type);
 		}
-
-		var2sim->set_output_indexing(args);
 
 		return var2sim;
 	}

@@ -2,6 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/var2sims/ParameterType.hpp>
 
 #include <Eigen/Core>
 
@@ -21,19 +22,6 @@ namespace polyfem
 
 namespace polyfem::solver
 {
-	enum class ParameterType
-	{
-		Shape,
-		LameParameter,
-		FrictionCoefficient,
-		DampingCoefficient,
-		InitialCondition,
-		DirichletBC,
-		PressureBC,
-		MacroStrain,
-		PeriodicShape
-	};
-
 	enum class SpatialIntegralType
 	{
 		Volume,
