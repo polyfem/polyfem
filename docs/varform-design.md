@@ -3,7 +3,7 @@
 ## Status
 
 This document describes the VarForm architecture on the `varform` branch after
-the legacy `State` split. 
+the legacy `State` split.
 
 The current migration target is:
 
