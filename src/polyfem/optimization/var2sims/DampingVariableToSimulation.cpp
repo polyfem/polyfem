@@ -85,7 +85,7 @@ namespace polyfem::solver
 					{"psi", psi},
 					{"phi", phi},
 				};
-				s->damping_assembler->add_multimaterial(0, damping_param, s->units);
+				s->damping_assembler->add_multimaterial(0, damping_param, s->units, s->root_path());
 			}
 		}
 	}
