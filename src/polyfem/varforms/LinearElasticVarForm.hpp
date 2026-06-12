@@ -14,7 +14,7 @@ namespace polyfem::solver
 	class BodyForm;
 	class ElasticForm;
 	class InertiaForm;
-}
+} // namespace polyfem::solver
 
 namespace polyfem::varform
 {

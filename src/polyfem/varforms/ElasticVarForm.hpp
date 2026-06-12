@@ -11,7 +11,7 @@ namespace polyfem::solver
 {
 	class ContactForm;
 	class Form;
-}
+} // namespace polyfem::solver
 
 namespace polyfem::time_integrator
 {
