@@ -154,12 +154,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
 endif()
 
-set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -299,6 +293,49 @@ target_link_libraries(polyfem PUBLIC units::units)
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
+
+
+################################################################################
+# JSON specifications
+################################################################################
+
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+
+
+jse_add_spec(polyfem_spec
+	ALIAS polyfem::spec
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_opt_spec
+	ALIAS polyfem::opt_spec
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_opt.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_objective_spec
+	ALIAS polyfem::objective_spec
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_objective.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_material_spec
+	ALIAS polyfem::material_spec
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+    INPUT "${POLYFEM_JSON_SPEC_DIR}/material-parameters.json"
+    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_material.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec polyfem::material_spec)
 
 ################################################################################
 # Optional libraries
