@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
@@ -66,11 +66,11 @@ namespace
 		return true;
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>, std::vector<std::shared_ptr<DiffCache>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<legacy::State>>, std::vector<std::shared_ptr<DiffCache>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-		std::vector<std::shared_ptr<State>> states = from_json::build_states("", opt_args["states"], 16);
+		std::vector<std::shared_ptr<legacy::State>> states = from_json::build_states("", opt_args["states"], 16);
 		std::vector<std::shared_ptr<DiffCache>> diff_caches(states.size());
 		for (auto &dc : diff_caches)
 			dc = std::make_shared<DiffCache>();
@@ -270,14 +270,14 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
 	json state_args = opt_args["states"];
-	std::vector<std::shared_ptr<State>> states(state_args.size());
+	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 	std::vector<std::shared_ptr<DiffCache>> diff_caches(state_args.size());
 	int i = 0;
 	for (const json &args : state_args)
 	{
 		json cur_args;
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-			log_and_throw_adjoint_error("Can't find json for State {}", i);
+			log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 		states[i] = from_json::build_state(cur_args, 16);
 		diff_caches[i] = std::make_shared<DiffCache>();
@@ -290,7 +290,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	VariableToSimulationGroup variable_to_simulations;
 	{
 		variable_to_simulations.data.push_back(std::make_shared<ShapeVariableToSimulation>(
-			std::vector<std::shared_ptr<State>>{states[0]},
+			std::vector<std::shared_ptr<legacy::State>>{states[0]},
 			std::vector<std::shared_ptr<DiffCache>>{diff_caches[0]},
 			CompositeParametrization()));
 
@@ -381,13 +381,13 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
 // 	json state_args = opt_args["states"];
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	int i = 0;
 // 	for (const json &args : state_args)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -478,13 +478,13 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
 // 	json state_args = opt_args["states"];
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	int i = 0;
 // 	for (const json &args : state_args)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -609,7 +609,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -619,7 +619,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -761,7 +761,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -771,7 +771,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -834,7 +834,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -844,7 +844,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -905,7 +905,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -915,7 +915,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}

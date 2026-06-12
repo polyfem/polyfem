@@ -23,6 +23,7 @@ set(test_sources
   test_tbb.cpp
   test_time_integrators.cpp
   test_utils.cpp
+  test_varform_factory.cpp
   verify_run.cpp
 )
 

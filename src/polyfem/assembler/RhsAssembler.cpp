@@ -31,7 +31,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
+		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle *obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
@@ -214,9 +214,9 @@ namespace polyfem
 					mass_mat_assembler.set_size(assembler_.size());
 					mass_mat_assembler.add_multimaterial(0, json({}), Units(), "");
 					StiffnessMatrix mass;
-					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
+					const int n_fe_basis = n_basis_ - (obstacle_ ? obstacle_->n_vertices() : 0);
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
-					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
+					assert(mass.rows() == n_basis_ * size_ - (obstacle_ ? obstacle_->ndof() : 0) && mass.cols() == n_basis_ * size_ - (obstacle_ ? obstacle_->ndof() : 0));
 
 					auto solver = linear::Solver::create(solver_params_, logger());
 					logger().info("Solve RHS using {} linear solver", solver->name());
@@ -630,7 +630,8 @@ namespace polyfem
 				},
 				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, t, rhs);
 
-			obstacle_.update_displacement(t, rhs);
+			if (obstacle_)
+				obstacle_->update_displacement(t, rhs);
 		}
 
 		void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary,

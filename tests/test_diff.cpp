@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
@@ -59,7 +59,7 @@ namespace
 		return true;
 	}
 
-	void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	void sample_field(const legacy::State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
 	{
 		Eigen::MatrixXd tmp;
 		tmp.setZero(1, state.mesh->dimension());
@@ -129,7 +129,7 @@ namespace
 	{
 	public:
 		json args;
-		std::vector<std::shared_ptr<State>> states;
+		std::vector<std::shared_ptr<legacy::State>> states;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 		int ndof;
 		std::vector<int> var_sizes;

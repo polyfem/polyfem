@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -20,7 +20,7 @@
 #include <memory>
 #include <vector>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace solver;
 	using namespace time_integrator;
@@ -277,4 +277,4 @@ namespace polyfem
 			}
 		}
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

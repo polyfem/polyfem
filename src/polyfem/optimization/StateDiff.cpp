@@ -1,6 +1,6 @@
 #include <polyfem/optimization/StateDiff.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -65,7 +65,7 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void compute_force_jacobian_prev(const State &state, const DiffCache &diff_cache, const int force_step, const int sol_step, StiffnessMatrix &hessian_prev)
+		void compute_force_jacobian_prev(const legacy::State &state, const DiffCache &diff_cache, const int force_step, const int sol_step, StiffnessMatrix &hessian_prev)
 		{
 			assert(force_step > 0);
 			assert(force_step > sol_step);
@@ -227,7 +227,7 @@ namespace polyfem
 			}
 		}
 
-		Eigen::MatrixXd solve_static_adjoint(const State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
+		Eigen::MatrixXd solve_static_adjoint(const legacy::State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
 		{
 			auto &s = state;
 
@@ -317,7 +317,7 @@ namespace polyfem
 			return adjoint;
 		}
 
-		Eigen::MatrixXd solve_transient_adjoint(const State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
+		Eigen::MatrixXd solve_transient_adjoint(const legacy::State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
 		{
 			auto &s = state;
 
@@ -412,7 +412,7 @@ namespace polyfem
 			return adjoints;
 		}
 
-		Eigen::MatrixXd solve_adjoint(const State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
+		Eigen::MatrixXd solve_adjoint(const legacy::State &state, const DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
 		{
 			if (state.problem->is_time_dependent())
 				return solve_transient_adjoint(state, diff_cache, rhs);
@@ -421,7 +421,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	void solve_adjoint_cached(const State &state, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
+	void solve_adjoint_cached(const legacy::State &state, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
 	{
 		diff_cache.cache_adjoints(solve_adjoint(state, diff_cache, rhs));
 	}
@@ -433,7 +433,7 @@ namespace polyfem
 	/// @param[in] state Forward simulation state.
 	/// @param[in] diff_cache Cache for differential specific data.
 	/// @param[in] type Return adjoint parameter p if type == 0. Return nu if type == 1.
-	Eigen::MatrixXd get_adjoint_mat(const State &state, const DiffCache &diff_cache, int type)
+	Eigen::MatrixXd get_adjoint_mat(const legacy::State &state, const DiffCache &diff_cache, int type)
 	{
 		assert(diff_cache.adjoint_mat().size() > 0);
 
@@ -452,7 +452,7 @@ namespace polyfem
 		return diff_cache.adjoint_mat();
 	}
 
-	void compute_surface_node_ids(const State &state, const int surface_selection, std::vector<int> &node_ids)
+	void compute_surface_node_ids(const legacy::State &state, const int surface_selection, std::vector<int> &node_ids)
 	{
 		auto &s = state;
 
@@ -482,7 +482,7 @@ namespace polyfem
 		}
 	}
 
-	void compute_total_surface_node_ids(const State &state, std::vector<int> &node_ids)
+	void compute_total_surface_node_ids(const legacy::State &state, std::vector<int> &node_ids)
 	{
 		auto &s = state;
 
@@ -508,7 +508,7 @@ namespace polyfem
 		}
 	}
 
-	void compute_volume_node_ids(const State &state, const int volume_selection, std::vector<int> &node_ids)
+	void compute_volume_node_ids(const legacy::State &state, const int volume_selection, std::vector<int> &node_ids)
 	{
 		auto &s = state;
 

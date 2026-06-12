@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -46,7 +46,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("[{}] Second derivatives not implemented", name());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, state, diff_cache);
 		// Only for homogenization
@@ -83,7 +83,7 @@ namespace polyfem::solver
 		gradv = Eigen::VectorXd::Zero(x.size());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		return Eigen::MatrixXd::Zero(state.ndof(), diff_cache.size());
 	}
@@ -108,12 +108,12 @@ namespace polyfem::solver
 		compute_partial_gradient_step(0, x, gradv);
 	}
 
-	Eigen::VectorXd StaticForm::compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd StaticForm::compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		return Eigen::MatrixXd::Zero(state.ndof(), 1);
 	}
 
-	Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		assert(!depends_on_step_prev());
 		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), diff_cache.size());
@@ -153,7 +153,7 @@ namespace polyfem::solver
 
 		return max_stress.maxCoeff();
 	}
-	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		log_and_throw_adjoint_error("[{}] Not differentiable!", name());
 		return Eigen::VectorXd();

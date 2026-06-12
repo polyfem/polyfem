@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/mesh/remesh/SizingFieldRemesher.hpp>
@@ -10,7 +10,7 @@
 
 #include <igl/edges.h>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace mesh;
 
@@ -300,4 +300,4 @@ namespace polyfem
 
 		return true;
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

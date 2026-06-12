@@ -3,7 +3,10 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+
+#include "VarFormTestAccess.hpp"
 
 #include <catch2/catch_all.hpp>
 
@@ -54,11 +57,33 @@ namespace
 
 		state->load_mesh();
 
-		state->build_basis();
-		// state->assemble_rhs();
-		// state->assemble_mass_mat();
+		polyfem::test::VarFormTestAccess::prepare(*state->variational_formulation);
 
 		return state;
+	}
+
+	void build_mesh_matrices(const polyfem::test::VarFormDebugData &debug, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+	{
+		REQUIRE(debug.mesh != nullptr);
+		REQUIRE(debug.bases != nullptr);
+		const size_t n_vertices = debug.n_bases - debug.n_obstacle_vertices;
+		const int dim = debug.mesh->dimension();
+
+		V.resize(n_vertices, dim);
+		F.resize(debug.bases->size(), dim + 1);
+
+		for (int i = 0; i < debug.bases->size(); i++)
+		{
+			const polyfem::basis::ElementBases &element = (*debug.bases)[i];
+			for (int j = 0; j < element.bases.size(); j++)
+			{
+				const polyfem::basis::Basis &basis = element.bases[j];
+				REQUIRE(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				if (j < F.cols())
+					F(i, j) = basis.global()[0].index;
+			}
+		}
 	}
 } // namespace
 
@@ -103,12 +128,18 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 
 	const auto state = get_state();
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.bases != nullptr);
+	REQUIRE(debug.geometry_bases != nullptr);
+	REQUIRE(debug.total_local_boundary != nullptr);
 
 	Eigen::MatrixXd proxy_vertices;
 	Eigen::MatrixXi proxy_faces;
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	build_collision_proxy(
-		state->bases, state->geom_bases(), state->total_local_boundary, state->n_bases, state->mesh->dimension(),
+		*debug.bases, *debug.geometry_bases, *debug.total_local_boundary, debug.n_bases, debug.mesh->dimension(),
 		/*max_edge_length=*/0.1, proxy_vertices, proxy_faces, displacement_map_entries, tessellation);
 
 #if defined(WIN32) && defined(NDEBUG)
@@ -130,7 +161,7 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F, T;
-	state->build_mesh_matrices(V, T);
+	build_mesh_matrices(debug, V, T);
 	igl::boundary_facets(T, F);
 
 	Eigen::MatrixXd squished_V = V;
@@ -172,6 +203,12 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	// }
 
 	const auto state = get_state(fe_mesh_path, discr_order);
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.bases != nullptr);
+	REQUIRE(debug.geometry_bases != nullptr);
+	REQUIRE(debug.total_local_boundary != nullptr);
 
 	Eigen::MatrixXd vertices;
 	Eigen::VectorXi _;
@@ -180,8 +217,8 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	polyfem::mesh::build_collision_proxy_displacement_map(
-		state->bases, state->geom_bases(), state->total_local_boundary,
-		state->n_bases, state->mesh->dimension(), vertices,
+		*debug.bases, *debug.geometry_bases, *debug.total_local_boundary,
+		debug.n_bases, debug.mesh->dimension(), vertices,
 		displacement_map_entries);
 
 	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);

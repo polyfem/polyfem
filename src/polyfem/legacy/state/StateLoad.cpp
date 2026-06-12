@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 
@@ -13,7 +13,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <igl/Timer.h>
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace basis;
 	using namespace mesh;
@@ -207,4 +207,4 @@ namespace polyfem
 
 		return bcs;
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

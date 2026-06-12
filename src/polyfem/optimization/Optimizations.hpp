@@ -10,8 +10,11 @@
 
 namespace polyfem
 {
-	class State;
-}
+	namespace legacy
+	{
+		class State;
+	}
+} // namespace polyfem
 
 namespace polysolve::nonlinear
 {
@@ -34,8 +37,8 @@ namespace polyfem::solver
 
 		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim);
 
-		static void solve_pde(State &state);
+		static void solve_pde(legacy::State &state);
 
-		static int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states);
+		static int compute_variable_size(const json &args, const std::vector<std::shared_ptr<legacy::State>> &states);
 	};
 } // namespace polyfem::solver

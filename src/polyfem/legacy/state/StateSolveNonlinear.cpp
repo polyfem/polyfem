@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -36,7 +36,7 @@
 #include <string>
 #include <vector>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace mesh;
 	using namespace solver;
@@ -165,7 +165,7 @@ namespace polyfem
 				Eigen::MatrixXd V;
 				Eigen::MatrixXi F;
 				build_mesh_matrices(V, F);
-				io::MshWriter::write(
+				polyfem::io::MshWriter::write(
 					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t + t_offset)),
 					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
 			}
@@ -202,7 +202,7 @@ namespace polyfem
 
 			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
 			{
-				OBJWriter::write(
+				polyfem::io::OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
 					collision_mesh.edges(), collision_mesh.faces());
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
@@ -479,4 +479,4 @@ namespace polyfem
 			user_post_step(step, *this, sol, nullptr, nullptr);
 		}
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

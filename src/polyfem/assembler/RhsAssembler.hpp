@@ -21,7 +21,7 @@ namespace polyfem
 			RhsAssembler(
 				const Assembler &assembler,
 				const mesh::Mesh &mesh,
-				const mesh::Obstacle &obstacle,
+				const mesh::Obstacle *obstacle,
 				const std::vector<int> &dirichlet_nodes,
 				const std::vector<int> &neumann_nodes,
 				const std::vector<RowVectorNd> &dirichlet_nodes_position,
@@ -128,7 +128,7 @@ namespace polyfem
 
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
-			const mesh::Obstacle &obstacle_;
+			const mesh::Obstacle *obstacle_;
 			const int n_basis_;
 			const int size_;                                 ///< dimension of problem
 			const std::vector<basis::ElementBases> &bases_;  ///< basis functions associated with solution
