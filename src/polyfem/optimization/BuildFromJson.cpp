@@ -72,7 +72,7 @@ namespace polyfem::from_json
 			return true;
 		}
 
-		Eigen::VectorXi eigen_vetor_xi_from_json(const json &j)
+		Eigen::VectorXi eigen_vector_xi_from_json(const json &j)
 		{
 			auto tmp = j.get<std::vector<int>>();
 			Eigen::VectorXi out = Eigen::Map<Eigen::VectorXi>(tmp.data(), tmp.size());
@@ -94,7 +94,7 @@ namespace polyfem::from_json
 		{
 			if (j.is_array())
 			{
-				return eigen_vetor_xi_from_json(j);
+				return eigen_vector_xi_from_json(j);
 			}
 			if (j.is_string())
 			{
@@ -295,7 +295,7 @@ namespace polyfem::from_json
 		std::string var2sim_type = args["type"];
 		if (var2sim_type == "shape")
 		{
-			Eigen::VectorXi active_dimensions = eigen_vetor_xi_from_json(args["active_dimensions"]);
+			Eigen::VectorXi active_dimensions = eigen_vector_xi_from_json(args["active_dimensions"]);
 			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *rel_states[0]);
 
 			var2sim = std::make_shared<ShapeVariableToSimulation>(
@@ -328,7 +328,7 @@ namespace polyfem::from_json
 		}
 		else if (var2sim_type == "initial")
 		{
-			Eigen::VectorXi active_dofs = eigen_vetor_xi_from_json(args["active_dofs"]);
+			Eigen::VectorXi active_dofs = eigen_vector_xi_from_json(args["active_dofs"]);
 			var2sim = std::make_shared<InitialConditionVariableToSimulation>(
 				std::move(rel_states),
 				std::move(rel_diff_caches),
@@ -337,8 +337,8 @@ namespace polyfem::from_json
 		}
 		else if (var2sim_type == "dirichlet-boundary")
 		{
-			Eigen::VectorXi active_boundary_ids = eigen_vetor_xi_from_json(args["active_boundary_ids"]);
-			Eigen::VectorXi active_time_slices = eigen_vetor_xi_from_json(args["active_time_slices"]);
+			Eigen::VectorXi active_boundary_ids = eigen_vector_xi_from_json(args["active_boundary_ids"]);
+			Eigen::VectorXi active_time_slices = eigen_vector_xi_from_json(args["active_time_slices"]);
 			var2sim = std::make_shared<DirichletBoundaryVariableToSimulation>(
 				std::move(rel_states),
 				std::move(rel_diff_caches),
@@ -357,8 +357,8 @@ namespace polyfem::from_json
 		}
 		else if (var2sim_type == "pressure")
 		{
-			Eigen::VectorXi active_boundary_ids = eigen_vetor_xi_from_json(args["active_boundary_ids"]);
-			Eigen::VectorXi active_time_slices = eigen_vetor_xi_from_json(args["active_time_slices"]);
+			Eigen::VectorXi active_boundary_ids = eigen_vector_xi_from_json(args["active_boundary_ids"]);
+			Eigen::VectorXi active_time_slices = eigen_vector_xi_from_json(args["active_time_slices"]);
 			var2sim = std::make_shared<PressureBoundaryVariableToSimulation>(
 				std::move(rel_states),
 				std::move(rel_diff_caches),

@@ -10,7 +10,7 @@
 
 namespace polyfem::solver
 {
-	/// @brief Maps to vicious damping parameters phi/psi.
+	/// @brief Maps to viscous damping parameters phi/psi.
 	class DampingVariableToSimulation : public VariableToSimulation
 	{
 	public:

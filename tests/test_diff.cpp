@@ -441,7 +441,7 @@ TEST_CASE("node-trajectory", "[opt_gradient]")
 	Eigen::MatrixXd targets =
 		uniform_random_matrix(states[0]->n_bases, states[0]->mesh->dimension(), rng, 0.0, 10.0);
 
-	// All actice.
+	// All active.
 	std::vector<int> actives(targets.rows());
 	for (int i = 0; i < targets.rows(); ++i)
 	{

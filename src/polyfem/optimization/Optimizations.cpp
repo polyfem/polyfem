@@ -117,7 +117,7 @@ namespace polyfem::solver
 				// dangerous to rely on it.
 				if (var2sim.data.size() != 1)
 				{
-					logger().warn("Computing initail guess via inverse eval with multiple"
+					logger().warn("Computing initial guess via inverse eval with multiple"
 								  " variable to simulation. You should make sure var2sim maps one"
 								  " to one to optimization parameter blocks in perfect order.");
 				}
