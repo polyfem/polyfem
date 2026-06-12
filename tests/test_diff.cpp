@@ -90,20 +90,6 @@ namespace
 		}
 	}
 
-	Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim)
-	{
-		if (x.size() == 0)
-			return Eigen::MatrixXd(0, dim);
-
-		assert(x.size() % dim == 0);
-		Eigen::MatrixXd X(x.size() / dim, dim);
-		for (int i = 0; i < x.size(); ++i)
-		{
-			X(i / dim, i % dim) = x(i);
-		}
-		return X;
-	}
-
 	// for debugging. compute the relative tolerance that will pass adjoint test.
 	double compute_relative_eps(double derivative, double finite_difference)
 	{
