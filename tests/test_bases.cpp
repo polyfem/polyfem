@@ -1537,8 +1537,7 @@ TEST_CASE("Pyramid", "[bases]")
 	Eigen::MatrixXd nodes, val, grad, pts;
 	Eigen::VectorXd fgrad;
 
-	// Pyramid test segfaults when p>2.
-	// TODO: Fix pyramid autogen code and enable higher order test.
+	// Higher order need different tolerance?
 	for (int p = 0; p <= 2; ++p)
 	{
 		PyramidQuadrature rule;
