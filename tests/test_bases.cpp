@@ -1547,7 +1547,8 @@ TEST_CASE("Pyramid", "[bases]")
 		pts = quad.points;
 
 		polyfem::autogen::pyramid_nodes_3d(p, nodes);
-		nodes(4, 2) -= 1e-7;
+		if (nodes.rows() > 4)
+			nodes(4, 2) -= 1e-7;
 
 		// Test partition of unity.
 		Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(pts.rows());
