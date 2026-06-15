@@ -134,7 +134,7 @@ TEST_CASE("friction-opt", EXPENSIVE_TEST_LABEL)
 	run_test1("friction-opt", 1.7981112e-09, 1e-1);
 }
 
-TEST_CASE("damping-opt", "[optimization]")
+TEST_CASE("damping-opt", EXPENSIVE_TEST_LABEL)
 {
 	run_test1("damping-opt", 2.9914589897e-07, 1e-3);
 }
