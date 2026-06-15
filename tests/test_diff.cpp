@@ -345,7 +345,7 @@ TEST_CASE("static-control-pressure-nodes-3d", EXPENSIVE_TEST_LABEL)
 	run_test1("static-control-pressure-nodes-3d-opt.json", 1e-3, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
-TEST_CASE("control-pressure-walker-2d", "[opt_gradient]")
+TEST_CASE("control-pressure-walker-2d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 8;
 	constexpr int REPEAT = 3;
@@ -369,7 +369,7 @@ TEST_CASE("shape-contact-force-norm", "[opt_gradient]")
 	run_test1("shape-contact-force-norm-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
-TEST_CASE("shape-contact-force-norm-adhesion", "[opt_gradient]")
+TEST_CASE("shape-contact-force-norm-adhesion", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 11;
 	constexpr int REPEAT = 3;
@@ -377,7 +377,7 @@ TEST_CASE("shape-contact-force-norm-adhesion", "[opt_gradient]")
 	run_test1("shape-contact-force-norm-opt-adhesion.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
-TEST_CASE("shape-contact-force-norm-3d", "[opt_gradient]")
+TEST_CASE("shape-contact-force-norm-3d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 12;
 	constexpr int REPEAT = 3;
@@ -598,7 +598,7 @@ TEST_CASE("initial-contact-smooth", "[opt_gradient]")
 	}
 }
 
-TEST_CASE("shape-transient-smooth", "[opt_gradient]")
+TEST_CASE("shape-transient-smooth", EXPENSIVE_TEST_LABEL)
 {
 	TestContext ctx{"shape-transient-friction-opt.json"};
 
