@@ -193,9 +193,8 @@ namespace polyfem::solver
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
 
-		// This line inserts solver.linear into config, but the opt spec has no rule for it. CLI run would throw "Invalid input json" in strict mode.
-		// TODO: Fix json spec properly.
-		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in.contains("/solver/linear"_json_pointer))
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 

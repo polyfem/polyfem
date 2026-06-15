@@ -109,6 +109,7 @@
         "default": null,
         "optional": [
             "nonlinear",
+            "linear",
             "advanced",
             "max_threads"
         ],
@@ -126,6 +127,12 @@
         "type": "include",
         "spec_file": "nonlinear-solver-spec.json",
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/linear",
+        "type": "include",
+        "spec_file": "linear-solver-spec.json",
+        "doc": "Linear solver settings for optimization nonlinear solver inner solves."
     },
     {
         "pointer": "/variable_to_simulation",
