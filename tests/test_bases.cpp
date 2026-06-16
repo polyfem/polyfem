@@ -737,13 +737,14 @@ TEST_CASE("P2_2d", "[bases]")
 
 TEST_CASE("Pk_2d", "[bases]")
 {
+	Eigen::MatrixXd pts, val, grad;
+	Eigen::VectorXd fgrad;
 
-	Eigen::MatrixXd pts;
-	for (int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
+	for (int k = 0; k <= polyfem::autogen::MAX_P_BASES; ++k)
 	{
 		polyfem::autogen::p_nodes_2d(k, pts);
 
-		Eigen::MatrixXd val;
+		// Test Kronecker-delta property.
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::p_basis_value_2d(false, k, i, pts, val);
@@ -754,6 +755,42 @@ TEST_CASE("Pk_2d", "[bases]")
 					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
 					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+			}
+		}
+
+		TriQuadrature rule;
+		Quadrature quad;
+		rule.get_quadrature(k + 1, quad);
+
+		for (bool bernstein : {false, true})
+		{
+			// Test partition of unity.
+			Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(quad.points.rows());
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				polyfem::autogen::p_basis_value_2d(bernstein, k, i, quad.points, val);
+				value_sum += val.col(0);
+			}
+			for (int j = 0; j < value_sum.size(); ++j)
+				REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+
+			// Test basis gradient with finite difference.
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				polyfem::autogen::p_grad_basis_value_2d(bernstein, k, i, quad.points, grad);
+
+				for (int j = 0; j < quad.points.rows(); ++j)
+				{
+					fd::finite_gradient(
+						quad.points.row(j), [bernstein, k, i](const Eigen::VectorXd &x) -> double {
+							Eigen::MatrixXd tmp;
+							polyfem::autogen::p_basis_value_2d(bernstein, k, i, x.transpose(), tmp);
+							return tmp(0);
+						},
+						fgrad);
+
+					CHECK(fd::compare_gradient(grad.row(j), fgrad));
+				}
 			}
 		}
 	}
@@ -853,12 +890,14 @@ TEST_CASE("P3_2d", "[bases]")
 
 TEST_CASE("Pk_3d", "[bases]")
 {
-	Eigen::MatrixXd pts;
-	for (int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
+	Eigen::MatrixXd pts, val, grad;
+	Eigen::VectorXd fgrad;
+
+	for (int k = 0; k <= polyfem::autogen::MAX_P_BASES; ++k)
 	{
 		polyfem::autogen::p_nodes_3d(k, pts);
 
-		Eigen::MatrixXd val;
+		// Test Kronecker-delta property.
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::p_basis_value_3d(false, k, i, pts, val);
@@ -869,6 +908,42 @@ TEST_CASE("Pk_3d", "[bases]")
 					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
 					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+			}
+		}
+
+		TetQuadrature rule;
+		Quadrature quad;
+		rule.get_quadrature(k + 1, quad);
+
+		for (const bool bernstein : {false, true})
+		{
+			// Test partition of unity.
+			Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(quad.points.rows());
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				polyfem::autogen::p_basis_value_3d(bernstein, k, i, quad.points, val);
+				value_sum += val.col(0);
+			}
+			for (int j = 0; j < value_sum.size(); ++j)
+				REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+
+			// Test basis gradient with finite difference.
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				polyfem::autogen::p_grad_basis_value_3d(bernstein, k, i, quad.points, grad);
+
+				for (int j = 0; j < quad.points.rows(); ++j)
+				{
+					fd::finite_gradient(
+						quad.points.row(j), [bernstein, k, i](const Eigen::VectorXd &x) -> double {
+							Eigen::MatrixXd tmp;
+							polyfem::autogen::p_basis_value_3d(bernstein, k, i, x.transpose(), tmp);
+							return tmp(0);
+						},
+						fgrad);
+
+					CHECK(fd::compare_gradient(grad.row(j), fgrad));
+				}
 			}
 		}
 	}
@@ -936,6 +1011,73 @@ TEST_CASE("Q2_1d", "[bases]")
 	}
 }
 
+TEST_CASE("Qk_1d", "[bases]")
+{
+	const int max_q_1d = 6;
+
+	Eigen::MatrixXd pts, val, grad;
+	Eigen::VectorXd fgrad;
+
+	// k=-2 enables serendipity.
+	for (int k = -2; k <= max_q_1d; ++k)
+	{
+		// k=-1 is not a valid input.
+		if (k == -1)
+			continue;
+
+		polyfem::autogen::q_nodes_1d(k, pts);
+
+		// Test Kronecker-delta property.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			polyfem::autogen::q_basis_value_1d(k, i, pts, val);
+
+			for (int j = 0; j < val.size(); ++j)
+			{
+				if (i == j)
+					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
+				else
+					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+			}
+		}
+
+		LineQuadrature rule;
+		Quadrature quad;
+		rule.get_quadrature(k > 0 ? k + 1 : 3, quad);
+
+		// Test partition of unity.
+		Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(quad.points.rows());
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			polyfem::autogen::q_basis_value_1d(k, i, quad.points, val);
+			value_sum += val.col(0);
+		}
+		for (int j = 0; j < value_sum.size(); ++j)
+		{
+			REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+		}
+
+		// Test basis gradient with finite difference.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			polyfem::autogen::q_grad_basis_value_1d(k, i, quad.points, grad);
+
+			for (int j = 0; j < quad.points.rows(); ++j)
+			{
+				fd::finite_gradient(
+					quad.points.row(j), [k, i](const Eigen::VectorXd &x) -> double {
+						Eigen::MatrixXd tmp;
+						polyfem::autogen::q_basis_value_1d(k, i, x.transpose(), tmp);
+						return tmp(0);
+					},
+					fgrad);
+
+				CHECK(fd::compare_gradient(grad.row(j), fgrad));
+			}
+		}
+	}
+}
+
 TEST_CASE("Q1_2d", "[bases]")
 {
 	QuadQuadrature rule;
@@ -1000,13 +1142,19 @@ TEST_CASE("Q2_2d", "[bases]")
 
 TEST_CASE("Qk_2d", "[bases]")
 {
+	Eigen::MatrixXd pts, val, grad;
+	Eigen::VectorXd fgrad;
 
-	Eigen::MatrixXd pts;
-	for (int k = 1; k < polyfem::autogen::MAX_Q_BASES; ++k)
+	// k=-1 enables serendipity.
+	for (int k = -2; k <= polyfem::autogen::MAX_Q_BASES; ++k)
 	{
+		// k=-1 is not a valid input.
+		if (k == -1)
+			continue;
+
 		polyfem::autogen::q_nodes_2d(k, pts);
 
-		Eigen::MatrixXd val;
+		// Test Kronecker-delta property.
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::q_basis_value_2d(k, i, pts, val);
@@ -1019,22 +1167,39 @@ TEST_CASE("Qk_2d", "[bases]")
 					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
-	}
 
-	int k = -2;
-	polyfem::autogen::q_nodes_2d(k, pts);
-
-	Eigen::MatrixXd val;
-	for (int i = 0; i < pts.rows(); ++i)
-	{
-		polyfem::autogen::q_basis_value_2d(k, i, pts, val);
-
-		for (int j = 0; j < val.size(); ++j)
+		// Test partition of unity.
+		QuadQuadrature rule;
+		Quadrature quad;
+		rule.get_quadrature(k > 0 ? k + 1 : 3, quad);
+		Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(quad.points.rows());
+		for (int i = 0; i < pts.rows(); ++i)
 		{
-			if (i == j)
-				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
-			else
-				REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+			polyfem::autogen::q_basis_value_2d(k, i, quad.points, val);
+			value_sum += val.col(0);
+		}
+		for (int j = 0; j < value_sum.size(); ++j)
+		{
+			REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+		}
+
+		// Test basis gradient with finite difference.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			polyfem::autogen::q_grad_basis_value_2d(k, i, quad.points, grad);
+
+			for (int j = 0; j < quad.points.rows(); ++j)
+			{
+				fd::finite_gradient(
+					quad.points.row(j), [k, i](const Eigen::VectorXd &x) -> double {
+						Eigen::MatrixXd tmp;
+						polyfem::autogen::q_basis_value_2d(k, i, x.transpose(), tmp);
+						return tmp(0);
+					},
+					fgrad);
+
+				CHECK(fd::compare_gradient(grad.row(j), fgrad));
+			}
 		}
 	}
 }
@@ -1103,13 +1268,19 @@ TEST_CASE("Q2_3d", "[bases]")
 
 TEST_CASE("Qk_3d", "[bases]")
 {
+	Eigen::MatrixXd pts, val, grad;
+	Eigen::VectorXd fgrad;
 
-	Eigen::MatrixXd pts;
-	for (int k = 1; k < polyfem::autogen::MAX_Q_BASES; ++k)
+	// k=-2 enables serendipity.
+	for (int k = -2; k <= polyfem::autogen::MAX_Q_BASES; ++k)
 	{
+		// k=-1 is not a valid input.
+		if (k == -1)
+			continue;
+
 		polyfem::autogen::q_nodes_3d(k, pts);
 
-		Eigen::MatrixXd val;
+		// Test Kronecker-delta property.
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::q_basis_value_3d(k, i, pts, val);
@@ -1122,22 +1293,40 @@ TEST_CASE("Qk_3d", "[bases]")
 					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
-	}
 
-	int k = -2;
-	polyfem::autogen::q_nodes_3d(k, pts);
+		HexQuadrature rule;
+		Quadrature quad;
+		rule.get_quadrature(k > 0 ? k + 1 : 3, quad);
 
-	Eigen::MatrixXd val;
-	for (int i = 0; i < pts.rows(); ++i)
-	{
-		polyfem::autogen::q_basis_value_3d(k, i, pts, val);
-
-		for (int j = 0; j < val.size(); ++j)
+		// Test partition of unity.
+		Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(quad.points.rows());
+		for (int i = 0; i < pts.rows(); ++i)
 		{
-			if (i == j)
-				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
-			else
-				REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+			polyfem::autogen::q_basis_value_3d(k, i, quad.points, val);
+			value_sum += val.col(0);
+		}
+		for (int j = 0; j < value_sum.size(); ++j)
+		{
+			REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+		}
+
+		// Test basis gradient with finite difference.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			polyfem::autogen::q_grad_basis_value_3d(k, i, quad.points, grad);
+
+			for (int j = 0; j < quad.points.rows(); ++j)
+			{
+				fd::finite_gradient(
+					quad.points.row(j), [k, i](const Eigen::VectorXd &x) -> double {
+						Eigen::MatrixXd tmp;
+						polyfem::autogen::q_basis_value_3d(k, i, x.transpose(), tmp);
+						return tmp(0);
+					},
+					fgrad);
+
+				CHECK(fd::compare_gradient(grad.row(j), fgrad));
+			}
 		}
 	}
 }
@@ -1272,8 +1461,8 @@ TEST_CASE("WS_2d", "[bases]")
 
 TEST_CASE("Prism", "[bases]")
 {
-	const int max_p_deg = 4;
-	const int max_q_deg = 5;
+	const int max_p_deg = polyfem::autogen::MAX_P_BASES;
+	const int max_q_deg = 6;
 
 	Eigen::MatrixXd nodes, val, grad, pts;
 	Eigen::VectorXd fgrad;
@@ -1287,7 +1476,19 @@ TEST_CASE("Prism", "[bases]")
 			rule.get_quadrature(p + 1, q + 1, quad);
 			pts = quad.points;
 
+			// Test partition of unity.
 			polyfem::autogen::prism_nodes_3d(p, q, nodes);
+			Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(pts.rows());
+			for (int i = 0; i < nodes.rows(); ++i)
+			{
+				polyfem::autogen::prism_basis_value_3d(p, q, i, pts, val);
+				value_sum += val.col(0);
+			}
+			for (int j = 0; j < value_sum.size(); ++j)
+			{
+				REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+			}
+
 			for (int i = 0; i < nodes.rows(); ++i)
 			{
 				// interpolation
@@ -1331,12 +1532,14 @@ TEST_CASE("Prism", "[bases]")
 
 TEST_CASE("Pyramid", "[bases]")
 {
-	const int max_p_deg = 2;
+	const int max_p_deg = polyfem::autogen::MAX_Pyramid_BASES;
 
 	Eigen::MatrixXd nodes, val, grad, pts;
 	Eigen::VectorXd fgrad;
 
-	for (int p = 1; p <= max_p_deg; ++p)
+	// Pyramid test segfaults when p>2.
+	// TODO: Fix pyramid autogen code and enable higher order test.
+	for (int p = 0; p <= 2; ++p)
 	{
 		PyramidQuadrature rule;
 		Quadrature quad;
@@ -1344,7 +1547,21 @@ TEST_CASE("Pyramid", "[bases]")
 		pts = quad.points;
 
 		polyfem::autogen::pyramid_nodes_3d(p, nodes);
-		nodes(4, 2) -= 1e-7;
+		if (nodes.rows() > 4)
+			nodes(4, 2) -= 1e-7;
+
+		// Test partition of unity.
+		Eigen::VectorXd value_sum = Eigen::VectorXd::Zero(pts.rows());
+		for (int i = 0; i < nodes.rows(); ++i)
+		{
+			polyfem::autogen::pyramid_basis_value_3d(p, i, pts, val);
+			value_sum += val.col(0);
+		}
+		for (int j = 0; j < value_sum.size(); ++j)
+		{
+			REQUIRE(value_sum(j) == Catch::Approx(1).margin(1e-10));
+		}
+
 		for (int i = 0; i < nodes.rows(); ++i)
 		{
 			// interpolation
