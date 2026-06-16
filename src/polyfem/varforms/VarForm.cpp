@@ -544,6 +544,161 @@ namespace polyfem::varform
 		}
 	}
 
+	void VarForm::build_fe_space(
+		mesh::Mesh &mesh,
+		const bool iso_parametric,
+		const Eigen::VectorXi &disc_orders,
+		const std::string &basis_type,
+		const std::string &poly_basis_type,
+		const assembler::Assembler &space_assembler,
+		const int value_dim,
+		const int quadrature_order,
+		const int mass_quadrature_order,
+		const bool use_corner_quadrature,
+		const int n_harmonic_samples,
+		const int integral_constraints,
+		FESpace &space,
+		VarFormBoundaryState &boundary)
+	{
+		using namespace mesh;
+
+		const std::string space_assembler_name = space_assembler.name();
+
+		space.reset();
+		boundary.reset();
+
+		space.value_dim = value_dim;
+
+		space.bases = std::make_shared<std::vector<basis::ElementBases>>();
+		space.geometry = std::make_shared<GeometryMapping>();
+
+		space.disc_orders = disc_orders;
+		space.disc_ordersq = disc_orders;
+
+		Eigen::MatrixXi geom_disc_orders;
+		if (!iso_parametric)
+		{
+			if (mesh.orders().size() <= 0)
+			{
+				geom_disc_orders.resizeLike(space.disc_orders);
+				geom_disc_orders.setConstant(1);
+			}
+			else
+				geom_disc_orders = mesh.orders();
+
+			space.geometry->bases = std::make_shared<std::vector<basis::ElementBases>>();
+			space.geometry->disc_orders = geom_disc_orders;
+		}
+
+		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
+
+		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
+
+		igl::Timer timer;
+		timer.start();
+
+		const bool has_polys = mesh.has_poly();
+		std::map<int, basis::InterfaceData> poly_edge_to_data_geom;
+
+		const bool use_continuous_gbasis = true;
+
+		if (mesh.is_volume())
+		{
+			const Mesh3D &tmp_mesh = dynamic_cast<const Mesh3D &>(mesh);
+
+			if (basis_type == "Spline")
+			{
+				space.n_bases = basis::SplineBasis3d::build_bases(
+					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+					*space.bases, boundary.local_boundary, space.poly_edge_to_data);
+			}
+			else
+			{
+				if (!iso_parametric)
+					space.geometry->n_bases = basis::LagrangeBasis3d::build_bases(
+						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+						geom_disc_orders, geom_disc_ordersq, false, false, has_polys,
+						!use_continuous_gbasis, use_corner_quadrature,
+						*space.geometry->bases, boundary.local_boundary, poly_edge_to_data_geom,
+						space.geometry->mesh_nodes);
+
+				space.n_bases = basis::LagrangeBasis3d::build_bases(
+					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+					space.disc_orders, space.disc_ordersq,
+					basis_type == "Bernstein",
+					basis_type == "Serendipity",
+					has_polys, false, use_corner_quadrature,
+					*space.bases, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
+			}
+		}
+		else
+		{
+			const Mesh2D &tmp_mesh = dynamic_cast<const Mesh2D &>(mesh);
+
+			if (basis_type == "Spline")
+			{
+				space.n_bases = basis::SplineBasis2d::build_bases(
+					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+					*space.bases, boundary.local_boundary, space.poly_edge_to_data);
+			}
+			else
+			{
+				if (!iso_parametric)
+					space.geometry->n_bases = basis::LagrangeBasis2d::build_bases(
+						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+						geom_disc_orders, false, false, has_polys,
+						!use_continuous_gbasis, use_corner_quadrature,
+						*space.geometry->bases, boundary.local_boundary, poly_edge_to_data_geom,
+						space.geometry->mesh_nodes);
+
+				space.n_bases = basis::LagrangeBasis2d::build_bases(
+					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
+					space.disc_orders,
+					basis_type == "Bernstein",
+					basis_type == "Serendipity",
+					has_polys, false, use_corner_quadrature,
+					*space.bases, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
+			}
+		}
+
+		build_polygonal_basis(mesh, poly_basis_type, space_assembler,
+							  iso_parametric,
+							  quadrature_order,
+							  mass_quadrature_order,
+							  n_harmonic_samples,
+							  integral_constraints,
+							  space,
+							  boundary);
+
+		if (iso_parametric)
+			space.geometry->init_from_fe_space(space);
+		else
+		{
+			assert(space.geometry->bases);
+			assert(space.geometry->n_bases > 0);
+		}
+
+		boundary.total_local_boundary.clear();
+		for (const auto &lb : boundary.local_boundary)
+			boundary.total_local_boundary.emplace_back(lb);
+
+		{
+			igl::Timer timer2;
+			logger().debug("Building node mapping...");
+			timer2.start();
+			build_node_mapping(mesh, basis_type, space, space.space_in_node_to_node, space.space_in_primitive_to_primitive);
+			timer2.stop();
+			logger().debug("Done (took {}s)", timer2.getElapsedTime());
+		}
+
+		logger().info("n_bases {}", space.n_bases);
+
+		timings.building_basis_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.building_basis_time);
+
+		logger().info("n bases: {}", space.n_bases);
+	}
+
 	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)
 	{
 		rhs.resize(0, 0);
@@ -688,6 +843,162 @@ namespace polyfem::varform
 		n_bases += new_bases;
 	}
 
+	void VarForm::build_polygonal_basis(
+		const mesh::Mesh &mesh,
+		const std::string &poly_basis_type,
+		const assembler::Assembler &space_assembler,
+		bool iso_parametric,
+		const int n_harmonic_samples,
+		const int quadrature_order,
+		const int mass_quadrature_order,
+		const int integral_constraints,
+		varform::FESpace &space,
+		varform::VarFormBoundaryState &boundary)
+	{
+		if (space.poly_edge_to_data.empty() && space.polys.empty())
+		{
+			timings.computing_poly_basis_time = 0;
+			return;
+		}
+
+		const std::string space_assembler_name = space_assembler.name();
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Computing polygonal basis...");
+
+		int new_bases = 0;
+		const int dim = space_assembler.is_tensor() ? mesh.dimension() : 1;
+		if (iso_parametric)
+		{
+			if (mesh.is_volume())
+			{
+				if (poly_basis_type == "MeanValue" || poly_basis_type == "Wachspress")
+					log_and_throw_error("Barycentric bases not supported in 3D");
+
+				const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(&space_assembler);
+				assert(linear_assembler);
+				new_bases = basis::PolygonalBasis3d::build_bases(
+					*linear_assembler,
+					n_harmonic_samples,
+					dynamic_cast<const mesh::Mesh3D &>(mesh),
+					space.n_bases,
+					quadrature_order,
+					mass_quadrature_order,
+					integral_constraints,
+					*space.bases,
+					*space.bases,
+					space.poly_edge_to_data,
+					space.polys_3d);
+			}
+			else
+			{
+				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
+				if (poly_basis_type == "MeanValue")
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						space_assembler.name(), dim, mesh_2d, space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						*space.bases, boundary.local_boundary, space.polys);
+				}
+				else if (poly_basis_type == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						space_assembler.name(), dim, mesh_2d, space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						*space.bases, boundary.local_boundary, space.polys);
+				}
+				else
+				{
+					const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(&space_assembler);
+					assert(linear_assembler);
+					new_bases = basis::PolygonalBasis2d::build_bases(
+						*linear_assembler,
+						n_harmonic_samples,
+						mesh_2d,
+						space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						integral_constraints,
+						*space.bases,
+						*space.bases,
+						space.poly_edge_to_data,
+						space.polys);
+				}
+			}
+		}
+		else
+		{
+			assert(space.geometry);
+			assert(space.geometry->bases);
+			if (mesh.is_volume())
+			{
+				if (poly_basis_type == "MeanValue" || poly_basis_type == "Wachspress")
+					log_and_throw_error("Barycentric bases not supported in 3D");
+
+				const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(&space_assembler);
+				assert(linear_assembler);
+				new_bases = basis::PolygonalBasis3d::build_bases(
+					*linear_assembler,
+					n_harmonic_samples,
+					dynamic_cast<const mesh::Mesh3D &>(mesh),
+					space.n_bases,
+					quadrature_order,
+					mass_quadrature_order,
+					integral_constraints,
+					*space.bases,
+					*space.geometry->bases,
+					space.poly_edge_to_data,
+					space.polys_3d);
+			}
+			else
+			{
+				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
+				if (poly_basis_type == "MeanValue")
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						space_assembler.name(), dim, mesh_2d, space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						*space.bases, boundary.local_boundary, space.polys);
+				}
+				else if (poly_basis_type == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						space_assembler.name(), dim, mesh_2d, space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						*space.bases, boundary.local_boundary, space.polys);
+				}
+				else
+				{
+					const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(&space_assembler);
+					assert(linear_assembler);
+					new_bases = basis::PolygonalBasis2d::build_bases(
+						*linear_assembler,
+						n_harmonic_samples,
+						mesh_2d,
+						space.n_bases,
+						quadrature_order,
+						mass_quadrature_order,
+						integral_constraints,
+						*space.bases,
+						*space.geometry->bases,
+						space.poly_edge_to_data,
+						space.polys);
+				}
+			}
+		}
+
+		timer.stop();
+		timings.computing_poly_basis_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.computing_poly_basis_time);
+
+		space.n_bases += new_bases;
+	}
+
 	void VarForm::solve(Eigen::MatrixXd &sol)
 	{
 		prepare();
@@ -774,6 +1085,103 @@ namespace polyfem::varform
 		{
 			if (tmp[i] >= 0)
 				in_node_to_node[tmp[i]] = i;
+		}
+	}
+
+	void VarForm::build_node_mapping(
+		const mesh::Mesh &mesh,
+		const std::string &basis_type,
+		const FESpace &space,
+		Eigen::VectorXi &space_in_node_to_node,
+		Eigen::VectorXi &space_in_primitive_to_primitive) const
+	{
+		space_in_node_to_node.resize(0);
+		space_in_primitive_to_primitive.resize(0);
+
+		if (basis_type == "Spline")
+		{
+			logger().warn("Node ordering disabled, it dosent work for splines!");
+			return;
+		}
+
+		if (space.disc_orders.maxCoeff() >= 4 || space.disc_orders.maxCoeff() != space.disc_orders.minCoeff())
+		{
+			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
+			return;
+		}
+
+		if (!mesh.is_conforming())
+		{
+			logger().warn("Node ordering disabled, not supported for non-conforming meshes!");
+			return;
+		}
+
+		if (mesh.has_poly())
+		{
+			logger().warn("Node ordering disabled, not supported for polygonal meshes!");
+			return;
+		}
+
+		if (mesh.in_ordered_vertices().size() <= 0 || mesh.in_ordered_edges().size() <= 0 || (mesh.is_volume() && mesh.in_ordered_faces().size() <= 0))
+		{
+			logger().warn("Node ordering disabled, input vertices/edges/faces not computed!");
+			return;
+		}
+
+		if (!space.mesh_nodes)
+		{
+			logger().warn("Node ordering disabled, FE space does not expose mesh nodes!");
+			return;
+		}
+
+		const int num_vertex_nodes = space.mesh_nodes->num_vertex_nodes();
+		const int num_edge_nodes = space.mesh_nodes->num_edge_nodes();
+		const int num_face_nodes = space.mesh_nodes->num_face_nodes();
+		const int num_cell_nodes = space.mesh_nodes->num_cell_nodes();
+
+		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
+		const long n_vertices = num_vertex_nodes;
+		const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+		const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+
+		igl::Timer timer;
+
+		logger().trace("Building in-node to in-primitive mapping...");
+		timer.start();
+		Eigen::VectorXi in_node_to_in_primitive;
+		Eigen::VectorXi in_node_offset;
+		build_in_node_to_in_primitive(mesh, *space.mesh_nodes, in_node_to_in_primitive, in_node_offset);
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
+
+		logger().trace("Building in-primitive to primitive mapping...");
+		timer.start();
+		bool ok = build_in_primitive_to_primitive(
+			mesh, *space.mesh_nodes,
+			mesh.in_ordered_vertices(),
+			mesh.in_ordered_edges(),
+			mesh.in_ordered_faces(),
+			space_in_primitive_to_primitive);
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
+
+		if (!ok)
+		{
+			space_in_node_to_node.resize(0);
+			space_in_primitive_to_primitive.resize(0);
+			return;
+		}
+
+		const auto &tmp = space.mesh_nodes->in_ordered_vertices();
+		int max_tmp = -1;
+		for (auto v : tmp)
+			max_tmp = std::max(max_tmp, v);
+
+		space_in_node_to_node.resize(max_tmp + 1);
+		for (int i = 0; i < tmp.size(); ++i)
+		{
+			if (tmp[i] >= 0)
+				space_in_node_to_node[tmp[i]] = i;
 		}
 	}
 

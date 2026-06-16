@@ -87,6 +87,9 @@ namespace polyfem::varform
 		/// Geometric mapping used to integrate this FE space.
 		std::shared_ptr<GeometryMapping> geometry;
 
+		Eigen::VectorXi space_in_node_to_node;
+		Eigen::VectorXi space_in_primitive_to_primitive;
+
 		int ndof() const
 		{
 			return n_bases * value_dim;
@@ -127,9 +130,9 @@ namespace polyfem::varform
 			polys_3d.clear();
 			mesh_nodes = nullptr;
 			geometry = nullptr;
-			ass_vals_cache.init_empty();
-			mass_ass_vals_cache.init_empty(true);
-			pure_mass_ass_vals_cache.init_empty(true);
+
+			space_in_node_to_node.resize(0);
+			space_in_primitive_to_primitive.resize(0);
 		}
 	};
 

@@ -31,7 +31,7 @@ namespace polyfem
 	{
 		class BDF;
 		class ImplicitTimeIntegrator;
-	}
+	} // namespace time_integrator
 
 	namespace test
 	{
@@ -137,7 +137,45 @@ namespace polyfem
 			}
 
 			void build_polygonal_basis(const mesh::Mesh &mesh);
+			void build_fe_space(
+				mesh::Mesh &mesh,
+				const bool iso_parametric,
+				const Eigen::VectorXi &disc_orders,
+				const std::string &basis_type,
+				const std::string &poly_basis_type,
+				const assembler::Assembler &space_assembler,
+				const int value_dim,
+				const int quadrature_order,
+				const int mass_quadrature_order,
+				const bool use_corner_quadrature,
+				const int n_harmonic_samples,
+				const int integral_constraints,
+				FESpace &space,
+				VarFormBoundaryState &boundary);
+
 			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
+
+		private:
+			void build_polygonal_basis(
+				const mesh::Mesh &mesh,
+				const std::string &poly_basis_type,
+				const assembler::Assembler &space_assembler,
+				bool iso_parametric,
+				const int quadrature_order,
+				const int mass_quadrature_order,
+				const int n_harmonic_samples,
+				const int integral_constraints,
+				FESpace &space,
+				VarFormBoundaryState &boundary);
+
+			void build_node_mapping(
+				const mesh::Mesh &mesh,
+				const std::string &basis_type,
+				const FESpace &space,
+				Eigen::VectorXi &space_in_node_to_node,
+				Eigen::VectorXi &space_in_primitive_to_primitive) const;
+
+		protected:
 			std::vector<int> primitive_to_node() const;
 			std::vector<int> node_to_primitive() const;
 
