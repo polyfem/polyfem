@@ -87,11 +87,6 @@ namespace polyfem::varform
 		/// Geometric mapping used to integrate this FE space.
 		std::shared_ptr<GeometryMapping> geometry;
 
-		/// Assembly caches for operators on this space.
-		assembler::AssemblyValsCache ass_vals_cache;
-		assembler::AssemblyValsCache mass_ass_vals_cache;
-		assembler::AssemblyValsCache pure_mass_ass_vals_cache;
-
 		int ndof() const
 		{
 			return n_bases * value_dim;
