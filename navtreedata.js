@@ -60,7 +60,7 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", "namespacemembers_dup" ],
         [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
-        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Variables", "namespacemembers_vars.html", "namespacemembers_vars" ],
         [ "Typedefs", "namespacemembers_type.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
@@ -141,12 +141,12 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#ad9e6d2341465275487608c13ec73d2b1",
 "functions_l.html",
 "namespacemembers_func_i.html",
-"namespacepolyfem_1_1io.html#a9b84370fb8325fed647d02c0cf45b207",
-"namespacepolyfem_1_1solver_1_1_adjoint_tools.html#afd1c5f4891c34a48045ce552f6f28e3f",
-"p__n__bases_8cpp.html#ac52a919ee75e5b46c7792683f227a0d1",
-"struct_d_scalar2.html#ad0d98c068c13277fc22f9091028b0157",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a217a3e351ddac688b8f1e02736860c0f",
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#ab9c0be65a3361408667d25eb1e85a69d"
+"namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482",
+"namespacepolyfem_1_1solver.html#a4165a3aa1ac3d4ff7e4ed89921620ef9",
+"namespacetriangle.html#ad10a5c91f381925721f38f3c19b7c38e",
+"struct_d_scalar1.html#a763a6ae05504a9fcc208b31f6b04cf1d",
+"structpolyfem_1_1mesh_1_1_mesh___quality.html#a344e0c037fe415e07689e9501582762d",
+"structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html#a5f555e4f35f8cb81139fc4cac52b7b46"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

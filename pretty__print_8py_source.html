@@ -132,55 +132,144 @@ $(document).ready(function(){initNavTree('pretty__print_8py_source.html',''); in
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">from</span> sympy.printing <span class="keyword">import</span> ccode</div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"># pretty print</span></div>
-<div class="foldopen" id="foldopen00008" data-start="" data-end="">
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a73786f15be021f8233264d6227553414">    8</a></span><span class="keyword">def </span>C99_print(expr):</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    CSE_results = cse(expr, numbered_symbols(<span class="stringliteral">&quot;helper_&quot;</span>), optimizations=<span class="stringliteral">&#39;basic&#39;</span>)</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    lines = []</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">for</span> helper <span class="keywordflow">in</span> CSE_results[0]:</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">if</span> isinstance(helper[1], MatrixSymbol):</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>            lines.append(</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                <span class="stringliteral">&#39;const auto &#39;</span> + str(helper[0]) + <span class="stringliteral">&#39;[&#39;</span> + str(helper[1].rows * helper[1].cols) + <span class="stringliteral">&#39;];&#39;</span>)</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            lines.append(ccode(helper[1], helper[0]))</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            lines.append(<span class="stringliteral">&#39;const auto &#39;</span> + ccode(helper[1], helper[0]))</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">for</span> i, result <span class="keywordflow">in</span> enumerate(CSE_results[1]):</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        lines.append(ccode(result, <span class="stringliteral">&quot;result_%d&quot;</span> % i))</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <span class="stringliteral">&#39;\n&#39;</span>.join(lines)</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"># Pretty print a matrix or tensor expression.</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"># We define reference space coordinate as sympy symbol x, y, z.</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a5ea4bd1317479f680c22780f36a222d9">    7</a></span>SCALAR_COORDS = symbols(<span class="stringliteral">&#39;x,y,z&#39;</span>)</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"># pretty print</span></div>
+<div class="foldopen" id="foldopen00010" data-start="" data-end="">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a73786f15be021f8233264d6227553414">   10</a></span><span class="keyword">def </span>C99_print(expr):</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    CSE_results = cse(expr, numbered_symbols(<span class="stringliteral">&quot;helper_&quot;</span>), optimizations=<span class="stringliteral">&#39;basic&#39;</span>)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    lines = []</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">for</span> helper <span class="keywordflow">in</span> CSE_results[0]:</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">if</span> isinstance(helper[1], MatrixSymbol):</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            lines.append(</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                <span class="stringliteral">&#39;const auto &#39;</span> + str(helper[0]) + <span class="stringliteral">&#39;[&#39;</span> + str(helper[1].rows * helper[1].cols) + <span class="stringliteral">&#39;];&#39;</span>)</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            lines.append(ccode(helper[1], helper[0]))</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            lines.append(<span class="stringliteral">&#39;const auto &#39;</span> + ccode(helper[1], helper[0]))</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">for</span> i, result <span class="keywordflow">in</span> enumerate(CSE_results[1]):</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        lines.append(ccode(result, <span class="stringliteral">&quot;result_%d&quot;</span> % i))</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> <span class="stringliteral">&#39;\n&#39;</span>.join(lines)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 </div>
-<div class="foldopen" id="foldopen00024" data-start="" data-end="">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#ac11a97cfd2c874ce1ad19aaadca6f738">   24</a></span><span class="keyword">def </span>C99_print_tensor(expr, result_name=&quot;result&quot;):</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment"># If a tensor expression, the result is reshaped into a 2d matrix for printing.</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    lines = []</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    subs, result = cse(expr, numbered_symbols(</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="stringliteral">&quot;helper_&quot;</span>), optimizations=<span class="stringliteral">&#39;basic&#39;</span>)</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> len(result) == 1:</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        result = result[0]</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">for</span> k, v <span class="keywordflow">in</span> subs:</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        lines.append(f<span class="stringliteral">&quot;const double {ccode(v, k)}&quot;</span>)</div>
+<div class="foldopen" id="foldopen00026" data-start="" data-end="">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a67b653d5a9a228b8d95105ad614ace0c">   26</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#a67b653d5a9a228b8d95105ad614ace0c">C99_print_scalar</a>(expr, result_name=&quot;result&quot;):</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="stringliteral">&quot;&quot;&quot;Print scalar assignment: double helper_x = expr;&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    substitutions, results = cse(</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        expr, numbered_symbols(<span class="stringliteral">&quot;helper_&quot;</span>), optimizations=<span class="stringliteral">&#39;basic&#39;</span>)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    lines = [f<span class="stringliteral">&quot;double {ccode(value, symbol)}&quot;</span> <span class="keywordflow">for</span> symbol, value <span class="keywordflow">in</span> substitutions]</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    lines.append(ccode(results[0], result_name))</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> <span class="stringliteral">&#39;\n&#39;</span>.join(lines)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    result_shape = np.array(result).shape</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> len(result_shape) == 2:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(result_shape[0]):</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keywordflow">for</span> j <span class="keywordflow">in</span> range(result_shape[1]):</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                s = ccode(result[i, j], f<span class="stringliteral">&quot;{result_name}[{i}, {j}]&quot;</span>)</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                lines.append(f<span class="stringliteral">&quot;{s}&quot;</span>)</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">elif</span> len(result_shape) == 4:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(result_shape[0]):</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">for</span> j <span class="keywordflow">in</span> range(result_shape[1]):</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                <span class="keywordflow">for</span> k <span class="keywordflow">in</span> range(result_shape[2]):</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                    <span class="keywordflow">for</span> l <span class="keywordflow">in</span> range(result_shape[3]):</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                        s = ccode(result[i, j, k, l],</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                  f<span class="stringliteral">&quot;{result_name}[{i * result_shape[1] + j}, {k * result_shape[3] + l}]&quot;</span>)</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                        lines.append(f<span class="stringliteral">&quot;{s}&quot;</span>)</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;\n&quot;</span>.join(lines)</div>
 </div>
+<div class="foldopen" id="foldopen00035" data-start="" data-end="">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a800e288ac66202d8a166c0767f0b92c8">   35</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#a800e288ac66202d8a166c0767f0b92c8">scalar_args</a>(dim):</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="stringliteral">&quot;&quot;&quot;Return a scalar function argument list, e.g. &#39;double x, double y&#39;.&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">assert</span> 1 &lt;= dim &lt;= len(SCALAR_COORDS)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;, &quot;</span>.join(f<span class="stringliteral">&quot;double {coord.name}&quot;</span> <span class="keywordflow">for</span> coord <span class="keywordflow">in</span> SCALAR_COORDS[:dim])</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+</div>
+<div class="foldopen" id="foldopen00041" data-start="" data-end="">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a04ff07e346faa110f798b9d897f58ce7">   41</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#a04ff07e346faa110f798b9d897f58ce7">scalar_call_args</a>(dim):</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="stringliteral">    Return scalar function call args: uv(i, 0), uv(i, 1)</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="stringliteral">    This is for unpacking quadrature points in Eigen matrix.</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="stringliteral">    &quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;, &quot;</span>.join(f<span class="stringliteral">&quot;uv(i, {d})&quot;</span> <span class="keywordflow">for</span> d <span class="keywordflow">in</span> range(dim))</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+</div>
+<div class="foldopen" id="foldopen00049" data-start="" data-end="">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a569c13fce0bf473b7c239b04e276ae87">   49</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#a569c13fce0bf473b7c239b04e276ae87">C99_print_scalar_value_function</a>(function_name, expr, dim):</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="stringliteral">&quot;&quot;&quot;Print function that evaluate basis value at one quadrature point.&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> (</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        f<span class="stringliteral">&quot;double {function_name}({scalar_args(dim)}) {{\n&quot;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="stringliteral">&quot;double result;\n&quot;</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        f<span class="stringliteral">&quot;{C99_print_scalar(expr, &#39;result&#39;)}\n&quot;</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="stringliteral">&quot;return result;\n&quot;</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="stringliteral">&quot;}\n\n&quot;</span>)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+</div>
+<div class="foldopen" id="foldopen00059" data-start="" data-end="">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#a47c85760038853c1511b1caaeb6b493f">   59</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#a47c85760038853c1511b1caaeb6b493f">C99_print_scalar_gradient_function</a>(function_name, expr, dim):</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="stringliteral">&quot;&quot;&quot;Print function that evaluate basis gradient at one quadrature point.&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">assert</span> 1 &lt;= dim &lt;= len(SCALAR_COORDS)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    lines = [f<span class="stringliteral">&quot;void {function_name}({scalar_args(dim)}, double *val) {{&quot;</span>]</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">for</span> d, coord <span class="keywordflow">in</span> enumerate(SCALAR_COORDS[:dim]):</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        derivative = simplify(diff(expr, coord))</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        lines.append(<span class="stringliteral">&quot;{&quot;</span> + <a class="code hl_function" href="namespacepretty__print.html#a67b653d5a9a228b8d95105ad614ace0c">C99_print_scalar</a>(derivative, f<span class="stringliteral">&quot;val[{d}]&quot;</span>) + <span class="stringliteral">&quot;}&quot;</span>)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    lines.append(<span class="stringliteral">&quot;}\n&quot;</span>)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;\n&quot;</span>.join(lines) + <span class="stringliteral">&quot;\n&quot;</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+</div>
+<div class="foldopen" id="foldopen00070" data-start="" data-end="">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#aaeb5a2d3d8aa3d3675bcd41a8c93d5cf">   70</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#aaeb5a2d3d8aa3d3675bcd41a8c93d5cf">C99_print_scalar_value_case</a>(local_index, function_name, dim):</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="stringliteral">&quot;&quot;&quot;Generate one local_index switch case for basis values function.&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> (</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        f<span class="stringliteral">&quot;\tcase {local_index}:\n&quot;</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="stringliteral">&quot;\t\tfor (Eigen::Index i = 0; i &lt; uv.rows(); ++i)\n&quot;</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        f<span class="stringliteral">&quot;\t\t\tresult_0(i, 0) = {function_name}({scalar_call_args(dim)});\n&quot;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="stringliteral">&quot;\t\tbreak;\n&quot;</span>)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+</div>
+<div class="foldopen" id="foldopen00079" data-start="" data-end="">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#ad435306a38a08d1629bf84a0797e5a09">   79</a></span><span class="keyword">def </span><a class="code hl_function" href="namespacepretty__print.html#ad435306a38a08d1629bf84a0797e5a09">C99_print_scalar_gradient_case</a>(local_index, function_name, dim):</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="stringliteral">&quot;&quot;&quot;Generate one local_index switch case for basis gradients.&quot;&quot;&quot;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    lines = [</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        f<span class="stringliteral">&quot;\tcase {local_index}:&quot;</span>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="stringliteral">&quot;\t\tfor (Eigen::Index i = 0; i &lt; uv.rows(); ++i) {&quot;</span>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        f<span class="stringliteral">&quot;\t\t\t{function_name}({scalar_call_args(dim)}, gradient);&quot;</span>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    ]</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    lines.extend(f<span class="stringliteral">&quot;\t\t\tval(i, {d}) = gradient[{d}];&quot;</span> <span class="keywordflow">for</span> d <span class="keywordflow">in</span> range(dim))</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    lines.extend([<span class="stringliteral">&quot;\t\t}&quot;</span>, <span class="stringliteral">&quot;\t\tbreak;&quot;</span>])</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;\n&quot;</span>.join(lines) + <span class="stringliteral">&quot;\n&quot;</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="comment"># Pretty print a matrix or tensor expression.</span></div>
+</div>
+<div class="foldopen" id="foldopen00092" data-start="" data-end="">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="namespacepretty__print.html#ac11a97cfd2c874ce1ad19aaadca6f738">   92</a></span><span class="keyword">def </span>C99_print_tensor(expr, result_name=&quot;result&quot;):</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="comment"># If a tensor expression, the result is reshaped into a 2d matrix for printing.</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    lines = []</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    subs, result = cse(expr, numbered_symbols(</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="stringliteral">&quot;helper_&quot;</span>), optimizations=<span class="stringliteral">&#39;basic&#39;</span>)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> len(result) == 1:</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        result = result[0]</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">for</span> k, v <span class="keywordflow">in</span> subs:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        lines.append(f<span class="stringliteral">&quot;const double {ccode(v, k)}&quot;</span>)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    result_shape = np.array(result).shape</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> len(result_shape) == 2:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(result_shape[0]):</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">for</span> j <span class="keywordflow">in</span> range(result_shape[1]):</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                s = ccode(result[i, j], f<span class="stringliteral">&quot;{result_name}[{i}, {j}]&quot;</span>)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                lines.append(f<span class="stringliteral">&quot;{s}&quot;</span>)</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">elif</span> len(result_shape) == 4:</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(result_shape[0]):</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">for</span> j <span class="keywordflow">in</span> range(result_shape[1]):</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                <span class="keywordflow">for</span> k <span class="keywordflow">in</span> range(result_shape[2]):</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    <span class="keywordflow">for</span> l <span class="keywordflow">in</span> range(result_shape[3]):</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                        s = ccode(result[i, j, k, l],</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                                  f<span class="stringliteral">&quot;{result_name}[{i * result_shape[1] + j}, {k * result_shape[3] + l}]&quot;</span>)</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                        lines.append(f<span class="stringliteral">&quot;{s}&quot;</span>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;\n&quot;</span>.join(lines)</div>
+</div>
+<div class="ttc" id="anamespacepretty__print_html_a04ff07e346faa110f798b9d897f58ce7"><div class="ttname"><a href="namespacepretty__print.html#a04ff07e346faa110f798b9d897f58ce7">pretty_print.scalar_call_args</a></div><div class="ttdeci">scalar_call_args(dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00041">pretty_print.py:41</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_a47c85760038853c1511b1caaeb6b493f"><div class="ttname"><a href="namespacepretty__print.html#a47c85760038853c1511b1caaeb6b493f">pretty_print.C99_print_scalar_gradient_function</a></div><div class="ttdeci">C99_print_scalar_gradient_function(function_name, expr, dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00059">pretty_print.py:59</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_a569c13fce0bf473b7c239b04e276ae87"><div class="ttname"><a href="namespacepretty__print.html#a569c13fce0bf473b7c239b04e276ae87">pretty_print.C99_print_scalar_value_function</a></div><div class="ttdeci">C99_print_scalar_value_function(function_name, expr, dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00049">pretty_print.py:49</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_a67b653d5a9a228b8d95105ad614ace0c"><div class="ttname"><a href="namespacepretty__print.html#a67b653d5a9a228b8d95105ad614ace0c">pretty_print.C99_print_scalar</a></div><div class="ttdeci">C99_print_scalar(expr, result_name=&quot;result&quot;)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00026">pretty_print.py:26</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_a800e288ac66202d8a166c0767f0b92c8"><div class="ttname"><a href="namespacepretty__print.html#a800e288ac66202d8a166c0767f0b92c8">pretty_print.scalar_args</a></div><div class="ttdeci">scalar_args(dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00035">pretty_print.py:35</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_aaeb5a2d3d8aa3d3675bcd41a8c93d5cf"><div class="ttname"><a href="namespacepretty__print.html#aaeb5a2d3d8aa3d3675bcd41a8c93d5cf">pretty_print.C99_print_scalar_value_case</a></div><div class="ttdeci">C99_print_scalar_value_case(local_index, function_name, dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00070">pretty_print.py:70</a></div></div>
+<div class="ttc" id="anamespacepretty__print_html_ad435306a38a08d1629bf84a0797e5a09"><div class="ttname"><a href="namespacepretty__print.html#ad435306a38a08d1629bf84a0797e5a09">pretty_print.C99_print_scalar_gradient_case</a></div><div class="ttdeci">C99_print_scalar_gradient_case(local_index, function_name, dim)</div><div class="ttdef"><b>Definition</b> <a href="pretty__print_8py_source.html#l00079">pretty_print.py:79</a></div></div>
 <div class="ttc" id="anamespacesympy_1_1matrices_html"><div class="ttname"><a href="namespacesympy_1_1matrices.html">matrices</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
