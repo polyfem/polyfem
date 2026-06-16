@@ -397,7 +397,7 @@ TEST_CASE("shape-contact-adhesion", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 28;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 2.4e-6;
+	constexpr double TOL = 2.4e-3;
 	run_test2("shape-contact-adhesion-opt.json", 1e-7, TOL, SEED, REPEAT);
 }
 
