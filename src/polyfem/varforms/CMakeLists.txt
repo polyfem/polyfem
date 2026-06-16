@@ -3,6 +3,7 @@ set(SOURCES
     VarFormFactory.hpp
     VarFormFactory.cpp
     VarFormUtils.hpp
+    FESpace.hpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp
     LinearElasticVarForm.hpp

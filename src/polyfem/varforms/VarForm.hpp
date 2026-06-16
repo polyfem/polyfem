@@ -13,6 +13,7 @@
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/varforms/FESpace.hpp>
 
 #include <Eigen/Dense>
 
