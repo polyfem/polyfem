@@ -144,6 +144,7 @@ namespace polyfem
 				FESpace &space,
 				VarFormBoundaryState &boundary,
 				std::shared_ptr<GeometryMapping> geometry = nullptr);
+
 		private:
 			void build_polygonal_basis(
 				const mesh::Mesh &mesh,

@@ -689,7 +689,7 @@ namespace polyfem::varform
 
 			Eigen::MatrixXd solution, velocity, acceleration;
 			initial_elastic_solution(solution); // Reload this because we need all previous solutions
-			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+			solution.col(0) = sol;              // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
 			assert(velocity.rows() == sol.size());
