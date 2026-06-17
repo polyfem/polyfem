@@ -301,40 +301,39 @@ target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 ################################################################################
 
 set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-
+set(POLYFEM_GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated")
+set(POLYFEM_EMBEDDED_SPEC_DIR "${POLYFEM_GENERATED_INCLUDE_DIR}/polyfem/embedded_spec")
 
 jse_add_spec(polyfem_spec
 	ALIAS polyfem::spec
-    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
 	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
-	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem.hpp"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem.hpp"
 	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
 )
 
 jse_add_spec(polyfem_opt_spec
 	ALIAS polyfem::opt_spec
-    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
 	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
-	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_opt.hpp"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_opt.hpp"
 	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
 )
 
 jse_add_spec(polyfem_objective_spec
 	ALIAS polyfem::objective_spec
-    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
 	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
-	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_objective.hpp"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_objective.hpp"
 	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
 )
 
 jse_add_spec(polyfem_material_spec
 	ALIAS polyfem::material_spec
-    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
     INPUT "${POLYFEM_JSON_SPEC_DIR}/material-parameters.json"
-    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_material.hpp"
+    OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_material.hpp"
 	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
 )
 
+target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATED_INCLUDE_DIR}>")
+add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec polyfem_material_spec)
 target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec polyfem::material_spec)
 
 ################################################################################
