@@ -145,11 +145,11 @@ var sectionId = 'dynsection-20';
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="180,-100 16,-100 16,-59 180,-59 180,-100"/>
-<text text-anchor="start" x="24" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
-<text text-anchor="start" x="24" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">CoeffientVariableToSimulation</text>
-<text text-anchor="middle" x="98" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_adjoint_term</text>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a10b492083529412dfc645e3cf450cf92" target="_top" xlink:title="Compute adjoint contribution of objective gradient.">
+<polygon fill="white" stroke="#666666" points="182,-100 14,-100 14,-59 182,-59 182,-100"/>
+<text text-anchor="start" x="22" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
+<text text-anchor="start" x="22" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">VariableToSimulation::compute</text>
+<text text-anchor="middle" x="98" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_term</text>
 </a>
 </g>
 </g>
@@ -157,7 +157,7 @@ var sectionId = 'dynsection-20';
 <g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
 <g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M226.06,-79.5C211,-79.5 195.27,-79.5 180.23,-79.5"/>
+<path fill="none" stroke="#63b8ff" d="M225.98,-79.5C211.55,-79.5 196.51,-79.5 182.05,-79.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="226.37,-83 236.37,-79.5 226.37,-76 226.37,-83"/>
 </a>
 </g>
@@ -165,7 +165,7 @@ var sectionId = 'dynsection-20';
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" target="_top" xlink:title="Compute adjoint contribution of objective gradient.">
 <polygon fill="white" stroke="#666666" points="196,-35.5 0,-35.5 0,-5.5 196,-5.5 196,-35.5"/>
 <text text-anchor="start" x="8" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ShapeVariable</text>
 <text text-anchor="middle" x="98" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">ToSimulation::compute_adjoint_term</text>

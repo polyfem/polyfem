@@ -120,14 +120,19 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_initial_con
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::solver::InitialConditionVariableToSimulation Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>&gt;</code></p>
+<p>Maps to initial solution and solution velocity.  
+ <a href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::solver::InitialConditionVariableToSimulation:</div>
 <div class="dyncontent">
@@ -136,61 +141,176 @@ Inheritance diagram for polyfem::solver::InitialConditionVariableToSimulation:</
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::InitialConditionVariableToSimulation:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation__coll__graph.svg" width="246" height="318"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation__coll__graph.svg" width="440" height="228"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8840dc922bf025606fd5b6ebddbb4e63" id="r_a8840dc922bf025606fd5b6ebddbb4e63"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">StatePtrs</a> = std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;</td></tr>
+<tr class="separator:a8840dc922bf025606fd5b6ebddbb4e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12a27397c72145199a0824ed51ece39b" id="r_a12a27397c72145199a0824ed51ece39b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">DiffCachePtrs</a> = std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;</td></tr>
+<tr class="separator:a12a27397c72145199a0824ed51ece39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a73bd9f5cca37b477c9d077ea8068ff57" id="r_a73bd9f5cca37b477c9d077ea8068ff57"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a73bd9f5cca37b477c9d077ea8068ff57">~InitialConditionVariableToSimulation</a> ()</td></tr>
-<tr class="separator:a73bd9f5cca37b477c9d077ea8068ff57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97e1aaada3683ac9214aa07aff17a18d" id="r_a97e1aaada3683ac9214aa07aff17a18d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a97e1aaada3683ac9214aa07aff17a18d">InitialConditionVariableToSimulation</a> (<a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">StatePtrs</a> states, <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">DiffCachePtrs</a> diff_caches, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> parametrizations, Eigen::VectorXi active_dofs)</td></tr>
+<tr class="memdesc:a97e1aaada3683ac9214aa07aff17a18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html" title="Maps to initial solution and solution velocity.">InitialConditionVariableToSimulation</a>.  <br /></td></tr>
+<tr class="separator:a97e1aaada3683ac9214aa07aff17a18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92772fd51f8902ab9337aca5b903a0a4" id="r_a92772fd51f8902ab9337aca5b903a0a4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a92772fd51f8902ab9337aca5b903a0a4">name</a> () const override</td></tr>
 <tr class="separator:a92772fd51f8902ab9337aca5b903a0a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d0df4c9c5ad543cb068b4d9c5b32085" id="r_a5d0df4c9c5ad543cb068b4d9c5b32085"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a5d0df4c9c5ad543cb068b4d9c5b32085">get_parameter_type</a> () const override</td></tr>
-<tr class="separator:a5d0df4c9c5ad543cb068b4d9c5b32085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae9dadfbd27558a2cb2db79bbfdd56f2" id="r_aae9dadfbd27558a2cb2db79bbfdd56f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aae9dadfbd27558a2cb2db79bbfdd56f2">parameter_type</a> () const override</td></tr>
+<tr class="separator:aae9dadfbd27558a2cb2db79bbfdd56f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12e6aac181bc79be4bbf00d51f85b662" id="r_a12e6aac181bc79be4bbf00d51f85b662"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12e6aac181bc79be4bbf00d51f85b662">affect_state</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;target) const override</td></tr>
+<tr class="memdesc:a12e6aac181bc79be4bbf00d51f85b662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if current var2sim maps to target state.  <br /></td></tr>
+<tr class="separator:a12e6aac181bc79be4bbf00d51f85b662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa58de45b6288c84485e3a7821f851b17" id="r_aa58de45b6288c84485e3a7821f851b17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa58de45b6288c84485e3a7821f851b17">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
+<tr class="memdesc:aa58de45b6288c84485e3a7821f851b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update forward simulation states from optimization variables.  <br /></td></tr>
+<tr class="separator:aa58de45b6288c84485e3a7821f851b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc97e103eb103f6536809a248110a10c" id="r_acc97e103eb103f6536809a248110a10c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#acc97e103eb103f6536809a248110a10c">update_state_variables</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;state_variables) const override</td></tr>
+<tr class="memdesc:acc97e103eb103f6536809a248110a10c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update state variables from optimization variables.  <br /></td></tr>
+<tr class="separator:acc97e103eb103f6536809a248110a10c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a362b5b788dad19c69ecdc855e8c0af65" id="r_a362b5b788dad19c69ecdc855e8c0af65"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a362b5b788dad19c69ecdc855e8c0af65">compute_adjoint_term</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:a362b5b788dad19c69ecdc855e8c0af65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute adjoint contribution of objective gradient.  <br /></td></tr>
 <tr class="separator:a362b5b788dad19c69ecdc855e8c0af65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17b232f4a044ae0386845f9538ecba86" id="r_a17b232f4a044ae0386845f9538ecba86"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a17b232f4a044ae0386845f9538ecba86">inverse_eval</a> () override</td></tr>
-<tr class="separator:a17b232f4a044ae0386845f9538ecba86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b838fdacd0cbcf4018b26613c31cddd" id="r_a4b838fdacd0cbcf4018b26613c31cddd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd">VariableToSimulation</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a>, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a>)</td></tr>
-<tr class="separator:a4b838fdacd0cbcf4018b26613c31cddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34affb3780a8053fa5ade4fb7519246b" id="r_a34affb3780a8053fa5ade4fb7519246b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a34affb3780a8053fa5ade4fb7519246b">inverse_dof</a> () const override</td></tr>
+<tr class="memdesc:a34affb3780a8053fa5ade4fb7519246b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables dof.  <br /></td></tr>
+<tr class="separator:a34affb3780a8053fa5ade4fb7519246b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71342ed5f2d0ce967673b1b2efb6ee87" id="r_a71342ed5f2d0ce967673b1b2efb6ee87"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a71342ed5f2d0ce967673b1b2efb6ee87">inverse_eval</a> () const override</td></tr>
+<tr class="memdesc:a71342ed5f2d0ce967673b1b2efb6ee87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>.  <br /></td></tr>
+<tr class="separator:a71342ed5f2d0ce967673b1b2efb6ee87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69fd44c14a3d1d40335dc0bd1610f053" id="r_a69fd44c14a3d1d40335dc0bd1610f053"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a69fd44c14a3d1d40335dc0bd1610f053">apply_parametrization_jacobian</a> (const Eigen::VectorXd &amp;term, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:a69fd44c14a3d1d40335dc0bd1610f053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply parametrization jacobian to compute the gradient w.r.t.  <br /></td></tr>
+<tr class="separator:a69fd44c14a3d1d40335dc0bd1610f053"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:a4b838fdacd0cbcf4018b26613c31cddd inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a4b838fdacd0cbcf4018b26613c31cddd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd">VariableToSimulation</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a>, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a>)</td></tr>
-<tr class="separator:a4b838fdacd0cbcf4018b26613c31cddd inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbde9689beb75eb9bedcecfb64778ced inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_abbde9689beb75eb9bedcecfb64778ced"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abbde9689beb75eb9bedcecfb64778ced">~VariableToSimulation</a> ()=default</td></tr>
 <tr class="separator:abbde9689beb75eb9bedcecfb64778ced inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2e28ad1b291e82a76fb7190563dd8d0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_ad2e28ad1b291e82a76fb7190563dd8d0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#ad2e28ad1b291e82a76fb7190563dd8d0">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:ad2e28ad1b291e82a76fb7190563dd8d0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa69c1f62782af807c7b3f32b4e299527 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_aa69c1f62782af807c7b3f32b4e299527"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa69c1f62782af807c7b3f32b4e299527">set_output_indexing</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
-<tr class="separator:aa69c1f62782af807c7b3f32b4e299527 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add1131a5cecca74b48bf4d0a0fa9cddb inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_add1131a5cecca74b48bf4d0a0fa9cddb"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#add1131a5cecca74b48bf4d0a0fa9cddb">get_output_indexing</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
-<tr class="separator:add1131a5cecca74b48bf4d0a0fa9cddb inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1468ee2e131cb52898bae709938cc9e0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a1468ee2e131cb52898bae709938cc9e0"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a1468ee2e131cb52898bae709938cc9e0">apply_parametrization_jacobian</a> (const Eigen::VectorXd &amp;term, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
-<tr class="separator:a1468ee2e131cb52898bae709938cc9e0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9373833702a062d5cc4e854855eafacb" id="r_a9373833702a062d5cc4e854855eafacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a9373833702a062d5cc4e854855eafacb">update_state</a> (const Eigen::VectorXd &amp;state_variable, const Eigen::VectorXi &amp;indices) override</td></tr>
-<tr class="separator:a9373833702a062d5cc4e854855eafacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a8fb2589c37722fe6e81f2b7c7541dea9" id="r_a8fb2589c37722fe6e81f2b7c7541dea9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8fb2589c37722fe6e81f2b7c7541dea9">para_out_dof</a> () const</td></tr>
+<tr class="separator:a8fb2589c37722fe6e81f2b7c7541dea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:abda4a1587b01eea466b2aae89e55b8e3 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_abda4a1587b01eea466b2aae89e55b8e3"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a></td></tr>
-<tr class="separator:abda4a1587b01eea466b2aae89e55b8e3 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a196924c7d969a5087c592f4aa857802d inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a196924c7d969a5087c592f4aa857802d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a></td></tr>
-<tr class="separator:a196924c7d969a5087c592f4aa857802d inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a348c4eb43c72c73ed9d2617ed07bf8b2 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a348c4eb43c72c73ed9d2617ed07bf8b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a></td></tr>
-<tr class="separator:a348c4eb43c72c73ed9d2617ed07bf8b2 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:af74d41eb67ade0340134309e0f7b08de inherit pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_af74d41eb67ade0340134309e0f7b08de"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#af74d41eb67ade0340134309e0f7b08de">output_indexing_</a></td></tr>
-<tr class="separator:af74d41eb67ade0340134309e0f7b08de inherit pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a623eefe312280aefc30f89f4209b0551" id="r_a623eefe312280aefc30f89f4209b0551"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a623eefe312280aefc30f89f4209b0551">dof_num_</a></td></tr>
+<tr class="separator:a623eefe312280aefc30f89f4209b0551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af38ab65b5f1ecc1acddf4a17e828f58f" id="r_af38ab65b5f1ecc1acddf4a17e828f58f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">StatePtrs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#af38ab65b5f1ecc1acddf4a17e828f58f">states_</a></td></tr>
+<tr class="separator:af38ab65b5f1ecc1acddf4a17e828f58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d24546532353bd0a7bc5b92e2799d74" id="r_a9d24546532353bd0a7bc5b92e2799d74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">DiffCachePtrs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a9d24546532353bd0a7bc5b92e2799d74">diff_caches_</a></td></tr>
+<tr class="separator:a9d24546532353bd0a7bc5b92e2799d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeba01099946e528e12ac16b9c39d35b" id="r_afeba01099946e528e12ac16b9c39d35b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#afeba01099946e528e12ac16b9c39d35b">parametrization_</a></td></tr>
+<tr class="separator:afeba01099946e528e12ac16b9c39d35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d5a8acd67ff93005106a17445c776ae" id="r_a2d5a8acd67ff93005106a17445c776ae"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a2d5a8acd67ff93005106a17445c776ae">active_dofs_</a></td></tr>
+<tr class="separator:a2d5a8acd67ff93005106a17445c776ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00175">175</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a73bd9f5cca37b477c9d077ea8068ff57" name="a73bd9f5cca37b477c9d077ea8068ff57"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73bd9f5cca37b477c9d077ea8068ff57">&#9670;&#160;</a></span>~InitialConditionVariableToSimulation()</h2>
+<div class="textblock"><p>Maps to initial solution and solution velocity. </p>
+<p>Expect optimization variables with layout: [ initial solution of all dofs .... ] [ initail solution velocity of all dofs ... ] </p>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00017">17</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a12a27397c72145199a0824ed51ece39b" name="a12a27397c72145199a0824ed51ece39b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12a27397c72145199a0824ed51ece39b">&#9670;&#160;</a></span>DiffCachePtrs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">polyfem::solver::InitialConditionVariableToSimulation::DiffCachePtrs</a> =  std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00021">21</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a8840dc922bf025606fd5b6ebddbb4e63" name="a8840dc922bf025606fd5b6ebddbb4e63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8840dc922bf025606fd5b6ebddbb4e63">&#9670;&#160;</a></span>StatePtrs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">polyfem::solver::InitialConditionVariableToSimulation::StatePtrs</a> =  std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1_state.html">State</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00020">20</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a97e1aaada3683ac9214aa07aff17a18d" name="a97e1aaada3683ac9214aa07aff17a18d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97e1aaada3683ac9214aa07aff17a18d">&#9670;&#160;</a></span>InitialConditionVariableToSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::InitialConditionVariableToSimulation::InitialConditionVariableToSimulation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">StatePtrs</a>&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">DiffCachePtrs</a>&#160;</td>
+          <td class="paramname"><em>diff_caches</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td>
+          <td class="paramname"><em>parametrizations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi&#160;</td>
+          <td class="paramname"><em>active_dofs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html" title="Maps to initial solution and solution velocity.">InitialConditionVariableToSimulation</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all forward sim states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">diff_caches</td><td>Shared ptr to all diff caches. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">parametrizations</td><td>Parametrizations. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">active_dofs</td><td>Active solution space dofs. Empty implies all active. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if input is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00016">16</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00047">diff_caches_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">dof_num_</a>, <a class="el" href="_active_selection_utils_8cpp_source.html#l00104">polyfem::solver::is_active_dofs_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00046">states_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a97e1aaada3683ac9214aa07aff17a18d_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a12e6aac181bc79be4bbf00d51f85b662" name="a12e6aac181bc79be4bbf00d51f85b662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12e6aac181bc79be4bbf00d51f85b662">&#9670;&#160;</a></span>affect_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,24 +319,86 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual polyfem::solver::InitialConditionVariableToSimulation::~InitialConditionVariableToSimulation </td>
+          <td class="memname">bool polyfem::solver::InitialConditionVariableToSimulation::affect_state </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00179">179</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p>Return true if current var2sim maps to target state. </p>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4ce3878dd48efd4bc92c775f42271856">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00095">95</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00046">states_</a>.</p>
 
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a69fd44c14a3d1d40335dc0bd1610f053" name="a69fd44c14a3d1d40335dc0bd1610f053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69fd44c14a3d1d40335dc0bd1610f053">&#9670;&#160;</a></span>apply_parametrization_jacobian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::solver::InitialConditionVariableToSimulation::apply_parametrization_jacobian </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>term</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply parametrization jacobian to compute the gradient w.r.t. </p>
+<p>to optimization variables. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">term</td><td>Gradient w.r.t. to full inherent dof (Ex. all vertices for shape var2sim) </td></tr>
+    <tr><td class="paramname">x</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aba4636cab361d21a64db3672bd1003c2">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00204">204</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00085">name()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a69fd44c14a3d1d40335dc0bd1610f053_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="a362b5b788dad19c69ecdc855e8c0af65" name="a362b5b788dad19c69ecdc855e8c0af65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a362b5b788dad19c69ecdc855e8c0af65">&#9670;&#160;</a></span>compute_adjoint_term()</h2>
 
@@ -241,21 +423,32 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Compute adjoint contribution of objective gradient. </p>
+<p>See arXiv:2205.13643.</p>
+<p>Let objective function be J and optimization variable be x. This method computes all adjoint related terms in dJ/dx. For static case (E.q. 11), it's the second term. For dynamic case (E.q. 15), it's everything except ∂qJ.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x[in]</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Adjoint contribution of objective gradient. </dd></dl>
+
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a5758532c2ac7030bf3741a41974aef42">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00420">420</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">146</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00068">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00052">polyfem::solver::VariableToSimulation::diff_caches</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00992">polyfem::solver::AdjointTools::dJ_initial_condition_adjoint_term()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00436">polyfem::get_adjoint_mat()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00181">name()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00051">polyfem::solver::VariableToSimulation::states</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00059">polyfem::solver::CompositeParametrization::apply_jacobian()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00047">diff_caches_</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00992">polyfem::solver::AdjointTools::dJ_initial_condition_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">dof_num_</a>, <a class="el" href="_state_diff_8cpp_source.html#l00436">polyfem::get_adjoint_mat()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">parametrization_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00046">states_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a362b5b788dad19c69ecdc855e8c0af65_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a362b5b788dad19c69ecdc855e8c0af65_cgraph.svg" width="100%" height="522"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a5d0df4c9c5ad543cb068b4d9c5b32085" name="a5d0df4c9c5ad543cb068b4d9c5b32085"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d0df4c9c5ad543cb068b4d9c5b32085">&#9670;&#160;</a></span>get_parameter_type()</h2>
+<a id="a34affb3780a8053fa5ade4fb7519246b" name="a34affb3780a8053fa5ade4fb7519246b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34affb3780a8053fa5ade4fb7519246b">&#9670;&#160;</a></span>inverse_dof()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -264,7 +457,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a> polyfem::solver::InitialConditionVariableToSimulation::get_parameter_type </td>
+          <td class="memname">int polyfem::solver::InitialConditionVariableToSimulation::inverse_dof </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -272,21 +465,35 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a42f04c6ce5f100eb4d59a96c1fc44652">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Compute optimization variables dof. </p>
+<dl class="section return"><dt>Returns</dt><dd>Optimization variables dof. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00183">183</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a01abb242174098ab938cef15c9c725cf">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898">polyfem::solver::InitialCondition</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00182">182</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrization_8cpp_source.html#l00015">polyfem::solver::CompositeParametrization::inverse_size()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">parametrization_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a34affb3780a8053fa5ade4fb7519246b_cgraph.svg" width="502" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a17b232f4a044ae0386845f9538ecba86" name="a17b232f4a044ae0386845f9538ecba86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a17b232f4a044ae0386845f9538ecba86">&#9670;&#160;</a></span>inverse_eval()</h2>
+<a id="a71342ed5f2d0ce967673b1b2efb6ee87" name="a71342ed5f2d0ce967673b1b2efb6ee87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71342ed5f2d0ce967673b1b2efb6ee87">&#9670;&#160;</a></span>inverse_eval()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -298,7 +505,7 @@ Here is the call graph for this function:</div>
           <td class="memname">Eigen::VectorXd polyfem::solver::InitialConditionVariableToSimulation::inverse_eval </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -308,11 +515,25 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a61980fa8af530a04b79862d1066285e0">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Optimization variables. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00445">445</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a089eb0ce1e2db20380f16a4c7fa8ce32">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00051">polyfem::solver::VariableToSimulation::states</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">187</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00047">diff_caches_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">dof_num_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00030">polyfem::solver::CompositeParametrization::inverse_eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">parametrization_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a71342ed5f2d0ce967673b1b2efb6ee87_cgraph.svg" width="502" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -334,26 +555,26 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00181">181</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00085">85</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00420">compute_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00204">apply_parametrization_jacobian()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a92772fd51f8902ab9337aca5b903a0a4_icgraph.svg" width="547" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a92772fd51f8902ab9337aca5b903a0a4_icgraph.svg" width="564" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a9373833702a062d5cc4e854855eafacb" name="a9373833702a062d5cc4e854855eafacb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9373833702a062d5cc4e854855eafacb">&#9670;&#160;</a></span>update_state()</h2>
+<a id="a8fb2589c37722fe6e81f2b7c7541dea9" name="a8fb2589c37722fe6e81f2b7c7541dea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fb2589c37722fe6e81f2b7c7541dea9">&#9670;&#160;</a></span>para_out_dof()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -362,40 +583,110 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::InitialConditionVariableToSimulation::update_state </td>
+          <td class="memname">int polyfem::solver::InitialConditionVariableToSimulation::para_out_dof </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">210</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00182">inverse_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">inverse_eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">update()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00131">update_state_variables()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_a8fb2589c37722fe6e81f2b7c7541dea9_icgraph.svg" width="502" height="380"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="aae9dadfbd27558a2cb2db79bbfdd56f2" name="aae9dadfbd27558a2cb2db79bbfdd56f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae9dadfbd27558a2cb2db79bbfdd56f2">&#9670;&#160;</a></span>parameter_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a> polyfem::solver::InitialConditionVariableToSimulation::parameter_type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a8ad1c61a2cffbf3a08967ad8ba5f0f63">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00090">90</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898">polyfem::solver::InitialCondition</a>.</p>
+
+</div>
+</div>
+<a id="aa58de45b6288c84485e3a7821f851b17" name="aa58de45b6288c84485e3a7821f851b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa58de45b6288c84485e3a7821f851b17">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::InitialConditionVariableToSimulation::update </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>state_variable</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>x</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
-          <td class="paramname"><em>indices</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa515864c242bd6cf8baee829628a6a95">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Update forward simulation states from optimization variables. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00404">404</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a284c8b467b5a6a21b4e31ca70df13131">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00052">polyfem::solver::VariableToSimulation::diff_caches</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00051">polyfem::solver::VariableToSimulation::states</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">107</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00047">diff_caches_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">dof_num_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00046">polyfem::solver::CompositeParametrization::eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">parametrization_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_aa58de45b6288c84485e3a7821f851b17_cgraph.svg" width="502" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a4b838fdacd0cbcf4018b26613c31cddd" name="a4b838fdacd0cbcf4018b26613c31cddd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b838fdacd0cbcf4018b26613c31cddd">&#9670;&#160;</a></span>VariableToSimulation()</h2>
+<a id="acc97e103eb103f6536809a248110a10c" name="acc97e103eb103f6536809a248110a10c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc97e103eb103f6536809a248110a10c">&#9670;&#160;</a></span>update_state_variables()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -404,43 +695,187 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">polyfem::solver::VariableToSimulation::VariableToSimulation </td>
+          <td class="memname">void polyfem::solver::InitialConditionVariableToSimulation::update_state_variables </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>diff_caches</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td>
-          <td class="paramname"><em>parametrization</em>&#160;</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state_variables</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00024">24</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p>Update state variables from optimization variables. </p>
+<p>Compared to <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa58de45b6288c84485e3a7821f851b17" title="Update forward simulation states from optimization variables.">update()</a> this method update abstract state variables instead of writing directly to state.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Optimization variables. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">state_variables</td><td>Abstract state variables update dst. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a85e289ca979426e8d11c29557f4bea16">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00131">131</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">active_dofs_</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">dof_num_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00046">polyfem::solver::CompositeParametrization::eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">parametrization_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation_acc97e103eb103f6536809a248110a10c_cgraph.svg" width="502" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2d5a8acd67ff93005106a17445c776ae" name="a2d5a8acd67ff93005106a17445c776ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d5a8acd67ff93005106a17445c776ae">&#9670;&#160;</a></span>active_dofs_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::solver::InitialConditionVariableToSimulation::active_dofs_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00049">49</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00016">InitialConditionVariableToSimulation()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">inverse_eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00210">para_out_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">update()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00131">update_state_variables()</a>.</p>
+
+</div>
+</div>
+<a id="a9d24546532353bd0a7bc5b92e2799d74" name="a9d24546532353bd0a7bc5b92e2799d74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d24546532353bd0a7bc5b92e2799d74">&#9670;&#160;</a></span>diff_caches_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b">DiffCachePtrs</a> polyfem::solver::InitialConditionVariableToSimulation::diff_caches_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00047">47</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00016">InitialConditionVariableToSimulation()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">inverse_eval()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">update()</a>.</p>
+
+</div>
+</div>
+<a id="a623eefe312280aefc30f89f4209b0551" name="a623eefe312280aefc30f89f4209b0551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a623eefe312280aefc30f89f4209b0551">&#9670;&#160;</a></span>dof_num_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::InitialConditionVariableToSimulation::dof_num_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00045">45</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00016">InitialConditionVariableToSimulation()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">inverse_eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">update()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00131">update_state_variables()</a>.</p>
+
+</div>
+</div>
+<a id="afeba01099946e528e12ac16b9c39d35b" name="afeba01099946e528e12ac16b9c39d35b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeba01099946e528e12ac16b9c39d35b">&#9670;&#160;</a></span>parametrization_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> polyfem::solver::InitialConditionVariableToSimulation::parametrization_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00048">48</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00182">inverse_dof()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00187">inverse_eval()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00107">update()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00131">update_state_variables()</a>.</p>
+
+</div>
+</div>
+<a id="af38ab65b5f1ecc1acddf4a17e828f58f" name="af38ab65b5f1ecc1acddf4a17e828f58f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af38ab65b5f1ecc1acddf4a17e828f58f">&#9670;&#160;</a></span>states_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a8840dc922bf025606fd5b6ebddbb4e63">StatePtrs</a> polyfem::solver::InitialConditionVariableToSimulation::states_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html#l00046">46</a> of file <a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00095">affect_state()</a>, <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00146">compute_adjoint_term()</a>, and <a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html#l00016">InitialConditionVariableToSimulation()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/optimization/forms/<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a></li>
-<li>src/polyfem/optimization/forms/<a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a></li>
+<li>src/polyfem/optimization/var2sims/<a class="el" href="_initial_condition_variable_to_simulation_8hpp_source.html">InitialConditionVariableToSimulation.hpp</a></li>
+<li>src/polyfem/optimization/var2sims/<a class="el" href="_initial_condition_variable_to_simulation_8cpp_source.html">InitialConditionVariableToSimulation.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

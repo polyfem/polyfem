@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['dampingcoeffientvariabletosimulation_0',['DampingCoeffientVariableToSimulation',['../classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['dampingvariabletosimulation_0',['DampingVariableToSimulation',['../classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html',1,'polyfem::solver']]],
   ['deformedcollisionbarrierform_1',['DeformedCollisionBarrierForm',['../classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html',1,'polyfem::solver']]],
   ['densematrixcache_2',['DenseMatrixCache',['../classpolyfem_1_1utils_1_1_dense_matrix_cache.html',1,'polyfem::utils']]],
   ['density_3',['Density',['../classpolyfem_1_1assembler_1_1_density.html',1,'polyfem::assembler']]],
   ['diffcache_4',['DiffCache',['../classpolyfem_1_1_diff_cache.html',1,'polyfem']]],
   ['diffscalarbase_5',['DiffScalarBase',['../struct_diff_scalar_base.html',1,'']]],
-  ['dirichletenergyform_6',['DirichletEnergyForm',['../classpolyfem_1_1solver_1_1_dirichlet_energy_form.html',1,'polyfem::solver']]],
-  ['dirichletnodesvariabletosimulation_7',['DirichletNodesVariableToSimulation',['../classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html',1,'polyfem::solver']]],
-  ['dirichletvariabletosimulation_8',['DirichletVariableToSimulation',['../classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['dirichletboundaryvariabletosimulation_6',['DirichletBoundaryVariableToSimulation',['../classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['dirichletenergyform_7',['DirichletEnergyForm',['../classpolyfem_1_1solver_1_1_dirichlet_energy_form.html',1,'polyfem::solver']]],
+  ['dirichletnodesvariabletosimulation_8',['DirichletNodesVariableToSimulation',['../classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html',1,'polyfem::solver']]],
   ['divideform_9',['DivideForm',['../classpolyfem_1_1solver_1_1_divide_form.html',1,'polyfem::solver']]],
   ['doubletorsionelasticproblem_10',['DoubleTorsionElasticProblem',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html',1,'polyfem::problem']]],
   ['drivencavity_11',['DrivenCavity',['../classpolyfem_1_1problem_1_1_driven_cavity.html',1,'polyfem::problem']]],

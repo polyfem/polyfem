@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/optimization/forms/VariableToSimulation.hpp File Reference</title>
+<title>PolyFEM: src/polyfem/optimization/var2sims/VariableToSimulation.hpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -125,18 +125,12 @@ $(document).ready(function(){initNavTree('_variable_to_simulation_8hpp.html','')
   <div class="headertitle"><div class="title">VariableToSimulation.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_parametrization_8hpp_source.html">polyfem/optimization/parametrization/Parametrization.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_adjoint_tools_8hpp_source.html">polyfem/optimization/AdjointTools.hpp</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_diff_cache_8hpp_source.html">polyfem/optimization/DiffCache.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_parametrization_8hpp_source.html">polyfem/optimization/parametrization/Parametrization.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_parameter_type_8hpp_source.html">polyfem/optimization/var2sims/ParameterType.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for VariableToSimulation.hpp:</div>
 <div class="dyncontent">
@@ -153,28 +147,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps the optimization variable to the state variable.  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">polyfem::solver::VariableToSimulationGroup</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A collection of <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html" title="Maps the optimization variable to the state variable.">VariableToSimulation</a>.  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html">polyfem::solver::ShapeVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html">polyfem::solver::ElasticVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html">polyfem::solver::FrictionCoeffientVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html">polyfem::solver::DampingCoeffientVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html">polyfem::solver::InitialConditionVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html">polyfem::solver::DirichletVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html">polyfem::solver::DirichletNodesVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html">polyfem::solver::PressureVariableToSimulation</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html">polyfem::solver::PeriodicShapeVariableToSimulation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a> variables.  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -190,7 +163,7 @@ Namespaces</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_5da2a33dc2e1a94e890bf1b87e3a1bf1.html">optimization</a></li><li class="navelem"><a class="el" href="dir_9abfecab5cd745c1f009828461c37fa4.html">forms</a></li><li class="navelem"><a class="el" href="_variable_to_simulation_8hpp.html">VariableToSimulation.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_5da2a33dc2e1a94e890bf1b87e3a1bf1.html">optimization</a></li><li class="navelem"><a class="el" href="dir_7b3e798784997eab8885abeac62a10c1.html">var2sims</a></li><li class="navelem"><a class="el" href="_variable_to_simulation_8hpp.html">VariableToSimulation.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

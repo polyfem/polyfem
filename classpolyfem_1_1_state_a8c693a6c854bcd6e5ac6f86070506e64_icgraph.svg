@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 915;
+var viewWidth = 919;
 var viewHeight = 208;
 var sectionId = 'dynsection-58';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-58';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Load or compute the initial acceleration.">
-<polygon fill="#999999" stroke="#666666" points="907,-118 785,-118 785,-88 907,-88 907,-118"/>
-<text text-anchor="start" x="793" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::initial</text>
-<text text-anchor="middle" x="846" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
+<polygon fill="#999999" stroke="#666666" points="911,-118 789,-118 789,-88 911,-88 911,-118"/>
+<text text-anchor="start" x="797" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::initial</text>
+<text text-anchor="middle" x="850" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
 </a>
 </g>
 </g>
@@ -68,10 +68,10 @@ var sectionId = 'dynsection-58';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a181bba348fd19672c8f65e8153224407" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="749,-196.5 604,-196.5 604,-155.5 749,-155.5 749,-196.5"/>
-<text text-anchor="start" x="612" y="-184.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
-<text text-anchor="start" x="612" y="-173.5" font-family="Helvetica,sans-Serif" font-size="10.00">Tools::dJ_friction_transient</text>
-<text text-anchor="middle" x="676.5" y="-162.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_term</text>
+<polygon fill="white" stroke="#666666" points="753,-196.5 608,-196.5 608,-155.5 753,-155.5 753,-196.5"/>
+<text text-anchor="start" x="616" y="-184.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
+<text text-anchor="start" x="616" y="-173.5" font-family="Helvetica,sans-Serif" font-size="10.00">Tools::dJ_friction_transient</text>
+<text text-anchor="middle" x="680.5" y="-162.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_term</text>
 </a>
 </g>
 </g>
@@ -79,8 +79,8 @@ var sectionId = 'dynsection-58';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M800.91,-122.21C777.41,-132.46 748.49,-145.06 724.55,-155.49"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="802.53,-125.33 810.29,-118.13 799.73,-118.91 802.53,-125.33"/>
+<path fill="none" stroke="#63b8ff" d="M804.91,-122.21C781.41,-132.46 752.49,-145.06 728.55,-155.49"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="806.53,-125.33 814.29,-118.13 803.73,-118.91 806.53,-125.33"/>
 </a>
 </g>
 </g>
@@ -88,9 +88,9 @@ var sectionId = 'dynsection-58';
 <g id="Node000004" class="node">
 <title>Node4</title>
 <g id="a_Node000004"><a xlink:href="classpolyfem_1_1_state.html#af6c3764f761dcb4ab1cb196bcbfb3c5f" target="_top" xlink:title="initialize the linear solve">
-<polygon fill="white" stroke="#666666" points="541,-140 431,-140 431,-110 541,-110 541,-140"/>
-<text text-anchor="start" x="439" y="-128" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
-<text text-anchor="middle" x="486" y="-117" font-family="Helvetica,sans-Serif" font-size="10.00">_linear_solve</text>
+<polygon fill="white" stroke="#666666" points="543,-140 433,-140 433,-110 543,-110 543,-140"/>
+<text text-anchor="start" x="441" y="-128" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
+<text text-anchor="middle" x="488" y="-117" font-family="Helvetica,sans-Serif" font-size="10.00">_linear_solve</text>
 </a>
 </g>
 </g>
@@ -98,8 +98,8 @@ var sectionId = 'dynsection-58';
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M774.4,-107.34C705.9,-111.55 603.4,-117.85 541.12,-121.67"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="774.91,-110.81 784.68,-106.71 774.48,-103.83 774.91,-110.81"/>
+<path fill="none" stroke="#63b8ff" d="M778.41,-107.31C709.46,-111.53 606,-117.85 543.26,-121.68"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="778.98,-110.79 788.74,-106.68 778.55,-103.8 778.98,-110.79"/>
 </a>
 </g>
 </g>
@@ -107,9 +107,9 @@ var sectionId = 'dynsection-58';
 <g id="Node000009" class="node">
 <title>Node9</title>
 <g id="a_Node000009"><a xlink:href="classpolyfem_1_1_state.html#ad41d92c2bae6e7027d8f33e02a017c8a" target="_top" xlink:title="initialize the nonlinear solver">
-<polygon fill="white" stroke="#666666" points="744,-97 609,-97 609,-67 744,-67 744,-97"/>
-<text text-anchor="start" x="617" y="-85" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
-<text text-anchor="middle" x="676.5" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">_nonlinear_tensor_solve</text>
+<polygon fill="white" stroke="#666666" points="748,-97 613,-97 613,-67 748,-67 748,-97"/>
+<text text-anchor="start" x="621" y="-85" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
+<text text-anchor="middle" x="680.5" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">_nonlinear_tensor_solve</text>
 </a>
 </g>
 </g>
@@ -117,8 +117,8 @@ var sectionId = 'dynsection-58';
 <g id="edge8_Node000001_Node000009" class="edge">
 <title>Node1&#45;&gt;Node9</title>
 <g id="a_edge8_Node000001_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M774.56,-94.17C764.47,-92.9 754.13,-91.61 744.12,-90.35"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="774.17,-97.65 784.53,-95.42 775.04,-90.7 774.17,-97.65"/>
+<path fill="none" stroke="#63b8ff" d="M778.56,-94.17C768.47,-92.9 758.13,-91.61 748.12,-90.35"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="778.17,-97.65 788.53,-95.42 779.04,-90.7 778.17,-97.65"/>
 </a>
 </g>
 </g>
@@ -126,9 +126,9 @@ var sectionId = 'dynsection-58';
 <g id="Node000011" class="node">
 <title>Node11</title>
 <g id="a_Node000011"><a xlink:href="classpolyfem_1_1_state.html#aaba89b1d3992dfda9b02df4447914f18" target="_top" xlink:title="solves transient linear problem">
-<polygon fill="white" stroke="#666666" points="737,-30 616,-30 616,0 737,0 737,-30"/>
-<text text-anchor="start" x="624" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
-<text text-anchor="middle" x="676.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_linear</text>
+<polygon fill="white" stroke="#666666" points="741,-30 620,-30 620,0 741,0 741,-30"/>
+<text text-anchor="start" x="628" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
+<text text-anchor="middle" x="680.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_linear</text>
 </a>
 </g>
 </g>
@@ -136,19 +136,19 @@ var sectionId = 'dynsection-58';
 <g id="edge12_Node000001_Node000011" class="edge">
 <title>Node1&#45;&gt;Node11</title>
 <g id="a_edge12_Node000001_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M807.11,-83.09C776.5,-67.01 734.05,-44.71 706.2,-30.08"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="805.73,-86.32 816.21,-87.87 808.98,-80.12 805.73,-86.32"/>
+<path fill="none" stroke="#63b8ff" d="M811.11,-83.09C780.5,-67.01 738.05,-44.71 710.2,-30.08"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="809.73,-86.32 820.21,-87.87 812.98,-80.12 809.73,-86.32"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="568,-199.5 404,-199.5 404,-158.5 568,-158.5 568,-199.5"/>
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a10b492083529412dfc645e3cf450cf92" target="_top" xlink:title="Compute adjoint contribution of objective gradient.">
+<polygon fill="white" stroke="#666666" points="572,-199.5 404,-199.5 404,-158.5 572,-158.5 572,-199.5"/>
 <text text-anchor="start" x="412" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
-<text text-anchor="start" x="412" y="-176.5" font-family="Helvetica,sans-Serif" font-size="10.00">CoeffientVariableToSimulation</text>
-<text text-anchor="middle" x="486" y="-165.5" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_adjoint_term</text>
+<text text-anchor="start" x="412" y="-176.5" font-family="Helvetica,sans-Serif" font-size="10.00">VariableToSimulation::compute</text>
+<text text-anchor="middle" x="488" y="-165.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_term</text>
 </a>
 </g>
 </g>
@@ -156,8 +156,8 @@ var sectionId = 'dynsection-58';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M593.75,-177.3C585.3,-177.44 576.71,-177.57 568.27,-177.71"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="594.02,-180.8 603.97,-177.14 593.91,-173.8 594.02,-180.8"/>
+<path fill="none" stroke="#63b8ff" d="M597.58,-177.29C589.18,-177.42 580.63,-177.56 572.21,-177.69"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="597.81,-180.79 607.75,-177.13 597.7,-173.79 597.81,-180.79"/>
 </a>
 </g>
 </g>
@@ -175,8 +175,8 @@ var sectionId = 'dynsection-58';
 <g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
 <g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M432.99,-106.52C423.34,-103.06 413.36,-99.44 404,-96 385.54,-89.22 365.13,-81.55 347.94,-75.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="431.9,-109.85 442.49,-109.93 434.26,-103.26 431.9,-109.85"/>
+<path fill="none" stroke="#63b8ff" d="M433.69,-106.59C423.8,-103.11 413.58,-99.48 404,-96 385.51,-89.29 365.1,-81.63 347.91,-75.1"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="432.83,-110 443.42,-110 435.14,-103.39 432.83,-110"/>
 </a>
 </g>
 </g>
@@ -239,8 +239,8 @@ var sectionId = 'dynsection-58';
 <g id="edge9_Node000009_Node000005" class="edge">
 <title>Node9&#45;&gt;Node5</title>
 <g id="a_edge9_Node000009_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M598.3,-77.37C529.73,-73.26 430.94,-67.34 368.25,-63.58"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="598.42,-80.89 608.61,-77.99 598.84,-73.9 598.42,-80.89"/>
+<path fill="none" stroke="#63b8ff" d="M602.71,-77.45C533.13,-73.32 432.01,-67.32 368.28,-63.55"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="602.55,-80.94 612.74,-78.04 602.97,-73.96 602.55,-80.94"/>
 </a>
 </g>
 </g>
@@ -248,9 +248,9 @@ var sectionId = 'dynsection-58';
 <g id="Node000010" class="node">
 <title>Node10</title>
 <g id="a_Node000010"><a xlink:href="classpolyfem_1_1_state.html#a581a91ee028c3d6376f9f0db39194ff3" target="_top" xlink:title="solves transient tensor nonlinear problem">
-<polygon fill="white" stroke="#666666" points="562,-54 410,-54 410,-24 562,-24 562,-54"/>
-<text text-anchor="start" x="418" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
-<text text-anchor="middle" x="486" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_tensor_nonlinear</text>
+<polygon fill="white" stroke="#666666" points="564,-54 412,-54 412,-24 564,-24 564,-54"/>
+<text text-anchor="start" x="420" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
+<text text-anchor="middle" x="488" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_tensor_nonlinear</text>
 </a>
 </g>
 </g>
@@ -258,8 +258,8 @@ var sectionId = 'dynsection-58';
 <g id="edge10_Node000009_Node000010" class="edge">
 <title>Node9&#45;&gt;Node10</title>
 <g id="a_edge10_Node000009_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M599.54,-64.67C584.09,-61.15 567.96,-57.47 552.89,-54.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="599.04,-68.15 609.57,-66.96 600.6,-61.32 599.04,-68.15"/>
+<path fill="none" stroke="#63b8ff" d="M602.73,-64.67C587.12,-61.15 570.81,-57.47 555.59,-54.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="602.35,-68.17 612.87,-66.96 603.89,-61.34 602.35,-68.17"/>
 </a>
 </g>
 </g>
@@ -267,8 +267,8 @@ var sectionId = 'dynsection-58';
 <g id="edge11_Node000010_Node000005" class="edge">
 <title>Node10&#45;&gt;Node5</title>
 <g id="a_edge11_Node000010_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M399.68,-49.15C388.98,-50.42 378.23,-51.7 368.05,-52.92"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="400.38,-52.59 409.89,-47.94 399.55,-45.64 400.38,-52.59"/>
+<path fill="none" stroke="#63b8ff" d="M401.85,-49.02C390.46,-50.36 378.98,-51.71 368.15,-52.98"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="402.29,-52.49 411.82,-47.85 401.48,-45.54 402.29,-52.49"/>
 </a>
 </g>
 </g>
@@ -276,8 +276,8 @@ var sectionId = 'dynsection-58';
 <g id="edge13_Node000011_Node000005" class="edge">
 <title>Node11&#45;&gt;Node5</title>
 <g id="a_edge13_Node000011_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M605.84,-6.71C550.44,-2.1 471.34,0.07 404,-15 378.42,-20.72 351.62,-34.09 332.94,-44.78"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="605.63,-10.21 615.89,-7.6 606.24,-3.23 605.63,-10.21"/>
+<path fill="none" stroke="#63b8ff" d="M609.62,-6.66C553.37,-1.93 472.66,0.37 404,-15 378.42,-20.72 351.62,-34.09 332.94,-44.78"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="609.56,-10.17 619.83,-7.57 610.18,-3.19 609.56,-10.17"/>
 </a>
 </g>
 </g>

@@ -83,7 +83,7 @@ var namespacepolyfem =
       [ "build_parametrization", "namespacepolyfem_1_1from__json.html#ab0e091fce89cd79e120154b877711f49", null ],
       [ "build_state", "namespacepolyfem_1_1from__json.html#a49018660f3d88871cbba546d72c67761", null ],
       [ "build_states", "namespacepolyfem_1_1from__json.html#a405698baaa2a89fae05fb63b9688fcd9", null ],
-      [ "build_variable_to_simulation", "namespacepolyfem_1_1from__json.html#a68307d6cb8d6854897f1d8d48554b4fe", null ],
+      [ "build_variable_to_simulation", "namespacepolyfem_1_1from__json.html#a204ac2de23e31d8649c710122768a50a", null ],
       [ "build_variable_to_simulation_group", "namespacepolyfem_1_1from__json.html#a4527b60c9b05724f41b4f1493cfbbae9", null ]
     ] ],
     [ "io", "namespacepolyfem_1_1io.html", "namespacepolyfem_1_1io" ],
@@ -156,6 +156,9 @@ var namespacepolyfem =
     [ "pk1_from_cauchy", "namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21", null ],
     [ "pk2_from_cauchy", "namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13", null ],
     [ "second_invariant", "namespacepolyfem.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],
+    [ "select_boundary_nodes", "namespacepolyfem.html#ae57a2c5a18411e90009aa622205469bd", null ],
+    [ "select_boundary_nodes_excluding_surfaces", "namespacepolyfem.html#a17b55d5b32fb9c675936abc9ab25ab66", null ],
+    [ "select_interior_nodes", "namespacepolyfem.html#a5c0a3e2c84b81986aa392dbfdda86abe", null ],
     [ "set_adjoint_logger", "namespacepolyfem.html#a85a916e211055cb036123120e33fd971", null ],
     [ "set_logger", "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569", null ],
     [ "solve_adjoint_cached", "namespacepolyfem.html#a957918a4bafd3f507b383d1209de1a27", null ],

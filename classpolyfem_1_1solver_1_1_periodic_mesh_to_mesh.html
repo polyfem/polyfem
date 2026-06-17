@@ -143,6 +143,9 @@ Collaboration diagram for polyfem::solver::PeriodicMeshToMesh:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2d2b492381c900e0026cf19984cdf70e" id="r_a2d2b492381c900e0026cf19984cdf70e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a2d2b492381c900e0026cf19984cdf70e">PeriodicMeshToMesh</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>)</td></tr>
 <tr class="separator:a2d2b492381c900e0026cf19984cdf70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94fb05f527188a7e7c4899375dd67ec1" id="r_a94fb05f527188a7e7c4899375dd67ec1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a94fb05f527188a7e7c4899375dd67ec1">inverse_size</a> (int y_size) const override</td></tr>
+<tr class="memdesc:a94fb05f527188a7e7c4899375dd67ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of x given DOF of y.  <br /></td></tr>
+<tr class="separator:a94fb05f527188a7e7c4899375dd67ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a428eaea284ac0e53b2ea4a648167571a" id="r_a428eaea284ac0e53b2ea4a648167571a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a428eaea284ac0e53b2ea4a648167571a">size</a> (const int x_size) const override</td></tr>
 <tr class="memdesc:a428eaea284ac0e53b2ea4a648167571a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of y given DOF of x.  <br /></td></tr>
 <tr class="separator:a428eaea284ac0e53b2ea4a648167571a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,9 +160,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a36d2f3ac2f82f026eab73420680868d8" id="r_a36d2f3ac2f82f026eab73420680868d8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8">eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a36d2f3ac2f82f026eab73420680868d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval y = f(x).  <br /></td></tr>
 <tr class="separator:a36d2f3ac2f82f026eab73420680868d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0829584cf4782cc4229063b49d1a8b3b" id="r_a0829584cf4782cc4229063b49d1a8b3b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) override</td></tr>
-<tr class="memdesc:a0829584cf4782cc4229063b49d1a8b3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
-<tr class="separator:a0829584cf4782cc4229063b49d1a8b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c023fd4cd8a92d7535b86d0a3f52a9" id="r_ac8c023fd4cd8a92d7535b86d0a3f52a9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#ac8c023fd4cd8a92d7535b86d0a3f52a9">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:ac8c023fd4cd8a92d7535b86d0a3f52a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
+<tr class="separator:ac8c023fd4cd8a92d7535b86d0a3f52a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3de7ef85bccf3ba04b44f720fbd3d3b8" id="r_a3de7ef85bccf3ba04b44f720fbd3d3b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8">apply_jacobian</a> (const Eigen::VectorXd &amp;grad, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a3de7ef85bccf3ba04b44f720fbd3d3b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply jacobian for chain rule.  <br /></td></tr>
 <tr class="separator:a3de7ef85bccf3ba04b44f720fbd3d3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,7 +205,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">7</a> of file <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html">PeriodicMeshToMesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">n_periodic_dof_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">periodic_dependence</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">n_periodic_dof_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00036">periodic_dependence</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -261,7 +264,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">137</a> of file <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html">PeriodicMeshToMesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">n_periodic_dof_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">periodic_dependence</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">n_periodic_dof_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00036">periodic_dependence</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00691">polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term()</a>.</p>
 <div class="dynheader">
@@ -300,9 +303,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00023">23</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00024">24</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="diff__elastic__energy_8py_source.html#l00038">diff_elastic_energy.AMIPSEnergy::eval()</a>, and <a class="el" href="diff__elastic__energy_8py_source.html#l00018">diff_elastic_energy.AMIPSEnergy::get_standard()</a>.</p>
 <div class="dynheader">
@@ -350,7 +353,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">87</a> of file <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html">PeriodicMeshToMesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">periodic_dependence</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">size()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00036">periodic_dependence</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00016">size()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>.</p>
 <div class="dynheader">
@@ -390,9 +393,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00029">29</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00030">30</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00014">polyfem::solver::PeriodicContactForceDerivative::force_shape_derivative()</a>.</p>
 <div class="dynheader">
@@ -426,21 +429,21 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">20</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">21</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">n_periodic_dof_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">n_periodic_dof_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">inverse_size()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00016">size()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh_af6cde50bcb2d3c1e56f8a908e40acaa0_icgraph.svg" width="100%" height="456"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh_af6cde50bcb2d3c1e56f8a908e40acaa0_icgraph.svg" width="100%" height="522"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a0829584cf4782cc4229063b49d1a8b3b" name="a0829584cf4782cc4229063b49d1a8b3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0829584cf4782cc4229063b49d1a8b3b">&#9670;&#160;</a></span>inverse_eval()</h2>
+<a id="ac8c023fd4cd8a92d7535b86d0a3f52a9" name="ac8c023fd4cd8a92d7535b86d0a3f52a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8c023fd4cd8a92d7535b86d0a3f52a9">&#9670;&#160;</a></span>inverse_eval()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -453,7 +456,7 @@ Here is the caller graph for this function:</div>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>y</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -474,20 +477,72 @@ Here is the caller graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>x. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not implemented or is impossible. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">polyfem::solver::Parametrization</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a335d0fd32aa812642f0c1faa5c9902ba">polyfem::solver::Parametrization</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">107</a> of file <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html">PeriodicMeshToMesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">periodic_dependence</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00036">periodic_dependence</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh_a0829584cf4782cc4229063b49d1a8b3b_cgraph.svg" width="100%" height="476"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh_ac8c023fd4cd8a92d7535b86d0a3f52a9_cgraph.svg" width="100%" height="476"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a94fb05f527188a7e7c4899375dd67ec1" name="a94fb05f527188a7e7c4899375dd67ec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94fb05f527188a7e7c4899375dd67ec1">&#9670;&#160;</a></span>inverse_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::PeriodicMeshToMesh::inverse_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y_size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute DOF of x given DOF of y. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y_size</td><td>DOF of y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DOF of x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not impossible or y_size is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#af86347e4f31d0572c10eccd40f84c7fc">polyfem::solver::Parametrization</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">15</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh_a94fb05f527188a7e7c4899375dd67ec1_cgraph.svg" width="438" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -515,9 +570,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00022">22</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00023">23</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>.</p>
 
 </div>
 </div>
@@ -544,9 +599,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">21</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00022">22</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">n_periodic_dof_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">n_periodic_dof_</a>.</p>
 
 </div>
 </div>
@@ -585,9 +640,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a0b68baa55dfbd76f3fc41b47d48aff82">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">15</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00016">16</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">dim_</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">dependent_map</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">dim_</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>.</p>
 <div class="dynheader">
@@ -624,9 +679,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">34</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">35</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00029">full_to_periodic()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00022">n_full_dof()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00030">full_to_periodic()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00023">n_full_dof()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00016">size()</a>.</p>
 
 </div>
 </div>
@@ -650,9 +705,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00032">32</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">33</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00023">dim()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00015">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00024">dim()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00016">size()</a>.</p>
 
 </div>
 </div>
@@ -676,9 +731,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00033">33</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00034">34</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00020">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">n_periodic_dof()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00021">input_size()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00022">n_periodic_dof()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>.</p>
 
 </div>
 </div>
@@ -702,7 +757,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00035">35</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00036">36</a> of file <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">PeriodicMeshToMesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">apply_jacobian()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">eval()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">inverse_eval()</a>, and <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00007">PeriodicMeshToMesh()</a>.</p>
 

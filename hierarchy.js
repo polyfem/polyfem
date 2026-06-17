@@ -313,7 +313,6 @@ var hierarchy =
     [ "polyfem::IntegrableFunctional::ParameterType", "structpolyfem_1_1_integrable_functional_1_1_parameter_type.html", null ],
     [ "polyfem::solver::Parametrization", "classpolyfem_1_1solver_1_1_parametrization.html", [
       [ "polyfem::solver::BSplineParametrization1DTo2D", "classpolyfem_1_1solver_1_1_b_spline_parametrization1_d_to2_d.html", null ],
-      [ "polyfem::solver::BSplineParametrization2DTo3D", "classpolyfem_1_1solver_1_1_b_spline_parametrization2_d_to3_d.html", null ],
       [ "polyfem::solver::BoundedBiharmonicWeights2Dto3D", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html", null ],
       [ "polyfem::solver::CompositeParametrization", "classpolyfem_1_1solver_1_1_composite_parametrization.html", null ],
       [ "polyfem::solver::ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", null ],
@@ -475,20 +474,15 @@ var hierarchy =
     [ "polyfem::quadrature::TriQuadrature", "classpolyfem_1_1quadrature_1_1_tri_quadrature.html", null ],
     [ "polyfem::renderer::UniformAttributes", "classpolyfem_1_1renderer_1_1_uniform_attributes.html", null ],
     [ "polyfem::Units", "classpolyfem_1_1_units.html", null ],
-    [ "polyfem::solver::VariableToNodes", "classpolyfem_1_1solver_1_1_variable_to_nodes.html", [
-      [ "polyfem::solver::VariableToBoundaryNodes", "classpolyfem_1_1solver_1_1_variable_to_boundary_nodes.html", null ],
-      [ "polyfem::solver::VariableToBoundaryNodesExclusive", "classpolyfem_1_1solver_1_1_variable_to_boundary_nodes_exclusive.html", null ],
-      [ "polyfem::solver::VariableToInteriorNodes", "classpolyfem_1_1solver_1_1_variable_to_interior_nodes.html", null ]
-    ] ],
     [ "polyfem::solver::VariableToSimulation", "classpolyfem_1_1solver_1_1_variable_to_simulation.html", [
-      [ "polyfem::solver::DampingCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html", null ],
+      [ "polyfem::solver::DampingVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html", null ],
+      [ "polyfem::solver::DirichletBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html", null ],
       [ "polyfem::solver::DirichletNodesVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html", null ],
-      [ "polyfem::solver::DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", null ],
       [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", null ],
-      [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", null ],
+      [ "polyfem::solver::FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html", null ],
       [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", null ],
       [ "polyfem::solver::PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html", null ],
-      [ "polyfem::solver::PressureVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html", null ],
+      [ "polyfem::solver::PressureBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html", null ],
       [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", null ]
     ] ],
     [ "polyfem::solver::VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", null ],

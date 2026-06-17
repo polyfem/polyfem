@@ -1,21 +1,21 @@
 <map id="polyfem::get_adjoint_mat" name="polyfem::get_adjoint_mat">
-<area shape="rect" id="Node000001" title="Get adjoint parameter nu or p." alt="" coords="315,321,505,346"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" title=" " alt="" coords="5,5,267,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="400,308,385,255,359,188,319,118,294,87,265,59,246,48,249,43,268,55,298,83,324,115,364,185,390,253,406,307"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a22c326ff74722077734beaccc1301647" title=" " alt="" coords="49,70,223,125"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="395,309,375,271,346,225,309,178,265,138,222,117,225,112,268,134,313,174,351,222,380,268,400,307"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="27,149,245,203"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="386,313,334,264,301,239,265,217,241,206,244,201,268,212,304,235,337,260,389,309"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html#a71759bd7ccaffbc2b6b191106be7e94d" title=" " alt="" coords="27,227,245,282"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="351,319,231,285,233,280,352,314"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a362b5b788dad19c69ecdc855e8c0af65" title=" " alt="" coords="25,306,247,361"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="301,336,247,336,247,331,301,331"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a01e67080c867ca4d4df9bfcac16c1f7c" title=" " alt="" coords="24,385,248,439"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="352,353,233,387,231,382,351,347"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac0d13c9423cc7ae626382deea345c066" title=" " alt="" coords="36,463,236,518"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="389,358,336,406,303,431,268,453,237,467,235,462,265,448,300,427,333,401,385,354"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#af5ac621ea9abd7eaeb55003867b010f5" title=" " alt="" coords="24,542,248,597"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="400,360,379,398,350,444,313,491,268,531,247,544,244,539,265,527,309,487,346,441,375,395,395,357"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6" title=" " alt="" coords="37,621,235,675"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="405,360,389,413,362,480,322,550,297,582,268,610,237,629,234,625,265,606,293,578,318,547,357,478,384,411,400,359"/>
+<area shape="rect" id="Node000001" title="Get adjoint parameter nu or p." alt="" coords="315,335,505,360"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#ad8fff6bcbcf34fe4809e08d77a418a20" title="Compute adjoint contribution of objective gradient." alt="" coords="41,5,231,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="400,322,384,269,358,202,318,133,293,101,265,73,230,53,233,49,268,69,297,97,323,130,362,200,389,267,405,320"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ad95e47a2f19fa6eb94467d945460f42a" title="Compute adjoint contribution of objective gradient." alt="" coords="25,84,247,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="395,323,375,285,346,239,309,192,265,152,246,141,248,136,268,148,313,188,351,236,380,282,400,321"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac0d13c9423cc7ae626382deea345c066" title="Compute adjoint contribution of objective gradient." alt="" coords="36,163,236,217"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="386,327,334,278,301,253,265,231,235,217,237,213,268,226,304,249,337,274,389,323"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a22c326ff74722077734beaccc1301647" title="Compute adjoint contribution of objective gradient." alt="" coords="49,241,223,296"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="351,333,223,296,224,291,352,328"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a10b492083529412dfc645e3cf450cf92" title="Compute adjoint contribution of objective gradient." alt="" coords="24,320,248,375"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="301,350,248,350,248,345,301,345"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a362b5b788dad19c69ecdc855e8c0af65" title="Compute adjoint contribution of objective gradient." alt="" coords="25,399,247,453"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="352,367,233,401,231,396,351,361"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6" title="Compute adjoint contribution of objective gradient." alt="" coords="37,477,235,532"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="389,372,336,420,303,445,268,467,237,481,234,476,265,462,300,441,333,415,385,368"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a2146118b2316398172c661a104df6e15" title="Compute adjoint contribution of objective gradient." alt="" coords="25,556,247,611"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="400,374,379,412,350,458,313,505,268,545,247,558,244,553,265,541,309,501,346,455,375,409,395,371"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" title="Compute adjoint contribution of objective gradient." alt="" coords="5,635,267,675"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="405,374,390,427,363,494,323,564,298,596,268,624,247,638,244,633,265,620,294,593,319,561,358,492,385,425,400,372"/>
 </map>

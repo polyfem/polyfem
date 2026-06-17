@@ -143,12 +143,15 @@ Collaboration diagram for polyfem::solver::PowerMap:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ace99432054276a0dbed5c3284a0c7499" id="r_ace99432054276a0dbed5c3284a0c7499"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#ace99432054276a0dbed5c3284a0c7499">PowerMap</a> (const double power=1, const int from=-1, const int to=-1)</td></tr>
 <tr class="separator:ace99432054276a0dbed5c3284a0c7499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c238c3131fee68e2d8ad52d9a472e4f" id="r_a1c238c3131fee68e2d8ad52d9a472e4f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#a1c238c3131fee68e2d8ad52d9a472e4f">inverse_size</a> (int y_size) const override</td></tr>
+<tr class="memdesc:a1c238c3131fee68e2d8ad52d9a472e4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of x given DOF of y.  <br /></td></tr>
+<tr class="separator:a1c238c3131fee68e2d8ad52d9a472e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85315cb919b2f07f6cae1fcf01bdc66c" id="r_a85315cb919b2f07f6cae1fcf01bdc66c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#a85315cb919b2f07f6cae1fcf01bdc66c">size</a> (const int x_size) const override</td></tr>
 <tr class="memdesc:a85315cb919b2f07f6cae1fcf01bdc66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of y given DOF of x.  <br /></td></tr>
 <tr class="separator:a85315cb919b2f07f6cae1fcf01bdc66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfad269dd943b4a0447c4af75f991547" id="r_acfad269dd943b4a0447c4af75f991547"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#acfad269dd943b4a0447c4af75f991547">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) override</td></tr>
-<tr class="memdesc:acfad269dd943b4a0447c4af75f991547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
-<tr class="separator:acfad269dd943b4a0447c4af75f991547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5818816b1771c6c43751b7e30334261" id="r_ae5818816b1771c6c43751b7e30334261"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#ae5818816b1771c6c43751b7e30334261">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:ae5818816b1771c6c43751b7e30334261"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
+<tr class="separator:ae5818816b1771c6c43751b7e30334261"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34497ef5361d5120df3403f94149716a" id="r_a34497ef5361d5120df3403f94149716a"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_power_map.html#a34497ef5361d5120df3403f94149716a">eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a34497ef5361d5120df3403f94149716a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval y = f(x).  <br /></td></tr>
 <tr class="separator:a34497ef5361d5120df3403f94149716a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,16 +173,13 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00048">48</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00049">49</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ace99432054276a0dbed5c3284a0c7499" name="ace99432054276a0dbed5c3284a0c7499"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ace99432054276a0dbed5c3284a0c7499">&#9670;&#160;</a></span>PowerMap()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">polyfem::solver::PowerMap::PowerMap </td>
@@ -205,16 +205,9 @@ Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00051">51</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00064">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00063">power_</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00064">to_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00144">144</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
 </div>
 </div>
@@ -266,9 +259,9 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ab9ba31549e419d2122ae648954f265f3">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00119">119</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00185">185</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00064">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00063">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00064">to_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00062">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00061">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00062">to_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -307,14 +300,14 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a13746ef77cadd36b2a4844cc9e812d45">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00107">107</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00173">173</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00064">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00063">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00064">to_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00062">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00061">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00062">to_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 
 </div>
 </div>
-<a id="acfad269dd943b4a0447c4af75f991547" name="acfad269dd943b4a0447c4af75f991547"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfad269dd943b4a0447c4af75f991547">&#9670;&#160;</a></span>inverse_eval()</h2>
+<a id="ae5818816b1771c6c43751b7e30334261" name="ae5818816b1771c6c43751b7e30334261"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5818816b1771c6c43751b7e30334261">&#9670;&#160;</a></span>inverse_eval()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,7 +320,7 @@ Private Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>y</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -348,16 +341,61 @@ Private Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>x. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not implemented or is impossible. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">polyfem::solver::Parametrization</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a335d0fd32aa812642f0c1faa5c9902ba">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00095">95</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00161">161</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00064">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00063">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00064">to_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00062">from_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00061">power_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00062">to_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+
+</div>
+</div>
+<a id="a1c238c3131fee68e2d8ad52d9a472e4f" name="a1c238c3131fee68e2d8ad52d9a472e4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c238c3131fee68e2d8ad52d9a472e4f">&#9670;&#160;</a></span>inverse_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::PowerMap::inverse_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y_size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute DOF of x given DOF of y. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y_size</td><td>DOF of y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DOF of x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not impossible or y_size is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#af86347e4f31d0572c10eccd40f84c7fc">polyfem::solver::Parametrization</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00150">150</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
 </div>
 </div>
@@ -380,7 +418,7 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -396,7 +434,7 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a0b68baa55dfbd76f3fc41b47d48aff82">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00057">57</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00156">156</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
 </div>
 </div>
@@ -421,9 +459,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00064">64</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00062">62</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00119">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00107">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00095">inverse_eval()</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00051">PowerMap()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00185">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00173">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00161">inverse_eval()</a>.</p>
 
 </div>
 </div>
@@ -447,9 +485,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00063">63</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00061">61</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00119">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00107">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00095">inverse_eval()</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00051">PowerMap()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00185">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00173">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00161">inverse_eval()</a>.</p>
 
 </div>
 </div>
@@ -473,9 +511,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00064">64</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00062">62</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00119">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00107">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00095">inverse_eval()</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00051">PowerMap()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00185">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00173">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00161">inverse_eval()</a>.</p>
 
 </div>
 </div>

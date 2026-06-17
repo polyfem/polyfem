@@ -128,6 +128,7 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8hpp.html',''); initRes
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_diff_cache_8hpp_source.html">polyfem/optimization/DiffCache.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_parameter_type_8hpp_source.html">polyfem/optimization/var2sims/ParameterType.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
@@ -139,7 +140,7 @@ Include dependency graph for AdjointTools.hpp:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_adjoint_tools_8hpp__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_adjoint_tools_8hpp__dep__incl.svg" width="100%" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_adjoint_tools_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -155,21 +156,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a1c9e86081b90c3ab43c4d722f65d3c59" id="r_a1c9e86081b90c3ab43c4d722f65d3c59"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">polyfem::solver::ParameterType</a> { <br />
-&#160;&#160;<a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59af85a0e688bf256d124f6dc011c7cb51e">polyfem::solver::LameParameter</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59ac52c4cf716836bae440d812a9a7ad553">polyfem::solver::FrictionCoefficient</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a633e1ddfaf226af9371bec1bdb01ba03">polyfem::solver::DampingCoefficient</a>
-, <br />
-&#160;&#160;<a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898">polyfem::solver::InitialCondition</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112">polyfem::solver::DirichletBC</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9f7433a078e50b71061edcf112bc9cb5">polyfem::solver::PressureBC</a>
-, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370">polyfem::solver::MacroStrain</a>
-, <br />
-&#160;&#160;<a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a09aba3008cae6307aa607fe2fec31c48">polyfem::solver::PeriodicShape</a>
-<br />
- }</td></tr>
-<tr class="separator:a1c9e86081b90c3ab43c4d722f65d3c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad27032b2014cdcea2f5718580272f48f" id="r_ad27032b2014cdcea2f5718580272f48f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48f">polyfem::solver::SpatialIntegralType</a> { <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fabd7a9717d29c5ddcab1bc175eda1e298">polyfem::solver::Volume</a>
 , <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819">polyfem::solver::Surface</a>
 , <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faad22a1be59b755962010de3a6aa93458">polyfem::solver::VertexSum</a>

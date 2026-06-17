@@ -23,6 +23,5 @@ var searchData=
   ['bsplineparametrization_20',['BSplineParametrization',['../classpolyfem_1_1_b_spline_parametrization.html',1,'polyfem']]],
   ['bsplineparametrization1dto2d_21',['BSplineParametrization1DTo2D',['../classpolyfem_1_1solver_1_1_b_spline_parametrization1_d_to2_d.html',1,'polyfem::solver']]],
   ['bsplineparametrization2d_22',['BSplineParametrization2D',['../classpolyfem_1_1_b_spline_parametrization2_d.html',1,'polyfem']]],
-  ['bsplineparametrization2dto3d_23',['BSplineParametrization2DTo3D',['../classpolyfem_1_1solver_1_1_b_spline_parametrization2_d_to3_d.html',1,'polyfem::solver']]],
-  ['bsplineparametrization3d_24',['BSplineParametrization3D',['../classpolyfem_1_1_b_spline_parametrization3_d.html',1,'polyfem']]]
+  ['bsplineparametrization3d_23',['BSplineParametrization3D',['../classpolyfem_1_1_b_spline_parametrization3_d.html',1,'polyfem']]]
 ];

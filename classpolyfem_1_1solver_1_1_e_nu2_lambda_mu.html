@@ -143,12 +143,15 @@ Collaboration diagram for polyfem::solver::ENu2LambdaMu:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa3a4dd1b48be812772b2b0a18b6d3c38" id="r_aa3a4dd1b48be812772b2b0a18b6d3c38"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#aa3a4dd1b48be812772b2b0a18b6d3c38">ENu2LambdaMu</a> (const bool is_volume)</td></tr>
 <tr class="separator:aa3a4dd1b48be812772b2b0a18b6d3c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf8bfa4e8dfc94d91ac8a714fa6eaafc" id="r_adf8bfa4e8dfc94d91ac8a714fa6eaafc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#adf8bfa4e8dfc94d91ac8a714fa6eaafc">inverse_size</a> (int y_size) const override</td></tr>
+<tr class="memdesc:adf8bfa4e8dfc94d91ac8a714fa6eaafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of x given DOF of y.  <br /></td></tr>
+<tr class="separator:adf8bfa4e8dfc94d91ac8a714fa6eaafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98ea0570590ffe38f8b28180540aeed1" id="r_a98ea0570590ffe38f8b28180540aeed1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a98ea0570590ffe38f8b28180540aeed1">size</a> (const int x_size) const override</td></tr>
 <tr class="memdesc:a98ea0570590ffe38f8b28180540aeed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of y given DOF of x.  <br /></td></tr>
 <tr class="separator:a98ea0570590ffe38f8b28180540aeed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae72f46224dfdfb36633d937aa6a30f8f" id="r_ae72f46224dfdfb36633d937aa6a30f8f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#ae72f46224dfdfb36633d937aa6a30f8f">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) override</td></tr>
-<tr class="memdesc:ae72f46224dfdfb36633d937aa6a30f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
-<tr class="separator:ae72f46224dfdfb36633d937aa6a30f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1b23e1e1287426b48e119a8b485ae55" id="r_af1b23e1e1287426b48e119a8b485ae55"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#af1b23e1e1287426b48e119a8b485ae55">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:af1b23e1e1287426b48e119a8b485ae55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
+<tr class="separator:af1b23e1e1287426b48e119a8b485ae55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c4444c765fa9bbbf666a8716fd6af42" id="r_a4c4444c765fa9bbbf666a8716fd6af42"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a4c4444c765fa9bbbf666a8716fd6af42">eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a4c4444c765fa9bbbf666a8716fd6af42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval y = f(x).  <br /></td></tr>
 <tr class="separator:a4c4444c765fa9bbbf666a8716fd6af42"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,7 +169,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00067">67</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00065">65</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa3a4dd1b48be812772b2b0a18b6d3c38" name="aa3a4dd1b48be812772b2b0a18b6d3c38"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa3a4dd1b48be812772b2b0a18b6d3c38">&#9670;&#160;</a></span>ENu2LambdaMu()</h2>
@@ -184,7 +187,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00131">131</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00197">197</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
 </div>
 </div>
@@ -236,9 +239,9 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ab9ba31549e419d2122ae648954f265f3">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00167">167</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00248">248</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00025">polyfem::d_lambda_mu_d_E_nu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00079">is_volume_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00072">size()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00025">polyfem::d_lambda_mu_d_E_nu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00077">is_volume_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00212">size()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -282,9 +285,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a13746ef77cadd36b2a4844cc9e812d45">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00151">151</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00232">232</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00012">polyfem::convert_to_lambda()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00020">polyfem::convert_to_mu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00079">is_volume_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00072">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00012">polyfem::convert_to_lambda()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00020">polyfem::convert_to_mu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00077">is_volume_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00212">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -293,8 +296,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ae72f46224dfdfb36633d937aa6a30f8f" name="ae72f46224dfdfb36633d937aa6a30f8f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae72f46224dfdfb36633d937aa6a30f8f">&#9670;&#160;</a></span>inverse_eval()</h2>
+<a id="af1b23e1e1287426b48e119a8b485ae55" name="af1b23e1e1287426b48e119a8b485ae55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b23e1e1287426b48e119a8b485ae55">&#9670;&#160;</a></span>inverse_eval()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -307,7 +310,7 @@ Here is the call graph for this function:</div>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>y</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -328,20 +331,72 @@ Here is the call graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>x. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not implemented or is impossible. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">polyfem::solver::Parametrization</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a335d0fd32aa812642f0c1faa5c9902ba">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00136">136</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00217">217</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00065">polyfem::convert_to_E()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00073">polyfem::convert_to_nu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00079">is_volume_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00072">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00065">polyfem::convert_to_E()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00073">polyfem::convert_to_nu()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00077">is_volume_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00212">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu_ae72f46224dfdfb36633d937aa6a30f8f_cgraph.svg" width="496" height="151"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu_af1b23e1e1287426b48e119a8b485ae55_cgraph.svg" width="496" height="151"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="adf8bfa4e8dfc94d91ac8a714fa6eaafc" name="adf8bfa4e8dfc94d91ac8a714fa6eaafc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf8bfa4e8dfc94d91ac8a714fa6eaafc">&#9670;&#160;</a></span>inverse_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::ENu2LambdaMu::inverse_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y_size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute DOF of x given DOF of y. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y_size</td><td>DOF of y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DOF of x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not impossible or y_size is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#af86347e4f31d0572c10eccd40f84c7fc">polyfem::solver::Parametrization</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00202">202</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu_adf8bfa4e8dfc94d91ac8a714fa6eaafc_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -365,7 +420,7 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -381,9 +436,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a0b68baa55dfbd76f3fc41b47d48aff82">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00072">72</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00212">212</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00167">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00151">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00136">inverse_eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00248">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00232">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00217">inverse_eval()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -413,9 +468,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00079">79</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00077">77</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00167">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00151">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00136">inverse_eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00248">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00232">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00217">inverse_eval()</a>.</p>
 
 </div>
 </div>

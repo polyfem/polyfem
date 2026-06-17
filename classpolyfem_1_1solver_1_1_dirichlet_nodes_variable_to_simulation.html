@@ -120,8 +120,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_dirichlet_n
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation-members.html">List of all members</a>  </div>
@@ -129,7 +129,10 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_dirichlet_n
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>&gt;</code></p>
+<p>Maps to dirichlet boundary.  
+ <a href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::solver::DirichletNodesVariableToSimulation:</div>
 <div class="dyncontent">
@@ -138,73 +141,180 @@ Inheritance diagram for polyfem::solver::DirichletNodesVariableToSimulation:</di
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::DirichletNodesVariableToSimulation:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation__coll__graph.svg" width="246" height="318"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation__coll__graph.svg" width="440" height="228"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8806fd4708d87dbd65698dc77c001f24" id="r_a8806fd4708d87dbd65698dc77c001f24"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">StatePtrs</a> = std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;</td></tr>
+<tr class="separator:a8806fd4708d87dbd65698dc77c001f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a002f48ad8064efde102317a55b50f941" id="r_a002f48ad8064efde102317a55b50f941"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">DiffCachePtrs</a> = std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;</td></tr>
+<tr class="separator:a002f48ad8064efde102317a55b50f941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5ce09930271bb90700878aca22c35da1" id="r_a5ce09930271bb90700878aca22c35da1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a5ce09930271bb90700878aca22c35da1">~DirichletNodesVariableToSimulation</a> ()</td></tr>
-<tr class="separator:a5ce09930271bb90700878aca22c35da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd257e0c19a007a47fd08d28b03edd9d" id="r_afd257e0c19a007a47fd08d28b03edd9d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#afd257e0c19a007a47fd08d28b03edd9d">DirichletNodesVariableToSimulation</a> (<a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">StatePtrs</a> states, <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">DiffCachePtrs</a> diff_caches, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> parametrizations, Eigen::VectorXi active_geom_nodes)</td></tr>
+<tr class="memdesc:afd257e0c19a007a47fd08d28b03edd9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html" title="Maps to dirichlet boundary.">DirichletNodesVariableToSimulation</a>.  <br /></td></tr>
+<tr class="separator:afd257e0c19a007a47fd08d28b03edd9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f2cf7968772da1a7fba39633cf5d4d4" id="r_a5f2cf7968772da1a7fba39633cf5d4d4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a5f2cf7968772da1a7fba39633cf5d4d4">name</a> () const override</td></tr>
 <tr class="separator:a5f2cf7968772da1a7fba39633cf5d4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0a39d590cbe34685fab08201cdd6372" id="r_ab0a39d590cbe34685fab08201cdd6372"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ab0a39d590cbe34685fab08201cdd6372">set_dirichlet_nodes</a> (const Eigen::VectorXi &amp;dirichlet_nodes)</td></tr>
-<tr class="separator:ab0a39d590cbe34685fab08201cdd6372"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb2e836800d0bf47b28df92c6c5d2215" id="r_abb2e836800d0bf47b28df92c6c5d2215"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#abb2e836800d0bf47b28df92c6c5d2215">get_parameter_type</a> () const override</td></tr>
-<tr class="separator:abb2e836800d0bf47b28df92c6c5d2215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1856605700e18344e7a96449564b300e" id="r_a1856605700e18344e7a96449564b300e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a1856605700e18344e7a96449564b300e">parameter_type</a> () const override</td></tr>
+<tr class="separator:a1856605700e18344e7a96449564b300e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8568374f2f2b7da8983f3394f29fca4b" id="r_a8568374f2f2b7da8983f3394f29fca4b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8568374f2f2b7da8983f3394f29fca4b">affect_state</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;target) const override</td></tr>
+<tr class="memdesc:a8568374f2f2b7da8983f3394f29fca4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if current var2sim maps to target state.  <br /></td></tr>
+<tr class="separator:a8568374f2f2b7da8983f3394f29fca4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71263a8f1b4689b9ae2940e8542bc6d2" id="r_a71263a8f1b4689b9ae2940e8542bc6d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a71263a8f1b4689b9ae2940e8542bc6d2">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
+<tr class="memdesc:a71263a8f1b4689b9ae2940e8542bc6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update forward simulation states from optimization variables.  <br /></td></tr>
+<tr class="separator:a71263a8f1b4689b9ae2940e8542bc6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac24a97417eb680971f32bf686ef759e4" id="r_ac24a97417eb680971f32bf686ef759e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac24a97417eb680971f32bf686ef759e4">update_state_variables</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;state_variables) const override</td></tr>
+<tr class="memdesc:ac24a97417eb680971f32bf686ef759e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update state variables from optimization variables.  <br /></td></tr>
+<tr class="separator:ac24a97417eb680971f32bf686ef759e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0d13c9423cc7ae626382deea345c066" id="r_ac0d13c9423cc7ae626382deea345c066"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac0d13c9423cc7ae626382deea345c066">compute_adjoint_term</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:ac0d13c9423cc7ae626382deea345c066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute adjoint contribution of objective gradient.  <br /></td></tr>
 <tr class="separator:ac0d13c9423cc7ae626382deea345c066"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ed3493a19825d87a8078c23501ada9" id="r_a07ed3493a19825d87a8078c23501ada9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a07ed3493a19825d87a8078c23501ada9">inverse_eval</a> () override</td></tr>
-<tr class="separator:a07ed3493a19825d87a8078c23501ada9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea5edfe48b089f4c60ce2f90183c3821" id="r_aea5edfe48b089f4c60ce2f90183c3821"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#aea5edfe48b089f4c60ce2f90183c3821">set_output_indexing</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args) override</td></tr>
-<tr class="separator:aea5edfe48b089f4c60ce2f90183c3821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b838fdacd0cbcf4018b26613c31cddd" id="r_a4b838fdacd0cbcf4018b26613c31cddd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd">VariableToSimulation</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a>, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a>)</td></tr>
-<tr class="separator:a4b838fdacd0cbcf4018b26613c31cddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98d8ed778ee646de2a16ef37bf7fa02d" id="r_a98d8ed778ee646de2a16ef37bf7fa02d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a98d8ed778ee646de2a16ef37bf7fa02d">inverse_dof</a> () const override</td></tr>
+<tr class="memdesc:a98d8ed778ee646de2a16ef37bf7fa02d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables dof.  <br /></td></tr>
+<tr class="separator:a98d8ed778ee646de2a16ef37bf7fa02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92d1e2300899159a4a6ab32ca4d29b6" id="r_ac92d1e2300899159a4a6ab32ca4d29b6"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac92d1e2300899159a4a6ab32ca4d29b6">inverse_eval</a> () const override</td></tr>
+<tr class="memdesc:ac92d1e2300899159a4a6ab32ca4d29b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>.  <br /></td></tr>
+<tr class="separator:ac92d1e2300899159a4a6ab32ca4d29b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a041724e1392b1344363f7c9e74204b4d" id="r_a041724e1392b1344363f7c9e74204b4d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a041724e1392b1344363f7c9e74204b4d">apply_parametrization_jacobian</a> (const Eigen::VectorXd &amp;term, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:a041724e1392b1344363f7c9e74204b4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply parametrization jacobian to compute the gradient w.r.t.  <br /></td></tr>
+<tr class="separator:a041724e1392b1344363f7c9e74204b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:a4b838fdacd0cbcf4018b26613c31cddd inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a4b838fdacd0cbcf4018b26613c31cddd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd">VariableToSimulation</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a>, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a>)</td></tr>
-<tr class="separator:a4b838fdacd0cbcf4018b26613c31cddd inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbde9689beb75eb9bedcecfb64778ced inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_abbde9689beb75eb9bedcecfb64778ced"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abbde9689beb75eb9bedcecfb64778ced">~VariableToSimulation</a> ()=default</td></tr>
 <tr class="separator:abbde9689beb75eb9bedcecfb64778ced inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2e28ad1b291e82a76fb7190563dd8d0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_ad2e28ad1b291e82a76fb7190563dd8d0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#ad2e28ad1b291e82a76fb7190563dd8d0">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:ad2e28ad1b291e82a76fb7190563dd8d0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add1131a5cecca74b48bf4d0a0fa9cddb inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_add1131a5cecca74b48bf4d0a0fa9cddb"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#add1131a5cecca74b48bf4d0a0fa9cddb">get_output_indexing</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
-<tr class="separator:add1131a5cecca74b48bf4d0a0fa9cddb inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1468ee2e131cb52898bae709938cc9e0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a1468ee2e131cb52898bae709938cc9e0"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a1468ee2e131cb52898bae709938cc9e0">apply_parametrization_jacobian</a> (const Eigen::VectorXd &amp;term, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
-<tr class="separator:a1468ee2e131cb52898bae709938cc9e0 inherit pub_methods_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a1de472308ed51fc06888b8efc05be832" id="r_a1de472308ed51fc06888b8efc05be832"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a1de472308ed51fc06888b8efc05be832">update_state</a> (const Eigen::VectorXd &amp;state_variable, const Eigen::VectorXi &amp;indices) override</td></tr>
-<tr class="separator:a1de472308ed51fc06888b8efc05be832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:abe817e5bd232a2d25bf292b96328f7e3" id="r_abe817e5bd232a2d25bf292b96328f7e3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#abe817e5bd232a2d25bf292b96328f7e3">variable_to_string</a> (const Eigen::VectorXd &amp;variable)</td></tr>
-<tr class="separator:abe817e5bd232a2d25bf292b96328f7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7dbb304bcf5d35011722841fe4c4aa" id="r_a8e7dbb304bcf5d35011722841fe4c4aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8e7dbb304bcf5d35011722841fe4c4aa">para_out_dof</a> () const</td></tr>
+<tr class="separator:a8e7dbb304bcf5d35011722841fe4c4aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a6e78e23cd658ae31342433ee101becf7" id="r_a6e78e23cd658ae31342433ee101becf7"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a6e78e23cd658ae31342433ee101becf7">dirichlet_nodes_</a></td></tr>
-<tr class="separator:a6e78e23cd658ae31342433ee101becf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:abda4a1587b01eea466b2aae89e55b8e3 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_abda4a1587b01eea466b2aae89e55b8e3"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#abda4a1587b01eea466b2aae89e55b8e3">states</a></td></tr>
-<tr class="separator:abda4a1587b01eea466b2aae89e55b8e3 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a196924c7d969a5087c592f4aa857802d inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a196924c7d969a5087c592f4aa857802d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a196924c7d969a5087c592f4aa857802d">diff_caches</a></td></tr>
-<tr class="separator:a196924c7d969a5087c592f4aa857802d inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a348c4eb43c72c73ed9d2617ed07bf8b2 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_a348c4eb43c72c73ed9d2617ed07bf8b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a348c4eb43c72c73ed9d2617ed07bf8b2">parametrization</a></td></tr>
-<tr class="separator:a348c4eb43c72c73ed9d2617ed07bf8b2 inherit pub_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">polyfem::solver::VariableToSimulation</a></td></tr>
-<tr class="memitem:af74d41eb67ade0340134309e0f7b08de inherit pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation" id="r_af74d41eb67ade0340134309e0f7b08de"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#af74d41eb67ade0340134309e0f7b08de">output_indexing_</a></td></tr>
-<tr class="separator:af74d41eb67ade0340134309e0f7b08de inherit pro_attribs_classpolyfem_1_1solver_1_1_variable_to_simulation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b00e40de0556fce35065aa1e3dba998" id="r_a6b00e40de0556fce35065aa1e3dba998"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a6b00e40de0556fce35065aa1e3dba998">dim_</a></td></tr>
+<tr class="separator:a6b00e40de0556fce35065aa1e3dba998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e59edfd56b0c953be86358aaa8c400b" id="r_a4e59edfd56b0c953be86358aaa8c400b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a4e59edfd56b0c953be86358aaa8c400b">vertex_num_</a></td></tr>
+<tr class="separator:a4e59edfd56b0c953be86358aaa8c400b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e5072831ab061d76ba614792eb76aaa" id="r_a3e5072831ab061d76ba614792eb76aaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">StatePtrs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a3e5072831ab061d76ba614792eb76aaa">states_</a></td></tr>
+<tr class="separator:a3e5072831ab061d76ba614792eb76aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6114571aaef439a1fb4bf5fa874476c6" id="r_a6114571aaef439a1fb4bf5fa874476c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">DiffCachePtrs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a6114571aaef439a1fb4bf5fa874476c6">diff_caches_</a></td></tr>
+<tr class="separator:a6114571aaef439a1fb4bf5fa874476c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03a6cf4ec8cc4e6d06d345dbbff81409" id="r_a03a6cf4ec8cc4e6d06d345dbbff81409"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a03a6cf4ec8cc4e6d06d345dbbff81409">parametrization_</a></td></tr>
+<tr class="separator:a03a6cf4ec8cc4e6d06d345dbbff81409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80131b2bf4188bff12902542ac507a5b" id="r_a80131b2bf4188bff12902542ac507a5b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a80131b2bf4188bff12902542ac507a5b">active_geom_nodes_</a></td></tr>
+<tr class="separator:a80131b2bf4188bff12902542ac507a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00223">223</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5ce09930271bb90700878aca22c35da1" name="a5ce09930271bb90700878aca22c35da1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ce09930271bb90700878aca22c35da1">&#9670;&#160;</a></span>~DirichletNodesVariableToSimulation()</h2>
+<div class="textblock"><p>Maps to dirichlet boundary. </p>
+<p>Maps one boundary solution to one boundary. Only support static problem.</p>
+<p>Example 1: Suppose one boundary selection contains 3 vertices at x=0, this var2sim will map 3 solution (displacement xyz) to their respective vertices. </p>
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00020">20</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a002f48ad8064efde102317a55b50f941" name="a002f48ad8064efde102317a55b50f941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a002f48ad8064efde102317a55b50f941">&#9670;&#160;</a></span>DiffCachePtrs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">polyfem::solver::DirichletNodesVariableToSimulation::DiffCachePtrs</a> =  std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00024">24</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a8806fd4708d87dbd65698dc77c001f24" name="a8806fd4708d87dbd65698dc77c001f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8806fd4708d87dbd65698dc77c001f24">&#9670;&#160;</a></span>StatePtrs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">polyfem::solver::DirichletNodesVariableToSimulation::StatePtrs</a> =  std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1_state.html">State</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00023">23</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="afd257e0c19a007a47fd08d28b03edd9d" name="afd257e0c19a007a47fd08d28b03edd9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd257e0c19a007a47fd08d28b03edd9d">&#9670;&#160;</a></span>DirichletNodesVariableToSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::DirichletNodesVariableToSimulation::DirichletNodesVariableToSimulation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">StatePtrs</a>&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">DiffCachePtrs</a>&#160;</td>
+          <td class="paramname"><em>diff_caches</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td>
+          <td class="paramname"><em>parametrizations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi&#160;</td>
+          <td class="paramname"><em>active_geom_nodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html" title="Maps to dirichlet boundary.">DirichletNodesVariableToSimulation</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all forward sim states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">diff_caches</td><td>Shared ptr to all diff caches. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">parametrizations</td><td>Parametrizations. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">actice_dimensions</td><td>Vector of active dimensions per mesh node. Empty implies all active. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">active_geom_nodes</td><td>Input vertex indices. Empty implies all nodal Dirichlet vertices. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if input is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00022">22</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00058">active_geom_nodes_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00054">diff_caches_</a>, <a class="el" href="_active_selection_utils_8cpp_source.html#l00247">polyfem::solver::is_active_dirichlet_node_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00053">states_</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00051">vertex_num_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_afd257e0c19a007a47fd08d28b03edd9d_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8568374f2f2b7da8983f3394f29fca4b" name="a8568374f2f2b7da8983f3394f29fca4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8568374f2f2b7da8983f3394f29fca4b">&#9670;&#160;</a></span>affect_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -213,24 +323,86 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual polyfem::solver::DirichletNodesVariableToSimulation::~DirichletNodesVariableToSimulation </td>
+          <td class="memname">bool polyfem::solver::DirichletNodesVariableToSimulation::affect_state </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00227">227</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p>Return true if current var2sim maps to target state. </p>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4ce3878dd48efd4bc92c775f42271856">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00082">82</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00053">states_</a>.</p>
 
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a041724e1392b1344363f7c9e74204b4d" name="a041724e1392b1344363f7c9e74204b4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a041724e1392b1344363f7c9e74204b4d">&#9670;&#160;</a></span>apply_parametrization_jacobian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::solver::DirichletNodesVariableToSimulation::apply_parametrization_jacobian </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>term</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply parametrization jacobian to compute the gradient w.r.t. </p>
+<p>to optimization variables. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">term</td><td>Gradient w.r.t. to full inherent dof (Ex. all vertices for shape var2sim) </td></tr>
+    <tr><td class="paramname">x</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aba4636cab361d21a64db3672bd1003c2">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00156">156</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00072">name()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a041724e1392b1344363f7c9e74204b4d_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="ac0d13c9423cc7ae626382deea345c066" name="ac0d13c9423cc7ae626382deea345c066"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac0d13c9423cc7ae626382deea345c066">&#9670;&#160;</a></span>compute_adjoint_term()</h2>
 
@@ -255,21 +427,32 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Compute adjoint contribution of objective gradient. </p>
+<p>See arXiv:2205.13643.</p>
+<p>Let objective function be J and optimization variable be x. This method computes all adjoint related terms in dJ/dx. For static case (E.q. 11), it's the second term. For dynamic case (E.q. 15), it's everything except ∂qJ.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x[in]</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Adjoint contribution of objective gradient. </dd></dl>
+
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a5758532c2ac7030bf3741a41974aef42">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00566">566</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">119</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00068">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00052">polyfem::solver::VariableToSimulation::diff_caches</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01012">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00436">polyfem::get_adjoint_mat()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00229">name()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00051">polyfem::solver::VariableToSimulation::states</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00058">active_geom_nodes_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00059">polyfem::solver::CompositeParametrization::apply_jacobian()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00054">diff_caches_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00050">dim_</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01012">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00436">polyfem::get_adjoint_mat()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">parametrization_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00053">states_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00051">vertex_num_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_ac0d13c9423cc7ae626382deea345c066_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_ac0d13c9423cc7ae626382deea345c066_cgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="abb2e836800d0bf47b28df92c6c5d2215" name="abb2e836800d0bf47b28df92c6c5d2215"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb2e836800d0bf47b28df92c6c5d2215">&#9670;&#160;</a></span>get_parameter_type()</h2>
+<a id="a98d8ed778ee646de2a16ef37bf7fa02d" name="a98d8ed778ee646de2a16ef37bf7fa02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98d8ed778ee646de2a16ef37bf7fa02d">&#9670;&#160;</a></span>inverse_dof()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,7 +461,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a> polyfem::solver::DirichletNodesVariableToSimulation::get_parameter_type </td>
+          <td class="memname">int polyfem::solver::DirichletNodesVariableToSimulation::inverse_dof </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -286,21 +469,35 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a42f04c6ce5f100eb4d59a96c1fc44652">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Compute optimization variables dof. </p>
+<dl class="section return"><dt>Returns</dt><dd>Optimization variables dof. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00236">236</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a01abb242174098ab938cef15c9c725cf">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112">polyfem::solver::DirichletBC</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00145">145</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrization_8cpp_source.html#l00015">polyfem::solver::CompositeParametrization::inverse_size()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">parametrization_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a98d8ed778ee646de2a16ef37bf7fa02d_cgraph.svg" width="474" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a07ed3493a19825d87a8078c23501ada9" name="a07ed3493a19825d87a8078c23501ada9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07ed3493a19825d87a8078c23501ada9">&#9670;&#160;</a></span>inverse_eval()</h2>
+<a id="ac92d1e2300899159a4a6ab32ca4d29b6" name="ac92d1e2300899159a4a6ab32ca4d29b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92d1e2300899159a4a6ab32ca4d29b6">&#9670;&#160;</a></span>inverse_eval()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,7 +509,7 @@ Here is the call graph for this function:</div>
           <td class="memname">Eigen::VectorXd polyfem::solver::DirichletNodesVariableToSimulation::inverse_eval </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -322,15 +519,24 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a61980fa8af530a04b79862d1066285e0">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Optimization variables. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00589">589</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a089eb0ce1e2db20380f16a4c7fa8ce32">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00150">150</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrization_8cpp_source.html#l00030">polyfem::solver::CompositeParametrization::inverse_eval()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00072">name()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">parametrization_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a07ed3493a19825d87a8078c23501ada9_cgraph.svg" width="663" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_ac92d1e2300899159a4a6ab32ca4d29b6_cgraph.svg" width="504" height="246"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -353,26 +559,26 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00229">229</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00072">72</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00566">compute_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00156">apply_parametrization_jacobian()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00150">inverse_eval()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a5f2cf7968772da1a7fba39633cf5d4d4_icgraph.svg" width="504" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a5f2cf7968772da1a7fba39633cf5d4d4_icgraph.svg" width="543" height="223"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="ab0a39d590cbe34685fab08201cdd6372" name="ab0a39d590cbe34685fab08201cdd6372"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0a39d590cbe34685fab08201cdd6372">&#9670;&#160;</a></span>set_dirichlet_nodes()</h2>
+<a id="a8e7dbb304bcf5d35011722841fe4c4aa" name="a8e7dbb304bcf5d35011722841fe4c4aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7dbb304bcf5d35011722841fe4c4aa">&#9670;&#160;</a></span>para_out_dof()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -381,35 +587,34 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::DirichletNodesVariableToSimulation::set_dirichlet_nodes </td>
+          <td class="memname">int polyfem::solver::DirichletNodesVariableToSimulation::para_out_dof </td>
           <td>(</td>
-          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
-          <td class="paramname"><em>dirichlet_nodes</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00231">231</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">162</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00249">dirichlet_nodes_</a>.</p>
+<p class="reference">References <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00058">active_geom_nodes_</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00050">dim_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00593">set_output_indexing()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00145">inverse_dof()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00150">inverse_eval()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00113">update_state_variables()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_ab0a39d590cbe34685fab08201cdd6372_icgraph.svg" width="459" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a8e7dbb304bcf5d35011722841fe4c4aa_icgraph.svg" width="459" height="380"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="aea5edfe48b089f4c60ce2f90183c3821" name="aea5edfe48b089f4c60ce2f90183c3821"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea5edfe48b089f4c60ce2f90183c3821">&#9670;&#160;</a></span>set_output_indexing()</h2>
+<a id="a1856605700e18344e7a96449564b300e" name="a1856605700e18344e7a96449564b300e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1856605700e18344e7a96449564b300e">&#9670;&#160;</a></span>parameter_type()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -418,10 +623,41 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::DirichletNodesVariableToSimulation::set_output_indexing </td>
+          <td class="memname"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a> polyfem::solver::DirichletNodesVariableToSimulation::parameter_type </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a8ad1c61a2cffbf3a08967ad8ba5f0f63">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00077">77</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112">polyfem::solver::DirichletBC</a>.</p>
+
+</div>
+</div>
+<a id="a71263a8f1b4689b9ae2940e8542bc6d2" name="a71263a8f1b4689b9ae2940e8542bc6d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71263a8f1b4689b9ae2940e8542bc6d2">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::DirichletNodesVariableToSimulation::update </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -432,21 +668,29 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa69c1f62782af807c7b3f32b4e299527">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Update forward simulation states from optimization variables. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Optimization variables. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00593">593</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a284c8b467b5a6a21b4e31ca70df13131">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00249">dirichlet_nodes_</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00231">set_dirichlet_nodes()</a>, and <a class="el" href="_variable_to_simulation_8cpp_source.html#l00027">polyfem::solver::VariableToSimulation::set_output_indexing()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">94</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00058">active_geom_nodes_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00050">dim_</a>, <a class="el" href="_parametrization_8cpp_source.html#l00046">polyfem::solver::CompositeParametrization::eval()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00072">name()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">parametrization_</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00053">states_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_aea5edfe48b089f4c60ce2f90183c3821_cgraph.svg" width="100%" height="513"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a71263a8f1b4689b9ae2940e8542bc6d2_cgraph.svg" width="100%" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a1de472308ed51fc06888b8efc05be832" name="a1de472308ed51fc06888b8efc05be832"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1de472308ed51fc06888b8efc05be832">&#9670;&#160;</a></span>update_state()</h2>
+<a id="ac24a97417eb680971f32bf686ef759e4" name="ac24a97417eb680971f32bf686ef759e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac24a97417eb680971f32bf686ef759e4">&#9670;&#160;</a></span>update_state_variables()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -455,118 +699,56 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::DirichletNodesVariableToSimulation::update_state </td>
+          <td class="memname">void polyfem::solver::DirichletNodesVariableToSimulation::update_state_variables </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>state_variable</em>, </td>
+          <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
-          <td class="paramname"><em>indices</em>&#160;</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state_variables</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa515864c242bd6cf8baee829628a6a95">polyfem::solver::VariableToSimulation</a>.</p>
+<p>Update state variables from optimization variables. </p>
+<p>Compared to <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a71263a8f1b4689b9ae2940e8542bc6d2" title="Update forward simulation states from optimization variables.">update()</a> this method update abstract state variables instead of writing directly to state.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Optimization variables. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">state_variables</td><td>Abstract state variables update dst. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00553">553</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a85e289ca979426e8d11c29557f4bea16">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00249">dirichlet_nodes_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00051">polyfem::solver::VariableToSimulation::states</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00113">113</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrization_8cpp_source.html#l00046">polyfem::solver::CompositeParametrization::eval()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">parametrization_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_a1de472308ed51fc06888b8efc05be832_cgraph.svg" width="438" height="86"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation_ac24a97417eb680971f32bf686ef759e4_cgraph.svg" width="462" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
-
-</div>
-</div>
-<a id="abe817e5bd232a2d25bf292b96328f7e3" name="abe817e5bd232a2d25bf292b96328f7e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe817e5bd232a2d25bf292b96328f7e3">&#9670;&#160;</a></span>variable_to_string()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string polyfem::solver::DirichletNodesVariableToSimulation::variable_to_string </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>variable</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00585">585</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a4b838fdacd0cbcf4018b26613c31cddd" name="a4b838fdacd0cbcf4018b26613c31cddd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b838fdacd0cbcf4018b26613c31cddd">&#9670;&#160;</a></span>VariableToSimulation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">polyfem::solver::VariableToSimulation::VariableToSimulation </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>diff_caches</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>&#160;</td>
-          <td class="paramname"><em>parametrization</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00024">24</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a6e78e23cd658ae31342433ee101becf7" name="a6e78e23cd658ae31342433ee101becf7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e78e23cd658ae31342433ee101becf7">&#9670;&#160;</a></span>dirichlet_nodes_</h2>
+<a id="a80131b2bf4188bff12902542ac507a5b" name="a80131b2bf4188bff12902542ac507a5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80131b2bf4188bff12902542ac507a5b">&#9670;&#160;</a></span>active_geom_nodes_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -575,7 +757,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::VectorXi polyfem::solver::DirichletNodesVariableToSimulation::dirichlet_nodes_</td>
+          <td class="memname">Eigen::VectorXi polyfem::solver::DirichletNodesVariableToSimulation::active_geom_nodes_</td>
         </tr>
       </table>
   </td>
@@ -585,15 +767,145 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00249">249</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00058">58</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8hpp_source.html#l00231">set_dirichlet_nodes()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00593">set_output_indexing()</a>, and <a class="el" href="_variable_to_simulation_8cpp_source.html#l00553">update_state()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00022">DirichletNodesVariableToSimulation()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>.</p>
+
+</div>
+</div>
+<a id="a6114571aaef439a1fb4bf5fa874476c6" name="a6114571aaef439a1fb4bf5fa874476c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6114571aaef439a1fb4bf5fa874476c6">&#9670;&#160;</a></span>diff_caches_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941">DiffCachePtrs</a> polyfem::solver::DirichletNodesVariableToSimulation::diff_caches_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00054">54</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00022">DirichletNodesVariableToSimulation()</a>.</p>
+
+</div>
+</div>
+<a id="a6b00e40de0556fce35065aa1e3dba998" name="a6b00e40de0556fce35065aa1e3dba998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b00e40de0556fce35065aa1e3dba998">&#9670;&#160;</a></span>dim_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::DirichletNodesVariableToSimulation::dim_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00050">50</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00162">para_out_dof()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>.</p>
+
+</div>
+</div>
+<a id="a03a6cf4ec8cc4e6d06d345dbbff81409" name="a03a6cf4ec8cc4e6d06d345dbbff81409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03a6cf4ec8cc4e6d06d345dbbff81409">&#9670;&#160;</a></span>parametrization_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a> polyfem::solver::DirichletNodesVariableToSimulation::parametrization_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00055">55</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00145">inverse_dof()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00150">inverse_eval()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00113">update_state_variables()</a>.</p>
+
+</div>
+</div>
+<a id="a3e5072831ab061d76ba614792eb76aaa" name="a3e5072831ab061d76ba614792eb76aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5072831ab061d76ba614792eb76aaa">&#9670;&#160;</a></span>states_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24">StatePtrs</a> polyfem::solver::DirichletNodesVariableToSimulation::states_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00053">53</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00082">affect_state()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00022">DirichletNodesVariableToSimulation()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00094">update()</a>.</p>
+
+</div>
+</div>
+<a id="a4e59edfd56b0c953be86358aaa8c400b" name="a4e59edfd56b0c953be86358aaa8c400b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e59edfd56b0c953be86358aaa8c400b">&#9670;&#160;</a></span>vertex_num_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::DirichletNodesVariableToSimulation::vertex_num_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html#l00051">51</a> of file <a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00119">compute_adjoint_term()</a>, and <a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html#l00022">DirichletNodesVariableToSimulation()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/optimization/forms/<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a></li>
-<li>src/polyfem/optimization/forms/<a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a></li>
+<li>src/polyfem/optimization/var2sims/<a class="el" href="_dirichlet_nodes_variable_to_simulation_8hpp_source.html">DirichletNodesVariableToSimulation.hpp</a></li>
+<li>src/polyfem/optimization/var2sims/<a class="el" href="_dirichlet_nodes_variable_to_simulation_8cpp_source.html">DirichletNodesVariableToSimulation.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

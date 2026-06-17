@@ -127,6 +127,9 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_per_body2_p
 </div><!--header-->
 <div class="contents">
 
+<p>Map per body to per FE node in node major layout (x1 y1 z1 x2 y2 z2...)  
+ <a href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::solver::PerBody2PerNode:</div>
@@ -146,6 +149,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a05dffc159979047fd6384de7293e4801" id="r_a05dffc159979047fd6384de7293e4801"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a05dffc159979047fd6384de7293e4801">size</a> (const int x_size) const override</td></tr>
 <tr class="memdesc:a05dffc159979047fd6384de7293e4801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of y given DOF of x.  <br /></td></tr>
 <tr class="separator:a05dffc159979047fd6384de7293e4801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0a849134e70f4f1617592f13d8725cd" id="r_ad0a849134e70f4f1617592f13d8725cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#ad0a849134e70f4f1617592f13d8725cd">inverse_size</a> (int y_size) const override</td></tr>
+<tr class="memdesc:ad0a849134e70f4f1617592f13d8725cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of x given DOF of y.  <br /></td></tr>
+<tr class="separator:ad0a849134e70f4f1617592f13d8725cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3859a70ed9b1a987e8384c4f2a37891" id="r_ad3859a70ed9b1a987e8384c4f2a37891"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#ad3859a70ed9b1a987e8384c4f2a37891">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:ad3859a70ed9b1a987e8384c4f2a37891"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
+<tr class="separator:ad3859a70ed9b1a987e8384c4f2a37891"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a315de7cd91fc9317ae139b8029d03a77" id="r_a315de7cd91fc9317ae139b8029d03a77"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a315de7cd91fc9317ae139b8029d03a77">eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a315de7cd91fc9317ae139b8029d03a77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval y = f(x).  <br /></td></tr>
 <tr class="separator:a315de7cd91fc9317ae139b8029d03a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,9 +164,6 @@ Public Member Functions</h2></td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_parametrization')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html">polyfem::solver::Parametrization</a></td></tr>
 <tr class="memitem:ad85dc942f14295721a5bf7ce8e9d6c00 inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization" id="r_ad85dc942f14295721a5bf7ce8e9d6c00"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ad85dc942f14295721a5bf7ce8e9d6c00">~Parametrization</a> ()=default</td></tr>
 <tr class="separator:ad85dc942f14295721a5bf7ce8e9d6c00 inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1442cd89d8ca4ed607b5caff20effd1d inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization" id="r_a1442cd89d8ca4ed607b5caff20effd1d"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
-<tr class="memdesc:a1442cd89d8ca4ed607b5caff20effd1d inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
-<tr class="separator:a1442cd89d8ca4ed607b5caff20effd1d inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -168,13 +174,20 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ab7e7080207987af50f46e0d3d1650dd2" id="r_ab7e7080207987af50f46e0d3d1650dd2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#ab7e7080207987af50f46e0d3d1650dd2">full_size_</a></td></tr>
 <tr class="separator:ab7e7080207987af50f46e0d3d1650dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a511662816fa09d253c78b9cb3d55f32a" id="r_a511662816fa09d253c78b9cb3d55f32a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a511662816fa09d253c78b9cb3d55f32a">reduced_size_</a></td></tr>
+<tr class="memdesc:a511662816fa09d253c78b9cb3d55f32a"><td class="mdescLeft">&#160;</td><td class="mdescRight">FE node num.  <br /></td></tr>
 <tr class="separator:a511662816fa09d253c78b9cb3d55f32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12e9cc204ba798ac5e698407ee52d2e6" id="r_a12e9cc204ba798ac5e698407ee52d2e6"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a12e9cc204ba798ac5e698407ee52d2e6">node_id_to_body_id_</a></td></tr>
-<tr class="separator:a12e9cc204ba798ac5e698407ee52d2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a353a1bd68d81f53ba3c01d96c6f1ee05" id="r_a353a1bd68d81f53ba3c01d96c6f1ee05"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a353a1bd68d81f53ba3c01d96c6f1ee05">compacted_body_node_num_</a></td></tr>
+<tr class="memdesc:a353a1bd68d81f53ba3c01d96c6f1ee05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Body num.  <br /></td></tr>
+<tr class="separator:a353a1bd68d81f53ba3c01d96c6f1ee05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fafd35915a6a2293a72674cca05a0dd" id="r_a9fafd35915a6a2293a72674cca05a0dd"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_per_body2_per_node.html#a9fafd35915a6a2293a72674cca05a0dd">node_id_to_compacted_body_</a></td></tr>
+<tr class="memdesc:a9fafd35915a6a2293a72674cca05a0dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes of a body.  <br /></td></tr>
+<tr class="separator:a9fafd35915a6a2293a72674cca05a0dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00082">82</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<div class="textblock"><p>Map per body to per FE node in node major layout (x1 y1 z1 x2 y2 z2...) </p>
+<p>The order of the input body is pseudo randomly determined by the element order of input mesh, <em>Which is different from body id</em>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00084">84</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6dcb656d62dc6d54c18c8f350ee6ddd3" name="a6dcb656d62dc6d54c18c8f350ee6ddd3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6dcb656d62dc6d54c18c8f350ee6ddd3">&#9670;&#160;</a></span>PerBody2PerNode()</h2>
@@ -208,9 +221,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00185">185</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00266">266</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00094">full_size_</a>, <a class="el" href="_mesh_8hpp_source.html#l00514">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00092">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00096">node_id_to_body_id_</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00095">reduced_size_</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00100">compacted_body_node_num_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, <a class="el" href="_mesh_8hpp_source.html#l00514">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00096">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00101">node_id_to_compacted_body_</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -267,9 +280,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ab9ba31549e419d2122ae648954f265f3">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00242">242</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00365">365</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00094">full_size_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00096">node_id_to_body_id_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00095">reduced_size_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00236">size()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00101">node_id_to_compacted_body_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00359">size()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -313,13 +326,125 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a13746ef77cadd36b2a4844cc9e812d45">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00219">219</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00342">342</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00094">full_size_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00096">node_id_to_body_id_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00095">reduced_size_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00236">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00101">node_id_to_compacted_body_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00359">size()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_per_body2_per_node_a315de7cd91fc9317ae139b8029d03a77_cgraph.svg" width="448" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ad3859a70ed9b1a987e8384c4f2a37891" name="ad3859a70ed9b1a987e8384c4f2a37891"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3859a70ed9b1a987e8384c4f2a37891">&#9670;&#160;</a></span>inverse_eval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::solver::PerBody2PerNode::inverse_eval </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>y</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Eval x = f^-1 (y). </p>
+<p>This is not a strict inverse in mathematical sense, one may choose "reasonable" x even if f is not one-to-one.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not implemented or is impossible. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a335d0fd32aa812642f0c1faa5c9902ba">polyfem::solver::Parametrization</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00316">316</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00100">compacted_body_node_num_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00305">inverse_size()</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00101">node_id_to_compacted_body_</a>, <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_per_body2_per_node_ad3859a70ed9b1a987e8384c4f2a37891_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ad0a849134e70f4f1617592f13d8725cd" name="ad0a849134e70f4f1617592f13d8725cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a849134e70f4f1617592f13d8725cd">&#9670;&#160;</a></span>inverse_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::PerBody2PerNode::inverse_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y_size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute DOF of x given DOF of y. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y_size</td><td>DOF of y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DOF of x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if inverse not impossible or y_size is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#af86347e4f31d0572c10eccd40f84c7fc">polyfem::solver::Parametrization</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00305">305</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00316">inverse_eval()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_per_body2_per_node_ad0a849134e70f4f1617592f13d8725cd_cgraph.svg" width="658" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_per_body2_per_node_ad0a849134e70f4f1617592f13d8725cd_icgraph.svg" width="448" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -359,11 +484,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a0b68baa55dfbd76f3fc41b47d48aff82">polyfem::solver::Parametrization</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00236">236</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8cpp_source.html#l00359">359</a> of file <a class="el" href="_parametrizations_8cpp_source.html">Parametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00094">full_size_</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00095">reduced_size_</a>.</p>
+<p class="reference">References <a class="el" href="_parametrizations_8hpp_source.html#l00098">full_size_</a>, and <a class="el" href="_parametrizations_8hpp_source.html#l00099">reduced_size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00242">apply_jacobian()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00219">eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00365">apply_jacobian()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00342">eval()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -393,7 +518,35 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00093">93</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00097">97</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a353a1bd68d81f53ba3c01d96c6f1ee05" name="a353a1bd68d81f53ba3c01d96c6f1ee05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353a1bd68d81f53ba3c01d96c6f1ee05">&#9670;&#160;</a></span>compacted_body_node_num_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::solver::PerBody2PerNode::compacted_body_node_num_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Body num. </p>
+
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00100">100</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00316">inverse_eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00266">PerBody2PerNode()</a>.</p>
 
 </div>
 </div>
@@ -417,9 +570,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00094">94</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00098">98</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00242">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00219">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00185">PerBody2PerNode()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00236">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00365">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00342">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00316">inverse_eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00305">inverse_size()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00266">PerBody2PerNode()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00359">size()</a>.</p>
 
 </div>
 </div>
@@ -443,14 +596,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00092">92</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00096">96</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00185">PerBody2PerNode()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00266">PerBody2PerNode()</a>.</p>
 
 </div>
 </div>
-<a id="a12e9cc204ba798ac5e698407ee52d2e6" name="a12e9cc204ba798ac5e698407ee52d2e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12e9cc204ba798ac5e698407ee52d2e6">&#9670;&#160;</a></span>node_id_to_body_id_</h2>
+<a id="a9fafd35915a6a2293a72674cca05a0dd" name="a9fafd35915a6a2293a72674cca05a0dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fafd35915a6a2293a72674cca05a0dd">&#9670;&#160;</a></span>node_id_to_compacted_body_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -459,7 +612,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::VectorXi polyfem::solver::PerBody2PerNode::node_id_to_body_id_</td>
+          <td class="memname">Eigen::VectorXi polyfem::solver::PerBody2PerNode::node_id_to_compacted_body_</td>
         </tr>
       </table>
   </td>
@@ -469,9 +622,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00096">96</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p>Number of nodes of a body. </p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00242">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00219">eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00185">PerBody2PerNode()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00101">101</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00365">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00342">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00316">inverse_eval()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00266">PerBody2PerNode()</a>.</p>
 
 </div>
 </div>
@@ -495,9 +650,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00095">95</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+<p>FE node num. </p>
 
-<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00242">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00219">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00185">PerBody2PerNode()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00236">size()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_parametrizations_8hpp_source.html#l00099">99</a> of file <a class="el" href="_parametrizations_8hpp_source.html">Parametrizations.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_parametrizations_8cpp_source.html#l00365">apply_jacobian()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00342">eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00316">inverse_eval()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00305">inverse_size()</a>, <a class="el" href="_parametrizations_8cpp_source.html#l00266">PerBody2PerNode()</a>, and <a class="el" href="_parametrizations_8cpp_source.html#l00359">size()</a>.</p>
 
 </div>
 </div>

@@ -1,27 +1,61 @@
 <map id="polyfem::solver::CompositeParametrization::eval" name="polyfem::solver::CompositeParametrization::eval">
-<area shape="rect" id="Node000001" title="Eval y = f(x)." alt="" coords="571,325,773,365"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ad3bb3c346b4846bd71a67681fb6b0112" title=" " alt="" coords="288,261,523,301"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="574,325,489,304,490,299,575,319"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#ad2e28ad1b291e82a76fb7190563dd8d0" title=" " alt="" coords="313,325,498,365"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="557,348,498,348,498,343,557,343"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a0e8599ebc5b27cdbfa6eb46dc38b802b" title=" " alt="" coords="306,390,505,445"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="585,372,506,393,504,388,583,366"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a8ae48b34f50ecd7cd28503baa8112c15" title=" " alt="" coords="5,5,240,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,250,364,207,331,155,289,103,238,60,217,48,220,43,242,55,292,100,335,152,368,204,392,248"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a83cee4bf06bc0d1babac1babb4c6aa77" title="Initialize the form." alt="" coords="5,69,240,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="378,252,319,186,281,153,239,124,213,112,216,107,241,119,284,148,323,183,382,248"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a2c95a0bcec6ca56bb42141b5e966d5c6" title="Checks if the step is collision free." alt="" coords="5,133,240,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="362,256,305,221,239,188,206,176,208,171,241,183,308,216,365,252"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#af39ff0069771bbb7450df3792924169c" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="5,197,240,237"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="302,261,211,240,212,235,304,256"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ae882d2c545ccec56425d6913345c779b" title="Initialize variables used during the line search." alt="" coords="5,261,240,301"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="274,284,240,284,240,279,274,279"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#abf7b16060b1c89d6a6aaa67eaafc0f37" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="5,325,240,365"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="304,307,212,328,211,323,302,302"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a85a17c2bb4c0bc2a31d9045ccbebaf26" title="Update fields after a step in the optimization." alt="" coords="5,389,240,429"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="299,310,290,315,274,331,266,347,258,363,242,379,220,392,217,387,238,375,254,360,262,344,270,327,286,311,296,305"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a225a64e319c2d7d179e9fc0dbd2ff8" title="Update cached fields upon a change in the solution." alt="" coords="5,453,240,493"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="295,311,290,315,277,330,270,346,267,378,263,411,255,427,242,443,225,455,222,451,238,439,251,424,258,409,261,377,265,344,273,328,286,311,291,307"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a307268e993cba8f9796fa08c162c81" title="Compute the value of the form." alt="" coords="5,517,240,557"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="294,312,290,315,273,338,266,362,265,385,267,409,269,433,267,458,260,483,242,507,227,519,224,515,238,503,255,480,262,457,263,434,261,410,259,385,261,361,268,336,286,312,290,308"/>
+<area shape="rect" id="Node000001" title="Eval y = f(x)." alt="" coords="575,911,777,951"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a396f6e421cfb48c9cb98600742812504" title="Apply parametrization jacobian to compute the gradient w.r.t." alt="" coords="288,182,527,237"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="669,897,654,758,625,564,606,465,582,375,555,301,540,273,525,251,511,239,514,235,529,248,545,270,560,299,587,374,611,464,630,563,659,757,674,897"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ad3bb3c346b4846bd71a67681fb6b0112" title=" " alt="" coords="290,261,525,301"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="668,897,652,769,622,594,603,505,580,425,554,359,540,334,525,315,510,304,513,299,529,311,544,331,559,357,585,423,608,504,628,593,657,768,674,896"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6" title="Compute adjoint contribution of objective gradient." alt="" coords="308,326,507,381"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="673,897,670,799,663,735,651,665,633,592,606,521,571,453,525,394,505,379,508,374,529,390,575,450,611,518,638,591,656,664,668,734,675,799,678,897"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a89ac1b80657c0326430117b12d4fc767" title="Update forward simulation states from optimization variables." alt="" coords="312,405,503,459"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="671,897,663,812,655,757,641,698,623,638,598,578,565,522,525,473,501,456,505,451,528,469,570,519,602,575,628,636,647,697,660,756,669,811,676,897"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a134dd47faccb562d5d29bc39550fe2ff" title="Update forward simulation states from optimization variables." alt="" coords="297,483,518,538"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="668,897,656,826,631,733,612,685,588,637,560,592,525,553,509,540,512,536,528,549,564,589,593,634,617,682,636,732,661,825,674,896"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a71263a8f1b4689b9ae2940e8542bc6d2" title="Update forward simulation states from optimization variables." alt="" coords="307,562,507,617"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="665,898,648,841,620,769,580,695,554,661,525,631,506,618,509,614,528,627,558,658,584,692,625,767,653,839,670,897"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a2f1fdc2111a3fd1ae3cf36644fdb520b" title="Update forward simulation states from optimization variables." alt="" coords="320,641,495,695"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="659,899,638,856,609,805,571,754,525,710,494,692,497,688,528,706,575,751,613,802,643,854,664,897"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a772939aa4cf9cbb909c0bc3310f205b7" title="Update forward simulation states from optimization variables." alt="" coords="301,720,513,760"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="651,901,599,837,564,804,525,776,499,763,501,758,528,771,567,800,602,833,655,898"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa58de45b6288c84485e3a7821f851b17" title="Update forward simulation states from optimization variables." alt="" coords="297,785,518,839"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="628,906,526,854,494,842,496,837,528,850,630,902"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a0e8599ebc5b27cdbfa6eb46dc38b802b" title="Update forward simulation states from optimization variables." alt="" coords="308,863,507,918"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="560,916,507,908,507,903,561,911"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a0bcc0f1eb524cd39f869b0bc680176f8" title="Update forward simulation states from optimization variables." alt="" coords="297,942,518,997"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="561,950,518,956,518,951,561,945"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#aff748a563c3449a55a8d9fb53ef44cf1" title="Update forward simulation states from optimization variables." alt="" coords="295,1021,520,1061"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="632,960,583,987,528,1012,493,1024,491,1019,526,1007,580,982,629,955"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a978980df0290018f42800b04a4ea78e7" title="Update state variables from optimization variables." alt="" coords="312,1086,503,1141"/>
+<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="652,963,599,1020,565,1050,528,1076,504,1088,501,1083,525,1071,561,1046,595,1016,648,960"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac24a97417eb680971f32bf686ef759e4" title="Update state variables from optimization variables." alt="" coords="307,1165,507,1219"/>
+<area shape="poly" id="edge23_Node000001_Node000024" title=" " alt="" coords="664,965,643,1008,613,1059,575,1111,528,1155,509,1167,506,1163,525,1151,571,1107,609,1056,638,1005,659,963"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a17e950b06a80121f3a06885a0b6c1b24" title="Update state variables from optimization variables." alt="" coords="320,1243,495,1298"/>
+<area shape="poly" id="edge24_Node000001_Node000025" title=" " alt="" coords="670,965,653,1022,625,1095,584,1169,558,1204,528,1234,496,1254,494,1249,525,1230,554,1200,580,1166,621,1092,648,1021,665,963"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#aa06908312ddb6f7ed6514c4312811d3c" title="Update state variables from optimization variables." alt="" coords="301,1322,513,1377"/>
+<area shape="poly" id="edge25_Node000001_Node000026" title=" " alt="" coords="674,965,662,1036,636,1129,617,1179,593,1227,564,1273,528,1313,514,1324,511,1320,525,1309,560,1269,589,1225,612,1177,631,1128,656,1035,669,964"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#acc97e103eb103f6536809a248110a10c" title="Update state variables from optimization variables." alt="" coords="297,1401,518,1455"/>
+<area shape="poly" id="edge26_Node000001_Node000027" title=" " alt="" coords="676,965,669,1050,660,1104,646,1164,628,1225,602,1285,570,1341,529,1391,515,1402,511,1398,525,1387,565,1338,598,1282,623,1223,641,1162,655,1103,663,1049,671,964"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a1ff0af1ca1a57a0a0a3f147d47d0173d" title="Update state variables from optimization variables." alt="" coords="308,1479,507,1534"/>
+<area shape="poly" id="edge27_Node000001_Node000028" title=" " alt="" coords="678,965,675,1062,668,1127,656,1197,638,1270,611,1342,575,1410,529,1470,508,1486,505,1481,525,1466,571,1407,606,1340,633,1268,651,1196,663,1126,670,1062,673,964"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ab3efe6662788d1346df4931e19926939" title="Update state variables from optimization variables." alt="" coords="297,1558,518,1613"/>
+<area shape="poly" id="edge28_Node000001_Node000029" title=" " alt="" coords="674,965,657,1092,627,1267,607,1355,584,1436,558,1502,529,1548,516,1560,512,1556,525,1545,553,1500,579,1434,602,1354,621,1266,651,1091,668,964"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a1f100fa2675da4852119cccf0cebf48a" title="Update state variables from optimization variables." alt="" coords="295,1637,520,1691"/>
+<area shape="poly" id="edge29_Node000001_Node000030" title=" " alt="" coords="675,964,660,1106,632,1304,612,1405,588,1498,561,1574,545,1604,529,1627,516,1639,512,1635,525,1624,541,1601,556,1572,583,1496,607,1404,626,1303,655,1105,669,964"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a8ae48b34f50ecd7cd28503baa8112c15" title=" " alt="" coords="5,5,240,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="292,255,286,250,269,226,261,201,259,177,261,152,263,129,262,105,255,82,238,59,224,48,227,44,242,55,259,80,267,104,269,129,267,153,265,177,266,200,273,223,290,246,296,252"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a83cee4bf06bc0d1babac1babb4c6aa77" title="Initialize the form." alt="" coords="5,69,240,109"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="294,256,286,250,273,234,265,217,261,185,257,153,251,138,238,123,222,112,225,107,242,119,255,135,263,152,267,184,271,216,277,231,290,246,297,252"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a2c95a0bcec6ca56bb42141b5e966d5c6" title="Checks if the step is collision free." alt="" coords="5,133,240,173"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="299,258,286,250,270,234,262,218,254,202,238,187,217,176,219,171,242,183,258,199,266,215,274,231,290,246,302,253"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#af39ff0069771bbb7450df3792924169c" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="5,197,240,237"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="304,261,212,240,213,235,305,256"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ae882d2c545ccec56425d6913345c779b" title="Initialize variables used during the line search." alt="" coords="5,261,240,301"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="276,284,240,284,240,279,276,279"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#abf7b16060b1c89d6a6aaa67eaafc0f37" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="5,325,240,365"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="305,307,213,328,212,323,304,302"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a85a17c2bb4c0bc2a31d9045ccbebaf26" title="Update fields after a step in the optimization." alt="" coords="5,389,240,429"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="299,310,290,315,274,331,266,347,258,363,242,379,220,392,217,387,238,375,254,360,262,344,270,327,286,311,296,305"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a225a64e319c2d7d179e9fc0dbd2ff8" title="Update cached fields upon a change in the solution." alt="" coords="5,453,240,493"/>
+<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="295,311,290,315,277,330,270,346,267,378,263,410,255,427,242,443,225,455,222,451,238,439,251,424,258,409,261,377,265,344,273,327,286,311,292,307"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a307268e993cba8f9796fa08c162c81" title="Compute the value of the form." alt="" coords="5,517,240,557"/>
+<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="294,312,290,315,273,338,266,361,265,385,267,409,269,433,267,458,260,483,242,507,227,519,224,515,238,503,255,480,262,457,263,434,261,410,259,385,261,361,268,336,286,312,290,308"/>
 </map>
