@@ -10,6 +10,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
 #include <Eigen/Core>
 
@@ -1040,7 +1041,7 @@ namespace polyfem::solver
 		assert(state_->solve_data.time_integrator != nullptr);
 		assert(state_->solve_data.contact_form != nullptr);
 
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, time_step, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, time_step, &x]() {
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 			auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);

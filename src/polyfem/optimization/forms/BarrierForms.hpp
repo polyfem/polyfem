@@ -5,7 +5,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 
 #include <Eigen/Core>
 #include <ipc/potentials/barrier_potential.hpp>
