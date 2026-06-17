@@ -36,16 +36,16 @@ namespace polyfem::varform
 	void ScalarVarForm::reset()
 	{
 		VarForm::reset();
-		scalar_space_.reset();
-		scalar_boundary_.reset();
-		scalar_ass_vals_cache_.init_empty();
-		scalar_mass_ass_vals_cache_.init_empty(true);
-		scalar_pure_mass_ass_vals_cache_.init_empty(true);
-		scalar_rhs_assembler_ = nullptr;
-		scalar_mass_.resize(0, 0);
-		scalar_pure_mass_.resize(0, 0);
-		scalar_avg_mass_ = 0;
-		scalar_rhs_.resize(0, 0);
+		space_.reset();
+		boundary_.reset();
+		ass_vals_cache_.init_empty();
+		mass_ass_vals_cache_.init_empty(true);
+		pure_mass_ass_vals_cache_.init_empty(true);
+		rhs_assembler_ = nullptr;
+		mass_.resize(0, 0);
+		pure_mass_.resize(0, 0);
+		avg_mass_ = 0;
+		rhs_.resize(0, 0);
 		time_integrator = nullptr;
 	}
 
@@ -99,8 +99,8 @@ namespace polyfem::varform
 
 		this->iso_parametric = iso_parametric;
 
-		Eigen::VectorXi scalar_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, scalar_disc_orders);
+		Eigen::VectorXi space_disc_orders;
+		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -111,15 +111,15 @@ namespace polyfem::varform
 				args["space"]["discr_order"],
 				args["space"]["advanced"]["discr_order_max"],
 				stats,
-				scalar_disc_orders);
+				space_disc_orders);
 
-			logger().info("min p: {} max p: {}", scalar_disc_orders.minCoeff(), scalar_disc_orders.maxCoeff());
+			logger().info("min p: {} max p: {}", space_disc_orders.minCoeff(), space_disc_orders.maxCoeff());
 		}
 
 		build_fe_space(
 			mesh,
 			iso_parametric,
-			scalar_disc_orders,
+			space_disc_orders,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*assembler,
@@ -129,58 +129,58 @@ namespace polyfem::varform
 			args["space"]["advanced"]["use_corner_quadrature"],
 			args["space"]["advanced"]["n_harmonic_samples"],
 			args["space"]["advanced"]["integral_constraints"],
-			scalar_space_,
-			scalar_boundary_);
+			space_,
+			boundary_);
 
-		scalar_boundary_.clear_boundary_conditions();
+		boundary_.clear_boundary_conditions();
 
-		problem->update_nodes(scalar_space_.space_in_node_to_node);
-		mesh.update_nodes(scalar_space_.space_in_node_to_node);
+		problem->update_nodes(space_.space_in_node_to_node);
+		mesh.update_nodes(space_.space_in_node_to_node);
 
 		problem->setup_bc(
 			mesh,
 			assembler::BoundaryKind::Dirichlet,
 			/*fe_space_id=*/-1,
-			scalar_space_.basis_list(),
-			scalar_boundary_.total_local_boundary,
-			scalar_boundary_.local_boundary,
-			scalar_boundary_.boundary_nodes);
+			space_.basis_list(),
+			boundary_.total_local_boundary,
+			boundary_.local_boundary,
+			boundary_.boundary_nodes);
 		std::vector<int> unused_neumann_boundary_nodes;
 		problem->setup_bc(
 			mesh,
 			assembler::BoundaryKind::Neumann,
 			/*fe_space_id=*/-1,
-			scalar_space_.basis_list(),
-			scalar_boundary_.total_local_boundary,
-			scalar_boundary_.local_neumann_boundary,
+			space_.basis_list(),
+			boundary_.total_local_boundary,
+			boundary_.local_neumann_boundary,
 			unused_neumann_boundary_nodes);
 
 		problem->setup_nodal_bc(
 			mesh,
 			assembler::BoundaryKind::Dirichlet,
 			/*fe_space_id=*/-1,
-			scalar_space_.n_bases,
-			scalar_boundary_.dirichlet_nodes);
+			space_.n_bases,
+			boundary_.dirichlet_nodes);
 		problem->setup_nodal_bc(
 			mesh,
 			assembler::BoundaryKind::Neumann,
 			/*fe_space_id=*/-1,
-			scalar_space_.n_bases,
-			scalar_boundary_.neumann_nodes);
+			space_.n_bases,
+			boundary_.neumann_nodes);
 
-		for (const int n_id : scalar_boundary_.dirichlet_nodes)
+		for (const int n_id : boundary_.dirichlet_nodes)
 		{
 			const int tag = mesh.get_node_id(n_id);
 			if (problem->is_nodal_dimension_dirichlet(n_id, tag, 0))
-				scalar_boundary_.boundary_nodes.push_back(n_id);
+				boundary_.boundary_nodes.push_back(n_id);
 		}
 
-		scalar_boundary_.normalize_boundary_nodes();
+		boundary_.normalize_boundary_nodes();
 
-		rebuild_node_positions(scalar_space_.basis_list(), scalar_boundary_.dirichlet_nodes, scalar_boundary_.dirichlet_nodes_position);
-		rebuild_node_positions(scalar_space_.basis_list(), scalar_boundary_.neumann_nodes, scalar_boundary_.neumann_nodes_position);
+		rebuild_node_positions(space_.basis_list(), boundary_.dirichlet_nodes, boundary_.dirichlet_nodes_position);
+		rebuild_node_positions(space_.basis_list(), boundary_.neumann_nodes, boundary_.neumann_nodes_position);
 
-		const auto &current_bases = scalar_space_.geometry_basis_list();
+		const auto &current_bases = space_.geometry_basis_list();
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(mesh, current_bases);
 
@@ -190,36 +190,36 @@ namespace polyfem::varform
 		logger().info("flipped elements {}", stats.n_flipped);
 		logger().info("h: {}", stats.mesh_size);
 
-		if (scalar_space_.n_bases <= args["solver"]["advanced"]["cache_size"])
+		if (space_.n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			igl::Timer timer;
 			timer.start();
 			logger().info("Building cache...");
-			scalar_ass_vals_cache_.init(mesh.is_volume(), scalar_space_.basis_list(), current_bases);
-			scalar_mass_ass_vals_cache_.init(mesh.is_volume(), scalar_space_.basis_list(), current_bases, true);
-			scalar_pure_mass_ass_vals_cache_.init(mesh.is_volume(), scalar_space_.basis_list(), current_bases, true);
+			ass_vals_cache_.init(mesh.is_volume(), space_.basis_list(), current_bases);
+			mass_ass_vals_cache_.init(mesh.is_volume(), space_.basis_list(), current_bases, true);
+			pure_mass_ass_vals_cache_.init(mesh.is_volume(), space_.basis_list(), current_bases, true);
 			logger().info(" took {}s", timer.getElapsedTime());
 		}
 		else
 		{
-			scalar_ass_vals_cache_.init_empty();
-			scalar_mass_ass_vals_cache_.init_empty(true);
-			scalar_pure_mass_ass_vals_cache_.init_empty(true);
+			ass_vals_cache_.init_empty();
+			mass_ass_vals_cache_.init_empty(true);
+			pure_mass_ass_vals_cache_.init_empty(true);
 		}
 	}
 
-	void ScalarVarForm::build_scalar_rhs_assembler()
+	void ScalarVarForm::build_rhs_assembler()
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
-		scalar_rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
+		rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
 			*assembler, *mesh_, nullptr,
-			scalar_boundary_.dirichlet_nodes, scalar_boundary_.neumann_nodes,
-			scalar_boundary_.dirichlet_nodes_position, scalar_boundary_.neumann_nodes_position,
-			scalar_space_.n_bases, /*size=*/1, scalar_space_.basis_list(), scalar_space_.geometry_basis_list(), scalar_mass_ass_vals_cache_, *problem,
+			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
+			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
+			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -241,15 +241,15 @@ namespace polyfem::varform
 		}
 		problem->set_parameters(p_params, root_path);
 
-		scalar_rhs_.resize(0, 0);
+		rhs_.resize(0, 0);
 
 		timer.start();
 		logger().info("Assigning rhs...");
 
-		build_scalar_rhs_assembler();
-		assert(scalar_rhs_assembler_ != nullptr);
-		scalar_rhs_assembler_->assemble(mass_matrix_assembler->density(), scalar_rhs_);
-		scalar_rhs_ *= -1;
+		build_rhs_assembler();
+		assert(rhs_assembler_ != nullptr);
+		rhs_assembler_->assemble(mass_matrix_assembler->density(), rhs_);
+		rhs_ *= -1;
 
 		timings.assigning_rhs_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.assigning_rhs_time);
@@ -259,63 +259,63 @@ namespace polyfem::varform
 	{
 		if (!problem->is_time_dependent())
 		{
-			scalar_avg_mass_ = 1;
+			avg_mass_ = 1;
 			timings.assembling_mass_mat_time = 0;
 			return;
 		}
 
-		scalar_mass_.resize(0, 0);
+		mass_.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling mass mat...");
 
-		mass_matrix_assembler->assemble(mesh.is_volume(), scalar_space_.n_bases, scalar_space_.basis_list(), scalar_space_.geometry_basis_list(), scalar_mass_ass_vals_cache_, 0, scalar_mass_, true);
+		mass_matrix_assembler->assemble(mesh.is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, 0, mass_, true);
 
-		assert(scalar_mass_.size() > 0);
+		assert(mass_.size() > 0);
 
-		scalar_avg_mass_ = 0;
-		for (int k = 0; k < scalar_mass_.outerSize(); ++k)
+		avg_mass_ = 0;
+		for (int k = 0; k < mass_.outerSize(); ++k)
 		{
-			for (StiffnessMatrix::InnerIterator it(scalar_mass_, k); it; ++it)
+			for (StiffnessMatrix::InnerIterator it(mass_, k); it; ++it)
 			{
 				assert(it.col() == k);
-				scalar_avg_mass_ += it.value();
+				avg_mass_ += it.value();
 			}
 		}
 
-		scalar_avg_mass_ /= scalar_mass_.rows();
-		logger().info("average mass {}", scalar_avg_mass_);
+		avg_mass_ /= mass_.rows();
+		logger().info("average mass {}", avg_mass_);
 
 		if (args["solver"]["advanced"]["lump_mass_matrix"])
-			scalar_mass_ = utils::lump_matrix(scalar_mass_);
+			mass_ = utils::lump_matrix(mass_);
 
 		timer.stop();
 		timings.assembling_mass_mat_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.assembling_mass_mat_time);
 
-		stats.nn_zero = scalar_mass_.nonZeros();
-		stats.num_dofs = scalar_mass_.rows();
-		stats.mat_size = (long long)scalar_mass_.rows() * (long long)scalar_mass_.cols();
+		stats.nn_zero = mass_.nonZeros();
+		stats.num_dofs = mass_.rows();
+		stats.mat_size = (long long)mass_.rows() * (long long)mass_.cols();
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void ScalarVarForm::initial_scalar_solution(Eigen::MatrixXd &solution) const
+	void ScalarVarForm::prepare_initial_solution(Eigen::MatrixXd &solution) const
 	{
-		assert(scalar_rhs_assembler_ != nullptr);
+		assert(rhs_assembler_ != nullptr);
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
-			args["input"]["data"]["reorder"], scalar_space_.space_in_node_to_node,
+			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			/*dim=*/1, solution);
 
 		if (!was_solution_loaded)
 		{
 			if (problem->is_time_dependent())
-				scalar_rhs_assembler_->initial_solution(solution);
+				rhs_assembler_->initial_solution(solution);
 			else
 			{
-				solution.resize(scalar_rhs_.size(), 1);
+				solution.resize(rhs_.size(), 1);
 				solution.setZero();
 			}
 		}
@@ -335,7 +335,7 @@ namespace polyfem::varform
 		}
 
 		logger().info("Saving json...");
-		const int primary_size = scalar_space_.n_bases;
+		const int primary_size = space_.n_bases;
 		const Eigen::MatrixXd stats_solution =
 			solution.rows() >= primary_size
 				? solution.topRows(primary_size).eval()
@@ -343,36 +343,36 @@ namespace polyfem::varform
 
 		nlohmann::json j;
 		stats.save_json(
-			args, scalar_space_.n_bases, /*n_auxiliary_bases=*/0,
-			stats_solution, *mesh_, scalar_space_.disc_orders, scalar_space_.disc_ordersq, *problem,
-			timings, assembler ? assembler->name() : name(), scalar_space_.is_iso_parametric(),
+			args, space_.n_bases, /*n_auxiliary_bases=*/0,
+			stats_solution, *mesh_, space_.disc_orders, space_.disc_ordersq, *problem,
+			timings, assembler ? assembler->name() : name(), space_.is_iso_parametric(),
 			args["output"]["advanced"]["sol_at_node"], j);
 		out << j.dump(4) << std::endl;
 	}
 
 	io::OutputSpace ScalarVarForm::output_space() const
 	{
-		Eigen::VectorXi output_orders = scalar_space_.disc_orders;
-		if (mesh_ && scalar_space_.disc_ordersq.size() == scalar_space_.disc_orders.size())
+		Eigen::VectorXi output_orders = space_.disc_orders;
+		if (mesh_ && space_.disc_ordersq.size() == space_.disc_orders.size())
 		{
 			for (int e = 0; e < output_orders.size(); ++e)
 			{
 				if (mesh_->is_prism(e))
-					output_orders(e) = std::max(scalar_space_.disc_orders(e), scalar_space_.disc_ordersq(e));
+					output_orders(e) = std::max(space_.disc_orders(e), space_.disc_ordersq(e));
 			}
 		}
 
 		return {
 			mesh_.get(),
-			&scalar_space_.geometry_basis_list(),
+			&space_.geometry_basis_list(),
 			output_orders,
-			&scalar_space_.polys,
-			&scalar_space_.polys_3d,
-			&scalar_boundary_.total_local_boundary,
+			&space_.polys,
+			&space_.polys_3d,
+			&boundary_.total_local_boundary,
 			nullptr,
 			nullptr,
-			&scalar_boundary_.dirichlet_nodes,
-			&scalar_boundary_.dirichlet_nodes_position};
+			&boundary_.dirichlet_nodes,
+			&boundary_.dirichlet_nodes_position};
 	}
 
 	io::OutStatsData ScalarVarForm::compute_errors(const Eigen::MatrixXd &solution)
@@ -384,7 +384,7 @@ namespace polyfem::varform
 		if (!args["time"].is_null())
 			tend = args["time"]["tend"];
 
-		stats.compute_errors(scalar_space_.n_bases, scalar_space_.basis_list(), scalar_space_.geometry_basis_list(), *mesh_, *problem, tend, solution);
+		stats.compute_errors(space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), *mesh_, *problem, tend, solution);
 		return stats;
 	}
 
@@ -423,15 +423,15 @@ namespace polyfem::varform
 		const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
 		if (!solution_path.empty())
 		{
-			const int primary_ndof = std::min<int>(solution.rows(), scalar_space_.n_bases);
+			const int primary_ndof = std::min<int>(solution.rows(), space_.n_bases);
 			const Eigen::MatrixXd primary_solution = solution.topRows(primary_ndof);
-			if (opts.reorder_output && scalar_space_.space_in_node_to_node.size() > 0)
+			if (opts.reorder_output && space_.space_in_node_to_node.size() > 0)
 			{
 				const Eigen::MatrixXd nodal_solution = utils::unflatten(primary_solution, 1);
 				Eigen::MatrixXd reordered = Eigen::MatrixXd::Zero(nodal_solution.rows(), nodal_solution.cols());
-				for (int input_node = 0; input_node < scalar_space_.space_in_node_to_node.size(); ++input_node)
+				for (int input_node = 0; input_node < space_.space_in_node_to_node.size(); ++input_node)
 				{
-					const int node = scalar_space_.space_in_node_to_node(input_node);
+					const int node = space_.space_in_node_to_node(input_node);
 					if (node >= 0 && node < nodal_solution.rows() && input_node < reordered.rows())
 						reordered.row(input_node) = nodal_solution.row(node);
 				}
@@ -446,8 +446,8 @@ namespace polyfem::varform
 		const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
 		if (!nodes_path.empty())
 		{
-			Eigen::MatrixXd nodes = Eigen::MatrixXd::Zero(scalar_space_.n_bases, mesh_->dimension());
-			for (const basis::ElementBases &element_bases : scalar_space_.basis_list())
+			Eigen::MatrixXd nodes = Eigen::MatrixXd::Zero(space_.n_bases, mesh_->dimension());
+			for (const basis::ElementBases &element_bases : space_.basis_list())
 				for (const basis::Basis &basis : element_bases.bases)
 					for (const auto &global : basis.global())
 						nodes.row(global.index) = global.node;
@@ -461,8 +461,8 @@ namespace polyfem::varform
 			Eigen::MatrixXd stress;
 			Eigen::VectorXd mises;
 			io::Evaluator::compute_stress_at_quadrature_points(
-				*mesh_, problem->is_scalar(), scalar_space_.basis_list(), scalar_space_.geometry_basis_list(),
-				scalar_space_.disc_orders, scalar_space_.disc_ordersq, *assembler, solution, tend,
+				*mesh_, problem->is_scalar(), space_.basis_list(), space_.geometry_basis_list(),
+				space_.disc_orders, space_.disc_ordersq, *assembler, solution, tend,
 				stress, mises);
 			if (!stress_path.empty())
 				io::write_matrix(stress_path, stress);
@@ -483,7 +483,7 @@ namespace polyfem::varform
 		assert(problem->is_scalar());
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
-		const int primary_ndof = std::min<int>(solution.rows(), scalar_space_.n_bases);
+		const int primary_ndof = std::min<int>(solution.rows(), space_.n_bases);
 		const Eigen::MatrixXd primary_solution = solution.topRows(primary_ndof);
 
 		const auto sample_dof_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values, Eigen::MatrixXd *gradients = nullptr) -> bool {
@@ -508,7 +508,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, 1, scalar_space_.basis_list(), scalar_space_.geometry_basis_list(),
+						*mesh_, 1, space_.basis_list(), space_.geometry_basis_list(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 					values(i) = local_sol(0);
 					if (gradients)
@@ -579,7 +579,7 @@ namespace polyfem::varform
 			&& mesh_->dimension() == 1
 			&& sample.primitive_ids.size() == 0)
 		{
-			const auto invalid_elements = utils::count_invalid(mesh_->dimension(), scalar_space_.basis_list(), scalar_space_.geometry_basis_list(), primary_solution);
+			const auto invalid_elements = utils::count_invalid(mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), primary_solution);
 			Eigen::MatrixXd validity = Eigen::MatrixXd::Zero(output_rows, 1);
 			for (int i = 0; i < sample.element_ids.size(); ++i)
 				validity(i) = std::find(invalid_elements.begin(), invalid_elements.end(), sample.element_ids(i)) != invalid_elements.end();
@@ -652,7 +652,7 @@ namespace polyfem::varform
 		assert(assembler->is_linear());
 		assert(problem->is_scalar());
 
-		assembler->assemble(mesh_->is_volume(), scalar_space_.n_bases, scalar_space_.basis_list(), scalar_space_.geometry_basis_list(), scalar_ass_vals_cache_, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), ass_vals_cache_, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -675,16 +675,16 @@ namespace polyfem::varform
 	{
 		assert(assembler->is_linear());
 		assert(problem->is_scalar());
-		assert(scalar_rhs_assembler_ != nullptr);
+		assert(rhs_assembler_ != nullptr);
 
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
 			*solver,
 			A,
 			b,
-			scalar_boundary_.boundary_nodes,
+			boundary_.boundary_nodes,
 			x,
-			scalar_space_.n_bases,
+			space_.n_bases,
 			args["output"]["data"]["stiffness_mat"],
 			compute_spectrum,
 			/*is_problem_mixed=*/false,
@@ -706,23 +706,23 @@ namespace polyfem::varform
 		logger().info("{}...", solver->name());
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(scalar_space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
 
-		scalar_rhs_assembler_->set_bc(
-			scalar_boundary_.local_boundary, scalar_boundary_.boundary_nodes, boundary_samples,
-			(assembler->name() != "Bilaplacian") ? scalar_boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), scalar_rhs_);
+		rhs_assembler_->set_bc(
+			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
+			(assembler->name() != "Bilaplacian") ? boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs_);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
 
-		Eigen::VectorXd b = scalar_rhs_;
+		Eigen::VectorXd b = rhs_;
 		solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"], sol);
 	}
 
 	void ScalarVarForm::solve_transient(Eigen::MatrixXd &sol)
 	{
 		assert(problem->is_time_dependent());
-		assert(scalar_rhs_assembler_ != nullptr);
+		assert(rhs_assembler_ != nullptr);
 
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
@@ -733,27 +733,27 @@ namespace polyfem::varform
 
 		save_timestep(t0, 0, t0, dt, sol);
 
-		Eigen::MatrixXd current_rhs = scalar_rhs_;
+		Eigen::MatrixXd current_rhs = rhs_;
 
 		StiffnessMatrix stiffness;
 		build_stiffness_mat(stiffness);
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders n_b_samples = n_boundary_samples(scalar_space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders n_b_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
 
-			scalar_rhs_assembler_->compute_energy_grad(
-				scalar_boundary_.local_boundary, scalar_boundary_.boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
-				scalar_boundary_.local_neumann_boundary, scalar_rhs_, time, current_rhs);
+			rhs_assembler_->compute_energy_grad(
+				boundary_.local_boundary, boundary_.boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
+				boundary_.local_neumann_boundary, rhs_, time, current_rhs);
 
-			scalar_rhs_assembler_->set_bc(
-				scalar_boundary_.local_boundary, scalar_boundary_.boundary_nodes, n_b_samples, scalar_boundary_.local_neumann_boundary, current_rhs, sol, time);
+			rhs_assembler_->set_bc(
+				boundary_.local_boundary, boundary_.boundary_nodes, n_b_samples, boundary_.local_neumann_boundary, current_rhs, sol, time);
 
-			StiffnessMatrix A = scalar_mass_ / bdf->beta_dt() + stiffness;
-			Eigen::VectorXd b = (scalar_mass_ * bdf->weighted_sum_x_prevs()) / bdf->beta_dt();
-			for (int i : scalar_boundary_.boundary_nodes)
+			StiffnessMatrix A = mass_ / bdf->beta_dt() + stiffness;
+			Eigen::VectorXd b = (mass_ * bdf->weighted_sum_x_prevs()) / bdf->beta_dt();
+			for (int i : boundary_.boundary_nodes)
 				b[i] = 0;
 			b += current_rhs;
 
@@ -780,7 +780,7 @@ namespace polyfem::varform
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
 			if (sol.size() <= 0)
-				initial_scalar_solution(sol);
+				prepare_initial_solution(sol);
 
 			if (sol.cols() > 1)
 				sol.conservativeResize(Eigen::NoChange, 1);

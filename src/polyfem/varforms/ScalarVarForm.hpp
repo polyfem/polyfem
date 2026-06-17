@@ -36,8 +36,20 @@ namespace polyfem::varform
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 
 	private:
-		void build_scalar_rhs_assembler();
-		void initial_scalar_solution(Eigen::MatrixXd &solution) const;
+		void build_rhs_assembler() override;
+
+		FESpace space_;
+		VarFormBoundaryState boundary_;
+		assembler::AssemblyValsCache ass_vals_cache_;
+		assembler::AssemblyValsCache mass_ass_vals_cache_;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache_;
+		std::shared_ptr<assembler::RhsAssembler> rhs_assembler_;
+		StiffnessMatrix mass_;
+		StiffnessMatrix pure_mass_;
+		double avg_mass_ = 0;
+		Eigen::MatrixXd rhs_;
+
+		void prepare_initial_solution(Eigen::MatrixXd &solution) const;
 
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 
@@ -50,17 +62,6 @@ namespace polyfem::varform
 			Eigen::MatrixXd &sol);
 		void solve_static(Eigen::MatrixXd &sol);
 		void solve_transient(Eigen::MatrixXd &sol);
-
-		FESpace scalar_space_;
-		VarFormBoundaryState scalar_boundary_;
-		assembler::AssemblyValsCache scalar_ass_vals_cache_;
-		assembler::AssemblyValsCache scalar_mass_ass_vals_cache_;
-		assembler::AssemblyValsCache scalar_pure_mass_ass_vals_cache_;
-		std::shared_ptr<assembler::RhsAssembler> scalar_rhs_assembler_;
-		StiffnessMatrix scalar_mass_;
-		StiffnessMatrix scalar_pure_mass_;
-		double scalar_avg_mass_ = 0;
-		Eigen::MatrixXd scalar_rhs_;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
