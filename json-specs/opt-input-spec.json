@@ -109,6 +109,7 @@
         "default": null,
         "optional": [
             "nonlinear",
+            "linear",
             "advanced",
             "max_threads"
         ],
@@ -128,6 +129,12 @@
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
     {
+        "pointer": "/solver/linear",
+        "type": "include",
+        "spec_file": "linear-solver-spec.json",
+        "doc": "Linear solver settings for optimization nonlinear solver inner solves."
+    },
+    {
         "pointer": "/variable_to_simulation",
         "type": "list",
         "doc": "A list of mappings from the raw optimization variable to parameters in states."
@@ -141,9 +148,8 @@
             "elastic",
             "friction",
             "damping",
-            "macro-strain",
             "initial",
-            "dirichlet",
+            "dirichlet-boundary",
             "dirichlet-nodes",
             "pressure"
         ]
@@ -158,9 +164,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
             "active_dimensions",
-            "composite_map_indices"
+            "active_geometry_nodes"
         ]
     },
     {
@@ -173,8 +178,6 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
         ]
     },
     {
@@ -187,8 +190,6 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
         ]
     },
     {
@@ -201,8 +202,6 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
         ]
     },
     {
@@ -215,8 +214,6 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
         ]
     },
     {
@@ -229,23 +226,21 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
+            "active_dofs"
         ]
     },
     {
         "pointer": "/variable_to_simulation/*",
-        "type_name": "dirichlet",
+        "type_name": "dirichlet-boundary",
         "type": "object",
         "required": [
             "state",
             "type",
-            "composition",
-            "surface_selection"
+            "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
+            "active_boundary_ids",
+            "active_time_slices"
         ]
     },
     {
@@ -258,8 +253,7 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
+            "active_geometry_nodes"
         ]
     },
     {
@@ -269,21 +263,12 @@
         "required": [
             "state",
             "type",
-            "composition",
-            "surface_selection"
+            "composition"
         ],
         "optional": [
-            "composite_map_type",
-            "composite_map_indices"
+            "active_boundary_ids",
+            "active_time_slices"
         ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*/mesh",
-        "type": "string"
-    },
-    {
-        "pointer": "/variable_to_simulation/*/mesh_id",
-        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/active_dimensions",
@@ -306,6 +291,71 @@
         "pointer": "/variable_to_simulation/*/composition",
         "type": "list",
         "doc": "list of parametrizations that maps raw optimization variables to parameters in simulations"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_dofs",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_dofs/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_boundary_ids",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_boundary_ids/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_time_slices",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_time_slices/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes",
+        "type": "file"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes",
+        "type": "object",
+        "required": [
+            "type",
+            "selection"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes/type",
+        "type": "string",
+        "options": [
+            "interior",
+            "boundary",
+            "boundary_excluding_surface"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes/selection",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_geometry_nodes/selection/*",
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/type",
@@ -595,30 +645,12 @@
         "type": "int"
     },
     {
-        "pointer": "/variable_to_simulation/*/composite_map_type",
+        "pointer": "/parameters",
         "type": "string",
-        "default": "none",
         "options": [
-            "none",
-            "interior",
-            "boundary",
-            "boundary_excluding_surface",
-            "indices",
-            "time_step_indexing"
-        ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composite_map_indices",
-        "type": "file"
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composite_map_indices",
-        "type": "list",
-        "default": []
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composite_map_indices/*",
-        "type": "int"
+            "auto"
+        ],
+        "doc": "Optimization variable initialization and sizing. Can be a list for manual sizing or the string \"auto\" for auto sizing."
     },
     {
         "pointer": "/parameters",

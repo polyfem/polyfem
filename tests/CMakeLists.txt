@@ -32,7 +32,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     test_opt.cpp
     test_form_derivatives.cpp
     test_parametrizations.cpp
-    test_periodic.cpp
   )
 endif()
 
@@ -84,4 +83,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests)
+catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS)
