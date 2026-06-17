@@ -203,10 +203,10 @@ namespace polyfem::varform
 		logger().info("n pressure bases: {}", n_pressure_bases);
 	}
 
-	void BilaplacianVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
+	void BilaplacianVarForm::assemble_rhs(const mesh::Mesh &mesh)
 	{
 		build_rhs_assembler();
-		VarForm::assemble_rhs(mesh, args);
+		VarForm::assemble_rhs(mesh);
 
 		const int prev_size = rhs.rows();
 		rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());

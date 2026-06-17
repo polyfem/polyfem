@@ -9,6 +9,7 @@
 
 #include <Eigen/Dense>
 
+#include <algorithm>
 #include <cassert>
 #include <map>
 #include <memory>
@@ -161,10 +162,9 @@ namespace polyfem::varform
 		std::vector<int> neumann_nodes;
 		std::vector<RowVectorNd> neumann_nodes_position;
 
-		void reset()
+		void clear_boundary_conditions()
 		{
 			boundary_nodes.clear();
-			total_local_boundary.clear();
 			local_boundary.clear();
 			local_neumann_boundary.clear();
 			local_pressure_boundary.clear();
@@ -174,6 +174,18 @@ namespace polyfem::varform
 			dirichlet_nodes_position.clear();
 			neumann_nodes.clear();
 			neumann_nodes_position.clear();
+		}
+
+		void normalize_boundary_nodes()
+		{
+			std::sort(boundary_nodes.begin(), boundary_nodes.end());
+			boundary_nodes.erase(std::unique(boundary_nodes.begin(), boundary_nodes.end()), boundary_nodes.end());
+		}
+
+		void reset()
+		{
+			total_local_boundary.clear();
+			clear_boundary_conditions();
 		}
 	};
 } // namespace polyfem::varform

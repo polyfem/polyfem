@@ -258,11 +258,15 @@ namespace polyfem::varform
 
 	QuadratureOrders VarForm::n_boundary_samples() const
 	{
-		using assembler::AssemblerUtils;
-		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 		const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+		return n_boundary_samples(discr_order, gdiscr_order);
+	}
 
+	QuadratureOrders VarForm::n_boundary_samples(const int discr_order, const int gdiscr_order) const
+	{
+		using assembler::AssemblerUtils;
+		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
 		return {{n_b_samples, n_b_samples}};
 	}
@@ -375,7 +379,7 @@ namespace polyfem::varform
 		mesh_->prepare_mesh();
 		stats.compute_mesh_stats(*mesh_);
 		build_basis(*mesh_, should_use_iso_parametric(*mesh_, args), args);
-		assemble_rhs(*mesh_, args);
+		assemble_rhs(*mesh_);
 		assemble_mass_mat(*mesh_, args);
 		prepared_ = true;
 	}
@@ -1394,7 +1398,7 @@ namespace polyfem::varform
 		return indices;
 	}
 
-	void VarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
+	void VarForm::assemble_rhs(const mesh::Mesh &mesh)
 	{
 		igl::Timer timer;
 		json p_params = {};

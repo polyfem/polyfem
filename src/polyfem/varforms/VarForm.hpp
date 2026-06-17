@@ -110,7 +110,7 @@ namespace polyfem
 			/// @brief 	Save the solution to a JSON file, for output purposes
 			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
-			void export_data(const Eigen::MatrixXd &solution) const;
+			virtual void export_data(const Eigen::MatrixXd &solution) const;
 
 			QuadratureOrders n_boundary_samples() const;
 
@@ -124,10 +124,11 @@ namespace polyfem
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
 			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
-			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
+			virtual void assemble_rhs(const mesh::Mesh &mesh);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			void prepare();
+			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
 
 			/// @brief Get a constant reference to the geometry mapping bases.
 			/// @return A constant reference to the geometry mapping bases.
