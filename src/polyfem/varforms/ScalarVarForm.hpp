@@ -31,6 +31,7 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
@@ -48,6 +49,14 @@ namespace polyfem::varform
 		StiffnessMatrix pure_mass_;
 		double avg_mass_ = 0;
 		Eigen::MatrixXd rhs_;
+
+		std::shared_ptr<assembler::Assembler> primary_assembler_ = nullptr;
+		std::shared_ptr<assembler::Mass> mass_assembler_ = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_assembler_ = nullptr;
+
+		double t0 = 0;
+		int time_steps = 0;
+		double dt = 0;
 
 		void prepare_initial_solution(Eigen::MatrixXd &solution) const;
 

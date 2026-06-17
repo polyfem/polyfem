@@ -221,11 +221,11 @@ namespace polyfem::varform
 	{
 		ElasticVarForm::build_basis(mesh, iso_parametric, args);
 
-		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
-		// The shared VarForm build path only counts FE bases, so extend it here
+		// Legacy nonlinear/contact code assumes the displacement space includes obstacle vertices.
+		// The shared build path only counts FE bases, so extend it here
 		// before constructing collision/contact state.
-		const int n_fe_bases = n_bases;
-		n_bases += obstacle.n_vertices();
+		const int n_fe_bases = space_.n_bases;
+		space_.n_bases += obstacle.n_vertices();
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh(mesh, args);
@@ -235,14 +235,13 @@ namespace polyfem::varform
 		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
 
-		for (int i = n_fe_bases; i < n_bases; ++i)
+		for (int i = n_fe_bases; i < space_.n_bases; ++i)
 		{
 			for (int d = 0; d < mesh.dimension(); ++d)
-				boundary_nodes.push_back(i * mesh.dimension() + d);
+				boundary_.boundary_nodes.push_back(i * mesh.dimension() + d);
 		}
 
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-		boundary_nodes.erase(std::unique(boundary_nodes.begin(), boundary_nodes.end()), boundary_nodes.end());
+		boundary_.normalize_boundary_nodes();
 	}
 
 	void NonlinearElasticVarForm::preprocess_contact_parameters()
@@ -286,13 +285,13 @@ namespace polyfem::varform
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
 		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, &obstacle,
-			dirichlet_nodes, neumann_nodes,
-			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases, size, bases, geom_bases(), mass_ass_vals_cache, *problem,
+			*primary_assembler_, *mesh_, &obstacle,
+			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
+			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
+			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
-		rhs_assembler = solve_data.rhs_assembler;
+		rhs_assembler_ = solve_data.rhs_assembler;
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -300,9 +299,9 @@ namespace polyfem::varform
 		const json &args)
 	{
 		build_collision_mesh(
-			mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
+			mesh, space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), boundary_.total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
-			in_node_to_node, collision_mesh);
+			space_.space_in_node_to_node, collision_mesh);
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -437,12 +436,12 @@ namespace polyfem::varform
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
 		return std::make_shared<assembler::PressureAssembler>(
-			*assembler, *mesh_, obstacle,
-			local_pressure_boundary,
-			local_pressure_cavity,
-			boundary_nodes,
-			primitive_to_node(), node_to_primitive(),
-			n_bases, size, bases, geom_bases(), *problem);
+			*primary_assembler_, *mesh_, obstacle,
+			boundary_.local_pressure_boundary,
+			boundary_.local_pressure_cavity,
+			boundary_.boundary_nodes,
+			elastic_primitive_to_node(), elastic_node_to_primitive(),
+			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), *problem);
 	}
 
 	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
@@ -451,7 +450,7 @@ namespace polyfem::varform
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {}", assembler->name());
+		logger().info("Solving {}", primary_assembler_->name());
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
@@ -463,7 +462,7 @@ namespace polyfem::varform
 			//  mesh->dimension(), solution);
 
 			if (sol.size() <= 0)
-				initial_solution(sol);
+				initial_elastic_solution(sol);
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
@@ -488,7 +487,7 @@ namespace polyfem::varform
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {}", assembler->name());
+		logger().info("Solving {}", primary_assembler_->name());
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
@@ -500,7 +499,7 @@ namespace polyfem::varform
 			//  mesh->dimension(), solution);
 
 			if (sol.size() <= 0)
-				initial_solution(sol);
+				initial_elastic_solution(sol);
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
@@ -520,7 +519,7 @@ namespace polyfem::varform
 			const io::OutputSpace space = output_space();
 			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(
 				resolve_output_path("stats.csv"),
-				n_bases,
+				space_.n_bases,
 				space.mesh ? space.mesh->n_elements() : 0,
 				t0, dt);
 		}
@@ -559,7 +558,7 @@ namespace polyfem::varform
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-			notify_time_step(t);
+			notify_time_step(t, time_steps, t0, dt);
 
 			save_elastic_step_state(t0, dt, t, solve_data.time_integrator.get());
 			if (stats_csv)
@@ -574,13 +573,13 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t)
 	{
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
-		set_materials(*damping_assembler);
+		set_materials(*damping_assembler, mesh_->dimension());
 
 		elasticity_pressure_assembler = build_pressure_assembler();
 
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
-		set_materials(*damping_prev_assembler);
+		set_materials(*damping_prev_assembler, mesh_->dimension());
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 
@@ -588,17 +587,17 @@ namespace polyfem::varform
 		forms = solve_data.init_forms(
 			// General
 			units,
-			dim, t, in_node_to_node,
+			dim, t, space_.space_in_node_to_node,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
+			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
-			0, boundary_nodes, local_boundary,
-			local_neumann_boundary,
-			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
+			0, boundary_.boundary_nodes, boundary_.local_boundary,
+			boundary_.local_neumann_boundary,
+			elastic_boundary_samples(), rhs_, sol, mass_assembler_->density(),
 			// Pressure form
-			local_pressure_boundary, local_pressure_cavity, elasticity_pressure_assembler,
+			boundary_.local_pressure_boundary, boundary_.local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
-			args.value("/time/quasistatic"_json_pointer, true), mass,
+			args.value("/time/quasistatic"_json_pointer, true), mass_,
 			damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
@@ -607,7 +606,7 @@ namespace polyfem::varform
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
-			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
+			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
@@ -689,7 +688,7 @@ namespace polyfem::varform
 			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_solution(solution); // Reload this because we need all previous solutions
+			initial_elastic_solution(solution); // Reload this because we need all previous solutions
 			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
@@ -736,14 +735,14 @@ namespace polyfem::varform
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 		}
 
-		if (pure_mass.size() == 0)
-			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+		if (pure_mass_.size() == 0)
+			pure_mass_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), pure_mass_ass_vals_cache_, 0, pure_mass_, true);
 
-		const int ndof = n_bases * mesh_->dimension();
+		const int ndof = space_.n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
 			ndof, nullptr, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
-			characteristic_length, characteristic_force_density, pure_mass, mesh_->dimension());
+			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -756,7 +755,7 @@ namespace polyfem::varform
 		assert(solve_data.nl_problem != nullptr);
 		solver::NLProblem &nl_problem = *(solve_data.nl_problem);
 
-		assert(sol.size() == rhs.size());
+		assert(sol.size() == rhs_.size());
 
 		if (nl_problem.uses_lagging())
 		{
@@ -802,7 +801,7 @@ namespace polyfem::varform
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
-			const auto invalidList = utils::count_invalid(mesh_->dimension(), bases, geom_bases(), sol);
+			const auto invalidList = utils::count_invalid(mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), sol);
 			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
 		}
 

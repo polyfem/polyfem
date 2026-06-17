@@ -45,6 +45,9 @@ namespace polyfem::varform
 		mixed_assembler_ = nullptr;
 		pressure_assembler_ = nullptr;
 		use_avg_pressure = true;
+		t0 = 0;
+		time_steps = 0;
+		dt = 0;
 		time_integrator = nullptr;
 	}
 
@@ -58,9 +61,6 @@ namespace polyfem::varform
 		pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
 		mixed_assembler_ = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler_ = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
-		assembler = primary_assembler_;
-		mass_matrix_assembler = mass_assembler_;
-		pure_mass_matrix_assembler = pure_mass_assembler_;
 
 		if (!args.contains("preset_problem"))
 		{
@@ -245,11 +245,15 @@ namespace polyfem::varform
 
 	void BilaplacianVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
-		VarForm::load_mesh(mesh, args);
+		set_materials(*primary_assembler_, 1);
+		set_materials(*mass_assembler_, 1);
+		pure_mass_assembler_->set_size(mass_assembler_->size());
+		problem->init(mesh);
+
 		if (mixed_assembler_)
 			mixed_assembler_->set_size(1);
 		if (pressure_assembler_)
-			set_materials(*pressure_assembler_);
+			set_materials(*pressure_assembler_, 1);
 	}
 
 	std::shared_ptr<assembler::RhsAssembler> BilaplacianVarForm::build_rhs_assembler(
@@ -277,8 +281,6 @@ namespace polyfem::varform
 		assert(primary_assembler_);
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
-
-		this->iso_parametric = iso_parametric;
 
 		Eigen::VectorXi space_disc_orders;
 		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
@@ -682,7 +684,7 @@ namespace polyfem::varform
 			save_timestep(time, t, t0, dt, sol);
 			save_step_state(t0, dt, t, time_integrator.get());
 			logger().info("{}/{}  t={}", t, time_steps, time);
-			notify_time_step(t);
+			notify_time_step(t, time_steps, t0, dt);
 		}
 	}
 

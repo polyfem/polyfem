@@ -54,9 +54,9 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling stiffness mat...");
-		assert(assembler->is_linear());
+		assert(primary_assembler_->is_linear());
 
-		assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, stiffness);
+		primary_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), ass_vals_cache_, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -77,23 +77,23 @@ namespace polyfem::varform
 		const bool compute_spectrum,
 		Eigen::MatrixXd &sol)
 	{
-		assert(assembler->is_linear());
-		assert(rhs_assembler != nullptr);
+		assert(primary_assembler_->is_linear());
+		assert(rhs_assembler_ != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh_->dimension();
-		const int precond_num = problem_dim * n_bases;
+		const int precond_num = problem_dim * space_.n_bases;
 
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
 			*solver,
 			A,
 			b,
-			boundary_nodes,
+			boundary_.boundary_nodes,
 			x,
 			precond_num,
 			args["output"]["data"]["stiffness_mat"],
 			compute_spectrum,
-			assembler->is_fluid(),
+			primary_assembler_->is_fluid(),
 			/*use_avg_pressure=*/true);
 
 		sol = x;
@@ -109,33 +109,33 @@ namespace polyfem::varform
 	void LinearElasticVarForm::init_linear_solve(Eigen::MatrixXd &sol, const double t)
 	{
 		assert(sol.cols() == 1);
-		assert(assembler->is_linear());
+		assert(primary_assembler_->is_linear());
 
-		const int ndof = n_bases * mesh_->dimension();
+		const int ndof = space_.n_bases * mesh_->dimension();
 
 		elastic_form = std::make_shared<solver::ElasticForm>(
-			n_bases, bases, geom_bases(),
-			*assembler, ass_vals_cache,
+			space_.n_bases, *space_.bases, space_.geometry_basis_list(),
+			*primary_assembler_, ass_vals_cache_,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh_->is_volume());
 
 		body_form = std::make_shared<solver::BodyForm>(
 			ndof, 0,
-			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
-			rhs, *rhs_assembler,
-			mass_matrix_assembler->density(),
+			boundary_.boundary_nodes, boundary_.local_boundary, boundary_.local_neumann_boundary, elastic_boundary_samples(),
+			rhs_, *rhs_assembler_,
+			mass_assembler_->density(),
 			/*is_formulation_mixed=*/false, problem->is_time_dependent());
 		body_form->update_quantities(t, sol);
 
 		if (problem->is_time_dependent())
 		{
 			time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			inertia_form = std::make_shared<solver::InertiaForm>(mass, *time_integrator);
+			inertia_form = std::make_shared<solver::InertiaForm>(mass_, *time_integrator);
 
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_solution(solution);
+			initial_elastic_solution(solution);
 			solution.col(0) = sol;
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
@@ -159,21 +159,21 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		rhs_assembler->set_bc(
-			local_boundary, boundary_nodes, n_boundary_samples(),
-			local_neumann_boundary, rhs);
+		rhs_assembler_->set_bc(
+			boundary_.local_boundary, boundary_.boundary_nodes, elastic_boundary_samples(),
+			boundary_.local_neumann_boundary, rhs_);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
 
-		Eigen::VectorXd b = rhs;
+		Eigen::VectorXd b = rhs_;
 		solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"], sol);
 	}
 
 	void LinearElasticVarForm::solve_transient_linear(Eigen::MatrixXd &sol)
 	{
 		assert(problem->is_time_dependent());
-		assert(rhs_assembler != nullptr);
+		assert(rhs_assembler_ != nullptr);
 		assert(time_integrator != nullptr);
 
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
@@ -181,7 +181,7 @@ namespace polyfem::varform
 
 		save_timestep(t0, 0, t0, dt, sol);
 
-		Eigen::MatrixXd current_rhs = rhs;
+		Eigen::MatrixXd current_rhs = rhs_;
 
 		StiffnessMatrix stiffness;
 		build_stiffness_mat(stiffness);
@@ -190,21 +190,21 @@ namespace polyfem::varform
 		{
 			const double time = t0 + t * dt;
 
-			rhs_assembler->assemble(mass_matrix_assembler->density(), current_rhs, time);
+			rhs_assembler_->assemble(mass_assembler_->density(), current_rhs, time);
 			current_rhs *= -1;
 
-			rhs_assembler->set_bc(
-				std::vector<mesh::LocalBoundary>(), std::vector<int>(), n_boundary_samples(),
-				local_neumann_boundary, current_rhs, sol, time);
+			rhs_assembler_->set_bc(
+				std::vector<mesh::LocalBoundary>(), std::vector<int>(), elastic_boundary_samples(),
+				boundary_.local_neumann_boundary, current_rhs, sol, time);
 
 			current_rhs *= time_integrator->acceleration_scaling();
-			current_rhs += mass * time_integrator->x_tilde();
+			current_rhs += mass_ * time_integrator->x_tilde();
 
-			rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_boundary_samples(),
+			rhs_assembler_->set_bc(
+				boundary_.local_boundary, boundary_.boundary_nodes, elastic_boundary_samples(),
 				std::vector<mesh::LocalBoundary>(), current_rhs, sol, time);
 
-			StiffnessMatrix A = stiffness * time_integrator->acceleration_scaling() + mass;
+			StiffnessMatrix A = stiffness * time_integrator->acceleration_scaling() + mass_;
 			Eigen::VectorXd b = current_rhs;
 
 			solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"].get<bool>() && t == 1, sol);
@@ -214,7 +214,7 @@ namespace polyfem::varform
 			save_elastic_step_state(t0, dt, t, time_integrator.get());
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
-			notify_time_step(t);
+			notify_time_step(t, time_steps, t0, dt);
 		}
 	}
 
@@ -224,13 +224,13 @@ namespace polyfem::varform
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {}", assembler->name());
+		logger().info("Solving {}", primary_assembler_->name());
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
 			if (sol.size() <= 0)
-				initial_solution(sol);
+				initial_elastic_solution(sol);
 
 			if (sol.cols() > 1)
 				sol.conservativeResize(Eigen::NoChange, 1);

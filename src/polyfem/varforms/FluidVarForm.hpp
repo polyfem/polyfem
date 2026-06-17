@@ -14,9 +14,14 @@ namespace polyfem::varform
 {
 	class FluidVarForm : public VarForm
 	{
+		friend class polyfem::test::VarFormTestAccess;
+
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
+		void export_data(const Eigen::MatrixXd &solution) const override;
+		io::OutputSpace output_space() const override;
+		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -46,14 +51,34 @@ namespace polyfem::varform
 
 		void build_rhs_assembler() override;
 
-		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
-		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::vector<basis::ElementBases> pressure_bases;
-		int n_pressure_bases = 0;
-		std::shared_ptr<mesh::MeshNodes> pressure_mesh_nodes;
-		assembler::AssemblyValsCache pressure_ass_vals_cache;
-		std::vector<int> pressure_boundary_nodes;
+		FESpace space_;
+		FESpace pressure_space_;
+
+		VarFormBoundaryState boundary_;
+		VarFormBoundaryState pressure_boundary_;
+
+		assembler::AssemblyValsCache ass_vals_cache_;
+		assembler::AssemblyValsCache pressure_ass_vals_cache_;
+		assembler::AssemblyValsCache mass_ass_vals_cache_;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache_;
+
+		std::shared_ptr<assembler::RhsAssembler> rhs_assembler_;
+
+		StiffnessMatrix mass_;
+		StiffnessMatrix pure_mass_;
+
+		double avg_mass_ = 0;
+		Eigen::MatrixXd rhs_;
+
+		std::shared_ptr<assembler::Assembler> primary_assembler_ = nullptr;
+		std::shared_ptr<assembler::Mass> mass_assembler_ = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_assembler_ = nullptr;
+		std::shared_ptr<assembler::MixedAssembler> mixed_assembler_ = nullptr;
+		std::shared_ptr<assembler::Assembler> pressure_assembler_ = nullptr;
 		bool use_avg_pressure = true;
+		double t0 = 0;
+		int time_steps = 0;
+		double dt = 0;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 

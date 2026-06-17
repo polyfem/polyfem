@@ -46,6 +46,12 @@ namespace polyfem::varform
 		pure_mass_.resize(0, 0);
 		avg_mass_ = 0;
 		rhs_.resize(0, 0);
+		primary_assembler_ = nullptr;
+		mass_assembler_ = nullptr;
+		pure_mass_assembler_ = nullptr;
+		t0 = 0;
+		time_steps = 0;
+		dt = 0;
 		time_integrator = nullptr;
 	}
 
@@ -54,12 +60,12 @@ namespace polyfem::varform
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
-		assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		assert(assembler->name() == formulation);
-		assert(assembler->is_linear());
-		assert(!assembler->is_tensor());
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
+		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
+		assert(primary_assembler_->name() == formulation);
+		assert(primary_assembler_->is_linear());
+		assert(!primary_assembler_->is_tensor());
+		mass_assembler_ = std::make_shared<assembler::Mass>();
+		pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
 
 		if (!args.contains("preset_problem"))
 		{
@@ -83,21 +89,28 @@ namespace polyfem::varform
 			problem->set_parameters(args["preset_problem"], root_path);
 		}
 
-		problem->set_units(*assembler, units);
+		problem->set_units(*primary_assembler_, units);
 
 		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
 		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
+	void ScalarVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
+	{
+		set_materials(*primary_assembler_, 1);
+		set_materials(*mass_assembler_, 1);
+		pure_mass_assembler_->set_size(mass_assembler_->size());
+
+		problem->init(mesh);
+	}
+
 	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		assert(problem);
-		assert(assembler);
-		assert(mass_matrix_assembler);
-		assert(pure_mass_matrix_assembler);
-
-		this->iso_parametric = iso_parametric;
+		assert(primary_assembler_);
+		assert(mass_assembler_);
+		assert(pure_mass_assembler_);
 
 		Eigen::VectorXi space_disc_orders;
 		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
@@ -122,7 +135,7 @@ namespace polyfem::varform
 			space_disc_orders,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
-			*assembler,
+			*primary_assembler_,
 			/*value_dim=*/1,
 			args["space"]["advanced"]["quadrature_order"],
 			args["space"]["advanced"]["mass_quadrature_order"],
@@ -216,7 +229,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, nullptr,
+			*primary_assembler_, *mesh_, nullptr,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
@@ -228,7 +241,7 @@ namespace polyfem::varform
 	{
 		igl::Timer timer;
 		json p_params = {};
-		p_params["formulation"] = assembler->name();
+		p_params["formulation"] = primary_assembler_->name();
 		p_params["root_path"] = root_path;
 		{
 			RowVectorNd min, max, delta;
@@ -248,7 +261,7 @@ namespace polyfem::varform
 
 		build_rhs_assembler();
 		assert(rhs_assembler_ != nullptr);
-		rhs_assembler_->assemble(mass_matrix_assembler->density(), rhs_);
+		rhs_assembler_->assemble(mass_assembler_->density(), rhs_);
 		rhs_ *= -1;
 
 		timings.assigning_rhs_time = timer.getElapsedTime();
@@ -270,7 +283,7 @@ namespace polyfem::varform
 		timer.start();
 		logger().info("Assembling mass mat...");
 
-		mass_matrix_assembler->assemble(mesh.is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, 0, mass_, true);
+		mass_assembler_->assemble(mesh.is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, 0, mass_, true);
 
 		assert(mass_.size() > 0);
 
@@ -345,7 +358,7 @@ namespace polyfem::varform
 		stats.save_json(
 			args, space_.n_bases, /*n_auxiliary_bases=*/0,
 			stats_solution, *mesh_, space_.disc_orders, space_.disc_ordersq, *problem,
-			timings, assembler ? assembler->name() : name(), space_.is_iso_parametric(),
+			timings, primary_assembler_ ? primary_assembler_->name() : name(), space_.is_iso_parametric(),
 			args["output"]["advanced"]["sol_at_node"], j);
 		out << j.dump(4) << std::endl;
 	}
@@ -456,13 +469,13 @@ namespace polyfem::varform
 
 		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
 		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
-		if ((!stress_path.empty() || !mises_path.empty()) && assembler)
+		if ((!stress_path.empty() || !mises_path.empty()) && primary_assembler_)
 		{
 			Eigen::MatrixXd stress;
 			Eigen::VectorXd mises;
 			io::Evaluator::compute_stress_at_quadrature_points(
 				*mesh_, problem->is_scalar(), space_.basis_list(), space_.geometry_basis_list(),
-				space_.disc_orders, space_.disc_ordersq, *assembler, solution, tend,
+				space_.disc_orders, space_.disc_ordersq, *primary_assembler_, solution, tend,
 				stress, mises);
 			if (!stress_path.empty())
 				io::write_matrix(stress_path, stress);
@@ -604,13 +617,13 @@ namespace polyfem::varform
 
 		if (paraview_options["material"] && has_element_samples)
 		{
-			const auto &params = assembler->parameters();
+			const auto &params = primary_assembler_->parameters();
 			std::map<std::string, Eigen::MatrixXd> param_values;
 			for (const auto &[p, _] : params)
 				param_values[p].setZero(output_rows, 1);
 
 			Eigen::MatrixXd rhos = Eigen::MatrixXd::Zero(output_rows, 1);
-			const auto &density = mass_matrix_assembler->density();
+			const auto &density = mass_assembler_->density();
 			for (int i = 0; i < sample.local_points.rows(); ++i)
 			{
 				const int element_id = sample.element_ids(i);
@@ -649,10 +662,10 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling stiffness mat...");
-		assert(assembler->is_linear());
+		assert(primary_assembler_->is_linear());
 		assert(problem->is_scalar());
 
-		assembler->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), ass_vals_cache_, 0, stiffness);
+		primary_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), ass_vals_cache_, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -673,7 +686,7 @@ namespace polyfem::varform
 		const bool compute_spectrum,
 		Eigen::MatrixXd &sol)
 	{
-		assert(assembler->is_linear());
+		assert(primary_assembler_->is_linear());
 		assert(problem->is_scalar());
 		assert(rhs_assembler_ != nullptr);
 
@@ -710,7 +723,7 @@ namespace polyfem::varform
 
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
-			(assembler->name() != "Bilaplacian") ? boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs_);
+			(primary_assembler_->name() != "Bilaplacian") ? boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs_);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
@@ -745,7 +758,7 @@ namespace polyfem::varform
 			const double time = t0 + t * dt;
 
 			rhs_assembler_->compute_energy_grad(
-				boundary_.local_boundary, boundary_.boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
+				boundary_.local_boundary, boundary_.boundary_nodes, mass_assembler_->density(), n_b_samples,
 				boundary_.local_neumann_boundary, rhs_, time, current_rhs);
 
 			rhs_assembler_->set_bc(
@@ -764,7 +777,7 @@ namespace polyfem::varform
 			save_step_state(t0, dt, t, time_integrator.get());
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
-			notify_time_step(t);
+			notify_time_step(t, time_steps, t0, dt);
 		}
 	}
 
@@ -774,7 +787,7 @@ namespace polyfem::varform
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {}", assembler->name());
+		logger().info("Solving {}", primary_assembler_->name());
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");

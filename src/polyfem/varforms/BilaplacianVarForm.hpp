@@ -14,6 +14,8 @@ namespace polyfem::varform
 {
 	class BilaplacianVarForm : public VarForm
 	{
+		friend class polyfem::test::VarFormTestAccess;
+
 	public:
 		std::string name() const override { return "Bilaplacian"; }
 
@@ -85,6 +87,9 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::Assembler> pressure_assembler_ = nullptr;
 
 		bool use_avg_pressure = true;
+		double t0 = 0;
+		int time_steps = 0;
+		double dt = 0;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 } // namespace polyfem::varform
