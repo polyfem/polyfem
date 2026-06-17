@@ -41,6 +41,7 @@ namespace polyfem::assembler
 		virtual bool is_linear() const override { return true; }
 		bool allow_inversion() const override { return true; }
 		std::string name() const override { return "HookeLinearElasticity"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {0, 2, 0}; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,

@@ -5,6 +5,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <Eigen/Dense>
 #include <vector>
@@ -58,6 +59,8 @@ namespace polyfem
 				const int n_samples_per_edge,
 				const mesh::Mesh3D &mesh,
 				const int n_bases,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const int integral_constraints,

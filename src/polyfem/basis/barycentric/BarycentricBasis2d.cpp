@@ -2,8 +2,6 @@
 #include "BarycentricBasis2d.hpp"
 #include <polyfem/quadrature/PolygonQuadrature.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-
 #include <memory>
 
 namespace polyfem
@@ -114,7 +112,8 @@ namespace polyfem
 		////////////////////////////////////////////////////////////////////////////////
 
 		int BarycentricBasis2d::build_bases(
-			const std::string &assembler_name,
+			const WeakFormOrderHint &quadrature_hint,
+			const WeakFormOrderHint &mass_quadrature_hint,
 			const int dim,
 			const Mesh2D &mesh,
 			const int n_bases,
@@ -173,11 +172,16 @@ namespace polyfem
 				b.has_parameterization = false;
 
 				// Compute quadrature points for the polygon
+				const BasisOrderHint basis_hint{BasisFamily::POLY, 1, 1};
+				// Order of geometry mapping depends on runtime solution. 1 is dummy value.
+				const GeometryBasisOrderHint geometry_hint{BasisFamily::POLY, 1, 1, 1};
+				const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+				const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(polygon, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 1, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
+				poly_quadr.get_quadrature(polygon, final_quad_order.order, tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(polygon, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 1, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
+				poly_quadr.get_quadrature(polygon, final_mass_quad_order.order, tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });
