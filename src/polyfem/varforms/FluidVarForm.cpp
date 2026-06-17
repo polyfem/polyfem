@@ -375,9 +375,7 @@ namespace polyfem::varform
 			mass_ass_vals_cache_.init_empty(true);
 			pure_mass_ass_vals_cache_.init_empty(true);
 		}
-
-		igl::Timer timer;
-		timer.start();
+		assert(space_.poly_edge_to_data.empty() && "mixed formulations do not support polygonal bases");
 
 		const auto &all_boundary = boundary_.total_local_boundary;
 		const int prev_bases = space_.n_bases;
@@ -451,8 +449,6 @@ namespace polyfem::varform
 
 		build_rhs_assembler();
 
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
 		logger().info("n pressure bases: {}", pressure_space_.n_bases);
 	}
 

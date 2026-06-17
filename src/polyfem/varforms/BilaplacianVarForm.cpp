@@ -347,9 +347,7 @@ namespace polyfem::varform
 
 		if (space_.disc_orders.maxCoeff() != space_.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
-
-		igl::Timer timer;
-		timer.start();
+		assert(space_.poly_edge_to_data.empty() && "mixed formulations do not support polygonal bases");
 
 		const int prev_bases = space_.n_bases;
 		const auto &all_boundary = boundary_.total_local_boundary;
@@ -422,8 +420,6 @@ namespace polyfem::varform
 
 		build_rhs_assembler();
 
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
 		logger().info("n pressure bases: {}", pressure_space_.n_bases);
 	}
 

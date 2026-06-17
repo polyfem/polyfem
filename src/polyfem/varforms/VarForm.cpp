@@ -440,7 +440,6 @@ namespace polyfem::varform
 		}
 
 		const bool use_fe_space_as_geometry = build_geom_mapping ? iso_parametric : space.is_iso_parametric();
-		const double previous_poly_basis_time = timings.computing_poly_basis_time;
 		build_polygonal_basis(mesh, poly_basis_type, space_assembler,
 							  use_fe_space_as_geometry,
 							  quadrature_order,
