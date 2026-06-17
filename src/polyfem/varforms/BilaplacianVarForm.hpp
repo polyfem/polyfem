@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/ScalarVarForm.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
@@ -12,13 +12,16 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class BilaplacianVarForm : public ScalarVarForm
+	class BilaplacianVarForm : public VarForm
 	{
 	public:
 		std::string name() const override { return "Bilaplacian"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
+		void export_data(const Eigen::MatrixXd &solution) const override;
+		io::OutputSpace output_space() const override;
+		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -48,7 +51,7 @@ namespace polyfem::varform
 
 		void build_rhs_assembler() override
 		{
-			rhs_assembler = build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+			rhs_assembler_ = build_rhs_assembler(space_.n_bases, space_.basis_list(), mass_ass_vals_cache_);
 		}
 
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -56,13 +59,31 @@ namespace polyfem::varform
 			const std::vector<basis::ElementBases> &bases,
 			const assembler::AssemblyValsCache &ass_vals_cache);
 
-		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
-		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::vector<basis::ElementBases> pressure_bases;
-		int n_pressure_bases = 0;
-		std::shared_ptr<mesh::MeshNodes> pressure_mesh_nodes;
-		assembler::AssemblyValsCache pressure_ass_vals_cache;
-		std::vector<int> pressure_boundary_nodes;
+		FESpace space_;
+		FESpace pressure_space_;
+
+		VarFormBoundaryState boundary_;
+		VarFormBoundaryState pressure_boundary_;
+
+		assembler::AssemblyValsCache ass_vals_cache_;
+		assembler::AssemblyValsCache pressure_ass_vals_cache_;
+		assembler::AssemblyValsCache mass_ass_vals_cache_;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache_;
+
+		std::shared_ptr<assembler::RhsAssembler> rhs_assembler_;
+
+		StiffnessMatrix mass_;
+		StiffnessMatrix pure_mass_;
+
+		double avg_mass_ = 0;
+		Eigen::MatrixXd rhs_;
+
+		std::shared_ptr<assembler::Assembler> primary_assembler_ = nullptr;
+		std::shared_ptr<assembler::Mass> mass_assembler_ = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_assembler_ = nullptr;
+		std::shared_ptr<assembler::MixedAssembler> mixed_assembler_ = nullptr;
+		std::shared_ptr<assembler::Assembler> pressure_assembler_ = nullptr;
+
 		bool use_avg_pressure = true;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
