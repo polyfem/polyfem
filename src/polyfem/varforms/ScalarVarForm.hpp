@@ -28,6 +28,7 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);

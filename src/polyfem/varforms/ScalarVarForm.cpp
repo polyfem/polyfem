@@ -6,6 +6,7 @@
 #include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
+#include <polyfem/refinement/APriori.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -14,6 +15,8 @@
 #include <unsupported/Eigen/SparseExtra>
 
 #include <polysolve/linear/FEMSolver.hpp>
+
+#include <algorithm>
 
 namespace polyfem::varform
 {
@@ -72,6 +75,164 @@ namespace polyfem::varform
 		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
 		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
+	}
+
+	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	{
+		assert(problem);
+		assert(assembler);
+		assert(mass_matrix_assembler);
+		assert(pure_mass_matrix_assembler);
+
+		this->iso_parametric = iso_parametric;
+
+		Eigen::VectorXi scalar_disc_orders;
+		assign_discr_orders(args["space"]["discr_order"], mesh, scalar_disc_orders);
+
+		if (args["space"]["use_p_ref"])
+		{
+			refinement::APriori::p_refine(
+				mesh,
+				args["space"]["advanced"]["B"],
+				args["space"]["advanced"]["h1_formula"],
+				args["space"]["discr_order"],
+				args["space"]["advanced"]["discr_order_max"],
+				stats,
+				scalar_disc_orders);
+
+			logger().info("min p: {} max p: {}", scalar_disc_orders.minCoeff(), scalar_disc_orders.maxCoeff());
+		}
+
+		FESpace scalar_space;
+		VarFormBoundaryState scalar_boundary;
+		build_fe_space(
+			mesh,
+			iso_parametric,
+			scalar_disc_orders,
+			args["space"]["basis_type"],
+			args["space"]["poly_basis_type"],
+			*assembler,
+			/*value_dim=*/1,
+			args["space"]["advanced"]["quadrature_order"],
+			args["space"]["advanced"]["mass_quadrature_order"],
+			args["space"]["advanced"]["use_corner_quadrature"],
+			args["space"]["advanced"]["n_harmonic_samples"],
+			args["space"]["advanced"]["integral_constraints"],
+			scalar_space,
+			scalar_boundary);
+
+		n_bases = scalar_space.n_bases;
+		bases = scalar_space.basis_list();
+		disc_orders = scalar_space.disc_orders;
+		disc_ordersq = scalar_space.disc_ordersq;
+		poly_edge_to_data = scalar_space.poly_edge_to_data;
+		polys = scalar_space.polys;
+		polys_3d = scalar_space.polys_3d;
+		mesh_nodes = scalar_space.mesh_nodes;
+		in_node_to_node = scalar_space.space_in_node_to_node;
+		in_primitive_to_primitive = scalar_space.space_in_primitive_to_primitive;
+
+		if (iso_parametric)
+		{
+			geom_bases_.clear();
+			geom_mesh_nodes = nullptr;
+			n_geom_bases = n_bases;
+		}
+		else
+		{
+			assert(scalar_space.geometry);
+			n_geom_bases = scalar_space.geometry->n_bases;
+			geom_bases_ = scalar_space.geometry_basis_list();
+			geom_mesh_nodes = scalar_space.geometry->mesh_nodes;
+		}
+
+		total_local_boundary.clear();
+		for (const auto &lb : scalar_boundary.total_local_boundary)
+			total_local_boundary.emplace_back(lb);
+		local_boundary.clear();
+		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
+		boundary_nodes.clear();
+		dirichlet_nodes.clear();
+		neumann_nodes.clear();
+		dirichlet_nodes_position.clear();
+		neumann_nodes_position.clear();
+
+		problem->update_nodes(in_node_to_node);
+		mesh.update_nodes(in_node_to_node);
+
+		problem->setup_bc(
+			mesh,
+			assembler::BoundaryKind::Dirichlet,
+			/*fe_space_id=*/-1,
+			bases,
+			total_local_boundary,
+			local_boundary,
+			boundary_nodes);
+		std::vector<int> unused_neumann_boundary_nodes;
+		problem->setup_bc(
+			mesh,
+			assembler::BoundaryKind::Neumann,
+			/*fe_space_id=*/-1,
+			bases,
+			total_local_boundary,
+			local_neumann_boundary,
+			unused_neumann_boundary_nodes);
+
+		problem->setup_nodal_bc(
+			mesh,
+			assembler::BoundaryKind::Dirichlet,
+			/*fe_space_id=*/-1,
+			n_bases,
+			dirichlet_nodes);
+		problem->setup_nodal_bc(
+			mesh,
+			assembler::BoundaryKind::Neumann,
+			/*fe_space_id=*/-1,
+			n_bases,
+			neumann_nodes);
+
+		for (const int n_id : dirichlet_nodes)
+		{
+			const int tag = mesh.get_node_id(n_id);
+			if (problem->is_nodal_dimension_dirichlet(n_id, tag, 0))
+				boundary_nodes.push_back(n_id);
+		}
+
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		const auto end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.resize(std::distance(boundary_nodes.begin(), end));
+
+		rebuild_node_positions(bases, dirichlet_nodes, dirichlet_nodes_position);
+		rebuild_node_positions(bases, neumann_nodes, neumann_nodes_position);
+
+		const auto &current_bases = geom_bases();
+		if (args["space"]["advanced"]["count_flipped_els"])
+			stats.count_flipped_elements(mesh, current_bases);
+
+		const int n_samples = 10;
+		stats.compute_mesh_size(mesh, current_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
+
+		logger().info("flipped elements {}", stats.n_flipped);
+		logger().info("h: {}", stats.mesh_size);
+
+		if (n_bases <= args["solver"]["advanced"]["cache_size"])
+		{
+			igl::Timer timer;
+			timer.start();
+			logger().info("Building cache...");
+			ass_vals_cache.init(mesh.is_volume(), bases, current_bases);
+			mass_ass_vals_cache.init(mesh.is_volume(), bases, current_bases, true);
+			pure_mass_ass_vals_cache.init(mesh.is_volume(), bases, current_bases, true);
+			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			ass_vals_cache.init_empty();
+			mass_ass_vals_cache.init_empty(true);
+			pure_mass_ass_vals_cache.init_empty(true);
+		}
 	}
 
 	void ScalarVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const

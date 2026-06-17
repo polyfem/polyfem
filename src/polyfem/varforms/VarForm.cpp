@@ -848,9 +848,9 @@ namespace polyfem::varform
 		const std::string &poly_basis_type,
 		const assembler::Assembler &space_assembler,
 		bool iso_parametric,
-		const int n_harmonic_samples,
 		const int quadrature_order,
 		const int mass_quadrature_order,
+		const int n_harmonic_samples,
 		const int integral_constraints,
 		varform::FESpace &space,
 		varform::VarFormBoundaryState &boundary)
