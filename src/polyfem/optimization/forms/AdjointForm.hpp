@@ -4,7 +4,7 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 
 #include <memory>
 #include <utility>

@@ -6,7 +6,7 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 
 #include <Eigen/Core>
 
@@ -80,6 +80,22 @@ namespace polyfem
 
 		void solve(Eigen::VectorXd &x);
 
+		//---------------------------------------------------
+		//-----------------state--------------------
+		//---------------------------------------------------
+
+		/// legacy::State used in the opt
+		std::vector<std::shared_ptr<legacy::State>> states;
+		std::vector<std::shared_ptr<DiffCache>> diff_caches;
+
+		/// @brief variables
+		std::vector<int> variable_sizes;
+		int ndof;
+
+		solver::VariableToSimulationGroup variable_to_simulations;
+
+		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
+
 	private:
 		inline std::string root_path() const
 		{
@@ -99,20 +115,8 @@ namespace polyfem
 		spdlog::sink_ptr file_sink_ = nullptr;
 
 		//---------------------------------------------------
-		//-----------------state--------------------
+		//-----------------output--------------------
 		//---------------------------------------------------
-
-		/// legacy::State used in the opt
-		std::vector<std::shared_ptr<legacy::State>> states;
-		std::vector<std::shared_ptr<DiffCache>> diff_caches;
-
-		/// @brief variables
-		std::vector<int> variable_sizes;
-		int ndof;
-
-		solver::VariableToSimulationGroup variable_to_simulations;
-
-		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 
 	public:
 		/// Directory for output files

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/basis/ElementBases.hpp>
@@ -56,7 +56,7 @@ namespace polyfem::solver
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
 			Eigen::VectorXd X = X_rest;
-			variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
+			variable_to_simulations_.compute_state_variable(ParameterType::Shape, *state_, x, X);
 			return X;
 		}
 

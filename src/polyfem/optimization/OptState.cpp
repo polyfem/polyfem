@@ -11,7 +11,7 @@
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/BuildFromJson.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
 
@@ -215,7 +215,38 @@ namespace polyfem
 
 	void OptState::init_variables()
 	{
-		/* DOFS */
+		const json &parameters = args["parameters"];
+		bool is_auto = parameters.is_string() && parameters.get<std::string>() == "auto";
+
+		// Auto mode.
+		// In auto mode optimization parameters dof is inferred. No need to parse json.
+		if (is_auto)
+		{
+			if (args["variable_to_simulation"].size() != 1)
+			{
+				log_and_throw_adjoint_error(
+					"Auto parameters are only supported with a single variable to simulation.");
+			}
+
+			for (auto &composition : utils::json_as_array(args["variable_to_simulation"][0]["composition"]))
+			{
+				if (composition["type"].get<std::string>() == "slice")
+				{
+					log_and_throw_adjoint_error("Auto parameters do not support slice maps in composition.");
+				}
+			}
+
+			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], states, diff_caches, {});
+
+			ndof = variable_to_simulations.data[0]->inverse_dof();
+			variable_sizes = {ndof};
+
+			return;
+		}
+
+		// Manual mode.
+		// We need to parse optimization parameter blocks to load dof first.
+		variable_sizes.clear();
 		ndof = 0;
 		for (const auto &arg : args["parameters"])
 		{
@@ -227,6 +258,19 @@ namespace polyfem
 		/* variable to simulations */
 		variable_to_simulations = from_json::build_variable_to_simulation_group(
 			args["variable_to_simulation"], states, diff_caches, variable_sizes);
+
+		// Verify varaible dof.
+		for (int i = 0; i < variable_to_simulations.data.size(); ++i)
+		{
+			auto &var2sim = variable_to_simulations.data[i];
+			int inv_dof = var2sim->inverse_dof();
+			if (inv_dof != ndof)
+			{
+				log_and_throw_adjoint_error(
+					"VariableToSimulation {} (type {}) expects {} DOF, but parameters define {} DOF.",
+					i, var2sim->name(), inv_dof, ndof);
+			}
+		}
 	}
 
 	void OptState::create_problem()

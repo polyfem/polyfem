@@ -78,6 +78,20 @@ namespace polyfem::solver
 
 	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim)
 	{
+		// Auto mode, pure inverse eval.
+		if (args.is_string() && args.get<std::string>() == "auto")
+		{
+			Eigen::VectorXd x = var2sim.data[0]->inverse_eval();
+			if (x.size() != ndof)
+			{
+				log_and_throw_adjoint_error("inverse_eval() returned {} DOF, expected {}.", x.size(), ndof);
+			}
+			return x;
+		}
+
+		// Manual mode.
+		// 1. Try get initial specified by user first.
+		// 2. Fallback to inverse_eval.
 		Eigen::VectorXd x;
 		x.setZero(ndof);
 		int accumulative = 0;
@@ -96,8 +110,19 @@ namespace polyfem::solver
 				tmp.setConstant(arg_initial.get<double>());
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else // arg["initial"] is empty array
+			else
+			{
+				// We seem to assume var2sim maps to parameter block in perfect order.
+				// But since either json spec or other part of the code enforce this, it's
+				// dangerous to rely on it.
+				if (var2sim.data.size() != 1)
+				{
+					logger().warn("Computing initial guess via inverse eval with multiple"
+								  " variable to simulation. You should make sure var2sim maps one"
+								  " to one to optimization parameter blocks in perfect order.");
+				}
 				x += var2sim.data[var]->inverse_eval();
+			}
 
 			accumulative += tmp.size();
 			var++;
@@ -165,10 +190,11 @@ namespace polyfem::solver
 			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
 			rules = jse.inject_include(rules);
 
-			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
 
-		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in.contains("/solver/linear"_json_pointer))
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -195,8 +221,7 @@ namespace polyfem::solver
 		}
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
-		if (args.contains("stopping_conditions"))
-			apply_objective_json_spec(args["stopping_conditions"], obj_rules);
+		apply_objective_json_spec(args["stopping_conditions"], obj_rules);
 
 		return args;
 	}

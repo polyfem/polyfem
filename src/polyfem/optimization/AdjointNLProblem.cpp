@@ -36,18 +36,7 @@ namespace polyfem::solver
 			curr_state->get_vertices(V);
 			Eigen::VectorXd X = utils::flatten(V);
 
-			for (auto &p : variables_to_simulation.data)
-			{
-				for (const auto &state : p->states)
-					if (state.get() != curr_state.get())
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				auto state_variable = p->parametrization.eval(x);
-				auto output_indexing = p->get_output_indexing(x);
-				for (int i = 0; i < output_indexing.size(); ++i)
-					X(output_indexing(i)) = state_variable(i);
-			}
+			variables_to_simulation.compute_state_variable(ParameterType::Shape, *curr_state, x, X);
 
 			return X;
 		}
@@ -176,13 +165,10 @@ namespace polyfem::solver
 		{
 			for (const auto &v2sim : variables_to_simulation_.data)
 			{
-				for (const auto &state : v2sim->states)
+				if (v2sim->affect_state(*all_states_[i]))
 				{
-					if (all_states_[i].get() == state.get())
-					{
-						active_state_mask[i] = true;
-						break;
-					}
+					active_state_mask[i] = true;
+					break;
 				}
 			}
 		}
@@ -242,7 +228,7 @@ namespace polyfem::solver
 
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_.data)
-			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
+			if (v->parameter_type() == ParameterType::Shape || v->parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 
 		if (need_rebuild_basis && smooth_line_search)
@@ -385,7 +371,7 @@ namespace polyfem::solver
 		for (const auto &v : variables_to_simulation_.data)
 		{
 			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
+			if (v->parameter_type() == ParameterType::Shape || v->parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 		}
 

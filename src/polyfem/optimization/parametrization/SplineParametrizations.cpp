@@ -93,7 +93,14 @@ namespace polyfem::solver
 			return grad.transpose();
 		}
 	} // namespace
-	Eigen::VectorXd BSplineParametrization1DTo2D::inverse_eval(const Eigen::VectorXd &y)
+
+	int BSplineParametrization1DTo2D::inverse_size(int y_size) const
+	{
+		int control_num = initial_control_points_.rows();
+		return exclude_ends_ ? 2 * (control_num - 2) : 2 * control_num;
+	}
+
+	Eigen::VectorXd BSplineParametrization1DTo2D::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		spline_ = std::make_shared<BSplineParametrization2D>(initial_control_points_, knots_, utils::unflatten(y, 2));
 		invoked_inverse_eval_ = true;
@@ -133,25 +140,6 @@ namespace polyfem::solver
 			return grad.segment(2, (initial_control_points_.rows() - 2) * 2);
 		else
 			return grad;
-	}
-
-	Eigen::VectorXd BSplineParametrization2DTo3D::inverse_eval(const Eigen::VectorXd &y)
-	{
-		spline_ = std::make_shared<BSplineParametrization3D>(initial_control_point_grid_, knots_u_, knots_v_, y);
-		invoked_inverse_eval_ = true;
-		return Eigen::VectorXd();
-	}
-
-	Eigen::VectorXd BSplineParametrization2DTo3D::eval(const Eigen::VectorXd &x) const
-	{
-		if (!invoked_inverse_eval_)
-			log_and_throw_error("Must call inverse eval on this parametrization first!");
-		return Eigen::VectorXd();
-	}
-
-	Eigen::VectorXd BSplineParametrization2DTo3D::apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
-	{
-		return Eigen::VectorXd();
 	}
 
 	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const legacy::State &state, const bool allow_rotations)
@@ -233,7 +221,12 @@ namespace polyfem::solver
 		return opt_idx;
 	}
 
-	Eigen::VectorXd BoundedBiharmonicWeights2Dto3D::inverse_eval(const Eigen::VectorXd &y)
+	int BoundedBiharmonicWeights2Dto3D::inverse_size(int y_size) const
+	{
+		return num_control_vertices_ * (allow_rotations_ ? 6 : 3);
+	}
+
+	Eigen::VectorXd BoundedBiharmonicWeights2Dto3D::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		y_start = y;
 
