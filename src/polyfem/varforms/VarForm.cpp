@@ -333,11 +333,13 @@ namespace polyfem::varform
 		const int n_harmonic_samples,
 		const int integral_constraints,
 		FESpace &space,
-		VarFormBoundaryState &boundary)
+		VarFormBoundaryState &boundary,
+		std::shared_ptr<GeometryMapping> geometry)
 	{
 		using namespace mesh;
 
 		const std::string space_assembler_name = space_assembler.name();
+		const bool build_geom_mapping = geometry == nullptr;
 
 		space.reset();
 		boundary.reset();
@@ -345,13 +347,14 @@ namespace polyfem::varform
 		space.value_dim = value_dim;
 
 		space.bases = std::make_shared<std::vector<basis::ElementBases>>();
-		space.geometry = std::make_shared<GeometryMapping>();
+		space.geometry = build_geom_mapping ? std::make_shared<GeometryMapping>() : std::move(geometry);
+		assert(space.geometry);
 
 		space.disc_orders = disc_orders;
 		space.disc_ordersq = disc_orders;
 
 		Eigen::MatrixXi geom_disc_orders;
-		if (!iso_parametric)
+		if (build_geom_mapping && !iso_parametric)
 		{
 			if (mesh.orders().size() <= 0)
 			{
@@ -367,7 +370,7 @@ namespace polyfem::varform
 
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
 
-		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
+		logger().info("Building {} basis...", (build_geom_mapping ? (iso_parametric ? "isoparametric" : "not isoparametric") : "finite-element"));
 
 		igl::Timer timer;
 		timer.start();
@@ -389,7 +392,7 @@ namespace polyfem::varform
 			}
 			else
 			{
-				if (!iso_parametric)
+				if (build_geom_mapping && !iso_parametric)
 					space.geometry->n_bases = basis::LagrangeBasis3d::build_bases(
 						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
 						geom_disc_orders, geom_disc_ordersq, false, false, has_polys,
@@ -418,7 +421,7 @@ namespace polyfem::varform
 			}
 			else
 			{
-				if (!iso_parametric)
+				if (build_geom_mapping && !iso_parametric)
 					space.geometry->n_bases = basis::LagrangeBasis2d::build_bases(
 						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
 						geom_disc_orders, false, false, has_polys,
@@ -436,8 +439,10 @@ namespace polyfem::varform
 			}
 		}
 
+		const bool use_fe_space_as_geometry = build_geom_mapping ? iso_parametric : space.is_iso_parametric();
+		const double previous_poly_basis_time = timings.computing_poly_basis_time;
 		build_polygonal_basis(mesh, poly_basis_type, space_assembler,
-							  iso_parametric,
+							  use_fe_space_as_geometry,
 							  quadrature_order,
 							  mass_quadrature_order,
 							  n_harmonic_samples,
@@ -445,18 +450,22 @@ namespace polyfem::varform
 							  space,
 							  boundary);
 
-		if (iso_parametric)
-			space.geometry->init_from_fe_space(space);
-		else
+		if (build_geom_mapping)
 		{
-			assert(space.geometry->bases);
-			assert(space.geometry->n_bases > 0);
+			if (iso_parametric)
+				space.geometry->init_from_fe_space(space);
+			else
+			{
+				assert(space.geometry->bases);
+				assert(space.geometry->n_bases > 0);
+			}
 		}
 
 		boundary.total_local_boundary.clear();
 		for (const auto &lb : boundary.local_boundary)
 			boundary.total_local_boundary.emplace_back(lb);
 
+		if (build_geom_mapping)
 		{
 			igl::Timer timer2;
 			logger().debug("Building node mapping...");
@@ -468,7 +477,7 @@ namespace polyfem::varform
 
 		logger().info("n_bases {}", space.n_bases);
 
-		timings.building_basis_time = timer.getElapsedTime();
+		timings.building_basis_time += timer.getElapsedTime();
 		logger().info(" took {}s", timings.building_basis_time);
 
 		logger().info("n bases: {}", space.n_bases);

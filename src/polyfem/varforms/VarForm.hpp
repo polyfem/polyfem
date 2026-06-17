@@ -142,7 +142,8 @@ namespace polyfem
 				const int n_harmonic_samples,
 				const int integral_constraints,
 				FESpace &space,
-				VarFormBoundaryState &boundary);
+				VarFormBoundaryState &boundary,
+				std::shared_ptr<GeometryMapping> geometry = nullptr);
 		private:
 			void build_polygonal_basis(
 				const mesh::Mesh &mesh,

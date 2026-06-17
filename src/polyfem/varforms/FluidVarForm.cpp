@@ -382,41 +382,30 @@ namespace polyfem::varform
 		const auto &all_boundary = boundary_.total_local_boundary;
 		const int prev_bases = space_.n_bases;
 		const int prev_b_size = int(all_boundary.size());
-		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
 		const int order = args["space"]["pressure_discr_order"];
-		std::vector<mesh::LocalBoundary> pressure_local_boundary;
-
-		pressure_space_.reset();
-		pressure_space_.value_dim = 1;
-		pressure_space_.bases = std::make_shared<std::vector<basis::ElementBases>>();
-		pressure_space_.geometry = space_.geometry;
-		pressure_space_.disc_orders.resize(mesh.n_elements());
-		pressure_space_.disc_orders.setConstant(order);
-		pressure_space_.disc_ordersq = pressure_space_.disc_orders;
-
-		if (mesh.is_volume())
-		{
-			const mesh::Mesh3D &tmp_mesh = dynamic_cast<const mesh::Mesh3D &>(mesh);
-			pressure_space_.n_bases = basis::LagrangeBasis3d::build_bases(
-				tmp_mesh, primary_assembler_->name(), quadrature_order, mass_quadrature_order,
-				order, order,
-				args["space"]["basis_type"] == "Bernstein", false,
-				has_polys, false, use_corner_quadrature,
-				*pressure_space_.bases, pressure_local_boundary, pressure_space_.poly_edge_to_data, pressure_space_.mesh_nodes);
-		}
-		else
-		{
-			const mesh::Mesh2D &tmp_mesh = dynamic_cast<const mesh::Mesh2D &>(mesh);
-			pressure_space_.n_bases = basis::LagrangeBasis2d::build_bases(
-				tmp_mesh, primary_assembler_->name(), quadrature_order, mass_quadrature_order,
-				order,
-				args["space"]["basis_type"] == "Bernstein", false,
-				has_polys, false, use_corner_quadrature,
-				*pressure_space_.bases, pressure_local_boundary, pressure_space_.poly_edge_to_data, pressure_space_.mesh_nodes);
-		}
+		Eigen::VectorXi pressure_disc_orders(mesh.n_elements());
+		pressure_disc_orders.setConstant(order);
+		// to avoid serendipity
+		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
+		build_fe_space(
+			mesh,
+			/*iso_parametric=*/true,
+			pressure_disc_orders,
+			pressure_basis_type,
+			args["space"]["poly_basis_type"],
+			*primary_assembler_,
+			/*value_dim=*/1,
+			quadrature_order,
+			mass_quadrature_order,
+			use_corner_quadrature,
+			args["space"]["advanced"]["n_harmonic_samples"],
+			args["space"]["advanced"]["integral_constraints"],
+			pressure_space_,
+			pressure_boundary_,
+			space_.geometry);
 
 		assert(space_.basis_list().size() == pressure_space_.basis_list().size());
 		for (int i = 0; i < int(pressure_space_.basis_list().size()); ++i)
