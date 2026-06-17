@@ -159,12 +159,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
 endif()
 
-set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -304,6 +298,41 @@ target_link_libraries(polyfem PUBLIC units::units)
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
+
+
+################################################################################
+# JSON specifications
+################################################################################
+
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+set(POLYFEM_GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated")
+set(POLYFEM_EMBEDDED_SPEC_DIR "${POLYFEM_GENERATED_INCLUDE_DIR}/polyfem/embedded_spec")
+
+jse_add_spec(polyfem_spec
+	ALIAS polyfem::spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_opt_spec
+	ALIAS polyfem::opt_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_opt.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_objective_spec
+	ALIAS polyfem::objective_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_objective.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATED_INCLUDE_DIR}>")
+add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec)
+target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec)
 
 ################################################################################
 # Optional libraries
