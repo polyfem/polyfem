@@ -85,7 +85,7 @@ namespace polyfem
 
 			/// @brief Get the output space of the variational formulation, for output purposes
 			/// @return Output space
-			virtual io::OutputSpace output_space() const;
+			virtual io::OutputSpace output_space() const = 0;
 			/// @brief Get the output fields of the variational formulation, for output purposes
 			/// @param sample Output sample
 			/// @param solution Solution matrix
@@ -101,7 +101,7 @@ namespace polyfem
 			const io::OutRuntimeData &output_timings() const { return timings; }
 			/// @brief Get the error statistics of the variational formulation, for output purposes
 			/// @return Error statistics
-			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
+			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) = 0;
 
 			/// @brief Save the solution to a JSON file, for output purposes
 			/// @param solution Solution matrix to save
@@ -110,34 +110,24 @@ namespace polyfem
 			/// @brief 	Save the solution to a JSON file, for output purposes
 			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
-			virtual void export_data(const Eigen::MatrixXd &solution) const;
-
-			QuadratureOrders n_boundary_samples() const;
+			virtual void export_data(const Eigen::MatrixXd &solution) const = 0;
 
 		protected:
 			std::string resolve_output_path(const std::string &path) const;
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
-			virtual void set_materials(assembler::Assembler &assembler) const;
-			virtual void reset();
+			void set_materials(assembler::Assembler &assembler, const int size) const;
+			virtual void reset() = 0;
 
-			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
-			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
+			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
 			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
-			virtual void assemble_rhs(const mesh::Mesh &mesh);
-			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
+			virtual void assemble_rhs(const mesh::Mesh &mesh) = 0;
+			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			void prepare();
 			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
 
-			/// @brief Get a constant reference to the geometry mapping bases.
-			/// @return A constant reference to the geometry mapping bases.
-			const std::vector<basis::ElementBases> &geom_bases() const
-			{
-				return iso_parametric ? bases : geom_bases_;
-			}
-
-			void build_polygonal_basis(const mesh::Mesh &mesh);
 			void build_fe_space(
 				mesh::Mesh &mesh,
 				const bool iso_parametric,
@@ -153,9 +143,6 @@ namespace polyfem
 				const int integral_constraints,
 				FESpace &space,
 				VarFormBoundaryState &boundary);
-
-			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
-
 		private:
 			void build_polygonal_basis(
 				const mesh::Mesh &mesh,
@@ -177,12 +164,8 @@ namespace polyfem
 				Eigen::VectorXi &space_in_primitive_to_primitive) const;
 
 		protected:
-			std::vector<int> primitive_to_node() const;
-			std::vector<int> node_to_primitive() const;
+			virtual void build_rhs_assembler() = 0;
 
-			virtual void build_rhs_assembler();
-
-			void initial_solution(Eigen::MatrixXd &solution) const;
 			std::shared_ptr<time_integrator::BDF> make_bdf_time_integrator() const;
 
 			void save_step_state(
@@ -193,20 +176,11 @@ namespace polyfem
 				const bool rest_mesh_written = false) const;
 
 			void ensure_output_sampler() const;
-			std::vector<io::OutputField> common_output_fields(
-				const io::OutputSample &sample,
-				const Eigen::MatrixXd &solution,
-				const io::OutputFieldOptions &options) const;
-			void save_json_stats(
-				const Eigen::MatrixXd &solution,
-				const int n_auxiliary_bases,
-				std::ostream &out) const;
-
 			void save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;
-			void notify_time_step(const int t) const;
+			void notify_time_step(const int t, const int time_steps, const double t0, const double dt) const;
 
 			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
 			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
@@ -215,8 +189,6 @@ namespace polyfem
 			std::shared_ptr<assembler::Problem> problem;
 			Units units;
 			json args;
-
-			bool iso_parametric;
 
 			io::OutStatsData stats;
 
@@ -228,81 +200,6 @@ namespace polyfem
 
 			std::unique_ptr<mesh::Mesh> mesh_;
 
-			/// assembler corresponding to governing physical equations
-			std::shared_ptr<assembler::Assembler> assembler = nullptr;
-			std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
-			std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
-
-			/// FE bases, the size is #elements
-			std::vector<basis::ElementBases> bases;
-
-			/// number of bases
-			int n_bases = 0;
-
-			/// vector of discretization orders, used when not all elements have the same degree, one per element
-			Eigen::VectorXi disc_orders, disc_ordersq;
-
-			/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-			std::vector<basis::ElementBases> geom_bases_;
-			/// number of geometric bases
-			int n_geom_bases = 0;
-
-			/// polyhedra/polygons, used since poly elements have no geometry mapping
-			std::map<int, Eigen::MatrixXd> polys;
-			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
-
-			/// nodes on the boundary of polygonal elements, used for harmonic bases
-			std::map<int, basis::InterfaceData> poly_edge_to_data;
-
-			/// Mapping from input nodes to FE nodes
-			std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
-
-			/// Mapping from input nodes to geometric mapping nodes
-			std::shared_ptr<polyfem::mesh::MeshNodes> geom_mesh_nodes;
-
-			/// Input nodes (including high-order) to polyfem nodes, only for isoparametric
-			Eigen::VectorXi in_node_to_node;
-			/// maps input vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
-			Eigen::VectorXi in_primitive_to_primitive;
-
-			/// used to store assembly values for small problems
-			assembler::AssemblyValsCache ass_vals_cache;
-			assembler::AssemblyValsCache mass_ass_vals_cache;
-			assembler::AssemblyValsCache pure_mass_ass_vals_cache;
-
-			std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-
-			/// Mass matrix, it is computed only for time dependent problems
-			StiffnessMatrix mass;
-			StiffnessMatrix pure_mass;
-			/// average system mass, used for contact with IPC
-			double avg_mass = 0;
-			Eigen::MatrixXd rhs;
-
-			/// list of boundary nodes
-			std::vector<int> boundary_nodes;
-			/// mapping from elements to nodes for all mesh
-			std::vector<mesh::LocalBoundary> total_local_boundary;
-			/// mapping from elements to nodes for dirichlet boundary conditions
-			std::vector<mesh::LocalBoundary> local_boundary;
-			/// mapping from elements to nodes for neumann boundary conditions
-			std::vector<mesh::LocalBoundary> local_neumann_boundary;
-
-			/// mapping from elements to nodes for pressure boundary conditions
-			std::vector<mesh::LocalBoundary> local_pressure_boundary;
-			/// mapping from elements to nodes for pressure boundary conditions
-			std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
-
-			/// per node dirichlet
-			std::vector<int> dirichlet_nodes;
-			std::vector<RowVectorNd> dirichlet_nodes_position;
-			/// per node neumann
-			std::vector<int> neumann_nodes;
-			std::vector<RowVectorNd> neumann_nodes_position;
-
-			double t0 = 0;
-			int time_steps = 0;
-			double dt = 0;
 			std::function<void(int, int, double, double)> time_callback;
 
 			mutable io::OutGeometryData output_geometry_;
