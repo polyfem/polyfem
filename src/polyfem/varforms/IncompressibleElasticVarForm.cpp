@@ -71,13 +71,28 @@ namespace polyfem::varform
 		out << j.dump(4) << std::endl;
 	}
 
+	io::OutStatsData IncompressibleElasticVarForm::compute_errors(const Eigen::MatrixXd &solution)
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return stats;
+
+		double tend = 0;
+		if (!args["time"].is_null())
+			tend = args["time"]["tend"];
+
+		Eigen::MatrixXd displacement, pressure;
+		split_solution(solution, displacement, pressure);
+		stats.compute_errors(space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), *mesh_, *problem, tend, displacement);
+		return stats;
+	}
+
 	void IncompressibleElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		ElasticVarForm::load_mesh(mesh, args);
 		if (mixed_assembler_)
 			mixed_assembler_->set_size(mesh.dimension());
 		if (pressure_assembler_)
-			set_materials(*pressure_assembler_, 1);
+			set_materials(*pressure_assembler_, mesh.dimension());
 	}
 
 	int IncompressibleElasticVarForm::primary_ndof() const

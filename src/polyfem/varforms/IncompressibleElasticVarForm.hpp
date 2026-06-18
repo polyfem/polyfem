@@ -19,6 +19,7 @@ namespace polyfem::varform
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
+		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
