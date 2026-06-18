@@ -82,6 +82,7 @@ set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
 option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
 option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
+option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -114,6 +115,10 @@ include(polyfem_use_colors)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (POLYFEM_SILENCE_DEP_WARNINGS)
+  include(polyfem_silence_dep_warnings)
+endif()
 
 ################################################################################
 # Polyfem library
