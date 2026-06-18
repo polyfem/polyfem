@@ -143,7 +143,8 @@ namespace polyfem
 		states = from_json::build_states(
 			root_path(),
 			args["states"],
-			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads,
+			args["output"]["log"]);
 
 		diff_caches.resize(states.size());
 		for (auto &diff_cache : diff_caches)

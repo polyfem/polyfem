@@ -147,7 +147,8 @@ namespace polyfem::from_json
 	std::vector<std::shared_ptr<legacy::State>> build_states(
 		const std::string &root_path,
 		const json &args,
-		const size_t max_threads)
+		const size_t max_threads,
+		const json &output_log)
 	{
 		std::vector<std::shared_ptr<legacy::State>> states(args.size());
 		for (int i = 0; i < args.size(); ++i)
@@ -158,6 +159,9 @@ namespace polyfem::from_json
 			{
 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 			}
+
+			if (!output_log.empty())
+				cur_args["output"]["log"].merge_patch(output_log);
 
 			states[i] = build_state(cur_args, max_threads);
 		}
