@@ -5,12 +5,10 @@ namespace polyfem::assembler
 {
 	namespace
 	{
-		RowVectorNd zero_point(const int dim)
+		inline RowVectorNd zero_point(const int dim)
 		{
 			assert(dim == 2 || dim == 3);
-			RowVectorNd val(dim);
-			val.setZero();
-			return val;
+			return RowVectorNd::Zero(dim);
 		}
 	} // namespace
 
