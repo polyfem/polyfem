@@ -1898,12 +1898,6 @@
         "doc": "Finite element space ID for the Neumann boundary condition. If not specified, default to the all finite element spaces."
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
-        "type": "include",
-        "spec_file": "interpolation.json",
-        "doc": "interpolation of boundary condition"
-    },
-    {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
         "default": [],
         "type": "list",
