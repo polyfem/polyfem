@@ -31,6 +31,8 @@ namespace polyfem::varform
 		VarForm::reset();
 		space_.reset();
 		pressure_space_.reset();
+		velocity_space_id_ = -1;
+		pressure_space_id_ = -1;
 		boundary_.reset();
 		pressure_boundary_.reset();
 		ass_vals_cache_.init_empty();
@@ -58,6 +60,39 @@ namespace polyfem::varform
 	{
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
+		const json &discr_orders = args.at("space").at("discr_order");
+		if (!discr_orders.is_array())
+			log_and_throw_error("Fluid formulations require a discretization order for each FE space.");
+
+		const json &materials = args.at("materials");
+		if (materials.is_array() && materials.empty())
+			log_and_throw_error("Fluid formulations require at least one material.");
+		const json &first_material = materials.is_array() ? materials.at(0) : materials;
+		velocity_space_id_ = first_material.at("velocity_space_id").get<int>();
+		pressure_space_id_ = first_material.at("pressure_space_id").get<int>();
+		if (velocity_space_id_ == pressure_space_id_)
+			log_and_throw_error("Fluid velocity and pressure must use different FE space IDs.");
+
+		bool has_velocity_space = false;
+		bool has_pressure_space = false;
+		for (const json &entry : discr_orders)
+		{
+			const int fe_space_id = entry.at("fe_space").get<int>();
+			has_velocity_space |= fe_space_id == velocity_space_id_;
+			has_pressure_space |= fe_space_id == pressure_space_id_;
+		}
+		if (!has_velocity_space || !has_pressure_space)
+			log_and_throw_error("Fluid discretization orders must explicitly name the velocity and pressure FE spaces.");
+
+		if (materials.is_array())
+		{
+			for (const json &material : materials)
+			{
+				if (material.at("velocity_space_id").get<int>() != velocity_space_id_
+					|| material.at("pressure_space_id").get<int>() != pressure_space_id_)
+					log_and_throw_error("All fluid materials must use the same velocity and pressure FE space IDs.");
+			}
+		}
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
 		mass_assembler_ = std::make_shared<assembler::Mass>();
@@ -311,7 +346,7 @@ namespace polyfem::varform
 		assert(pure_mass_assembler_);
 
 		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
+		assign_discr_orders(args["space"]["discr_order"], velocity_space_id_, mesh, space_disc_orders);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -384,9 +419,8 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		const int order = args["space"]["pressure_discr_order"];
-		Eigen::VectorXi pressure_disc_orders(mesh.n_elements());
-		pressure_disc_orders.setConstant(order);
+		Eigen::VectorXi pressure_disc_orders;
+		assign_discr_orders(args["space"]["discr_order"], pressure_space_id_, mesh, pressure_disc_orders);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(

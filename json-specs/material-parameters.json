@@ -300,7 +300,9 @@
         "type_name": "Stokes",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -314,7 +316,9 @@
         "type_name": "NavierStokes",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -546,6 +550,18 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Fuild's viscosity"
+    },
+    {
+        "pointer": "/velocity_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the fluid velocity"
+    },
+    {
+        "pointer": "/pressure_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the fluid pressure"
     },
     {
         "pointer": "/elasticity_tensor",

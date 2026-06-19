@@ -17,41 +17,31 @@
     {
         "pointer": "/",
         "type": "list",
-        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
+        "doc": "List of Lagrange element orders selected by volume and/or FE space IDs."
     },
     {
         "pointer": "/*",
         "type": "object",
         "required": [
-            "id",
             "order"
         ],
         "optional": [
+            "id",
             "fe_space"
         ],
-        "doc": "Lagrange element order for the a volume tagged with volume ID for the main unknown."
-    },
-    {
-        "pointer": "/*",
-        "type": "object",
-        "required": [
-            "fe_space",
-            "order"
-        ],
-        "optional": [
-            "id"
-        ],
-        "doc": "Lagrange element order for the a space tagged with FE space ID for the main unknown."
+        "doc": "Lagrange element order, optionally restricted to a volume selection and/or FE space."
     },
     {
         "pointer": "/*/id",
         "type": "int",
-        "doc": "Volume selection ID to apply the discr_order to."
+        "default": -1,
+        "doc": "Volume selection ID to apply the discr_order to; -1 applies to all volumes."
     },
     {
         "pointer": "/*/fe_space",
         "type": "int",
-        "doc": "FE space ID to apply the discr_order to."
+        "default": -1,
+        "doc": "FE space ID to apply the discr_order to; -1 applies to all spaces."
     },
     {
         "pointer": "/*/id",
