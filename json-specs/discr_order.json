@@ -1,0 +1,71 @@
+[
+    {
+        "pointer": "/",
+        "default": 1,
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    },
+    {
+        "pointer": "/",
+        "type": "file",
+        "extensions": [
+            ".txt",
+            ".bin"
+        ],
+        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
+    },
+    {
+        "pointer": "/",
+        "type": "list",
+        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "order"
+        ],
+        "optional": [
+            "fe_space"
+        ],
+        "doc": "Lagrange element order for the a volume tagged with volume ID for the main unknown."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "fe_space",
+            "order"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Lagrange element order for the a space tagged with FE space ID for the main unknown."
+    },
+    {
+        "pointer": "/*/id",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/*/fe_space",
+        "type": "int",
+        "doc": "FE space ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/*/id",
+        "type": "list",
+        "doc": "List of volume selection IDs to apply the discr_order to."
+    },
+    {
+        "pointer": "/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/*/order",
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    }
+]
