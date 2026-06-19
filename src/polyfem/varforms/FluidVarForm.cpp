@@ -61,8 +61,6 @@ namespace polyfem::varform
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 		const json &discr_orders = args.at("space").at("discr_order");
-		if (!discr_orders.is_array())
-			log_and_throw_error("Fluid formulations require a discretization order for each FE space.");
 
 		const json &materials = args.at("materials");
 		if (materials.is_array() && materials.empty())
@@ -73,16 +71,19 @@ namespace polyfem::varform
 		if (velocity_space_id_ == pressure_space_id_)
 			log_and_throw_error("Fluid velocity and pressure must use different FE space IDs.");
 
-		bool has_velocity_space = false;
-		bool has_pressure_space = false;
-		for (const json &entry : discr_orders)
+		if (discr_orders.is_array())
 		{
-			const int fe_space_id = entry.at("fe_space").get<int>();
-			has_velocity_space |= fe_space_id == velocity_space_id_;
-			has_pressure_space |= fe_space_id == pressure_space_id_;
+			bool has_velocity_space = false;
+			bool has_pressure_space = false;
+			for (const json &entry : discr_orders)
+			{
+				const int fe_space_id = entry.at("fe_space").get<int>();
+				has_velocity_space |= fe_space_id == velocity_space_id_;
+				has_pressure_space |= fe_space_id == pressure_space_id_;
+			}
+			if (!has_velocity_space || !has_pressure_space)
+				log_and_throw_error("Fluid discretization-order lists must explicitly name the velocity and pressure FE spaces.");
 		}
-		if (!has_velocity_space || !has_pressure_space)
-			log_and_throw_error("Fluid discretization orders must explicitly name the velocity and pressure FE spaces.");
 
 		if (materials.is_array())
 		{

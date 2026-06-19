@@ -361,7 +361,9 @@
         "required": [
             "type",
             "E",
-            "nu"
+            "nu",
+            "displacement_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -390,7 +392,9 @@
         "required": [
             "type",
             "lambda",
-            "mu"
+            "mu",
+            "displacement_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -430,7 +434,9 @@
         "type": "object",
         "type_name": "Bilaplacian",
         "required": [
-            "type"
+            "type",
+            "solution_space_id",
+            "auxiliary_space_id"
         ],
         "optional": [
             "id",
@@ -561,7 +567,25 @@
         "pointer": "/pressure_space_id",
         "type": "int",
         "min": 0,
-        "doc": "FE space ID for the fluid pressure"
+        "doc": "FE space ID for pressure"
+    },
+    {
+        "pointer": "/displacement_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for displacement"
+    },
+    {
+        "pointer": "/solution_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the primary solution"
+    },
+    {
+        "pointer": "/auxiliary_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the auxiliary solution"
     },
     {
         "pointer": "/elasticity_tensor",

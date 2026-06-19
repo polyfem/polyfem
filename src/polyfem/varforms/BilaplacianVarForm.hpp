@@ -63,6 +63,8 @@ namespace polyfem::varform
 
 		FESpace space_;
 		FESpace pressure_space_;
+		int solution_space_id_ = -1;
+		int auxiliary_space_id_ = -1;
 
 		VarFormBoundaryState boundary_;
 		VarFormBoundaryState pressure_boundary_;
