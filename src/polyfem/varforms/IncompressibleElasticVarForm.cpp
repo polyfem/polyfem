@@ -29,7 +29,6 @@ namespace polyfem::varform
 		pressure_ass_vals_cache_.init_empty();
 		mixed_assembler_ = nullptr;
 		pressure_assembler_ = nullptr;
-		use_avg_pressure = true;
 		time_integrator = nullptr;
 	}
 
@@ -127,11 +126,11 @@ namespace polyfem::varform
 
 		if (space_.disc_orders.maxCoeff() != space_.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
-		assert(space_.poly_edge_to_data.empty() && "mixed formulations do not support polygonal bases");
+		if (!space_.poly_edge_to_data.empty())
+			log_and_throw_error("Polygonal bases are not supported in mixed formulations!");
 
 		const auto &all_boundary = boundary_.total_local_boundary;
 		const int prev_bases = space_.n_bases;
-		const int prev_b_size = int(all_boundary.size());
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
@@ -184,9 +183,6 @@ namespace polyfem::varform
 
 		rebuild_node_positions(space_.basis_list(), boundary_.dirichlet_nodes, boundary_.dirichlet_nodes_position);
 		rebuild_node_positions(space_.basis_list(), boundary_.neumann_nodes, boundary_.neumann_nodes_position);
-
-		const bool has_neumann = !boundary_.local_neumann_boundary.empty() || int(boundary_.local_boundary.size()) < prev_b_size;
-		use_avg_pressure = !has_neumann;
 
 		for (int i = prev_bases; i < space_.n_bases; ++i)
 			for (int d = 0; d < mesh.dimension(); ++d)

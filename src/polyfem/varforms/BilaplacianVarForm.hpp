@@ -86,7 +86,6 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler_ = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler_ = nullptr;
 
-		bool use_avg_pressure = true;
 		double t0 = 0;
 		int time_steps = 0;
 		double dt = 0;

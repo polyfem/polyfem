@@ -358,6 +358,8 @@ namespace polyfem::varform
 
 		if (space_.disc_orders.maxCoeff() != space_.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
+		if (!space_.poly_edge_to_data.empty())
+			log_and_throw_error("Polygonal bases are not supported in mixed formulations!");
 
 		if (space_.n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
@@ -375,7 +377,6 @@ namespace polyfem::varform
 			mass_ass_vals_cache_.init_empty(true);
 			pure_mass_ass_vals_cache_.init_empty(true);
 		}
-		assert(space_.poly_edge_to_data.empty() && "mixed formulations do not support polygonal bases");
 
 		const auto &all_boundary = boundary_.total_local_boundary;
 		const int prev_bases = space_.n_bases;
