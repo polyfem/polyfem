@@ -1,5 +1,4 @@
 # hocgv-miso: miso-generated Jacobian validity solvers
-# Replaces the deprecated bezier library.
 # License: see hocgv-miso repo
 
 if(TARGET miso)
