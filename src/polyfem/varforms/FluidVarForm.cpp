@@ -336,7 +336,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			velocity_space_id_);
 	}
 
 	void FluidVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)

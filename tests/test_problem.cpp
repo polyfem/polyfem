@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/Helmholtz.hpp>
 #include <polyfem/assembler/LinearElasticity.hpp>
@@ -23,12 +24,59 @@ using namespace polyfem::mesh;
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;
 
+namespace
+{
+	class GenericTensorProblemAccess : public GenericTensorProblem
+	{
+	public:
+		using GenericTensorProblem::GenericTensorProblem;
+		using GenericTensorProblem::has_boundary;
+	};
+} // namespace
+
 json get_params()
 {
 	return {
 		{"k", k},
 		{"lambda", lambda},
 		{"mu", mu}};
+}
+
+TEST_CASE("generic tensor problem selects finite element space data", "[problem]")
+{
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["rhs"] = json::array({
+		{{"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
+		{{"fe_space", 1}, {"value", 300}},
+	});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", json::array({0, 0})}, {"interpolation", json::array()}},
+		{{"id", 2}, {"fe_space", 1}, {"value", 300}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 1, 2,
+		3, 4;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, pts, 0, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2, 2)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(4, 2)));
+
+	problem.rhs(assembler, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values.array().isApproxToConstant(300));
+
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, 1));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
 }
 
 TEST_CASE("franke 2d", "[problem]")

@@ -294,7 +294,8 @@ namespace polyfem::varform
 	std::shared_ptr<assembler::RhsAssembler> BilaplacianVarForm::build_rhs_assembler(
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
-		const assembler::AssemblyValsCache &ass_vals_cache)
+		const assembler::AssemblyValsCache &ass_vals_cache,
+		const int fe_space_id)
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
@@ -307,7 +308,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			n_bases, 1, bases, space_.geometry_basis_list(), ass_vals_cache, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			fe_space_id);
 	}
 
 	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -493,7 +495,7 @@ namespace polyfem::varform
 		else
 		{
 			Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
-			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_);
+			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_, auxiliary_space_id_);
 			const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 			const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
 			tmp_rhs_assembler->set_bc(
