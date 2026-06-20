@@ -7,4 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'miso' via hocgv-miso")
 
-add_subdirectory("${HOCGV_MISO_DIR}" "${CMAKE_BINARY_DIR}/hocgv-miso-build")
+include(CPM)
+CPMAddPackage("gh:fsichetti/hocgv-miso#4ef6504487f375e5866aa7dcd488b6239553e1a0")
