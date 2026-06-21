@@ -224,6 +224,37 @@ namespace
 		return l2g;
 	}
 
+	int prism_edge_order(int cid, int edge_id,
+						 const Eigen::VectorXi &discr_ordersp, const Eigen::VectorXi &discr_ordersq,
+						 const Mesh3D &mesh)
+	{
+		if (!mesh.is_prism(cid))
+			return discr_ordersp(cid);
+
+		const auto pv = prism_vertices_local_to_global(mesh, cid);
+
+		Eigen::Matrix<int, 9, 2> pev;
+		pev.row(0) << pv[0], pv[1];
+		pev.row(1) << pv[1], pv[2];
+		pev.row(2) << pv[2], pv[0];
+		pev.row(3) << pv[3], pv[4];
+		pev.row(4) << pv[4], pv[5];
+		pev.row(5) << pv[5], pv[3];
+		pev.row(6) << pv[0], pv[3];
+		pev.row(7) << pv[1], pv[4];
+		pev.row(8) << pv[2], pv[5];
+
+		for (int le = 0; le < 9; ++le)
+		{
+			const auto pidx = mesh.get_index_from_element_edge(cid, pev(le, 0), pev(le, 1));
+			if (pidx.edge == edge_id)
+				return le < 6 ? discr_ordersp(cid) : discr_ordersq(cid);
+		}
+
+		assert(false);
+		return discr_ordersp(cid);
+	};
+
 	int lowest_order_elem_on_edge(const polyfem::mesh::NCMesh3D &mesh, const Eigen::VectorXi &discr_orders, const int eid)
 	{
 		auto elem_list = mesh.edge_neighs(eid);
@@ -632,24 +663,9 @@ namespace
 		{
 			const auto index = e[le];
 			auto neighs = mesh.edge_neighs(index.edge);
-			// int min_q = discr_order.size() > 0 ? discr_order(c) : 0;
 
-			// TODO prism: not conforming
-			// for (auto cid : neighs)
-			// {
-			// 	min_q = std::min(min_q, discr_order.size() > 0 ? discr_order(cid) : 0);
-			// }
-
-			// if (discr_order.size() > 0 && discr_order(c) > min_q)
-			// {
-			// 	for (int tmp = 0; tmp < q - 1; ++tmp)
-			// 		res.push_back(-le - 10);
-			// }
-			// else
-			{
-				auto node_ids = nodes.node_ids_from_edge(index, (le < 6 ? p : q) - 1);
-				res.insert(res.end(), node_ids.begin(), node_ids.end());
-			}
+			auto node_ids = nodes.node_ids_from_edge(index, (le < 6 ? p : q) - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 		assert(res.size() == size_t(6 + n_edge_nodes));
 
@@ -657,43 +673,81 @@ namespace
 		for (int lf = 0; lf < f.rows(); ++lf)
 		{
 			const auto index = f[lf];
-			const auto other_cell = mesh.switch_element(index).element;
 
-			// TODO prism: not conforming
-			//  const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) > discr_order(other_cell);
-
-			// if (skip_other)
-			// {
-			// 	for (int tmp = 0; tmp < n_loc_f; ++tmp)
-			// 		res.push_back(-lf - 1);
-			// }
-			// else
-			{
-				// todo prism, nodes are not necessarly a square
-				auto node_ids = nodes.node_ids_from_face(index, lf < 2 ? (p - 2) : ((q - 1) * (p - 1)));
-				// assert(node_ids.size() == n_loc_f);
-				res.insert(res.end(), node_ids.begin(), node_ids.end());
-			}
+			// todo prism, nodes are not necessarly a square
+			auto node_ids = nodes.node_ids_from_face(index, lf < 2 ? (p - 2) : (p - 1), lf < 2 ? -1 : (q - 1));
+			assert((lf < 2 && node_ids.size() == n_face_nodest) || (lf >= 2 && node_ids.size() == n_face_nodesq));
+			// assert(node_ids.size() == n_loc_f);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes));
 
 		// cells
 		if (n_cell_nodes > 0)
 		{
-			// TODO: implement me internal prism nodes
-			log_and_throw_error("Prism internal nodes not implemented yet");
-
 			const auto index = f[0];
 
 			auto node_ids = nodes.node_ids_from_cell(index, q - 1);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 
+		// Prism local-node ordering from MeshNodes primitive traversal can differ
+		// from autogen prism basis local ordering, especially for higher q.
+		// Reorder all local nodes by matching autogen local coordinates in physical space.
+		{
+			Eigen::MatrixXd local_nodes;
+			autogen::prism_nodes_3d(p, q, local_nodes);
+			assert(local_nodes.rows() == (int)res.size());
+
+			auto map_ref_to_phys = [&mesh, &v](const Eigen::RowVector3d &uvw) -> Eigen::RowVector3d {
+				const double u = uvw(0);
+				const double vv = uvw(1);
+				const double w = uvw(2);
+
+				const double N0 = (1.0 - u - vv) * (1.0 - w);
+				const double N1 = u * (1.0 - w);
+				const double N2 = vv * (1.0 - w);
+				const double N3 = (1.0 - u - vv) * w;
+				const double N4 = u * w;
+				const double N5 = vv * w;
+
+				return N0 * mesh.point(v[0]) + N1 * mesh.point(v[1]) + N2 * mesh.point(v[2]) + N3 * mesh.point(v[3]) + N4 * mesh.point(v[4]) + N5 * mesh.point(v[5]);
+			};
+
+			std::vector<int> reordered(res.size(), -1);
+			std::vector<bool> used(res.size(), false);
+
+			for (int i = 0; i < local_nodes.rows(); ++i)
+			{
+				const Eigen::RowVector3d target = map_ref_to_phys(local_nodes.row(i));
+				double best = std::numeric_limits<double>::infinity();
+				int best_j = -1;
+				for (int j = 0; j < (int)res.size(); ++j)
+				{
+					if (used[j])
+						continue;
+					const double d2 = (nodes.node_position(res[j]) - target).squaredNorm();
+					if (d2 < best)
+					{
+						best = d2;
+						best_j = j;
+					}
+				}
+				assert(best_j >= 0);
+				reordered[i] = res[best_j];
+				used[best_j] = true;
+			}
+
+			res.swap(reordered);
+		}
+
 		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 
-	void pyramid_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
+	void pyramid_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &discr_ordersq, std::vector<int> &res, MeshNodes &nodes)
 	{
+		// discr_ordersq is only used for non conforming bases!!!!
+
 		assert(mesh.is_pyramid(c));
 
 		if (p == 0)
@@ -780,11 +834,27 @@ namespace
 		assert(res.size() == size_t(5));
 
 		// Edges
+
 		for (int le = 0; le < e.rows(); ++le)
 		{
 			const auto index = e[le];
-			auto node_ids = nodes.node_ids_from_edge(index, p - 1);
-			res.insert(res.end(), node_ids.begin(), node_ids.end());
+
+			auto neighs = mesh.edge_neighs(index.edge);
+			int min_p = discr_order.size() > 0 ? discr_order(c) : 0;
+
+			for (auto cid : neighs)
+				min_p = std::min(min_p, prism_edge_order(cid, index.edge, discr_order, discr_ordersq, mesh));
+
+			if (!is_geom_bases && discr_order.size() > 0 && discr_order(c) > min_p)
+			{
+				for (int tmp = 0; tmp < p - 1; ++tmp)
+					res.push_back(-le - 10);
+			}
+			else
+			{
+				auto node_ids = nodes.node_ids_from_edge(index, p - 1);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 		assert(res.size() == size_t(5 + n_edge_nodes));
 
@@ -792,10 +862,28 @@ namespace
 		for (int lf = 0; lf < f.rows(); ++lf)
 		{
 			const auto index = f[lf];
+			const auto other_cell = mesh.switch_element(index).element;
+			const bool is_tri_face = lf < 4;
 
-			int n_loc_face = (lf < 4) ? (p - 2) : (p - 1);
-			auto node_ids = nodes.node_ids_from_face(index, n_loc_face);
-			res.insert(res.end(), node_ids.begin(), node_ids.end());
+			const bool skip_other =
+				other_cell >= 0 && (discr_order(c) > discr_order(other_cell) || (!is_tri_face && mesh.is_prism(other_cell) && discr_order(c) > discr_ordersq(other_cell)));
+
+			if (!is_geom_bases && skip_other)
+			{
+				const int nn = is_tri_face ? (p > 2 ? (p - 2) : 0) : (p - 1);
+				const int n_loc_face = is_tri_face ? (nn * (nn + 1) / 2) : (nn * nn);
+
+				for (int tmp = 0; tmp < n_loc_face; ++tmp)
+					res.push_back(-lf - 1);
+				continue;
+			}
+			else
+			{
+				const int n_loc_face = is_tri_face ? (p > 2 ? (p - 2) : 0) : (p - 1);
+
+				auto node_ids = nodes.node_ids_from_face(index, n_loc_face);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 		assert(res.size() == size_t(5 + n_edge_nodes + n_face_nodes));
 
@@ -951,7 +1039,7 @@ namespace
 			// todo non conforming prisms
 			else if (mesh.is_pyramid(c))
 			{
-				pyramid_local_to_global(discr_order, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
+				pyramid_local_to_global(is_geom_bases, discr_order, mesh, c, discr_ordersp, discr_ordersq, element_nodes_id[c], nodes);
 
 				auto v = pyramid_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 4, 3> fvt;
@@ -1748,18 +1836,16 @@ Eigen::VectorXi LagrangeBasis3d::hex_face_local_nodes(const bool serendipity, co
 
 Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q, const Mesh3D &mesh, Navigation3D::Index index)
 {
-	const int c = index.element;
+	const int c = index.element; // c is global elem id
 	assert(mesh.is_prism(c));
 
 	// Local to global mapping of node indices
 	const auto l2g = prism_vertices_local_to_global(mesh, c);
-
 	const int global_n_edges_nodes = (p - 1) * 6 + (q - 1) * 3;
 
 	if (mesh.n_face_vertices(index.face) == 3)
 	{
 		const int nn = p > 2 ? (p - 2) : 0;
-		const int n_edge_nodes = (p - 1) * 6;
 		const int n_face_nodes = nn * (nn + 1) / 2;
 
 		// Extract requested interface
@@ -2060,17 +2146,19 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 	}
 	else
 	{
-		const int nn = q - 1;
-		const int n_edge_nodes = nn * 12;
-		const int n_face_nodes = nn * nn;
+		const int n_edge_nodes = 2 * (p - 1) + 2 * (q - 1); // 4 edges
+		const int n_face_nodes = (p - 1) * (q - 1);
+		const int n_tri_face_nodes = p > 2 ? (p - 2) : 0;
 
 		// Extract requested interface
-		Eigen::VectorXi result(4 + nn * 4 + n_face_nodes);
+		Eigen::VectorXi result(4 + n_edge_nodes + n_face_nodes);
+		// v nodes
 		result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
 		result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
 		result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
 		result[3] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(mesh.next_around_face(index))).vertex);
 
+		// e nodes
 		Eigen::Matrix<Navigation3D::Index, 9, 1> e;
 		Eigen::Matrix<int, 9, 2> ev;
 		ev.row(0) << l2g[0], l2g[1];
@@ -2089,7 +2177,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 		for (int le = 0; le < e.rows(); ++le)
 		{
-			const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+			const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1)); // get random face for an edge
 			e[le] = l_index;
 		}
 
@@ -2118,22 +2206,44 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 			}
 			assert(le < 9);
 
-			if (!reverse)
-			{
+			// found le, know reverse
 
-				for (int i = 0; i < q - 1; ++i)
+			if (le < 6)
+			{
+				if (!reverse)
 				{
-					result[ii++] = 6 + le * (q - 1) + i;
+
+					for (int i = 0; i < p - 1; ++i)
+					{
+						result[ii++] = 6 + le * (p - 1) + i;
+					}
+				}
+				else
+				{
+					for (int i = 0; i < p - 1; ++i)
+					{
+						result[ii++] = 6 + (le + 1) * (p - 1) - i - 1;
+					}
 				}
 			}
 			else
 			{
-				for (int i = 0; i < q - 1; ++i)
+				if (!reverse)
 				{
-					result[ii++] = 6 + (le + 1) * (q - 1) - i - 1;
+
+					for (int i = 0; i < q - 1; ++i)
+					{
+						result[ii++] = 6 + 6 * (p - 1) + (le - 6) * (q - 1) + i;
+					}
+				}
+				else
+				{
+					for (int i = 0; i < q - 1; ++i)
+					{
+						result[ii++] = 6 + 6 * (p - 1) + (le - 5) * (q - 1) - i - 1;
+					}
 				}
 			}
-
 			tmp = mesh.next_around_face(tmp);
 		}
 
@@ -2155,22 +2265,22 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 		assert(lf < fv.rows());
 
 		if (n_face_nodes == 1)
+		{
 			result[ii++] = 6 + global_n_edges_nodes + lf;
-		else if (n_face_nodes != 0)
+		}
+		else if (n_face_nodes == 2)
 		{
 			Eigen::MatrixXd nodes;
-			autogen::q_nodes_3d(q, nodes);
-			// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
-			// Local to global mapping of node indices
+			autogen::prism_nodes_3d(p, q, nodes);
 
-			// Extract requested interface
-			std::array<int, 4> idx;
+			std::array<int, 4> idx; // local node id of the 4 face vertices
 			for (int lv = 0; lv < 4; ++lv)
 			{
 				idx[lv] = find_index(l2g.begin(), l2g.end(), index.vertex);
 				index = mesh.next_around_face(index);
 			}
-			Eigen::Matrix<double, 4, 3> pos(4, 3);
+
+			Eigen::Matrix<double, 4, 3> pos(4, 3); // local (on ref) coordinates of the 4 face corner nodes
 			int cnt = 0;
 			for (int i : idx)
 			{
@@ -2179,41 +2289,41 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 			const Eigen::RowVector3d bary = pos.colwise().mean();
 
-			const int offset = 8 + n_edge_nodes;
+			const int offset = 6 + global_n_edges_nodes;
+
 			bool found = false;
-			for (int lff = 0; lff < 6; ++lff)
+			for (int lff = 0; lff < 3; ++lff)
 			{
-				Eigen::Matrix<double, 4, 3> loc_nodes = nodes.block<4, 3>(offset + lff * n_face_nodes, 0);
+				int start_row = offset + lff * n_face_nodes + 2 * n_tri_face_nodes; // skip tri face nodes
+
+				Eigen::MatrixXd loc_nodes = nodes.block(start_row, 0, n_face_nodes, 3);
 				Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
 
-				if ((node_bary - bary).norm() < 1e-10)
+				double dist = (node_bary - bary).norm();
+
+				if (dist < 1e-10) // find which quad face
 				{
-					int sum = 0;
-					for (int m = 0; m < 4; ++m)
+					auto t = pos.row(0);
+					int min_n = -1;
+					double min_dis = 10000;
+					for (int n = 0; n < n_face_nodes; ++n)
 					{
-						auto t = pos.row(m);
-						int min_n = -1;
-						double min_dis = 10000;
-
-						for (int n = 0; n < 4; ++n)
+						double dis = (loc_nodes.row(n) - t).squaredNorm();
+						if (dis < min_dis)
 						{
-							double dis = (loc_nodes.row(n) - t).squaredNorm();
-							if (dis < min_dis)
-							{
-								min_dis = dis;
-								min_n = n;
-							}
+							min_dis = dis;
+							min_n = n;
 						}
-
-						assert(min_n >= 0);
-						assert(min_n < 4);
-
-						sum += min_n;
-
-						result[ii++] = 8 + n_edge_nodes + min_n + lf * n_face_nodes;
 					}
 
-					assert(sum == 6); // 0 + 1 + 2 + 3
+					assert(min_n >= 0);
+					assert(min_n < n_face_nodes);
+
+					int final_idx = 6 + global_n_edges_nodes + min_n + lf * n_face_nodes + 2 * n_tri_face_nodes;
+					result[ii++] = final_idx;
+
+					final_idx = 6 + global_n_edges_nodes + (min_n + 1) % 2 + lf * n_face_nodes + 2 * n_tri_face_nodes;
+					result[ii++] = final_idx;
 
 					found = true;
 					assert(lff == lf);
@@ -2225,7 +2335,77 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 			assert(found);
 		}
+		else if (n_face_nodes == 4)
+		{
+			std::cout << "ASdasdasd" << std::endl;
+			// This is ONLY for non conforming, not to support 33 prism face
+			assert(p == 3 && q == 3);
 
+			Eigen::MatrixXd nodes;
+			autogen::prism_nodes_3d(p, q, nodes);
+
+			std::array<int, 4> idx;
+			Navigation3D::Index idx_it = index;
+			for (int lv = 0; lv < 4; ++lv)
+			{
+				idx[lv] = find_index(l2g.begin(), l2g.end(), idx_it.vertex);
+				idx_it = mesh.next_around_face(idx_it);
+			}
+
+			Eigen::Matrix<double, 4, 3> pos;
+			for (int lv = 0; lv < 4; ++lv)
+				pos.row(lv) = nodes.row(idx[lv]);
+
+			const int start_row = 6 + global_n_edges_nodes + lf * n_face_nodes + 2 * n_tri_face_nodes;
+			Eigen::MatrixXd loc_nodes = nodes.block(start_row, 0, n_face_nodes, 3);
+
+			const std::array<Eigen::Vector2d, 4> uv = {{
+				Eigen::Vector2d(1.0 / 3.0, 1.0 / 3.0),
+				Eigen::Vector2d(1.0 / 3.0, 2.0 / 3.0),
+				Eigen::Vector2d(2.0 / 3.0, 1.0 / 3.0),
+				Eigen::Vector2d(2.0 / 3.0, 2.0 / 3.0),
+			}};
+
+			std::array<bool, 4> used = {{false, false, false, false}};
+
+			for (const auto &st : uv)
+			{
+				const double s = st(0);
+				const double t = st(1);
+
+				const Eigen::RowVector3d target =
+					(1.0 - s) * (1.0 - t) * pos.row(0)
+					+ s * (1.0 - t) * pos.row(1)
+					+ s * t * pos.row(2)
+					+ (1.0 - s) * t * pos.row(3);
+
+				int best_n = -1;
+				double best = std::numeric_limits<double>::infinity();
+
+				for (int n = 0; n < n_face_nodes; ++n)
+				{
+					if (used[n])
+						continue;
+
+					const double d = (loc_nodes.row(n) - target).squaredNorm();
+					if (d < best)
+					{
+						best = d;
+						best_n = n;
+					}
+				}
+
+				assert(best_n >= 0);
+				assert(best < 1e-12);
+
+				used[best_n] = true;
+				result[ii++] = start_row + best_n;
+			}
+		}
+		else
+		{
+			assert(n_face_nodes == 0);
+		}
 		assert(ii == result.size());
 		return result;
 	}
@@ -3142,7 +3322,9 @@ int LagrangeBasis3d::build_bases(
 							const int global_index = element_nodes_id[e][j];
 
 							if (global_index >= 0)
+							{
 								b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
+							}
 							else
 							{
 								const int lnn = max_p > 2 ? (discr_order - 2) : 0;
@@ -3206,36 +3388,74 @@ int LagrangeBasis3d::build_bases(
 									}
 
 									bool found = false;
-									for (int lf = 0; lf < 4; ++lf)
+
+									// check min neighbour cell type
+									if (mesh.is_simplex(min_cell))
 									{
-										for (int lv = 0; lv < 4; ++lv)
+										for (int lf = 0; lf < 4; ++lf)
 										{
-											index = mesh.get_index_from_element(min_cell, lf, lv);
-
-											if (index.vertex == edge_index.vertex)
+											for (int lv = 0; lv < 4; ++lv)
 											{
-												if (index.edge != edge_index.edge)
-												{
-													auto tmp = index;
-													index = mesh.switch_edge(tmp);
+												index = mesh.get_index_from_element(min_cell, lf, lv);
 
+												if (index.vertex == edge_index.vertex)
+												{
 													if (index.edge != edge_index.edge)
 													{
-														index = mesh.switch_edge(mesh.switch_face(tmp));
+														auto tmp = index;
+														index = mesh.switch_edge(tmp);
+
+														if (index.edge != edge_index.edge)
+														{
+															index = mesh.switch_edge(mesh.switch_face(tmp));
+														}
 													}
+													found = true;
+													break;
 												}
-												found = true;
+											}
+
+											if (found)
 												break;
+										}
+									}
+									else if (mesh.is_prism(min_cell))
+									{
+										for (int lf = 0; lf < 5; ++lf) // loop only 2 faces
+										{
+											for (int lv = 0; lv < 5; ++lv) // quad face 4 vertices + 1 dummmy
+											{
+												index = mesh.get_index_from_element(min_cell, lf, lv); // correct for all elem types
+												if (index.vertex == edge_index.vertex)
+												{
+													if (index.edge != edge_index.edge)
+													{
+														auto tmp = index;
+														index = mesh.switch_edge(tmp);
+
+														if (index.edge != edge_index.edge)
+														{
+															index = mesh.switch_edge(mesh.switch_face(tmp));
+														}
+													}
+													found = true;
+													break;
+												}
 											}
 										}
 
-										if (found)
-											break;
-									}
+										if (mesh.n_face_vertices(index.face) == 4)
+											index = mesh.switch_face(index); // switch to tri face
 
-									assert(found);
-									assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
-									assert(index.element != edge_index.element);
+										assert(mesh.n_face_vertices(index.face) == 3);
+										assert(found);
+										assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
+										assert(index.element != edge_index.element);
+									}
+									else if (mesh.is_pyramid(min_cell))
+									{
+										assert(false);
+									}
 								}
 								else
 								{
@@ -3254,12 +3474,27 @@ int LagrangeBasis3d::build_bases(
 
 								const auto other_cell = index.element;
 								assert(other_cell >= 0);
-								assert(discr_order > discr_ordersp(other_cell));
 
-								auto indices = tet_face_local_nodes(discr_order, mesh, index);
+								Eigen::VectorXi indices;
 								Eigen::MatrixXd lnodes;
-								autogen::p_nodes_3d(discr_order, lnodes);
 								Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
+
+								if (mesh.is_simplex(other_cell))
+								{
+									assert(discr_order > discr_ordersp(other_cell));
+									indices = tet_face_local_nodes(discr_order, mesh, index);
+									autogen::p_nodes_3d(discr_order, lnodes);
+								}
+								else if (mesh.is_prism(other_cell))
+								{
+									assert(discr_order > discr_ordersp(other_cell));
+									indices = prism_face_local_nodes(discr_order, 1, mesh, index);
+									autogen::prism_nodes_3d(discr_order, 1, lnodes);
+								}
+								else
+								{
+									assert(false);
+								}
 
 								if (j < 4)
 									node_position = lnodes.row(indices(0));
@@ -3310,8 +3545,181 @@ int LagrangeBasis3d::build_bases(
 					}
 					else if (mesh.is_pyramid(e))
 					{
-						// TODO
-						assert(false);
+						for (int j = 0; j < n_el_bases; ++j)
+						{
+							const int global_index = element_nodes_id[e][j];
+
+							if (global_index >= 0)
+							{
+								b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
+							}
+							else
+							{
+								const int lnn = discr_order - 1;
+								const int ln_edge_nodes = discr_order - 1;
+								const int ln_face_nodes = lnn * lnn;
+
+								const auto v = pyramid_vertices_local_to_global(mesh, e);
+								Navigation3D::Index index;
+								if (global_index <= -30)
+								{
+									assert(false);
+								}
+								else if (global_index <= -10)
+								{
+									const int le = -(global_index + 10);
+									assert(le >= 0 && le < 4);
+									assert(j >= 5 && j < 5 + 8 * ln_edge_nodes);
+
+									Eigen::Matrix<int, 4, 2> ev;
+									ev.row(0) << v[0], v[1];
+									ev.row(1) << v[1], v[2];
+									ev.row(2) << v[2], v[3];
+									ev.row(3) << v[3], v[0];
+
+									const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
+									auto neighs = mesh.edge_neighs(edge_index.edge);
+									int min_p = discr_order;
+									int min_cell = edge_index.element;
+
+									for (auto cid : neighs)
+									{
+										const int cid_order =
+											prism_edge_order(cid, edge_index.edge, discr_ordersp, discr_ordersq, mesh);
+
+										if (cid_order < min_p)
+										{
+											min_p = cid_order;
+											min_cell = cid;
+										}
+									}
+
+									bool found = false;
+									if (mesh.is_prism(min_cell))
+									{
+										for (int lf = 0; lf < 5; ++lf) // loop only 2 faces
+										{
+											for (int lv = 0; lv < 5; ++lv) // quad face 4 vertices + 1 dummmy
+											{
+												index = mesh.get_index_from_element(min_cell, lf, lv); // correct for all elem types
+												if (index.vertex == edge_index.vertex)
+												{
+													if (index.edge != edge_index.edge)
+													{
+														auto tmp = index;
+														index = mesh.switch_edge(tmp);
+
+														if (index.edge != edge_index.edge)
+														{
+															index = mesh.switch_edge(mesh.switch_face(tmp));
+														}
+													}
+													found = true;
+													break;
+												}
+											}
+											if (found)
+												break;
+										}
+
+										if (mesh.n_face_vertices(index.face) == 3)
+											index = mesh.switch_face(index); // switch to quad face
+
+										assert(mesh.n_face_vertices(index.face) == 4);
+										assert(found);
+										assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
+										assert(index.element != edge_index.element);
+									}
+									else
+									{
+										assert(false);
+									}
+								}
+								else
+								{
+									const auto lf = -(global_index + 1);
+									assert(lf == 4);
+
+									index = mesh.switch_element(find_quad_face(mesh, e, v[0], v[1], v[2], v[3]));
+								}
+
+								const auto other_cell = index.element;
+								assert(other_cell >= 0);
+
+								Eigen::VectorXi indices;
+								Eigen::MatrixXd lnodes;
+								Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
+
+								if (mesh.is_prism(other_cell))
+								{
+									assert(
+										(global_index <= -10 && discr_order > prism_edge_order(other_cell, index.edge, discr_ordersp, discr_ordersq, mesh))
+										|| (global_index > -10 && (discr_order > discr_ordersp(other_cell) || discr_order > discr_ordersq(other_cell))));
+
+									indices = prism_face_local_nodes(discr_order, discr_order, mesh, index);
+									autogen::prism_nodes_3d(discr_order, discr_order, lnodes);
+								}
+								else
+								{
+									assert(false);
+								}
+
+								const int tri_face_nodes = (discr_order - 1) * (discr_order - 2) / 2;
+								const int quad_face_start = 5 + 8 * ln_edge_nodes + 4 * tri_face_nodes;
+
+								if (j < 5)
+									node_position = lnodes.row(indices(0));
+								else if (j < 5 + 8 * ln_edge_nodes)
+								{
+									const int le = -(global_index + 10);
+									const int edge_offset = j - (5 + le * ln_edge_nodes);
+									assert(j >= 5 + le * ln_edge_nodes);
+									assert(j < 5 + (le + 1) * ln_edge_nodes);
+
+									// we are on a quad face
+									node_position = lnodes.row(indices(4 + edge_offset));
+								}
+								else if (j >= quad_face_start && j < quad_face_start + ln_face_nodes)
+								{
+									auto me_indices = pyramid_face_local_nodes(discr_order, mesh, mesh.switch_element(index));
+									int ii;
+									for (ii = 0; ii < me_indices.size(); ++ii)
+									{
+										if (me_indices(ii) == j)
+											break;
+									}
+
+									assert(ii >= 4 + 4 * ln_edge_nodes);
+									assert(ii < me_indices.size());
+
+									node_position = lnodes.row(indices(ii));
+								}
+								else
+									assert(false);
+
+								const auto &other_bases = bases[other_cell];
+								// Eigen::MatrixXd w;
+								std::vector<AssemblyValues> w;
+								other_bases.evaluate_bases(node_position, w);
+
+								assert(b.bases[j].global().size() == 0);
+
+								for (long i = 0; i < w.size(); ++i)
+								{
+									assert(w[i].val.size() == 1);
+									if (std::abs(w[i].val(0)) < 1e-8)
+										continue;
+
+									// assert(other_bases.bases[i].global().size() == 1);
+									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+									{
+										const auto &other_global = other_bases.bases[i].global()[ii];
+										// logger().trace("e {} j {} gid {}", e, j, other_global.index);
+										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
+									}
+								}
+							}
+						}
 					}
 					else
 					{
