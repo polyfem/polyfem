@@ -14,6 +14,8 @@ set(SOURCES
     NonlinearElasticVarForm.cpp
     FluidVarForm.hpp
     FluidVarForm.cpp
+    OperatorSplittingVarForm.hpp
+    OperatorSplittingVarForm.cpp
     IncompressibleElasticVarForm.hpp
     IncompressibleElasticVarForm.cpp
     BilaplacianVarForm.hpp

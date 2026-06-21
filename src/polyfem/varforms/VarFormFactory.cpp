@@ -6,6 +6,7 @@
 #include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
+#include <polyfem/varforms/OperatorSplittingVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
 
 namespace polyfem::varform
@@ -78,7 +79,7 @@ namespace polyfem::varform
 			return false;
 
 		if (formulation == "OperatorSplitting")
-			return false;
+			return args.contains("time") && !args["time"].is_null();
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
 			return formulation == "Stokes"
@@ -109,6 +110,8 @@ namespace polyfem::varform
 			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
 		if (formulation == "NavierStokes")
 			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>() : nullptr;
+		if (formulation == "OperatorSplitting")
+			return (!has_contact && !has_constraints) ? std::make_shared<OperatorSplittingVarForm>() : nullptr;
 		if (formulation == "IncompressibleLinearElasticity")
 			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<IncompressibleElasticVarForm>() : nullptr;
 		if (formulation == "Bilaplacian")
