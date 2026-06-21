@@ -28,6 +28,7 @@ namespace
 		json args;
 		file >> args;
 		args["root_path"] = path;
+		args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 		args["/output/directory"_json_pointer] = "";
 		args["/output/log/quiet"_json_pointer] = true;
 		args["/output/log/level"_json_pointer] = "error";
