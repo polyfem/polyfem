@@ -31,6 +31,12 @@ namespace polyfem::assembler
 		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
+		void assign_stress_tensor_per_component(const OutputData &data,
+												 const int all_size,
+												 const ElasticityTensorType &type,
+												 std::vector<std::pair<std::string, Eigen::MatrixXd>> &all,
+												 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
+
 	protected:
 		void assign_stress_tensor(const OutputData &data,
 								  const int all_size,
