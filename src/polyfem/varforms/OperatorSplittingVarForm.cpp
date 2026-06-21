@@ -778,7 +778,7 @@ namespace polyfem::varform
 		lapl_assembler.assemble(mesh_->is_volume(), pressure_space_.n_bases, pressure_space_.basis_list(), gbases, pressure_ass_vals_cache_, 0, pressure_stiffness);
 
 		mixed_assembler_->assemble(mesh_->is_volume(), pressure_space_.n_bases, space_.n_bases, pressure_space_.basis_list(), space_.basis_list(), gbases,
-								  pressure_ass_vals_cache_, ass_vals_cache_, 0, mixed_stiffness);
+								   pressure_ass_vals_cache_, ass_vals_cache_, 0, mixed_stiffness);
 		mass_assembler_->set_size(mesh_->dimension());
 		mass_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), gbases, mass_ass_vals_cache_, 0, velocity_mass, true);
 		mixed_stiffness = mixed_stiffness.transpose();
