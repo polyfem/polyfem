@@ -131,7 +131,7 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: log_and_throw_error("P=1 static validity: constant evaluator not yet integrated"); break;
+				case 1: invalid = JacEval_P1Tri(rv<3>(cp,o,0), rv<3>(cp,o,1)) <= 0; break;
 				case 2: invalid = !solve(make_p2tri_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 3: invalid = !solve(make_p3tri_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 4: invalid = !solve(make_p4tri_val(cp, o), {0.0}, 0, true).empty(); break;
@@ -142,7 +142,7 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: log_and_throw_error("P=1 static validity: constant evaluator not yet integrated"); break;
+				case 1: invalid = JacEval_P1Tet(rv<4>(cp,o,0), rv<4>(cp,o,1), rv<4>(cp,o,2)) <= 0; break;
 				case 2: invalid = !solve(make_p2tet_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 3: invalid = !solve(make_p3tet_val(cp, o), {0.0}, 0, true).empty(); break;
 				default: throw std::invalid_argument("Order not supported");
@@ -181,7 +181,7 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: log_and_throw_error("P=1 static validity: constant evaluator not yet integrated"); break;
+				case 1: invalid = JacEval_P1Tri(rv<3>(cp,o,0), rv<3>(cp,o,1)) <= 0; break;
 				case 2: invalid = !solve(make_p2tri_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 3: invalid = !solve(make_p3tri_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 4: invalid = !solve(make_p4tri_val(cp, o), {0.0}, 0, true).empty(); break;
@@ -192,7 +192,7 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: log_and_throw_error("P=1 static validity: constant evaluator not yet integrated"); break;
+				case 1: invalid = JacEval_P1Tet(rv<4>(cp,o,0), rv<4>(cp,o,1), rv<4>(cp,o,2)) <= 0; break;
 				case 2: invalid = !solve(make_p2tet_val(cp, o), {0.0}, 0, true).empty(); break;
 				case 3: invalid = !solve(make_p3tet_val(cp, o), {0.0}, 0, true).empty(); break;
 				default: throw std::invalid_argument("Order not supported");
