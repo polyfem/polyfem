@@ -332,7 +332,9 @@
         "type_name": "OperatorSplitting",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
