@@ -25,6 +25,7 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <algorithm>
@@ -65,6 +66,11 @@ namespace polyfem::varform
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(primary_assembler_->name() == formulation);
+		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		{
+			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(primary_assembler_))
+				elastic_assembler->set_use_robust_jacobian();
+		}
 		mass_assembler_ = std::make_shared<assembler::Mass>();
 		pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
 
@@ -890,6 +896,22 @@ namespace polyfem::varform
 		append_averaged_values();
 		append_material_fields();
 		append_body_ids();
+
+		if ((paraview_options["jacobian_validity"] || (explicit_fields && options.export_field("validity")))
+			&& has_element_samples
+			&& sample.primitive_ids.size() == 0)
+		{
+			const auto invalid_elements = utils::count_invalid(
+				mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), solution);
+			Eigen::MatrixXd validity = Eigen::MatrixXd::Zero(output_rows, 1);
+			for (int i = 0; i < sample.element_ids.size(); ++i)
+			{
+				validity(i) = std::find(
+					invalid_elements.begin(), invalid_elements.end(), sample.element_ids(i))
+					!= invalid_elements.end();
+			}
+			fields.push_back({"validity", validity, io::OutputField::Association::Point});
+		}
 
 		if (problem->is_time_dependent())
 		{
