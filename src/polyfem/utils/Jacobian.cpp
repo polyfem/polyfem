@@ -127,6 +127,7 @@ namespace polyfem::utils
 	{
 		std::vector<int> invalidList;
 #ifdef POLYFEM_WITH_MISO
+		initialize();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
@@ -168,6 +169,7 @@ namespace polyfem::utils
 			if (invalid)
 				invalidList.push_back(e);
 		}
+		cleanup();
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
 #endif
@@ -183,6 +185,7 @@ namespace polyfem::utils
 		const double threshold)
 	{
 #ifdef POLYFEM_WITH_MISO
+		initialize();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
@@ -225,8 +228,12 @@ namespace polyfem::utils
 				}
 			}
 			if (invalid)
+			{
+				cleanup();
 				return {false, e, Tree{}};
+			}
 		}
+		cleanup();
 		return {true, -1, Tree{}};
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
@@ -243,6 +250,7 @@ namespace polyfem::utils
 		const double threshold)
 	{
 #ifdef POLYFEM_WITH_MISO
+		initialize();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
@@ -286,8 +294,12 @@ namespace polyfem::utils
 				}
 			}
 			if (!valid)
+			{
+				cleanup();
 				return false;
+			}
 		}
+		cleanup();
 		return true;
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
@@ -304,6 +316,7 @@ namespace polyfem::utils
 		double precision)
 	{
 #ifdef POLYFEM_WITH_MISO
+		initialize();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
@@ -365,6 +378,7 @@ namespace polyfem::utils
 			}
 		}
 
+		cleanup();
 		return {step, invalid_id, invalid_step, tree};
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
