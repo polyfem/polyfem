@@ -242,10 +242,10 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: valid = lower(minimize(make_p1tri_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
-				case 2: valid = lower(minimize(make_p2tri_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
-				case 3: valid = lower(minimize(make_p3tri_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
-				case 4: valid = lower(minimize(make_p4tri_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
+				case 1: valid = lower(minimize(make_p1tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 2: valid = lower(minimize(make_p2tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 3: valid = lower(minimize(make_p3tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 4: valid = lower(minimize(make_p4tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -253,9 +253,9 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: valid = lower(minimize(make_p1tet_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
-				case 2: valid = lower(minimize(make_p2tet_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
-				case 3: valid = lower(minimize(make_p3tet_cgv(cp1, cp2, o), 1e-6, {0.0})) >= 1.0; break;
+				case 1: valid = lower(minimize(make_p1tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 2: valid = lower(minimize(make_p2tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 3: valid = lower(minimize(make_p3tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -294,7 +294,7 @@ namespace polyfem::utils
 
 		auto run = [&](auto problem, int e) {
 			Info info;
-			auto result = minimize(std::move(problem), precision, {0.0}, 0, -infinity, 0., &info);
+			auto result = minimize(std::move(problem), precision, {0.0}, 0, 0., 0., &info);
 			const double t_lo = lower(result);
 			if (t_lo < step)
 			{
