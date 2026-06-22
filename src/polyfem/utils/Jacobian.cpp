@@ -16,6 +16,9 @@ using namespace polyfem::assembler;
 
 namespace polyfem::utils
 {
+#ifdef POLYFEM_WITH_MISO
+	static constexpr unsigned MAX_ITER = 1'000'000;
+#endif
 	Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem)
 	{
 		if (n_elem < 0)
@@ -129,6 +132,14 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
 
+		auto run_solve = [&](auto problem, int e) {
+			Info info;
+			auto sols = solve(std::move(problem), {0.0}, MAX_ITER, true, 0., &info);
+			if (!info.success())
+				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
+			return !sols.empty();
+		};
+
 		for (int e = 0; e < n_elem; ++e)
 		{
 			const int o = e * n_per;
@@ -138,9 +149,9 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1: invalid = JacEval_P1Tri(rv<3>(cp,o,0,tri1_perm), rv<3>(cp,o,1,tri1_perm)) <= 0; break;
-				case 2: invalid = !solve(make_p2tri_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 3: invalid = !solve(make_p3tri_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 4: invalid = !solve(make_p4tri_val(cp, o), {0.0}, 0, true).empty(); break;
+				case 2: invalid = run_solve(make_p2tri_val(cp, o), e); break;
+				case 3: invalid = run_solve(make_p3tri_val(cp, o), e); break;
+				case 4: invalid = run_solve(make_p4tri_val(cp, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -149,8 +160,8 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1: invalid = JacEval_P1Tet(rv<4>(cp,o,0,tet1_perm), rv<4>(cp,o,1,tet1_perm), rv<4>(cp,o,2,tet1_perm)) <= 0; break;
-				case 2: invalid = !solve(make_p2tet_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 3: invalid = !solve(make_p3tet_val(cp, o), {0.0}, 0, true).empty(); break;
+				case 2: invalid = run_solve(make_p2tet_val(cp, o), e); break;
+				case 3: invalid = run_solve(make_p3tet_val(cp, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -177,8 +188,17 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
 
-		// Tree reconstruction from static validators is best-effort:
-		// not all generated Val classes carry subdivision history.
+		auto run_solve = [](auto problem, int e) {
+			Info info;
+			auto sols = solve(std::move(problem), {0.0}, MAX_ITER, true, 0., &info);
+			if (!info.success())
+			{
+				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
+				return true; // ambiguous counts as invalid
+			}
+			return !sols.empty();
+		};
+
 		for (int e = 0; e < n_elem; ++e)
 		{
 			const int o = e * n_per;
@@ -188,9 +208,9 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1: invalid = JacEval_P1Tri(rv<3>(cp,o,0,tri1_perm), rv<3>(cp,o,1,tri1_perm)) <= 0; break;
-				case 2: invalid = !solve(make_p2tri_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 3: invalid = !solve(make_p3tri_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 4: invalid = !solve(make_p4tri_val(cp, o), {0.0}, 0, true).empty(); break;
+				case 2: invalid = run_solve(make_p2tri_val(cp, o), e); break;
+				case 3: invalid = run_solve(make_p3tri_val(cp, o), e); break;
+				case 4: invalid = run_solve(make_p4tri_val(cp, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -199,8 +219,8 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1: invalid = JacEval_P1Tet(rv<4>(cp,o,0,tet1_perm), rv<4>(cp,o,1,tet1_perm), rv<4>(cp,o,2,tet1_perm)) <= 0; break;
-				case 2: invalid = !solve(make_p2tet_val(cp, o), {0.0}, 0, true).empty(); break;
-				case 3: invalid = !solve(make_p3tet_val(cp, o), {0.0}, 0, true).empty(); break;
+				case 2: invalid = run_solve(make_p2tet_val(cp, o), e); break;
+				case 3: invalid = run_solve(make_p3tet_val(cp, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -229,6 +249,17 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 		const int n_elem = static_cast<int>(bases.size());
 
+		auto run_minimize = [](auto problem, int e) {
+			Info info;
+			auto result = minimize(std::move(problem), 1., {0.0}, MAX_ITER, 0., 0., &info);
+			if (!info.success())
+			{
+				logger().warn("Jacobian minimize gave up at element {} after {} iterations", e, info.numIterations);
+				return false; // ambiguous counts as invalid
+			}
+			return lower(result) >= 1.0;
+		};
+
 		for (int e = 0; e < n_elem; ++e)
 		{
 			const int o = e * n_per;
@@ -237,10 +268,10 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: valid = lower(minimize(make_p1tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
-				case 2: valid = lower(minimize(make_p2tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
-				case 3: valid = lower(minimize(make_p3tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
-				case 4: valid = lower(minimize(make_p4tri_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 1: valid = run_minimize(make_p1tri_cgv(cp1, cp2, o), e); break;
+				case 2: valid = run_minimize(make_p2tri_cgv(cp1, cp2, o), e); break;
+				case 3: valid = run_minimize(make_p3tri_cgv(cp1, cp2, o), e); break;
+				case 4: valid = run_minimize(make_p4tri_cgv(cp1, cp2, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -248,9 +279,9 @@ namespace polyfem::utils
 			{
 				switch (order)
 				{
-				case 1: valid = lower(minimize(make_p1tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
-				case 2: valid = lower(minimize(make_p2tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
-				case 3: valid = lower(minimize(make_p3tet_cgv(cp1, cp2, o), 1., {0.0}, 0, 0.)) >= 1.0; break;
+				case 1: valid = run_minimize(make_p1tet_cgv(cp1, cp2, o), e); break;
+				case 2: valid = run_minimize(make_p2tet_cgv(cp1, cp2, o), e); break;
+				case 3: valid = run_minimize(make_p3tet_cgv(cp1, cp2, o), e); break;
 				default: throw std::invalid_argument("Order not supported");
 				}
 			}
@@ -289,8 +320,15 @@ namespace polyfem::utils
 
 		auto run = [&](auto problem, int e) {
 			Info info;
-			auto result = minimize(std::move(problem), precision, {0.0}, 0, 0., 0., &info);
+			auto result = minimize(std::move(problem), precision, {0.0}, MAX_ITER, 0., 0., &info);
 			const double t_lo = lower(result);
+			if (!info.success())
+			{
+				if (t_lo <= 0)
+					log_and_throw_error("Jacobian minimize gave up at element {} with step size 0 after {} iterations", e, info.numIterations);
+				else
+					logger().warn("Jacobian minimize gave up at element {} after {} iterations (step={})", e, info.numIterations, t_lo);
+			}
 			if (t_lo < step)
 			{
 				step = t_lo;
