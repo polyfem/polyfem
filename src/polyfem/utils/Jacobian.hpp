@@ -1,7 +1,9 @@
 #pragma once
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <fmt/ostream.h>
+#include <sstream>
+#include <spdlog/fmt/fmt.h>
+
 
 namespace polyfem::utils
 {
@@ -131,4 +133,12 @@ namespace polyfem::utils
 } // namespace polyfem::utils
 
 template<>
-struct fmt::formatter<polyfem::utils::Tree> : fmt::ostream_formatter {};
+struct fmt::formatter<polyfem::utils::Tree> : fmt::formatter<fmt::string_view>
+{
+	format_context::iterator format(const polyfem::utils::Tree &tree, fmt::format_context &ctx) const
+	{
+		std::ostringstream oss;
+		oss << tree;
+		return fmt::formatter<fmt::string_view>::format(oss.str(), ctx);
+	}
+};
