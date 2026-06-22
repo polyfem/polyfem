@@ -350,7 +350,7 @@ namespace polyfem::solver
 				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1);
 			}
 
-			logger().log(step == 0 ? spdlog::level::error : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
+			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
 						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, full tree {}, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree, subdivision_tree.depth());
 		}
 
