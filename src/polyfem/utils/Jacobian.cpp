@@ -98,13 +98,24 @@ namespace polyfem::utils
 #ifdef POLYFEM_WITH_MISO
 	namespace
 	{
-		void build_tree(Tree &tree, const std::vector<unsigned> &path, unsigned n_children)
+		void build_tree(Tree &tree, const std::vector<unsigned> &path, unsigned n_spatial)
 		{
 			Tree *dst = &tree;
 			for (const auto idx : path)
 			{
-				dst->add_children(n_children);
-				dst = &(dst->child(idx));
+				if (idx < n_spatial)
+				{
+					// Lower time half: spatial child idx
+					dst->add_children(n_spatial);
+					dst = &(dst->child(idx));
+				}
+				else if (idx < 2 * n_spatial)
+				{
+					// Upper time half: same spatial child, shifted index
+					dst->add_children(n_spatial);
+					dst = &(dst->child(idx - n_spatial));
+				}
+				// else: time-only subdivision, skip
 			}
 		}
 	} // anonymous namespace
@@ -278,8 +289,8 @@ namespace polyfem::utils
 		double invalid_step = 1.0;
 		Tree tree;
 
-		// CGV scheme[0] subdivides all variables: 2^(dim+1) children
-		const unsigned n_children = (dim == 2) ? 8u : 16u;
+		// Spatial split: 2^dim children (ignore time subdivisions)
+		const unsigned n_children = (dim == 2) ? 4u : 8u;
 
 		auto run = [&](auto problem, int e) {
 			Info info;

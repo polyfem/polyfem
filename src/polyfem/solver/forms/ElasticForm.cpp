@@ -71,31 +71,34 @@ namespace polyfem::solver
 					break;
 				case 4:
 				{
-					Eigen::VectorXd tmp = 1 - A.col(1).array() - A.col(2).array();
-					A.col(2) += A.col(0) + A.col(1);
+					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
+					A.col(2) += A.col(1);
+					A.col(1) = A.col(0);
 					A.col(0) = tmp;
 					break;
 				}
 				case 5:
 				{
-					Eigen::VectorXd tmp = 1. - A.col(1).array();
-					A.col(2) += A.col(1);
+					Eigen::VectorXd tmp = 1. - A.col(0).array();
 					A.col(1) += A.col(0);
 					A.col(0) = tmp;
 					break;
 				}
 				case 6:
 				{
-					Eigen::VectorXd tmp = A.col(0) + A.col(1);
-					A.col(1) = 1. - A.col(0).array();
-					A.col(0) = tmp;
+					Eigen::VectorXd tmp0 = A.col(0);
+					Eigen::VectorXd tmp1 = A.col(1);
+					A.col(0) = tmp1;
+					A.col(1) = 1. - tmp0.array() - tmp1.array();
+					A.col(2) += tmp0 + tmp1;
 					break;
 				}
 				case 7:
 				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
-					A.col(1) += A.col(2);
-					A.col(2) = tmp;
+					Eigen::VectorXd tmp = A.col(1);
+					A.col(0) += tmp;
+					A.col(1) = 1. - tmp.array();
+					A.col(2) += tmp;
 					break;
 				}
 				default:
