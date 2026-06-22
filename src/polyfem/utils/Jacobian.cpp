@@ -100,20 +100,15 @@ namespace polyfem::utils
 	{
 		void build_tree(Tree &tree, const std::vector<unsigned> &path, unsigned n_spatial)
 		{
+			// Space-time child i maps to spatial child i/2 (even=lower t, odd=upper t).
+			// Children beyond 2*n_spatial are time-only subdivisions and are skipped.
 			Tree *dst = &tree;
 			for (const auto idx : path)
 			{
-				if (idx < n_spatial)
+				if (idx < 2 * n_spatial)
 				{
-					// Lower time half: spatial child idx
 					dst->add_children(n_spatial);
-					dst = &(dst->child(idx));
-				}
-				else if (idx < 2 * n_spatial)
-				{
-					// Upper time half: same spatial child, shifted index
-					dst->add_children(n_spatial);
-					dst = &(dst->child(idx - n_spatial));
+					dst = &(dst->child(idx / 2));
 				}
 				// else: time-only subdivision, skip
 			}
