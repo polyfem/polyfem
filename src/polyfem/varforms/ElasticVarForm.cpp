@@ -907,8 +907,8 @@ namespace polyfem::varform
 			for (int i = 0; i < sample.element_ids.size(); ++i)
 			{
 				validity(i) = std::find(
-					invalid_elements.begin(), invalid_elements.end(), sample.element_ids(i))
-					!= invalid_elements.end();
+								  invalid_elements.begin(), invalid_elements.end(), sample.element_ids(i))
+							  != invalid_elements.end();
 			}
 			fields.push_back({"validity", validity, io::OutputField::Association::Point});
 		}
