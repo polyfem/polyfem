@@ -8,6 +8,7 @@
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 #include <polyfem/varforms/OperatorSplittingVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
+#include <polyfem/varforms/ThermoElasticVarForm.hpp>
 
 namespace polyfem::varform
 {
@@ -74,12 +75,15 @@ namespace polyfem::varform
 			&& args.at("/boundary_conditions/periodic_boundary/linear_displacement_offset"_json_pointer).size() > 0)
 			return false;
 
+		if (formulation == "OperatorSplitting")
+			return args.contains("time") && !args["time"].is_null();
+
+		if (formulation == "ThermoElasticity")
+			return true;
+
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		if (!assembler)
 			return false;
-
-		if (formulation == "OperatorSplitting")
-			return args.contains("time") && !args["time"].is_null();
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
 			return formulation == "Stokes"
@@ -98,13 +102,17 @@ namespace polyfem::varform
 		if (!supports(formulation, args))
 			return nullptr;
 
-		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
 								  || has_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
 		const bool has_constraints =
 			has_entries(args, "/constraints/hard"_json_pointer)
 			|| has_entries(args, "/constraints/soft"_json_pointer);
+
+		if (formulation == "ThermoElasticity")
+			return (!has_pressure && !has_constraints) ? std::make_shared<ThermoElasticVarForm>() : nullptr;
+
+		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 
 		if (formulation == "Stokes")
 			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;

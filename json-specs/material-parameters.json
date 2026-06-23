@@ -449,6 +449,27 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "ThermoElasticity",
+        "required": [
+            "type",
+            "displacement_space_id",
+            "temperature_space_id"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "elastic_material",
+            "elastic_formulation",
+            "E",
+            "nu",
+            "lambda",
+            "mu"
+        ],
+        "doc": "Thermoelastic mixed material. The displacement block currently reuses an elastic material model and the temperature block uses a scalar Laplacian."
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "AMIPS",
         "required": [
             "type"
@@ -576,6 +597,22 @@
         "type": "int",
         "min": 0,
         "doc": "FE space ID for displacement"
+    },
+    {
+        "pointer": "/temperature_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for temperature"
+    },
+    {
+        "pointer": "/elastic_material",
+        "type": "string",
+        "doc": "Elastic material model used by the displacement block"
+    },
+    {
+        "pointer": "/elastic_formulation",
+        "type": "string",
+        "doc": "Elastic formulation used by the displacement block"
     },
     {
         "pointer": "/solution_space_id",
