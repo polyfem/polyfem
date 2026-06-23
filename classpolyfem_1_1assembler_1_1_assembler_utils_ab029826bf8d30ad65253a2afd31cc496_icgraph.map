@@ -1,20 +1,32 @@
 <map id="polyfem::assembler::AssemblerUtils::is_elastic_material" name="polyfem::assembler::AssemblerUtils::is_elastic_material">
-<area shape="rect" id="Node000001" title="utility to check if material is one of the elastic materials" alt="" coords="919,80,1071,135"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="668,95,871,120"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="905,110,871,110,871,105,905,105"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="431,5,577,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="729,91,677,68,619,46,573,33,574,28,621,41,680,63,731,86"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a312e1fefb77164111fd598cd8b4521e9" title=" " alt="" coords="388,55,620,95"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="654,96,620,92,620,87,655,91"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab03432dc5cce912fb679a73d93ad334d" title=" " alt="" coords="388,119,620,159"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="655,124,620,128,620,123,654,119"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="407,183,601,223"/>
-<area shape="poly" id="edge9_Node000002_Node000009" title=" " alt="" coords="730,128,621,174,584,186,582,181,619,169,728,123"/>
-<area shape="rect" id="Node000004" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="150,5,298,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="417,21,298,21,298,15,417,15"/>
-<area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="136,21,60,21,60,15,136,15"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7a84ad351ae9f4d38cdad34660fd6585" title=" " alt="" coords="108,87,340,127"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="375,93,340,97,340,91,374,87"/>
-<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="374,127,340,123,340,118,375,122"/>
+<area shape="rect" id="Node000001" title="utility to check if material is one of the elastic materials" alt="" coords="1132,187,1284,242"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1legacy_1_1_state.html#a7121be34db5a0a2d6b5b5ffc90b1387f" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="890,133,1058,173"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1118,194,1050,176,1052,171,1119,189"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1varform.html#a13760d3cf0705a6cac9d9d5a79011cb3" title="Extracts the formulation type from the given JSON arguments." alt="" coords="864,255,1084,295"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="1119,240,1054,257,1052,252,1118,235"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1legacy_1_1_state.html#a0c0600598c4d3ed30a3f1c1a590c9723" title="initialize the polyfem solver with a json settings" alt="" coords="616,5,784,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="933,128,878,93,815,60,783,48,785,43,817,55,881,88,935,123"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a312e1fefb77164111fd598cd8b4521e9" title=" " alt="" coords="584,69,816,109"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="876,133,786,112,787,107,877,128"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab03432dc5cce912fb679a73d93ad334d" title=" " alt="" coords="584,133,816,173"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="876,156,816,156,816,151,876,151"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="603,197,797,237"/>
+<area shape="poly" id="edge10_Node000002_Node000010" title=" " alt="" coords="877,179,787,200,786,195,876,173"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="346,21,494,61"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="603,34,494,40,494,34,602,28"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="108,249,256,274"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="362,70,333,87,306,107,269,144,236,185,193,250,188,247,232,181,265,141,302,103,330,83,359,66"/>
+<area shape="rect" id="Node000006" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,249,60,274"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="94,264,60,264,60,259,94,259"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7a84ad351ae9f4d38cdad34660fd6585" title=" " alt="" coords="304,117,536,157"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="571,114,537,120,536,115,570,109"/>
+<area shape="poly" id="edge9_Node000009_Node000008" title=" " alt="" coords="570,149,536,147,536,141,571,143"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="627,262,773,287"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="850,277,774,277,774,272,850,272"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1varform.html#aabf6642627c1d8074aebcca490a81f86" title="Checks if the given JSON arguments use a VarForm state." alt="" coords="333,305,507,345"/>
+<area shape="poly" id="edge15_Node000011_Node000014" title=" " alt="" coords="851,298,816,303,652,317,508,325,507,320,652,312,816,297,850,293"/>
+<area shape="rect" id="Node000013" href="$main_8cpp.html#ab3a6eb14547a4ecc251f3194ace873c2" title=" " alt="" coords="342,241,498,281"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="613,273,498,268,499,262,613,268"/>
+<area shape="poly" id="edge14_Node000013_Node000005" title=" " alt="" coords="328,264,256,264,256,259,328,259"/>
+<area shape="poly" id="edge16_Node000014_Node000005" title=" " alt="" coords="331,304,230,277,231,272,333,299"/>
 </map>

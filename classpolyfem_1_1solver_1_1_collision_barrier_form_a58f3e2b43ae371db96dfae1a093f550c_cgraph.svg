@@ -124,7 +124,7 @@ var sectionId = 'dynsection-7';
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af18291ed5ba4fb90829002b5cca5a927" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#acd9b6559a40b74543bd4a3d3e7b43366" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="556,-321.5 398,-321.5 398,-280.5 556,-280.5 556,-321.5"/>
 <text text-anchor="start" x="406" y="-309.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Variable</text>
 <text text-anchor="start" x="406" y="-298.5" font-family="Helvetica,sans-Serif" font-size="10.00">ToSimulationGroup::compute</text>
@@ -144,7 +144,7 @@ var sectionId = 'dynsection-7';
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#aa7f73a425012498c55fca81fd8a24ca5" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a8f7a86ff0e508a5d97307f9cff8aaf77" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="544,-262.5 410,-262.5 410,-221.5 544,-221.5 544,-262.5"/>
 <text text-anchor="start" x="418" y="-250.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="start" x="418" y="-239.5" font-family="Helvetica,sans-Serif" font-size="10.00">Tools::map_primitive_to</text>
@@ -164,10 +164,10 @@ var sectionId = 'dynsection-7';
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="733,-274 594,-274 594,-244 733,-244 733,-274"/>
-<text text-anchor="start" x="602" y="-262" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::primitive</text>
-<text text-anchor="middle" x="663.5" y="-251" font-family="Helvetica,sans-Serif" font-size="10.00">_to_node</text>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#aebd4d1f72c28d6ecaf99780138bc0aca" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="726.5,-274 600.5,-274 600.5,-244 726.5,-244 726.5,-274"/>
+<text text-anchor="start" x="608.5" y="-262" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="663.5" y="-251" font-family="Helvetica,sans-Serif" font-size="10.00">::primitive_to_node</text>
 </a>
 </g>
 </g>
@@ -175,18 +175,18 @@ var sectionId = 'dynsection-7';
 <g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
 <g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M544.09,-248.09C556.94,-249.27 570.53,-250.53 583.75,-251.74"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="583.48,-255.23 593.76,-252.67 584.13,-248.26 583.48,-255.23"/>
+<path fill="none" stroke="#63b8ff" d="M544.09,-248.09C558.96,-249.46 574.82,-250.92 589.94,-252.31"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="589.98,-255.83 600.26,-253.27 590.63,-248.86 589.98,-255.83"/>
 </a>
 </g>
 </g>
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" target="_top" xlink:title="check if using iso parametric bases">
-<polygon fill="white" stroke="#666666" points="907.5,-400 798.5,-400 798.5,-370 907.5,-370 907.5,-400"/>
-<text text-anchor="start" x="806.5" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::iso</text>
-<text text-anchor="middle" x="853" y="-377" font-family="Helvetica,sans-Serif" font-size="10.00">_parametric</text>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a09103939ffb7c7e750909cf260903451" target="_top" xlink:title="check if using iso parametric bases">
+<polygon fill="white" stroke="#666666" points="916,-400 790,-400 790,-370 916,-370 916,-400"/>
+<text text-anchor="start" x="798" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="853" y="-377" font-family="Helvetica,sans-Serif" font-size="10.00">::iso_parametric</text>
 </a>
 </g>
 </g>
@@ -194,18 +194,18 @@ var sectionId = 'dynsection-7';
 <g id="edge5_Node000005_Node000006" class="edge">
 <title>Node5&#45;&gt;Node6</title>
 <g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M676.25,-274.14C694.28,-296.38 730.92,-337.74 771,-361 776.49,-364.19 782.45,-366.99 788.55,-369.43"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="787.62,-372.82 798.21,-372.99 790.04,-366.25 787.62,-372.82"/>
+<path fill="none" stroke="#63b8ff" d="M676.25,-274.14C694.28,-296.38 730.92,-337.74 771,-361 774.01,-362.75 777.16,-364.38 780.39,-365.89"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="779.12,-369.16 789.69,-369.88 781.88,-362.72 779.12,-369.16"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1_state.html#a7447e954de5980b45223f7cf49738073" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1109,-400 997,-400 997,-370 1109,-370 1109,-400"/>
-<text text-anchor="start" x="1005" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::has</text>
-<text text-anchor="middle" x="1053" y="-377" font-family="Helvetica,sans-Serif" font-size="10.00">_periodic_bc</text>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abe9d15d78fe8863dab5c3bf3e850a5ad" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1116,-400 990,-400 990,-370 1116,-370 1116,-400"/>
+<text text-anchor="start" x="998" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="1053" y="-377" font-family="Helvetica,sans-Serif" font-size="10.00">::has_periodic_bc</text>
 </a>
 </g>
 </g>
@@ -213,8 +213,8 @@ var sectionId = 'dynsection-7';
 <g id="edge6_Node000006_Node000007" class="edge">
 <title>Node6&#45;&gt;Node7</title>
 <g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M907.58,-385C932.05,-385 961.24,-385 986.96,-385"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="987,-388.5 997,-385 987,-381.5 987,-388.5"/>
+<path fill="none" stroke="#63b8ff" d="M916.11,-385C936.28,-385 958.84,-385 979.69,-385"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="979.78,-388.5 989.78,-385 979.77,-381.5 979.78,-388.5"/>
 </a>
 </g>
 </g>

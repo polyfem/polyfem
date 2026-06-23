@@ -1,124 +1,126 @@
 <map id="polyfem::autogen::p_n_nodes_2d" name="polyfem::autogen::p_n_nodes_2d">
-<area shape="rect" id="Node000001" title=" " alt="" coords="2872,999,3025,1039"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="2671,999,2824,1039"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2858,1022,2824,1022,2824,1017,2858,1017"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1io_1_1_evaluator.html#a389e8aabdd8fe99956da896b5b149a55" title="calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_..." alt="" coords="2161,762,2386,802"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="2728,989,2686,922,2656,888,2621,860,2565,831,2504,811,2443,797,2386,789,2387,784,2444,792,2506,806,2567,827,2624,856,2660,885,2690,919,2733,986"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a938439e2cebaf08e7d5e0437c603164e" title="saves the volume vtu file" alt="" coords="1573,854,1765,894"/>
-<area shape="poly" id="edge73_Node000002_Node000004" title=" " alt="" coords="2730,1053,2687,1112,2658,1141,2624,1166,2560,1198,2502,1220,2449,1233,2397,1237,2345,1235,2288,1228,2154,1203,2061,1185,1989,1166,1922,1135,1842,1084,1789,1038,1742,985,1705,935,1680,896,1685,893,1710,932,1746,982,1793,1034,1846,1080,1924,1131,1991,1161,2062,1180,2155,1198,2289,1223,2345,1230,2397,1232,2448,1227,2501,1215,2558,1193,2621,1161,2654,1137,2683,1108,2726,1049"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1_state.html#aa708cfe19c264bb75b86dead580bb593" title="solves transient navier stokes with operator splitting" alt="" coords="587,954,805,994"/>
-<area shape="poly" id="edge74_Node000002_Node000020" title=" " alt="" coords="2748,1054,2741,1121,2722,1205,2706,1249,2685,1291,2658,1329,2624,1361,2580,1390,2539,1405,2499,1411,2460,1410,2377,1397,2329,1390,2275,1387,1157,1387,1113,1384,1071,1374,1030,1358,991,1338,955,1313,920,1285,857,1222,803,1156,760,1092,705,996,710,993,764,1089,808,1153,861,1219,924,1281,958,1309,994,1333,1032,1353,1072,1369,1114,1379,1157,1382,2275,1382,2329,1385,2377,1391,2461,1404,2499,1406,2537,1400,2577,1385,2621,1357,2654,1326,2681,1289,2701,1247,2717,1204,2736,1120,2742,1053"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#ab2495c2d3e4032f1a97d1a524be947c3" title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ..." alt="" coords="2177,1005,2369,1060"/>
-<area shape="poly" id="edge28_Node000002_Node000021" title=" " alt="" coords="2657,1019,2623,1018,2531,1016,2440,1018,2370,1024,2369,1018,2440,1013,2531,1011,2623,1013,2657,1013"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1io_1_1_evaluator.html#a82b538dc2e93a9f6f0ad6bc8477efe3b" title="checks if mises are not nan" alt="" coords="2190,826,2357,866"/>
-<area shape="poly" id="edge30_Node000002_Node000022" title=" " alt="" coords="2721,990,2678,944,2651,921,2621,903,2555,877,2485,861,2417,852,2357,848,2357,843,2418,846,2486,856,2557,872,2624,898,2654,917,2682,940,2725,987"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1io_1_1_evaluator.html#a55939ec4dd2d7b4b7a662409962219f6" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="2185,698,2361,738"/>
-<area shape="poly" id="edge31_Node000002_Node000023" title=" " alt="" coords="2733,987,2717,946,2694,898,2662,851,2621,811,2591,791,2559,774,2491,749,2423,733,2361,725,2362,720,2424,728,2493,744,2561,769,2594,786,2624,807,2666,847,2698,896,2722,944,2738,985"/>
-<area shape="rect" id="Node000025" href="$classpolyfem_1_1io_1_1_evaluator.html#a6e5d9a97c8247fc720c85232a7d60682" title="compute tensor quantity (ie stress tensor or velocity)" alt="" coords="2184,1085,2363,1125"/>
-<area shape="poly" id="edge35_Node000002_Node000025" title=" " alt="" coords="2703,1049,2665,1067,2623,1082,2556,1096,2487,1105,2363,1110,2363,1105,2487,1099,2555,1091,2622,1077,2663,1062,2700,1044"/>
-<area shape="rect" id="Node000026" href="$namespacepolyfem_1_1utils.html#ab984fbb966c452b34d3a3a3ab929e34e" title=" " alt="" coords="2448,1027,2615,1067"/>
-<area shape="poly" id="edge37_Node000002_Node000026" title=" " alt="" coords="2657,1034,2615,1039,2614,1034,2657,1028"/>
-<area shape="rect" id="Node000027" href="$namespacepolyfem_1_1utils.html#ae60d5a3e782afc99c0c595421a870c1a" title=" " alt="" coords="2448,487,2615,527"/>
-<area shape="poly" id="edge38_Node000002_Node000027" title=" " alt="" coords="2736,986,2694,835,2661,738,2620,643,2583,580,2547,529,2551,526,2588,577,2625,641,2666,736,2699,833,2741,985"/>
-<area shape="rect" id="Node000029" href="$classpolyfem_1_1io_1_1_evaluator.html#a920cb9a19c27f56b607e289a61287711" title=" " alt="" coords="1892,641,2059,681"/>
-<area shape="poly" id="edge61_Node000002_Node000029" title=" " alt="" coords="2737,987,2724,936,2701,873,2667,810,2646,781,2621,756,2590,732,2557,711,2485,679,2409,658,2331,645,2254,640,2181,640,2059,650,2059,644,2181,634,2254,634,2332,640,2410,652,2487,674,2559,707,2593,728,2624,752,2650,778,2672,807,2706,871,2729,934,2742,985"/>
-<area shape="rect" id="Node000044" href="$classpolyfem_1_1io_1_1_evaluator.html#a9796be452325fff18047042e2a9cbca4" title="interpolate the function fun." alt="" coords="2190,1149,2357,1189"/>
-<area shape="poly" id="edge60_Node000002_Node000044" title=" " alt="" coords="2717,1051,2675,1084,2624,1114,2556,1137,2485,1153,2417,1163,2357,1169,2357,1163,2417,1158,2484,1148,2554,1132,2622,1109,2672,1080,2714,1046"/>
-<area shape="rect" id="Node000045" href="$namespacepolyfem_1_1autogen.html#a2e1ff763f9dd7cae9bcfbb2f83d69ddb" title=" " alt="" coords="2440,1243,2623,1283"/>
-<area shape="poly" id="edge62_Node000002_Node000045" title=" " alt="" coords="2736,1053,2719,1092,2694,1138,2663,1185,2624,1227,2595,1245,2592,1241,2621,1223,2659,1182,2690,1136,2714,1090,2731,1051"/>
-<area shape="rect" id="Node000046" href="$namespacepolyfem_1_1autogen.html#a4c1817590e26fc1110e76f75f2d563f2" title=" " alt="" coords="2440,1307,2623,1347"/>
-<area shape="poly" id="edge63_Node000002_Node000046" title=" " alt="" coords="2743,1053,2729,1106,2706,1171,2672,1239,2650,1270,2624,1297,2607,1309,2604,1305,2621,1293,2646,1266,2668,1236,2702,1169,2724,1105,2737,1052"/>
-<area shape="rect" id="Node000047" href="$namespacepolyfem_1_1autogen.html#a510eafb48b84cfe34b5511a009a9b9b9" title=" " alt="" coords="2440,913,2623,953"/>
-<area shape="poly" id="edge64_Node000002_Node000047" title=" " alt="" coords="2683,997,2581,955,2583,950,2685,992"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="2148,804,1766,862,1765,857,2147,798"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#ab6ebc8d7951c52d2ce07506306b63ea0" title="saves the vtu file for time t" alt="" coords="1303,698,1495,738"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1620,849,1433,741,1436,736,1623,845"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#ae5fdb256636278dc9d47358e202aba22" title="exports everytihng, txt, vtu, etc" alt="" coords="1063,526,1255,566"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1357,692,1186,568,1189,564,1360,688"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="1080,669,1237,709"/>
-<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="1289,707,1237,701,1238,696,1290,702"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="855,762,1013,802"/>
-<area shape="poly" id="edge16_Node000005_Node000015" title=" " alt="" coords="1289,736,1013,774,1012,769,1288,730"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="335,563,539,588"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1049,553,539,574,539,569,1049,548"/>
-<area shape="rect" id="Node000008" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,591,271,616"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="321,591,272,597,271,592,321,586"/>
-<area shape="rect" id="Node000009" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,591,60,616"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="109,606,60,606,60,601,109,601"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a5f52fc1a97ba3abe95d80868ab22a949" title="solves nonlinear problems" alt="" coords="853,609,1015,649"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="1069,668,1009,651,1010,646,1071,662"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#aa8dffa9c5caf8ca5082a6814e1c8ed36" title="solves the problems" alt="" coords="356,730,517,770"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="840,612,781,605,717,603,651,608,588,624,546,646,509,674,478,705,456,731,451,728,475,701,506,670,543,641,586,620,650,603,717,597,782,599,840,606"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#a581a91ee028c3d6376f9f0db39194ff3" title="solves transient tensor nonlinear problem" alt="" coords="595,634,797,674"/>
-<area shape="poly" id="edge14_Node000011_Node000014" title=" " alt="" coords="840,641,798,646,797,641,839,636"/>
-<area shape="poly" id="edge12_Node000012_Node000008" title=" " alt="" coords="390,725,218,619,221,614,393,720"/>
-<area shape="rect" id="Node000013" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,730,287,770"/>
-<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="342,753,287,753,287,747,342,747"/>
-<area shape="poly" id="edge15_Node000014_Node000012" title=" " alt="" coords="610,681,588,688,482,732,480,727,586,684,608,676"/>
-<area shape="poly" id="edge27_Node000015_Node000014" title=" " alt="" coords="899,755,855,720,804,688,776,677,778,672,807,684,858,716,902,750"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1_state.html#aaa1977089bd41efb9edca92038b74b74" title="initialize solver" alt="" coords="623,698,769,738"/>
-<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="845,761,769,740,770,735,847,756"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1_state.html#af575faba770a261cb0398a98f0a752b9" title=" " alt="" coords="615,762,777,802"/>
-<area shape="poly" id="edge19_Node000015_Node000017" title=" " alt="" coords="841,785,777,785,777,779,841,779"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1_state.html#aaba89b1d3992dfda9b02df4447914f18" title="solves transient linear problem" alt="" coords="615,826,777,866"/>
-<area shape="poly" id="edge21_Node000015_Node000018" title=" " alt="" coords="846,808,772,829,770,823,845,803"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1_state.html#ada934cc34fae787ec506a812c65e13b5" title="solves transient navier stokes with FEM" alt="" coords="604,890,788,930"/>
-<area shape="poly" id="edge23_Node000015_Node000019" title=" " alt="" coords="902,814,858,848,807,880,778,892,776,887,804,876,855,844,899,809"/>
-<area shape="poly" id="edge25_Node000015_Node000020" title=" " alt="" coords="917,816,873,881,842,915,807,944,785,956,782,952,804,940,838,911,869,878,913,813"/>
-<area shape="poly" id="edge18_Node000016_Node000012" title=" " alt="" coords="610,731,518,743,517,737,609,726"/>
-<area shape="poly" id="edge20_Node000017_Node000012" title=" " alt="" coords="602,773,517,763,518,757,602,768"/>
-<area shape="poly" id="edge22_Node000018_Node000012" title=" " alt="" coords="608,824,586,816,480,773,482,768,588,812,610,819"/>
-<area shape="poly" id="edge24_Node000019_Node000012" title=" " alt="" coords="599,887,585,880,546,855,510,826,454,772,458,768,513,822,549,851,588,876,601,882"/>
-<area shape="poly" id="edge26_Node000020_Node000012" title=" " alt="" coords="595,950,585,944,538,903,498,855,467,808,446,772,450,769,471,806,502,852,541,899,588,940,597,946"/>
-<area shape="poly" id="edge29_Node000021_Node000004" title=" " alt="" coords="2163,1008,1843,925,1741,897,1743,891,1845,919,2165,1003"/>
-<area shape="poly" id="edge32_Node000023_Node000004" title=" " alt="" coords="2172,738,2017,769,1845,813,1720,856,1718,851,1843,807,2016,764,2171,733"/>
-<area shape="rect" id="Node000024" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aabdf1d6e7d6725e07cae1d4bbd7a51de" title="saves the wireframe" alt="" coords="1573,698,1765,738"/>
-<area shape="poly" id="edge33_Node000023_Node000024" title=" " alt="" coords="2172,721,1765,721,1765,715,2172,715"/>
-<area shape="poly" id="edge34_Node000024_Node000005" title=" " alt="" coords="1559,721,1495,721,1495,715,1559,715"/>
-<area shape="poly" id="edge36_Node000025_Node000004" title=" " alt="" coords="2170,1091,2013,1056,1926,1030,1843,996,1799,973,1758,946,1693,897,1696,892,1761,942,1802,969,1845,992,1928,1025,2014,1051,2171,1086"/>
-<area shape="rect" id="Node000028" href="$namespacepolyfem_1_1utils.html#ab9c9cc0362231a822f91f5f1a02cf9bc" title=" " alt="" coords="2195,455,2351,495"/>
-<area shape="poly" id="edge39_Node000027_Node000028" title=" " alt="" coords="2434,498,2351,488,2352,482,2435,493"/>
-<area shape="rect" id="Node000030" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#aaacfede0d10b44c492f4bd5c76d08bed" title=" " alt="" coords="2178,121,2369,190"/>
-<area shape="poly" id="edge43_Node000027_Node000030" title=" " alt="" coords="2505,478,2298,192,2302,189,2509,474"/>
-<area shape="rect" id="Node000034" href="$namespacepolyfem_1_1utils.html#a08175843f4d83a5b314e0f58fb2e9b4d" title=" " alt="" coords="2208,391,2339,431"/>
-<area shape="poly" id="edge47_Node000027_Node000034" title=" " alt="" coords="2478,484,2391,446,2338,429,2340,424,2393,441,2480,479"/>
-<area shape="rect" id="Node000042" href="$namespacepolyfem_1_1utils.html#a9283eee6b5b857fec557ebd308c6cbb5" title=" " alt="" coords="2208,519,2339,559"/>
-<area shape="poly" id="edge58_Node000027_Node000042" title=" " alt="" coords="2435,522,2339,534,2339,529,2434,517"/>
-<area shape="rect" id="Node000043" href="$namespacepolyfem_1_1utils.html#aa3345a3660c907fb4c164a7753106104" title=" " alt="" coords="2199,583,2348,623"/>
-<area shape="poly" id="edge59_Node000027_Node000043" title=" " alt="" coords="2480,536,2393,574,2349,588,2348,583,2391,569,2478,531"/>
-<area shape="poly" id="edge42_Node000028_Node000011" title=" " alt="" coords="2183,495,2156,509,2141,526,2134,544,2126,562,2108,578,2048,606,1995,622,1946,629,1898,628,1797,615,1738,609,1671,606,1397,606,1190,612,1015,624,1015,619,1190,607,1397,601,1671,601,1738,603,1797,610,1898,622,1945,623,1994,617,2046,601,2105,573,2121,559,2129,541,2137,523,2153,505,2180,491"/>
-<area shape="poly" id="edge40_Node000028_Node000029" title=" " alt="" coords="2184,493,2156,509,2145,523,2138,536,2133,565,2128,594,2121,609,2108,624,2085,640,2060,651,2058,646,2083,635,2105,620,2117,607,2123,593,2128,564,2133,535,2140,520,2153,505,2181,488"/>
-<area shape="poly" id="edge41_Node000029_Node000004" title=" " alt="" coords="1936,691,1701,856,1698,852,1933,686"/>
-<area shape="rect" id="Node000031" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a057eca414cf080900dc0120ec8db295f" title=" " alt="" coords="1889,5,2062,60"/>
-<area shape="poly" id="edge44_Node000030_Node000031" title=" " alt="" coords="2197,116,2106,74,2061,58,2063,53,2108,69,2199,112"/>
-<area shape="rect" id="Node000032" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3181de6231691b0b0330fceedcf045b1" title=" " alt="" coords="1844,84,2107,139"/>
-<area shape="poly" id="edge45_Node000030_Node000032" title=" " alt="" coords="2164,142,2107,133,2108,128,2165,137"/>
-<area shape="rect" id="Node000033" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5306ffa2e688fa3e3380cb7cf43c9dc9" title=" " alt="" coords="1877,163,2073,233"/>
-<area shape="poly" id="edge46_Node000030_Node000033" title=" " alt="" coords="2165,174,2074,187,2073,181,2164,168"/>
-<area shape="rect" id="Node000035" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c" title="Checks if the step is collision free." alt="" coords="1852,523,2099,563"/>
-<area shape="poly" id="edge48_Node000034_Node000035" title=" " alt="" coords="2196,427,2156,445,2141,461,2133,479,2125,496,2108,513,2086,526,2084,521,2105,509,2121,493,2128,476,2136,458,2153,441,2194,422"/>
-<area shape="rect" id="Node000036" href="$classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006" title="Checks if the step is collision free." alt="" coords="1874,459,2077,499"/>
-<area shape="poly" id="edge49_Node000034_Node000036" title=" " alt="" coords="2195,432,2064,462,2063,457,2194,427"/>
-<area shape="rect" id="Node000038" href="$classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9803efa9b0a6b35ce5ccf61152e545c4" title="refine the mesh" alt="" coords="1875,395,2075,435"/>
-<area shape="poly" id="edge51_Node000034_Node000038" title=" " alt="" coords="2194,415,2076,417,2075,411,2194,410"/>
-<area shape="rect" id="Node000039" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6fdec4cc54af0219017946bd8ebe8029" title="refine the mesh" alt="" coords="1569,250,1769,290"/>
-<area shape="poly" id="edge53_Node000034_Node000039" title=" " alt="" coords="2240,384,2181,337,2144,315,2106,298,2020,276,1930,264,1845,261,1770,263,1770,258,1845,256,1931,259,2021,270,2108,293,2147,310,2184,333,2243,380"/>
-<area shape="rect" id="Node000040" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a7bfe24f02e444983ea0d9717db259ed8" title=" " alt="" coords="1875,307,2075,347"/>
-<area shape="poly" id="edge55_Node000034_Node000040" title=" " alt="" coords="2198,390,2106,362,2061,350,2062,345,2107,357,2199,385"/>
-<area shape="rect" id="Node000037" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4" title="Checks if the step is collision free." alt="" coords="1543,459,1796,499"/>
-<area shape="poly" id="edge50_Node000036_Node000037" title=" " alt="" coords="1860,482,1796,482,1796,477,1860,477"/>
-<area shape="poly" id="edge52_Node000038_Node000038" title=" " alt="" coords="2026,384,2008,377,1975,374,1947,376,1929,381,1923,387,1926,394,1921,396,1917,386,1926,376,1946,371,1975,369,2009,371,2028,379"/>
-<area shape="poly" id="edge54_Node000039_Node000039" title=" " alt="" coords="1715,238,1699,231,1669,229,1643,231,1627,235,1622,241,1625,249,1619,250,1616,240,1625,231,1642,225,1669,223,1701,226,1718,233"/>
-<area shape="poly" id="edge56_Node000040_Node000039" title=" " alt="" coords="1861,309,1769,291,1770,286,1862,304"/>
-<area shape="rect" id="Node000041" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ac8bd31195b915a0944dfb161af6a5b1b" title=" " alt="" coords="1569,314,1769,354"/>
-<area shape="poly" id="edge57_Node000040_Node000041" title=" " alt="" coords="1861,332,1769,334,1769,329,1861,327"/>
-<area shape="poly" id="edge65_Node000047_Node000003" title=" " alt="" coords="2501,905,2452,859,2422,836,2391,816,2364,805,2366,800,2393,812,2425,832,2456,855,2505,901"/>
-<area shape="poly" id="edge72_Node000047_Node000004" title=" " alt="" coords="2426,928,1765,883,1766,878,2427,923"/>
-<area shape="poly" id="edge66_Node000047_Node000021" title=" " alt="" coords="2471,961,2441,974,2393,995,2359,1008,2357,1003,2391,990,2439,969,2469,956"/>
-<area shape="poly" id="edge67_Node000047_Node000022" title=" " alt="" coords="2459,911,2391,887,2335,869,2337,864,2393,882,2461,905"/>
-<area shape="poly" id="edge68_Node000047_Node000023" title=" " alt="" coords="2512,901,2491,866,2464,826,2430,786,2391,752,2360,737,2363,732,2393,748,2434,782,2468,822,2496,863,2516,899"/>
-<area shape="poly" id="edge69_Node000047_Node000025" title=" " alt="" coords="2498,964,2442,1017,2420,1047,2410,1060,2393,1074,2364,1088,2362,1083,2391,1069,2406,1057,2416,1044,2438,1014,2494,960"/>
-<area shape="poly" id="edge70_Node000047_Node000044" title=" " alt="" coords="2493,963,2466,988,2442,1017,2427,1050,2422,1080,2416,1109,2407,1124,2394,1139,2377,1151,2358,1159,2356,1154,2374,1146,2390,1135,2403,1121,2411,1107,2417,1079,2422,1048,2438,1014,2463,984,2490,959"/>
-<area shape="rect" id="Node000048" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a38d0836450711cadbb63257dc3ac49d3" title=" " alt="" coords="2155,941,2392,981"/>
-<area shape="poly" id="edge71_Node000047_Node000048" title=" " alt="" coords="2427,947,2392,950,2392,945,2426,941"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="2976,438,3129,478"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="2775,438,2928,478"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2962,461,2928,461,2928,455,2962,455"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1io_1_1_evaluator.html#a389e8aabdd8fe99956da896b5b149a55" title="calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_..." alt="" coords="2265,259,2490,299"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="2826,428,2784,379,2756,355,2725,335,2668,312,2607,296,2547,286,2490,281,2491,276,2547,281,2608,290,2670,306,2728,330,2759,350,2787,375,2831,425"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html#a519005a92bdb08ca3277bd45e54302d2" title="saves the volume vtu file" alt="" coords="1679,239,1867,293"/>
+<area shape="poly" id="edge73_Node000002_Node000004" title=" " alt="" coords="2842,425,2829,372,2807,307,2773,240,2751,210,2725,184,2696,162,2670,147,2645,138,2620,133,2496,122,2340,106,2277,105,2218,108,2159,118,2097,133,1949,182,1925,194,1901,208,1835,241,1833,236,1899,204,1922,189,1947,177,2096,127,2158,112,2217,103,2277,99,2340,101,2496,117,2621,127,2647,133,2673,143,2699,158,2728,180,2755,207,2778,237,2812,305,2835,370,2847,424"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1legacy_1_1_state.html#a44ceb3ea3dfd61111cbc14d9a5513525" title="solves transient navier stokes with operator splitting" alt="" coords="644,5,823,60"/>
+<area shape="poly" id="edge74_Node000002_Node000021" title=" " alt="" coords="2844,425,2834,363,2814,285,2798,245,2778,205,2754,168,2725,136,2683,100,2644,74,2606,56,2568,45,2528,39,2484,36,2379,35,1216,35,823,35,823,30,1216,30,2379,30,2484,30,2529,33,2569,40,2608,51,2646,70,2686,96,2729,132,2758,165,2783,202,2803,242,2819,284,2840,362,2850,424"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1io_1_1_evaluator.html#a82b538dc2e93a9f6f0ad6bc8477efe3b" title="checks if mises are not nan" alt="" coords="2294,438,2461,478"/>
+<area shape="poly" id="edge28_Node000002_Node000022" title=" " alt="" coords="2761,461,2461,461,2461,455,2761,455"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1io_1_1_evaluator.html#a55939ec4dd2d7b4b7a662409962219f6" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="2289,131,2465,171"/>
+<area shape="poly" id="edge29_Node000002_Node000023" title=" " alt="" coords="2838,426,2823,383,2799,333,2767,282,2747,260,2725,240,2695,220,2664,204,2595,179,2527,164,2465,157,2466,151,2528,159,2597,174,2666,199,2698,216,2728,236,2751,256,2771,279,2804,330,2828,381,2843,424"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1io_1_1_evaluator.html#a6e5d9a97c8247fc720c85232a7d60682" title="compute tensor quantity (ie stress tensor or velocity)" alt="" coords="2288,195,2467,235"/>
+<area shape="poly" id="edge33_Node000002_Node000025" title=" " alt="" coords="2833,427,2815,394,2791,357,2761,321,2725,291,2663,259,2595,238,2527,226,2467,219,2467,214,2528,220,2596,233,2665,254,2728,286,2765,317,2796,353,2820,391,2838,424"/>
+<area shape="rect" id="Node000026" href="$namespacepolyfem_1_1utils.html#ab984fbb966c452b34d3a3a3ab929e34e" title=" " alt="" coords="2552,681,2719,721"/>
+<area shape="poly" id="edge35_Node000002_Node000026" title=" " alt="" coords="2841,493,2825,533,2800,581,2768,629,2728,671,2710,683,2707,678,2725,667,2764,626,2796,578,2820,531,2836,491"/>
+<area shape="rect" id="Node000027" href="$namespacepolyfem_1_1utils.html#ae60d5a3e782afc99c0c595421a870c1a" title=" " alt="" coords="2552,617,2719,657"/>
+<area shape="poly" id="edge36_Node000002_Node000027" title=" " alt="" coords="2831,491,2787,546,2759,574,2728,600,2695,619,2693,614,2725,596,2755,571,2783,542,2827,488"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1io_1_1_evaluator.html#a920cb9a19c27f56b607e289a61287711" title=" " alt="" coords="1996,374,2163,414"/>
+<area shape="poly" id="edge62_Node000002_Node000029" title=" " alt="" coords="2806,487,2701,540,2632,567,2558,589,2480,602,2402,604,2364,599,2327,590,2291,576,2257,556,2242,543,2234,528,2230,496,2227,464,2221,449,2209,435,2187,419,2162,409,2164,404,2190,415,2212,431,2225,446,2232,463,2235,495,2239,526,2247,539,2260,552,2293,571,2328,585,2365,594,2403,599,2480,597,2557,583,2631,561,2699,535,2804,483"/>
+<area shape="rect" id="Node000047" href="$classpolyfem_1_1io_1_1_evaluator.html#a9796be452325fff18047042e2a9cbca4" title="interpolate the function fun." alt="" coords="2294,502,2461,542"/>
+<area shape="poly" id="edge61_Node000002_Node000047" title=" " alt="" coords="2761,473,2461,513,2461,508,2760,467"/>
+<area shape="rect" id="Node000048" href="$namespacepolyfem_1_1autogen.html#a2e1ff763f9dd7cae9bcfbb2f83d69ddb" title=" " alt="" coords="2544,745,2727,785"/>
+<area shape="poly" id="edge63_Node000002_Node000048" title=" " alt="" coords="2846,492,2833,544,2810,609,2776,676,2754,707,2728,735,2711,747,2708,742,2725,731,2750,704,2772,673,2805,607,2828,543,2841,491"/>
+<area shape="rect" id="Node000049" href="$namespacepolyfem_1_1autogen.html#a4c1817590e26fc1110e76f75f2d563f2" title=" " alt="" coords="2544,809,2727,849"/>
+<area shape="poly" id="edge64_Node000002_Node000049" title=" " alt="" coords="2850,492,2840,556,2819,638,2803,681,2783,723,2759,763,2729,799,2713,811,2710,806,2725,795,2754,760,2779,721,2798,679,2814,636,2835,555,2844,491"/>
+<area shape="rect" id="Node000050" href="$namespacepolyfem_1_1autogen.html#a510eafb48b84cfe34b5511a009a9b9b9" title=" " alt="" coords="2544,345,2727,385"/>
+<area shape="poly" id="edge65_Node000002_Node000050" title=" " alt="" coords="2791,435,2682,387,2684,382,2793,430"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="2251,279,1868,271,1868,265,2251,274"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html#a479abcc6767f13511924ee2662a99965" title="saves the vtu file for time t" alt="" coords="1383,246,1599,286"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1666,269,1599,269,1599,263,1666,263"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html#a376092ff0170ca6839459f863278bc0e" title="exports everytihng, txt, vtu, etc" alt="" coords="1100,369,1335,409"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1435,294,1336,339,1265,371,1263,366,1334,334,1432,289"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1legacy_1_1_state.html#a07143f0728547036b5c9c4403a710537" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="1133,285,1301,325"/>
+<area shape="poly" id="edge9_Node000005_Node000011" title=" " alt="" coords="1369,286,1302,295,1301,290,1369,281"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1legacy_1_1_state.html#adeac93516a7b01210f2e9461af58ae4e" title="saves a timestep" alt="" coords="877,213,1045,253"/>
+<area shape="poly" id="edge16_Node000005_Node000016" title=" " alt="" coords="1368,261,1045,241,1046,235,1369,256"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1legacy_1_1_state.html#a8df4d0ce0d8ff265c83d335c5a0dc68b" title="saves all data on the disk according to the input params" alt="" coords="428,414,596,454"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1158,416,1107,434,1053,447,939,464,849,467,759,463,644,454,596,449,596,444,644,449,759,457,849,462,938,458,1051,442,1106,429,1156,411"/>
+<area shape="rect" id="Node000008" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="217,345,365,385"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="434,412,354,387,356,382,435,407"/>
+<area shape="rect" id="Node000009" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="5,352,153,377"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="203,367,154,367,154,362,203,362"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1legacy_1_1_state.html#a29a17ca9bffef643d9cf2eac92604f6c" title="solves nonlinear problems" alt="" coords="871,393,1052,433"/>
+<area shape="poly" id="edge10_Node000011_Node000012" title=" " alt="" coords="1157,333,1011,395,1009,390,1155,328"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1legacy_1_1_state.html#ae8174512fdfb4de037d593ef99b26c0f" title="solves the problems" alt="" coords="428,249,596,289"/>
+<area shape="poly" id="edge11_Node000012_Node000013" title=" " alt="" coords="876,438,822,447,762,450,701,444,643,426,601,398,566,361,539,322,521,290,525,288,543,320,570,357,604,393,645,421,702,439,762,444,821,441,875,433"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1legacy_1_1_state.html#a0e3aedcf0fff3afc2b8f8842a433ef80" title="solves transient tensor nonlinear problem" alt="" coords="644,356,823,411"/>
+<area shape="poly" id="edge14_Node000012_Node000015" title=" " alt="" coords="857,402,823,397,823,392,857,397"/>
+<area shape="poly" id="edge12_Node000013_Node000008" title=" " alt="" coords="454,297,339,347,337,342,451,292"/>
+<area shape="rect" id="Node000014" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a0aab07822700745f38ea85dd84f76511" title=" " alt="" coords="201,249,380,289"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="414,271,380,271,380,266,414,266"/>
+<area shape="poly" id="edge15_Node000015_Node000013" title=" " alt="" coords="654,353,643,347,544,291,547,286,645,342,656,348"/>
+<area shape="poly" id="edge27_Node000016_Node000015" title=" " alt="" coords="931,264,882,305,824,347,804,358,801,353,821,342,879,301,927,260"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1legacy_1_1_state.html#a2bf21acacd475be7d3266038f7564619" title="initialize solver" alt="" coords="649,85,817,125"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="923,206,876,172,821,139,795,127,797,122,824,134,879,168,926,202"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1legacy_1_1_state.html#a45f026afc7e4940ccdc14ee077478861" title=" " alt="" coords="645,149,822,189"/>
+<area shape="poly" id="edge19_Node000016_Node000018" title=" " alt="" coords="876,212,804,191,806,186,877,206"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1legacy_1_1_state.html#a817a0023cd82fa547e97eb7181b88e8e" title="solves transient linear problem" alt="" coords="646,213,821,253"/>
+<area shape="poly" id="edge21_Node000016_Node000019" title=" " alt="" coords="863,235,821,235,821,230,863,230"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1legacy_1_1_state.html#a060188229742774ef84eaaa3b3a52861" title="solves transient navier stokes with FEM" alt="" coords="644,277,823,332"/>
+<area shape="poly" id="edge23_Node000016_Node000020" title=" " alt="" coords="885,259,821,280,819,275,883,254"/>
+<area shape="poly" id="edge25_Node000016_Node000021" title=" " alt="" coords="937,203,888,139,856,105,821,75,802,62,805,58,824,71,860,101,892,136,941,199"/>
+<area shape="poly" id="edge18_Node000017_Node000013" title=" " alt="" coords="656,133,645,139,610,165,578,195,531,250,526,247,574,192,607,161,643,134,653,128"/>
+<area shape="poly" id="edge20_Node000018_Node000013" title=" " alt="" coords="662,196,645,203,550,251,548,246,643,198,660,191"/>
+<area shape="poly" id="edge22_Node000019_Node000013" title=" " alt="" coords="633,252,597,258,596,252,632,246"/>
+<area shape="poly" id="edge24_Node000020_Node000013" title=" " alt="" coords="630,291,596,285,597,280,631,285"/>
+<area shape="poly" id="edge26_Node000021_Node000013" title=" " alt="" coords="652,70,646,75,604,118,570,166,525,249,520,247,565,164,600,114,642,71,649,66"/>
+<area shape="poly" id="edge30_Node000023_Node000004" title=" " alt="" coords="2276,168,2121,192,1949,225,1868,244,1867,238,1947,219,2120,187,2275,163"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html#a493b708c232b5b97ac2cafbf4e4d9434" title="saves the wireframe" alt="" coords="1662,154,1885,194"/>
+<area shape="poly" id="edge31_Node000023_Node000024" title=" " alt="" coords="2276,157,1948,169,1885,171,1885,166,1948,163,2275,152"/>
+<area shape="poly" id="edge32_Node000024_Node000005" title=" " alt="" coords="1699,201,1554,249,1552,243,1697,196"/>
+<area shape="poly" id="edge34_Node000025_Node000004" title=" " alt="" coords="2275,227,1868,261,1867,256,2274,221"/>
+<area shape="rect" id="Node000028" href="$namespacepolyfem_1_1utils.html#ab9c9cc0362231a822f91f5f1a02cf9bc" title=" " alt="" coords="2299,617,2455,657"/>
+<area shape="poly" id="edge37_Node000027_Node000028" title=" " alt="" coords="2538,639,2456,639,2456,634,2538,634"/>
+<area shape="rect" id="Node000033" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#aaacfede0d10b44c492f4bd5c76d08bed" title=" " alt="" coords="2282,765,2473,834"/>
+<area shape="poly" id="edge44_Node000027_Node000033" title=" " alt="" coords="2553,666,2546,671,2530,686,2522,701,2513,717,2498,735,2452,767,2449,762,2494,731,2509,714,2517,698,2526,683,2542,667,2550,661"/>
+<area shape="rect" id="Node000037" href="$namespacepolyfem_1_1utils.html#a08175843f4d83a5b314e0f58fb2e9b4d" title=" " alt="" coords="2312,1013,2443,1053"/>
+<area shape="poly" id="edge48_Node000027_Node000037" title=" " alt="" coords="2550,667,2546,670,2530,692,2520,712,2514,752,2512,795,2508,820,2498,847,2474,896,2446,943,2396,1014,2392,1011,2441,940,2469,893,2494,845,2503,819,2507,795,2509,751,2515,710,2525,689,2542,667,2546,663"/>
+<area shape="rect" id="Node000045" href="$namespacepolyfem_1_1utils.html#a9283eee6b5b857fec557ebd308c6cbb5" title=" " alt="" coords="2312,1077,2443,1117"/>
+<area shape="poly" id="edge59_Node000027_Node000045" title=" " alt="" coords="2548,668,2546,670,2529,696,2517,721,2511,746,2509,770,2513,819,2525,868,2536,917,2539,966,2537,991,2529,1016,2517,1041,2498,1067,2473,1085,2444,1095,2442,1090,2471,1081,2494,1063,2512,1038,2524,1014,2531,990,2534,966,2530,917,2519,869,2508,820,2503,770,2506,745,2512,719,2524,693,2542,667,2544,664"/>
+<area shape="rect" id="Node000046" href="$namespacepolyfem_1_1utils.html#aa3345a3660c907fb4c164a7753106104" title=" " alt="" coords="2303,681,2452,721"/>
+<area shape="poly" id="edge60_Node000027_Node000046" title=" " alt="" coords="2541,663,2453,685,2452,680,2540,657"/>
+<area shape="poly" id="edge43_Node000028_Node000012" title=" " alt="" coords="2285,627,2257,609,2243,593,2236,575,2233,541,2230,508,2223,493,2209,479,2173,461,2123,451,2064,446,2000,445,1775,454,1489,454,1371,451,1252,444,1052,426,1053,421,1253,439,1371,446,1489,449,1775,449,2000,440,2064,441,2124,446,2174,456,2212,474,2227,490,2235,506,2239,540,2241,574,2248,590,2260,605,2288,622"/>
+<area shape="poly" id="edge38_Node000028_Node000029" title=" " alt="" coords="2285,620,2257,600,2241,579,2234,557,2232,515,2231,474,2224,454,2209,435,2187,418,2162,408,2164,403,2190,414,2213,431,2228,452,2236,473,2238,515,2239,556,2246,576,2261,596,2288,616"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a694d521e93c0edf336c4aaf8a71a19e0" title="Get the output fields of the variational formulation, for output purposes." alt="" coords="1971,489,2187,529"/>
+<area shape="poly" id="edge40_Node000028_Node000030" title=" " alt="" coords="2285,615,2257,600,2241,585,2233,570,2224,556,2209,543,2186,531,2188,526,2212,538,2228,553,2237,568,2246,582,2260,596,2288,611"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a7993c9655d661ed89c0789fe2f567d12" title="Get the output fields of the variational formulation, for output purposes." alt="" coords="1987,553,2171,593"/>
+<area shape="poly" id="edge41_Node000028_Node000031" title=" " alt="" coords="2286,620,2171,595,2172,590,2287,615"/>
+<area shape="rect" id="Node000032" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#ad7611505ef4058bff29f33d4b639c934" title=" " alt="" coords="1974,617,2185,672"/>
+<area shape="poly" id="edge42_Node000028_Node000032" title=" " alt="" coords="2286,642,2185,645,2185,639,2286,636"/>
+<area shape="poly" id="edge39_Node000029_Node000004" title=" " alt="" coords="1988,372,1947,358,1880,327,1821,296,1823,291,1883,323,1949,353,1990,367"/>
+<area shape="rect" id="Node000034" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a057eca414cf080900dc0120ec8db295f" title=" " alt="" coords="1993,791,2166,845"/>
+<area shape="poly" id="edge45_Node000033_Node000034" title=" " alt="" coords="2268,809,2166,815,2166,810,2268,803"/>
+<area shape="rect" id="Node000035" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3181de6231691b0b0330fceedcf045b1" title=" " alt="" coords="1948,869,2211,924"/>
+<area shape="poly" id="edge46_Node000033_Node000035" title=" " alt="" coords="2270,841,2211,861,2176,872,2174,867,2210,855,2268,836"/>
+<area shape="rect" id="Node000036" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5306ffa2e688fa3e3380cb7cf43c9dc9" title=" " alt="" coords="1981,697,2177,766"/>
+<area shape="poly" id="edge47_Node000033_Node000036" title=" " alt="" coords="2268,777,2177,756,2178,751,2269,772"/>
+<area shape="rect" id="Node000038" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c" title="Checks if the step is collision free." alt="" coords="1956,949,2203,989"/>
+<area shape="poly" id="edge49_Node000037_Node000038" title=" " alt="" coords="2298,1019,2173,991,2174,986,2299,1013"/>
+<area shape="rect" id="Node000039" href="$classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006" title="Checks if the step is collision free." alt="" coords="1978,1013,2181,1053"/>
+<area shape="poly" id="edge50_Node000037_Node000039" title=" " alt="" coords="2299,1035,2181,1035,2181,1030,2299,1030"/>
+<area shape="rect" id="Node000041" href="$classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9803efa9b0a6b35ce5ccf61152e545c4" title="refine the mesh" alt="" coords="1979,1101,2179,1141"/>
+<area shape="poly" id="edge52_Node000037_Node000041" title=" " alt="" coords="2299,1056,2259,1067,2143,1103,2141,1098,2258,1062,2298,1051"/>
+<area shape="rect" id="Node000042" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6fdec4cc54af0219017946bd8ebe8029" title="refine the mesh" alt="" coords="1673,1158,1873,1198"/>
+<area shape="poly" id="edge54_Node000037_Node000042" title=" " alt="" coords="2300,1047,2279,1055,2260,1067,2250,1077,2244,1088,2238,1111,2232,1134,2224,1145,2212,1155,2186,1166,2151,1175,2064,1185,1966,1187,1874,1186,1874,1180,1966,1182,2063,1180,2150,1170,2184,1161,2209,1150,2220,1141,2227,1132,2233,1109,2239,1086,2246,1074,2257,1063,2277,1050,2298,1042"/>
+<area shape="rect" id="Node000043" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a7bfe24f02e444983ea0d9717db259ed8" title=" " alt="" coords="1979,1215,2179,1255"/>
+<area shape="poly" id="edge56_Node000037_Node000043" title=" " alt="" coords="2300,1045,2279,1054,2260,1067,2248,1082,2241,1098,2237,1131,2233,1165,2226,1182,2212,1199,2181,1219,2178,1215,2209,1195,2222,1179,2228,1163,2232,1130,2236,1096,2243,1079,2257,1063,2276,1049,2298,1040"/>
+<area shape="rect" id="Node000040" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4" title="Checks if the step is collision free." alt="" coords="1647,1013,1900,1053"/>
+<area shape="poly" id="edge51_Node000039_Node000040" title=" " alt="" coords="1964,1035,1900,1035,1900,1030,1964,1030"/>
+<area shape="poly" id="edge53_Node000041_Node000041" title=" " alt="" coords="2130,1089,2112,1082,2079,1079,2051,1081,2033,1086,2027,1092,2030,1099,2025,1101,2021,1091,2030,1082,2050,1076,2079,1074,2113,1077,2132,1084"/>
+<area shape="poly" id="edge55_Node000042_Node000042" title=" " alt="" coords="1822,1146,1805,1139,1773,1137,1746,1139,1729,1144,1723,1149,1726,1157,1721,1159,1718,1148,1726,1139,1745,1133,1773,1131,1806,1134,1824,1141"/>
+<area shape="poly" id="edge57_Node000043_Node000042" title=" " alt="" coords="1965,1217,1873,1199,1874,1194,1966,1212"/>
+<area shape="rect" id="Node000044" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ac8bd31195b915a0944dfb161af6a5b1b" title=" " alt="" coords="1673,1222,1873,1262"/>
+<area shape="poly" id="edge58_Node000043_Node000044" title=" " alt="" coords="1965,1240,1873,1242,1873,1237,1965,1235"/>
+<area shape="poly" id="edge66_Node000050_Node000003" title=" " alt="" coords="2561,343,2495,321,2439,302,2441,297,2497,315,2563,338"/>
+<area shape="poly" id="edge72_Node000050_Node000004" title=" " alt="" coords="2530,355,1867,279,1868,274,2531,350"/>
+<area shape="poly" id="edge67_Node000050_Node000022" title=" " alt="" coords="2582,393,2497,429,2460,440,2458,435,2495,423,2580,388"/>
+<area shape="poly" id="edge68_Node000050_Node000023" title=" " alt="" coords="2616,333,2595,298,2568,258,2534,219,2495,186,2464,170,2467,166,2497,181,2538,215,2572,255,2600,296,2620,331"/>
+<area shape="poly" id="edge69_Node000050_Node000025" title=" " alt="" coords="2605,337,2556,292,2526,269,2495,250,2466,237,2468,232,2497,245,2529,265,2559,287,2608,333"/>
+<area shape="poly" id="edge70_Node000050_Node000047" title=" " alt="" coords="2610,397,2561,446,2530,471,2497,492,2462,507,2460,503,2495,488,2527,467,2558,442,2607,393"/>
+<area shape="rect" id="Node000051" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a38d0836450711cadbb63257dc3ac49d3" title=" " alt="" coords="2259,374,2496,414"/>
+<area shape="poly" id="edge71_Node000050_Node000051" title=" " alt="" coords="2531,379,2496,383,2496,378,2530,374"/>
 </map>

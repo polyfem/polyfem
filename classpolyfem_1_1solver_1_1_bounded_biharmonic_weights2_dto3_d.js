@@ -1,7 +1,7 @@
 var classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d =
 [
     [ "BoundedBiharmonicWeights2Dto3D", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#ac542f45ce4d2fa313e5478f62a40f06c", null ],
-    [ "BoundedBiharmonicWeights2Dto3D", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#acd76ff43b35af0e45e6b568381fa9cd9", null ],
+    [ "BoundedBiharmonicWeights2Dto3D", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a62ac248cf1949386dc5347b1b7d419d1", null ],
     [ "apply_jacobian", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a5386b4a50e566cb0061dd4a05e0e62a0", null ],
     [ "compute_faces_for_partial_vertices", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a767e89f2b661b8297afc73028a68f910", null ],
     [ "eval", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a2b4b0398c8bb707631024ec079eca992", null ],

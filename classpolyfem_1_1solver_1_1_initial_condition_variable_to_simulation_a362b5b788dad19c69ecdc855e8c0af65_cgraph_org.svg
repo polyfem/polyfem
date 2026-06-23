@@ -42,7 +42,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a83a0a0adacafbe7876a0a8de0d0ba417" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a14d473935aebd85d6769538c838a92ba" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="355,-137 215,-137 215,-96 355,-96 355,-137"/>
 <text text-anchor="start" x="223" y="-125" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="start" x="223" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">Tools::dJ_initial_condition</text>
@@ -62,7 +62,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="namespacepolyfem.html#a92bdeb618e4a9d898e4787139b82fe3b" target="_top" xlink:title="Get adjoint parameter nu or p.">
+<g id="a_Node000005"><a xlink:href="namespacepolyfem.html#abe0ca4a1e288f3ee0ca294200a731948" target="_top" xlink:title="Get adjoint parameter nu or p.">
 <polygon fill="white" stroke="#666666" points="356.5,-78 213.5,-78 213.5,-59 356.5,-59 356.5,-78"/>
 <text text-anchor="middle" x="285" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::get_adjoint_mat</text>
 </a>
@@ -92,8 +92,8 @@
 <g id="edge9_Node000001_Node000009" class="edge">
 <title>Node1&#45;&gt;Node9</title>
 <g id="a_edge9_Node000001_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M140.08,-71.94C159.66,-64.8 181.79,-56.76 202,-49.5 206.56,-47.86 211.26,-46.18 216,-44.49"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="217.49,-47.68 225.74,-41.03 215.15,-41.08 217.49,-47.68"/>
+<path fill="none" stroke="#63b8ff" d="M141.04,-71.96C164.79,-63.41 192.53,-53.43 217.22,-44.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="218.66,-47.74 226.88,-41.06 216.29,-41.16 218.66,-47.74"/>
 </a>
 </g>
 </g>
@@ -109,9 +109,10 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="529,-126 413,-126 413,-107 529,-107 529,-126"/>
-<text text-anchor="middle" x="471" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::ndof</text>
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a10f4ad9682019ae610b0a066d02132ec" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="534,-131.5 408,-131.5 408,-101.5 534,-101.5 534,-131.5"/>
+<text text-anchor="start" x="416" y="-119.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="471" y="-108.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ndof</text>
 </a>
 </g>
 </g>
@@ -119,8 +120,8 @@
 <g id="edge4_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
 <g id="a_edge4_Node000003_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M355.04,-116.5C370.68,-116.5 387.27,-116.5 402.83,-116.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="402.89,-120 412.89,-116.5 402.89,-113 402.89,-120"/>
+<path fill="none" stroke="#63b8ff" d="M355.04,-116.5C368.99,-116.5 383.69,-116.5 397.75,-116.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="397.85,-120 407.85,-116.5 397.85,-113 397.85,-120"/>
 </a>
 </g>
 </g>
@@ -128,9 +129,9 @@
 <g id="Node000006" class="node">
 <title>Node6</title>
 <g id="a_Node000006"><a xlink:href="classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="526,-85.5 416,-85.5 416,-55.5 526,-55.5 526,-85.5"/>
-<text text-anchor="start" x="424" y="-73.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::DiffCache</text>
-<text text-anchor="middle" x="471" y="-62.5" font-family="Helvetica,sans-Serif" font-size="10.00">::adjoint_mat</text>
+<polygon fill="white" stroke="#666666" points="526,-83.5 416,-83.5 416,-53.5 526,-53.5 526,-83.5"/>
+<text text-anchor="start" x="424" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::DiffCache</text>
+<text text-anchor="middle" x="471" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">::adjoint_mat</text>
 </a>
 </g>
 </g>
@@ -138,8 +139,8 @@
 <g id="edge6_Node000005_Node000006" class="edge">
 <title>Node5&#45;&gt;Node6</title>
 <g id="a_edge6_Node000005_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M356.61,-69.27C372.74,-69.44 389.8,-69.63 405.65,-69.8"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="405.83,-73.3 415.87,-69.91 405.91,-66.3 405.83,-73.3"/>
+<path fill="none" stroke="#63b8ff" d="M356.61,-68.5C372.74,-68.5 389.8,-68.5 405.65,-68.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="405.87,-72 415.87,-68.5 405.87,-65 405.87,-72"/>
 </a>
 </g>
 </g>
@@ -147,9 +148,9 @@
 <g id="Node000007" class="node">
 <title>Node7</title>
 <g id="a_Node000007"><a xlink:href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="538,-37.5 404,-37.5 404,-7.5 538,-7.5 538,-37.5"/>
-<text text-anchor="start" x="412" y="-25.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
-<text text-anchor="middle" x="471" y="-14.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_error</text>
+<polygon fill="white" stroke="#666666" points="538,-35.5 404,-35.5 404,-5.5 538,-5.5 538,-35.5"/>
+<text text-anchor="start" x="412" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
+<text text-anchor="middle" x="471" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_error</text>
 </a>
 </g>
 </g>
@@ -157,8 +158,8 @@
 <g id="edge7_Node000005_Node000007" class="edge">
 <title>Node5&#45;&gt;Node7</title>
 <g id="a_edge7_Node000005_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M328.2,-58.99C341,-56.03 355.09,-52.7 368,-49.5 379.92,-46.54 392.6,-43.28 404.82,-40.08"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="405.72,-43.46 414.5,-37.53 403.93,-36.69 405.72,-43.46"/>
+<path fill="none" stroke="#63b8ff" d="M332.11,-58.97C343.85,-56.38 356.42,-53.47 368,-50.5 382.24,-46.85 397.48,-42.57 411.74,-38.4"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="412.82,-41.73 421.42,-35.54 410.84,-35.01 412.82,-41.73"/>
 </a>
 </g>
 </g>
@@ -166,8 +167,8 @@
 <g id="Node000008" class="node">
 <title>Node8</title>
 <g id="a_Node000008"><a xlink:href="namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" target="_top" xlink:title="Retrieves the current logger for adjoint.">
-<polygon fill="white" stroke="#666666" points="707,-32 574,-32 574,-13 707,-13 707,-32"/>
-<text text-anchor="middle" x="640.5" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::adjoint_logger</text>
+<polygon fill="white" stroke="#666666" points="707,-30 574,-30 574,-11 707,-11 707,-30"/>
+<text text-anchor="middle" x="640.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::adjoint_logger</text>
 </a>
 </g>
 </g>
@@ -175,8 +176,8 @@
 <g id="edge8_Node000007_Node000008" class="edge">
 <title>Node7&#45;&gt;Node8</title>
 <g id="a_edge8_Node000007_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M538.2,-22.5C546.52,-22.5 555.09,-22.5 563.54,-22.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="563.78,-26 573.78,-22.5 563.78,-19 563.78,-26"/>
+<path fill="none" stroke="#63b8ff" d="M538.2,-20.5C546.52,-20.5 555.09,-20.5 563.54,-20.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="563.78,-24 573.78,-20.5 563.78,-17 563.78,-24"/>
 </a>
 </g>
 </g>

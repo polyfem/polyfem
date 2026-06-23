@@ -1,7 +1,7 @@
 var classpolyfem_1_1solver_1_1_variable_to_simulation =
 [
     [ "~VariableToSimulation", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#abbde9689beb75eb9bedcecfb64778ced", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4ce3878dd48efd4bc92c775f42271856", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a6e902394d9ae35a6d05878b341a1e37f", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#aba4636cab361d21a64db3672bd1003c2", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a5758532c2ac7030bf3741a41974aef42", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a01abb242174098ab938cef15c9c725cf", null ],

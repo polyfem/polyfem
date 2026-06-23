@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['userpoststepcallback_0',['UserPostStepCallback',['../namespacepolyfem.html#a910b3dbb6b070be9a2e1f4ebf3f1551a',1,'polyfem']]]
+  ['userpoststepcallback_0',['UserPostStepCallback',['../namespacepolyfem_1_1legacy.html#a1ee8396741fff2f24d319369b6c62b27',1,'polyfem::legacy']]]
 ];

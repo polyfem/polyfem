@@ -122,6 +122,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_problem.
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1assembler_1_1_problem-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::assembler::Problem Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
@@ -205,6 +206,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae0fb2d461731e82f11835e8c754bfa84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a6babbba43f88cfb5a966ff68593fab" id="r_a7a6babbba43f88cfb5a966ff68593fab"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7a6babbba43f88cfb5a966ff68593fab">all_dimensions_dirichlet</a> () const</td></tr>
 <tr class="separator:a7a6babbba43f88cfb5a966ff68593fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b685aeda5271b1e69d97ce922cbbfbb" id="r_a2b685aeda5271b1e69d97ce922cbbfbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2b685aeda5271b1e69d97ce922cbbfbb">setup_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int fe_space_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;selected_local_boundary, std::vector&lt; int &gt; &amp;boundary_nodes)</td></tr>
+<tr class="separator:a2b685aeda5271b1e69d97ce922cbbfbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dced08c8868dfcb5e2f6efe9b69978c" id="r_a7dced08c8868dfcb5e2f6efe9b69978c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7dced08c8868dfcb5e2f6efe9b69978c">setup_pressure_cavity_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int fe_space_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity)</td></tr>
+<tr class="separator:a7dced08c8868dfcb5e2f6efe9b69978c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6fd0188ff803d62924ab7d252a14195" id="r_ae6fd0188ff803d62924ab7d252a14195"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae6fd0188ff803d62924ab7d252a14195">setup_nodal_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int fe_space_id, const int n_bases, std::vector&lt; int &gt; &amp;nodes)</td></tr>
+<tr class="separator:ae6fd0188ff803d62924ab7d252a14195"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d01038e6a37fff6f045eeb59111fd98" id="r_a0d01038e6a37fff6f045eeb59111fd98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a0d01038e6a37fff6f045eeb59111fd98">setup_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;geom_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;pressure_bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::vector&lt; int &gt; &amp;boundary_nodes, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, std::vector&lt; int &gt; &amp;pressure_boundary_nodes, std::vector&lt; int &gt; &amp;dirichlet_nodes, std::vector&lt; int &gt; &amp;neumann_nodes)</td></tr>
 <tr class="separator:a0d01038e6a37fff6f045eeb59111fd98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92740a6fa985a4a8e4a8f5e88b35cda6" id="r_a92740a6fa985a4a8e4a8f5e88b35cda6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a92740a6fa985a4a8e4a8f5e88b35cda6">update_nodes</a> (const Eigen::VectorXi &amp;in_node_to_node)</td></tr>
@@ -227,6 +234,11 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a70de874756e51566b3fe1f34279fb08d" id="r_a70de874756e51566b3fe1f34279fb08d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a70de874756e51566b3fe1f34279fb08d">updated_dirichlet_node_ordering_</a> = false</td></tr>
 <tr class="separator:a70de874756e51566b3fe1f34279fb08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a126b83d85718e8ce4aca33dc2af850f5" id="r_a126b83d85718e8ce4aca33dc2af850f5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a126b83d85718e8ce4aca33dc2af850f5">has_boundary</a> (const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int tag)</td></tr>
+<tr class="separator:a126b83d85718e8ce4aca33dc2af850f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a8c5f8ee21d844b1f2a99432a96168e1b" id="r_a8c5f8ee21d844b1f2a99432a96168e1b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a8c5f8ee21d844b1f2a99432a96168e1b">name_</a></td></tr>
@@ -234,7 +246,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00014">14</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00020">20</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab7bc716ad17294502839aa1435265cd1" name="ab7bc716ad17294502839aa1435265cd1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab7bc716ad17294502839aa1435265cd1">&#9670;&#160;</a></span>Problem()</h2>
@@ -279,7 +291,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00020">20</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00026">26</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -309,7 +321,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a39eddfbb12a094350bafbf1f83aebb11">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#af3c9e0af7322af8806b209a1d50ce60e">polyfem::problem::NodeProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a55666aae9bf7e95a86ca4282d363b74f">polyfem::problem::PointBasedTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00064">64</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00070">70</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00426">polyfem::assembler::RhsAssembler::sample_bc()</a>.</p>
 <div class="dynheader">
@@ -345,7 +357,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abce75d763fbaca90db302e2b8871b662">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ab5c3f305f695f725c920715707ec5904">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00048">48</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00054">54</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_problem_8cpp_source.html#l00634">polyfem::problem::ElasticCantileverExact::ElasticCantileverExact()</a>.</p>
 <div class="dynheader">
@@ -472,7 +484,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abc09b74ea91104b0c418a585a09360ea">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a581d22dc7d63a8b61617304ea0a52f50">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00037">37</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00043">43</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -518,9 +530,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9d5eb5dda4dfe6370e2be10b938443b4">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af475be4834a1aed64e595b0f62920720">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a4e2f76c039233253b46d3ddce44b92aa">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#a7a2e8c1d3f156d7e16e2fe9fa52fd891">polyfem::problem::ProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a3a05d4e6dccd33ae0934ad32009803de">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#a7883a5de03e21cbfe08b6fd6d07b1407">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a7799888b83710dea0bcfb3aff1d5da3a">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a7d34103f628d61eae01a6f2a08b3363c">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#ab2d9c1564afed6b23ee9da25dbb3cb47">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a5882a1709f0ed70c0edfdd702d778fb4">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00045">45</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00051">51</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03011">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_out_data_8cpp_source.html#l01473">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02488">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l01474">polyfem::legacy::io::OutGeometryData::save_volume()</a>, and <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l02489">polyfem::legacy::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -571,13 +583,58 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ae0025745a8cc81760e68e733affcd34d">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7dd3484a279ffc8426edf6ad4c07ea06">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a5143cbacaeea9d703848b2d94a8717fa">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#af5ad4a407d0ba561ea823dd28d647697">polyfem::problem::ProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a2b51dae158870c31791608f353e14a86">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#a5804dc9dd5b4805e0f0d134e6cade6a4">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3a1d8c693e13cb1b9edd9a95bf20ed8b">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a6867b96981193d2ae9ad4f97ea01b7c9">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a8a7d581f4ef603f11782354f084ae17d">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#afae64ff7804e103b1eabaeaedb33898f">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00046">46</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00052">52</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03011">polyfem::io::OutStatsData::compute_errors()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a7ec16ec0a2556437ba3c67788c7032f4_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a7ec16ec0a2556437ba3c67788c7032f4_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a126b83d85718e8ce4aca33dc2af850f5" name="a126b83d85718e8ce4aca33dc2af850f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a126b83d85718e8ce4aca33dc2af850f5">&#9670;&#160;</a></span>has_boundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::Problem::has_boundary </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_problem_8cpp_source.html#l00016">16</a> of file <a class="el" href="_problem_8cpp_source.html">Problem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00113">boundary_ids_</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f">polyfem::assembler::Dirichlet</a>, <a class="el" href="_problem_8hpp_source.html#l00066">might_have_no_dirichlet()</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152">polyfem::assembler::Neumann</a>, <a class="el" href="_problem_8hpp_source.html#l00114">neumann_boundary_ids_</a>, and <a class="el" href="_problem_8hpp_source.html#l00115">normal_aligned_neumann_boundary_ids_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a126b83d85718e8ce4aca33dc2af850f5_cgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -607,7 +664,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ad8b80eda6699ba7c77ad9d1e05d489b1">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea048f90d8ae340782bf1756cfc6b6b4">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem.html#a2bdc5620fdec7a48dde4f666fa3bbd5b">polyfem::problem::ElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#adb3885eab672d0cd8e9824ee134cbfc4">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a71972c29d44bb72d4a4192e5d7647868">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html#a1d8e3a5892e126d8a42c66c7e7181eff">polyfem::problem::ElasticProblemZeroBC</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#abdca8019e069b598f1869377c45f01b3">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#aa66f9409667d4c279ebed84809869ea1">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a5ab2c04ebd9ea5f6ddb7ceccf3ff97f0">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_min_surf_problem.html#a486d24850ea52aee5ba95383910cbde8">polyfem::problem::MinSurfProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a447611eb4182411fc35049ba9780cc61">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a033811e50f74ea7ac776047a69cbc9cc">polyfem::problem::NodeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ae52c3df204c90e59973150565c7be06c">polyfem::problem::PointBasedTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#a6b6e06e71d46153233b420e606ed421c">polyfem::problem::ProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a902b107e8911623470cefbd3dd058c94">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a42af1db25fb0d498c6cbe938bea2aac8">polyfem::problem::TimeDepentendStokesProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#a0dc27e1393814294ed6a5cf0abfc5440">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ad9ea5e46b905708f8c053fc943d44e21">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#ae599b0c77e53be13364e0cc5b54478c3">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a496ece0d3fd9158c1061e054c0724872">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#adacbe4e4288eb61b86caacac935b2c38">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03011">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_out_data_8cpp_source.html#l01473">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02488">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l01474">polyfem::legacy::io::OutGeometryData::save_volume()</a>, and <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l02489">polyfem::legacy::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -641,13 +698,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a99c94d3354161dbc07693afd4643267f">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a11e5f2ec0a69603abe5ec4f06dc6d416">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00041">41</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00047">47</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00128">setup_nodal_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aff33b353989818b0e80d0a94edfb5e40_icgraph.svg" width="370" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aff33b353989818b0e80d0a94edfb5e40_icgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -677,13 +734,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8b2748628d7f94ffb625c3e60aca5818">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7263a3babf86a2a0de99c6d294caa11d">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00042">42</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00048">48</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00128">setup_nodal_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a135987ed8d0c8214f77507a20f69308e_icgraph.svg" width="370" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a135987ed8d0c8214f77507a20f69308e_icgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -714,7 +771,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a051c2a6f8b9d4043682539fde7159d14">polyfem::problem::NodeProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00022">22</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00028">28</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01213">polyfem::assembler::GenericScalarProblem::set_parameters()</a>.</p>
 <div class="dynheader">
@@ -773,7 +830,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8de0f06f128befabcf4e8315f97696f5">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a34d66b7a1d7873f92fda6f713c6fcc0f">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#afe30f2ed0d4c5b0dd949c530e41eab55">polyfem::problem::GravityProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#a7c69ffad2a2adf7b14dd8a28d3802b17">polyfem::problem::WalkProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00055">55</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00061">61</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00130">polyfem::assembler::RhsAssembler::initial_acceleration()</a>.</p>
 <div class="dynheader">
@@ -820,7 +877,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1problem_1_1_two_spheres.html#a7fcd6a43d5ecd7d4d3ec8e322d94ef54">polyfem::problem::TwoSpheres</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00056">56</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00062">62</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -872,7 +929,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af42e3e4a2bfe460d623020c3f9ea8db1">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a13ae1127a02b89c15d3997fef95b4896">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a13a159860632cf2308315ba0fde0eb59">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a3db16633ad4ad5a2269d22eb22a58b7e">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#acb7b8b34b46867eec63f2feb85210971">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a7b3dcf0a3a986a05f7e7667cf6a6a1ea">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a0171e29cfcaec12b604ef273235acc53">polyfem::problem::TimeDepentendStokesProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_two_spheres.html#a7265e14b45a95bbb313acf45801fad5d">polyfem::problem::TwoSpheres</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#a198732bc88ccd36e54ae2c54a6a61187">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#abb72db62f188f3d2bc481fa46edd8a18">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a9dcc8da2a74f106456a230464ecc9c39">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a2b2c2c5e1fa59b6877d48516afb8041d">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a2cd3cb6342ec0221176e4d181848f2f6">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00053">53</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00059">59</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00114">polyfem::assembler::RhsAssembler::initial_solution()</a>.</p>
 <div class="dynheader">
@@ -931,7 +988,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a42e6897ecbcdd6ecb2db982244bc471a">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#aa4a8db7edbf92f2cac0d2dddaedbb606">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a7d37a30eb72f3361c36828be3d925743">polyfem::problem::GravityProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#ad8dbf51390adae025040bf5930a7bfed">polyfem::problem::WalkProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00054">54</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00060">60</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00122">polyfem::assembler::RhsAssembler::initial_velocity()</a>.</p>
 <div class="dynheader">
@@ -966,11 +1023,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00035">35</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00041">41</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00081">pressure_boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00116">pressure_boundary_ids_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00822">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00823">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1004,9 +1061,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aadecf193a9e766eb1e2453da26438616">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a167e88b0e98fe31b0ffdf2b9e54beae9">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#afbac577a4d30e6c481be548afd978572">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ac38d4b0c802c51e5bf852f8d9a8c7b6f">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#a1ff9883a17ade56963f52cd06efcbcb6">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a110c0e92893a10163bbe95a4623fd099">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a5d0fcb3e0dac1b4d707feacf07d07d3b">polyfem::problem::TimeDepentendStokesProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a004cf65a17466b714967d302a2d8727d">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00051">51</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00057">57</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00636">polyfem::assembler::RhsAssembler::compute_energy_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00637">polyfem::assembler::RhsAssembler::compute_energy_grad()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1051,13 +1108,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9b5d724692b79b4e82cee829d63411c9">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a072e1011ae2c244b029fe781b37efdc6">polyfem::problem::NodeProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#abc23a5a8355e1f00fb8c6f7c45b8326f">polyfem::problem::PointBasedTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00061">61</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00067">67</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00426">polyfem::assembler::RhsAssembler::sample_bc()</a>, and <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00426">polyfem::assembler::RhsAssembler::sample_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a58751552ead1c373f759824138efcbb9_icgraph.svg" width="439" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a58751552ead1c373f759824138efcbb9_icgraph.svg" width="439" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1104,14 +1161,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aea2fcaac00687d97de2526f9fc6fee35">polyfem::assembler::GenericTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00062">62</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_ae0fb2d461731e82f11835e8c754bfa84_icgraph.svg" width="368" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00068">68</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1151,13 +1201,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a721d9352b374a2d29b5fb66706b608a6">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a5405afd2aa29e9bceddfb4791c93d456">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00039">39</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00045">45</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00128">setup_nodal_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_adf910233e7b1ba839fd2ad3171396fdf_icgraph.svg" width="363" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_adf910233e7b1ba839fd2ad3171396fdf_icgraph.svg" width="404" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1198,13 +1248,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ace897a6fd531fc7687614bc74e716ac6">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a0761c3b2d1b5cf73ce3abae60ae0f785">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00040">40</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00046">46</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00128">setup_nodal_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aa0ed3c91250b71932acd4534b60fdc19_icgraph.svg" width="370" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aa0ed3c91250b71932acd4534b60fdc19_icgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1234,7 +1284,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a7bc682c1f8c046178ab131444dcc3944">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a46246beee2a0266e2a26973f1fe3dd0e">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem.html#a0e545810862a9a68b8d0310832486418">polyfem::problem::ElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a6a672f67214e479ec969e874beac25ff">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ac6e4c2e7314329abb3876e45d5a15a12">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html#aee37287f9b3a6bb471e559f3c8df568a">polyfem::problem::ElasticProblemZeroBC</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a1918831d8d28c0aedbc5862a063507cb">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#a5305767cb37977b7b19027cc3df362b2">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a0ec35262feef8eec5a4782a66d604962">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_min_surf_problem.html#aace37213360c67c671ea95accf298fe7">polyfem::problem::MinSurfProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a9d36f8eca8043f3efcd25046451a82ea">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#ad1ca688d7de86cfcea869d59a63961b1">polyfem::problem::NodeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#abeff2f754f43ae499dbc413de4a2b42f">polyfem::problem::PointBasedTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#a3699d416b210101dbe60e24c439d6f30">polyfem::problem::ProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#aeb02a0889c6bc2f3f2987cc4b7886d1d">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_constant_velocity.html#a4cb4bacee10261745388c54e8b8da02a">polyfem::problem::ConstantVelocity</a>, <a class="el" href="classpolyfem_1_1problem_1_1_two_spheres.html#af439098c03952e5634050b5deaa9c50c">polyfem::problem::TwoSpheres</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity.html#a5b6d69ad22ed59de9c8411e2b5c7ab49">polyfem::problem::DrivenCavity</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity_c0.html#acda9952f52e9179d7754d62a6307c1e1">polyfem::problem::DrivenCavityC0</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity_smooth.html#ae8060da1b6f8dba101de9f501f44cea9">polyfem::problem::DrivenCavitySmooth</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a7417cfd167bb1f5455550982cb840259">polyfem::problem::Flow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8b2cf255fb3cc83c2055b51b5337fe4e">polyfem::problem::FlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#ad31ac88c2772d1faf3b6843708395c0e">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_corner_flow.html#ad5fdaf5f5dd6e8c049d87823a044ceaf">polyfem::problem::CornerFlow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_lshape.html#a9c8308eeebf03b70cbae1a39eeb0cdc4">polyfem::problem::Lshape</a>, <a class="el" href="classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#ae170f1047a6c61d414075fdb02620aa9">polyfem::problem::UnitFlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a78b28862ee265b63440abebf0cd02912">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a63f2e9304cbcb682f407e706c3833211">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#ac32753a32abbaf79e48a128aad9b3ba2">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aecc8b2a8e5694f2c0df8284e120ded69">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00667">polyfem::assembler::RhsAssembler::compute_energy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00668">polyfem::assembler::RhsAssembler::compute_energy()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1268,7 +1318,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aed0d8c86e61fd17a1babac94d1a7d941">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa86b35163129fcd063f7595c61d0c44a">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem.html#abe03f6ea9df9d1807060fb11a69f2bc4">polyfem::problem::ElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a425e6013607e9f28745d7c8c53434179">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ad0e4d6daa451f826befd2488e01c0dad">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html#a77e41c8fac91b7197c891f64b8abadea">polyfem::problem::ElasticProblemZeroBC</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem_exact.html#aeee6da28e23e22254742af53e573ea9d">polyfem::problem::ElasticProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_compression_elastic_problem_exact.html#abe95195535c0b2e71049d865ee9c492e">polyfem::problem::CompressionElasticProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html#a50d43a23bf961026d7252e5d730323bb">polyfem::problem::QuadraticElasticProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a1e4ad1dabb15894df2a2b74335e29241">polyfem::problem::LinearElasticProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#afbfde943ea4b3661e379a4c67b86e3cd">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#ad2f6c49c833a9144986555d4064ae0d2">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_franke_problem.html#a0f2420df2879f03c7151fd0784e63de3">polyfem::problem::FrankeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_franke_problem_old.html#ae73f95cd29b0c9ab9e7cb394ae9851d1">polyfem::problem::FrankeProblemOld</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a5ae35168ec08106ffada783ba52aa30c">polyfem::problem::KernelProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_linear_problem.html#ad9119b323d98b74965481260a58ffc3a">polyfem::problem::LinearProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_quadratic_problem.html#a4f185089abdfe9bcb31623f256b2845b">polyfem::problem::QuadraticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_cubic_problem.html#a19389cbc33e61507f2dce1b287cc097c">polyfem::problem::CubicProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_sine_problem.html#a61aaa846e27bffd1eb6df94a7ebdae49">polyfem::problem::SineProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_zero_b_c_problem.html#a6ad1b239aa24fc707fb3c89a3e7bad3d">polyfem::problem::ZeroBCProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_min_surf_problem.html#a87b9a60b7254288f6e1cbe349cb21e0e">polyfem::problem::MinSurfProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a3e8aa2814a560192edb4960d8315b772">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a66f7414ee04b0dff3b29b064f59c33a6">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a1c837353d969395d1474abc4aafb5dea">polyfem::problem::NodeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ac50debe5b3a962040225ea0b0590f837">polyfem::problem::PointBasedTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a7355add61737a827d0e0d2cb7fc8818c">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#acdfeea2499f525f122e4c0f8084a44bb">polyfem::problem::TimeDepentendStokesProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#ae11d548f75aa981093fdff6b55bbd20b">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a4b98dbecdee1ceb246e839c623c60b1f">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a07e0d839f712d47020e76cfa7ea126dd">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a24442cbd20b09aa40392c2fe6c642942">polyfem::problem::Airfoil</a>, <a class="el" href="classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a7d3985e96c3e363ff23f8383af161ece">polyfem::problem::SimpleStokeProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_sine_stoke_problem_exact.html#a914f7341ce8e5721bb47967eebffddb5">polyfem::problem::SineStokeProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#ae0544551f722cb1129cb932bc1572c35">polyfem::problem::TransientStokeProblemExact</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_test_problem.html#a91581ba244cec3bbc5522b98e6a5d7e0">polyfem::problem::TestProblem</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03011">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_out_data_8cpp_source.html#l01204">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_body_force_derivative_8cpp_source.html#l00037">polyfem::solver::BodyForceDerivative::force_shape_derivative()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00426">polyfem::assembler::RhsAssembler::sample_bc()</a>, <a class="el" href="_out_data_8cpp_source.html#l03254">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_out_data_8cpp_source.html#l02714">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l02101">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01473">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l02488">polyfem::io::OutGeometryData::save_wire()</a>, <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>, and <a class="el" href="_problem_with_solution_8hpp_source.html#l00033">polyfem::problem::ProblemWithSolution::size_for()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l01205">polyfem::legacy::io::OutGeometryData::export_data()</a>, <a class="el" href="_body_force_derivative_8cpp_source.html#l00037">polyfem::solver::BodyForceDerivative::force_shape_derivative()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00426">polyfem::assembler::RhsAssembler::sample_bc()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02099">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l02715">polyfem::legacy::io::OutGeometryData::save_points()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l02102">polyfem::legacy::io::OutGeometryData::save_surface()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l01474">polyfem::legacy::io::OutGeometryData::save_volume()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l02489">polyfem::legacy::io::OutGeometryData::save_wire()</a>, and <a class="el" href="_problem_with_solution_8hpp_source.html#l00033">polyfem::problem::ProblemWithSolution::size_for()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1302,9 +1352,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a30afe0343101b8a07dada44478459309">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a61f7b9a0852a74c021d8b9b439c6b747">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a8ea0df5b56a863b2660bca9409c74466">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#aebbef0b54680ea4538ef5bf4d730e7e7">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#ad8f93962fa8b3b42db9501b343c35f76">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a0e8d81a79ffff9f60ef1f5103838aafb">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#addadb6f6bc1ced27f3a2381444e7f74e">polyfem::problem::TimeDepentendStokesProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#a6468840dad58e13dee5e4bb1dda2e688">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ace99069135e004b01402fa82a82d3a87">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#ac7594391bfffa4e40ea7e5649bea4bd8">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a59e59aa1b0a6ce8dbe5687ed29e79672">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a4b77c874256b10a197a418b249bf84a0">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00050">50</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00056">56</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01473">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l01474">polyfem::legacy::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1338,13 +1388,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ada4dc69fbd13ad2b53d52ad9d557b354">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#add9f908a605e3a5161726927986550d6">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00060">60</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00066">66</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">has_boundary()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aa5e9069b4bf80363dc85825bee00bf1e_icgraph.svg" width="380" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_aa5e9069b4bf80363dc85825bee00bf1e_icgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1372,15 +1422,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00023">23</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00029">29</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00088">name_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00125">name_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03254">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02099">polyfem::io::OutStatsData::save_json()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a49bcc436f56b6ac1c201261495bb333c_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a49bcc436f56b6ac1c201261495bb333c_icgraph.svg" width="100%" height="578"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1451,9 +1501,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a21f9ade09719d477675f76e787f77bc3">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a6ba31b5dd378ce28984e9cd93b81c20f">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a8281bc2ade9dedbebb473e9d0b088771">polyfem::problem::NodeProblem</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ac143fafb7edf1516acd3121a5d0c894a">polyfem::problem::PointBasedTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00031">31</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00037">37</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00667">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00822">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00668">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00823">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1522,7 +1572,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8d57b6de64d26b07e21b2d7989ee8f12">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae76ab9703370242db85d92b45be0e056">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00038">38</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00044">44</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1592,7 +1642,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9b1d1a7cb4ff60641df3ec8da9ed3bdc">polyfem::assembler::GenericTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00032">32</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00038">38</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1632,7 +1682,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abb156f2c383c8bfeefccdad3a2213656">polyfem::assembler::GenericTensorProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00033">33</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00039">39</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">polyfem::assembler::PressureAssembler::compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">polyfem::assembler::PressureAssembler::compute_cavity_energy_grad()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">polyfem::assembler::PressureAssembler::compute_cavity_energy_hess()</a>.</p>
 <div class="dynheader">
@@ -1691,7 +1741,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af6b751523b4242cee6ebdf5f88c7bd0e">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1cd5b360096c9a0f3910beb9ce474b9c">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem.html#ad07bc734de55495aac787608a651480f">polyfem::problem::ElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a19adbfb8e040746c7f96a7f7b6b3367c">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ab8177f14fee43cb7f144209c2557c809">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html#a998b029905e3df5a5267ef4094f9dfca">polyfem::problem::ElasticProblemZeroBC</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a6adb51225a475e44e3cdba56915ed7ca">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_walk_problem.html#ae29a2a48ad877d215dc583d3e0bcf8db">polyfem::problem::WalkProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a67be9dd73a3129a68612154c0bbe596d">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a6d23254ebf04f49597121aa74a878397">polyfem::problem::KernelProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_min_surf_problem.html#ac01ef795a94b4d85d2a73909bfab18bf">polyfem::problem::MinSurfProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_dependent_problem.html#a3352e5dec13372ec8e2f338836cf140e">polyfem::problem::TimeDependentProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ab124ce7b5ee624850580f4b252bdb4c5">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a740b7fc07b1450cf68749d2b46b7b8da">polyfem::problem::NodeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ae07a8a3988bee9818d3bbbfbe4b72a93">polyfem::problem::PointBasedTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#a24d2aba136e3d02cf1eab72d59c79b5c">polyfem::problem::ProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#ab1aeb5b4e1ea4689e3df1e210d55774d">polyfem::problem::BilaplacianProblemWithSolution</a>, <a class="el" href="classpolyfem_1_1problem_1_1_constant_velocity.html#a52321401d61db4756240d2b48d905230">polyfem::problem::ConstantVelocity</a>, <a class="el" href="classpolyfem_1_1problem_1_1_two_spheres.html#a9c7a305ca8645f583008cf559ba3c775">polyfem::problem::TwoSpheres</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity.html#afe6f0ff1ed79473fa8b81ee4c0dfda74">polyfem::problem::DrivenCavity</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity_c0.html#a55ef5e2285e2abec71b8fac9b2272d1b">polyfem::problem::DrivenCavityC0</a>, <a class="el" href="classpolyfem_1_1problem_1_1_driven_cavity_smooth.html#a8882d5dc426cfb095c16e00d46dd252a">polyfem::problem::DrivenCavitySmooth</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow.html#ab9dce515044d8b8c489f23b571470698">polyfem::problem::Flow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a53c837004e451b1027db769b6ae65c43">polyfem::problem::FlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#af65806ac8250906e032843540562add0">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_corner_flow.html#af11bdcaf85c4f1a5a442bf94bde244b8">polyfem::problem::CornerFlow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_lshape.html#af74f3020d333bbb21bfbc6a610aaa1e2">polyfem::problem::Lshape</a>, <a class="el" href="classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#a5199b43c7697eef45583b5cb5875a01e">polyfem::problem::UnitFlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ac993a76e358aefcba686d4e7043dc0ed">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a0feec695d9af6b5665fb03e3ce2d99d0">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a0dd5ef43299e8f66f2f2a89621cca67f">polyfem::problem::Airfoil</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a7f90a3bdf37850f94df1760c5a61d6e6">polyfem::problem::TransientStokeProblemExact</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00667">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_body_force_derivative_8cpp_source.html#l00037">polyfem::solver::BodyForceDerivative::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00668">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_body_force_derivative_8cpp_source.html#l00037">polyfem::solver::BodyForceDerivative::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1736,7 +1786,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a150cc7d70972fc96ddc9ed60b4f9b83b">polyfem::assembler::GenericTensorProblem</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af19715a20a188f76baa8ac2b124321d4">polyfem::assembler::GenericScalarProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a8c913cb2940228882448fcc8cd6144ee">polyfem::problem::TorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a787f437567dc06e5d69d6355a68dcc6d">polyfem::problem::DoubleTorsionElasticProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a6abab6d6d852155ce3f8e2f2fb524354">polyfem::problem::GravityProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a1b15068e66e7771a7f65dfac0dedf695">polyfem::problem::ElasticCantileverExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a956f74f38b2ab114a6bce10b3779582e">polyfem::problem::KernelProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a74bbfd0f274642068ac4349a80f116f9">polyfem::problem::GenericScalarProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_node_problem.html#a30ca35f99b5f7ac0192c988d3fec3169">polyfem::problem::NodeProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a0db7fda673e0b8a371502db1efa7a645">polyfem::problem::PointBasedTensorProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#ad2da1c6563acfd196b2f3e9c938f414c">polyfem::problem::TimeDepentendStokesProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a0306b45278b7d253d31ba979d9391062">polyfem::problem::Flow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a844159dff1672ff9510d7bdb9fa526eb">polyfem::problem::FlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_kovnaszy.html#ae9952b9134a5509ea750ed1551195ad3">polyfem::problem::Kovnaszy</a>, <a class="el" href="classpolyfem_1_1problem_1_1_corner_flow.html#ad8bc3d5cd1ae0d97acaa9529f67aa0be">polyfem::problem::CornerFlow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_lshape.html#ab7fe2c8022d6f14fcc51dd58406f8ad2">polyfem::problem::Lshape</a>, <a class="el" href="classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#ab36971457c05fb166f1297024a0b6013">polyfem::problem::UnitFlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3e7184ff294bb33308ec466d89d06ae7">polyfem::problem::TaylorGreenVortexProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a57cdb694ca17f476df80fdd93cff0773">polyfem::problem::StokesLawProblem</a>, <a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#ac847e668ef922cbe21f408bf670f69b2">polyfem::problem::Airfoil</a>, <a class="el" href="classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#ac7eac76bb33deb3199ce52d636d51118">polyfem::problem::SimpleStokeProblemExact</a>, <a class="el" href="classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a8687c376719f80291b7d52e96bd20132">polyfem::problem::TransientStokeProblemExact</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_test_problem.html#a37f4293c2d23fbba3eedb36dffcac286">polyfem::problem::TestProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00058">58</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00064">64</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1776,12 +1826,70 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aeb7bc1bff905955ea5b89e514cd6e5de">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad1a65ec58b4e1fcf8d41339b77759234">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00018">18</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00024">24</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a2b685aeda5271b1e69d97ce922cbbfbb" name="a2b685aeda5271b1e69d97ce922cbbfbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b685aeda5271b1e69d97ce922cbbfbb">&#9670;&#160;</a></span>setup_bc() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::Problem::setup_bc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>selected_local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>boundary_nodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
 <a id="a0d01038e6a37fff6f045eeb59111fd98" name="a0d01038e6a37fff6f045eeb59111fd98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d01038e6a37fff6f045eeb59111fd98">&#9670;&#160;</a></span>setup_bc()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d01038e6a37fff6f045eeb59111fd98">&#9670;&#160;</a></span>setup_bc() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1871,14 +1979,110 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Legacy all-in-one BC setup. New VarForm code should use the BoundaryKind overloads above and request only the BC data it owns. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8cpp_source.html#l00016">16</a> of file <a class="el" href="_problem_8cpp_source.html">Problem.cpp</a>.</p>
+</div>
+</div>
+<a id="ae6fd0188ff803d62924ab7d252a14195" name="ae6fd0188ff803d62924ab7d252a14195"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6fd0188ff803d62924ab7d252a14195">&#9670;&#160;</a></span>setup_nodal_bc()</h2>
 
-<p class="reference">References <a class="el" href="_local_boundary_8cpp_source.html#l00016">polyfem::mesh::LocalBoundary::add_boundary_primitive()</a>, <a class="el" href="_problem_8hpp_source.html#l00078">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00049">polyfem::mesh::LocalBoundary::empty()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00497">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_problem_8hpp_source.html#l00041">has_nodal_dirichlet()</a>, <a class="el" href="_problem_8hpp_source.html#l00042">has_nodal_neumann()</a>, <a class="el" href="_mesh_8hpp_source.html#l00530">polyfem::mesh::Mesh::has_node_ids()</a>, <a class="el" href="_problem_8hpp_source.html#l00061">is_dimension_dirichet()</a>, <a class="el" href="_problem_8hpp_source.html#l00062">is_nodal_dimension_dirichlet()</a>, <a class="el" href="_problem_8hpp_source.html#l00039">is_nodal_dirichlet_boundary()</a>, <a class="el" href="_problem_8hpp_source.html#l00040">is_nodal_neumann_boundary()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">is_scalar()</a>, <a class="el" href="_problem_8hpp_source.html#l00060">might_have_no_dirichlet()</a>, <a class="el" href="_problem_8hpp_source.html#l00079">neumann_boundary_ids_</a>, <a class="el" href="_problem_8hpp_source.html#l00080">normal_aligned_neumann_boundary_ids_</a>, <a class="el" href="_problem_8hpp_source.html#l00081">pressure_boundary_ids_</a>, <a class="el" href="_problem_8hpp_source.html#l00082">pressure_cavity_ids_</a>, and <a class="el" href="_problem_8hpp_source.html#l00083">splitting_pressure_boundary_ids_</a>.</p>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::Problem::setup_nodal_bc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_problem_8cpp_source.html#l00128">128</a> of file <a class="el" href="_problem_8cpp_source.html">Problem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f">polyfem::assembler::Dirichlet</a>, <a class="el" href="_mesh_8hpp_source.html#l00497">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_problem_8hpp_source.html#l00047">has_nodal_dirichlet()</a>, <a class="el" href="_problem_8hpp_source.html#l00048">has_nodal_neumann()</a>, <a class="el" href="_mesh_8hpp_source.html#l00530">polyfem::mesh::Mesh::has_node_ids()</a>, <a class="el" href="_problem_8hpp_source.html#l00045">is_nodal_dirichlet_boundary()</a>, <a class="el" href="_problem_8hpp_source.html#l00046">is_nodal_neumann_boundary()</a>, and <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152">polyfem::assembler::Neumann</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a0d01038e6a37fff6f045eeb59111fd98_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_ae6fd0188ff803d62924ab7d252a14195_cgraph.svg" width="626" height="418"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a7dced08c8868dfcb5e2f6efe9b69978c" name="a7dced08c8868dfcb5e2f6efe9b69978c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dced08c8868dfcb5e2f6efe9b69978c">&#9670;&#160;</a></span>setup_pressure_cavity_bc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::Problem::setup_pressure_cavity_bc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_pressure_cavity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_problem_8cpp_source.html#l00101">101</a> of file <a class="el" href="_problem_8cpp_source.html">Problem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_local_boundary_8cpp_source.html#l00016">polyfem::mesh::LocalBoundary::add_boundary_primitive()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, and <a class="el" href="_problem_8hpp_source.html#l00117">pressure_cavity_ids_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_problem_a7dced08c8868dfcb5e2f6efe9b69978c_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1909,7 +2113,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3e618950a2bf62155bf802415d0abd91">polyfem::assembler::GenericTensorProblem</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a3f25b6e94ffe26d31a9a24643700ff0a">polyfem::assembler::GenericScalarProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00075">75</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00110">110</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1934,9 +2138,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00078">78</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00113">113</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">polyfem::problem::PointBasedTensorProblem::add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00193">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00744">polyfem::problem::Airfoil::Airfoil()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00044">polyfem::problem::ConstantVelocity::ConstantVelocity()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00464">polyfem::problem::CornerFlow::CornerFlow()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00220">polyfem::assembler::GenericTensorProblem::dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00937">polyfem::assembler::GenericScalarProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00053">polyfem::problem::TorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00145">polyfem::problem::DoubleTorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00104">polyfem::problem::NodeProblem::dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00120">polyfem::problem::PointBasedTensorProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00115">polyfem::problem::DoubleTorsionElasticProblem::DoubleTorsionElasticProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00634">polyfem::problem::ElasticCantileverExact::ElasticCantileverExact()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00011">polyfem::problem::ElasticProblem::ElasticProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00238">polyfem::problem::ElasticProblemZeroBC::ElasticProblemZeroBC()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00241">polyfem::problem::Flow::Flow()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00338">polyfem::problem::FlowWithObstacle::FlowWithObstacle()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00555">polyfem::problem::GravityProblem::GravityProblem()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00196">polyfem::assembler::GenericTensorProblem::is_dimension_dirichet()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00149">polyfem::problem::NodeProblem::is_dimension_dirichet()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00217">polyfem::problem::PointBasedTensorProblem::is_dimension_dirichet()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00390">polyfem::problem::Kovnaszy::Kovnaszy()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00510">polyfem::problem::Lshape::Lshape()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00130">polyfem::problem::NodeProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01213">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00080">polyfem::problem::TorsionElasticProblem::set_parameters()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00188">polyfem::problem::DoubleTorsionElasticProblem::set_parameters()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00172">polyfem::problem::NodeProblem::set_parameters()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00234">polyfem::problem::PointBasedTensorProblem::set_parameters()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00274">polyfem::problem::Flow::set_parameters()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00596">polyfem::problem::UnitFlowWithObstacle::set_parameters()</a>, <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00649">polyfem::problem::StokesLawProblem::StokesLawProblem()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00810">polyfem::problem::TaylorGreenVortexProblem::TaylorGreenVortexProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00039">polyfem::problem::TorsionElasticProblem::TorsionElasticProblem()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00556">polyfem::problem::UnitFlowWithObstacle::UnitFlowWithObstacle()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01075">polyfem::assembler::GenericTensorProblem::update_dirichlet_boundary()</a>, and <a class="el" href="_elastic_problem_8cpp_source.html#l00595">polyfem::problem::WalkProblem::WalkProblem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">polyfem::problem::PointBasedTensorProblem::add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00193">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00744">polyfem::problem::Airfoil::Airfoil()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00044">polyfem::problem::ConstantVelocity::ConstantVelocity()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00464">polyfem::problem::CornerFlow::CornerFlow()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00220">polyfem::assembler::GenericTensorProblem::dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00937">polyfem::assembler::GenericScalarProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00053">polyfem::problem::TorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00145">polyfem::problem::DoubleTorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00104">polyfem::problem::NodeProblem::dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00120">polyfem::problem::PointBasedTensorProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00115">polyfem::problem::DoubleTorsionElasticProblem::DoubleTorsionElasticProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00634">polyfem::problem::ElasticCantileverExact::ElasticCantileverExact()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00011">polyfem::problem::ElasticProblem::ElasticProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00238">polyfem::problem::ElasticProblemZeroBC::ElasticProblemZeroBC()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00241">polyfem::problem::Flow::Flow()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00338">polyfem::problem::FlowWithObstacle::FlowWithObstacle()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00555">polyfem::problem::GravityProblem::GravityProblem()</a>, <a class="el" href="_problem_8cpp_source.html#l00016">has_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00196">polyfem::assembler::GenericTensorProblem::is_dimension_dirichet()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00149">polyfem::problem::NodeProblem::is_dimension_dirichet()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00217">polyfem::problem::PointBasedTensorProblem::is_dimension_dirichet()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00390">polyfem::problem::Kovnaszy::Kovnaszy()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00510">polyfem::problem::Lshape::Lshape()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00130">polyfem::problem::NodeProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01213">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00080">polyfem::problem::TorsionElasticProblem::set_parameters()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00188">polyfem::problem::DoubleTorsionElasticProblem::set_parameters()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00172">polyfem::problem::NodeProblem::set_parameters()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00234">polyfem::problem::PointBasedTensorProblem::set_parameters()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00274">polyfem::problem::Flow::set_parameters()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00596">polyfem::problem::UnitFlowWithObstacle::set_parameters()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00649">polyfem::problem::StokesLawProblem::StokesLawProblem()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00810">polyfem::problem::TaylorGreenVortexProblem::TaylorGreenVortexProblem()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00039">polyfem::problem::TorsionElasticProblem::TorsionElasticProblem()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00556">polyfem::problem::UnitFlowWithObstacle::UnitFlowWithObstacle()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01075">polyfem::assembler::GenericTensorProblem::update_dirichlet_boundary()</a>, and <a class="el" href="_elastic_problem_8cpp_source.html#l00595">polyfem::problem::WalkProblem::WalkProblem()</a>.</p>
 
 </div>
 </div>
@@ -1960,9 +2164,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00088">88</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00125">125</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_problem_8hpp_source.html#l00023">name()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8hpp_source.html#l00029">name()</a>.</p>
 
 </div>
 </div>
@@ -1986,9 +2190,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00079">79</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00114">114</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">polyfem::problem::PointBasedTensorProblem::add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00193">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00634">polyfem::problem::ElasticCantileverExact::ElasticCantileverExact()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00253">polyfem::assembler::GenericTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00963">polyfem::assembler::GenericScalarProblem::neumann_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">polyfem::problem::PointBasedTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01213">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00172">polyfem::problem::NodeProblem::set_parameters()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00234">polyfem::problem::PointBasedTensorProblem::set_parameters()</a>, and <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">polyfem::problem::PointBasedTensorProblem::add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00193">polyfem::problem::PointBasedTensorProblem::add_function()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00634">polyfem::problem::ElasticCantileverExact::ElasticCantileverExact()</a>, <a class="el" href="_problem_8cpp_source.html#l00016">has_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00253">polyfem::assembler::GenericTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00963">polyfem::assembler::GenericScalarProblem::neumann_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">polyfem::problem::PointBasedTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01213">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00172">polyfem::problem::NodeProblem::set_parameters()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">polyfem::problem::PointBasedTensorProblem::set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -2012,9 +2216,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00080">80</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00115">115</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00253">polyfem::assembler::GenericTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">has_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00253">polyfem::assembler::GenericTensorProblem::neumann_bc()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -2038,9 +2242,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00081">81</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00116">116</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00464">polyfem::problem::CornerFlow::CornerFlow()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00338">polyfem::problem::FlowWithObstacle::FlowWithObstacle()</a>, <a class="el" href="_problem_8hpp_source.html#l00035">is_boundary_pressure()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00510">polyfem::problem::Lshape::Lshape()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00288">polyfem::assembler::GenericTensorProblem::pressure_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01045">polyfem::assembler::GenericTensorProblem::update_pressure_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00464">polyfem::problem::CornerFlow::CornerFlow()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00338">polyfem::problem::FlowWithObstacle::FlowWithObstacle()</a>, <a class="el" href="_problem_8hpp_source.html#l00041">is_boundary_pressure()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00510">polyfem::problem::Lshape::Lshape()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00288">polyfem::assembler::GenericTensorProblem::pressure_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01045">polyfem::assembler::GenericTensorProblem::update_pressure_boundary()</a>.</p>
 
 </div>
 </div>
@@ -2064,9 +2268,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00082">82</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00117">117</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00476">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_problem_8cpp_source.html#l00101">setup_pressure_cavity_bc()</a>.</p>
 
 </div>
 </div>
@@ -2090,9 +2294,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00083">83</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00016">setup_bc()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00118">118</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 </div>
 </div>
@@ -2116,7 +2318,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00085">85</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_problem_8hpp_source.html#l00120">120</a> of file <a class="el" href="_problem_8hpp_source.html">Problem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00865">polyfem::assembler::GenericTensorProblem::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01352">polyfem::assembler::GenericScalarProblem::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00457">polyfem::assembler::GenericTensorProblem::update_nodes()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01198">polyfem::assembler::GenericScalarProblem::update_nodes()</a>.</p>
 

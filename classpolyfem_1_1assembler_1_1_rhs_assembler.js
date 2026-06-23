@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_rhs_assembler =
 [
-    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#af4c729f4127069657c4a09f8b8ed3157", null ],
+    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ac29fd1c51a89f9061e6e854e115fb9a8", null ],
     [ "ass_vals_cache", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a24586fcdb60aabb348a29855e43cbe6e", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5", null ],
     [ "assembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a97719fe113df5d24a8993e19dad8cea5", null ],
@@ -30,7 +30,7 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "n_basis_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a39a825e996487157c35b072370d06373", null ],
     [ "neumann_nodes_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a69131e256e8d0f64a8f936430c528a7c", null ],
     [ "neumann_nodes_position_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4a6b5c08a73684306164df9f9ad2949e", null ],
-    [ "obstacle_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#aadf285b97992411c93f3bf94fe0cb76b", null ],
+    [ "obstacle_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a56e3838bd4103d929e2b767f98123cc0", null ],
     [ "problem_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868", null ],
     [ "size_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a5b343c891a021a28b2e97d85d451d6d8", null ],
     [ "solver_params_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#aaf95310c955e08dd3c4aa60756b8235b", null ]

@@ -22,7 +22,7 @@ var classpolyfem_1_1_opt_state =
     [ "ndof", "classpolyfem_1_1_opt_state.html#aa601accd4d2967809ac165aedc3b45a8", null ],
     [ "nl_problem", "classpolyfem_1_1_opt_state.html#a9d787809d949294df9be646375e2d9fa", null ],
     [ "output_dir", "classpolyfem_1_1_opt_state.html#aa5b86fbc404f7d34534e654b19d13d87", null ],
-    [ "states", "classpolyfem_1_1_opt_state.html#a033bf0014e0985c1f63e8fa0a0c8a1f7", null ],
+    [ "states", "classpolyfem_1_1_opt_state.html#aaf43b97b3df2bd6ea3c98fa331689b37", null ],
     [ "variable_sizes", "classpolyfem_1_1_opt_state.html#a92db2e5b36ebafaa49ef692b5c6f616c", null ],
     [ "variable_to_simulations", "classpolyfem_1_1_opt_state.html#ae274543ae0052dea3a0965ed10e06696", null ]
 ];

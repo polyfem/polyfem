@@ -141,8 +141,8 @@ Collaboration diagram for polyfem::solver::BoundarySmoothingForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a660639076f4e0e7a969aa19e3323b48e" id="r_a660639076f4e0e7a969aa19e3323b48e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a660639076f4e0e7a969aa19e3323b48e">BoundarySmoothingForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; state, const bool scale_invariant, const int power, const std::vector&lt; int &gt; &amp;surface_selections, const std::vector&lt; int &gt; &amp;active_dims)</td></tr>
-<tr class="separator:a660639076f4e0e7a969aa19e3323b48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa35ffa8c4a1141084277a92888562a7" id="r_aaa35ffa8c4a1141084277a92888562a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#aaa35ffa8c4a1141084277a92888562a7">BoundarySmoothingForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; state, const bool scale_invariant, const int power, const std::vector&lt; int &gt; &amp;surface_selections, const std::vector&lt; int &gt; &amp;active_dims)</td></tr>
+<tr class="separator:aaa35ffa8c4a1141084277a92888562a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6150d8d1509bb088b2e1fc9913c3b16" id="r_ab6150d8d1509bb088b2e1fc9913c3b16"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#ab6150d8d1509bb088b2e1fc9913c3b16">value_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:ab6150d8d1509bb088b2e1fc9913c3b16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form.  <br /></td></tr>
 <tr class="separator:ab6150d8d1509bb088b2e1fc9913c3b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,13 +165,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3f00fafcf3de6cbf9d381d89d093db83 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a185871b84b48eb67a6436c8f2fcfd304"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a185871b84b48eb67a6436c8f2fcfd304">get_variable_to_simulations</a> () const</td></tr>
 <tr class="separator:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00fbabfb24ab18d71030306e1c25bdb3 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a00fbabfb24ab18d71030306e1c25bdb3"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a00fbabfb24ab18d71030306e1c25bdb3">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
-<tr class="separator:a00fbabfb24ab18d71030306e1c25bdb3 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5edfbf61036ea24a6e0aeddc03de0261 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a5edfbf61036ea24a6e0aeddc03de0261"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5edfbf61036ea24a6e0aeddc03de0261">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
+<tr class="separator:a5edfbf61036ea24a6e0aeddc03de0261 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a809444267534055ed66f02df2f4e7fa6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a809444267534055ed66f02df2f4e7fa6">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
 <tr class="memdesc:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b59bd33dd4e908adc56069c6a97ecf6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a6b59bd33dd4e908adc56069c6a97ecf6"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a6b59bd33dd4e908adc56069c6a97ecf6">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
-<tr class="separator:a6b59bd33dd4e908adc56069c6a97ecf6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6b90d2200c5670bbdbd2b4ea48b224 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a7e6b90d2200c5670bbdbd2b4ea48b224"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a7e6b90d2200c5670bbdbd2b4ea48b224">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
+<tr class="separator:a7e6b90d2200c5670bbdbd2b4ea48b224 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_aa2ac7f6f4495c6085ae1d3c51bfdd9de"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa2ac7f6f4495c6085ae1d3c51bfdd9de">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) final override</td></tr>
 <tr class="memdesc:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time-dependent fields.  <br /></td></tr>
 <tr class="separator:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -251,8 +251,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a70031e7a1564d6037f78df1cb696d26d" id="r_a70031e7a1564d6037f78df1cb696d26d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a70031e7a1564d6037f78df1cb696d26d">state_</a></td></tr>
-<tr class="separator:a70031e7a1564d6037f78df1cb696d26d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087d750f4a5562f58995914f1c966560" id="r_a087d750f4a5562f58995914f1c966560"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a087d750f4a5562f58995914f1c966560">state_</a></td></tr>
+<tr class="separator:a087d750f4a5562f58995914f1c966560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a501b369f0575d34a5469bf46f18f1e46" id="r_a501b369f0575d34a5469bf46f18f1e46"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a501b369f0575d34a5469bf46f18f1e46">scale_invariant_</a></td></tr>
 <tr class="separator:a501b369f0575d34a5469bf46f18f1e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab180008af6577c67cd112b58f814bb5c" id="r_ab180008af6577c67cd112b58f814bb5c"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#ab180008af6577c67cd112b58f814bb5c">power_</a></td></tr>
@@ -309,10 +309,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00018">18</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00021">21</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a660639076f4e0e7a969aa19e3323b48e" name="a660639076f4e0e7a969aa19e3323b48e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a660639076f4e0e7a969aa19e3323b48e">&#9670;&#160;</a></span>BoundarySmoothingForm()</h2>
+<a id="aaa35ffa8c4a1141084277a92888562a7" name="aaa35ffa8c4a1141084277a92888562a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa35ffa8c4a1141084277a92888562a7">&#9670;&#160;</a></span>BoundarySmoothingForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -326,7 +326,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -363,7 +363,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">17</a> of file <a class="el" href="_smoothing_forms_8cpp_source.html">SmoothingForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">adj</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00034">scale_invariant_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00033">state_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00038">surface_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">adj</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00040">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">scale_invariant_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">state_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00041">surface_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
 
 </div>
 </div>
@@ -406,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">129</a> of file <a class="el" href="_smoothing_forms_8cpp_source.html">SmoothingForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">active_dims_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">adj</a>, <a class="el" href="_variable_to_simulation_group_8cpp_source.html#l00049">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00035">power_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00034">scale_invariant_</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00033">state_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00045">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00042">active_dims_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">adj</a>, <a class="el" href="_variable_to_simulation_group_8cpp_source.html#l00049">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00040">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00038">power_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">scale_invariant_</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">state_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00045">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -452,7 +452,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">88</a> of file <a class="el" href="_smoothing_forms_8cpp_source.html">SmoothingForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">active_dims_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">adj</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00035">power_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00034">scale_invariant_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00033">state_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_smoothing_forms_8hpp_source.html#l00042">active_dims_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">adj</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00040">L</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00038">power_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">scale_invariant_</a>, <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">state_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -477,7 +477,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">39</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00042">42</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
@@ -503,7 +503,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">36</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00039">39</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">BoundarySmoothingForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
@@ -529,7 +529,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">37</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00040">40</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">BoundarySmoothingForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
@@ -555,7 +555,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00035">35</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00038">38</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
@@ -581,14 +581,14 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00034">34</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00037">37</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">BoundarySmoothingForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
 </div>
 </div>
-<a id="a70031e7a1564d6037f78df1cb696d26d" name="a70031e7a1564d6037f78df1cb696d26d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a70031e7a1564d6037f78df1cb696d26d">&#9670;&#160;</a></span>state_</h2>
+<a id="a087d750f4a5562f58995914f1c966560" name="a087d750f4a5562f58995914f1c966560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a087d750f4a5562f58995914f1c966560">&#9670;&#160;</a></span>state_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -597,7 +597,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;const <a class="el" href="classpolyfem_1_1_state.html">State</a>&gt; polyfem::solver::BoundarySmoothingForm::state_</td>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a>&gt; polyfem::solver::BoundarySmoothingForm::state_</td>
         </tr>
       </table>
   </td>
@@ -607,7 +607,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00033">33</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00036">36</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">BoundarySmoothingForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">compute_partial_gradient()</a>, and <a class="el" href="_smoothing_forms_8cpp_source.html#l00088">value_unweighted()</a>.</p>
 
@@ -633,7 +633,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00038">38</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_smoothing_forms_8hpp_source.html#l00041">41</a> of file <a class="el" href="_smoothing_forms_8hpp_source.html">SmoothingForms.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_smoothing_forms_8cpp_source.html#l00017">BoundarySmoothingForm()</a>.</p>
 

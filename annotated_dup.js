@@ -124,9 +124,22 @@ var annotated_dup =
         [ "OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", "classpolyfem_1_1io_1_1_o_b_j_reader" ],
         [ "OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", "classpolyfem_1_1io_1_1_o_b_j_writer" ],
         [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
+        [ "OutputField", "structpolyfem_1_1io_1_1_output_field.html", "structpolyfem_1_1io_1_1_output_field" ],
+        [ "OutputFieldOptions", "structpolyfem_1_1io_1_1_output_field_options.html", "structpolyfem_1_1io_1_1_output_field_options" ],
+        [ "OutputSample", "structpolyfem_1_1io_1_1_output_sample.html", "structpolyfem_1_1io_1_1_output_sample" ],
+        [ "OutputSpace", "structpolyfem_1_1io_1_1_output_space.html", "structpolyfem_1_1io_1_1_output_space" ],
         [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
         [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
         [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ]
+      ] ],
+      [ "legacy", "namespacepolyfem_1_1legacy.html", [
+        [ "io", "namespacepolyfem_1_1legacy_1_1io.html", [
+          [ "EnergyCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_energy_c_s_v_writer.html", "classpolyfem_1_1legacy_1_1io_1_1_energy_c_s_v_writer" ],
+          [ "OutGeometryData", "classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data" ],
+          [ "RuntimeStatsCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer" ]
+        ] ],
+        [ "InitialConditionOverride", "classpolyfem_1_1legacy_1_1_initial_condition_override.html", "classpolyfem_1_1legacy_1_1_initial_condition_override" ],
+        [ "State", "classpolyfem_1_1legacy_1_1_state.html", "classpolyfem_1_1legacy_1_1_state" ]
       ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
         [ "Navigation", "namespacepolyfem_1_1mesh_1_1_navigation.html", [
@@ -395,6 +408,24 @@ var annotated_dup =
         [ "TriangleClipping", "classpolyfem_1_1utils_1_1_triangle_clipping.html", "classpolyfem_1_1utils_1_1_triangle_clipping" ],
         [ "UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", "classpolyfem_1_1utils_1_1_uniform_selection" ]
       ] ],
+      [ "varform", "namespacepolyfem_1_1varform.html", [
+        [ "BilaplacianVarForm", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html", "classpolyfem_1_1varform_1_1_bilaplacian_var_form" ],
+        [ "ElasticVarForm", "classpolyfem_1_1varform_1_1_elastic_var_form.html", "classpolyfem_1_1varform_1_1_elastic_var_form" ],
+        [ "FESpace", "classpolyfem_1_1varform_1_1_f_e_space.html", "classpolyfem_1_1varform_1_1_f_e_space" ],
+        [ "FluidVarForm", "classpolyfem_1_1varform_1_1_fluid_var_form.html", "classpolyfem_1_1varform_1_1_fluid_var_form" ],
+        [ "GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", "classpolyfem_1_1varform_1_1_geometry_mapping" ],
+        [ "IncompressibleElasticVarForm", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form" ],
+        [ "LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", "classpolyfem_1_1varform_1_1_linear_elastic_var_form" ],
+        [ "NavierStokesVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html", "classpolyfem_1_1varform_1_1_navier_stokes_var_form" ],
+        [ "NonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form.html", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form" ],
+        [ "NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form" ],
+        [ "NonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form" ],
+        [ "ScalarVarForm", "classpolyfem_1_1varform_1_1_scalar_var_form.html", "classpolyfem_1_1varform_1_1_scalar_var_form" ],
+        [ "StokesVarForm", "classpolyfem_1_1varform_1_1_stokes_var_form.html", "classpolyfem_1_1varform_1_1_stokes_var_form" ],
+        [ "VarForm", "classpolyfem_1_1varform_1_1_var_form.html", "classpolyfem_1_1varform_1_1_var_form" ],
+        [ "VarFormBoundaryState", "structpolyfem_1_1varform_1_1_var_form_boundary_state.html", "structpolyfem_1_1varform_1_1_var_form_boundary_state" ],
+        [ "VarFormFactory", "classpolyfem_1_1varform_1_1_var_form_factory.html", null ]
+      ] ],
       [ "AutoDiffAllocator", "classpolyfem_1_1_auto_diff_allocator.html", "classpolyfem_1_1_auto_diff_allocator" ],
       [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
       [ "BSplineParametrization", "classpolyfem_1_1_b_spline_parametrization.html", "classpolyfem_1_1_b_spline_parametrization" ],
@@ -402,7 +433,6 @@ var annotated_dup =
       [ "BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", "classpolyfem_1_1_b_spline_parametrization3_d" ],
       [ "CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", "classpolyfem_1_1_cubic_hermite_spline_parametrization" ],
       [ "DiffCache", "classpolyfem_1_1_diff_cache.html", "classpolyfem_1_1_diff_cache" ],
-      [ "InitialConditionOverride", "classpolyfem_1_1_initial_condition_override.html", "classpolyfem_1_1_initial_condition_override" ],
       [ "IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", "classpolyfem_1_1_integrable_functional" ],
       [ "LazyCubicInterpolator", "classpolyfem_1_1_lazy_cubic_interpolator.html", "classpolyfem_1_1_lazy_cubic_interpolator" ],
       [ "OptState", "classpolyfem_1_1_opt_state.html", "classpolyfem_1_1_opt_state" ],

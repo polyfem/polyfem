@@ -1,6 +1,6 @@
 var classpolyfem_1_1io_1_1_out_runtime_data =
 [
-    [ "total_time", "classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5", null ],
+    [ "total_time", "classpolyfem_1_1io_1_1_out_runtime_data.html#a461d80bfe3fc170d8f0f4c71c9046a10", null ],
     [ "assembling_mass_mat_time", "classpolyfem_1_1io_1_1_out_runtime_data.html#a9953354b1d788ad1f7319453cf21dad5", null ],
     [ "assembling_stiffness_mat_time", "classpolyfem_1_1io_1_1_out_runtime_data.html#a43e0fe9f9bbe227616a8750c0c537e63", null ],
     [ "assigning_rhs_time", "classpolyfem_1_1io_1_1_out_runtime_data.html#a875878129bfb3c538fdde0c2500baaa6", null ],

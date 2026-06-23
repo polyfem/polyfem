@@ -5,7 +5,7 @@ var classpolyfem_1_1io_1_1_out_stats_data =
     [ "compute_mesh_stats", "classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5", null ],
     [ "count_flipped_elements", "classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2", null ],
     [ "reset", "classpolyfem_1_1io_1_1_out_stats_data.html#abb956b11c2d5d90d1fce4a2d0f022f0f", null ],
-    [ "save_json", "classpolyfem_1_1io_1_1_out_stats_data.html#a6b41f990731f99eddc33467a1bbb3f1c", null ],
+    [ "save_json", "classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3", null ],
     [ "average_edge_length", "classpolyfem_1_1io_1_1_out_stats_data.html#a87d671a7fc6da0c88db83ad49768801f", null ],
     [ "boundary_count", "classpolyfem_1_1io_1_1_out_stats_data.html#ae504256417402e9e77503a18d2b761a1", null ],
     [ "grad_max_err", "classpolyfem_1_1io_1_1_out_stats_data.html#ac18aadc9857ee84cf1417bc8f626b5d5", null ],

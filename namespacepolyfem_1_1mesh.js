@@ -59,6 +59,7 @@ var namespacepolyfem_1_1mesh =
     [ "GetAdjacentLocalEdge", "namespacepolyfem_1_1mesh.html#adb5543570018cfbaaaf1932e5f1ba21a", null ],
     [ "SizingFieldTetRemesher", "namespacepolyfem_1_1mesh.html#a895ca70ab8326be69c56104b2698321e", null ],
     [ "SizingFieldTriRemesher", "namespacepolyfem_1_1mesh.html#ae872a682102beb38e1abeb00bebc6e1c", null ],
+    [ "State", "namespacepolyfem_1_1mesh.html#a1a2dce803be1fcb9b36db189e2f66fe0", null ],
     [ "TetMesh", "namespacepolyfem_1_1mesh.html#a59b0c4c6a423199c5f2a9cdc9139e9a1", null ],
     [ "TriMesh", "namespacepolyfem_1_1mesh.html#a54cc60d8426a0d1706f2ec8d3945f9f6", null ],
     [ "Tuple", "namespacepolyfem_1_1mesh.html#a12a2c540a3924398980d3d24af8dd83a", null ],

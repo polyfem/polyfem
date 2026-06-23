@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a7f090e6958e46232ebee48115589ff7e", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#aa22e8868236f72a0880abbf8a164fa5a", null ],
+    [ "StatePtrs", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#af1193f86d7f6aaf8346ac302d49bb992", null ],
     [ "PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#acb56a3e6406864a743523814378fc69f", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a1c44de2473a4ceddf61740c435657f16", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#acdf03a60b71d29594e73c19ec165e0cf", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a396f6e421cfb48c9cb98600742812504", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#aab59203b394a103d1bea5e384324be07", null ],

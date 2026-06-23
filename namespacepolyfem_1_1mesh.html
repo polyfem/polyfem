@@ -203,6 +203,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:ab40b3d90650fc21517c5a9af3e4cf960"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb5543570018cfbaaaf1932e5f1ba21a" id="r_adb5543570018cfbaaaf1932e5f1ba21a"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; std::tuple&lt; int, int, bool &gt;(int, int)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#adb5543570018cfbaaaf1932e5f1ba21a">GetAdjacentLocalEdge</a></td></tr>
 <tr class="separator:adb5543570018cfbaaaf1932e5f1ba21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a2dce803be1fcb9b36db189e2f66fe0" id="r_a1a2dce803be1fcb9b36db189e2f66fe0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1a2dce803be1fcb9b36db189e2f66fe0">State</a> = <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">polyfem::legacy::State</a></td></tr>
+<tr class="separator:a1a2dce803be1fcb9b36db189e2f66fe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae872a682102beb38e1abeb00bebc6e1c" id="r_ae872a682102beb38e1abeb00bebc6e1c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ae872a682102beb38e1abeb00bebc6e1c">SizingFieldTriRemesher</a> = <a class="el" href="classpolyfem_1_1mesh_1_1_sizing_field_remesher.html">SizingFieldRemesher</a>&lt; wmtk::TriMesh &gt;</td></tr>
 <tr class="separator:ae872a682102beb38e1abeb00bebc6e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a895ca70ab8326be69c56104b2698321e" id="r_a895ca70ab8326be69c56104b2698321e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a895ca70ab8326be69c56104b2698321e">SizingFieldTetRemesher</a> = <a class="el" href="classpolyfem_1_1mesh_1_1_sizing_field_remesher.html">SizingFieldRemesher</a>&lt; wmtk::TetMesh &gt;</td></tr>
@@ -538,6 +540,22 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_sizing_field_remesher_8hpp_source.html#l00069">69</a> of file <a class="el" href="_sizing_field_remesher_8hpp_source.html">SizingFieldRemesher.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a1a2dce803be1fcb9b36db189e2f66fe0" name="a1a2dce803be1fcb9b36db189e2f66fe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2dce803be1fcb9b36db189e2f66fe0">&#9670;&#160;</a></span>State</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">polyfem::legacy::State</a> <a class="el" href="namespacepolyfem_1_1mesh.html#a1a2dce803be1fcb9b36db189e2f66fe0">polyfem::mesh::State</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_remesher_8hpp_source.html#l00019">19</a> of file <a class="el" href="_remesher_8hpp_source.html">Remesher.hpp</a>.</p>
 
 </div>
 </div>
@@ -983,7 +1001,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00027">polyfem::basis::ElementBases::bases</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">IRREGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">irregular_triangle_barycentric_coordinates()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">REGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">regular_grid_triangle_barycentric_coordinates()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433">TRI</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01335">polyfem::State::build_collision_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l01335">polyfem::legacy::State::build_collision_mesh()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00307">polyfem::varform::NonlinearElasticVarForm::build_collision_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -992,7 +1010,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a290ded340a51fb051467b479ff7dfccc_icgraph.svg" width="378" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a290ded340a51fb051467b479ff7dfccc_icgraph.svg" width="482" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1651,7 +1669,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_icgraph.svg" width="100%" height="452"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_icgraph.svg" width="100%" height="568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1862,7 +1880,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4923ee604ddc3a313a19ef3344f0a719_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4923ee604ddc3a313a19ef3344f0a719_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1979,7 +1997,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a614178cdb624f2eff9500fabb9a4f432_icgraph.svg" width="100%" height="433"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a614178cdb624f2eff9500fabb9a4f432_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2434,7 +2452,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a521aec8d19df9ccbe3493d7d6d97c451_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a521aec8d19df9ccbe3493d7d6d97c451_icgraph.svg" width="100%" height="410"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2516,7 +2534,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abe799e00606dbda12858d3dbd0d6491e_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abe799e00606dbda12858d3dbd0d6491e_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2602,7 +2620,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0eb020dda8244f82ea9450b2d655cadd_icgraph.svg" width="100%" height="439"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0eb020dda8244f82ea9450b2d655cadd_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2786,7 +2804,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00368">load_collision_proxy_displacement_map()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01335">polyfem::State::build_collision_mesh()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l01335">polyfem::legacy::State::build_collision_mesh()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00307">polyfem::varform::NonlinearElasticVarForm::build_collision_mesh()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2795,7 +2813,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a15b9f6e84b61e94823dad7a365835542_icgraph.svg" width="374" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a15b9f6e84b61e94823dad7a365835542_icgraph.svg" width="478" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -2861,7 +2879,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ac69cc240a806f402d61f1eaf7eb2d819_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ac69cc240a806f402d61f1eaf7eb2d819_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2942,7 +2960,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8b354410bd3ee20974de06b0131f8036_icgraph.svg" width="592" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8b354410bd3ee20974de06b0131f8036_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3254,7 +3272,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a1f0a5489e7a8bc1a78e123094cb09854_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a1f0a5489e7a8bc1a78e123094cb09854_icgraph.svg" width="100%" height="568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3443,7 +3461,7 @@ template&lt;typename WMTKMesh &gt; </div>
 
 <p class="reference">References <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00038">polyfem::utils::json_as_array()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::State::load_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::legacy::State::load_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l00402">polyfem::State::load_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3452,7 +3470,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a72e21b96b5cdfa9d82fe80b56a4151be_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a72e21b96b5cdfa9d82fe80b56a4151be_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3519,7 +3537,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a778e805ac1a3193ae27fca02a121c77b_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a778e805ac1a3193ae27fca02a121c77b_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3614,7 +3632,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00096">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00125">polyfem::mesh::Obstacle::append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00164">polyfem::mesh::Obstacle::append_plane()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00038">polyfem::utils::json_as_array()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00353">read_obstacle_mesh()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00254">polyfem::mesh::Obstacle::set_units()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::State::load_mesh()</a>, and <a class="el" href="_state_load_8cpp_source.html#l00041">polyfem::State::load_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::legacy::State::load_mesh()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00069">polyfem::varform::NonlinearElasticVarForm::load_mesh()</a>, and <a class="el" href="_state_load_8cpp_source.html#l00041">polyfem::legacy::State::load_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3623,7 +3641,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a47496a714e0b233ab918bfbbe7c4626f_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a47496a714e0b233ab918bfbbe7c4626f_icgraph.svg" width="100%" height="458"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3716,7 +3734,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0998cc6c7de5ec57108b351c79ba171e_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0998cc6c7de5ec57108b351c79ba171e_icgraph.svg" width="100%" height="458"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3790,7 +3808,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad5cb1c08fb1f96a1f0c2bd635457e25f_icgraph.svg" width="100%" height="433"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad5cb1c08fb1f96a1f0c2bd635457e25f_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -3901,7 +3919,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4cf65a44948a6042699876449b0eddab_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4cf65a44948a6042699876449b0eddab_icgraph.svg" width="100%" height="410"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -4149,7 +4167,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_acf01f1cc1cd8d1c23d270e5c1471c091_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_acf01f1cc1cd8d1c23d270e5c1471c091_icgraph.svg" width="100%" height="410"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -4325,7 +4343,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a9d79697c151a12917ccb7a8b871fe7b7_icgraph.svg" width="631" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a9d79697c151a12917ccb7a8b871fe7b7_icgraph.svg" width="100%" height="410"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -4433,7 +4451,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a5b53129ddbb617fbeb6b26d82171fd56_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a5b53129ddbb617fbeb6b26d82171fd56_icgraph.svg" width="100%" height="568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -4624,7 +4642,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a3366f41b53c326c7a196eea55d0c5c13_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a3366f41b53c326c7a196eea55d0c5c13_icgraph.svg" width="100%" height="568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -4932,7 +4950,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad36edbb969d1772884b1a67bb4037510_icgraph.svg" width="655" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad36edbb969d1772884b1a67bb4037510_icgraph.svg" width="100%" height="458"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

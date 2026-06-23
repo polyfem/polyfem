@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a002f48ad8064efde102317a55b50f941", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8806fd4708d87dbd65698dc77c001f24", null ],
+    [ "StatePtrs", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a74731763998a62d47453c64809421b99", null ],
     [ "DirichletNodesVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#afd257e0c19a007a47fd08d28b03edd9d", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8568374f2f2b7da8983f3394f29fca4b", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ae2338a0ddf585a028556b9d1b85c37a0", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a041724e1392b1344363f7c9e74204b4d", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ac0d13c9423cc7ae626382deea345c066", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a98d8ed778ee646de2a16ef37bf7fa02d", null ],

@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1io_1_1_out_geometry_da
 <p>Utilies related to export of geometry.  
  <a href="classpolyfem_1_1io_1_1_out_geometry_data.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for polyfem::io::OutGeometryData:</div>
 <div class="dyncontent">
@@ -154,27 +154,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a72f26a24843b7e470674f13241a8bc05" id="r_a72f26a24843b7e470674f13241a8bc05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05">build_grid</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a> &amp;mesh, const double spacing)</td></tr>
 <tr class="memdesc:a72f26a24843b7e470674f13241a8bc05"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds the grid to export the solution  <br /></td></tr>
 <tr class="separator:a72f26a24843b7e470674f13241a8bc05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5fdb256636278dc9d47358e202aba22" id="r_ae5fdb256636278dc9d47358e202aba22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#ae5fdb256636278dc9d47358e202aba22">export_data</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure, const bool is_time_dependent, const double tend_in, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const std::string &amp;vis_mesh_path, const std::string &amp;nodes_path, const std::string &amp;solution_path, const std::string &amp;stress_path, const std::string &amp;mises_path, const bool is_contact_enabled) const</td></tr>
-<tr class="memdesc:ae5fdb256636278dc9d47358e202aba22"><td class="mdescLeft">&#160;</td><td class="mdescRight">exports everytihng, txt, vtu, etc  <br /></td></tr>
-<tr class="separator:ae5fdb256636278dc9d47358e202aba22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6ebc8d7951c52d2ce07506306b63ea0" id="r_ab6ebc8d7951c52d2ce07506306b63ea0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#ab6ebc8d7951c52d2ce07506306b63ea0">save_vtu</a> (const std::string &amp;path, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure, const double t, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const bool is_contact_enabled) const</td></tr>
-<tr class="memdesc:ab6ebc8d7951c52d2ce07506306b63ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the vtu file for time t  <br /></td></tr>
-<tr class="separator:ab6ebc8d7951c52d2ce07506306b63ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a938439e2cebaf08e7d5e0437c603164e" id="r_a938439e2cebaf08e7d5e0437c603164e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a938439e2cebaf08e7d5e0437c603164e">save_volume</a> (const std::string &amp;path, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure, const double t, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
-<tr class="memdesc:a938439e2cebaf08e7d5e0437c603164e"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the volume vtu file  <br /></td></tr>
-<tr class="separator:a938439e2cebaf08e7d5e0437c603164e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0647359b2ab723d8543452884e673a9" id="r_af0647359b2ab723d8543452884e673a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#af0647359b2ab723d8543452884e673a9">save_surface</a> (const std::string &amp;export_surface, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure, const double t, const double dt_in, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const bool is_contact_enabled) const</td></tr>
-<tr class="memdesc:af0647359b2ab723d8543452884e673a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the surface vtu file for for surface quantites, eg traction forces  <br /></td></tr>
-<tr class="separator:af0647359b2ab723d8543452884e673a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75d6b190a564249fbef63ee7e778cb84" id="r_a75d6b190a564249fbef63ee7e778cb84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a75d6b190a564249fbef63ee7e778cb84">save_contact_surface</a> (const std::string &amp;export_surface, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure, const double t, const double dt_in, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const bool is_contact_enabled) const</td></tr>
-<tr class="memdesc:a75d6b190a564249fbef63ee7e778cb84"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the surface vtu file for for constact quantites, eg contact or friction forces  <br /></td></tr>
-<tr class="separator:a75d6b190a564249fbef63ee7e778cb84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabdf1d6e7d6725e07cae1d4bbd7a51de" id="r_aabdf1d6e7d6725e07cae1d4bbd7a51de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#aabdf1d6e7d6725e07cae1d4bbd7a51de">save_wire</a> (const std::string &amp;name, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const double t, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
-<tr class="memdesc:aabdf1d6e7d6725e07cae1d4bbd7a51de"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the wireframe  <br /></td></tr>
-<tr class="separator:aabdf1d6e7d6725e07cae1d4bbd7a51de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e717aa5e96497a9f4e6edd8d313ffb9" id="r_a6e717aa5e96497a9f4e6edd8d313ffb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a6e717aa5e96497a9f4e6edd8d313ffb9">save_points</a> (const std::string &amp;path, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
-<tr class="memdesc:a6e717aa5e96497a9f4e6edd8d313ffb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the nodal values  <br /></td></tr>
-<tr class="separator:a6e717aa5e96497a9f4e6edd8d313ffb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0486c1044d849cef88d53dbde2d54a0" id="r_ab0486c1044d849cef88d53dbde2d54a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#ab0486c1044d849cef88d53dbde2d54a0">export_data</a> (const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const bool is_time_dependent, const double tend_in, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const std::string &amp;vis_mesh_path) const</td></tr>
+<tr class="memdesc:ab0486c1044d849cef88d53dbde2d54a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">exports everytihng, txt, vtu, etc  <br /></td></tr>
+<tr class="separator:ab0486c1044d849cef88d53dbde2d54a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfa73a2fcd7abdcd993993d529feddc6" id="r_abfa73a2fcd7abdcd993993d529feddc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#abfa73a2fcd7abdcd993993d529feddc6">save_vtu</a> (const std::string &amp;path, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const double t, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:abfa73a2fcd7abdcd993993d529feddc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the vtu file for time t  <br /></td></tr>
+<tr class="separator:abfa73a2fcd7abdcd993993d529feddc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d1d7d9ec27173a2c7b6452dec3f70da" id="r_a4d1d7d9ec27173a2c7b6452dec3f70da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da">save_volume</a> (const std::string &amp;path, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const double t, const double dt, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:a4d1d7d9ec27173a2c7b6452dec3f70da"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the volume vtu file  <br /></td></tr>
+<tr class="separator:a4d1d7d9ec27173a2c7b6452dec3f70da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae03b30d5c996ab5b3fd5266de3bcad92" id="r_ae03b30d5c996ab5b3fd5266de3bcad92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#ae03b30d5c996ab5b3fd5266de3bcad92">save_surface</a> (const std::string &amp;export_surface, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const double t, const double dt_in, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:ae03b30d5c996ab5b3fd5266de3bcad92"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the surface vtu file for for surface quantites, eg traction forces  <br /></td></tr>
+<tr class="separator:ae03b30d5c996ab5b3fd5266de3bcad92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad4e967fdc0282b928278c171bf8d395" id="r_aad4e967fdc0282b928278c171bf8d395"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#aad4e967fdc0282b928278c171bf8d395">save_contact_surface</a> (const std::string &amp;export_surface, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const double t, const double dt_in, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:aad4e967fdc0282b928278c171bf8d395"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the surface vtu file for for constact quantites, eg contact or friction forces  <br /></td></tr>
+<tr class="separator:aad4e967fdc0282b928278c171bf8d395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73d8e9ef4fc8260849bfa536051d418b" id="r_a73d8e9ef4fc8260849bfa536051d418b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a73d8e9ef4fc8260849bfa536051d418b">save_wire</a> (const std::string &amp;name, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const double t, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:a73d8e9ef4fc8260849bfa536051d418b"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the wireframe  <br /></td></tr>
+<tr class="separator:a73d8e9ef4fc8260849bfa536051d418b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb9e13789e8c1bc0354be70f324befe7" id="r_abb9e13789e8c1bc0354be70f324befe7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#abb9e13789e8c1bc0354be70f324befe7">save_points</a> (const std::string &amp;path, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;space, const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;output_fields, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts) const</td></tr>
+<tr class="memdesc:abb9e13789e8c1bc0354be70f324befe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the nodal values  <br /></td></tr>
+<tr class="separator:abb9e13789e8c1bc0354be70f324befe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9781d8636456b50aa8843bb2063427a5" id="r_a9781d8636456b50aa8843bb2063427a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5">save_pvd</a> (const std::string &amp;name, const std::function&lt; std::string(int)&gt; &amp;vtu_names, int time_steps, double t0, double dt, int skip_frame=1) const</td></tr>
 <tr class="memdesc:a9781d8636456b50aa8843bb2063427a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">save a PVD of a time dependent simulation  <br /></td></tr>
 <tr class="separator:a9781d8636456b50aa8843bb2063427a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,17 +187,15 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a64a28ee005ac8965605f23b42b311e84" id="r_a64a28ee005ac8965605f23b42b311e84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a64a28ee005ac8965605f23b42b311e84">build_vis_boundary_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;total_local_boundary, const Eigen::MatrixXd &amp;solution, const int problem_dim, Eigen::MatrixXd &amp;boundary_vis_vertices, Eigen::MatrixXd &amp;boundary_vis_local_vertices, Eigen::MatrixXi &amp;boundary_vis_elements, Eigen::MatrixXi &amp;boundary_vis_elements_ids, Eigen::MatrixXi &amp;boundary_vis_primitive_ids, Eigen::MatrixXd &amp;boundary_vis_normals, Eigen::MatrixXd &amp;displaced_boundary_vis_normals) const</td></tr>
-<tr class="memdesc:a64a28ee005ac8965605f23b42b311e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds the boundary mesh for visualization  <br /></td></tr>
-<tr class="separator:a64a28ee005ac8965605f23b42b311e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00efe14eb0828837150f06a2ddb20c9c" id="r_a00efe14eb0828837150f06a2ddb20c9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c">build_vis_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const bool boundary_only, Eigen::MatrixXd &amp;points, Eigen::MatrixXi &amp;tets, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr) const</td></tr>
-<tr class="memdesc:a00efe14eb0828837150f06a2ddb20c9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <br /></td></tr>
-<tr class="separator:a00efe14eb0828837150f06a2ddb20c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2495c2d3e4032f1a97d1a524be947c3" id="r_ab2495c2d3e4032f1a97d1a524be947c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#ab2495c2d3e4032f1a97d1a524be947c3">build_high_order_vis_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;points, std::vector&lt; paraviewo::CellElement &gt; &amp;elements, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr) const</td></tr>
-<tr class="memdesc:ab2495c2d3e4032f1a97d1a524be947c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds high-der visualzation mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <br /></td></tr>
-<tr class="separator:ab2495c2d3e4032f1a97d1a524be947c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e65c20c88b0fea48c12149e1ec7b61c" id="r_a0e65c20c88b0fea48c12149e1ec7b61c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a0e65c20c88b0fea48c12149e1ec7b61c">save_volume_vector_field</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;points, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;opts, const std::string &amp;name, const Eigen::VectorXd &amp;field, paraviewo::ParaviewWriter &amp;writer) const</td></tr>
-<tr class="separator:a0e65c20c88b0fea48c12149e1ec7b61c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0020d2d17b8e920289cad2096e17e15e" id="r_a0020d2d17b8e920289cad2096e17e15e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a0020d2d17b8e920289cad2096e17e15e">build_vis_boundary_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;total_local_boundary, Eigen::MatrixXd &amp;boundary_vis_vertices, Eigen::MatrixXd &amp;boundary_vis_local_vertices, Eigen::MatrixXi &amp;boundary_vis_elements, Eigen::MatrixXi &amp;boundary_vis_elements_ids, Eigen::MatrixXi &amp;boundary_vis_primitive_ids, Eigen::MatrixXd &amp;boundary_vis_normals) const</td></tr>
+<tr class="memdesc:a0020d2d17b8e920289cad2096e17e15e"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds the boundary mesh for visualization  <br /></td></tr>
+<tr class="separator:a0020d2d17b8e920289cad2096e17e15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ddd24210fa5df63ca022a78b405095b" id="r_a5ddd24210fa5df63ca022a78b405095b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a5ddd24210fa5df63ca022a78b405095b">build_vis_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const bool boundary_only, Eigen::MatrixXd &amp;points, Eigen::MatrixXi &amp;tets, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr, Eigen::MatrixXd &amp;local_points) const</td></tr>
+<tr class="memdesc:a5ddd24210fa5df63ca022a78b405095b"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <br /></td></tr>
+<tr class="separator:a5ddd24210fa5df63ca022a78b405095b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a162f9f18741978f2d5390768fe0ea738" id="r_a162f9f18741978f2d5390768fe0ea738"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a162f9f18741978f2d5390768fe0ea738">build_high_order_vis_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;output_orders, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;points, std::vector&lt; paraviewo::CellElement &gt; &amp;elements, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr, Eigen::MatrixXd &amp;local_points) const</td></tr>
+<tr class="memdesc:a162f9f18741978f2d5390768fe0ea738"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds high-der visualzation mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <br /></td></tr>
+<tr class="separator:a162f9f18741978f2d5390768fe0ea738"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -217,7 +215,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utilies related to export of geometry. </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00032">32</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00023">23</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a72f26a24843b7e470674f13241a8bc05" name="a72f26a24843b7e470674f13241a8bc05"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72f26a24843b7e470674f13241a8bc05">&#9670;&#160;</a></span>build_grid()</h2>
@@ -254,11 +252,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02781">2781</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01630">1630</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a399b7b652be1ffcc392b46a6d1572fec">polyfem::mesh::Mesh::barycentric_coords()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d">polyfem::mesh::Mesh::elements_boxes()</a>, <a class="el" href="_out_data_8hpp_source.html#l00255">grid_points</a>, <a class="el" href="_out_data_8hpp_source.html#l00259">grid_points_bc</a>, <a class="el" href="_out_data_8hpp_source.html#l00257">grid_points_to_elements</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a399b7b652be1ffcc392b46a6d1572fec">polyfem::mesh::Mesh::barycentric_coords()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d">polyfem::mesh::Mesh::elements_boxes()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00209">grid_points</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00213">grid_points_bc</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00211">grid_points_to_elements</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_var_form_8cpp_source.html#l00832">polyfem::varform::VarForm::ensure_output_sampler()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -267,13 +265,13 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a72f26a24843b7e470674f13241a8bc05_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a72f26a24843b7e470674f13241a8bc05_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="ab2495c2d3e4032f1a97d1a524be947c3" name="ab2495c2d3e4032f1a97d1a524be947c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2495c2d3e4032f1a97d1a524be947c3">&#9670;&#160;</a></span>build_high_order_vis_mesh()</h2>
+<a id="a162f9f18741978f2d5390768fe0ea738" name="a162f9f18741978f2d5390768fe0ea738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a162f9f18741978f2d5390768fe0ea738">&#9670;&#160;</a></span>build_high_order_vis_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -291,13 +289,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
-          <td class="paramname"><em>disc_orders</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
-          <td class="paramname"><em>disc_ordersq</em>, </td>
+          <td class="paramname"><em>output_orders</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -327,7 +319,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>discr</em>&#160;</td>
+          <td class="paramname"><em>discr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_points</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -346,9 +344,8 @@ Here is the caller graph for this function:</div>
 <p>if the mesh is not simplicial it gets tri/tet halized </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">disc_orders</td><td>discretization orders </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">disc_ordersq</td><td>discretization orders </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>bases </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_orders</td><td>output cell order per element </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>bases used to map output reference nodes </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">points</td><td>mesh points </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">elements</td><td>mesh high-order cells </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">el_id</td><td>mapping from points to elements id </td></tr>
@@ -357,26 +354,17 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l00978">978</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00969">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l03060">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="prism__bases_8cpp_source.html#l00092">polyfem::autogen::prism_nodes_3d()</a>, <a class="el" href="auto__pyramid__bases_8cpp_source.html#l08341">polyfem::autogen::pyramid_nodes_3d()</a>, <a class="el" href="auto__q__bases__2d__nodes_8cpp_source.html#l00067">polyfem::autogen::q_nodes_2d()</a>, and <a class="el" href="auto__q__bases__3d__nodes_8cpp_source.html#l00149">polyfem::autogen::q_nodes_3d()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab2495c2d3e4032f1a97d1a524be947c3_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab2495c2d3e4032f1a97d1a524be947c3_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a162f9f18741978f2d5390768fe0ea738_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a64a28ee005ac8965605f23b42b311e84" name="a64a28ee005ac8965605f23b42b311e84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64a28ee005ac8965605f23b42b311e84">&#9670;&#160;</a></span>build_vis_boundary_mesh()</h2>
+<a id="a0020d2d17b8e920289cad2096e17e15e" name="a0020d2d17b8e920289cad2096e17e15e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0020d2d17b8e920289cad2096e17e15e">&#9670;&#160;</a></span>build_vis_boundary_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -394,12 +382,6 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>bases</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>gbases</em>, </td>
         </tr>
         <tr>
@@ -407,18 +389,6 @@ Here is the caller graph for this function:</div>
           <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>total_local_boundary</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>solution</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>problem_dim</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -454,13 +424,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>boundary_vis_normals</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>displaced_boundary_vis_normals</em>&#160;</td>
+          <td class="paramname"><em>boundary_vis_normals</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -479,42 +443,38 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>bases </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">gbases</td><td>geometric bases </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">total_local_boundary</td><td>boundaries </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">solution</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">problem_dim</td><td>dimension of the problem </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_vertices</td><td>boundary visualization mesh vertices </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_local_vertices</td><td>boundary visualization mesh vertices pre image in ref element </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_elements</td><td>boundary visualization mesh connectivity </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_elements_ids</td><td>boundary visualization mesh elements ids </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_primitive_ids</td><td>boundary visualization mesh edge/face id </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_vis_normals</td><td>boundary visualization mesh normals </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">displaced_boundary_vis_normals</td><td>boundary visualization mesh normals after displacement is applied </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l00550">550</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l00495">495</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00777">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00753">polyfem::utils::BoundarySampler::normal_for_prism_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00765">polyfem::utils::BoundarySampler::normal_for_pyramid_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00709">polyfem::utils::BoundarySampler::normal_for_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00729">polyfem::utils::BoundarySampler::normal_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00719">polyfem::utils::BoundarySampler::normal_for_tri_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00741">polyfem::utils::BoundarySampler::normal_for_tri_face()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">polyfem::utils::RefElementSampler::num_samples()</a>, <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00512">polyfem::utils::BoundarySampler::sample_parametric_prism_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00570">polyfem::utils::BoundarySampler::sample_parametric_pyramid_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00422">polyfem::utils::BoundarySampler::sample_parametric_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00456">polyfem::utils::BoundarySampler::sample_parametric_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00439">polyfem::utils::BoundarySampler::sample_parametric_tri_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00481">polyfem::utils::BoundarySampler::sample_parametric_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00628">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00777">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00753">polyfem::utils::BoundarySampler::normal_for_prism_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00765">polyfem::utils::BoundarySampler::normal_for_pyramid_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00709">polyfem::utils::BoundarySampler::normal_for_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00729">polyfem::utils::BoundarySampler::normal_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00719">polyfem::utils::BoundarySampler::normal_for_tri_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00741">polyfem::utils::BoundarySampler::normal_for_tri_face()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">polyfem::utils::RefElementSampler::num_samples()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00206">ref_element_sampler</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00512">polyfem::utils::BoundarySampler::sample_parametric_prism_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00570">polyfem::utils::BoundarySampler::sample_parametric_pyramid_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00422">polyfem::utils::BoundarySampler::sample_parametric_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00456">polyfem::utils::BoundarySampler::sample_parametric_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00439">polyfem::utils::BoundarySampler::sample_parametric_tri_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00481">polyfem::utils::BoundarySampler::sample_parametric_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00628">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02101">save_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01401">save_surface()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a64a28ee005ac8965605f23b42b311e84_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a0020d2d17b8e920289cad2096e17e15e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a64a28ee005ac8965605f23b42b311e84_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a0020d2d17b8e920289cad2096e17e15e_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a00efe14eb0828837150f06a2ddb20c9c" name="a00efe14eb0828837150f06a2ddb20c9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00efe14eb0828837150f06a2ddb20c9c">&#9670;&#160;</a></span>build_vis_mesh()</h2>
+<a id="a5ddd24210fa5df63ca022a78b405095b" name="a5ddd24210fa5df63ca022a78b405095b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ddd24210fa5df63ca022a78b405095b">&#9670;&#160;</a></span>build_vis_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -580,7 +540,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>discr</em>&#160;</td>
+          <td class="paramname"><em>discr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_points</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -612,26 +578,26 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l00812">812</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l00721">721</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00053">polyfem::utils::RefElementSampler::simplex_volume()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00206">ref_element_sampler</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00053">polyfem::utils::RefElementSampler::simplex_volume()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01512">save_wire()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a00efe14eb0828837150f06a2ddb20c9c_cgraph.svg" width="658" height="486"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a5ddd24210fa5df63ca022a78b405095b_cgraph.svg" width="658" height="486"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a00efe14eb0828837150f06a2ddb20c9c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a5ddd24210fa5df63ca022a78b405095b_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="ae5fdb256636278dc9d47358e202aba22" name="ae5fdb256636278dc9d47358e202aba22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5fdb256636278dc9d47358e202aba22">&#9670;&#160;</a></span>export_data()</h2>
+<a id="ab0486c1044d849cef88d53dbde2d54a0" name="ab0486c1044d849cef88d53dbde2d54a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0486c1044d849cef88d53dbde2d54a0">&#9670;&#160;</a></span>export_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -639,20 +605,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::io::OutGeometryData::export_data </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pressure</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -682,37 +642,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>vis_mesh_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>nodes_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>solution_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>stress_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>mises_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_contact_enabled</em>&#160;</td>
+          <td class="paramname"><em>vis_mesh_path</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -725,37 +655,31 @@ Here is the caller graph for this function:</div>
 <p>exports everytihng, txt, vtu, etc </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pressure</td><td>pressure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">is_time_dependent</td><td>if the sim is time dependent </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tend_in</td><td>end time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>delta t </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">vis_mesh_path</td><td>vtu path </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nodes_path</td><td>path to save nodes </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">solution_path</td><td>path to save solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">stress_path</td><td>path to save stress tensor </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mises_path</td><td>path to save von mises stresses </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_contact_enabled</td><td>if contact is enabled </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l01204">1204</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01124">1124</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00190">polyfem::State::assembler</a>, <a class="el" href="_state_8hpp_source.html#l00207">polyfem::State::bases</a>, <a class="el" href="_evaluator_8cpp_source.html#l00342">polyfem::io::Evaluator::compute_stress_at_quadrature_points()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_orders</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_ordersq</a>, <a class="el" href="_state_8hpp_source.html#l00264">polyfem::State::geom_bases()</a>, <a class="el" href="_state_8hpp_source.html#l00578">polyfem::State::in_node_to_node</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00214">polyfem::State::n_bases</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, <a class="el" href="_out_data_8hpp_source.html#l00064">polyfem::io::OutGeometryData::ExportOptions::reorder_output</a>, <a class="el" href="_state_8hpp_source.html#l00248">polyfem::State::rhs</a>, <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00131">polyfem::State::export_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00159">polyfem::varform::BilaplacianVarForm::export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00176">polyfem::varform::FluidVarForm::export_data()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00404">polyfem::varform::ScalarVarForm::export_data()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ae5fdb256636278dc9d47358e202aba22_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab0486c1044d849cef88d53dbde2d54a0_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ae5fdb256636278dc9d47358e202aba22_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab0486c1044d849cef88d53dbde2d54a0_icgraph.svg" width="467" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -845,11 +769,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l00150">150</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l00095">95</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00104">polyfem::basis::Basis::global()</a>, <a class="el" href="_mesh_8hpp_source.html#l00576">polyfem::mesh::Mesh::has_poly()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4">polyfem::mesh::Mesh::is_conforming()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_8hpp_source.html#l00618">polyfem::mesh::Mesh::is_simplicial()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00176">polyfem::solver::LayerThicknessForm::build_collision_mesh()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00850">polyfem::solver::ProxyContactForceForm::build_collision_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l01335">polyfem::State::build_collision_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00307">polyfem::varform::NonlinearElasticVarForm::build_collision_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -858,7 +782,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a7b3e2f650cb68b596b8b67ef6702f3b1_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a7b3e2f650cb68b596b8b67ef6702f3b1_icgraph.svg" width="540" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -898,11 +822,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02776">2776</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01625">1625</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ref_element_sampler_8cpp_source.html#l00217">polyfem::utils::RefElementSampler::init()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>.</p>
+<p class="reference">References <a class="el" href="_ref_element_sampler_8cpp_source.html#l00217">polyfem::utils::RefElementSampler::init()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="io_2_out_data_8hpp_source.html#l00206">ref_element_sampler</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::State::load_mesh()</a>, and <a class="el" href="_state_load_8cpp_source.html#l00041">polyfem::State::load_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_var_form_8cpp_source.html#l00832">polyfem::varform::VarForm::ensure_output_sampler()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -911,13 +835,13 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ade72ed17639ad9cbd72a81a458d863ea_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ade72ed17639ad9cbd72a81a458d863ea_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a75d6b190a564249fbef63ee7e778cb84" name="a75d6b190a564249fbef63ee7e778cb84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75d6b190a564249fbef63ee7e778cb84">&#9670;&#160;</a></span>save_contact_surface()</h2>
+<a id="aad4e967fdc0282b928278c171bf8d395" name="aad4e967fdc0282b928278c171bf8d395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad4e967fdc0282b928278c171bf8d395">&#9670;&#160;</a></span>save_contact_surface()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -931,20 +855,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pressure</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -962,13 +880,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;&#160;</td>
-          <td class="paramname"><em>opts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_contact_enabled</em>&#160;</td>
+          <td class="paramname"><em>opts</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -982,37 +894,30 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">export_surface</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pressure</td><td>pressure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt_in</td><td>delta_t </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_contact_enabled</td><td>if contact is enabled </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02297">2297</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01472">1472</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00136">polyfem::State::args</a>, <a class="el" href="_state_8hpp_source.html#l00672">polyfem::State::collision_mesh</a>, <a class="el" href="_out_data_8hpp_source.html#l00044">polyfem::io::OutGeometryData::ExportOptions::contact_forces</a>, <a class="el" href="_solve_data_8hpp_source.html#l00175">polyfem::solver::SolveData::contact_form</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_out_data_8hpp_source.html#l00045">polyfem::io::OutGeometryData::ExportOptions::friction_forces</a>, <a class="el" href="_solve_data_8hpp_source.html#l00178">polyfem::solver::SolveData::friction_form</a>, <a class="el" href="_state_8hpp_source.html#l00716">polyfem::State::is_adhesion_enabled()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::normal_adhesion_forces</a>, <a class="el" href="_solve_data_8hpp_source.html#l00181">polyfem::solver::SolveData::normal_adhesion_form</a>, <a class="el" href="_state_8hpp_source.html#l00382">polyfem::State::solve_data</a>, <a class="el" href="_out_data_8hpp_source.html#l00047">polyfem::io::OutGeometryData::ExportOptions::tangential_adhesion_forces</a>, <a class="el" href="_solve_data_8hpp_source.html#l00182">polyfem::solver::SolveData::tangential_adhesion_form</a>, <a class="el" href="_solve_data_8hpp_source.html#l00186">polyfem::solver::SolveData::time_integrator</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00066">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
+<p class="reference">References <a class="el" href="_output_data_8hpp_source.html#l00055">polyfem::io::OutputSample::cell_count</a>, <a class="el" href="_output_data_8hpp_source.html#l00084">polyfem::io::OutputSpace::collision_mesh</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996abbaff12800505b22a853e8b7f4eb6a22">polyfem::io::OutputSample::Contact</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_output_data_8hpp_source.html#l00057">polyfem::io::OutputSample::dt</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>, and <a class="el" href="io_2_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a75d6b190a564249fbef63ee7e778cb84_cgraph.svg" width="100%" height="472"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a75d6b190a564249fbef63ee7e778cb84_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_aad4e967fdc0282b928278c171bf8d395_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a6e717aa5e96497a9f4e6edd8d313ffb9" name="a6e717aa5e96497a9f4e6edd8d313ffb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e717aa5e96497a9f4e6edd8d313ffb9">&#9670;&#160;</a></span>save_points()</h2>
+<a id="abb9e13789e8c1bc0354be70f324befe7" name="abb9e13789e8c1bc0354be70f324befe7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb9e13789e8c1bc0354be70f324befe7">&#9670;&#160;</a></span>save_points()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1026,14 +931,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1053,27 +958,27 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02714">2714</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01563">1563</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_state_8hpp_source.html#l00571">polyfem::State::dirichlet_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00572">polyfem::State::dirichlet_nodes_position</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_mesh_8hpp_source.html#l00497">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, and <a class="el" href="_out_data_8hpp_source.html#l00066">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
+<p class="reference">References <a class="el" href="_output_data_8hpp_source.html#l00055">polyfem::io::OutputSample::cell_count</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_output_data_8hpp_source.html#l00085">polyfem::io::OutputSpace::dirichlet_nodes</a>, <a class="el" href="_output_data_8hpp_source.html#l00086">polyfem::io::OutputSpace::dirichlet_nodes_position</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01151">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_mesh_8hpp_source.html#l00497">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_output_data_8hpp_source.html#l00051">polyfem::io::OutputSample::node_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996a75dd5f1160a3f02b6fae89c54361a1b3">polyfem::io::OutputSample::Points</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, and <a class="el" href="io_2_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a6e717aa5e96497a9f4e6edd8d313ffb9_cgraph.svg" width="100%" height="482"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_abb9e13789e8c1bc0354be70f324befe7_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a6e717aa5e96497a9f4e6edd8d313ffb9_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_abb9e13789e8c1bc0354be70f324befe7_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1141,19 +1046,19 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02768">2768</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01617">1617</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00048">polyfem::State::save_timestep()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_var_form_8cpp_source.html#l00907">polyfem::varform::VarForm::save_timestep()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a9781d8636456b50aa8843bb2063427a5_icgraph.svg" width="100%" height="578"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a9781d8636456b50aa8843bb2063427a5_icgraph.svg" width="100%" height="446"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="af0647359b2ab723d8543452884e673a9" name="af0647359b2ab723d8543452884e673a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0647359b2ab723d8543452884e673a9">&#9670;&#160;</a></span>save_surface()</h2>
+<a id="ae03b30d5c996ab5b3fd5266de3bcad92" name="ae03b30d5c996ab5b3fd5266de3bcad92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae03b30d5c996ab5b3fd5266de3bcad92">&#9670;&#160;</a></span>save_surface()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1167,20 +1072,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pressure</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1198,13 +1097,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;&#160;</td>
-          <td class="paramname"><em>opts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_contact_enabled</em>&#160;</td>
+          <td class="paramname"><em>opts</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1218,37 +1111,35 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">export_surface</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pressure</td><td>pressure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt_in</td><td>delta_t </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_contact_enabled</td><td>if contact is enabled </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02101">2101</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01401">1401</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00190">polyfem::State::assembler</a>, <a class="el" href="_state_8hpp_source.html#l00207">polyfem::State::bases</a>, <a class="el" href="_out_data_8hpp_source.html#l00054">polyfem::io::OutGeometryData::ExportOptions::body_ids</a>, <a class="el" href="_out_data_8cpp_source.html#l00550">build_vis_boundary_mesh()</a>, <a class="el" href="_assembler_8hpp_source.html#l00133">polyfem::assembler::Assembler::compute_tensor_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_orders</a>, <a class="el" href="_mesh_8hpp_source.html#l00308">polyfem::mesh::Mesh::edge_length()</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_state_8hpp_source.html#l00264">polyfem::State::geom_bases()</a>, <a class="el" href="_mesh_8hpp_source.html#l00514">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00660">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_state_8hpp_source.html#l00192">polyfem::State::mass_matrix_assembler</a>, <a class="el" href="_out_data_8hpp_source.html#l00053">polyfem::io::OutGeometryData::ExportOptions::material_params</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00195">polyfem::State::mixed_assembler</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler::parameters()</a>, <a class="el" href="_state_8hpp_source.html#l00209">polyfem::State::pressure_bases</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, <a class="el" href="_mesh_8hpp_source.html#l00317">polyfem::mesh::Mesh::quad_area()</a>, <a class="el" href="_state_8hpp_source.html#l00559">polyfem::State::total_local_boundary</a>, <a class="el" href="_mesh_8hpp_source.html#l00326">polyfem::mesh::Mesh::tri_area()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00066">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
+<p class="reference">References <a class="el" href="io_2_out_data_8cpp_source.html#l00495">build_vis_boundary_mesh()</a>, <a class="el" href="_output_data_8hpp_source.html#l00055">polyfem::io::OutputSample::cell_count</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_output_data_8hpp_source.html#l00057">polyfem::io::OutputSample::dt</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01151">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00078">polyfem::io::OutputSpace::geometry_bases</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_output_data_8hpp_source.html#l00052">polyfem::io::OutputSample::normals</a>, <a class="el" href="_output_data_8hpp_source.html#l00079">polyfem::io::OutputSpace::output_orders</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00050">polyfem::io::OutputSample::primitive_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996aaa0d528ba11ea1485d466dfe1ea40819">polyfem::io::OutputSample::Surface</a>, <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>, <a class="el" href="_output_data_8hpp_source.html#l00082">polyfem::io::OutputSpace::total_local_boundary</a>, and <a class="el" href="io_2_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_af0647359b2ab723d8543452884e673a9_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ae03b30d5c996ab5b3fd5266de3bcad92_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_af0647359b2ab723d8543452884e673a9_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ae03b30d5c996ab5b3fd5266de3bcad92_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a938439e2cebaf08e7d5e0437c603164e" name="a938439e2cebaf08e7d5e0437c603164e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a938439e2cebaf08e7d5e0437c603164e">&#9670;&#160;</a></span>save_volume()</h2>
+<a id="a4d1d7d9ec27173a2c7b6452dec3f70da" name="a4d1d7d9ec27173a2c7b6452dec3f70da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d1d7d9ec27173a2c7b6452dec3f70da">&#9670;&#160;</a></span>save_volume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1262,20 +1153,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pressure</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1307,9 +1192,8 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pressure</td><td>pressure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>delta t </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
@@ -1317,102 +1201,26 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l01473">1473</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01248">1248</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00057">polyfem::io::OutGeometryData::ExportOptions::acceleration</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00161">polyfem::utils::append_rows_of_zeros()</a>, <a class="el" href="_state_8hpp_source.html#l00190">polyfem::State::assembler</a>, <a class="el" href="_evaluator_8cpp_source.html#l00161">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_state_8hpp_source.html#l00207">polyfem::State::bases</a>, <a class="el" href="_out_data_8hpp_source.html#l00054">polyfem::io::OutGeometryData::ExportOptions::body_ids</a>, <a class="el" href="_out_data_8hpp_source.html#l00052">polyfem::io::OutGeometryData::ExportOptions::boundary_only</a>, <a class="el" href="_out_data_8cpp_source.html#l00978">build_high_order_vis_mesh()</a>, <a class="el" href="_out_data_8cpp_source.html#l00812">build_vis_mesh()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00856">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00968">polyfem::io::Evaluator::compute_tensor_value()</a>, <a class="el" href="_solve_data_8hpp_source.html#l00175">polyfem::solver::SolveData::contact_form</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_orders</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_ordersq</a>, <a class="el" href="_out_data_8hpp_source.html#l00060">polyfem::io::OutGeometryData::ExportOptions::discretization_order</a>, <a class="el" href="_solve_data_8hpp_source.html#l00177">polyfem::solver::SolveData::elastic_form</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_out_data_8hpp_source.html#l00048">polyfem::io::OutGeometryData::ExportOptions::forces</a>, <a class="el" href="_state_8hpp_source.html#l00264">polyfem::State::geom_bases()</a>, <a class="el" href="_mesh_8hpp_source.html#l00514">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00048">polyfem::mesh::Obstacle::get_edge_connectivity()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00047">polyfem::mesh::Obstacle::get_face_connectivity()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00049">polyfem::mesh::Obstacle::get_vertex_connectivity()</a>, <a class="el" href="_out_data_8hpp_source.html#l00255">grid_points</a>, <a class="el" href="_out_data_8hpp_source.html#l00259">grid_points_bc</a>, <a class="el" href="_out_data_8hpp_source.html#l00257">grid_points_to_elements</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00660">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00454">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_problem_8hpp_source.html#l00050">polyfem::assembler::Problem::is_time_dependent()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_out_data_8hpp_source.html#l00049">polyfem::io::OutGeometryData::ExportOptions::jacobian_validity</a>, <a class="el" href="_evaluator_8cpp_source.html#l00477">polyfem::io::Evaluator::mark_flipped_cells()</a>, <a class="el" href="_state_8hpp_source.html#l00192">polyfem::State::mass_matrix_assembler</a>, <a class="el" href="_out_data_8hpp_source.html#l00053">polyfem::io::OutGeometryData::ExportOptions::material_params</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00195">polyfem::State::mixed_assembler</a>, <a class="el" href="_state_8hpp_source.html#l00214">polyfem::State::n_bases</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00037">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_solve_data_8cpp_source.html#l00495">polyfem::solver::SolveData::named_forms()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00041">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_out_data_8hpp_source.html#l00061">polyfem::io::OutGeometryData::ExportOptions::nodes</a>, <a class="el" href="_state_8hpp_source.html#l00596">polyfem::State::obstacle</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00969">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l03060">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler::parameters()</a>, <a class="el" href="_state_8hpp_source.html#l00221">polyfem::State::polys</a>, <a class="el" href="_state_8hpp_source.html#l00223">polyfem::State::polys_3d</a>, <a class="el" href="_state_8hpp_source.html#l00209">polyfem::State::pressure_bases</a>, <a class="el" href="prism__bases_8cpp_source.html#l00092">polyfem::autogen::prism_nodes_3d()</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, <a class="el" href="auto__pyramid__bases_8cpp_source.html#l08341">polyfem::autogen::pyramid_nodes_3d()</a>, <a class="el" href="auto__q__bases__2d__nodes_8cpp_source.html#l00067">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases__3d__nodes_8cpp_source.html#l00149">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>, <a class="el" href="_out_data_8cpp_source.html#l02076">save_volume_vector_field()</a>, <a class="el" href="_out_data_8hpp_source.html#l00059">polyfem::io::OutGeometryData::ExportOptions::scalar_values</a>, <a class="el" href="_out_data_8hpp_source.html#l00055">polyfem::io::OutGeometryData::ExportOptions::sol_on_grid</a>, <a class="el" href="_state_8hpp_source.html#l00382">polyfem::State::solve_data</a>, <a class="el" href="_out_data_8hpp_source.html#l00058">polyfem::io::OutGeometryData::ExportOptions::tensor_values</a>, <a class="el" href="_solve_data_8hpp_source.html#l00186">polyfem::solver::SolveData::time_integrator</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_out_data_8hpp_source.html#l00066">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>, <a class="el" href="_out_data_8hpp_source.html#l00051">polyfem::io::OutGeometryData::ExportOptions::use_sampler</a>, <a class="el" href="_out_data_8hpp_source.html#l00063">polyfem::io::OutGeometryData::ExportOptions::use_spline</a>, <a class="el" href="_obstacle_8hpp_source.html#l00042">polyfem::mesh::Obstacle::v()</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_out_data_8hpp_source.html#l00056">polyfem::io::OutGeometryData::ExportOptions::velocity</a>.</p>
+<p class="reference">References <a class="el" href="io_2_out_data_8hpp_source.html#l00041">polyfem::io::OutGeometryData::ExportOptions::boundary_only</a>, <a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#a162f9f18741978f2d5390768fe0ea738">build_high_order_vis_mesh()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00721">build_vis_mesh()</a>, <a class="el" href="_output_data_8hpp_source.html#l00055">polyfem::io::OutputSample::cell_count</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00043">polyfem::io::OutGeometryData::ExportOptions::discretization_order</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_output_data_8hpp_source.html#l00057">polyfem::io::OutputSample::dt</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01151">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00078">polyfem::io::OutputSpace::geometry_bases</a>, <a class="el" href="_obstacle_8hpp_source.html#l00048">polyfem::mesh::Obstacle::get_edge_connectivity()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00047">polyfem::mesh::Obstacle::get_face_connectivity()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00049">polyfem::mesh::Obstacle::get_vertex_connectivity()</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996a5174d1309f275ba6f275db3af9eb3e18">polyfem::io::OutputSample::Grid</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00209">grid_points</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00213">grid_points_bc</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00211">grid_points_to_elements</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00037">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_output_data_8hpp_source.html#l00083">polyfem::io::OutputSpace::obstacle</a>, <a class="el" href="_output_data_8hpp_source.html#l00079">polyfem::io::OutputSpace::output_orders</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00080">polyfem::io::OutputSpace::polys</a>, <a class="el" href="_output_data_8hpp_source.html#l00081">polyfem::io::OutputSpace::polys_3d</a>, <a class="el" href="_output_data_8hpp_source.html#l00053">polyfem::io::OutputSample::requested_fields</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00042">polyfem::io::OutGeometryData::ExportOptions::sol_on_grid</a>, <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00040">polyfem::io::OutGeometryData::ExportOptions::use_sampler</a>, <a class="el" href="_obstacle_8hpp_source.html#l00042">polyfem::mesh::Obstacle::v()</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996abd7a9717d29c5ddcab1bc175eda1e298">polyfem::io::OutputSample::Volume</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a938439e2cebaf08e7d5e0437c603164e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a4d1d7d9ec27173a2c7b6452dec3f70da_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a938439e2cebaf08e7d5e0437c603164e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a4d1d7d9ec27173a2c7b6452dec3f70da_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a0e65c20c88b0fea48c12149e1ec7b61c" name="a0e65c20c88b0fea48c12149e1ec7b61c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e65c20c88b0fea48c12149e1ec7b61c">&#9670;&#160;</a></span>save_volume_vector_field()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::io::OutGeometryData::save_volume_vector_field </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>points</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;&#160;</td>
-          <td class="paramname"><em>opts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">paraviewo::ParaviewWriter &amp;&#160;</td>
-          <td class="paramname"><em>writer</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02076">2076</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00207">polyfem::State::bases</a>, <a class="el" href="_out_data_8hpp_source.html#l00052">polyfem::io::OutGeometryData::ExportOptions::boundary_only</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_orders</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_ordersq</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00454">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_obstacle_8hpp_source.html#l00037">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00041">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_state_8hpp_source.html#l00596">polyfem::State::obstacle</a>, <a class="el" href="_state_8hpp_source.html#l00221">polyfem::State::polys</a>, <a class="el" href="_state_8hpp_source.html#l00223">polyfem::State::polys_3d</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00051">polyfem::io::OutGeometryData::ExportOptions::use_sampler</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a0e65c20c88b0fea48c12149e1ec7b61c_cgraph.svg" width="100%" height="528"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a0e65c20c88b0fea48c12149e1ec7b61c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="ab6ebc8d7951c52d2ce07506306b63ea0" name="ab6ebc8d7951c52d2ce07506306b63ea0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6ebc8d7951c52d2ce07506306b63ea0">&#9670;&#160;</a></span>save_vtu()</h2>
+<a id="abfa73a2fcd7abdcd993993d529feddc6" name="abfa73a2fcd7abdcd993993d529feddc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfa73a2fcd7abdcd993993d529feddc6">&#9670;&#160;</a></span>save_vtu()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1426,20 +1234,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pressure</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1457,13 +1259,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">ExportOptions</a> &amp;&#160;</td>
-          <td class="paramname"><em>opts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_contact_enabled</em>&#160;</td>
+          <td class="paramname"><em>opts</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1477,37 +1273,35 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pressure</td><td>pressure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>delta t </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_contact_enabled</td><td>if contact is enabled </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l01389">1389</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01183">1183</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00044">polyfem::io::OutGeometryData::ExportOptions::contact_forces</a>, <a class="el" href="_out_data_8hpp_source.html#l00080">polyfem::io::OutGeometryData::ExportOptions::file_extension()</a>, <a class="el" href="_out_data_8hpp_source.html#l00045">polyfem::io::OutGeometryData::ExportOptions::friction_forces</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00214">polyfem::State::n_bases</a>, <a class="el" href="_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::normal_adhesion_forces</a>, <a class="el" href="_out_data_8hpp_source.html#l00043">polyfem::io::OutGeometryData::ExportOptions::points</a>, <a class="el" href="_state_8hpp_source.html#l00248">polyfem::State::rhs</a>, <a class="el" href="_out_data_8cpp_source.html#l02297">save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l02714">save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l02101">save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l02488">save_wire()</a>, <a class="el" href="_out_data_8hpp_source.html#l00041">polyfem::io::OutGeometryData::ExportOptions::surface</a>, <a class="el" href="_out_data_8hpp_source.html#l00047">polyfem::io::OutGeometryData::ExportOptions::tangential_adhesion_forces</a>, <a class="el" href="_out_data_8hpp_source.html#l00040">polyfem::io::OutGeometryData::ExportOptions::volume</a>, and <a class="el" href="_out_data_8hpp_source.html#l00042">polyfem::io::OutGeometryData::ExportOptions::wire</a>.</p>
+<p class="reference">References <a class="el" href="_output_data_8hpp_source.html#l00084">polyfem::io::OutputSpace::collision_mesh</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00035">polyfem::io::OutGeometryData::ExportOptions::contact_forces</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01151">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00029">polyfem::io::OutGeometryData::ExportOptions::fields</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00060">polyfem::io::OutGeometryData::ExportOptions::file_extension()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00036">polyfem::io::OutGeometryData::ExportOptions::friction_forces</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00037">polyfem::io::OutGeometryData::ExportOptions::normal_adhesion_forces</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00034">polyfem::io::OutGeometryData::ExportOptions::points</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01472">save_contact_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01563">save_points()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01401">save_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01512">save_wire()</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00032">polyfem::io::OutGeometryData::ExportOptions::surface</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00038">polyfem::io::OutGeometryData::ExportOptions::tangential_adhesion_forces</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00031">polyfem::io::OutGeometryData::ExportOptions::volume</a>, and <a class="el" href="io_2_out_data_8hpp_source.html#l00033">polyfem::io::OutGeometryData::ExportOptions::wire</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01204">export_data()</a>, <a class="el" href="_state_output_8cpp_source.html#l00112">polyfem::State::save_subsolve()</a>, and <a class="el" href="_state_output_8cpp_source.html#l00048">polyfem::State::save_timestep()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01124">export_data()</a>, <a class="el" href="_var_form_8cpp_source.html#l00932">polyfem::varform::VarForm::save_subsolve()</a>, and <a class="el" href="_var_form_8cpp_source.html#l00907">polyfem::varform::VarForm::save_timestep()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab6ebc8d7951c52d2ce07506306b63ea0_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_abfa73a2fcd7abdcd993993d529feddc6_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_ab6ebc8d7951c52d2ce07506306b63ea0_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_abfa73a2fcd7abdcd993993d529feddc6_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="aabdf1d6e7d6725e07cae1d4bbd7a51de" name="aabdf1d6e7d6725e07cae1d4bbd7a51de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabdf1d6e7d6725e07cae1d4bbd7a51de">&#9670;&#160;</a></span>save_wire()</h2>
+<a id="a73d8e9ef4fc8260849bfa536051d418b" name="a73d8e9ef4fc8260849bfa536051d418b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73d8e9ef4fc8260849bfa536051d418b">&#9670;&#160;</a></span>save_wire()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1521,14 +1315,14 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">OutputSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">OutputFieldFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>output_fields</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1554,28 +1348,28 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>state to get the data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">space</td><td>output geometry data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_fields</td><td>callback appending physics-specific fields </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">opts</td><td>export options </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02488">2488</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01512">1512</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00190">polyfem::State::assembler</a>, <a class="el" href="_state_8hpp_source.html#l00207">polyfem::State::bases</a>, <a class="el" href="_evaluator_8cpp_source.html#l00856">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_orders</a>, <a class="el" href="_state_8hpp_source.html#l00226">polyfem::State::disc_ordersq</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_out_data_8cpp_source.html#l01346">polyfem::io::OutGeometryData::ExportOptions::export_field()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_state_8hpp_source.html#l00264">polyfem::State::geom_bases()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00454">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00427">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00432">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00221">polyfem::State::polys</a>, <a class="el" href="_state_8hpp_source.html#l00223">polyfem::State::polys_3d</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::problem</a>, <a class="el" href="_out_data_8hpp_source.html#l00252">ref_element_sampler</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00051">polyfem::utils::RefElementSampler::simplex_points()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00066">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>.</p>
+<p class="reference">References <a class="el" href="io_2_out_data_8cpp_source.html#l00721">build_vis_mesh()</a>, <a class="el" href="_output_data_8hpp_source.html#l00055">polyfem::io::OutputSample::cell_count</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="_output_data_8hpp_source.html#l00078">polyfem::io::OutputSpace::geometry_bases</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_output_data_8hpp_source.html#l00079">polyfem::io::OutputSpace::output_orders</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00080">polyfem::io::OutputSpace::polys</a>, <a class="el" href="_output_data_8hpp_source.html#l00081">polyfem::io::OutputSpace::polys_3d</a>, <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>, <a class="el" href="io_2_out_data_8hpp_source.html#l00046">polyfem::io::OutGeometryData::ExportOptions::use_hdf5</a>, and <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996a8d0be41ab58751f3fe6fb5aa87b0e794">polyfem::io::OutputSample::Wire</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01389">save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01183">save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_aabdf1d6e7d6725e07cae1d4bbd7a51de_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a73d8e9ef4fc8260849bfa536051d418b_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_aabdf1d6e7d6725e07cae1d4bbd7a51de_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_geometry_data_a73d8e9ef4fc8260849bfa536051d418b_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1603,9 +1397,9 @@ Here is the caller graph for this function:</div>
 
 <p>grid mesh points to export solution sampled on a grid </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00255">255</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00209">209</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02781">build_grid()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01630">build_grid()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>.</p>
 
 </div>
 </div>
@@ -1631,9 +1425,9 @@ Here is the caller graph for this function:</div>
 
 <p>grid mesh boundaries </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00259">259</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00213">213</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02781">build_grid()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01630">build_grid()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>.</p>
 
 </div>
 </div>
@@ -1659,9 +1453,9 @@ Here is the caller graph for this function:</div>
 
 <p>grid mesh mapping to fe elements </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00257">257</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00211">211</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02781">build_grid()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l01630">build_grid()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01248">save_volume()</a>.</p>
 
 </div>
 </div>
@@ -1687,15 +1481,15 @@ Here is the caller graph for this function:</div>
 
 <p>used to sample the solution </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00252">252</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00206">206</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00550">build_vis_boundary_mesh()</a>, <a class="el" href="_out_data_8cpp_source.html#l00812">build_vis_mesh()</a>, <a class="el" href="_out_data_8cpp_source.html#l02776">init_sampler()</a>, <a class="el" href="_out_data_8cpp_source.html#l01473">save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l02076">save_volume_vector_field()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02488">save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l00495">build_vis_boundary_mesh()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00721">build_vis_mesh()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l01625">init_sampler()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/io/<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a></li>
-<li>src/polyfem/io/<a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a></li>
+<li>src/polyfem/io/<a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a></li>
+<li>src/polyfem/io/<a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

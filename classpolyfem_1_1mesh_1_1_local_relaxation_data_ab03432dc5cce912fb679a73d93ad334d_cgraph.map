@@ -1,26 +1,26 @@
 <map id="polyfem::mesh::LocalRelaxationData::init_bases" name="polyfem::mesh::LocalRelaxationData::init_bases">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,265,237,305"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_remesher.html#a0713031d6ff8d707585b0b435633cfd7" title="Build bases for a given mesh (V, F)" alt="" coords="289,165,484,205"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,263,319,208,321,213,177,268"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="285,341,488,366"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="201,303,324,335,322,340,199,308"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#ab0710f2a05b74e199bc9ad1a4742fdad" title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)." alt="" coords="536,5,723,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="405,163,460,110,496,81,535,55,547,49,549,53,537,60,499,85,463,114,409,167"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a6de0d2d7a818a450ffb2ec8ca84af1a6" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="536,69,723,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="431,163,535,119,555,111,557,116,537,124,433,168"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="548,133,711,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="484,170,534,163,535,168,485,175"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e" title="number of vertices" alt="" coords="548,197,711,237"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="485,196,535,202,534,207,484,201"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="548,261,711,301"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="433,203,537,247,557,254,555,259,535,252,431,208"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="779,133,942,173"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="711,151,765,151,765,156,711,156"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ab029826bf8d30ad65253a2afd31cc496" title="utility to check if material is one of the elastic materials" alt="" coords="553,326,705,381"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="488,351,539,351,539,356,488,356"/>
-<area shape="rect" id="Node000012" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="567,405,692,430"/>
-<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="437,364,567,398,566,404,435,369"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ad8fe633ff3cb68e2ae4fe8314d835e01" title="list of all elastic materials" alt="" coords="771,326,951,381"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="706,351,757,351,757,356,706,356"/>
-<area shape="poly" id="edge11_Node000011_Node000011" title=" " alt="" coords="816,326,816,316,824,307,839,301,861,299,887,302,901,310,899,315,885,308,861,305,840,307,827,311,821,318,821,326"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_remesher.html#a0713031d6ff8d707585b0b435633cfd7" title="Build bases for a given mesh (V, F)" alt="" coords="285,165,480,205"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="174,263,316,208,318,213,176,268"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1legacy_1_1_state.html#a7121be34db5a0a2d6b5b5ffc90b1387f" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="299,333,467,373"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="200,303,293,327,291,332,198,308"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#ab0710f2a05b74e199bc9ad1a4742fdad" title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)." alt="" coords="528,5,715,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="400,163,453,110,489,81,527,55,539,49,541,53,529,60,492,85,457,114,404,167"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a6de0d2d7a818a450ffb2ec8ca84af1a6" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="528,69,715,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="426,163,527,119,546,112,548,116,529,124,428,168"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="540,133,703,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="480,170,526,163,526,169,481,175"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e" title="number of vertices" alt="" coords="540,197,703,237"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="481,196,526,202,526,207,480,201"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="540,261,703,301"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="428,203,529,247,548,254,546,259,527,252,426,208"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="771,133,934,173"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="703,151,757,151,757,156,703,156"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ab029826bf8d30ad65253a2afd31cc496" title="utility to check if material is one of the elastic materials" alt="" coords="545,326,697,381"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="467,351,531,351,531,356,467,356"/>
+<area shape="rect" id="Node000012" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="559,405,684,430"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="459,371,560,398,559,404,457,376"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ad8fe633ff3cb68e2ae4fe8314d835e01" title="list of all elastic materials" alt="" coords="763,326,943,381"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="698,351,749,351,749,356,698,356"/>
+<area shape="poly" id="edge11_Node000011_Node000011" title=" " alt="" coords="808,326,808,316,816,307,831,301,853,299,879,302,893,310,891,315,877,308,853,305,832,307,819,311,813,318,813,326"/>
 </map>

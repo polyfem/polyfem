@@ -136,16 +136,16 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_diff_cache.html','');
 <div class="dynheader">
 Collaboration diagram for polyfem::DiffCache:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache__coll__graph.svg" width="272" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache__coll__graph.svg" width="266" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae603012a79875dde11c82f8cf2d705dc" id="r_ae603012a79875dde11c82f8cf2d705dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#ae603012a79875dde11c82f8cf2d705dc">cache_adjoints</a> (const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5">adjoint_mat</a>)</td></tr>
 <tr class="separator:ae603012a79875dde11c82f8cf2d705dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08e5289a2971a3ec3504665c38a17ed9" id="r_a08e5289a2971a3ec3504665c38a17ed9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a08e5289a2971a3ec3504665c38a17ed9">cache_transient</a> (int step, <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd *<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>, const Eigen::MatrixXd *pressure)</td></tr>
-<tr class="memdesc:a08e5289a2971a3ec3504665c38a17ed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache time-dependent adjoint optimization data.  <br /></td></tr>
-<tr class="separator:a08e5289a2971a3ec3504665c38a17ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad380efb2b3352099cc2f5e5f352987d8" id="r_ad380efb2b3352099cc2f5e5f352987d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#ad380efb2b3352099cc2f5e5f352987d8">cache_transient</a> (int step, <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd *<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>, const Eigen::MatrixXd *pressure)</td></tr>
+<tr class="memdesc:ad380efb2b3352099cc2f5e5f352987d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache time-dependent adjoint optimization data.  <br /></td></tr>
+<tr class="separator:ad380efb2b3352099cc2f5e5f352987d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77ea382b8c9e2d37150e221f755e6ed5" id="r_a77ea382b8c9e2d37150e221f755e6ed5"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5">adjoint_mat</a> () const</td></tr>
 <tr class="separator:a77ea382b8c9e2d37150e221f755e6ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa59ccc8e8a6558380de5adfde77a8713" id="r_aa59ccc8e8a6558380de5adfde77a8713"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#aa59ccc8e8a6558380de5adfde77a8713">basis_nodes_to_gbasis_nodes</a> () const</td></tr>
@@ -177,9 +177,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa0491d2ec450a2f9f016c1bea8c436cc" id="r_aa0491d2ec450a2f9f016c1bea8c436cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_initial_condition_override.html">InitialConditionOverride</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#aa0491d2ec450a2f9f016c1bea8c436cc">initial_condition_override</a></td></tr>
-<tr class="memdesc:aa0491d2ec450a2f9f016c1bea8c436cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial-condition override storage for initial condition optimization.  <br /></td></tr>
-<tr class="separator:aa0491d2ec450a2f9f016c1bea8c436cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4069d22cadd1745b4f641eb882bf535" id="r_ab4069d22cadd1745b4f641eb882bf535"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1legacy_1_1_initial_condition_override.html">legacy::InitialConditionOverride</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#ab4069d22cadd1745b4f641eb882bf535">initial_condition_override</a></td></tr>
+<tr class="memdesc:ab4069d22cadd1745b4f641eb882bf535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial-condition override storage for initial condition optimization.  <br /></td></tr>
+<tr class="separator:ab4069d22cadd1745b4f641eb882bf535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -669,8 +669,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a08e5289a2971a3ec3504665c38a17ed9" name="a08e5289a2971a3ec3504665c38a17ed9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08e5289a2971a3ec3504665c38a17ed9">&#9670;&#160;</a></span>cache_transient()</h2>
+<a id="ad380efb2b3352099cc2f5e5f352987d8" name="ad380efb2b3352099cc2f5e5f352987d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad380efb2b3352099cc2f5e5f352987d8">&#9670;&#160;</a></span>cache_transient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -684,7 +684,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -732,7 +732,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a08e5289a2971a3ec3504665c38a17ed9_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_ad380efb2b3352099cc2f5e5f352987d8_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1439,14 +1439,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa0491d2ec450a2f9f016c1bea8c436cc" name="aa0491d2ec450a2f9f016c1bea8c436cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0491d2ec450a2f9f016c1bea8c436cc">&#9670;&#160;</a></span>initial_condition_override</h2>
+<a id="ab4069d22cadd1745b4f641eb882bf535" name="ab4069d22cadd1745b4f641eb882bf535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4069d22cadd1745b4f641eb882bf535">&#9670;&#160;</a></span>initial_condition_override</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_initial_condition_override.html">InitialConditionOverride</a> polyfem::DiffCache::initial_condition_override</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1legacy_1_1_initial_condition_override.html">legacy::InitialConditionOverride</a> polyfem::DiffCache::initial_condition_override</td>
         </tr>
       </table>
 </div><div class="memdoc">

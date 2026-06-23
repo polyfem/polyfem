@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 534;
+var viewWidth = 681;
 var viewHeight = 98;
 var sectionId = 'dynsection-18';
 </script>
@@ -58,18 +58,18 @@ var sectionId = 'dynsection-18';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="526,-57 392,-57 392,-38 526,-38 526,-57"/>
-<text text-anchor="middle" x="459" y="-45" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::Units::velocity</text>
+<polygon fill="#999999" stroke="#666666" points="673,-57 539,-57 539,-38 673,-38 673,-57"/>
+<text text-anchor="middle" x="606" y="-45" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::Units::velocity</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" target="_top" xlink:title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,...">
-<polygon fill="white" stroke="#666666" points="349.5,-89.5 230.5,-89.5 230.5,-59.5 349.5,-59.5 349.5,-89.5"/>
-<text text-anchor="start" x="238.5" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::build</text>
-<text text-anchor="middle" x="290" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_basis</text>
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a8f6cd02b931de4bcf55c47282248c830" target="_top" xlink:title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,...">
+<polygon fill="white" stroke="#666666" points="500,-89.5 374,-89.5 374,-59.5 500,-59.5 500,-89.5"/>
+<text text-anchor="start" x="382" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="437" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">::build_basis</text>
 </a>
 </g>
 </g>
@@ -77,37 +77,38 @@ var sectionId = 'dynsection-18';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M389.19,-58.62C376.05,-60.75 362.41,-62.95 349.63,-65.02"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="389.81,-62.07 399.12,-57.02 388.69,-55.16 389.81,-62.07"/>
+<path fill="none" stroke="#63b8ff" d="M536.18,-58.63C524.2,-60.56 511.81,-62.57 500.02,-64.47"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="536.81,-62.07 546.12,-57.02 535.69,-55.16 536.81,-62.07"/>
 </a>
 </g>
 </g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aeb7bc1bff905955ea5b89e514cd6e5de" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="356,-41 224,-41 224,0 356,0 356,-41"/>
-<text text-anchor="start" x="232" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="start" x="232" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::GenericTensorProblem</text>
-<text text-anchor="middle" x="290" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::set_units</text>
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aeb7bc1bff905955ea5b89e514cd6e5de" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="503,-41 371,-41 371,0 503,0 503,-41"/>
+<text text-anchor="start" x="379" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="start" x="379" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::GenericTensorProblem</text>
+<text text-anchor="middle" x="437" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::set_units</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4_Node000001_Node000005" class="edge">
-<title>Node1&#45;&gt;Node5</title>
-<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M389.21,-36.38C378.28,-34.61 367.01,-32.79 356.17,-31.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="388.69,-39.84 399.12,-37.98 389.81,-32.93 388.69,-39.84"/>
+<!-- Node1&#45;&gt;Node6 -->
+<g id="edge5_Node000001_Node000006" class="edge">
+<title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M536.21,-36.38C525.28,-34.61 514.01,-32.79 503.17,-31.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="535.69,-39.84 546.12,-37.98 536.81,-32.93 535.69,-39.84"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="188,-84 77,-84 77,-65 188,-65 188,-84"/>
-<text text-anchor="middle" x="132.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
+<g id="a_Node000003"><a xlink:href="main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="335,-89.5 224,-89.5 224,-59.5 335,-59.5 335,-89.5"/>
+<text text-anchor="start" x="232" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
+<text text-anchor="middle" x="279.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_with_legacy_state</text>
 </a>
 </g>
 </g>
@@ -115,17 +116,17 @@ var sectionId = 'dynsection-18';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M220.03,-74.5C209.31,-74.5 198.36,-74.5 188.01,-74.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="220.21,-78 230.21,-74.5 220.21,-71 220.21,-78"/>
+<path fill="none" stroke="#63b8ff" d="M363.45,-74.5C354,-74.5 344.44,-74.5 335.34,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="363.65,-78 373.65,-74.5 363.65,-71 363.65,-78"/>
 </a>
 </g>
 </g>
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="41,-84 0,-84 0,-65 41,-65 41,-84"/>
-<text text-anchor="middle" x="20.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
+<g id="a_Node000004"><a xlink:href="main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="188,-84 77,-84 77,-65 188,-65 188,-84"/>
+<text text-anchor="middle" x="132.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
 </a>
 </g>
 </g>
@@ -133,6 +134,24 @@ var sectionId = 'dynsection-18';
 <g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
 <g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M213.54,-74.5C205.14,-74.5 196.61,-74.5 188.4,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="213.68,-78 223.68,-74.5 213.68,-71 213.68,-78"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="41,-84 0,-84 0,-65 41,-65 41,-84"/>
+<text text-anchor="middle" x="20.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
+</a>
+</g>
+</g>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge4_Node000004_Node000005" class="edge">
+<title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M66.64,-74.5C57.35,-74.5 48.45,-74.5 41.05,-74.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="66.82,-78 76.82,-74.5 66.82,-71 66.82,-78"/>
 </a>

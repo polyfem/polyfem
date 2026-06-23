@@ -120,75 +120,51 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">State.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_matrix_i_o_8hpp_source.html">polyfem/io/MatrixIO.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_o_b_j_writer_8hpp_source.html">polyfem/io/OBJWriter.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_mass_8hpp_source.html">polyfem/assembler/Mass.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_multi_model_8hpp_source.html">polyfem/assembler/MultiModel.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_units_8hpp_source.html">polyfem/Units.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_geometry_reader_8hpp_source.html">polyfem/mesh/GeometryReader.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/Mesh2D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/CMesh2D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/NCMesh2D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/Mesh3D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/CMesh3D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/NCMesh3D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_mesh_utils_8hpp_source.html">polyfem/mesh/MeshUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_collision_proxy_8hpp_source.html">polyfem/mesh/collision_proxy/CollisionProxy.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_lagrange_basis2d_8hpp_source.html">polyfem/basis/LagrangeBasis2d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_lagrange_basis3d_8hpp_source.html">polyfem/basis/LagrangeBasis3d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_a_priori_8hpp_source.html">polyfem/refinement/APriori.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_spline_basis2d_8hpp_source.html">polyfem/basis/SplineBasis2d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_spline_basis3d_8hpp_source.html">polyfem/basis/SplineBasis3d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">polyfem/basis/barycentric/MVPolygonalBasis2d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_w_s_polygonal_basis2d_8hpp_source.html">polyfem/basis/barycentric/WSPolygonalBasis2d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_polygonal_basis2d_8hpp_source.html">polyfem/basis/PolygonalBasis2d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_polygonal_basis3d_8hpp_source.html">polyfem/basis/PolygonalBasis3d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="auto__p__bases_8hpp_source.html">polyfem/autogen/auto_p_bases.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="auto__q__bases_8hpp_source.html">polyfem/autogen/auto_q_bases.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_hex_quadrature_8hpp_source.html">polyfem/quadrature/HexQuadrature.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_quad_quadrature_8hpp_source.html">polyfem/quadrature/QuadQuadrature.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_tet_quadrature_8hpp_source.html">polyfem/quadrature/TetQuadrature.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_tri_quadrature_8hpp_source.html">polyfem/quadrature/TriQuadrature.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_geogram_utils_8hpp_source.html">polyfem/utils/GeogramUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="autodiff_8h_source.html">polyfem/utils/autodiff.h</a>&gt;</code><br />
-<code>#include &lt;polysolve/linear/FEMSolver.hpp&gt;</code><br />
-<code>#include &lt;igl/edges.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="par__for_8hpp_source.html">polyfem/utils/par_for.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_var_form_8hpp_source.html">polyfem/varforms/VarForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_var_form_factory_8hpp_source.html">polyfem/varforms/VarFormFactory.hpp</a>&gt;</code><br />
+<code>#include &lt;jse/jse.h&gt;</code><br />
+<code>#include &lt;polyfem/embedded_spec/polyfem.hpp&gt;</code><br />
+<code>#include &lt;polysolve/linear/Solver.hpp&gt;</code><br />
+<code>#include &lt;spdlog/sinks/basic_file_sink.h&gt;</code><br />
+<code>#include &lt;spdlog/sinks/ostream_sink.h&gt;</code><br />
+<code>#include &lt;spdlog/sinks/stdout_color_sinks.h&gt;</code><br />
+<code>#include &lt;ipc/utils/logger.hpp&gt;</code><br />
 <code>#include &lt;igl/Timer.h&gt;</code><br />
-<code>#include &lt;Eigen/Core&gt;</code><br />
-<code>#include &lt;spdlog/fmt/fmt.h&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;stdexcept&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for State.cpp:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="100%" height="580"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_state_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespacespdlog" id="r_namespacespdlog"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacespdlog.html">spdlog</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacespdlog_1_1level" id="r_namespacespdlog_1_1level"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacespdlog_1_1level.html">spdlog::level</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem" id="r_namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a066ceec9d3e84702a92a3c8d53b5a8ce" id="r_a066ceec9d3e84702a92a3c8d53b5a8ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a066ceec9d3e84702a92a3c8d53b5a8ce">polyfem::compute_integral_constraints</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">Mesh3D</a> &amp;mesh, const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, Eigen::MatrixXd &amp;basis_integrals)</td></tr>
-<tr class="separator:a066ceec9d3e84702a92a3c8d53b5a8ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['periodiccontactforcederivative_0',['PeriodicContactForceDerivative',['../classpolyfem_1_1solver_1_1_periodic_contact_form.html#ade5b1c0cd09c66c73593d4f51137c3d3',1,'polyfem::solver::PeriodicContactForm']]],
-  ['pow_1',['pow',['../struct_d_scalar1.html#ab3c0aeb35d3267a25f4d5bd8f366ee93',1,'DScalar1::pow'],['../struct_d_scalar2.html#add536f45cd1ffb1f9f031c378afbdbba',1,'DScalar2::pow']]],
-  ['pressureforcederivative_2',['PressureForceDerivative',['../classpolyfem_1_1solver_1_1_pressure_form.html#a2ec7eaa8438402bc13c8ec089f67aef5',1,'polyfem::solver::PressureForm']]]
+  ['polyfem_3a_3atest_3a_3avarformtestaccess_1',['polyfem::test::varformtestaccess',['../classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::BilaplacianVarForm::VarFormTestAccess'],['../classpolyfem_1_1varform_1_1_elastic_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::ElasticVarForm::VarFormTestAccess'],['../classpolyfem_1_1varform_1_1_fluid_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::FluidVarForm::VarFormTestAccess'],['../classpolyfem_1_1varform_1_1_linear_elastic_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::LinearElasticVarForm::VarFormTestAccess'],['../classpolyfem_1_1varform_1_1_scalar_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::ScalarVarForm::VarFormTestAccess'],['../classpolyfem_1_1varform_1_1_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62',1,'polyfem::varform::VarForm::VarFormTestAccess']]],
+  ['pow_2',['pow',['../struct_d_scalar1.html#ab3c0aeb35d3267a25f4d5bd8f366ee93',1,'DScalar1::pow'],['../struct_d_scalar2.html#add536f45cd1ffb1f9f031c378afbdbba',1,'DScalar2::pow']]],
+  ['pressureforcederivative_3',['PressureForceDerivative',['../classpolyfem_1_1solver_1_1_pressure_form.html#a2ec7eaa8438402bc13c8ec089f67aef5',1,'polyfem::solver::PressureForm']]]
 ];

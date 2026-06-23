@@ -121,13 +121,13 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1io_1_1_energy_c_s_v_wr
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1io_1_1_energy_c_s_v_writer-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::io::EnergyCSVWriter Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for polyfem::io::EnergyCSVWriter:</div>
 <div class="dyncontent">
@@ -143,8 +143,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abd1c5b6cf85acf016dc37bd6ec291e7f" id="r_abd1c5b6cf85acf016dc37bd6ec291e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_energy_c_s_v_writer.html#abd1c5b6cf85acf016dc37bd6ec291e7f">write</a> (const int i, const Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="separator:abd1c5b6cf85acf016dc37bd6ec291e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
 <tr class="memitem:a228826b9ed5fa0fac7c50672dcb85823" id="r_a228826b9ed5fa0fac7c50672dcb85823"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_energy_c_s_v_writer.html#a228826b9ed5fa0fac7c50672dcb85823">file</a></td></tr>
 <tr class="separator:a228826b9ed5fa0fac7c50672dcb85823"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4fed98f854d9716717604ccf8fa6e54" id="r_aa4fed98f854d9716717604ccf8fa6e54"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_energy_c_s_v_writer.html#aa4fed98f854d9716717604ccf8fa6e54">solve_data</a></td></tr>
@@ -152,7 +152,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00499">499</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00017">17</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5059d90fa9b79b0cbbff06351930d8f4" name="a5059d90fa9b79b0cbbff06351930d8f4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5059d90fa9b79b0cbbff06351930d8f4">&#9670;&#160;</a></span>EnergyCSVWriter()</h2>
@@ -180,9 +180,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03393">3393</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00013">13</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00508">file</a>, <a class="el" href="_solve_data_8cpp_source.html#l00495">polyfem::solver::SolveData::named_forms()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00509">solve_data</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00026">file</a>, <a class="el" href="_solve_data_8cpp_source.html#l00495">polyfem::solver::SolveData::named_forms()</a>, and <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00027">solve_data</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -206,9 +206,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03404">3404</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00022">22</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00508">file</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00026">file</a>.</p>
 
 </div>
 </div>
@@ -239,9 +239,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03409">3409</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00027">27</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00508">file</a>, <a class="el" href="_solve_data_8cpp_source.html#l00495">polyfem::solver::SolveData::named_forms()</a>, <a class="el" href="_solve_data_8hpp_source.html#l00170">polyfem::solver::SolveData::nl_problem</a>, <a class="el" href="_out_data_8hpp_source.html#l00509">solve_data</a>, and <a class="el" href="_solve_data_8hpp_source.html#l00186">polyfem::solver::SolveData::time_integrator</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00026">file</a>, <a class="el" href="_solve_data_8cpp_source.html#l00495">polyfem::solver::SolveData::named_forms()</a>, <a class="el" href="_solve_data_8hpp_source.html#l00170">polyfem::solver::SolveData::nl_problem</a>, <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00027">solve_data</a>, and <a class="el" href="_solve_data_8hpp_source.html#l00186">polyfem::solver::SolveData::time_integrator</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -266,14 +266,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00508">508</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00026">26</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03393">EnergyCSVWriter()</a>, <a class="el" href="_out_data_8cpp_source.html#l03409">write()</a>, and <a class="el" href="_out_data_8cpp_source.html#l03404">~EnergyCSVWriter()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00013">EnergyCSVWriter()</a>, <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00027">write()</a>, and <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00022">~EnergyCSVWriter()</a>.</p>
 
 </div>
 </div>
@@ -292,20 +292,20 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00509">509</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00027">27</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03393">EnergyCSVWriter()</a>, and <a class="el" href="_out_data_8cpp_source.html#l03409">write()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00013">EnergyCSVWriter()</a>, and <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00027">write()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/io/<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a></li>
-<li>src/polyfem/io/<a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a></li>
+<li>src/polyfem/io/<a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a></li>
+<li>src/polyfem/io/<a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

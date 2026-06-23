@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_n_l_homo_problem =
 [
-    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a17e858e6b5d664dd5c9a68807bbbd391", null ],
+    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ad994984d0a15774d335593ec7b2c1e8d", null ],
     [ "~NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8b8e79453cb452aa0334e6ed3e40578b", null ],
     [ "add_form", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ae628c757aa4d6ca51dd76ba650a6038c", null ],
     [ "constraint_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a98a632068fd8dd697cd99730c2deb5dc", null ],
@@ -42,5 +42,5 @@ var classpolyfem_1_1solver_1_1_n_l_homo_problem =
     [ "macro_mid_to_reduced_", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a1c51a2b0774d69645b87776b76ee58f0", null ],
     [ "macro_strain_constraint_", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a433efa40a950ad33addc0692e4556728", null ],
     [ "only_symmetric", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ac4ddbee323b4546c5f9a837f16f92a6c", null ],
-    [ "state_", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a65ffd4541df1ea67cb93b13d87e2a41c", null ]
+    [ "state_", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a36a094d03bbdea2c588c9fc31d3bf438", null ]
 ];

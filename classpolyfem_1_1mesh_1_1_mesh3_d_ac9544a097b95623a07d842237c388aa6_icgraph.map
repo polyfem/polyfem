@@ -1,21 +1,39 @@
 <map id="polyfem::mesh::Mesh3D::is_volume" name="polyfem::mesh::Mesh3D::is_volume">
-<area shape="rect" id="Node000001" title="checks if mesh is volume" alt="" coords="1229,70,1411,110"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" title="Build bases over the remaining polygons of a mesh." alt="" coords="731,37,921,77"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1278,65,1233,39,1181,19,1142,12,1103,9,1024,12,951,24,890,39,888,34,950,19,1024,7,1103,4,1143,7,1182,14,1235,34,1281,60"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="717,101,935,141"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1216,99,935,117,935,111,1216,94"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a9850a45487f69bd2d03fa2520f4815e6" title=" " alt="" coords="985,29,1179,84"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="1215,78,1179,73,1180,68,1216,73"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem.html#a066ceec9d3e84702a92a3c8d53b5a8ce" title=" " alt="" coords="983,159,1181,199"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="1254,117,1137,162,1135,157,1252,112"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="511,39,669,79"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="717,60,670,61,669,56,717,55"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,..." alt="" coords="304,70,463,110"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="497,76,463,81,462,76,497,70"/>
-<area shape="rect" id="Node000005" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="108,77,256,103"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="290,93,256,93,256,87,290,87"/>
-<area shape="rect" id="Node000006" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,77,60,103"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="94,93,60,93,60,87,94,87"/>
-<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="703,115,463,98,463,93,704,109"/>
-<area shape="poly" id="edge9_Node000008_Node000002" title=" " alt="" coords="971,59,922,59,922,54,971,54"/>
+<area shape="rect" id="Node000001" title="checks if mesh is volume" alt="" coords="1656,255,1837,295"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" title="Build bases over the remaining polygons of a mesh." alt="" coords="1175,191,1365,231"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1705,249,1659,224,1607,204,1546,193,1482,190,1421,192,1366,197,1365,192,1421,187,1483,185,1546,188,1609,199,1662,219,1707,245"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="909,287,1127,327"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="1642,282,1127,305,1127,299,1642,277"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a9850a45487f69bd2d03fa2520f4815e6" title=" " alt="" coords="1413,214,1608,269"/>
+<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="1642,263,1608,258,1609,252,1643,257"/>
+<area shape="rect" id="Node000017" href="$namespacepolyfem_1_1legacy.html#a392495191f0c5d5694f72ab1131bdac4" title=" " alt="" coords="1415,344,1606,384"/>
+<area shape="poly" id="edge20_Node000001_Node000017" title=" " alt="" coords="1681,302,1566,346,1564,341,1679,297"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1legacy_1_1_state.html#a3bcd7d1b3429ccc7970befac11eb5656" title="builds bases for polygons, called inside build_basis" alt="" coords="931,223,1105,263"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1161,227,1106,234,1105,229,1161,222"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_var_form.html#a9ead6f93373e0191c14ef39514a20656" title=" " alt="" coords="919,159,1117,199"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="1161,200,1117,194,1118,189,1162,194"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1legacy_1_1_state.html#a8f6cd02b931de4bcf55c47282248c830" title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,..." alt="" coords="678,287,846,327"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="925,269,843,289,842,284,924,263"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="433,312,581,352"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="665,319,581,327,580,322,664,314"/>
+<area shape="rect" id="Node000006" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="155,319,303,345"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="419,335,303,335,303,329,419,329"/>
+<area shape="rect" id="Node000007" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,319,60,345"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="142,335,60,335,60,329,142,329"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_var_form.html#ac16f72b9ff477a2f02dc4ee2dd5ec777" title=" " alt="" coords="663,159,861,199"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="905,181,862,181,862,176,905,176"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a12e8547ee073254e215650ec05537700" title=" " alt="" coords="399,133,615,173"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="649,170,615,167,615,161,650,165"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a0c38477ea5ba3f898623028d83e43e5c" title=" " alt="" coords="413,248,600,288"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="692,206,566,250,564,245,690,201"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#abebd8d3d99cd99f8c225163f3ee1525f" title=" " alt="" coords="108,220,351,260"/>
+<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="649,194,351,229,351,223,648,189"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a0e242692af50b262ffd84132e9974614" title=" " alt="" coords="408,5,605,45"/>
+<area shape="poly" id="edge12_Node000009_Node000013" title=" " alt="" coords="730,151,678,104,647,80,613,60,587,48,589,43,616,55,650,76,682,100,734,147"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a4b7c4555af015f3a55a7b38b56d4e93f" title=" " alt="" coords="415,69,599,109"/>
+<area shape="poly" id="edge14_Node000009_Node000014" title=" " alt="" coords="699,156,614,124,577,112,579,107,616,119,701,151"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="400,260,351,255,351,250,400,255"/>
+<area shape="poly" id="edge16_Node000015_Node000004" title=" " alt="" coords="896,309,846,309,846,304,896,304"/>
+<area shape="poly" id="edge17_Node000015_Node000009" title=" " alt="" coords="925,284,908,277,841,239,787,201,790,197,844,235,911,272,927,279"/>
+<area shape="poly" id="edge19_Node000016_Node000002" title=" " alt="" coords="1399,230,1365,225,1366,220,1400,225"/>
 </map>

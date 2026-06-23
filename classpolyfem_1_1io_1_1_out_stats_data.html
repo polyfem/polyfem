@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1io_1_1_out_stats_data.
 <p>all stats from polyfem  
  <a href="classpolyfem_1_1io_1_1_out_stats_data.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -149,101 +149,101 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a59e33cd83c220e21830ee199e2ce68b2" id="r_a59e33cd83c220e21830ee199e2ce68b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2">count_flipped_elements</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">polyfem::basis::ElementBases</a> &gt; &amp;gbases)</td></tr>
 <tr class="memdesc:a59e33cd83c220e21830ee199e2ce68b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">counts the number of flipped elements  <br /></td></tr>
 <tr class="separator:a59e33cd83c220e21830ee199e2ce68b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b41f990731f99eddc33467a1bbb3f1c" id="r_a6b41f990731f99eddc33467a1bbb3f1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a6b41f990731f99eddc33467a1bbb3f1c">save_json</a> (const nlohmann::json &amp;args, const int n_bases, const int n_pressure_bases, const Eigen::MatrixXd &amp;sol, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &amp;problem, const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">OutRuntimeData</a> &amp;runtime, const std::string &amp;formulation, const bool isoparametric, const int sol_at_node_id, nlohmann::json &amp;j)</td></tr>
-<tr class="memdesc:a6b41f990731f99eddc33467a1bbb3f1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a json object  <br /></td></tr>
-<tr class="separator:a6b41f990731f99eddc33467a1bbb3f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf8fd9a4e5461e535b11e6a470881db3" id="r_abf8fd9a4e5461e535b11e6a470881db3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3">save_json</a> (const nlohmann::json &amp;args, const int n_bases, const int n_pressure_bases, const Eigen::MatrixXd &amp;sol, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &amp;problem, const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">OutRuntimeData</a> &amp;runtime, const std::string &amp;formulation, const bool isoparametric, const int sol_at_node_id, nlohmann::json &amp;j) const</td></tr>
+<tr class="memdesc:abf8fd9a4e5461e535b11e6a470881db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a json object  <br /></td></tr>
+<tr class="separator:abf8fd9a4e5461e535b11e6a470881db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a3a3cde994b2b0a5446e4adfc4bd89869" id="r_a3a3cde994b2b0a5446e4adfc4bd89869"><td class="memItemLeft" align="right" valign="top">Eigen::Vector4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a3a3cde994b2b0a5446e4adfc4bd89869">spectrum</a></td></tr>
+<tr class="memitem:a3a3cde994b2b0a5446e4adfc4bd89869" id="r_a3a3cde994b2b0a5446e4adfc4bd89869"><td class="memItemLeft" align="right" valign="top">Eigen::Vector4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a3a3cde994b2b0a5446e4adfc4bd89869">spectrum</a> = Eigen::Vector4d::Zero()</td></tr>
 <tr class="memdesc:a3a3cde994b2b0a5446e4adfc4bd89869"><td class="mdescLeft">&#160;</td><td class="mdescRight">spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)  <br /></td></tr>
 <tr class="separator:a3a3cde994b2b0a5446e4adfc4bd89869"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f29ae2ffcccfdba7b769c6e60865e96" id="r_a1f29ae2ffcccfdba7b769c6e60865e96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1f29ae2ffcccfdba7b769c6e60865e96">solver_info</a></td></tr>
 <tr class="memdesc:a1f29ae2ffcccfdba7b769c6e60865e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver  <br /></td></tr>
 <tr class="separator:a1f29ae2ffcccfdba7b769c6e60865e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb4b43dbc9ce0af90b93c727c0a2c18d" id="r_abb4b43dbc9ce0af90b93c727c0a2c18d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#abb4b43dbc9ce0af90b93c727c0a2c18d">mesh_size</a></td></tr>
+<tr class="memitem:abb4b43dbc9ce0af90b93c727c0a2c18d" id="r_abb4b43dbc9ce0af90b93c727c0a2c18d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#abb4b43dbc9ce0af90b93c727c0a2c18d">mesh_size</a> = 0</td></tr>
 <tr class="memdesc:abb4b43dbc9ce0af90b93c727c0a2c18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max edge lenght  <br /></td></tr>
 <tr class="separator:abb4b43dbc9ce0af90b93c727c0a2c18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed6696ee26c1eb5bacfb5fafbe8bcfe2" id="r_aed6696ee26c1eb5bacfb5fafbe8bcfe2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aed6696ee26c1eb5bacfb5fafbe8bcfe2">min_edge_length</a></td></tr>
+<tr class="memitem:aed6696ee26c1eb5bacfb5fafbe8bcfe2" id="r_aed6696ee26c1eb5bacfb5fafbe8bcfe2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aed6696ee26c1eb5bacfb5fafbe8bcfe2">min_edge_length</a> = 0</td></tr>
 <tr class="memdesc:aed6696ee26c1eb5bacfb5fafbe8bcfe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">min edge lenght  <br /></td></tr>
 <tr class="separator:aed6696ee26c1eb5bacfb5fafbe8bcfe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87d671a7fc6da0c88db83ad49768801f" id="r_a87d671a7fc6da0c88db83ad49768801f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a87d671a7fc6da0c88db83ad49768801f">average_edge_length</a></td></tr>
+<tr class="memitem:a87d671a7fc6da0c88db83ad49768801f" id="r_a87d671a7fc6da0c88db83ad49768801f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a87d671a7fc6da0c88db83ad49768801f">average_edge_length</a> = 0</td></tr>
 <tr class="memdesc:a87d671a7fc6da0c88db83ad49768801f"><td class="mdescLeft">&#160;</td><td class="mdescRight">avg edge lenght  <br /></td></tr>
 <tr class="separator:a87d671a7fc6da0c88db83ad49768801f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a659f5cbff15c4381abbdb3c353b6dc26" id="r_a659f5cbff15c4381abbdb3c353b6dc26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26">l2_err</a></td></tr>
+<tr class="memitem:a659f5cbff15c4381abbdb3c353b6dc26" id="r_a659f5cbff15c4381abbdb3c353b6dc26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26">l2_err</a> = 0</td></tr>
 <tr class="memdesc:a659f5cbff15c4381abbdb3c353b6dc26"><td class="mdescLeft">&#160;</td><td class="mdescRight">errors, lp_err is in fact an L8 error  <br /></td></tr>
 <tr class="separator:a659f5cbff15c4381abbdb3c353b6dc26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a736dedbb7fe279e1a5c0c30ee735356c" id="r_a736dedbb7fe279e1a5c0c30ee735356c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a736dedbb7fe279e1a5c0c30ee735356c">linf_err</a></td></tr>
+<tr class="memitem:a736dedbb7fe279e1a5c0c30ee735356c" id="r_a736dedbb7fe279e1a5c0c30ee735356c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a736dedbb7fe279e1a5c0c30ee735356c">linf_err</a> = 0</td></tr>
 <tr class="separator:a736dedbb7fe279e1a5c0c30ee735356c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30468b92c25ac491390157d56949ec0e" id="r_a30468b92c25ac491390157d56949ec0e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a30468b92c25ac491390157d56949ec0e">lp_err</a></td></tr>
+<tr class="memitem:a30468b92c25ac491390157d56949ec0e" id="r_a30468b92c25ac491390157d56949ec0e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a30468b92c25ac491390157d56949ec0e">lp_err</a> = 0</td></tr>
 <tr class="separator:a30468b92c25ac491390157d56949ec0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65daad9f95cf1232ac81e43d2a6e96a8" id="r_a65daad9f95cf1232ac81e43d2a6e96a8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a65daad9f95cf1232ac81e43d2a6e96a8">h1_err</a></td></tr>
+<tr class="memitem:a65daad9f95cf1232ac81e43d2a6e96a8" id="r_a65daad9f95cf1232ac81e43d2a6e96a8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a65daad9f95cf1232ac81e43d2a6e96a8">h1_err</a> = 0</td></tr>
 <tr class="separator:a65daad9f95cf1232ac81e43d2a6e96a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1cad59dcd347d00ae96d2821c07c1e54" id="r_a1cad59dcd347d00ae96d2821c07c1e54"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1cad59dcd347d00ae96d2821c07c1e54">h1_semi_err</a></td></tr>
+<tr class="memitem:a1cad59dcd347d00ae96d2821c07c1e54" id="r_a1cad59dcd347d00ae96d2821c07c1e54"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1cad59dcd347d00ae96d2821c07c1e54">h1_semi_err</a> = 0</td></tr>
 <tr class="separator:a1cad59dcd347d00ae96d2821c07c1e54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac18aadc9857ee84cf1417bc8f626b5d5" id="r_ac18aadc9857ee84cf1417bc8f626b5d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ac18aadc9857ee84cf1417bc8f626b5d5">grad_max_err</a></td></tr>
+<tr class="memitem:ac18aadc9857ee84cf1417bc8f626b5d5" id="r_ac18aadc9857ee84cf1417bc8f626b5d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ac18aadc9857ee84cf1417bc8f626b5d5">grad_max_err</a> = 0</td></tr>
 <tr class="separator:ac18aadc9857ee84cf1417bc8f626b5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac92b3bead3f1d5783741e29342a7a1c" id="r_aac92b3bead3f1d5783741e29342a7a1c"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aac92b3bead3f1d5783741e29342a7a1c">nn_zero</a></td></tr>
+<tr class="memitem:aac92b3bead3f1d5783741e29342a7a1c" id="r_aac92b3bead3f1d5783741e29342a7a1c"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aac92b3bead3f1d5783741e29342a7a1c">nn_zero</a> = 0</td></tr>
 <tr class="memdesc:aac92b3bead3f1d5783741e29342a7a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">non zeros and sytem matrix size num dof is the total dof in the system  <br /></td></tr>
 <tr class="separator:aac92b3bead3f1d5783741e29342a7a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a956cb8d764dd8382c3dfdd6f80fe48" id="r_a6a956cb8d764dd8382c3dfdd6f80fe48"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a6a956cb8d764dd8382c3dfdd6f80fe48">mat_size</a></td></tr>
+<tr class="memitem:a6a956cb8d764dd8382c3dfdd6f80fe48" id="r_a6a956cb8d764dd8382c3dfdd6f80fe48"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a6a956cb8d764dd8382c3dfdd6f80fe48">mat_size</a> = 0</td></tr>
 <tr class="separator:a6a956cb8d764dd8382c3dfdd6f80fe48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2010d9a34be7667c7ed75469c298ab85" id="r_a2010d9a34be7667c7ed75469c298ab85"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a2010d9a34be7667c7ed75469c298ab85">num_dofs</a></td></tr>
+<tr class="memitem:a2010d9a34be7667c7ed75469c298ab85" id="r_a2010d9a34be7667c7ed75469c298ab85"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a2010d9a34be7667c7ed75469c298ab85">num_dofs</a> = 0</td></tr>
 <tr class="separator:a2010d9a34be7667c7ed75469c298ab85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f782730c27b59db687f8ba83597a9ed" id="r_a8f782730c27b59db687f8ba83597a9ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a8f782730c27b59db687f8ba83597a9ed">max_angle</a></td></tr>
+<tr class="memitem:a8f782730c27b59db687f8ba83597a9ed" id="r_a8f782730c27b59db687f8ba83597a9ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a8f782730c27b59db687f8ba83597a9ed">max_angle</a> = 0</td></tr>
 <tr class="memdesc:a8f782730c27b59db687f8ba83597a9ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on angle, compute only when using p_ref (false by default)  <br /></td></tr>
 <tr class="separator:a8f782730c27b59db687f8ba83597a9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad64f1f0cc23a120ede8b25d6c66cb39f" id="r_ad64f1f0cc23a120ede8b25d6c66cb39f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad64f1f0cc23a120ede8b25d6c66cb39f">sigma_max</a></td></tr>
+<tr class="memitem:ad64f1f0cc23a120ede8b25d6c66cb39f" id="r_ad64f1f0cc23a120ede8b25d6c66cb39f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad64f1f0cc23a120ede8b25d6c66cb39f">sigma_max</a> = 0</td></tr>
 <tr class="memdesc:ad64f1f0cc23a120ede8b25d6c66cb39f"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on tri/tet quality, compute only when using p_ref (false by default)  <br /></td></tr>
 <tr class="separator:ad64f1f0cc23a120ede8b25d6c66cb39f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adde5a7cb41d1d9ada26b78c08d0bb513" id="r_adde5a7cb41d1d9ada26b78c08d0bb513"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#adde5a7cb41d1d9ada26b78c08d0bb513">sigma_min</a></td></tr>
+<tr class="memitem:adde5a7cb41d1d9ada26b78c08d0bb513" id="r_adde5a7cb41d1d9ada26b78c08d0bb513"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#adde5a7cb41d1d9ada26b78c08d0bb513">sigma_min</a> = 0</td></tr>
 <tr class="separator:adde5a7cb41d1d9ada26b78c08d0bb513"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7fb71a9b284a7699c81db1dd8a948cb" id="r_ab7fb71a9b284a7699c81db1dd8a948cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ab7fb71a9b284a7699c81db1dd8a948cb">sigma_avg</a></td></tr>
+<tr class="memitem:ab7fb71a9b284a7699c81db1dd8a948cb" id="r_ab7fb71a9b284a7699c81db1dd8a948cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ab7fb71a9b284a7699c81db1dd8a948cb">sigma_avg</a> = 0</td></tr>
 <tr class="separator:ab7fb71a9b284a7699c81db1dd8a948cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16fa7e9a7c1bdead393666cac6722085" id="r_a16fa7e9a7c1bdead393666cac6722085"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a16fa7e9a7c1bdead393666cac6722085">n_flipped</a></td></tr>
+<tr class="memitem:a16fa7e9a7c1bdead393666cac6722085" id="r_a16fa7e9a7c1bdead393666cac6722085"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a16fa7e9a7c1bdead393666cac6722085">n_flipped</a> = 0</td></tr>
 <tr class="memdesc:a16fa7e9a7c1bdead393666cac6722085"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of flipped elements, compute only when using count_flipped_els (false by default)  <br /></td></tr>
 <tr class="separator:a16fa7e9a7c1bdead393666cac6722085"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1939a9de1a9595b88b5b718641500ff4" id="r_a1939a9de1a9595b88b5b718641500ff4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1939a9de1a9595b88b5b718641500ff4">simplex_count</a></td></tr>
+<tr class="memitem:a1939a9de1a9595b88b5b718641500ff4" id="r_a1939a9de1a9595b88b5b718641500ff4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1939a9de1a9595b88b5b718641500ff4">simplex_count</a> = 0</td></tr>
 <tr class="memdesc:a1939a9de1a9595b88b5b718641500ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (simplices)  <br /></td></tr>
 <tr class="separator:a1939a9de1a9595b88b5b718641500ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a590b8ef7d3fe8db07267309acc807257" id="r_a590b8ef7d3fe8db07267309acc807257"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a590b8ef7d3fe8db07267309acc807257">prism_count</a></td></tr>
+<tr class="memitem:a590b8ef7d3fe8db07267309acc807257" id="r_a590b8ef7d3fe8db07267309acc807257"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a590b8ef7d3fe8db07267309acc807257">prism_count</a> = 0</td></tr>
 <tr class="memdesc:a590b8ef7d3fe8db07267309acc807257"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (simplices)  <br /></td></tr>
 <tr class="separator:a590b8ef7d3fe8db07267309acc807257"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13fb66b1f2de5fb444b7cf0046a99776" id="r_a13fb66b1f2de5fb444b7cf0046a99776"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a13fb66b1f2de5fb444b7cf0046a99776">pyramid_count</a></td></tr>
+<tr class="memitem:a13fb66b1f2de5fb444b7cf0046a99776" id="r_a13fb66b1f2de5fb444b7cf0046a99776"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a13fb66b1f2de5fb444b7cf0046a99776">pyramid_count</a> = 0</td></tr>
 <tr class="memdesc:a13fb66b1f2de5fb444b7cf0046a99776"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (simplices)  <br /></td></tr>
 <tr class="separator:a13fb66b1f2de5fb444b7cf0046a99776"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb88cadda41136be2639d35b7f2707fe" id="r_aeb88cadda41136be2639d35b7f2707fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aeb88cadda41136be2639d35b7f2707fe">regular_count</a></td></tr>
+<tr class="memitem:aeb88cadda41136be2639d35b7f2707fe" id="r_aeb88cadda41136be2639d35b7f2707fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aeb88cadda41136be2639d35b7f2707fe">regular_count</a> = 0</td></tr>
 <tr class="memdesc:aeb88cadda41136be2639d35b7f2707fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:aeb88cadda41136be2639d35b7f2707fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1d68060344b0c353d6adf0a023e2234" id="r_aa1d68060344b0c353d6adf0a023e2234"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aa1d68060344b0c353d6adf0a023e2234">regular_boundary_count</a></td></tr>
+<tr class="memitem:aa1d68060344b0c353d6adf0a023e2234" id="r_aa1d68060344b0c353d6adf0a023e2234"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aa1d68060344b0c353d6adf0a023e2234">regular_boundary_count</a> = 0</td></tr>
 <tr class="memdesc:aa1d68060344b0c353d6adf0a023e2234"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:aa1d68060344b0c353d6adf0a023e2234"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2691da4df5ecbfb0f206e18c90cb0735" id="r_a2691da4df5ecbfb0f206e18c90cb0735"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a2691da4df5ecbfb0f206e18c90cb0735">simple_singular_count</a></td></tr>
+<tr class="memitem:a2691da4df5ecbfb0f206e18c90cb0735" id="r_a2691da4df5ecbfb0f206e18c90cb0735"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a2691da4df5ecbfb0f206e18c90cb0735">simple_singular_count</a> = 0</td></tr>
 <tr class="memdesc:a2691da4df5ecbfb0f206e18c90cb0735"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:a2691da4df5ecbfb0f206e18c90cb0735"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af22819d4b31a66276c71304a1442e3f6" id="r_af22819d4b31a66276c71304a1442e3f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6">multi_singular_count</a></td></tr>
+<tr class="memitem:af22819d4b31a66276c71304a1442e3f6" id="r_af22819d4b31a66276c71304a1442e3f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6">multi_singular_count</a> = 0</td></tr>
 <tr class="memdesc:af22819d4b31a66276c71304a1442e3f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:af22819d4b31a66276c71304a1442e3f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae504256417402e9e77503a18d2b761a1" id="r_ae504256417402e9e77503a18d2b761a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ae504256417402e9e77503a18d2b761a1">boundary_count</a></td></tr>
+<tr class="memitem:ae504256417402e9e77503a18d2b761a1" id="r_ae504256417402e9e77503a18d2b761a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ae504256417402e9e77503a18d2b761a1">boundary_count</a> = 0</td></tr>
 <tr class="memdesc:ae504256417402e9e77503a18d2b761a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:ae504256417402e9e77503a18d2b761a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92c03d2dc8afb8091b6c264b28293e3a" id="r_a92c03d2dc8afb8091b6c264b28293e3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a92c03d2dc8afb8091b6c264b28293e3a">non_regular_boundary_count</a></td></tr>
+<tr class="memitem:a92c03d2dc8afb8091b6c264b28293e3a" id="r_a92c03d2dc8afb8091b6c264b28293e3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a92c03d2dc8afb8091b6c264b28293e3a">non_regular_boundary_count</a> = 0</td></tr>
 <tr class="memdesc:a92c03d2dc8afb8091b6c264b28293e3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:a92c03d2dc8afb8091b6c264b28293e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96260e7a17c7720f72890a42deff6ceb" id="r_a96260e7a17c7720f72890a42deff6ceb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a96260e7a17c7720f72890a42deff6ceb">non_regular_count</a></td></tr>
+<tr class="memitem:a96260e7a17c7720f72890a42deff6ceb" id="r_a96260e7a17c7720f72890a42deff6ceb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a96260e7a17c7720f72890a42deff6ceb">non_regular_count</a> = 0</td></tr>
 <tr class="memdesc:a96260e7a17c7720f72890a42deff6ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:a96260e7a17c7720f72890a42deff6ceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75f951afbf3b4b99d68c32860a39123e" id="r_a75f951afbf3b4b99d68c32860a39123e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a75f951afbf3b4b99d68c32860a39123e">undefined_count</a></td></tr>
+<tr class="memitem:a75f951afbf3b4b99d68c32860a39123e" id="r_a75f951afbf3b4b99d68c32860a39123e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a75f951afbf3b4b99d68c32860a39123e">undefined_count</a> = 0</td></tr>
 <tr class="memdesc:a75f951afbf3b4b99d68c32860a39123e"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:a75f951afbf3b4b99d68c32860a39123e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0a320e9bb339ded3abb6fd5780149bb" id="r_ad0a320e9bb339ded3abb6fd5780149bb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb">multi_singular_boundary_count</a></td></tr>
+<tr class="memitem:ad0a320e9bb339ded3abb6fd5780149bb" id="r_ad0a320e9bb339ded3abb6fd5780149bb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb">multi_singular_boundary_count</a> = 0</td></tr>
 <tr class="memdesc:ad0a320e9bb339ded3abb6fd5780149bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:ad0a320e9bb339ded3abb6fd5780149bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>all stats from polyfem </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00374">374</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00050">50</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a82dd3ebdfe11404430cc1beb193abe79" name="a82dd3ebdfe11404430cc1beb193abe79"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a82dd3ebdfe11404430cc1beb193abe79">&#9670;&#160;</a></span>compute_errors()</h2>
@@ -315,11 +315,11 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03011">3011</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01856">1856</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_problem_8hpp_source.html#l00046">polyfem::assembler::Problem::exact_grad()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_problem_8hpp_source.html#l00051">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_problem_8hpp_source.html#l00052">polyfem::assembler::Problem::exact_grad()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00012">polyfem::State::compute_errors()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00012">polyfem::legacy::State::compute_errors()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00144">polyfem::varform::BilaplacianVarForm::compute_errors()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00161">polyfem::varform::FluidVarForm::compute_errors()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00073">polyfem::varform::IncompressibleElasticVarForm::compute_errors()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00391">polyfem::varform::ScalarVarForm::compute_errors()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -328,7 +328,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a82dd3ebdfe11404430cc1beb193abe79_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a82dd3ebdfe11404430cc1beb193abe79_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -382,11 +382,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02879">2879</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01728">1728</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1bbd6a108623834041041c6278c49a92">polyfem::mesh::Mesh::get_edges()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00009">polyfem::utils::EdgeSampler::sample_2d_cube()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00038">polyfem::utils::EdgeSampler::sample_2d_simplex()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00103">polyfem::utils::EdgeSampler::sample_3d_cube()</a>, and <a class="el" href="_edge_sampler_8cpp_source.html#l00063">polyfem::utils::EdgeSampler::sample_3d_simplex()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00277">polyfem::varform::BilaplacianVarForm::build_basis()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00144">polyfem::varform::ElasticVarForm::build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00306">polyfem::varform::FluidVarForm::build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00108">polyfem::varform::ScalarVarForm::build_basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -395,7 +395,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a84cfce0e3e38ec71cb85e303d53b7333_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a84cfce0e3e38ec71cb85e303d53b7333_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -424,11 +424,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03172">3172</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l02017">2017</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00428">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00151">forward_simulation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00102">forward_simulation_with_legacy_state()</a>, and <a class="el" href="_var_form_8cpp_source.html#l00308">polyfem::varform::VarForm::prepare()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -437,7 +437,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_ad2a27e4251aa12bf821c2c68242a1ed5_icgraph.svg" width="500" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_ad2a27e4251aa12bf821c2c68242a1ed5_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -477,11 +477,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02966">2966</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01811">1811</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00428">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00277">polyfem::varform::BilaplacianVarForm::build_basis()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00144">polyfem::varform::ElasticVarForm::build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00306">polyfem::varform::FluidVarForm::build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00108">polyfem::varform::ScalarVarForm::build_basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -490,7 +490,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a59e33cd83c220e21830ee199e2ce68b2_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a59e33cd83c220e21830ee199e2ce68b2_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -512,19 +512,19 @@ Here is the caller graph for this function:</div>
 
 <p>clears all stats </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02957">2957</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l01806">1806</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, and <a class="el" href="_var_form_8cpp_source.html#l00268">polyfem::varform::VarForm::reset()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_abb956b11c2d5d90d1fce4a2d0f022f0f_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_abb956b11c2d5d90d1fce4a2d0f022f0f_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a6b41f990731f99eddc33467a1bbb3f1c" name="a6b41f990731f99eddc33467a1bbb3f1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b41f990731f99eddc33467a1bbb3f1c">&#9670;&#160;</a></span>save_json()</h2>
+<a id="abf8fd9a4e5461e535b11e6a470881db3" name="abf8fd9a4e5461e535b11e6a470881db3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf8fd9a4e5461e535b11e6a470881db3">&#9670;&#160;</a></span>save_json()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -610,7 +610,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -641,20 +641,20 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03254">3254</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8cpp_source.html#l02099">2099</a> of file <a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00359">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00357">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00361">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00351">polyfem::io::OutRuntimeData::building_basis_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00355">polyfem::io::OutRuntimeData::computing_poly_basis_time</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="par__for_8hpp_source.html#l00051">polyfem::utils::get_n_threads()</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_out_data_8hpp_source.html#l00353">polyfem::io::OutRuntimeData::loading_mesh_time</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_problem_8hpp_source.html#l00023">polyfem::assembler::Problem::name()</a>, <a class="el" href="_mesh_8hpp_source.html#l00285">polyfem::mesh::Mesh::orders()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00363">polyfem::io::OutRuntimeData::solving_time</a>.</p>
+<p class="reference">References <a class="el" href="_out_stats_data_8hpp_source.html#l00029">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00027">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00031">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00021">polyfem::io::OutRuntimeData::building_basis_time</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00025">polyfem::io::OutRuntimeData::computing_poly_basis_time</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="par__for_8hpp_source.html#l00051">polyfem::utils::get_n_threads()</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00023">polyfem::io::OutRuntimeData::loading_mesh_time</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00163">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_problem_8hpp_source.html#l00029">polyfem::assembler::Problem::name()</a>, <a class="el" href="_mesh_8hpp_source.html#l00285">polyfem::mesh::Mesh::orders()</a>, and <a class="el" href="_out_stats_data_8hpp_source.html#l00033">polyfem::io::OutRuntimeData::solving_time</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00088">polyfem::State::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00088">polyfem::legacy::State::save_json()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00091">polyfem::varform::BilaplacianVarForm::save_json()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00107">polyfem::varform::FluidVarForm::save_json()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00044">polyfem::varform::IncompressibleElasticVarForm::save_json()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00337">polyfem::varform::ScalarVarForm::save_json()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a6b41f990731f99eddc33467a1bbb3f1c_cgraph.svg" width="664" height="564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_abf8fd9a4e5461e535b11e6a470881db3_cgraph.svg" width="664" height="564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a6b41f990731f99eddc33467a1bbb3f1c_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_abf8fd9a4e5461e535b11e6a470881db3_icgraph.svg" width="100%" height="578"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -667,14 +667,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::average_edge_length</td>
+          <td class="memname">double polyfem::io::OutStatsData::average_edge_length = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>avg edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00389">389</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00065">65</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -685,14 +685,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::boundary_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::boundary_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00421">421</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00097">97</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -703,12 +703,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::grad_max_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::grad_max_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -719,12 +719,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::h1_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::h1_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -735,12 +735,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::h1_semi_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::h1_semi_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -751,14 +751,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::l2_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::l2_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>errors, lp_err is in fact an L8 error </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -769,12 +769,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::linf_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::linf_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -785,12 +785,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::lp_err</td>
+          <td class="memname">double polyfem::io::OutStatsData::lp_err = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -801,14 +801,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">long long polyfem::io::OutStatsData::mat_size</td>
+          <td class="memname">long long polyfem::io::OutStatsData::mat_size = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00072">72</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01462">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l01462">polyfem::legacy::State::assemble_mass_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00470">polyfem::varform::BilaplacianVarForm::assemble_mass_mat()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00282">polyfem::varform::ElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">polyfem::varform::FluidVarForm::assemble_mass_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00211">polyfem::varform::IncompressibleElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00271">polyfem::varform::ScalarVarForm::assemble_mass_mat()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::legacy::State::build_stiffness_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00550">polyfem::varform::BilaplacianVarForm::build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00591">polyfem::varform::FluidVarForm::build_stiffness_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00269">polyfem::varform::IncompressibleElasticVarForm::build_stiffness_mat()</a>, and <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00052">polyfem::varform::LinearElasticVarForm::build_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -819,14 +819,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::max_angle</td>
+          <td class="memname">double polyfem::io::OutStatsData::max_angle = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on angle, compute only when using p_ref (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00399">399</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00075">75</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -839,16 +839,16 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::mesh_size</td>
+          <td class="memname">double polyfem::io::OutStatsData::mesh_size = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>max edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00061">61</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00277">polyfem::varform::BilaplacianVarForm::build_basis()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00144">polyfem::varform::ElasticVarForm::build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00306">polyfem::varform::FluidVarForm::build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00108">polyfem::varform::ScalarVarForm::build_basis()</a>.</p>
 
 </div>
 </div>
@@ -859,16 +859,16 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::min_edge_length</td>
+          <td class="memname">double polyfem::io::OutStatsData::min_edge_length = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>min edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00387">387</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00063">63</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, and <a class="el" href="_var_form_8cpp_source.html#l00957">polyfem::varform::VarForm::save_restart_json()</a>.</p>
 
 </div>
 </div>
@@ -879,14 +879,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::multi_singular_boundary_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::multi_singular_boundary_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00429">429</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00105">105</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -897,14 +897,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::multi_singular_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::multi_singular_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00419">419</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00095">95</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -915,16 +915,16 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::n_flipped</td>
+          <td class="memname">int polyfem::io::OutStatsData::n_flipped = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>number of flipped elements, compute only when using count_flipped_els (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00404">404</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00080">80</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00507">polyfem::State::build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00507">polyfem::legacy::State::build_basis()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00277">polyfem::varform::BilaplacianVarForm::build_basis()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00144">polyfem::varform::ElasticVarForm::build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00306">polyfem::varform::FluidVarForm::build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00108">polyfem::varform::ScalarVarForm::build_basis()</a>.</p>
 
 </div>
 </div>
@@ -935,16 +935,16 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">long long polyfem::io::OutStatsData::nn_zero</td>
+          <td class="memname">long long polyfem::io::OutStatsData::nn_zero = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>non zeros and sytem matrix size num dof is the total dof in the system </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00072">72</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01462">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l01462">polyfem::legacy::State::assemble_mass_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00470">polyfem::varform::BilaplacianVarForm::assemble_mass_mat()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00282">polyfem::varform::ElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">polyfem::varform::FluidVarForm::assemble_mass_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00211">polyfem::varform::IncompressibleElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00271">polyfem::varform::ScalarVarForm::assemble_mass_mat()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::legacy::State::build_stiffness_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00550">polyfem::varform::BilaplacianVarForm::build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00591">polyfem::varform::FluidVarForm::build_stiffness_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00269">polyfem::varform::IncompressibleElasticVarForm::build_stiffness_mat()</a>, and <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00052">polyfem::varform::LinearElasticVarForm::build_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -955,14 +955,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::non_regular_boundary_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::non_regular_boundary_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00423">423</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00099">99</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -973,14 +973,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::non_regular_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::non_regular_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00425">425</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00101">101</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -991,14 +991,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">long long polyfem::io::OutStatsData::num_dofs</td>
+          <td class="memname">long long polyfem::io::OutStatsData::num_dofs = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00072">72</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01462">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l01462">polyfem::legacy::State::assemble_mass_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00470">polyfem::varform::BilaplacianVarForm::assemble_mass_mat()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00282">polyfem::varform::ElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">polyfem::varform::FluidVarForm::assemble_mass_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00211">polyfem::varform::IncompressibleElasticVarForm::assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00271">polyfem::varform::ScalarVarForm::assemble_mass_mat()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::legacy::State::build_stiffness_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00550">polyfem::varform::BilaplacianVarForm::build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00591">polyfem::varform::FluidVarForm::build_stiffness_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00269">polyfem::varform::IncompressibleElasticVarForm::build_stiffness_mat()</a>, and <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00052">polyfem::varform::LinearElasticVarForm::build_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -1009,14 +1009,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::prism_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::prism_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (simplices) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00409">409</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00085">85</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1027,14 +1027,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::pyramid_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::pyramid_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (simplices) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00411">411</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00087">87</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1045,14 +1045,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::regular_boundary_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::regular_boundary_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00415">415</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00091">91</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1063,14 +1063,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::regular_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::regular_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00413">413</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00089">89</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1081,12 +1081,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::sigma_avg</td>
+          <td class="memname">double polyfem::io::OutStatsData::sigma_avg = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00077">77</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1099,14 +1099,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::sigma_max</td>
+          <td class="memname">double polyfem::io::OutStatsData::sigma_max = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on tri/tet quality, compute only when using p_ref (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00077">77</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1119,12 +1119,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::io::OutStatsData::sigma_min</td>
+          <td class="memname">double polyfem::io::OutStatsData::sigma_min = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00077">77</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1137,14 +1137,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::simple_singular_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::simple_singular_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00417">417</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00093">93</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1155,14 +1155,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::simplex_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::simplex_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (simplices) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00407">407</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00083">83</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1180,9 +1180,9 @@ Here is the caller graph for this function:</div>
 
 <p>information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00382">382</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00058">58</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00184">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00079">polyfem::State::solve_linear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00348">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00184">polyfem::legacy::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00079">polyfem::legacy::State::solve_linear()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00574">polyfem::varform::BilaplacianVarForm::solve_linear_system()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00618">polyfem::varform::FluidVarForm::solve_linear_system()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00293">polyfem::varform::IncompressibleElasticVarForm::solve_linear_system()</a>, <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00073">polyfem::varform::LinearElasticVarForm::solve_linear_system()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00348">polyfem::legacy::State::solve_tensor_nonlinear()</a>.</p>
 
 </div>
 </div>
@@ -1193,16 +1193,16 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Vector4d polyfem::io::OutStatsData::spectrum</td>
+          <td class="memname">Eigen::Vector4d polyfem::io::OutStatsData::spectrum = Eigen::Vector4d::Zero()</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00378">378</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00054">54</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00079">polyfem::State::solve_linear()</a>, and <a class="el" href="_state_8cpp_source.html#l01665">polyfem::State::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00079">polyfem::legacy::State::solve_linear()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00574">polyfem::varform::BilaplacianVarForm::solve_linear_system()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00618">polyfem::varform::FluidVarForm::solve_linear_system()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00293">polyfem::varform::IncompressibleElasticVarForm::solve_linear_system()</a>, <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00073">polyfem::varform::LinearElasticVarForm::solve_linear_system()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00672">polyfem::varform::BilaplacianVarForm::solve_problem()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00385">polyfem::varform::IncompressibleElasticVarForm::solve_problem()</a>, <a class="el" href="_linear_elastic_var_form_8cpp_source.html#l00221">polyfem::varform::LinearElasticVarForm::solve_problem()</a>, and <a class="el" href="legacy_2_state_8cpp_source.html#l01665">polyfem::legacy::State::solve_problem()</a>.</p>
 
 </div>
 </div>
@@ -1213,20 +1213,20 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int polyfem::io::OutStatsData::undefined_count</td>
+          <td class="memname">int polyfem::io::OutStatsData::undefined_count = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00427">427</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_stats_data_8hpp_source.html#l00103">103</a> of file <a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/io/<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a></li>
-<li>src/polyfem/io/<a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a></li>
+<li>src/polyfem/io/<a class="el" href="_out_stats_data_8hpp_source.html">OutStatsData.hpp</a></li>
+<li>src/polyfem/io/<a class="el" href="io_2_out_data_8cpp_source.html">OutData.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

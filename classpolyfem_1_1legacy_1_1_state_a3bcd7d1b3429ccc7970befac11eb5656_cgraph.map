@@ -1,0 +1,125 @@
+<map id="polyfem::legacy::State::build_polygonal_basis" name="polyfem::legacy::State::build_polygonal_basis">
+<area shape="rect" id="Node000001" title="builds bases for polygons, called inside build_basis" alt="" coords="5,1441,180,1481"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1basis_1_1_polygonal_basis2d.html#ac44c9f77e8d3a1328e6288ed5aec07b2" title="Build bases over the remaining polygons of a mesh." alt="" coords="238,1065,429,1105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,1440,310,1116,314,1119,109,1443"/>
+<area shape="rect" id="Node000039" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" title="Build bases over the remaining polygons of a mesh." alt="" coords="238,568,429,608"/>
+<area shape="poly" id="edge40_Node000001_Node000039" title=" " alt="" coords="97,1440,320,621,325,622,102,1442"/>
+<area shape="rect" id="Node000044" href="$classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a96c68c7820d06a39ee2948b548c4a64d" title=" " alt="" coords="228,1409,439,1449"/>
+<area shape="poly" id="edge54_Node000001_Node000044" title=" " alt="" coords="180,1447,214,1443,215,1448,181,1452"/>
+<area shape="rect" id="Node000049" href="$classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a" title=" " alt="" coords="228,1473,439,1513"/>
+<area shape="poly" id="edge67_Node000001_Node000049" title=" " alt="" coords="181,1470,215,1475,214,1480,180,1476"/>
+<area shape="rect" id="Node000052" href="$classpolyfem_1_1legacy_1_1_state.html#a09103939ffb7c7e750909cf260903451" title="check if using iso parametric bases" alt="" coords="249,1537,417,1577"/>
+<area shape="poly" id="edge71_Node000001_Node000052" title=" " alt="" coords="133,1479,229,1523,250,1530,248,1535,227,1528,131,1484"/>
+<area shape="rect" id="Node000031" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="271,1602,396,1627"/>
+<area shape="poly" id="edge73_Node000001_Node000031" title=" " alt="" coords="111,1480,160,1534,193,1563,229,1587,259,1599,257,1604,227,1592,190,1567,156,1538,107,1483"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482" title=" " alt="" coords="511,1231,693,1271"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="356,1104,412,1156,449,1185,488,1210,517,1223,515,1228,485,1214,446,1189,409,1160,352,1108"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1basis_1_1_polygonal_basis2d.html#a1c6317639e60628b8a5df5cc2b9a95f8" title=" " alt="" coords="505,783,699,838"/>
+<area shape="poly" id="edge10_Node000002_Node000010" title=" " alt="" coords="348,1064,406,992,485,906,553,845,557,849,489,910,410,996,352,1067"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779" title="checks if element is polygon compatible" alt="" coords="809,983,971,1023"/>
+<area shape="poly" id="edge33_Node000002_Node000021" title=" " alt="" coords="381,1063,431,1044,486,1029,567,1016,649,1007,795,1000,795,1005,649,1012,567,1021,487,1035,433,1050,383,1068"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9" title=" " alt="" coords="807,1047,973,1087"/>
+<area shape="poly" id="edge34_Node000002_Node000022" title=" " alt="" coords="414,1063,486,1051,567,1046,648,1045,793,1053,793,1059,648,1051,567,1051,487,1056,415,1068"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5" title="checks if mesh is volume" alt="" coords="799,1111,981,1151"/>
+<area shape="poly" id="edge35_Node000002_Node000023" title=" " alt="" coords="418,1103,487,1115,644,1127,786,1130,785,1135,643,1132,486,1120,417,1108"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="809,612,971,652"/>
+<area shape="poly" id="edge36_Node000002_Node000024" title=" " alt="" coords="332,1065,339,988,347,936,360,879,379,821,406,764,441,712,485,669,508,656,539,646,619,634,709,628,795,627,795,632,710,634,620,639,540,652,510,661,488,673,445,716,410,767,384,823,365,881,352,937,344,989,338,1065"/>
+<area shape="rect" id="Node000032" href="$classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" title=" " alt="" coords="1329,800,1481,840"/>
+<area shape="poly" id="edge37_Node000002_Node000032" title=" " alt="" coords="335,1065,349,1006,376,925,396,882,420,840,450,802,485,769,531,743,593,721,667,703,747,691,827,685,902,686,967,695,1016,712,1028,721,1035,732,1042,753,1048,775,1054,784,1064,792,1093,808,1125,819,1191,832,1256,835,1316,832,1316,837,1256,841,1190,838,1123,824,1091,813,1061,797,1050,788,1043,777,1036,755,1030,734,1024,725,1013,717,966,700,902,691,827,690,747,696,668,708,595,726,533,748,488,773,454,805,425,843,401,884,381,927,354,1007,341,1066"/>
+<area shape="rect" id="Node000035" href="$classpolyfem_1_1quadrature_1_1_polygon_quadrature.html#a4e0ef6a256af3def81c64c05c6e5691f" title="Gets the quadrature points &amp; weights for a polygon." alt="" coords="813,1495,967,1550"/>
+<area shape="poly" id="edge31_Node000002_Node000035" title=" " alt="" coords="343,1105,360,1154,389,1220,432,1288,458,1318,488,1344,518,1362,547,1369,575,1371,602,1369,630,1367,658,1369,688,1377,719,1395,737,1416,744,1439,751,1460,767,1481,801,1501,799,1505,764,1485,746,1463,739,1440,733,1419,716,1399,686,1382,657,1374,630,1373,602,1374,575,1376,546,1375,516,1367,485,1349,454,1322,427,1291,384,1222,355,1156,338,1106"/>
+<area shape="rect" id="Node000037" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title="utility for retrieving the needed quadrature order to precisely integrate the given form on the given..." alt="" coords="765,1175,1015,1215"/>
+<area shape="poly" id="edge38_Node000002_Node000037" title=" " alt="" coords="386,1103,487,1135,623,1161,752,1179,752,1184,622,1167,486,1140,385,1108"/>
+<area shape="rect" id="Node000038" href="$namespacepolyfem_1_1mesh.html#a5b53129ddbb617fbeb6b26d82171fd56" title="Sample points on a polygon, evenly spaced from each other." alt="" coords="514,1065,690,1105"/>
+<area shape="poly" id="edge39_Node000002_Node000038" title=" " alt="" coords="429,1083,500,1083,500,1088,429,1088"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111" title=" " alt="" coords="799,1239,981,1279"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="694,1251,785,1253,785,1258,694,1256"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39" title="number of vertices of a face" alt="" coords="809,1303,971,1343"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="683,1268,797,1297,795,1302,682,1273"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="799,548,981,588"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="626,1229,673,1181,697,1150,715,1116,727,1068,731,1004,727,852,726,774,730,703,741,642,751,618,763,598,785,581,788,585,767,602,755,620,746,644,735,703,732,774,733,852,736,1004,732,1069,720,1118,701,1153,677,1184,630,1232"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" title=" " alt="" coords="1081,487,1263,527"/>
+<area shape="poly" id="edge9_Node000003_Node000008" title=" " alt="" coords="626,1229,674,1181,697,1150,715,1116,722,1091,727,1061,730,989,723,816,720,728,723,648,736,581,748,555,764,534,785,520,814,510,892,498,981,495,1067,497,1067,502,981,500,892,503,816,515,787,525,767,538,752,558,741,583,729,649,725,728,728,816,736,989,733,1062,728,1093,720,1118,701,1153,678,1184,630,1232"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="809,1367,971,1407"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="695,1267,719,1281,736,1299,744,1318,751,1336,767,1353,797,1368,795,1373,764,1357,747,1339,739,1320,731,1302,716,1285,693,1272"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581" title=" " alt="" coords="1081,551,1263,591"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="981,566,1068,567,1068,572,981,572"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="980,546,1067,527,1068,532,981,551"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_linear_assembler.html#a3a2430e7c06e87719b5eb23682ff3d9c" title="assembles the stiffness matrix for the given basis the bilinear form (local assembler) is encoded by ..." alt="" coords="785,855,995,895"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="700,830,787,849,785,854,699,835"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="795,407,985,462"/>
+<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="614,782,692,616,735,533,763,488,792,466,795,471,767,491,739,536,697,618,618,784"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a75b22925d15fe138c5421becf90650ee" title=" " alt="" coords="767,727,1013,767"/>
+<area shape="poly" id="edge18_Node000010_Node000020" title=" " alt="" coords="699,786,785,767,787,772,700,792"/>
+<area shape="poly" id="edge19_Node000010_Node000021" title=" " alt="" coords="693,836,719,855,731,870,738,885,743,915,748,942,755,956,767,969,797,986,794,991,764,973,751,959,743,944,738,915,733,887,727,873,715,859,690,840"/>
+<area shape="poly" id="edge20_Node000010_Node000022" title=" " alt="" coords="628,837,720,957,732,980,740,999,750,1016,767,1033,795,1048,792,1052,764,1037,745,1019,735,1001,728,982,715,960,624,840"/>
+<area shape="poly" id="edge21_Node000010_Node000023" title=" " alt="" coords="631,837,676,890,720,957,734,998,738,1033,744,1065,753,1081,767,1097,788,1111,785,1115,764,1101,749,1084,739,1067,732,1034,729,999,715,960,671,894,627,840"/>
+<area shape="poly" id="edge22_Node000010_Node000024" title=" " alt="" coords="646,781,844,657,847,662,649,785"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a0eb13d358aeff8c5c6a9e89a2c4b1291" title=" " alt="" coords="767,919,1013,959"/>
+<area shape="poly" id="edge26_Node000010_Node000028" title=" " alt="" coords="684,836,719,855,734,868,743,881,752,893,767,904,779,911,777,916,764,909,748,897,739,884,730,872,716,860,681,841"/>
+<area shape="rect" id="Node000034" href="$classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a699276b593b76cf2523f9e2c995b33b6" title=" " alt="" coords="767,791,1013,831"/>
+<area shape="poly" id="edge30_Node000010_Node000034" title=" " alt="" coords="700,808,753,808,753,813,700,813"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="1063,279,1281,319"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="985,408,1013,393,1028,377,1036,361,1045,345,1061,329,1070,323,1073,327,1064,333,1049,348,1041,364,1032,380,1016,397,987,413"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="1063,343,1281,383"/>
+<area shape="poly" id="edge14_Node000012_Node000015" title=" " alt="" coords="985,408,1079,384,1080,389,986,413"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="1077,407,1267,462"/>
+<area shape="poly" id="edge15_Node000012_Node000017" title=" " alt="" coords="986,432,1063,432,1063,437,986,437"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="1077,121,1267,175"/>
+<area shape="poly" id="edge16_Node000012_Node000018" title=" " alt="" coords="984,414,1013,393,1030,367,1038,342,1039,317,1036,291,1034,265,1035,239,1043,212,1061,185,1064,181,1068,185,1065,188,1048,214,1040,240,1039,265,1042,291,1044,317,1043,343,1035,370,1017,397,987,418"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="1077,199,1267,254"/>
+<area shape="poly" id="edge17_Node000012_Node000019" title=" " alt="" coords="984,412,1013,393,1025,377,1032,362,1036,331,1041,298,1048,281,1061,265,1065,260,1069,264,1065,268,1052,284,1046,300,1042,331,1037,364,1030,380,1016,397,987,417"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1091,615,1253,655"/>
+<area shape="poly" id="edge23_Node000024_Node000025" title=" " alt="" coords="971,630,1077,631,1077,636,971,635"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="1091,679,1253,719"/>
+<area shape="poly" id="edge24_Node000024_Node000026" title=" " alt="" coords="972,649,1078,674,1077,679,971,654"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="1091,743,1253,783"/>
+<area shape="poly" id="edge25_Node000024_Node000027" title=" " alt="" coords="973,647,1016,668,1032,684,1041,699,1049,714,1064,729,1079,737,1076,742,1061,733,1045,718,1036,702,1028,687,1013,673,970,652"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70" title=" " alt="" coords="1077,857,1267,897"/>
+<area shape="poly" id="edge27_Node000028_Node000029" title=" " alt="" coords="982,916,1066,898,1067,903,983,921"/>
+<area shape="rect" id="Node000033" href="$struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" title="Set the independent variable count used by the automatic differentiation layer." alt="" coords="1073,921,1271,961"/>
+<area shape="poly" id="edge29_Node000028_Node000033" title=" " alt="" coords="1013,937,1059,938,1059,943,1013,942"/>
+<area shape="poly" id="edge28_Node000029_Node000032" title=" " alt="" coords="1253,855,1315,839,1317,844,1255,860"/>
+<area shape="rect" id="Node000036" href="$classpolyfem_1_1quadrature_1_1_tri_quadrature.html#a85485e705bb0fa392400786863496e85" title=" " alt="" coords="1095,1495,1249,1550"/>
+<area shape="poly" id="edge32_Node000035_Node000036" title=" " alt="" coords="968,1520,1081,1520,1081,1525,968,1525"/>
+<area shape="poly" id="edge41_Node000039_Node000003" title=" " alt="" coords="340,608,354,692,382,821,401,894,426,970,455,1045,489,1116,528,1173,571,1219,567,1223,524,1177,484,1119,450,1047,421,972,396,896,376,822,349,693,335,609"/>
+<area shape="poly" id="edge47_Node000039_Node000021" title=" " alt="" coords="344,607,363,655,393,719,435,787,460,819,488,847,523,875,561,899,642,938,723,966,796,984,795,989,721,971,640,943,558,903,520,879,485,851,456,822,431,790,388,722,358,657,339,609"/>
+<area shape="poly" id="edge49_Node000039_Node000024" title=" " alt="" coords="429,593,795,622,795,627,429,598"/>
+<area shape="poly" id="edge50_Node000039_Node000032" title=" " alt="" coords="348,566,404,498,443,459,485,422,556,370,652,306,764,238,885,174,1005,121,1062,101,1116,87,1167,79,1212,79,1251,88,1283,106,1302,127,1319,156,1347,233,1368,327,1384,432,1401,639,1406,787,1401,787,1396,639,1379,433,1363,328,1342,234,1314,159,1298,130,1280,110,1249,93,1211,84,1167,84,1117,92,1064,106,1007,126,887,179,767,243,655,310,559,374,488,426,447,463,408,502,352,570"/>
+<area shape="poly" id="edge53_Node000039_Node000037" title=" " alt="" coords="340,608,353,674,379,767,399,817,423,867,453,915,489,957,517,980,546,993,574,1000,602,1004,631,1007,660,1014,689,1028,719,1051,731,1066,738,1080,743,1108,749,1135,755,1148,767,1161,773,1165,770,1170,764,1165,751,1151,744,1137,738,1110,733,1082,726,1069,715,1055,686,1033,658,1019,630,1013,601,1009,573,1005,544,998,514,984,485,961,449,918,418,870,394,819,374,768,347,675,335,609"/>
+<area shape="rect" id="Node000040" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a9850a45487f69bd2d03fa2520f4815e6" title=" " alt="" coords="505,495,699,550"/>
+<area shape="poly" id="edge42_Node000039_Node000040" title=" " alt="" coords="416,565,491,547,492,552,417,571"/>
+<area shape="rect" id="Node000041" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ac9544a097b95623a07d842237c388aa6" title="checks if mesh is volume" alt="" coords="799,343,981,383"/>
+<area shape="poly" id="edge48_Node000039_Node000041" title=" " alt="" coords="357,566,414,523,485,480,562,447,641,420,786,381,787,386,642,425,564,452,488,485,417,528,361,570"/>
+<area shape="rect" id="Node000042" href="$namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854" title="Orient a triangulated surface to have positive volume." alt="" coords="519,5,685,45"/>
+<area shape="poly" id="edge51_Node000039_Node000042" title=" " alt="" coords="332,568,335,477,342,414,354,343,373,268,400,194,437,124,459,92,485,62,504,47,508,51,489,66,463,95,441,127,405,196,378,270,359,344,347,414,340,478,337,568"/>
+<area shape="poly" id="edge43_Node000040_Node000012" title=" " alt="" coords="691,493,786,464,788,469,693,498"/>
+<area shape="poly" id="edge44_Node000040_Node000021" title=" " alt="" coords="621,549,668,645,720,770,728,801,731,829,731,879,733,901,738,923,748,945,767,969,797,988,794,993,764,973,744,948,733,925,727,902,726,879,726,829,723,802,715,772,663,647,616,551"/>
+<area shape="poly" id="edge46_Node000040_Node000024" title=" " alt="" coords="677,548,719,567,742,583,766,598,796,609,794,614,764,602,740,587,716,572,675,553"/>
+<area shape="poly" id="edge45_Node000040_Node000041" title=" " alt="" coords="633,493,703,435,764,392,785,383,787,388,767,397,706,440,637,497"/>
+<area shape="rect" id="Node000043" href="$namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13" title="Compute the signed volume of a surface mesh." alt="" coords="805,5,975,45"/>
+<area shape="poly" id="edge52_Node000042_Node000043" title=" " alt="" coords="685,23,791,23,791,28,685,28"/>
+<area shape="rect" id="Node000045" href="$classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da" title=" " alt="" coords="502,1295,702,1335"/>
+<area shape="poly" id="edge55_Node000044_Node000045" title=" " alt="" coords="381,1407,541,1338,543,1343,383,1412"/>
+<area shape="rect" id="Node000047" href="$classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#ab995c1ceb5684273a9603d30109ca5cb" title=" " alt="" coords="497,1473,707,1513"/>
+<area shape="poly" id="edge65_Node000044_Node000047" title=" " alt="" coords="419,1447,505,1468,504,1473,417,1452"/>
+<area shape="rect" id="Node000048" href="$classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#ac51379547373e1572f065c4a2f0f3c50" title=" " alt="" coords="489,1409,715,1449"/>
+<area shape="poly" id="edge66_Node000044_Node000048" title=" " alt="" coords="439,1427,475,1427,475,1432,439,1432"/>
+<area shape="poly" id="edge57_Node000045_Node000004" title=" " alt="" coords="702,1293,785,1276,786,1281,703,1298"/>
+<area shape="poly" id="edge62_Node000045_Node000005" title=" " alt="" coords="702,1315,795,1317,795,1323,702,1320"/>
+<area shape="poly" id="edge63_Node000045_Node000009" title=" " alt="" coords="683,1332,797,1361,795,1366,682,1337"/>
+<area shape="poly" id="edge59_Node000045_Node000021" title=" " alt="" coords="701,1293,715,1281,736,1251,743,1220,743,1190,738,1159,734,1128,733,1096,742,1064,763,1033,778,1021,795,1012,797,1017,781,1025,767,1036,747,1067,739,1097,739,1127,744,1158,748,1189,749,1221,741,1253,719,1284,704,1297"/>
+<area shape="poly" id="edge60_Node000045_Node000023" title=" " alt="" coords="699,1292,716,1281,728,1267,734,1252,739,1222,743,1191,750,1176,764,1161,785,1146,788,1151,767,1165,755,1179,748,1193,744,1223,739,1254,732,1269,719,1285,702,1297"/>
+<area shape="poly" id="edge61_Node000045_Node000024" title=" " alt="" coords="701,1294,715,1281,728,1260,737,1234,747,1168,748,1089,745,1003,741,917,739,836,745,766,753,737,763,713,791,681,826,656,829,661,795,685,768,716,758,739,751,767,745,836,746,917,750,1003,754,1089,752,1168,743,1235,733,1263,719,1284,704,1298"/>
+<area shape="poly" id="edge58_Node000045_Node000035" title=" " alt="" coords="692,1333,719,1351,732,1368,740,1385,744,1418,748,1450,755,1465,767,1481,801,1502,798,1507,764,1485,750,1468,743,1451,739,1418,735,1386,728,1371,716,1355,689,1337"/>
+<area shape="poly" id="edge64_Node000045_Node000037" title=" " alt="" coords="693,1292,716,1280,731,1267,739,1253,748,1239,764,1224,775,1218,778,1223,767,1229,752,1242,744,1256,735,1271,719,1285,696,1297"/>
+<area shape="rect" id="Node000046" href="$classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399" title="id of the face vertex" alt="" coords="809,1431,971,1471"/>
+<area shape="poly" id="edge56_Node000045_Node000046" title=" " alt="" coords="684,1332,719,1351,735,1368,743,1385,751,1401,767,1417,797,1432,794,1436,764,1421,747,1404,739,1388,731,1371,716,1355,682,1337"/>
+<area shape="poly" id="edge68_Node000049_Node000045" title=" " alt="" coords="416,1471,437,1459,453,1445,462,1430,470,1414,485,1395,520,1365,555,1340,558,1344,523,1370,489,1399,475,1416,466,1432,457,1448,440,1463,419,1476"/>
+<area shape="rect" id="Node000050" href="$classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a18c437d6d18725ba35e6e49b7c692014" title=" " alt="" coords="497,1601,707,1641"/>
+<area shape="poly" id="edge69_Node000049_Node000050" title=" " alt="" coords="419,1511,440,1523,456,1540,465,1556,473,1572,488,1587,497,1593,495,1597,485,1591,469,1575,460,1559,452,1543,437,1527,416,1516"/>
+<area shape="rect" id="Node000051" href="$classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5699764466dac77f782982b9e8d02927" title=" " alt="" coords="487,1537,717,1577"/>
+<area shape="poly" id="edge70_Node000049_Node000051" title=" " alt="" coords="419,1511,505,1532,504,1537,417,1516"/>
+<area shape="rect" id="Node000053" href="$classpolyfem_1_1legacy_1_1_state.html#abe9d15d78fe8863dab5c3bf3e850a5ad" title=" " alt="" coords="518,1665,686,1705"/>
+<area shape="poly" id="edge72_Node000052_Node000053" title=" " alt="" coords="416,1575,440,1589,456,1605,465,1621,473,1636,488,1651,506,1661,504,1666,485,1655,469,1640,460,1623,452,1608,437,1593,414,1580"/>
+</map>

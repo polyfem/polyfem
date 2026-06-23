@@ -121,93 +121,46 @@ $(document).ready(function(){initNavTree('_state_8hpp.html',''); initResizable()
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">State.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_units_8hpp_source.html">polyfem/Units.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_interface_data_8hpp_source.html">polyfem/basis/InterfaceData.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_element_assembly_values_8hpp_source.html">polyfem/assembler/ElementAssemblyValues.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_assembly_vals_cache_8hpp_source.html">polyfem/assembler/AssemblyValsCache.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_rhs_assembler_8hpp_source.html">polyfem/assembler/RhsAssembler.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_pressure_assembler_8hpp_source.html">polyfem/assembler/PressureAssembler.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_macro_strain_8hpp_source.html">polyfem/assembler/MacroStrain.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_problem_8hpp_source.html">polyfem/assembler/Problem.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_assembler_8hpp_source.html">polyfem/assembler/Assembler.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_mesh_8hpp_source.html">polyfem/mesh/Mesh.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_obstacle_8hpp_source.html">polyfem/mesh/Obstacle.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_mesh_nodes_8hpp_source.html">polyfem/mesh/MeshNodes.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_local_boundary_8hpp_source.html">polyfem/mesh/LocalBoundary.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_solve_data_8hpp_source.html">polyfem/solver/SolveData.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_elasticity_utils_8hpp_source.html">polyfem/utils/ElasticityUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_periodic_boundary_8hpp_source.html">polyfem/assembler/PeriodicBoundary.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">polyfem/io/OutData.hpp</a>&gt;</code><br />
-<code>#include &lt;polysolve/linear/Solver.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
-<code>#include &lt;Eigen/Sparse&gt;</code><br />
-<code>#include &lt;spdlog/sinks/basic_file_sink.h&gt;</code><br />
-<code>#include &lt;ipc/collision_mesh.hpp&gt;</code><br />
-<code>#include &lt;ipc/utils/logger.hpp&gt;</code><br />
+<code>#include &lt;spdlog/spdlog.h&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;sstream&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;cstddef&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for State.hpp:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8hpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8hpp__incl.svg" width="100%" height="437"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8hpp__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8hpp__dep__incl.svg" width="363" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="_state_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_initial_condition_override.html">polyfem::InitialConditionOverride</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime override for initial-condition histories.  <a href="classpolyfem_1_1_initial_condition_override.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">main class that contains the polyfem solver and all its state  <a href="classpolyfem_1_1_state.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">VarForm-only simulation state.  <a href="classpolyfem_1_1_state.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacepolysolve" id="r_namespacepolysolve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolysolve.html">polysolve</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepolysolve_1_1nonlinear" id="r_namespacepolysolve_1_1nonlinear"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolysolve_1_1nonlinear.html">polysolve::nonlinear</a></td></tr>
+<tr class="memitem:namespace_g_e_o" id="r_namespace_g_e_o"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_e_o.html">GEO</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem" id="r_namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepolyfem_1_1assembler" id="r_namespacepolyfem_1_1assembler"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></td></tr>
-<tr class="memdesc:namespacepolyfem_1_1assembler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used for test only. <br /></td></tr>
+<tr class="memitem:namespacepolyfem_1_1varform" id="r_namespacepolyfem_1_1varform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html">polyfem::varform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepolyfem_1_1mesh" id="r_namespacepolyfem_1_1mesh"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a910b3dbb6b070be9a2e1f4ebf3f1551a" id="r_a910b3dbb6b070be9a2e1f4ebf3f1551a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a910b3dbb6b070be9a2e1f4ebf3f1551a">polyfem::UserPostStepCallback</a> = std::function&lt; void(int step, <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)&gt;</td></tr>
-<tr class="memdesc:a910b3dbb6b070be9a2e1f4ebf3f1551a"><td class="mdescLeft">&#160;</td><td class="mdescRight">User callback at the end of every solver step.  <br /></td></tr>
-<tr class="separator:a910b3dbb6b070be9a2e1f4ebf3f1551a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

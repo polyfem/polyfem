@@ -1,29 +1,35 @@
 <map id="polyfem::mesh::is_planar" name="polyfem::mesh::is_planar">
-<area shape="rect" id="Node000001" title="Determine if the given mesh is planar (2D or tiny z&#45;range)." alt="" coords="1233,45,1420,70"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa671492edb4624e593b5b9e18098a16c" title="factory to build the proper mesh" alt="" coords="1023,5,1185,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1224,45,1185,40,1186,34,1225,40"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f" title="read a surface mesh" alt="" coords="1025,69,1183,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1225,75,1183,81,1183,75,1224,69"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036" title="Load a collision proxy mesh from a file." alt="" coords="804,37,975,77"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1011,78,974,73,975,67,1012,73"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a0998cc6c7de5ec57108b351c79ba171e" title="read a obstacle mesh from a geometry JSON" alt="" coords="811,101,968,141"/>
-<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="1012,106,968,112,968,107,1011,100"/>
-<area shape="poly" id="edge7_Node000004_Node000004" title=" " alt="" coords="925,26,912,19,889,16,869,18,857,23,853,29,855,36,850,38,847,28,854,18,868,13,889,11,914,14,927,21"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1mesh.html#a15b9f6e84b61e94823dad7a365835542" title="Load a collision proxy mesh and displacement map from files." alt="" coords="599,37,755,77"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="790,60,755,60,755,55,790,55"/>
-<area shape="poly" id="edge6_Node000005_Node000005" title=" " alt="" coords="713,26,700,19,677,16,657,18,645,23,641,29,643,36,638,38,635,28,642,18,656,13,677,11,702,14,715,21"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a0dfe8b477867a13f17afb35bd4309508" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="373,37,531,77"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="585,60,532,60,532,55,585,55"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#a47496a714e0b233ab918bfbbe7c4626f" title="read a FEM mesh from a geometry JSON" alt="" coords="599,101,756,141"/>
-<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="797,124,756,124,756,119,797,119"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f" title="loads the mesh from the json arguments" alt="" coords="353,105,551,130"/>
-<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="585,122,551,122,551,116,585,117"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#ac4b4c624e46a71afeb97d56c50190eb3" title="loads the mesh from a geogram mesh" alt="" coords="353,154,551,179"/>
-<area shape="poly" id="edge14_Node000008_Node000013" title=" " alt="" coords="585,143,516,157,515,151,584,137"/>
-<area shape="rect" id="Node000010" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="133,79,281,105"/>
-<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="339,108,281,102,281,97,340,103"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497" title="loads the mesh from V and F," alt="" coords="108,129,305,154"/>
-<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="340,131,306,134,305,129,339,126"/>
-<area shape="rect" id="Node000011" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,79,60,105"/>
-<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="118,95,60,95,60,89,118,89"/>
+<area shape="rect" id="Node000001" title="Determine if the given mesh is planar (2D or tiny z&#45;range)." alt="" coords="1465,125,1652,150"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa671492edb4624e593b5b9e18098a16c" title="factory to build the proper mesh" alt="" coords="1255,85,1417,125"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1456,125,1417,120,1418,114,1457,120"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f" title="read a surface mesh" alt="" coords="1257,149,1415,189"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1457,155,1415,161,1415,155,1456,149"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036" title="Load a collision proxy mesh from a file." alt="" coords="1036,85,1207,125"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1254,148,1188,128,1190,123,1256,143"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#a0998cc6c7de5ec57108b351c79ba171e" title="read a obstacle mesh from a geometry JSON" alt="" coords="1043,181,1200,221"/>
+<area shape="poly" id="edge9_Node000003_Node000008" title=" " alt="" coords="1244,186,1200,192,1200,187,1243,180"/>
+<area shape="poly" id="edge8_Node000004_Node000004" title=" " alt="" coords="1157,74,1144,67,1121,64,1101,66,1089,71,1085,77,1087,84,1082,86,1079,76,1086,66,1100,61,1121,59,1146,62,1159,69"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1mesh.html#a15b9f6e84b61e94823dad7a365835542" title="Load a collision proxy mesh and displacement map from files." alt="" coords="831,69,987,109"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1022,100,987,98,988,93,1022,95"/>
+<area shape="poly" id="edge7_Node000005_Node000005" title=" " alt="" coords="945,58,932,51,909,48,889,50,877,55,873,61,875,68,870,70,867,60,874,50,888,45,909,43,934,46,947,53"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="567,5,735,45"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="817,69,782,60,734,48,735,43,783,55,819,64"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" title=" " alt="" coords="520,69,783,109"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="818,92,783,92,783,87,818,87"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a47496a714e0b233ab918bfbbe7c4626f" title="read a FEM mesh from a geometry JSON" alt="" coords="831,189,988,229"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="1029,207,988,209,988,204,1029,202"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1legacy_1_1_state.html#a3f31bbbf5840f6ecbca38838c3e09977" title="loads the mesh from the json arguments" alt="" coords="567,133,735,173"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="817,192,735,174,736,169,818,187"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#abfcc977837501260a166966271fa2a66" title=" " alt="" coords="548,197,755,237"/>
+<area shape="poly" id="edge16_Node000009_Node000015" title=" " alt="" coords="817,215,755,217,755,211,817,210"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1legacy_1_1_state.html#ae0dbd692627c4719ce619ccb11938fbc" title="loads the mesh from a geogram mesh" alt="" coords="567,261,735,301"/>
+<area shape="poly" id="edge17_Node000009_Node000016" title=" " alt="" coords="836,236,783,252,736,264,735,259,782,247,834,231"/>
+<area shape="rect" id="Node000011" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="314,101,462,141"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="554,144,462,133,463,128,554,139"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1legacy_1_1_state.html#ac70c3886bcffb88621dd38db4b0de953" title="loads the mesh from V and F," alt="" coords="304,165,472,205"/>
+<area shape="poly" id="edge15_Node000010_Node000014" title=" " alt="" coords="554,168,473,178,472,172,553,162"/>
+<area shape="rect" id="Node000012" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="108,109,256,134"/>
+<area shape="poly" id="edge13_Node000011_Node000012" title=" " alt="" coords="300,124,256,124,256,119,300,119"/>
+<area shape="rect" id="Node000013" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,109,60,134"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="94,124,60,124,60,119,94,119"/>
 </map>

@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_friction_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a08c8bbcf86bc429036d8cf6fbf043dcc", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a4b10d9c935ea92202e600d72568c9617", null ],
+    [ "StatePtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a9ab4217b38e03efb4c84114ea9e79bff", null ],
     [ "FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a3b3d1ae5b690c089d203b2395e75ed38", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a86ebdebd4f720ac3a691c28edf2ea351", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a639eb2acb5561d51da7c89ba4d14b954", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a50f2a9c074c985ea6db0653518a866a3", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a10b492083529412dfc645e3cf450cf92", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a6f781432325e4de1d30cae6381533c20", null ],

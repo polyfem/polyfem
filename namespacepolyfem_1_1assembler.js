@@ -81,6 +81,10 @@ var namespacepolyfem_1_1assembler =
       [ "STRESS", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b", null ],
       [ "NONE", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693", null ]
     ] ],
+    [ "BoundaryKind", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8", [
+      [ "Dirichlet", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f", null ],
+      [ "Neumann", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152", null ]
+    ] ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

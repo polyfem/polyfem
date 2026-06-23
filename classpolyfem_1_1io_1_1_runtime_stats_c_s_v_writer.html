@@ -121,51 +121,42 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1io_1_1_runtime_stats_c
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::io::RuntimeStatsCSVWriter Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for polyfem::io::RuntimeStatsCSVWriter:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<p><code>#include &lt;<a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af5c4f8782ec4fcae18b40ab2f16c8240" id="r_af5c4f8782ec4fcae18b40ab2f16c8240"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#af5c4f8782ec4fcae18b40ab2f16c8240">RuntimeStatsCSVWriter</a> (const std::string &amp;path, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;<a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a4ccd7126b28c558d281e4d0059938398">state</a>, const double <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a39c1d9bc646539cef6ea1f96dac78aaa">t0</a>, const double <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a942e1f4bd69c8f6e73e40cc020c7fa66">dt</a>)</td></tr>
-<tr class="separator:af5c4f8782ec4fcae18b40ab2f16c8240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa44b0eb83a2ea6484b0ebb24902cae85" id="r_aa44b0eb83a2ea6484b0ebb24902cae85"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#aa44b0eb83a2ea6484b0ebb24902cae85">RuntimeStatsCSVWriter</a> (const std::string &amp;path, const int <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a274a4c9551f40f481f7580e9360f6ca4">n_bases</a>, const int <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#ae478f747e430225698063e2da39ad948">n_elements</a>, const double <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a39c1d9bc646539cef6ea1f96dac78aaa">t0</a>, const double <a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a942e1f4bd69c8f6e73e40cc020c7fa66">dt</a>)</td></tr>
+<tr class="separator:aa44b0eb83a2ea6484b0ebb24902cae85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a6c5d095386be588825f045097f3364" id="r_a0a6c5d095386be588825f045097f3364"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a0a6c5d095386be588825f045097f3364">~RuntimeStatsCSVWriter</a> ()</td></tr>
 <tr class="separator:a0a6c5d095386be588825f045097f3364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa734aa4a697d0023d991474d849a4fef" id="r_aa734aa4a697d0023d991474d849a4fef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#aa734aa4a697d0023d991474d849a4fef">write</a> (const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="separator:aa734aa4a697d0023d991474d849a4fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80b9d2136f069834a46adcb46f5db2c" id="r_ad80b9d2136f069834a46adcb46f5db2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#ad80b9d2136f069834a46adcb46f5db2c">write</a> (const int t, const double forward, const double remeshing, const double global_relaxation)</td></tr>
+<tr class="separator:ad80b9d2136f069834a46adcb46f5db2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
 <tr class="memitem:a28a92015313d75f5c2e58f6e6588633e" id="r_a28a92015313d75f5c2e58f6e6588633e"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a28a92015313d75f5c2e58f6e6588633e">file</a></td></tr>
 <tr class="separator:a28a92015313d75f5c2e58f6e6588633e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ccd7126b28c558d281e4d0059938398" id="r_a4ccd7126b28c558d281e4d0059938398"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a4ccd7126b28c558d281e4d0059938398">state</a></td></tr>
-<tr class="separator:a4ccd7126b28c558d281e4d0059938398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a274a4c9551f40f481f7580e9360f6ca4" id="r_a274a4c9551f40f481f7580e9360f6ca4"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a274a4c9551f40f481f7580e9360f6ca4">n_bases</a></td></tr>
+<tr class="separator:a274a4c9551f40f481f7580e9360f6ca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae478f747e430225698063e2da39ad948" id="r_ae478f747e430225698063e2da39ad948"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#ae478f747e430225698063e2da39ad948">n_elements</a></td></tr>
+<tr class="separator:ae478f747e430225698063e2da39ad948"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39c1d9bc646539cef6ea1f96dac78aaa" id="r_a39c1d9bc646539cef6ea1f96dac78aaa"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a39c1d9bc646539cef6ea1f96dac78aaa">t0</a></td></tr>
 <tr class="separator:a39c1d9bc646539cef6ea1f96dac78aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a942e1f4bd69c8f6e73e40cc020c7fa66" id="r_a942e1f4bd69c8f6e73e40cc020c7fa66"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#a942e1f4bd69c8f6e73e40cc020c7fa66">dt</a></td></tr>
 <tr class="separator:a942e1f4bd69c8f6e73e40cc020c7fa66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa48923eda32a41c7b3c40ac4a2b5c879" id="r_aa48923eda32a41c7b3c40ac4a2b5c879"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#aa48923eda32a41c7b3c40ac4a2b5c879">total_forward_solve_time</a> = 0</td></tr>
-<tr class="separator:aa48923eda32a41c7b3c40ac4a2b5c879"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc64f45c5d4910a0a5f9274add43560f" id="r_acc64f45c5d4910a0a5f9274add43560f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#acc64f45c5d4910a0a5f9274add43560f">total_remeshing_time</a> = 0</td></tr>
-<tr class="separator:acc64f45c5d4910a0a5f9274add43560f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af81b6ec66b4c7d0f2f003749dba121a2" id="r_af81b6ec66b4c7d0f2f003749dba121a2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#af81b6ec66b4c7d0f2f003749dba121a2">total_global_relaxation_time</a> = 0</td></tr>
-<tr class="separator:af81b6ec66b4c7d0f2f003749dba121a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00512">512</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00030">30</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="af5c4f8782ec4fcae18b40ab2f16c8240" name="af5c4f8782ec4fcae18b40ab2f16c8240"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5c4f8782ec4fcae18b40ab2f16c8240">&#9670;&#160;</a></span>RuntimeStatsCSVWriter()</h2>
+<a id="aa44b0eb83a2ea6484b0ebb24902cae85" name="aa44b0eb83a2ea6484b0ebb24902cae85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa44b0eb83a2ea6484b0ebb24902cae85">&#9670;&#160;</a></span>RuntimeStatsCSVWriter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -179,8 +170,14 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -202,9 +199,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03424">3424</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00042">42</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00521">file</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00039">file</a>.</p>
 
 </div>
 </div>
@@ -223,15 +220,15 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03430">3430</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00053">53</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00521">file</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00039">file</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa734aa4a697d0023d991474d849a4fef" name="aa734aa4a697d0023d991474d849a4fef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa734aa4a697d0023d991474d849a4fef">&#9670;&#160;</a></span>write()</h2>
+<a id="ad80b9d2136f069834a46adcb46f5db2c" name="ad80b9d2136f069834a46adcb46f5db2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad80b9d2136f069834a46adcb46f5db2c">&#9670;&#160;</a></span>write()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,13 +255,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>global_relaxation</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em>&#160;</td>
+          <td class="paramname"><em>global_relaxation</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -274,13 +265,13 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03435">3435</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">58</a> of file <a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00524">dt</a>, <a class="el" href="_out_data_8hpp_source.html#l00521">file</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="_state_8hpp_source.html#l00594">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00214">polyfem::State::n_bases</a>, <a class="el" href="_out_data_8hpp_source.html#l00522">state</a>, <a class="el" href="_out_data_8hpp_source.html#l00523">t0</a>, <a class="el" href="_out_data_8hpp_source.html#l00525">total_forward_solve_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00527">total_global_relaxation_time</a>, and <a class="el" href="_out_data_8hpp_source.html#l00526">total_remeshing_time</a>.</p>
+<p class="reference">References <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00043">dt</a>, <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00039">file</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00040">n_bases</a>, <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00041">n_elements</a>, and <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00042">t0</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer_aa734aa4a697d0023d991474d849a4fef_cgraph.svg" width="351" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer_ad80b9d2136f069834a46adcb46f5db2c_cgraph.svg" width="351" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -301,14 +292,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00524">524</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00043">43</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">write()</a>.</p>
 
 </div>
 </div>
@@ -327,19 +318,19 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00521">521</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00039">39</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03424">RuntimeStatsCSVWriter()</a>, <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>, and <a class="el" href="_out_data_8cpp_source.html#l03430">~RuntimeStatsCSVWriter()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00042">RuntimeStatsCSVWriter()</a>, <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">write()</a>, and <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00053">~RuntimeStatsCSVWriter()</a>.</p>
 
 </div>
 </div>
-<a id="a4ccd7126b28c558d281e4d0059938398" name="a4ccd7126b28c558d281e4d0059938398"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ccd7126b28c558d281e4d0059938398">&#9670;&#160;</a></span>state</h2>
+<a id="a274a4c9551f40f481f7580e9360f6ca4" name="a274a4c9551f40f481f7580e9360f6ca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a274a4c9551f40f481f7580e9360f6ca4">&#9670;&#160;</a></span>n_bases</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -348,19 +339,45 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classpolyfem_1_1_state.html">State</a>&amp; polyfem::io::RuntimeStatsCSVWriter::state</td>
+          <td class="memname">const int polyfem::io::RuntimeStatsCSVWriter::n_bases</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00522">522</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00040">40</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">write()</a>.</p>
+
+</div>
+</div>
+<a id="ae478f747e430225698063e2da39ad948" name="ae478f747e430225698063e2da39ad948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae478f747e430225698063e2da39ad948">&#9670;&#160;</a></span>n_elements</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int polyfem::io::RuntimeStatsCSVWriter::n_elements</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00041">41</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">write()</a>.</p>
 
 </div>
 </div>
@@ -379,98 +396,20 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00523">523</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_solver_c_s_v_writer_8hpp_source.html#l00042">42</a> of file <a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
-
-</div>
-</div>
-<a id="aa48923eda32a41c7b3c40ac4a2b5c879" name="aa48923eda32a41c7b3c40ac4a2b5c879"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa48923eda32a41c7b3c40ac4a2b5c879">&#9670;&#160;</a></span>total_forward_solve_time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double polyfem::io::RuntimeStatsCSVWriter::total_forward_solve_time = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00525">525</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
-
-</div>
-</div>
-<a id="af81b6ec66b4c7d0f2f003749dba121a2" name="af81b6ec66b4c7d0f2f003749dba121a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af81b6ec66b4c7d0f2f003749dba121a2">&#9670;&#160;</a></span>total_global_relaxation_time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double polyfem::io::RuntimeStatsCSVWriter::total_global_relaxation_time = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00527">527</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
-
-</div>
-</div>
-<a id="acc64f45c5d4910a0a5f9274add43560f" name="acc64f45c5d4910a0a5f9274add43560f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc64f45c5d4910a0a5f9274add43560f">&#9670;&#160;</a></span>total_remeshing_time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double polyfem::io::RuntimeStatsCSVWriter::total_remeshing_time = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00526">526</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l03435">write()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_solver_c_s_v_writer_8cpp_source.html#l00058">write()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/io/<a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a></li>
-<li>src/polyfem/io/<a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a></li>
+<li>src/polyfem/io/<a class="el" href="_solver_c_s_v_writer_8hpp_source.html">SolverCSVWriter.hpp</a></li>
+<li>src/polyfem/io/<a class="el" href="_solver_c_s_v_writer_8cpp_source.html">SolverCSVWriter.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

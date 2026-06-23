@@ -9,5 +9,5 @@ var searchData=
   ['referencesimplex_6',['referencesimplex',['../classp__bases_1_1_reference_simplex.html',1,'p_bases.ReferenceSimplex'],['../classq__bases_1_1_reference_simplex.html',1,'q_bases.ReferenceSimplex']]],
   ['remesher_7',['Remesher',['../classpolyfem_1_1mesh_1_1_remesher.html',1,'polyfem::mesh']]],
   ['rhsassembler_8',['RhsAssembler',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html',1,'polyfem::assembler']]],
-  ['runtimestatscsvwriter_9',['RuntimeStatsCSVWriter',['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::io']]]
+  ['runtimestatscsvwriter_9',['runtimestatscsvwriter',['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::io::RuntimeStatsCSVWriter'],['../classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::legacy::io::RuntimeStatsCSVWriter']]]
 ];

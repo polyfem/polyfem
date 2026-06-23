@@ -78,6 +78,7 @@ var namespaces_dup =
       [ "y", "namespacegenerate__rotation__mtx.html#a0b5e6f340bc0f3e63f2163d96865669c", null ],
       [ "z", "namespacegenerate__rotation__mtx.html#a1e7b87c0c1d222f1ab3237dbc4136d4f", null ]
     ] ],
+    [ "GEO", "namespace_g_e_o.html", null ],
     [ "ipc", "namespaceipc.html", null ],
     [ "JIXIE", "namespace_j_i_x_i_e.html", "namespace_j_i_x_i_e" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],

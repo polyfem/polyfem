@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('_state_diff_8cpp.html',''); initResiza
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_state_diff_8hpp_source.html">polyfem/optimization/StateDiff.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="legacy_2_state_8hpp_source.html">polyfem/legacy/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_matrix_utils_8hpp_source.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
@@ -164,17 +164,17 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a957918a4bafd3f507b383d1209de1a27" id="r_a957918a4bafd3f507b383d1209de1a27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a957918a4bafd3f507b383d1209de1a27">polyfem::solve_adjoint_cached</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, const Eigen::MatrixXd &amp;rhs)</td></tr>
-<tr class="separator:a957918a4bafd3f507b383d1209de1a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92bdeb618e4a9d898e4787139b82fe3b" id="r_a92bdeb618e4a9d898e4787139b82fe3b"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a92bdeb618e4a9d898e4787139b82fe3b">polyfem::get_adjoint_mat</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, int type)</td></tr>
-<tr class="memdesc:a92bdeb618e4a9d898e4787139b82fe3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get adjoint parameter nu or p.  <br /></td></tr>
-<tr class="separator:a92bdeb618e4a9d898e4787139b82fe3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e9f6b8e014f2509e8406e1d1ab79b62" id="r_a1e9f6b8e014f2509e8406e1d1ab79b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a1e9f6b8e014f2509e8406e1d1ab79b62">polyfem::compute_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const int surface_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
-<tr class="separator:a1e9f6b8e014f2509e8406e1d1ab79b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93c1ff67321ecba37e24d73bb1a74d64" id="r_a93c1ff67321ecba37e24d73bb1a74d64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a93c1ff67321ecba37e24d73bb1a74d64">polyfem::compute_total_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
-<tr class="separator:a93c1ff67321ecba37e24d73bb1a74d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16520f8a00832be325bdb7c7521a8b5e" id="r_a16520f8a00832be325bdb7c7521a8b5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a16520f8a00832be325bdb7c7521a8b5e">polyfem::compute_volume_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const int volume_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
-<tr class="separator:a16520f8a00832be325bdb7c7521a8b5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35125683abe105504efabc984ad7c66a" id="r_a35125683abe105504efabc984ad7c66a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a35125683abe105504efabc984ad7c66a">polyfem::solve_adjoint_cached</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, const Eigen::MatrixXd &amp;rhs)</td></tr>
+<tr class="separator:a35125683abe105504efabc984ad7c66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe0ca4a1e288f3ee0ca294200a731948" id="r_abe0ca4a1e288f3ee0ca294200a731948"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#abe0ca4a1e288f3ee0ca294200a731948">polyfem::get_adjoint_mat</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, int type)</td></tr>
+<tr class="memdesc:abe0ca4a1e288f3ee0ca294200a731948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get adjoint parameter nu or p.  <br /></td></tr>
+<tr class="separator:abe0ca4a1e288f3ee0ca294200a731948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20f8b4a87b001cd62c691a007e9ecee3" id="r_a20f8b4a87b001cd62c691a007e9ecee3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a20f8b4a87b001cd62c691a007e9ecee3">polyfem::compute_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const int surface_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a20f8b4a87b001cd62c691a007e9ecee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d49f0dc95164dcc885bd3bae8c2ecd2" id="r_a6d49f0dc95164dcc885bd3bae8c2ecd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a6d49f0dc95164dcc885bd3bae8c2ecd2">polyfem::compute_total_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a6d49f0dc95164dcc885bd3bae8c2ecd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42425c31a7365daafc1d5a2d7e136b14" id="r_a42425c31a7365daafc1d5a2d7e136b14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a42425c31a7365daafc1d5a2d7e136b14">polyfem::compute_volume_node_ids</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const int volume_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a42425c31a7365daafc1d5a2d7e136b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

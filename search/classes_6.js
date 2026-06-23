@@ -21,7 +21,8 @@ var searchData=
   ['genericscalarproblemexact_18',['GenericScalarProblemExact',['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html',1,'polyfem::problem']]],
   ['generictensorproblem_19',['GenericTensorProblem',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html',1,'polyfem::assembler']]],
   ['geogramutils_20',['GeogramUtils',['../classpolyfem_1_1utils_1_1_geogram_utils.html',1,'polyfem::utils']]],
-  ['givensrotation_21',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
-  ['globalprojectioncache_22',['GlobalProjectionCache',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html',1,'polyfem::mesh::Remesher']]],
-  ['gravityproblem_23',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
+  ['geometrymapping_21',['GeometryMapping',['../classpolyfem_1_1varform_1_1_geometry_mapping.html',1,'polyfem::varform']]],
+  ['givensrotation_22',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
+  ['globalprojectioncache_23',['GlobalProjectionCache',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html',1,'polyfem::mesh::Remesher']]],
+  ['gravityproblem_24',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
 ];

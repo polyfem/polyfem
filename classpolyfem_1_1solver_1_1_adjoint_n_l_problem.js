@@ -1,7 +1,7 @@
 var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
 [
-    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a67b45b96d655860e207240b4b389cfdb", null ],
-    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a73613b5126de491fd4ae9e38ba30bfdb", null ],
+    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a94eea95c945570970bfee22e8f14af05", null ],
+    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ac6872ca1757e2693522bc8bf1dedd204", null ],
     [ "after_line_search_custom_operation", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a042858ef53f3f410cc827236c7d5ead4", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a2465b3b989f5f836202bb38a32346b58", null ],
     [ "hessian", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a703e9b37b69297bfec21eb0879fe65f5", null ],
@@ -18,7 +18,7 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
     [ "value", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#adb716d951618b88716db5558da88e937", null ],
     [ "active_state_mask", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ac76af7dec4d0c1fed8fd4029f16ab6e9", null ],
     [ "all_diff_caches_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a5dd3a7963bf567fb01efb6d42f901228", null ],
-    [ "all_states_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#adfc870e7be37ea664cd31cf27bb9b61e", null ],
+    [ "all_states_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#acb367b2d1ef41193a1e037256e1dae2b", null ],
     [ "cur_grad", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a80bb8f48bb2942e0698064b92f51836c", null ],
     [ "curr_x", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a9620f6eae6d809ad41ea41538286c6f0", null ],
     [ "enable_slim", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#add1c9ed4ee0f4fe22d5a3b7171b62c4c", null ],

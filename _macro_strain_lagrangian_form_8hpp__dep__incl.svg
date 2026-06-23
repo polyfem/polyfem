@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 688;
+var viewWidth = 630;
 var viewHeight = 126;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,20 +58,20 @@ var sectionId = 'dynsection-1';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="353,-118 189,-118 189,-77 353,-77 353,-118"/>
-<text text-anchor="start" x="197" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="197" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/lagrangian/MacroStrain</text>
-<text text-anchor="middle" x="271" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="400.5,-118 236.5,-118 236.5,-77 400.5,-77 400.5,-118"/>
+<text text-anchor="start" x="244.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="244.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/lagrangian/MacroStrain</text>
+<text text-anchor="middle" x="318.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="_n_l_homo_problem_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="122,-35.5 0,-35.5 0,-5.5 122,-5.5 122,-35.5"/>
-<text text-anchor="start" x="8" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="61" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/NLHomoProblem.cpp</text>
+<g id="a_Node000002"><a xlink:href="_state_homogenization_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="173,-35.5 0,-35.5 0,-5.5 173,-5.5 173,-35.5"/>
+<text text-anchor="start" x="8" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/legacy</text>
+<text text-anchor="middle" x="86.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/state/StateHomogenization.cpp</text>
 </a>
 </g>
 </g>
@@ -79,18 +79,18 @@ var sectionId = 'dynsection-1';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M206.79,-73.57C172.08,-61.17 130.34,-46.26 100.43,-35.58"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="205.78,-76.92 216.37,-76.99 208.13,-70.33 205.78,-76.92"/>
+<path fill="none" stroke="#63b8ff" d="M248.54,-73.88C210.01,-61.43 163.39,-46.36 130.06,-35.58"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="247.56,-77.24 258.15,-76.99 249.71,-70.58 247.56,-77.24"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="_solve_data_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="247.5,-35.5 140.5,-35.5 140.5,-5.5 247.5,-5.5 247.5,-35.5"/>
-<text text-anchor="start" x="148.5" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="194" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/SolveData.cpp</text>
+<g id="a_Node000003"><a xlink:href="_n_l_homo_problem_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="313.5,-35.5 191.5,-35.5 191.5,-5.5 313.5,-5.5 313.5,-35.5"/>
+<text text-anchor="start" x="199.5" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="252.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/NLHomoProblem.cpp</text>
 </a>
 </g>
 </g>
@@ -98,19 +98,18 @@ var sectionId = 'dynsection-1';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M243.35,-69.57C231.66,-58.18 218.52,-45.39 208.74,-35.86"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="241.16,-72.32 250.77,-76.79 246.05,-67.31 241.16,-72.32"/>
+<path fill="none" stroke="#63b8ff" d="M294.51,-69.24C284.57,-57.94 273.44,-45.3 265.14,-35.86"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="291.93,-71.6 301.16,-76.79 297.18,-66.98 291.93,-71.6"/>
 </a>
 </g>
 </g>
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="_macro_strain_lagrangian_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="430,-41 266,-41 266,0 430,0 430,-41"/>
-<text text-anchor="start" x="274" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="274" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/lagrangian/MacroStrain</text>
-<text text-anchor="middle" x="348" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm.cpp</text>
+<g id="a_Node000004"><a xlink:href="_solve_data_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="439,-35.5 332,-35.5 332,-5.5 439,-5.5 439,-35.5"/>
+<text text-anchor="start" x="340" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="385.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/SolveData.cpp</text>
 </a>
 </g>
 </g>
@@ -118,17 +117,19 @@ var sectionId = 'dynsection-1';
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M298.42,-69.79C308.15,-60.32 318.9,-49.84 327.9,-41.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="295.95,-67.31 291.23,-76.79 300.84,-72.32 295.95,-67.31"/>
+<path fill="none" stroke="#63b8ff" d="M342.85,-69.24C352.95,-57.94 364.24,-45.3 372.67,-35.86"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="340.16,-67.01 336.1,-76.79 345.38,-71.67 340.16,-67.01"/>
 </a>
 </g>
 </g>
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="_state_homogenization_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="679.5,-30 448.5,-30 448.5,-11 679.5,-11 679.5,-30"/>
-<text text-anchor="middle" x="564" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateHomogenization.cpp</text>
+<g id="a_Node000005"><a xlink:href="_macro_strain_lagrangian_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="621.5,-41 457.5,-41 457.5,0 621.5,0 621.5,-41"/>
+<text text-anchor="start" x="465.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="465.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/lagrangian/MacroStrain</text>
+<text text-anchor="middle" x="539.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm.cpp</text>
 </a>
 </g>
 </g>
@@ -136,8 +137,8 @@ var sectionId = 'dynsection-1';
 <g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
 <g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M357.13,-74.45C415.15,-59.6 488.5,-40.83 530.45,-30.09"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="356.04,-71.12 347.22,-76.99 357.77,-77.9 356.04,-71.12"/>
+<path fill="none" stroke="#63b8ff" d="M385.76,-73.67C416.47,-63.25 452.47,-51.03 481.92,-41.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="384.33,-70.46 375.99,-76.99 386.58,-77.09 384.33,-70.46"/>
 </a>
 </g>
 </g>

@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_variable_to
 </div><!--header-->
 <div class="contents">
 
-<p>Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a> variables.  
+<p>Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1legacy_1_1_state.html" title="main class that contains the polyfem solver and all its state">legacy::State</a> variables.  
  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>&gt;</code></p>
@@ -144,9 +144,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adb558dcc6027a3fda5f8cb0ca8c43df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ad1c61a2cffbf3a08967ad8ba5f0f63" id="r_a8ad1c61a2cffbf3a08967ad8ba5f0f63"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a8ad1c61a2cffbf3a08967ad8ba5f0f63">parameter_type</a> () const =0</td></tr>
 <tr class="separator:a8ad1c61a2cffbf3a08967ad8ba5f0f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce3878dd48efd4bc92c775f42271856" id="r_a4ce3878dd48efd4bc92c775f42271856"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4ce3878dd48efd4bc92c775f42271856">affect_state</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;target) const =0</td></tr>
-<tr class="memdesc:a4ce3878dd48efd4bc92c775f42271856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if current var2sim maps to target state.  <br /></td></tr>
-<tr class="separator:a4ce3878dd48efd4bc92c775f42271856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e902394d9ae35a6d05878b341a1e37f" id="r_a6e902394d9ae35a6d05878b341a1e37f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a6e902394d9ae35a6d05878b341a1e37f">affect_state</a> (const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;target) const =0</td></tr>
+<tr class="memdesc:a6e902394d9ae35a6d05878b341a1e37f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if current var2sim maps to target state.  <br /></td></tr>
+<tr class="separator:a6e902394d9ae35a6d05878b341a1e37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a284c8b467b5a6a21b4e31ca70df13131" id="r_a284c8b467b5a6a21b4e31ca70df13131"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a284c8b467b5a6a21b4e31ca70df13131">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)=0</td></tr>
 <tr class="memdesc:a284c8b467b5a6a21b4e31ca70df13131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update forward simulation states from optimization variables.  <br /></td></tr>
 <tr class="separator:a284c8b467b5a6a21b4e31ca70df13131"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,14 +160,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a01abb242174098ab938cef15c9c725cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables dof.  <br /></td></tr>
 <tr class="separator:a01abb242174098ab938cef15c9c725cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a089eb0ce1e2db20380f16a4c7fa8ce32" id="r_a089eb0ce1e2db20380f16a4c7fa8ce32"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a089eb0ce1e2db20380f16a4c7fa8ce32">inverse_eval</a> () const =0</td></tr>
-<tr class="memdesc:a089eb0ce1e2db20380f16a4c7fa8ce32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>.  <br /></td></tr>
+<tr class="memdesc:a089eb0ce1e2db20380f16a4c7fa8ce32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1legacy_1_1_state.html" title="main class that contains the polyfem solver and all its state">legacy::State</a>.  <br /></td></tr>
 <tr class="separator:a089eb0ce1e2db20380f16a4c7fa8ce32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba4636cab361d21a64db3672bd1003c2" id="r_aba4636cab361d21a64db3672bd1003c2"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#aba4636cab361d21a64db3672bd1003c2">apply_parametrization_jacobian</a> (const Eigen::VectorXd &amp;term, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
 <tr class="memdesc:aba4636cab361d21a64db3672bd1003c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply parametrization jacobian to compute the gradient w.r.t.  <br /></td></tr>
 <tr class="separator:aba4636cab361d21a64db3672bd1003c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a> variables. </p>
+<div class="textblock"><p>Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1legacy_1_1_state.html" title="main class that contains the polyfem solver and all its state">legacy::State</a> variables. </p>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00015">15</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -197,8 +197,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4ce3878dd48efd4bc92c775f42271856" name="a4ce3878dd48efd4bc92c775f42271856"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ce3878dd48efd4bc92c775f42271856">&#9670;&#160;</a></span>affect_state()</h2>
+<a id="a6e902394d9ae35a6d05878b341a1e37f" name="a6e902394d9ae35a6d05878b341a1e37f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e902394d9ae35a6d05878b341a1e37f">&#9670;&#160;</a></span>affect_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +209,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual bool polyfem::solver::VariableToSimulation::affect_state </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;&#160;</td>
           <td class="paramname"><em>target</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -223,7 +223,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Return true if current var2sim maps to target state. </p>
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a6de079e6b5e5b3d88e6e842c8416b16e">polyfem::solver::DampingVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a815a5b1aff2d321d66a6856eaead90ed">polyfem::solver::DirichletBoundaryVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a8568374f2f2b7da8983f3394f29fca4b">polyfem::solver::DirichletNodesVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#aa60897da4bfe390ec7a42cbd2f4960aa">polyfem::solver::ElasticVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a86ebdebd4f720ac3a691c28edf2ea351">polyfem::solver::FrictionVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12e6aac181bc79be4bbf00d51f85b662">polyfem::solver::InitialConditionVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a1c44de2473a4ceddf61740c435657f16">polyfem::solver::PeriodicShapeVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ac2062f38583c152fb7a38dd4951154d9">polyfem::solver::PressureBoundaryVariableToSimulation</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a072123eef3ff624dc69061fd13686b5a">polyfem::solver::ShapeVariableToSimulation</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a5cd43fca96f5bac4412786954f656446">polyfem::solver::DampingVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a865f57c167a0f0e38aeabbdb930f9b6a">polyfem::solver::DirichletBoundaryVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#ae2338a0ddf585a028556b9d1b85c37a0">polyfem::solver::DirichletNodesVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#aa699d367e72e114c37d10ffb65c10977">polyfem::solver::ElasticVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a639eb2acb5561d51da7c89ba4d14b954">polyfem::solver::FrictionVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa886d403ee3853c31d043e78ec3f9fe6">polyfem::solver::InitialConditionVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#acdf03a60b71d29594e73c19ec165e0cf">polyfem::solver::PeriodicShapeVariableToSimulation</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ac08f2af8b26ce79234bdbfe85699af8a">polyfem::solver::PressureBoundaryVariableToSimulation</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a86914d5c1429f07e06b0c38bfb175dd9">polyfem::solver::ShapeVariableToSimulation</a>.</p>
 
 </div>
 </div>
@@ -372,7 +372,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a>. </p>
+<p>Compute optimization variables from forward simulation <a class="el" href="classpolyfem_1_1legacy_1_1_state.html" title="main class that contains the polyfem solver and all its state">legacy::State</a>. </p>
 <dl class="section return"><dt>Returns</dt><dd>Optimization variables. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">

@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_elastic_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a8dc0345f6c1a440b16e9714c7ebd5792", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#ae0ea064fe2060d1d7933f5858a1c5665", null ],
+    [ "StatePtrs", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a41c916123dc6c3e630a64504bbdb2edf", null ],
     [ "ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a9e8cec5d3de5d4395f9c97ee4f99566d", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#aa60897da4bfe390ec7a42cbd2f4960aa", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#aa699d367e72e114c37d10ffb65c10977", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a36082b813b6d4300a868d31e3c88bad5", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a22c326ff74722077734beaccc1301647", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a468b9cc06e9e0a9807953c3ae0df658e", null ],

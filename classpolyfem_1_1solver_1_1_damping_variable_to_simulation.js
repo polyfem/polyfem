@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_damping_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#ab676faab1c04c5671cd6399ebec3e024", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a48adfe08bd34c658707b812ae1561e3a", null ],
+    [ "StatePtrs", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#ae8000add09c4cef202db3f9035af0ac1", null ],
     [ "DampingVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#ab0c33317b508dfc94a9e12ac1da4a5ef", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a6de079e6b5e5b3d88e6e842c8416b16e", null ],
+    [ "affect_state", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a5cd43fca96f5bac4412786954f656446", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a776127f69df8395a039594bf2ab538f8", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#ad8fff6bcbcf34fe4809e08d77a418a20", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_damping_variable_to_simulation.html#a626fc5662335062e14cf28ed833011f7", null ],
