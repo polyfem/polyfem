@@ -260,7 +260,8 @@ namespace polyfem::varform
 	{
 		using assembler::AssemblerUtils;
 		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
+		const int boundary_order = std::max(discr_order, gdiscr_order);
+		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", boundary_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
 		return {{n_b_samples, n_b_samples}};
 	}
 

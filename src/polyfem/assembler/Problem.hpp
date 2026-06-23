@@ -122,7 +122,6 @@ namespace polyfem
 
 			bool updated_dirichlet_node_ordering_ = false;
 
-		private:
 			std::string name_;
 		};
 	} // namespace assembler
