@@ -28,6 +28,7 @@ namespace
 		json args;
 		file >> args;
 		args["root_path"] = path;
+		args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 		args["/output/directory"_json_pointer] = "";
 		args["/output/log/quiet"_json_pointer] = true;
 		args["/output/log/level"_json_pointer] = "error";
@@ -49,6 +50,7 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 			 "Laplacian",
 			 "Stokes",
 			 "NavierStokes",
+			 "OperatorSplitting",
 			 "IncompressibleLinearElasticity",
 			 "Bilaplacian",
 		 })
@@ -56,9 +58,6 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		CHECK(varform::VarFormFactory::supports(formulation, args));
 		CHECK(varform::VarFormFactory::create(formulation, args) != nullptr);
 	}
-
-	CHECK_FALSE(varform::VarFormFactory::supports("OperatorSplitting", args));
-	CHECK(varform::VarFormFactory::create("OperatorSplitting", args) == nullptr);
 
 	json periodic_args = args;
 	periodic_args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
@@ -73,6 +72,7 @@ TEST_CASE("state can opt into migrated varforms", "[varform][state]")
 	for (const auto &[scene, expected_name] : {
 			 std::pair{std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json", std::string("Stokes")},
 			 std::pair{std::string(POLYFEM_DATA_DIR) + "/units/navier_stokes_static.json", std::string("NavierStokes")},
+			 std::pair{std::string(POLYFEM_DATA_DIR) + "/standard/navier_stokes_split.json", std::string("OperatorSplitting")},
 			 std::pair{std::string(POLYFEM_DATA_DIR) + "/standard/incompressible.json", std::string("IncompressibleElastic")},
 			 std::pair{std::string(POLYFEM_DATA_DIR) + "/standard/bilaplace.json", std::string("Bilaplacian")},
 		 })

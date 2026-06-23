@@ -187,9 +187,9 @@ namespace polyfem
 					if (tag <= 0)
 						continue;
 
-				if ((!might_have_no_dirichlet() && boundary_ids_.empty())
-					|| std::find(boundary_ids_.begin(), boundary_ids_.end(), -1) != boundary_ids_.end()
-					|| std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
+					if ((!might_have_no_dirichlet() && boundary_ids_.empty())
+						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), -1) != boundary_ids_.end()
+						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 						new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 					if (std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
