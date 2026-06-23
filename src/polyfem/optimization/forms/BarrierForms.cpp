@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/BarrierForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -58,10 +58,10 @@ namespace polyfem::solver
 
 	} // namespace
 
-	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, const double dhat, const double dmin)
+	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state, const double dhat, const double dmin)
 		: AdjointForm(variable_to_simulation), state_(std::move(state)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
 	{
-		State::build_collision_mesh(
+		legacy::State::build_collision_mesh(
 			*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->geom_bases(),
 			state_->total_local_boundary, state_->obstacle, state_->args,
 			[this](const std::string &p) { return this->state_->resolve_input_path(p); },
@@ -156,7 +156,7 @@ namespace polyfem::solver
 	}
 
 	LayerThicknessForm::LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
-										   std::shared_ptr<const State> state,
+										   std::shared_ptr<const legacy::State> state,
 										   const std::vector<int> &boundary_ids,
 										   const double dhat,
 										   const bool use_log_barrier,
@@ -178,8 +178,8 @@ namespace polyfem::solver
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->total_local_boundary,
-												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+		legacy::io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->total_local_boundary,
+														   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
 		is_on_surface.resize(node_positions.rows(), false);
@@ -293,13 +293,13 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
 		: AdjointForm(variable_to_simulation), state_(std::move(state)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
 	{
 		if (state_->n_bases != state_->n_geom_bases)
 			log_and_throw_adjoint_error("[{}] Should use linear FE basis!", name());
 
-		State::build_collision_mesh(
+		legacy::State::build_collision_mesh(
 			*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->geom_bases(),
 			state_->total_local_boundary, state_->obstacle, state_->args,
 			[this](const std::string &p) { return this->state_->resolve_input_path(p); },
@@ -389,7 +389,7 @@ namespace polyfem::solver
 
 	SmoothContactForceForm::SmoothContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const State> state,
+		std::shared_ptr<const legacy::State> state,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const json &args)
 		: StaticForm(variable_to_simulations),
@@ -458,7 +458,7 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		assert(state_->solve_data.contact_form != nullptr);
 

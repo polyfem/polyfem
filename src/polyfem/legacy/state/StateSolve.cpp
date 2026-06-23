@@ -1,9 +1,9 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace assembler;
 	using namespace io;
@@ -22,7 +22,7 @@ namespace polyfem
 			if (state_path.empty())
 				return false;
 
-			if (!read_matrix(state_path, x_name, x))
+			if (!polyfem::io::read_matrix(state_path, x_name, x))
 			{
 				logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
 				return false;
@@ -169,4 +169,4 @@ namespace polyfem
 		if (!was_acceleration_loaded)
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

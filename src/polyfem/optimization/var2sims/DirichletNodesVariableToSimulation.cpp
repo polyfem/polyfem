@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletNodesVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
@@ -79,7 +79,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletNodesVariableToSimulation::affect_state(const State &target) const
+	bool DirichletNodesVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (auto &s : states_)
 		{

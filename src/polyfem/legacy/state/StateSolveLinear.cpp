@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace mesh;
 	using namespace time_integrator;
@@ -120,8 +120,8 @@ namespace polyfem
 			sol = periodic_bc->periodic_to_full(full_size, x);
 			if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
 			{
-				Eigen::VectorXd integral = Evaluator::integrate_function(bases, geom_bases(), sol, mesh->dimension(), problem_dim);
-				double area = Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), mesh->dimension(), 1)(0);
+				Eigen::VectorXd integral = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), sol, mesh->dimension(), problem_dim);
+				double area = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), mesh->dimension(), 1)(0);
 				for (int d = 0; d < problem_dim; d++)
 					sol(Eigen::seqN(d, n_bases, problem_dim), 0).array() -= integral(d) / area;
 			}
@@ -381,4 +381,4 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

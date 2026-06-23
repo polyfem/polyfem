@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -16,7 +16,7 @@ namespace polyfem::solver
 {
 	BoundarySmoothingForm::BoundarySmoothingForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const State> state,
+		std::shared_ptr<const legacy::State> state,
 		const bool scale_invariant,
 		const int power,
 		const std::vector<int> &surface_selections,

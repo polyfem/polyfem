@@ -143,7 +143,8 @@ namespace polyfem
 		states = from_json::build_states(
 			root_path(),
 			args["states"],
-			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads,
+			args["output"]["log"]);
 
 		diff_caches.resize(states.size());
 		for (auto &diff_cache : diff_caches)
@@ -160,13 +161,13 @@ namespace polyfem
 	{
 		for (int i = 0; i < states.size(); ++i)
 		{
-			const State &state = *states[i];
+			const legacy::State &state = *states[i];
 
 			// No transient linear support.
 			if (state.problem->is_time_dependent() && state.is_problem_linear())
 			{
 				log_and_throw_adjoint_error(
-					"State {}: transient linear problem is not supported in optimization.", i);
+					"legacy::State {}: transient linear problem is not supported in optimization.", i);
 			}
 
 			if (state.is_contact_enabled())
@@ -176,14 +177,14 @@ namespace polyfem
 					&& !state.args["contact"]["use_convergent_formulation"].get<bool>())
 				{
 					log_and_throw_adjoint_error(
-						"State {}: non-convergent contact formulation is not supported in optimization.", i);
+						"legacy::State {}: non-convergent contact formulation is not supported in optimization.", i);
 				}
 
 				// No non-const barrier stiffness support.
 				if (state.args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
 					log_and_throw_adjoint_error(
-						"State {}: only constant barrier stiffness is supported in optimization.", i);
+						"legacy::State {}: only constant barrier stiffness is supported in optimization.", i);
 				}
 			}
 
@@ -194,7 +195,7 @@ namespace polyfem
 				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
 				{
 					log_and_throw_adjoint_error(
-						"State {}: only constant rhs over space is supported in optimization.", i);
+						"legacy::State {}: only constant rhs over space is supported in optimization.", i);
 				}
 			}
 
@@ -206,7 +207,7 @@ namespace polyfem
 					if (basis.order() > 1)
 					{
 						log_and_throw_adjoint_error(
-							"State {}: high-order geometry basis is not supported in optimization.", i);
+							"legacy::State {}: high-order geometry basis is not supported in optimization.", i);
 					}
 				}
 			}

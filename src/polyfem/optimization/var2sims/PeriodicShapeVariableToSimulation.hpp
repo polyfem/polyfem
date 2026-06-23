@@ -14,7 +14,7 @@ namespace polyfem::solver
 	class PeriodicShapeVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using StatePtrs = std::vector<std::shared_ptr<State>>;
+		using StatePtrs = std::vector<std::shared_ptr<legacy::State>>;
 		using DiffCachePtrs = std::vector<std::shared_ptr<DiffCache>>;
 
 		/// @brief Construct PeriodicShapeVariableToSimulation.
@@ -28,7 +28,7 @@ namespace polyfem::solver
 
 		std::string name() const override;
 		ParameterType parameter_type() const override;
-		bool affect_state(const State &target) const override;
+		bool affect_state(const legacy::State &target) const override;
 		void update(const Eigen::VectorXd &x) override;
 		void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const override;
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;

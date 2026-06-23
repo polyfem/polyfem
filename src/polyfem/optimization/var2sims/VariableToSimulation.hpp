@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/var2sims/ParameterType.hpp>
@@ -11,7 +11,7 @@
 
 namespace polyfem::solver
 {
-	/// @brief Maps optimization variables to forward simulation State variables.
+	/// @brief Maps optimization variables to forward simulation legacy::State variables.
 	class VariableToSimulation
 	{
 	public:
@@ -22,7 +22,7 @@ namespace polyfem::solver
 		virtual ParameterType parameter_type() const = 0;
 
 		/// @brief Return true if current var2sim maps to target state.
-		virtual bool affect_state(const State &target) const = 0;
+		virtual bool affect_state(const legacy::State &target) const = 0;
 
 		/// @brief Update forward simulation states from optimization variables.
 		/// @param[in] x Optimization variables.
@@ -55,7 +55,7 @@ namespace polyfem::solver
 		/// @throw std::runtime_error Throw if not implemented.
 		virtual int inverse_dof() const = 0;
 
-		/// @brief Compute optimization variables from forward simulation State.
+		/// @brief Compute optimization variables from forward simulation legacy::State.
 		/// @return Optimization variables.
 		/// @throw std::runtime_error Throw if not implemented.
 		virtual Eigen::VectorXd inverse_eval() const = 0;

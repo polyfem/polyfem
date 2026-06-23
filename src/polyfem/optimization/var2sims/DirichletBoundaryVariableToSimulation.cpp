@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletBoundaryVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
@@ -96,7 +96,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletBoundaryVariableToSimulation::affect_state(const State &target) const
+	bool DirichletBoundaryVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (auto &s : states_)
 		{
@@ -265,7 +265,7 @@ namespace polyfem::solver
 
 		for (int si = 0; si < states_.size(); ++si)
 		{
-			const State &state = *states_[si];
+			const legacy::State &state = *states_[si];
 
 			// Map boundary node (FE space dof) to offset in boundary_nodes vector.
 			std::unordered_map<int, int> boundary_node_offset;

@@ -92,7 +92,7 @@ namespace polyfem::solver
 		return ParameterType::InitialCondition;
 	}
 
-	bool InitialConditionVariableToSimulation::affect_state(const State &target) const
+	bool InitialConditionVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (const auto &s : states_)
 		{

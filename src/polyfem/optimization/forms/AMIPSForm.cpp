@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/AMIPSForm.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -141,7 +141,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("{} is not differentiable!", name());
 	}
 
-	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state)
+	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state)
 		: AdjointForm(variable_to_simulation),
 		  state_(std::move(state))
 	{

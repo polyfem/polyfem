@@ -43,7 +43,7 @@ namespace polyfem::solver
 		return ParameterType::DampingCoefficient;
 	}
 
-	bool DampingVariableToSimulation::affect_state(const State &target) const
+	bool DampingVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (const auto &s : states_)
 		{

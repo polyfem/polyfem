@@ -1,6 +1,6 @@
 #include "SplineParametrizations.hpp"
 #include <polyfem/utils/BSplineParametrization.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>
@@ -142,26 +142,7 @@ namespace polyfem::solver
 			return grad;
 	}
 
-	// Eigen::VectorXd BSplineParametrization2DTo3D::inverse_eval(const Eigen::VectorXd &y)
-	// {
-	// 	spline_ = std::make_shared<BSplineParametrization3D>(initial_control_point_grid_, knots_u_, knots_v_, y);
-	// 	invoked_inverse_eval_ = true;
-	// 	return Eigen::VectorXd();
-	// }
-	//
-	// Eigen::VectorXd BSplineParametrization2DTo3D::eval(const Eigen::VectorXd &x) const
-	// {
-	// 	if (!invoked_inverse_eval_)
-	// 		log_and_throw_error("Must call inverse eval on this parametrization first!");
-	// 	return Eigen::VectorXd();
-	// }
-	//
-	// Eigen::VectorXd BSplineParametrization2DTo3D::apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
-	// {
-	// 	return Eigen::VectorXd();
-	// }
-	//
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const bool allow_rotations)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const legacy::State &state, const bool allow_rotations)
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), allow_rotations_(allow_rotations)
 	{
 		Eigen::MatrixXd V;

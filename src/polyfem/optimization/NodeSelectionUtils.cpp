@@ -1,6 +1,6 @@
 #include <polyfem/optimization/NodeSelectionUtils.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -41,7 +41,7 @@ namespace polyfem
 	} // namespace
 
 	Eigen::VectorXi select_interior_nodes(
-		const State &state,
+		const legacy::State &state,
 		const std::vector<int> &volume_selection)
 	{
 		auto &mesh = state.mesh;
@@ -71,7 +71,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes(
-		const State &state,
+		const legacy::State &state,
 		const std::vector<int> &surface_selection)
 	{
 		auto &mesh = state.mesh;
@@ -102,7 +102,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes_excluding_surfaces(
-		const State &state,
+		const legacy::State &state,
 		const std::vector<int> &exclude_surface_selections)
 	{
 		auto &mesh = state.mesh;

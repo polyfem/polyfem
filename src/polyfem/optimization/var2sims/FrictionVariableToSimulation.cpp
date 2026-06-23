@@ -42,7 +42,7 @@ namespace polyfem::solver
 		return ParameterType::FrictionCoefficient;
 	}
 
-	bool FrictionVariableToSimulation::affect_state(const State &target) const
+	bool FrictionVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (const auto &s : states_)
 		{

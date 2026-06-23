@@ -1,6 +1,6 @@
 #include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/StateDiff.hpp>
@@ -133,7 +133,7 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(State &state)
+	void AdjointOptUtils::solve_pde(legacy::State &state)
 	{
 		state.assemble_rhs();
 		state.assemble_mass_mat();
@@ -204,7 +204,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<legacy::State>> &states)
 	{
 		if (args["number"].is_number())
 		{

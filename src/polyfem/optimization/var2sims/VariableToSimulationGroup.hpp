@@ -13,7 +13,7 @@ namespace polyfem::solver
 		void update(const Eigen::VectorXd &x);
 
 		void compute_state_variable(ParameterType type,
-									const State &target,
+									const legacy::State &target,
 									const Eigen::VectorXd &x,
 									Eigen::VectorXd &state_variable) const;
 
@@ -22,7 +22,7 @@ namespace polyfem::solver
 		/// @brief Compute parametrization jacobian for all var2sim matching
 		/// parameter type and output to target state.
 		Eigen::VectorXd apply_parametrization_jacobian(ParameterType type,
-													   const State &target,
+													   const legacy::State &target,
 													   const Eigen::VectorXd &x,
 													   const std::function<Eigen::VectorXd()> &grad) const;
 

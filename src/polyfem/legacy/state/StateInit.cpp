@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
@@ -51,7 +51,7 @@ namespace spdlog::level
 		 {spdlog::level::level_enum::off, 5}})
 }
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	using namespace problem;
 	using namespace utils;
@@ -441,4 +441,4 @@ namespace polyfem
 		assembler.set_materials(body_ids, args["materials"], units, root_path());
 	}
 
-} // namespace polyfem
+} // namespace polyfem::legacy

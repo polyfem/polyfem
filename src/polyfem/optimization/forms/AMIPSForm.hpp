@@ -9,7 +9,10 @@
 
 namespace polyfem
 {
-	class State;
+	namespace legacy
+	{
+		class State;
+	}
 	namespace assembler
 	{
 		class Assembler;
@@ -23,7 +26,7 @@ namespace polyfem::solver
 	class MinJacobianForm : public AdjointForm
 	{
 	public:
-		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state)
+		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state)
 			: AdjointForm(variable_to_simulation),
 			  state_(std::move(state))
 		{
@@ -35,13 +38,13 @@ namespace polyfem::solver
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
-		std::shared_ptr<const State> state_;
+		std::shared_ptr<const legacy::State> state_;
 	};
 
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state);
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state);
 
 		virtual std::string name() const override { return "AMIPS"; }
 
@@ -57,7 +60,7 @@ namespace polyfem::solver
 			return X;
 		}
 
-		std::shared_ptr<const State> state_;
+		std::shared_ptr<const legacy::State> state_;
 
 		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;

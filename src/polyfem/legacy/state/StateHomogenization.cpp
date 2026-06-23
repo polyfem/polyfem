@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 
 	using namespace assembler;
@@ -127,7 +127,7 @@ namespace polyfem
 			}
 		}
 
-		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
+		std::shared_ptr<solver::NLHomoProblem> homo_problem = std::make_shared<solver::NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
 			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
@@ -146,7 +146,7 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int ndof = n_bases * dim;
 
-		auto homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(solve_data.nl_problem);
+		auto homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
 
 		Eigen::VectorXd extended_sol;
 		extended_sol.setZero(ndof + dim * dim);
@@ -283,8 +283,8 @@ namespace polyfem
 		sol = homo_problem->reduced_to_extended(reduced_sol);
 		if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
 		{
-			Eigen::VectorXd integral = io::Evaluator::integrate_function(bases, geom_bases(), sol, dim, dim);
-			double area = io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), dim, 1)(0);
+			Eigen::VectorXd integral = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), sol, dim, dim);
+			double area = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), dim, 1)(0);
 			for (int d = 0; d < dim; d++)
 				sol(Eigen::seqN(d, n_bases, dim), 0).array() -= integral(d) / area;
 
@@ -317,7 +317,7 @@ namespace polyfem
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
 				solve_homogenization_step(t, extended_sol, false, user_post_step);
 			}
-			sol = extended_sol.topRows(extended_sol.size() - dim * dim) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(dim * dim), dim));
+			sol = extended_sol.topRows(extended_sol.size() - dim * dim) + polyfem::io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(dim * dim), dim));
 
 			if (is_static)
 				return;
@@ -344,7 +344,7 @@ namespace polyfem
 			//     Eigen::MatrixXd V;
 			//     Eigen::MatrixXi F;
 			//     build_mesh_matrices(V, F);
-			//     io::MshWriter::write(
+			//     polyfem::io::MshWriter::write(
 			//         resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
 			//         V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
 			// }
@@ -359,4 +359,4 @@ namespace polyfem
 		}
 	}
 
-} // namespace polyfem
+} // namespace polyfem::legacy

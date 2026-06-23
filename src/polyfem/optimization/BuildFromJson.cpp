@@ -1,6 +1,6 @@
 #include <polyfem/optimization/BuildFromJson.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
@@ -90,7 +90,7 @@ namespace polyfem::from_json
 			return mat.reshaped();
 		}
 
-		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const State &state)
+		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const legacy::State &state)
 		{
 			if (j.is_array())
 			{
@@ -124,11 +124,11 @@ namespace polyfem::from_json
 
 	} // namespace
 
-	std::shared_ptr<State> build_state(
+	std::shared_ptr<legacy::State> build_state(
 		const json &args,
 		const size_t max_threads)
 	{
-		std::shared_ptr<State> state = std::make_shared<State>();
+		std::shared_ptr<legacy::State> state = std::make_shared<legacy::State>();
 		state->set_max_threads(max_threads);
 
 		json in_args = args;
@@ -144,20 +144,24 @@ namespace polyfem::from_json
 		return state;
 	}
 
-	std::vector<std::shared_ptr<State>> build_states(
+	std::vector<std::shared_ptr<legacy::State>> build_states(
 		const std::string &root_path,
 		const json &args,
-		const size_t max_threads)
+		const size_t max_threads,
+		const json &output_log)
 	{
-		std::vector<std::shared_ptr<State>> states(args.size());
+		std::vector<std::shared_ptr<legacy::State>> states(args.size());
 		for (int i = 0; i < args.size(); ++i)
 		{
 			json cur_args;
 			std::string abs_path = utils::resolve_path(args[i]["path"], root_path, false);
 			if (!load_json(abs_path, cur_args))
 			{
-				log_and_throw_adjoint_error("Can't find json for State {}", i);
+				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 			}
+
+			if (!output_log.empty())
+				cur_args["output"]["log"].merge_patch(output_log);
 
 			states[i] = build_state(cur_args, max_threads);
 		}
@@ -166,7 +170,7 @@ namespace polyfem::from_json
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<legacy::State>> &states,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
@@ -261,14 +265,14 @@ namespace polyfem::from_json
 
 	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<legacy::State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
 
 		// Collect relevant states from state index json.
-		std::vector<std::shared_ptr<State>> rel_states;
+		std::vector<std::shared_ptr<legacy::State>> rel_states;
 		std::vector<std::shared_ptr<DiffCache>> rel_diff_caches;
 		if (args["state"].is_array())
 		{
@@ -386,7 +390,7 @@ namespace polyfem::from_json
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<legacy::State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
@@ -402,7 +406,7 @@ namespace polyfem::from_json
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<legacy::State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches)
 	{
 		using namespace polyfem::solver;

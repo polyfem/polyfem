@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
@@ -64,7 +64,7 @@ namespace
 		return true;
 	}
 
-	void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	void sample_field(const legacy::State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
 	{
 		Eigen::MatrixXd tmp;
 		tmp.setZero(1, state.mesh->dimension());
@@ -409,11 +409,15 @@ TEST_CASE("node-trajectory", "[opt_gradient]")
 	json opt_args;
 	load_json(append_root_path("node-trajectory-opt.json"), opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+	opt_args["output"]["log"]["path"] = "";
+	opt_args["output"]["log"]["level"] = "off";
+	opt_args["output"]["log"]["file_level"] = "off";
+	opt_args["output"]["log"]["quiet"] = true;
 
 	// One state only.
 	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
 	auto states =
-		from_json::build_states(root, opt_args["states"], -1);
+		from_json::build_states(root, opt_args["states"], -1, opt_args["output"]["log"]);
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	auto elastic_var2sim =

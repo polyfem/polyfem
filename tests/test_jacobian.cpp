@@ -14,6 +14,9 @@
 #include <catch2/catch_approx.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
+
+#include "VarFormTestAccess.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -122,9 +125,7 @@ namespace
 
 		state->load_mesh();
 
-		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
+		test::VarFormTestAccess::prepare(*state->variational_formulation);
 
 		return state;
 	}

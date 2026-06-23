@@ -6,7 +6,10 @@
 
 namespace polyfem
 {
-	class State;
+	namespace legacy
+	{
+		class State;
+	}
 	class BSplineParametrization2D;
 	class BSplineParametrization3D;
 } // namespace polyfem
@@ -75,7 +78,7 @@ namespace polyfem::solver
 	{
 	public:
 		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const Eigen::MatrixXd &V_surface, const Eigen::MatrixXi &F_surface) : num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), V_surface_(V_surface), F_surface_(F_surface), allow_rotations_(true) {}
-		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const bool allow_rotations);
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const legacy::State &state, const bool allow_rotations);
 
 		int inverse_size(int y_size) const override;
 

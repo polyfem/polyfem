@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/WeightedVolumeForm.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <Eigen/Core>
 

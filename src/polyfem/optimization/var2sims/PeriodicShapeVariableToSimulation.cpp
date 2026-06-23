@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -70,7 +70,7 @@ namespace polyfem::solver
 		return ParameterType::PeriodicShape;
 	}
 
-	bool PeriodicShapeVariableToSimulation::affect_state(const State &target) const
+	bool PeriodicShapeVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (auto &s : states_)
 		{

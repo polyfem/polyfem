@@ -16,7 +16,10 @@
 
 namespace polyfem
 {
-	class State;
+	namespace legacy
+	{
+		class State;
+	}
 
 	namespace solver
 	{
@@ -81,8 +84,8 @@ namespace polyfem
 		//-----------------state--------------------
 		//---------------------------------------------------
 
-		/// State used in the opt
-		std::vector<std::shared_ptr<State>> states;
+		/// legacy::State used in the opt
+		std::vector<std::shared_ptr<legacy::State>> states;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables
@@ -101,7 +104,7 @@ namespace polyfem
 			return "";
 		}
 
-		/// @brief Check and throw if any forward simulation State is not supported.
+		/// @brief Check and throw if any forward simulation legacy::State is not supported.
 		void check_unsupported() const;
 
 		/// initializing the logger meant for internal usage
@@ -115,6 +118,7 @@ namespace polyfem
 		//-----------------output--------------------
 		//---------------------------------------------------
 
+	public:
 		/// Directory for output files
 		std::string output_dir;
 	};

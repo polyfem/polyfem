@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	void State::compute_errors(const Eigen::MatrixXd &sol)
 	{
@@ -280,4 +280,4 @@ namespace polyfem
 		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
 		file << restart_json;
 	}
-} // namespace polyfem
+} // namespace polyfem::legacy

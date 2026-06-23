@@ -44,7 +44,7 @@ namespace polyfem::solver
 		return ParameterType::LameParameter;
 	}
 
-	bool ElasticVariableToSimulation::affect_state(const State &target) const
+	bool ElasticVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (const auto &s : states_)
 		{

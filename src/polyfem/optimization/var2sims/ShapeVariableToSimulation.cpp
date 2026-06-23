@@ -62,7 +62,7 @@ namespace polyfem::solver
 		return ParameterType::Shape;
 	}
 
-	bool ShapeVariableToSimulation::affect_state(const State &target) const
+	bool ShapeVariableToSimulation::affect_state(const legacy::State &target) const
 	{
 		for (auto &s : states_)
 		{

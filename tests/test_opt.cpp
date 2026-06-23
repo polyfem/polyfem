@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
@@ -214,13 +214,13 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
 // 	json state_args = opt_args["states"];
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	int i = 0;
 // 	for (const json &args : state_args)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -311,13 +311,13 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
 // 	json state_args = opt_args["states"];
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	int i = 0;
 // 	for (const json &args : state_args)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -442,7 +442,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -452,7 +452,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -594,7 +594,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -604,7 +604,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -667,7 +667,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -677,7 +677,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -738,7 +738,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 
 // 	json state_args = opt_args["states"];
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	std::vector<std::shared_ptr<legacy::State>> states(state_args.size());
 // 	Eigen::VectorXd x;
 // 	VariableToSimulationGroup variable_to_simulations;
 // 	{
@@ -748,7 +748,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
