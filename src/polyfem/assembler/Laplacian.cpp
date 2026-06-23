@@ -8,6 +8,22 @@ namespace polyfem::assembler
 		{
 			return (i == j) ? true : false;
 		}
+
+		Eigen::VectorXd local_scalar_values(const NonLinearAssemblerData &data)
+		{
+			assert(data.x.cols() == 1);
+
+			const int n_bases = int(data.vals.basis_values.size());
+			Eigen::VectorXd local_u = Eigen::VectorXd::Zero(n_bases);
+			for (int i = 0; i < n_bases; ++i)
+			{
+				const auto &bs = data.vals.basis_values[i];
+				for (const auto &global : bs.global)
+					local_u(i) += global.val * data.x(global.index);
+			}
+
+			return local_u;
+		}
 	} // namespace
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Laplacian::assemble(const LinearAssemblerData &data) const
@@ -23,6 +39,36 @@ namespace polyfem::assembler
 			res += gradi.row(k).dot(gradj.row(k)) * data.da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
+	}
+
+	double Laplacian::compute_energy(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		const Eigen::VectorXd local_u = local_scalar_values(data);
+		return 0.5 * local_u.dot(assemble_hessian(data) * local_u);
+	}
+
+	Eigen::VectorXd Laplacian::assemble_gradient(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		return assemble_hessian(data) * local_scalar_values(data);
+	}
+
+	Eigen::MatrixXd Laplacian::assemble_hessian(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		const int n_bases = int(data.vals.basis_values.size());
+		Eigen::MatrixXd hessian = Eigen::MatrixXd::Zero(n_bases, n_bases);
+		for (int i = 0; i < n_bases; ++i)
+		{
+			for (int j = 0; j < n_bases; ++j)
+				hessian(i, j) = assemble(LinearAssemblerData(data.vals, data.t, i, j, data.da))(0);
+		}
+
+		return hessian;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::compute_rhs(const AutodiffHessianPt &pt) const
