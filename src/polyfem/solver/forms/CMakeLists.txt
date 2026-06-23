@@ -1,5 +1,7 @@
 set(SOURCES
 	Form.hpp
+	StackedForm.hpp
+	StackedForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
