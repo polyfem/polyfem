@@ -62,6 +62,40 @@ namespace polyfem::varform
 			}
 		}
 
+		json elastic_material_from_thermo_material(const json &material)
+		{
+			if (!material.contains("elastic_material") || !material["elastic_material"].is_object())
+				log_and_throw_error("ThermoElasticity requires elastic_material to be an elastic material object.");
+
+			json elastic_material = material["elastic_material"];
+			const std::string type = elastic_material.value("type", "");
+			if (!assembler::AssemblerUtils::is_elastic_material(type))
+				log_and_throw_error("ThermoElasticity elastic_material must be an elastic material, got '{}'.", type);
+
+			if (!elastic_material.contains("id") && material.contains("id"))
+				elastic_material["id"] = material["id"];
+			if (!elastic_material.contains("rho") && material.contains("rho"))
+				elastic_material["rho"] = material["rho"];
+
+			return elastic_material;
+		}
+
+		std::string elastic_formulation_from_thermo_materials(const json &materials)
+		{
+			std::string formulation;
+			for (const json &material : utils::json_as_array(materials))
+			{
+				const json elastic_material = elastic_material_from_thermo_material(material);
+				const std::string type = elastic_material["type"];
+				if (formulation.empty())
+					formulation = type;
+				else if (formulation != type)
+					formulation = "MultiModels";
+			}
+
+			return formulation;
+		}
+
 		StiffnessMatrix block_diag(const StiffnessMatrix &a, const StiffnessMatrix &b)
 		{
 			std::vector<Eigen::Triplet<double>> entries;
@@ -289,30 +323,21 @@ namespace polyfem::varform
 		if (displacement_space_id_ == temperature_space_id_)
 			log_and_throw_error("ThermoElasticity requires distinct displacement and temperature FE spaces.");
 
-		elastic_formulation_ =
-			material.value("elastic_material", material.value("elastic_formulation", std::string("NeoHookean")));
+		elastic_formulation_ = elastic_formulation_from_thermo_materials(args.at("materials"));
 		assert_same_space_ids(args.at("materials"), displacement_space_id_, temperature_space_id_);
 	}
 
 	json ThermoElasticVarForm::elastic_material_args() const
 	{
-		json materials = args["materials"];
-		const auto patch_material = [&](json &material) {
-			if (material.value("type", "") == "ThermoElasticity")
-				material["type"] = elastic_formulation_;
-		};
-
-		if (materials.is_array())
+		if (args["materials"].is_array())
 		{
-			for (json &material : materials)
-				patch_material(material);
-		}
-		else
-		{
-			patch_material(materials);
+			json materials = json::array();
+			for (const json &material : args["materials"])
+				materials.push_back(elastic_material_from_thermo_material(material));
+			return materials;
 		}
 
-		return materials;
+		return elastic_material_from_thermo_material(args["materials"]);
 	}
 
 	json ThermoElasticVarForm::time_integrator_args(const int fe_space_id) const
@@ -341,16 +366,17 @@ namespace polyfem::varform
 		for (int i = 0; i < mesh.n_elements(); ++i)
 			body_ids[i] = mesh.get_body_id(i);
 
-		primary_assembler_->set_size(mesh.dimension());
-		primary_assembler_->set_materials(body_ids, elastic_material_args(), units, root_path);
+		const json elastic_materials = elastic_material_args();
 
+		primary_assembler_->set_size(mesh.dimension());
+		primary_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
 		mass_assembler_->set_size(mesh.dimension());
-		mass_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
 		pure_mass_assembler_->set_size(mass_assembler_->size());
 
 		temperature_assembler_->set_size(1);
 		temperature_mass_assembler_->set_size(1);
-		temperature_mass_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		temperature_mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
 		temperature_pure_mass_assembler_->set_size(1);
 
 		problem->init(mesh);
