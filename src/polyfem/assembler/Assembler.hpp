@@ -203,6 +203,87 @@ namespace polyfem::assembler
 		int size_ = -1;
 	};
 
+	class MixedNLAssembler : virtual public Assembler
+	{
+	public:
+		using Assembler::assemble_energy;
+		using Assembler::assemble_energy_per_element;
+		using Assembler::assemble_gradient;
+		using Assembler::assemble_hessian;
+
+		virtual ~MixedNLAssembler() = default;
+
+		double assemble_energy(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev) const;
+
+		Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev) const;
+
+		void assemble_gradient(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			Eigen::MatrixXd &grad) const;
+
+		void assemble_hessian(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const bool project_to_psd,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			utils::MatrixCache &mat_cache,
+			StiffnessMatrix &hessian) const;
+
+		bool is_linear() const override { return false; }
+
+	protected:
+		virtual int rows() const = 0;
+		virtual int cols() const = 0;
+
+		virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+	};
+
 	/// assemble matrix based on the local assembler
 	/// local assembler is eg Laplace, LinearElasticity etc
 	class LinearAssembler : virtual public Assembler

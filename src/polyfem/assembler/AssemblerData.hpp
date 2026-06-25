@@ -78,6 +78,37 @@ namespace polyfem::assembler
 		const QuadratureVector &da;
 	};
 
+	class MixedNonLinearAssemblerData
+	{
+	public:
+		MixedNonLinearAssemblerData(
+			const ElementAssemblyValues &psi_vals,
+			const ElementAssemblyValues &phi_vals,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			const QuadratureVector &da)
+			: psi_vals(psi_vals), phi_vals(phi_vals),
+			  t(t), dt(dt), x(x), x_prev(x_prev), da(da)
+		{
+		}
+
+		/// Values for the second block, historically scalar pressure-like bases.
+		const ElementAssemblyValues &psi_vals;
+		/// Values for the first block, historically tensor velocity/displacement-like bases.
+		const ElementAssemblyValues &phi_vals;
+
+		const double t;
+		const double dt;
+		/// Stacked global state, ordered as [phi dofs, psi dofs].
+		const Eigen::MatrixXd &x;
+		/// Previous stacked global state, ordered as [phi dofs, psi dofs].
+		const Eigen::MatrixXd &x_prev;
+		/// Contains both the quadrature weight and the change of metric in the integral.
+		const QuadratureVector &da;
+	};
+
 	class OptAssemblerData
 	{
 	public:
