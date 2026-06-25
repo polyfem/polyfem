@@ -94,6 +94,42 @@ namespace polyfem::assembler
 				val = 0;
 			}
 		};
+
+		void split_mixed_solution(
+			const MixedNLAssembler::SolutionSplitter &split_solution,
+			const Eigen::MatrixXd &x,
+			const int phi_ndof,
+			const int psi_ndof,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)
+		{
+			assert(split_solution);
+
+			split_solution(x, x_phi, x_psi);
+
+			assert(x_phi.rows() == phi_ndof);
+			assert(x_phi.cols() == 1);
+			assert(x_psi.rows() == psi_ndof);
+			assert(x_psi.cols() == 1);
+		}
+
+		void split_mixed_previous_solution(
+			const MixedNLAssembler::SolutionSplitter &split_solution,
+			const Eigen::MatrixXd &x,
+			const int phi_ndof,
+			const int psi_ndof,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)
+		{
+			if (x.size() == 0)
+			{
+				x_phi.resize(0, 1);
+				x_psi.resize(0, 1);
+				return;
+			}
+
+			split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		}
 	} // namespace
 
 	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units, const std::string &root_path)
@@ -506,15 +542,21 @@ namespace polyfem::assembler
 		const double t,
 		const double dt,
 		const Eigen::MatrixXd &x,
-		const Eigen::MatrixXd &x_prev) const
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution) const
 	{
 		assert(size() > 0);
 		assert(rows() > 0);
 		assert(cols() > 0);
 		assert(phi_bases.size() == psi_bases.size());
 		assert(phi_bases.size() == gbases.size());
-		assert(x.rows() == n_phi_basis * rows() + n_psi_basis * cols());
-		assert(x.cols() == 1);
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
 
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(phi_bases.size());
@@ -535,7 +577,7 @@ namespace polyfem::assembler
 				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
 
 				local_storage.val += compute_energy(
-					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x, x_prev, local_storage.da));
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
 			}
 		});
 
@@ -557,15 +599,21 @@ namespace polyfem::assembler
 		const double t,
 		const double dt,
 		const Eigen::MatrixXd &x,
-		const Eigen::MatrixXd &x_prev) const
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution) const
 	{
 		assert(size() > 0);
 		assert(rows() > 0);
 		assert(cols() > 0);
 		assert(phi_bases.size() == psi_bases.size());
 		assert(phi_bases.size() == gbases.size());
-		assert(x.rows() == n_phi_basis * rows() + n_psi_basis * cols());
-		assert(x.cols() == 1);
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
 
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(phi_bases.size());
@@ -587,7 +635,7 @@ namespace polyfem::assembler
 				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
 
 				out(e) = compute_energy(
-					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x, x_prev, local_storage.da));
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
 			}
 		});
 
@@ -595,7 +643,7 @@ namespace polyfem::assembler
 		const double assemble_val = assemble_energy(
 			is_volume, n_psi_basis, n_phi_basis,
 			psi_bases, phi_bases, gbases,
-			psi_cache, phi_cache, t, dt, x, x_prev);
+			psi_cache, phi_cache, t, dt, x, x_prev, split_solution);
 		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * std::abs(assemble_val), 1e-10));
 #endif
 
@@ -615,6 +663,7 @@ namespace polyfem::assembler
 		const double dt,
 		const Eigen::MatrixXd &x,
 		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution,
 		Eigen::MatrixXd &grad) const
 	{
 		assert(size() > 0);
@@ -625,8 +674,10 @@ namespace polyfem::assembler
 
 		const int phi_ndof = n_phi_basis * rows();
 		const int psi_ndof = n_psi_basis * cols();
-		assert(x.rows() == phi_ndof + psi_ndof);
-		assert(x.cols() == 1);
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
 
 		grad.resize(phi_ndof + psi_ndof, 1);
 		grad.setZero();
@@ -650,7 +701,7 @@ namespace polyfem::assembler
 				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
 
 				const Eigen::VectorXd local_grad = compute_gradient(
-					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x, x_prev, local_storage.da));
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
 
 				const int n_phi_loc_bases = int(phi_vals.basis_values.size());
 				const int n_psi_loc_bases = int(psi_vals.basis_values.size());
@@ -667,13 +718,13 @@ namespace polyfem::assembler
 					}
 				}
 
-				const int psi_offset = n_phi_loc_bases * rows();
+				const int local_psi_offset = n_phi_loc_bases * rows();
 				for (int i = 0; i < n_psi_loc_bases; ++i)
 				{
 					const auto &global_i = psi_vals.basis_values[i].global;
 					for (int d = 0; d < cols(); ++d)
 					{
-						const double local_value = local_grad(psi_offset + i * cols() + d);
+						const double local_value = local_grad(local_psi_offset + i * cols() + d);
 						for (const auto &global : global_i)
 							local_storage.vec(phi_ndof + global.index * cols() + d) += local_value * global.val;
 					}
@@ -699,6 +750,7 @@ namespace polyfem::assembler
 		const double dt,
 		const Eigen::MatrixXd &x,
 		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution,
 		MatrixCache &mat_cache,
 		StiffnessMatrix &hessian) const
 	{
@@ -711,8 +763,10 @@ namespace polyfem::assembler
 		const int phi_ndof = n_phi_basis * rows();
 		const int psi_ndof = n_psi_basis * cols();
 		const int total_ndof = phi_ndof + psi_ndof;
-		assert(x.rows() == total_ndof);
-		assert(x.cols() == 1);
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
 
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(max_triplets_size, total_ndof);
@@ -739,7 +793,7 @@ namespace polyfem::assembler
 				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd local_hessian = compute_hessian(
-					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x, x_prev, local_storage.da));
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
 
 				const int n_phi_loc_bases = int(phi_vals.basis_values.size());
 				const int n_psi_loc_bases = int(psi_vals.basis_values.size());

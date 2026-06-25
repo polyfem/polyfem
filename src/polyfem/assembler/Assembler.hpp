@@ -10,6 +10,8 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <functional>
+
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
 namespace polyfem::assembler
@@ -206,6 +208,11 @@ namespace polyfem::assembler
 	class MixedNLAssembler : virtual public Assembler
 	{
 	public:
+		using SolutionSplitter = std::function<void(
+			const Eigen::MatrixXd &x,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)>;
+
 		using Assembler::assemble_energy;
 		using Assembler::assemble_energy_per_element;
 		using Assembler::assemble_gradient;
@@ -225,7 +232,8 @@ namespace polyfem::assembler
 			const double t,
 			const double dt,
 			const Eigen::MatrixXd &x,
-			const Eigen::MatrixXd &x_prev) const;
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution) const;
 
 		Eigen::VectorXd assemble_energy_per_element(
 			const bool is_volume,
@@ -239,7 +247,8 @@ namespace polyfem::assembler
 			const double t,
 			const double dt,
 			const Eigen::MatrixXd &x,
-			const Eigen::MatrixXd &x_prev) const;
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution) const;
 
 		void assemble_gradient(
 			const bool is_volume,
@@ -254,6 +263,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &x,
 			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution,
 			Eigen::MatrixXd &grad) const;
 
 		void assemble_hessian(
@@ -270,6 +280,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &x,
 			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &hessian) const;
 

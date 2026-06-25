@@ -187,7 +187,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "alpha",
+            "T0"
         ],
         "doc": "Thermoelastic mixed material. The displacement block currently reuses the nested elastic_material and the temperature block uses a scalar Laplacian."
     },
@@ -220,6 +222,18 @@
         "type": "int",
         "min": 0,
         "doc": "FE space ID for temperature"
+    },
+    {
+        "pointer": "/alpha",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Thermal expansion coefficient"
+    },
+    {
+        "pointer": "/T0",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Reference temperature"
     },
     {
         "pointer": "/elastic_material",
