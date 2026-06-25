@@ -9,9 +9,16 @@
             "NeoHookean",
             "MooneyRivlin",
             "MooneyRivlin3Param",
+            "MooneyRivlin3ParamSymbolic",
             "UnconstrainedOgden",
             "IncompressibleOgden",
-            "FixedCorotational"
+            "ActiveFiber",
+            "HGOFiber",
+            "IsochoricNeoHookean",
+            "MaterialSum",
+            "FixedCorotational",
+            "VolumePenalty",
+            "AMIPS"
         ],
         "doc": "Elastic material type"
     },
@@ -47,7 +54,41 @@
             "phi",
             "psi"
         ],
-        "doc": "Material Parameters including ID, Lam\u00e9 first ($\\lambda$), Lam\u00e9 second ($\\mu$), density ($\\rho$)"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/",
@@ -69,6 +110,23 @@
         "pointer": "/",
         "type": "object",
         "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "MooneyRivlin3ParamSymbolic",
         "required": [
             "type",
             "c1",
@@ -144,7 +202,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including ID, Lam\u00e9 first ($\\lambda$), Lam\u00e9 second ($\\mu$), density ($\\rho$)"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/",
@@ -211,6 +269,20 @@
             "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "MaterialSum",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "models",
+            "rho"
+        ],
+        "doc": "Model that is a sum of other models"
     },
     {
         "pointer": "/",
@@ -247,10 +319,71 @@
         "doc": "Material Parameters including ID"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "HGOFiber",
+        "required": [
+            "type",
+            "k1",
+            "k2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "ActiveFiber",
+        "required": [
+            "type",
+            "activation"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "Tmax",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "VolumePenalty",
+        "required": [
+            "type",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "use_rest_pose",
+            "weight",
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/id",
         "type": "int",
-        "default": 0,
-        "doc": "Volume selection ID"
+        "doc": "Volume selection ID",
+        "default": 0
     },
     {
         "pointer": "/id",
@@ -281,36 +414,36 @@
     },
     {
         "pointer": "/elasticity_tensor/*",
-        "default": 0,
         "type": "include",
         "spec_file": "value0.json",
-        "doc": "Entries of elasticity tensor"
+        "doc": "Entries of elasticity tensor",
+        "default": 0
     },
     {
         "pointer": "/fiber_direction",
         "type": "list",
-        "default": [],
-        "doc": "Fiber direction"
+        "doc": "Fiber direction",
+        "default": []
     },
     {
         "pointer": "/fiber_direction/*",
-        "default": 0,
         "type": "include",
         "spec_file": "value0.json",
-        "doc": "Entries of fiber direction"
+        "doc": "Entries of fiber direction",
+        "default": 0
     },
     {
         "pointer": "/fiber_direction/*",
         "type": "list",
-        "default": [],
-        "doc": "Fiber direction row"
+        "doc": "Fiber direction row",
+        "default": []
     },
     {
         "pointer": "/fiber_direction/*/*",
-        "default": 0,
         "type": "include",
         "spec_file": "value0.json",
-        "doc": "Entries of fiber direction"
+        "doc": "Entries of fiber direction",
+        "default": 0
     },
     {
         "pointer": "/rho",
@@ -343,13 +476,13 @@
         "pointer": "/mu",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "First Lam\u00e9 parameters"
+        "doc": "First Lamé parameters"
     },
     {
         "pointer": "/lambda",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "Second Lam\u00e9 parameter"
+        "doc": "Second Lamé parameter"
     },
     {
         "pointer": "/c1",
@@ -374,6 +507,18 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Fourth Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for HGOFiber"
     },
     {
         "pointer": "/alphas",
@@ -439,5 +584,35 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/activation",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Activation parameter for ActiveFiber"
+    },
+    {
+        "pointer": "/Tmax",
+        "type": "include",
+        "spec_file": "value1.json",
+        "doc": "Maximum tension for ActiveFiber",
+        "default": 1
+    },
+    {
+        "pointer": "/use_rest_pose",
+        "type": "bool",
+        "default": false,
+        "doc": "Use amips wrt to rest pose or the regular element"
+    },
+    {
+        "pointer": "/weight",
+        "type": "float",
+        "default": 1.0,
+        "doc": "Scale factor for the AMIPS energy."
+    },
+    {
+        "pointer": "/models",
+        "type": "list",
+        "doc": "List of elastic material models"
     }
 ]

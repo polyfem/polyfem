@@ -253,9 +253,15 @@ namespace polyfem
 				"NeoHookean",
 				"MooneyRivlin",
 				"MooneyRivlin3Param",
+				"MooneyRivlin3ParamSymbolic",
 				"UnconstrainedOgden",
 				"IncompressibleOgden",
+				"IsochoricNeoHookean",
+				"HGOFiber",
+				"ActiveFiber",
 				"FixedCorotational",
+				"VolumePenalty",
+				"AMIPS",
 				"MaterialSum",
 				"MultiModels"};
 
