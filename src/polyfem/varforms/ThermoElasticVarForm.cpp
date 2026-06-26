@@ -19,6 +19,8 @@
 #include <polyfem/solver/forms/MixedAssemblerForm.hpp>
 #include <polyfem/solver/forms/StackedForm.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/StackedAugmentedLagrangianForm.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
@@ -121,115 +123,6 @@ namespace polyfem::varform
 			return utils::sparse_identity(size, size);
 		}
 
-		class OffsetBCLagrangianForm : public solver::AugmentedLagrangianForm
-		{
-		public:
-			OffsetBCLagrangianForm(
-				const int full_size,
-				const int offset,
-				const int local_size,
-				const std::vector<int> &boundary_nodes,
-				const std::vector<mesh::LocalBoundary> &local_boundary,
-				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-				const QuadratureOrders &boundary_samples,
-				const assembler::RhsAssembler &rhs_assembler,
-				const bool is_time_dependent,
-				const double t)
-				: full_size_(full_size),
-				  offset_(offset),
-				  local_size_(local_size),
-				  boundary_nodes_(boundary_nodes),
-				  local_boundary_(local_boundary),
-				  local_neumann_boundary_(local_neumann_boundary),
-				  boundary_samples_(boundary_samples),
-				  rhs_assembler_(rhs_assembler),
-				  is_time_dependent_(is_time_dependent)
-			{
-				assert(full_size_ > 0);
-				assert(offset_ >= 0);
-				assert(local_size_ > 0);
-				assert(offset_ + local_size_ <= full_size_);
-				build_constraint_matrix();
-				update_target(t);
-				lagr_mults_.setZero(boundary_nodes_.size());
-			}
-
-			std::string name() const override { return "offset-bc-alagrangian"; }
-
-			void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override
-			{
-				k_al_ = k_al;
-				lagr_mults_ -= k_al * (A_ * x - b_);
-			}
-
-			double compute_error(const Eigen::VectorXd &x) const override
-			{
-				return (A_ * x - b_).squaredNorm();
-			}
-
-			void update_quantities(const double t, const Eigen::VectorXd &) override
-			{
-				if (is_time_dependent_)
-					update_target(t);
-			}
-
-		protected:
-			double value_unweighted(const Eigen::VectorXd &x) const override
-			{
-				const Eigen::VectorXd dist = A_ * x - b_;
-				return L_weight() * (-lagr_mults_.dot(dist)) + A_weight() * 0.5 * dist.squaredNorm();
-			}
-
-			void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-			{
-				const Eigen::VectorXd dist = A_ * x - b_;
-				gradv = L_weight() * A_.transpose() * (-lagr_mults_ + k_al_ * dist);
-			}
-
-			void second_derivative_unweighted(const Eigen::VectorXd &, StiffnessMatrix &hessian) const override
-			{
-				hessian = A_weight() * A_.transpose() * A_;
-			}
-
-		private:
-			void build_constraint_matrix()
-			{
-				std::vector<Eigen::Triplet<double>> entries;
-				entries.reserve(boundary_nodes_.size());
-				for (int i = 0; i < int(boundary_nodes_.size()); ++i)
-				{
-					assert(boundary_nodes_[i] >= 0);
-					assert(boundary_nodes_[i] < local_size_);
-					entries.emplace_back(i, offset_ + boundary_nodes_[i], 1.0);
-				}
-
-				A_.resize(boundary_nodes_.size(), full_size_);
-				A_.setFromTriplets(entries.begin(), entries.end());
-				A_.makeCompressed();
-			}
-
-			void update_target(const double t)
-			{
-				Eigen::MatrixXd local_target = Eigen::MatrixXd::Zero(local_size_, 1);
-				rhs_assembler_.set_bc(
-					local_boundary_, boundary_nodes_, boundary_samples_,
-					local_neumann_boundary_, local_target, Eigen::MatrixXd(), t);
-
-				b_.resize(boundary_nodes_.size(), 1);
-				for (int i = 0; i < int(boundary_nodes_.size()); ++i)
-					b_(i) = local_target(boundary_nodes_[i], 0);
-			}
-
-			const int full_size_;
-			const int offset_;
-			const int local_size_;
-			const std::vector<int> &boundary_nodes_;
-			const std::vector<mesh::LocalBoundary> &local_boundary_;
-			const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
-			const QuadratureOrders boundary_samples_;
-			const assembler::RhsAssembler &rhs_assembler_;
-			const bool is_time_dependent_;
-		};
 	} // namespace
 
 	void ThermoElasticVarForm::reset()
@@ -865,20 +758,36 @@ namespace polyfem::varform
 			form->set_output_dir(output_path);
 
 		al_forms_.clear();
-		if (!boundary_.boundary_nodes.empty())
+		if (!boundary_.boundary_nodes.empty() || !temperature_boundary_.boundary_nodes.empty())
 		{
-			al_forms_.push_back(std::make_shared<OffsetBCLagrangianForm>(
-				total_ndof(), displacement_block.offset(), displacement_block.size(),
-				boundary_.boundary_nodes, boundary_.local_boundary, boundary_.local_neumann_boundary,
-				elastic_boundary_samples(), *rhs_assembler_, is_time_dependent, t));
-		}
-		if (!temperature_boundary_.boundary_nodes.empty())
-		{
-			al_forms_.push_back(std::make_shared<OffsetBCLagrangianForm>(
-				total_ndof(), temperature_block.offset(), temperature_block.size(),
-				temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,
-				temperature_boundary_.local_neumann_boundary, temperature_boundary_samples,
-				*temperature_rhs_assembler_, is_time_dependent, t));
+			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
+			const auto displacement_al_block = stacked_al->add_block(displacement_block.size());
+			const auto temperature_al_block = stacked_al->add_block(temperature_block.size());
+
+			if (!boundary_.boundary_nodes.empty())
+			{
+				stacked_al->add(
+					displacement_al_block,
+					std::make_shared<solver::BCLagrangianForm>(
+						displacement_block.size(),
+						boundary_.boundary_nodes, boundary_.local_boundary, boundary_.local_neumann_boundary,
+						elastic_boundary_samples(), mass_, *rhs_assembler_,
+						obstacle.n_vertices() * mesh_->dimension(), is_time_dependent, t));
+			}
+
+			if (!temperature_boundary_.boundary_nodes.empty())
+			{
+				stacked_al->add(
+					temperature_al_block,
+					std::make_shared<solver::BCLagrangianForm>(
+						temperature_block.size(),
+						temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,
+						temperature_boundary_.local_neumann_boundary, temperature_boundary_samples,
+						temperature_mass_, *temperature_rhs_assembler_,
+						/*obstacle_ndof=*/0, is_time_dependent, t));
+			}
+
+			al_forms_.push_back(stacked_al);
 		}
 	}
 
