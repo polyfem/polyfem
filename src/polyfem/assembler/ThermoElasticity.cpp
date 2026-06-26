@@ -1,7 +1,7 @@
 #include "ThermoElasticity.hpp"
 
-#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <cmath>
 
@@ -101,6 +101,26 @@ namespace polyfem::assembler
 	{
 		alpha_.add_multimaterial(index, params, units.one_over_temperature(), root_path);
 		T0_.add_multimaterial(index, params, units.temperature(), root_path);
+
+		if (!params.contains("elastic_material") || !params["elastic_material"].is_object())
+			log_and_throw_error("ThermoElasticity requires elastic_material to be an elastic material object.");
+
+		json elastic_params = params["elastic_material"];
+		const std::string type = elastic_params.value("type", "");
+		if (type != "NeoHookean")
+			log_and_throw_error("ThermoElasticity currently supports only NeoHookean elastic_material, got '{}'.", type);
+
+		if (!elastic_params.contains("id") && params.contains("id"))
+			elastic_params["id"] = params["id"];
+		if (!elastic_params.contains("rho") && params.contains("rho"))
+			elastic_params["rho"] = params["rho"];
+
+		elastic_params_.add_multimaterial(index, elastic_params, size() == 3, units.stress(), root_path);
+	}
+
+	void ThermoElasticity::set_size(const int size)
+	{
+		Assembler::set_size(size);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> ThermoElasticity::parameters() const
@@ -108,8 +128,6 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> res;
 		res["alpha"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return alpha(uv, p, t, e); };
 		res["T0"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return T0(uv, p, t, e); };
-		res["E"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return young_; };
-		res["nu"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return nu_; };
 		return res;
 	}
 
@@ -140,8 +158,6 @@ namespace polyfem::assembler
 		assert(data.phi_vals.quadrature.weights.size() == data.psi_vals.quadrature.weights.size());
 
 		const int dim = size();
-		const double lambda = this->lambda();
-		const double mu = this->mu();
 
 		Eigen::Matrix<T, Eigen::Dynamic, 1> local_state;
 		get_local_state(data, dim, local_state);
@@ -167,7 +183,10 @@ namespace polyfem::assembler
 			using std::exp;
 			const T theta = exp(T(alpha) * (temperature - T(T0)));
 			const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> Fe = F / theta;
-			energy += (elastic_energy(Fe, lambda, mu) - elastic_energy(F, lambda, mu)) * data.da(p);
+			const RowVectorNd point = data.phi_vals.val.row(p);
+			energy += (elastic_energy(point, data.t, data.phi_vals.element_id, Fe)
+					   - elastic_energy(point, data.t, data.phi_vals.element_id, F))
+					  * data.da(p);
 		}
 
 		return energy;
@@ -175,10 +194,14 @@ namespace polyfem::assembler
 
 	template <typename T>
 	T ThermoElasticity::elastic_energy(
-		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F,
-		const double lambda,
-		const double mu) const
+		const RowVectorNd &p,
+		const double t,
+		const int el_id,
+		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const
 	{
+		double lambda, mu;
+		elastic_params_.lambda_mu(p, p, t, el_id, lambda, mu);
+
 		using std::log;
 		const T log_det_j = log(polyfem::utils::determinant(F));
 		return T(mu / 2.0) * ((F.transpose() * F).trace() - T(size()) - T(2) * log_det_j)
@@ -195,16 +218,4 @@ namespace polyfem::assembler
 		return T0_(p, t, element_id);
 	}
 
-	double ThermoElasticity::lambda() const
-	{
-		assert(size() == 2 || size() == 3);
-		if (size() == 3)
-			return (young_ * nu_) / ((1.0 + nu_) * (1.0 - 2.0 * nu_));
-		return (nu_ * young_) / (1.0 - nu_ * nu_);
-	}
-
-	double ThermoElasticity::mu() const
-	{
-		return young_ / (2.0 * (1.0 + nu_));
-	}
 } // namespace polyfem::assembler
