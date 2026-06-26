@@ -47,6 +47,7 @@
             "length",
             "mass",
             "time",
+            "temperature",
             "characteristic_length"
         ],
         "doc": "Basic units used in the code."
@@ -68,6 +69,12 @@
         "default": "s",
         "type": "string",
         "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/temperature",
+        "default": "K",
+        "type": "string",
+        "doc": "Temperature unit."
     },
     {
         "pointer": "/units/characteristic_length",

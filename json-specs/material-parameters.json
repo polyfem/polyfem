@@ -183,13 +183,13 @@
             "type",
             "displacement_space_id",
             "temperature_space_id",
-            "elastic_material"
+            "elastic_material",
+            "alpha",
+            "T0"
         ],
         "optional": [
             "id",
-            "rho",
-            "alpha",
-            "T0"
+            "rho"
         ],
         "doc": "Thermoelastic mixed material. The displacement block currently reuses the nested elastic_material and the temperature block uses a scalar Laplacian."
     },

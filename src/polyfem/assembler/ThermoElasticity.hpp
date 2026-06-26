@@ -1,13 +1,15 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 namespace polyfem::assembler
 {
 	class ThermoElasticity : public MixedNLAssembler
 	{
 	public:
+		ThermoElasticity();
+
 		std::string name() const override { return "ThermoElasticity"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
@@ -37,15 +39,8 @@ namespace polyfem::assembler
 		double lambda() const;
 		double mu() const;
 
-		static double eval_param(
-			const std::vector<utils::ExpressionValue> &params,
-			const double default_value,
-			const RowVectorNd &p,
-			const double t,
-			const int element_id);
-
-		std::vector<utils::ExpressionValue> alpha_;
-		std::vector<utils::ExpressionValue> T0_;
+		GenericMatParam alpha_;
+		GenericMatParam T0_;
 
 		// Temporary constants while the coupled model is being brought up.
 		double young_ = 20000.0;

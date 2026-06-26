@@ -1,5 +1,6 @@
 #include "ThermoElasticity.hpp"
 
+#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 #include <cmath>
@@ -91,20 +92,15 @@ namespace polyfem::assembler
 		}
 	} // namespace
 
-	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &, const std::string &root_path)
+	ThermoElasticity::ThermoElasticity()
+		: alpha_("alpha"), T0_("T0")
 	{
-		for (int i = int(alpha_.size()); i <= index; ++i)
-		{
-			alpha_.emplace_back();
-			alpha_.back().init(0.0);
-			T0_.emplace_back();
-			T0_.back().init(0.0);
-		}
+	}
 
-		if (params.contains("alpha"))
-			alpha_[index].init(params["alpha"], root_path);
-		if (params.contains("T0"))
-			T0_[index].init(params["T0"], root_path);
+	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	{
+		alpha_.add_multimaterial(index, params, units.one_over_temperature(), root_path);
+		T0_.add_multimaterial(index, params, units.temperature(), root_path);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> ThermoElasticity::parameters() const
@@ -179,28 +175,24 @@ namespace polyfem::assembler
 
 	template <typename T>
 	T ThermoElasticity::elastic_energy(
-		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &Fe,
+		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F,
 		const double lambda,
 		const double mu) const
 	{
-		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> I(Fe.rows(), Fe.cols());
-		for (int k = 0; k < I.size(); ++k)
-			I(k) = T(0);
-		for (int d = 0; d < Fe.rows(); ++d)
-			I(d, d) = T(1);
-
-		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> strain = (Fe + Fe.transpose()) / T(2) - I;
-		return T(mu) * (strain.transpose() * strain).trace() + T(lambda / 2.0) * strain.trace() * strain.trace();
+		using std::log;
+		const T log_det_j = log(polyfem::utils::determinant(F));
+		return T(mu / 2.0) * ((F.transpose() * F).trace() - T(size()) - T(2) * log_det_j)
+			   + T(lambda / 2.0) * log_det_j * log_det_j;
 	}
 
 	double ThermoElasticity::alpha(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
 	{
-		return eval_param(alpha_, 0.0, p, t, element_id);
+		return alpha_(p, t, element_id);
 	}
 
 	double ThermoElasticity::T0(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
 	{
-		return eval_param(T0_, 0.0, p, t, element_id);
+		return T0_(p, t, element_id);
 	}
 
 	double ThermoElasticity::lambda() const
@@ -214,19 +206,5 @@ namespace polyfem::assembler
 	double ThermoElasticity::mu() const
 	{
 		return young_ / (2.0 * (1.0 + nu_));
-	}
-
-	double ThermoElasticity::eval_param(
-		const std::vector<utils::ExpressionValue> &params,
-		const double default_value,
-		const RowVectorNd &p,
-		const double t,
-		const int element_id)
-	{
-		if (params.empty())
-			return default_value;
-
-		const auto &param = params.size() == 1 ? params.front() : params.at(element_id);
-		return param(p(0), p(1), p.size() == 3 ? p(2) : 0.0, t, element_id);
 	}
 } // namespace polyfem::assembler

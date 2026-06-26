@@ -82,6 +82,9 @@ namespace polyfem::solver
 		POLYFEM_SCOPED_TIMER("mixed assembler hessian");
 
 		hessian.resize(x.size(), x.size());
+		// The autodiff mixed Hessian can change its exact zero pattern between
+		// Newton iterations, so the per-element sparse pattern cache is unsafe.
+		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 		assembler_.assemble_hessian(
 			is_volume_,
 			n_psi_bases_, n_phi_bases_,
