@@ -1,14 +1,21 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/MatParams.hpp>
+
+#include <memory>
 
 namespace polyfem::assembler
 {
+	namespace detail
+	{
+		class ThermoElasticityModel;
+	}
+
 	class ThermoElasticity : public MixedNLAssembler
 	{
 	public:
 		ThermoElasticity();
+		~ThermoElasticity() override;
 
 		std::string name() const override { return "ThermoElasticity"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -25,21 +32,10 @@ namespace polyfem::assembler
 		Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const override;
 
 	private:
-		template <typename T>
-		T compute_energy_aux(const MixedNonLinearAssemblerData &data) const;
+		detail::ThermoElasticityModel &model();
+		const detail::ThermoElasticityModel &model() const;
 
-		template <typename T>
-		T elastic_energy(
-			const RowVectorNd &p,
-			const double t,
-			const int el_id,
-			const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const;
-
-		double alpha(const RowVectorNd &uv, const RowVectorNd &p, const double t, const int element_id) const;
-		double T0(const RowVectorNd &uv, const RowVectorNd &p, const double t, const int element_id) const;
-
-		LameParameters elastic_params_;
-		GenericMatParam alpha_;
-		GenericMatParam T0_;
+		std::unique_ptr<detail::ThermoElasticityModel> model_;
+		std::string elastic_formulation_;
 	};
 } // namespace polyfem::assembler

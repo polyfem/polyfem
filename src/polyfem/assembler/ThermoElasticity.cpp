@@ -1,5 +1,8 @@
 #include "ThermoElasticity.hpp"
 
+#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/NeoHookeanElasticity.hpp>
+
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 
@@ -92,12 +95,72 @@ namespace polyfem::assembler
 		}
 	} // namespace
 
-	ThermoElasticity::ThermoElasticity()
+	namespace detail
+	{
+		class ThermoElasticityModel
+		{
+		public:
+			virtual ~ThermoElasticityModel() = default;
+
+			virtual std::string elastic_name() const = 0;
+			virtual std::map<std::string, Assembler::ParamFunc> parameters() const = 0;
+			virtual void set_size(const int size) = 0;
+			virtual void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) = 0;
+
+			virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
+			virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
+			virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+		};
+
+		template <typename Elasticity>
+		class ThermoElasticityModelImpl : public ThermoElasticityModel
+		{
+		public:
+			ThermoElasticityModelImpl();
+
+			std::string elastic_name() const override { return elastic_.name(); }
+			std::map<std::string, Assembler::ParamFunc> parameters() const override;
+
+			void set_size(const int size) override;
+			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+
+			double compute_energy(const MixedNonLinearAssemblerData &data) const override;
+			Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const override;
+			Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const override;
+
+		private:
+			int size() const { return size_; }
+			int cols() const { return 1; }
+
+			template <typename T>
+			T compute_energy_aux(const MixedNonLinearAssemblerData &data) const;
+
+			double alpha(const RowVectorNd &uv, const RowVectorNd &p, const double t, const int element_id) const;
+			double T0(const RowVectorNd &uv, const RowVectorNd &p, const double t, const int element_id) const;
+
+			int size_ = -1;
+			Elasticity elastic_;
+			GenericMatParam alpha_;
+			GenericMatParam T0_;
+		};
+
+		std::unique_ptr<ThermoElasticityModel> make_thermo_elasticity_model(const std::string &elastic_formulation)
+		{
+			if (elastic_formulation == "NeoHookean")
+				return std::make_unique<ThermoElasticityModelImpl<NeoHookeanElasticity>>();
+
+			log_and_throw_error("ThermoElasticity currently supports only NeoHookean elastic_material, got '{}'.", elastic_formulation);
+		}
+	} // namespace detail
+
+	template <typename Elasticity>
+	detail::ThermoElasticityModelImpl<Elasticity>::ThermoElasticityModelImpl()
 		: alpha_("alpha"), T0_("T0")
 	{
 	}
 
-	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	template <typename Elasticity>
+	void detail::ThermoElasticityModelImpl<Elasticity>::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		alpha_.add_multimaterial(index, params, units.one_over_temperature(), root_path);
 		T0_.add_multimaterial(index, params, units.temperature(), root_path);
@@ -107,49 +170,56 @@ namespace polyfem::assembler
 
 		json elastic_params = params["elastic_material"];
 		const std::string type = elastic_params.value("type", "");
-		if (type != "NeoHookean")
-			log_and_throw_error("ThermoElasticity currently supports only NeoHookean elastic_material, got '{}'.", type);
+		if (type != elastic_.name())
+			log_and_throw_error("ThermoElasticity<{}> requires elastic_material '{}', got '{}'.", elastic_.name(), elastic_.name(), type);
 
 		if (!elastic_params.contains("id") && params.contains("id"))
 			elastic_params["id"] = params["id"];
 		if (!elastic_params.contains("rho") && params.contains("rho"))
 			elastic_params["rho"] = params["rho"];
 
-		elastic_params_.add_multimaterial(index, elastic_params, size() == 3, units.stress(), root_path);
+		elastic_.add_multimaterial(index, elastic_params, units, root_path);
 	}
 
-	void ThermoElasticity::set_size(const int size)
+	template <typename Elasticity>
+	void detail::ThermoElasticityModelImpl<Elasticity>::set_size(const int size)
 	{
-		Assembler::set_size(size);
+		size_ = size;
+		elastic_.set_size(size);
 	}
 
-	std::map<std::string, Assembler::ParamFunc> ThermoElasticity::parameters() const
+	template <typename Elasticity>
+	std::map<std::string, Assembler::ParamFunc> detail::ThermoElasticityModelImpl<Elasticity>::parameters() const
 	{
-		std::map<std::string, ParamFunc> res;
+		std::map<std::string, Assembler::ParamFunc> res;
 		res["alpha"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return alpha(uv, p, t, e); };
 		res["T0"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return T0(uv, p, t, e); };
 		return res;
 	}
 
-	double ThermoElasticity::compute_energy(const MixedNonLinearAssemblerData &data) const
+	template <typename Elasticity>
+	double detail::ThermoElasticityModelImpl<Elasticity>::compute_energy(const MixedNonLinearAssemblerData &data) const
 	{
 		return compute_energy_aux<double>(data);
 	}
 
-	Eigen::VectorXd ThermoElasticity::compute_gradient(const MixedNonLinearAssemblerData &data) const
+	template <typename Elasticity>
+	Eigen::VectorXd detail::ThermoElasticityModelImpl<Elasticity>::compute_gradient(const MixedNonLinearAssemblerData &data) const
 	{
 		const auto energy = compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data);
 		return energy.getGradient();
 	}
 
-	Eigen::MatrixXd ThermoElasticity::compute_hessian(const MixedNonLinearAssemblerData &data) const
+	template <typename Elasticity>
+	Eigen::MatrixXd detail::ThermoElasticityModelImpl<Elasticity>::compute_hessian(const MixedNonLinearAssemblerData &data) const
 	{
 		const auto energy = compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data);
 		return energy.getHessian();
 	}
 
+	template <typename Elasticity>
 	template <typename T>
-	T ThermoElasticity::compute_energy_aux(const MixedNonLinearAssemblerData &data) const
+	T detail::ThermoElasticityModelImpl<Elasticity>::compute_energy_aux(const MixedNonLinearAssemblerData &data) const
 	{
 		assert(size() == 2 || size() == 3);
 		assert(cols() == 1);
@@ -183,39 +253,100 @@ namespace polyfem::assembler
 			using std::exp;
 			const T theta = exp(T(alpha) * (temperature - T(T0)));
 			const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> Fe = F / theta;
-			const RowVectorNd point = data.phi_vals.val.row(p);
-			energy += (elastic_energy(point, data.t, data.phi_vals.element_id, Fe)
-					   - elastic_energy(point, data.t, data.phi_vals.element_id, F))
+			energy += (elastic_.elastic_energy_density(
+						   data.phi_vals.quadrature.points.row(p), data.phi_vals.val.row(p), data.t, data.phi_vals.element_id, Fe)
+					   - elastic_.elastic_energy_density(
+						   data.phi_vals.quadrature.points.row(p), data.phi_vals.val.row(p), data.t, data.phi_vals.element_id, F))
 					  * data.da(p);
 		}
 
 		return energy;
 	}
 
-	template <typename T>
-	T ThermoElasticity::elastic_energy(
-		const RowVectorNd &p,
-		const double t,
-		const int el_id,
-		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const
-	{
-		double lambda, mu;
-		elastic_params_.lambda_mu(p, p, t, el_id, lambda, mu);
-
-		using std::log;
-		const T log_det_j = log(polyfem::utils::determinant(F));
-		return T(mu / 2.0) * ((F.transpose() * F).trace() - T(size()) - T(2) * log_det_j)
-			   + T(lambda / 2.0) * log_det_j * log_det_j;
-	}
-
-	double ThermoElasticity::alpha(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
+	template <typename Elasticity>
+	double detail::ThermoElasticityModelImpl<Elasticity>::alpha(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
 	{
 		return alpha_(p, t, element_id);
 	}
 
-	double ThermoElasticity::T0(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
+	template <typename Elasticity>
+	double detail::ThermoElasticityModelImpl<Elasticity>::T0(const RowVectorNd &, const RowVectorNd &p, const double t, const int element_id) const
 	{
 		return T0_(p, t, element_id);
 	}
+
+	ThermoElasticity::ThermoElasticity() = default;
+
+	ThermoElasticity::~ThermoElasticity() = default;
+
+	std::map<std::string, Assembler::ParamFunc> ThermoElasticity::parameters() const
+	{
+		if (!model_)
+			return {};
+
+		return model_->parameters();
+	}
+
+	void ThermoElasticity::set_size(const int size)
+	{
+		Assembler::set_size(size);
+		if (model_)
+			model_->set_size(size);
+	}
+
+	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	{
+		if (!params.contains("elastic_material") || !params["elastic_material"].is_object())
+			log_and_throw_error("ThermoElasticity requires elastic_material to be an elastic material object.");
+
+		const std::string type = params["elastic_material"].value("type", "");
+		if (!model_)
+		{
+			model_ = detail::make_thermo_elasticity_model(type);
+			elastic_formulation_ = type;
+			model_->set_size(size());
+		}
+		else if (type != elastic_formulation_)
+		{
+			log_and_throw_error(
+				"ThermoElasticity requires all elastic_material entries to have the same type, got '{}' and '{}'.",
+				elastic_formulation_, type);
+		}
+
+		model_->add_multimaterial(index, params, units, root_path);
+	}
+
+	double ThermoElasticity::compute_energy(const MixedNonLinearAssemblerData &data) const
+	{
+		return model().compute_energy(data);
+	}
+
+	Eigen::VectorXd ThermoElasticity::compute_gradient(const MixedNonLinearAssemblerData &data) const
+	{
+		return model().compute_gradient(data);
+	}
+
+	Eigen::MatrixXd ThermoElasticity::compute_hessian(const MixedNonLinearAssemblerData &data) const
+	{
+		return model().compute_hessian(data);
+	}
+
+	detail::ThermoElasticityModel &ThermoElasticity::model()
+	{
+		if (!model_)
+			log_and_throw_error("ThermoElasticity material model was used before materials were initialized.");
+
+		return *model_;
+	}
+
+	const detail::ThermoElasticityModel &ThermoElasticity::model() const
+	{
+		if (!model_)
+			log_and_throw_error("ThermoElasticity material model was used before materials were initialized.");
+
+		return *model_;
+	}
+
+	template class detail::ThermoElasticityModelImpl<NeoHookeanElasticity>;
 
 } // namespace polyfem::assembler
