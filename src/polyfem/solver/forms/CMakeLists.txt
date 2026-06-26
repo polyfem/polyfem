@@ -6,6 +6,8 @@ set(SOURCES
 	BodyForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
+	MixedAssemblerForm.hpp
+	MixedAssemblerForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp

@@ -11,6 +11,7 @@ namespace polyfem::assembler
 {
 	class GenericScalarProblem;
 	class Laplacian;
+	class MixedNLAssembler;
 } // namespace polyfem::assembler
 
 namespace polyfem::solver
@@ -20,6 +21,7 @@ namespace polyfem::solver
 	class ElasticForm;
 	class Form;
 	class InertiaForm;
+	class MixedAssemblerForm;
 	class NLProblem;
 	class StackedForm;
 } // namespace polyfem::solver
@@ -86,6 +88,7 @@ namespace polyfem::varform
 		assembler::AssemblyValsCache temperature_pure_mass_ass_vals_cache_;
 
 		std::shared_ptr<assembler::Assembler> temperature_assembler_;
+		std::shared_ptr<assembler::MixedNLAssembler> thermoelastic_assembler_;
 		std::shared_ptr<assembler::Mass> temperature_mass_assembler_;
 		std::shared_ptr<assembler::HRZMass> temperature_pure_mass_assembler_;
 		std::shared_ptr<assembler::RhsAssembler> temperature_rhs_assembler_;
@@ -99,6 +102,7 @@ namespace polyfem::varform
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> temperature_time_integrator_;
 
 		std::shared_ptr<solver::ElasticForm> temperature_form_;
+		std::shared_ptr<solver::MixedAssemblerForm> thermoelastic_form_;
 		std::shared_ptr<solver::BodyForm> temperature_body_form_;
 		std::shared_ptr<solver::InertiaForm> temperature_inertia_form_;
 		std::shared_ptr<solver::StackedForm> stacked_form_;

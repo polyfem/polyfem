@@ -171,7 +171,7 @@ namespace polyfem::assembler
 			using std::exp;
 			const T theta = exp(T(alpha) * (temperature - T(T0)));
 			const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> Fe = F / theta;
-			energy += elastic_energy(Fe, lambda, mu) * data.da(p);
+			energy += (elastic_energy(Fe, lambda, mu) - elastic_energy(F, lambda, mu)) * data.da(p);
 		}
 
 		return energy;

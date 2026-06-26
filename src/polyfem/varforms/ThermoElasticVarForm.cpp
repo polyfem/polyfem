@@ -16,6 +16,7 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/MixedAssemblerForm.hpp>
 #include <polyfem/solver/forms/StackedForm.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
@@ -241,6 +242,7 @@ namespace polyfem::varform
 		temperature_mass_ass_vals_cache_.init_empty(true);
 		temperature_pure_mass_ass_vals_cache_.init_empty(true);
 		temperature_assembler_ = nullptr;
+		thermoelastic_assembler_ = nullptr;
 		temperature_mass_assembler_ = nullptr;
 		temperature_pure_mass_assembler_ = nullptr;
 		temperature_rhs_assembler_ = nullptr;
@@ -251,6 +253,7 @@ namespace polyfem::varform
 		displacement_time_integrator_ = nullptr;
 		temperature_time_integrator_ = nullptr;
 		temperature_form_ = nullptr;
+		thermoelastic_form_ = nullptr;
 		temperature_body_form_ = nullptr;
 		temperature_inertia_form_ = nullptr;
 		stacked_form_ = nullptr;
@@ -281,6 +284,7 @@ namespace polyfem::varform
 		}
 
 		temperature_assembler_ = std::make_shared<assembler::Laplacian>();
+		thermoelastic_assembler_ = assembler::AssemblerUtils::make_mixed_nl_assembler("ThermoElasticity");
 		mass_assembler_ = std::make_shared<assembler::Mass>();
 		pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
 		temperature_mass_assembler_ = std::make_shared<assembler::Mass>();
@@ -370,6 +374,8 @@ namespace polyfem::varform
 
 		primary_assembler_->set_size(mesh.dimension());
 		primary_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
+		thermoelastic_assembler_->set_size(mesh.dimension());
+		thermoelastic_assembler_->set_materials(body_ids, args["materials"], units, root_path);
 		mass_assembler_->set_size(mesh.dimension());
 		mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
 		pure_mass_assembler_->set_size(mass_assembler_->size());
@@ -806,6 +812,14 @@ namespace polyfem::varform
 			*temperature_assembler_, temperature_ass_vals_cache_, t, form_dt, mesh_->is_volume(),
 			/*jacobian_threshold=*/0.0, solver::ElementInversionCheck::Discrete);
 		stacked_form_->add(temperature_block, temperature_form_);
+
+		assert(thermoelastic_assembler_);
+		thermoelastic_form_ = std::make_shared<solver::MixedAssemblerForm>(
+			space_.n_bases, temperature_space_.n_bases,
+			space_.basis_list(), temperature_space_.basis_list(), space_.geometry_basis_list(),
+			*thermoelastic_assembler_, ass_vals_cache_, temperature_ass_vals_cache_,
+			t, form_dt, mesh_->is_volume());
+		stacked_form_->add(displacement_block, temperature_block, thermoelastic_form_);
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 		const QuadratureOrders temperature_boundary_samples =
