@@ -7,6 +7,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -190,36 +191,6 @@ namespace polyfem::solver
 			return quad;
 		}
 
-		// Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
-		// {
-		// 	assembler::ElementAssemblyValues vals;
-		// 	vals.compute(0, uv.cols() == 3, uv, bs, gbs);
-
-		// 	Eigen::MatrixXd out(uv.rows(), 2);
-		// 	for (long p = 0; p < uv.rows(); ++p)
-		// 	{
-		// 		Eigen::MatrixXd disp_grad;
-		// 		disp_grad.setZero(uv.cols(), uv.cols());
-
-		// 		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
-		// 		{
-		// 			const auto &loc_val = vals.basis_values[j];
-
-		// 			for (int d = 0; d < uv.cols(); ++d)
-		// 			{
-		// 				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
-		// 				{
-		// 					disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-		// 		out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
-		// 	}
-		// 	return out;
-		// }
-
 		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
 		{
 			// update quadrature to capture the point with negative jacobian
@@ -244,7 +215,8 @@ namespace polyfem::solver
 							 const double t, const double dt,
 							 const bool is_volume,
 							 const double jacobian_threshold,
-							 const ElementInversionCheck check_inversion)
+							 const ElementInversionCheck check_inversion,
+							 const unsigned conservative_max_iter)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
@@ -253,6 +225,7 @@ namespace polyfem::solver
 		  t_(t),
 		  jacobian_threshold_(jacobian_threshold),
 		  check_inversion_(check_inversion),
+		  conservative_max_iter_(conservative_max_iter),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -334,6 +307,7 @@ namespace polyfem::solver
 	{
 		for (auto &t : quadrature_hierarchy_)
 			t = Tree();
+		pending_refinement_.reset();
 	}
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -350,7 +324,7 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, 0., conservative_max_iter_);
 			}
 
 			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
@@ -359,21 +333,13 @@ namespace polyfem::solver
 
 		if (invalidID >= 0 && step <= 0.5)
 		{
-			auto &bs = bases_[invalidID];
-			auto &gbs = geom_bases_[invalidID];
-			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree)) // if the tree is refined
-				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
-
-			// verify that new quadrature points don't make x0 invalid
-			// {
-			// 	Quadrature quad;
-			// 	bs.compute_quadrature(quad);
-			// 	const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
-			// 	const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
-			// 	const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
-			// 	const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
-			// 	logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
-			// }
+			// Store as a candidate only; committed in post_step() if/when
+			// this step is accepted (see pending_refinement_ in the header).
+			pending_refinement_ = std::make_pair(invalidID, std::move(subdivision_tree));
+		}
+		else
+		{
+			pending_refinement_.reset();
 		}
 
 		return step;
@@ -384,7 +350,7 @@ namespace polyfem::solver
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 
-		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, 0., conservative_max_iter_);
 		return isvalid;
 	}
 
@@ -407,8 +373,24 @@ namespace polyfem::solver
 		// return true;
 	}
 
-	void ElasticForm::solution_changed(const Eigen::VectorXd &new_x)
+	void ElasticForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
+		if (!pending_refinement_.has_value())
+			return;
+
+		const int dim = is_volume_ ? 3 : 2;
+		const auto [id, subdivision_tree] = *pending_refinement_;
+
+		// Commit the accepted candidate: merge into quadrature_hierarchy_
+		// and rebuild the live quadrature for this element.
+		if (quadrature_hierarchy_[id].merge(subdivision_tree)) // if the tree is refined
+		{
+			auto &bs = bases_[id];
+			auto &gbs = geom_bases_[id];
+			update_quadrature(id, dim, quadrature_hierarchy_[id], quadrature_order_, bs, gbs, ass_vals_cache_);
+		}
+
+		pending_refinement_.reset();
 	}
 
 	void ElasticForm::compute_cached_stiffness()

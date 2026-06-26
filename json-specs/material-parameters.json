@@ -7,6 +7,7 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "CorrectedNeoHookean",
             "MooneyRivlin",
             "MooneyRivlin3Param",
             "MooneyRivlin3ParamSymbolic",
@@ -67,6 +68,40 @@
         "pointer": "/",
         "type": "object",
         "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "CorrectedNeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "CorrectedNeoHookean",
         "required": [
             "type",
             "lambda",

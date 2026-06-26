@@ -9,6 +9,7 @@
 #include "EigenAdapters.hpp"
 #include <algorithms/solve.hpp>
 #include <algorithms/minimize.hpp>
+#include <algorithms/batch-minimize.hpp>
 using namespace miso;
 #endif
 
@@ -16,9 +17,6 @@ using namespace polyfem::assembler;
 
 namespace polyfem::utils
 {
-#ifdef POLYFEM_WITH_MISO
-	static constexpr unsigned MAX_ITER = 1'000'000;
-#endif
 	Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem)
 	{
 		if (n_elem < 0)
@@ -119,11 +117,14 @@ namespace polyfem::utils
 	} // anonymous namespace
 #endif // POLYFEM_WITH_MISO
 
+	// Debug utility: counts elements with invalid Jacobian in a given configuration.
+	// Not used in the solve loop; called for diagnostics and visualization.
 	std::vector<int> count_invalid(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
-		const Eigen::VectorXd &u)
+		const Eigen::VectorXd &u,
+		const unsigned max_iter)
 	{
 		std::vector<int> invalidList;
 #ifdef POLYFEM_WITH_MISO
@@ -135,7 +136,7 @@ namespace polyfem::utils
 
 		auto run_solve = [&](auto problem, int e) {
 			Info info;
-			auto sols = solve(std::move(problem), {0.0}, MAX_ITER, true, 0., &info);
+			auto sols = solve(std::move(problem), {0.0}, max_iter, true, 0., &info);
 			if (!info.success())
 				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
 			return !sols.empty();
@@ -182,7 +183,8 @@ namespace polyfem::utils
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
-		const double threshold)
+		const double threshold,
+		const unsigned max_iter)
 	{
 #ifdef POLYFEM_WITH_MISO
 		RealInterval::init();
@@ -191,9 +193,9 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
 
-		auto run_solve = [](auto problem, int e) {
+		auto run_solve = [threshold, max_iter](auto problem, int e) {
 			Info info;
-			auto sols = solve(std::move(problem), {0.0}, MAX_ITER, true, 0., &info);
+			auto sols = solve(std::move(problem), {threshold}, max_iter, true, 0., &info);
 			if (!info.success())
 			{
 				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
@@ -241,79 +243,15 @@ namespace polyfem::utils
 #endif
 	}
 
-	bool is_valid(
-		const int dim,
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &gbases,
-		const Eigen::VectorXd &u1,
-		const Eigen::VectorXd &u2,
-		const double threshold)
-	{
-#ifdef POLYFEM_WITH_MISO
-		RealInterval::init();
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
-		const int n_elem = static_cast<int>(bases.size());
-
-		auto run_minimize = [](auto problem, int e) {
-			Info info;
-			auto result = minimize(std::move(problem), 1., {0.0}, MAX_ITER, 0., 0., &info);
-			if (!info.success())
-			{
-				logger().warn("Jacobian minimize gave up at element {} after {} iterations", e, info.numIterations);
-				return false; // ambiguous counts as invalid
-			}
-			return lower(result) >= 1.0;
-		};
-
-		for (int e = 0; e < n_elem; ++e)
-		{
-			const int o = e * n_per;
-			bool valid;
-			if (dim == 2)
-			{
-				switch (order)
-				{
-				case 1: valid = run_minimize(make_p1tri_cgv(cp1, cp2, o), e); break;
-				case 2: valid = run_minimize(make_p2tri_cgv(cp1, cp2, o), e); break;
-				case 3: valid = run_minimize(make_p3tri_cgv(cp1, cp2, o), e); break;
-				case 4: valid = run_minimize(make_p4tri_cgv(cp1, cp2, o), e); break;
-				default: throw std::invalid_argument("Order not supported");
-				}
-			}
-			else
-			{
-				switch (order)
-				{
-				case 1: valid = run_minimize(make_p1tet_cgv(cp1, cp2, o), e); break;
-				case 2: valid = run_minimize(make_p2tet_cgv(cp1, cp2, o), e); break;
-				case 3: valid = run_minimize(make_p3tet_cgv(cp1, cp2, o), e); break;
-				default: throw std::invalid_argument("Order not supported");
-				}
-			}
-			if (!valid)
-			{
-				RealInterval::deinit();
-				return false;
-			}
-		}
-		RealInterval::deinit();
-		return true;
-#else
-		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
-		return false;
-#endif
-	}
-
 	std::tuple<double, int, double, Tree> max_time_step(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u1,
 		const Eigen::VectorXd &u2,
-		double precision)
+		double precision,
+		double threshold,
+		const unsigned max_iter)
 	{
 #ifdef POLYFEM_WITH_MISO
 		RealInterval::init();
@@ -322,6 +260,7 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
 		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 		const int n_elem = static_cast<int>(bases.size());
+
 
 		double step = 1.0;
 		int invalid_id = -1;
@@ -331,50 +270,54 @@ namespace polyfem::utils
 		// Spatial split: 2^dim children (ignore time subdivisions)
 		const unsigned n_children = (dim == 2) ? 4u : 8u;
 
-		auto run = [&](auto problem, int e) {
+		// Build a vector of all per-element problems (same type for all elements) and
+		// run a single batch_minimize over the entire mesh.
+		auto run_batch = [&](auto factory) {
+			using ProblemType = decltype(factory(0));
+			std::vector<ProblemType> problems;
+			problems.reserve(n_elem);
+			for (int e = 0; e < n_elem; ++e)
+				problems.push_back(factory(e * n_per));
+
 			Info info;
-			auto result = minimize(std::move(problem), precision, {0.0}, MAX_ITER, 0., 0., &info);
+			auto result = batch_minimize(std::move(problems), precision, {threshold}, max_iter, 0., 0., &info);
 			const double t_lo = lower(result);
 			if (!info.success())
 			{
 				if (t_lo <= 0)
-					log_and_throw_error("Jacobian minimize gave up at element {} with step size 0 after {} iterations", e, info.numIterations);
+					log_and_throw_error("Jacobian batch_minimize gave up with step size 0 after {} iterations", info.numIterations);
 				else
-					logger().warn("Jacobian minimize gave up at element {} after {} iterations (step={})", e, info.numIterations, t_lo);
+					logger().warn("Jacobian batch_minimize gave up after {} iterations (step={})", info.numIterations, t_lo);
 			}
 			if (t_lo < step)
 			{
 				step = t_lo;
-				invalid_id = e;
+				invalid_id = static_cast<int>(info.pathToFeasibleId);
 				invalid_step = upper(result);
 				tree = Tree{};
 				build_tree(tree, info.pathToFeasible, n_children);
 			}
 		};
 
-		for (int e = 0; e < n_elem; ++e)
+		if (dim == 2)
 		{
-			const int o = e * n_per;
-			if (dim == 2)
+			switch (order)
 			{
-				switch (order)
-				{
-				case 1: run(make_p1tri_cgv(cp1, cp2, o), e); break;
-				case 2: run(make_p2tri_cgv(cp1, cp2, o), e); break;
-				case 3: run(make_p3tri_cgv(cp1, cp2, o), e); break;
-				case 4: run(make_p4tri_cgv(cp1, cp2, o), e); break;
-				default: throw std::invalid_argument("Order not supported");
-				}
+			case 1: run_batch([&](int o) { return make_p1tri_cgv(cp1, cp2, o); }); break;
+			case 2: run_batch([&](int o) { return make_p2tri_cgv(cp1, cp2, o); }); break;
+			case 3: run_batch([&](int o) { return make_p3tri_cgv(cp1, cp2, o); }); break;
+			case 4: run_batch([&](int o) { return make_p4tri_cgv(cp1, cp2, o); }); break;
+			default: throw std::invalid_argument("Order not supported");
 			}
-			else
+		}
+		else
+		{
+			switch (order)
 			{
-				switch (order)
-				{
-				case 1: run(make_p1tet_cgv(cp1, cp2, o), e); break;
-				case 2: run(make_p2tet_cgv(cp1, cp2, o), e); break;
-				case 3: run(make_p3tet_cgv(cp1, cp2, o), e); break;
-				default: throw std::invalid_argument("Order not supported");
-				}
+			case 1: run_batch([&](int o) { return make_p1tet_cgv(cp1, cp2, o); }); break;
+			case 2: run_batch([&](int o) { return make_p2tet_cgv(cp1, cp2, o); }); break;
+			case 3: run_batch([&](int o) { return make_p3tet_cgv(cp1, cp2, o); }); break;
+			default: throw std::invalid_argument("Order not supported");
 			}
 		}
 
