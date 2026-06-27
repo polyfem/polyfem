@@ -73,6 +73,7 @@ namespace polyfem::time_integrator
 		/// @param name name of the type of ImplicitTimeIntegrator to construct
 		/// @return new implicit time integrator of type specfied by name
 		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params);
+		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params, const DynamicOrder dynamic_order);
 
 		/// @brief Get a vector of the names of possible ImplicitTimeIntegrators
 		/// @return names in no particular order

@@ -65,19 +65,28 @@ namespace polyfem
 
 		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)
 		{
+			return construct_time_integrator(params, DynamicOrder::Second);
+		}
+
+		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(
+			const json &params,
+			const DynamicOrder dynamic_order)
+		{
 			const std::string type = params.is_object() ? params["type"] : params;
 
 			std::shared_ptr<ImplicitTimeIntegrator> integrator;
 			if (type == "implict_euler" || type == "ImplicitEuler")
 			{
-				integrator = std::make_shared<ImplicitEuler>();
+				integrator = std::make_shared<ImplicitEuler>(dynamic_order);
 			}
 			else if (type == "implict_newmark" || type == "ImplicitNewmark")
 			{
-				integrator = std::make_shared<ImplicitNewmark>();
+				integrator = std::make_shared<ImplicitNewmark>(dynamic_order);
 			}
 			else if (utils::StringUtils::startswith(type, "BDF"))
 			{
+				if (dynamic_order != DynamicOrder::Second)
+					log_and_throw_error("BDF only supports second-order dynamics.");
 				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)));
 			}
 			else

@@ -676,7 +676,9 @@ namespace polyfem::varform
 
 		if (is_time_dependent)
 		{
-			displacement_time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(time_integrator_args(displacement_space_id_));
+			displacement_time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
+				time_integrator_args(displacement_space_id_),
+				time_integrator::ImplicitTimeIntegrator::DynamicOrder::Second);
 
 			Eigen::MatrixXd displacement_solution, displacement_velocity, displacement_acceleration;
 			initial_elastic_solution(displacement_solution);
@@ -729,7 +731,9 @@ namespace polyfem::varform
 
 		if (is_time_dependent)
 		{
-			temperature_time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(time_integrator_args(temperature_space_id_));
+			temperature_time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
+				time_integrator_args(temperature_space_id_),
+				time_integrator::ImplicitTimeIntegrator::DynamicOrder::First);
 
 			Eigen::MatrixXd temperature_solution;
 			initial_temperature_solution(temperature_solution);

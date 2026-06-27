@@ -101,3 +101,26 @@ TEST_CASE("time integrator", "[time_integrator]")
 		x /= 100;
 	}
 }
+
+TEST_CASE("first order implicit Euler", "[time_integrator]")
+{
+	const double dt = 0.1;
+	const int n = 10;
+	Eigen::VectorXd x_prev = Eigen::VectorXd::LinSpaced(n, 1, n);
+	Eigen::VectorXd v_prev = Eigen::VectorXd::Ones(n);
+	Eigen::VectorXd a_prev = Eigen::VectorXd::Ones(n);
+
+	ImplicitEuler time_integrator(ImplicitTimeIntegrator::DynamicOrder::First);
+	time_integrator.init(x_prev, v_prev, a_prev, dt);
+
+	CHECK((time_integrator.x_tilde() - x_prev).norm() < 1e-12);
+	CHECK(time_integrator.acceleration_scaling() == dt);
+
+	const Eigen::VectorXd x = 2 * x_prev;
+	CHECK((time_integrator.compute_velocity(x) - (x - x_prev) / dt).norm() < 1e-12);
+	CHECK(time_integrator.compute_acceleration(time_integrator.compute_velocity(x)).norm() < 1e-12);
+
+	time_integrator.update_quantities(x);
+	CHECK((time_integrator.x_prev() - x).norm() < 1e-12);
+	CHECK(time_integrator.a_prev().norm() < 1e-12);
+}
