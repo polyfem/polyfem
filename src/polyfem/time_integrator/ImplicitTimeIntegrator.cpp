@@ -85,9 +85,7 @@ namespace polyfem
 			}
 			else if (utils::StringUtils::startswith(type, "BDF"))
 			{
-				if (dynamic_order != DynamicOrder::Second)
-					log_and_throw_error("BDF only supports second-order dynamics.");
-				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)));
+				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)), dynamic_order);
 			}
 			else
 			{
