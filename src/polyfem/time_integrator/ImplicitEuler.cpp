@@ -2,6 +2,11 @@
 
 namespace polyfem::time_integrator
 {
+	ImplicitEuler::ImplicitEuler(const DynamicOrder dynamic_order)
+		: ImplicitTimeIntegrator(dynamic_order)
+	{
+	}
+
 	void ImplicitEuler::update_quantities(const Eigen::VectorXd &x)
 	{
 		const Eigen::VectorXd v = compute_velocity(x);

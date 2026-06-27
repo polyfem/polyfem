@@ -4,7 +4,8 @@
 
 namespace polyfem::time_integrator
 {
-	BDF::BDF(const int order)
+	BDF::BDF(const int order, const DynamicOrder dynamic_order)
+		: ImplicitTimeIntegrator(dynamic_order)
 	{
 		if (order < 1 || order > 6)
 			log_and_throw_error("BDF order must be 1 ≤ n ≤ 6");

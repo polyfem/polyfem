@@ -1,7 +1,16 @@
 #include "ImplicitNewmark.hpp"
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem::time_integrator
 {
+	ImplicitNewmark::ImplicitNewmark(const DynamicOrder dynamic_order)
+		: ImplicitTimeIntegrator(dynamic_order)
+	{
+		if (dynamic_order != DynamicOrder::Second)
+			log_and_throw_error("ImplicitNewmark only supports second-order dynamics.");
+	}
+
 	void ImplicitNewmark::set_parameters(const json &params)
 	{
 		beta_ = params.at("gamma");

@@ -13,7 +13,7 @@ namespace polyfem::time_integrator
 	class BDF : public ImplicitTimeIntegrator
 	{
 	public:
-		BDF(const int order = 1);
+		BDF(const int order = 1, const DynamicOrder dynamic_order = DynamicOrder::Second);
 
 		/// @brief Set the number of steps parameters from a json object.
 		/// @param params json containing `{"steps": 1}`
