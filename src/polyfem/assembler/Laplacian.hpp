@@ -11,10 +11,10 @@ namespace polyfem
 		class Laplacian : public LinearAssembler, public NLAssembler
 		{
 		public:
+			using LinearAssembler::assemble;
 			using NLAssembler::assemble_energy;
 			using NLAssembler::assemble_gradient;
 			using NLAssembler::assemble_hessian;
-			using LinearAssembler::assemble;
 
 			std::string name() const override { return "Laplacian"; }
 			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }

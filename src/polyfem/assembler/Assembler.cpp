@@ -805,11 +805,11 @@ namespace polyfem::assembler
 					local_hessian = ipc::project_to_psd(local_hessian);
 
 				const auto local_index_data = [&](
-												const int local_index,
-												const std::vector<basis::Local2Global> *&global,
-												int &component,
-												int &component_count,
-												int &global_offset) {
+												  const int local_index,
+												  const std::vector<basis::Local2Global> *&global,
+												  int &component,
+												  int &component_count,
+												  int &global_offset) {
 					assert(local_index >= 0);
 					assert(local_index < local_size);
 
