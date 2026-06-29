@@ -173,9 +173,9 @@ namespace polyfem::assembler
 		if (type != elastic_.name())
 			log_and_throw_error("ThermoElasticity<{}> requires elastic_material '{}', got '{}'.", elastic_.name(), elastic_.name(), type);
 
-		if (!elastic_params.contains("id") && params.contains("id"))
+		if (params.contains("id"))
 			elastic_params["id"] = params["id"];
-		if (!elastic_params.contains("rho") && params.contains("rho"))
+		if (params.contains("rho"))
 			elastic_params["rho"] = params["rho"];
 
 		elastic_.add_multimaterial(index, elastic_params, units, root_path);

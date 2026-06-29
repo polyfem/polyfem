@@ -75,9 +75,9 @@ namespace polyfem::varform
 			if (!assembler::AssemblerUtils::is_elastic_material(type))
 				log_and_throw_error("ThermoElasticity elastic_material must be an elastic material, got '{}'.", type);
 
-			if (!elastic_material.contains("id") && material.contains("id"))
+			if (material.contains("id"))
 				elastic_material["id"] = material["id"];
-			if (!elastic_material.contains("rho") && material.contains("rho"))
+			if (material.contains("rho"))
 				elastic_material["rho"] = material["rho"];
 
 			return elastic_material;
