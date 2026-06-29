@@ -13,8 +13,8 @@ namespace polyfem::time_integrator
 
 	void ImplicitNewmark::set_parameters(const json &params)
 	{
-		beta_ = params.at("gamma");
-		gamma_ = params.at("beta");
+		gamma_ = params.at("gamma");
+		beta_ = params.at("beta");
 	}
 
 	void ImplicitNewmark::update_quantities(const Eigen::VectorXd &x)
