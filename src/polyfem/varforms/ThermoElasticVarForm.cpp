@@ -748,6 +748,12 @@ namespace polyfem::varform
 			const double temperature_scaling = temperature_time_integrator_->acceleration_scaling();
 			temperature_form_->set_weight(temperature_scaling);
 			temperature_body_form_->set_weight(temperature_scaling);
+
+			// The thermoelastic mixed energy is a mechanical potential depending on
+			// both displacement and temperature. Keep it on the same dynamic scale
+			// as the elastic displacement potential; otherwise it dominates the
+			// transient step by a factor of O(1 / dt^2).
+			thermoelastic_form_->set_weight(displacement_time_integrator_->acceleration_scaling());
 		}
 		else
 		{
