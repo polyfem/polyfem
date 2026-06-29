@@ -981,6 +981,31 @@ namespace polyfem::varform
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
 
+		const auto append_thermo_material_fields = [&]() {
+			const auto &paraview_options = args["output"]["paraview"]["options"];
+			if (!paraview_options["material"] || !has_element_samples || !thermoelastic_assembler_)
+				return;
+
+			const auto params = thermoelastic_assembler_->parameters();
+			std::map<std::string, Eigen::MatrixXd> param_values;
+			for (const auto &[p, _] : params)
+				param_values[p].setZero(output_rows, 1);
+
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				for (const auto &[p, func] : params)
+					param_values.at(p)(i) = func(sample.local_points.row(i), sample.points.row(i), sample.time, element_id);
+			}
+
+			for (const auto &[name, values] : param_values)
+				if (options.export_field(name))
+					fields.push_back({name, values, io::OutputField::Association::Point});
+		};
+
 		const auto sample_temperature = [&](Eigen::MatrixXd &values, Eigen::MatrixXd *gradients = nullptr) -> bool {
 			if (has_element_samples)
 			{
@@ -1050,6 +1075,8 @@ namespace polyfem::varform
 					fields.push_back({"temperature_gradient", gradients, io::OutputField::Association::Point});
 			}
 		}
+
+		append_thermo_material_fields();
 
 		return fields;
 	}
