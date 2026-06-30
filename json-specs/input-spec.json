@@ -1791,12 +1791,6 @@
     },
     {
         "pointer": "/boundary_conditions/rhs/*/value",
-        "type": "include",
-        "spec_file": "value.json",
-        "doc": "Right-hand side value."
-    },
-    {
-        "pointer": "/boundary_conditions/rhs/*/value",
         "type": "list",
         "doc": "Right-hand side value for a vector-valued finite element space."
     },

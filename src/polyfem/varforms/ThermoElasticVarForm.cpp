@@ -3,6 +3,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
@@ -171,6 +172,7 @@ namespace polyfem::varform
 		temperature_mass_assembler_ = nullptr;
 		temperature_pure_mass_assembler_ = nullptr;
 		temperature_rhs_assembler_ = nullptr;
+		temperature_rhs_density_ = std::make_shared<assembler::NoDensity>();
 		temperature_mass_.resize(0, 0);
 		temperature_pure_mass_.resize(0, 0);
 		stacked_lumped_mass_.resize(0, 0);
@@ -302,7 +304,6 @@ namespace polyfem::varform
 
 		temperature_assembler_->set_size(1);
 		temperature_mass_assembler_->set_size(1);
-		temperature_mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
 		temperature_pure_mass_assembler_->set_size(1);
 
 		problem->init(mesh);
@@ -591,9 +592,10 @@ namespace polyfem::varform
 		build_rhs_assembler();
 		assert(rhs_assembler_ != nullptr);
 		assert(temperature_rhs_assembler_ != nullptr);
+		assert(temperature_rhs_density_ != nullptr);
 		rhs_assembler_->assemble(mass_assembler_->density(), rhs_);
 		rhs_ *= -1;
-		temperature_rhs_assembler_->assemble(temperature_mass_assembler_->density(), temperature_rhs_);
+		temperature_rhs_assembler_->assemble(*temperature_rhs_density_, temperature_rhs_);
 		temperature_rhs_ *= -1;
 
 		timings.assigning_rhs_time = timer.getElapsedTime();
@@ -749,7 +751,7 @@ namespace polyfem::varform
 			temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,
 			temperature_boundary_.local_neumann_boundary, temperature_boundary_samples,
 			temperature_rhs_, *temperature_rhs_assembler_,
-			temperature_mass_assembler_->density(),
+			*temperature_rhs_density_,
 			/*is_formulation_mixed=*/false, is_time_dependent);
 		temperature_body_form_->update_quantities(t, temperature);
 		stacked_form_->add(temperature_block, temperature_body_form_);

@@ -9,6 +9,7 @@ namespace polysolve::linear
 
 namespace polyfem::assembler
 {
+	class Density;
 	class GenericScalarProblem;
 	class Laplacian;
 	class MixedNLAssembler;
@@ -93,6 +94,7 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::Mass> temperature_mass_assembler_;
 		std::shared_ptr<assembler::HRZMass> temperature_pure_mass_assembler_;
 		std::shared_ptr<assembler::RhsAssembler> temperature_rhs_assembler_;
+		std::shared_ptr<assembler::Density> temperature_rhs_density_;
 
 		StiffnessMatrix temperature_mass_;
 		StiffnessMatrix temperature_pure_mass_;
