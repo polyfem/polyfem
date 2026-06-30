@@ -205,11 +205,11 @@ namespace polyfem::varform
 				elastic_assembler->set_use_robust_jacobian();
 		}
 
-		temperature_assembler_ = std::make_shared<assembler::Laplacian>();
+		temperature_assembler_ = std::make_shared<assembler::Laplacian>("conductivity");
 		thermoelastic_assembler_ = assembler::AssemblerUtils::make_mixed_nl_assembler("ThermoElasticity");
 		mass_assembler_ = std::make_shared<assembler::Mass>();
 		pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
-		temperature_mass_assembler_ = std::make_shared<assembler::Mass>();
+		temperature_mass_assembler_ = std::make_shared<assembler::Mass>(std::make_shared<assembler::ThermalMassDensity>());
 		temperature_pure_mass_assembler_ = std::make_shared<assembler::HRZMass>();
 
 		problem = std::make_shared<assembler::GenericTensorProblem>("ThermoElasticDisplacement");
@@ -303,7 +303,9 @@ namespace polyfem::varform
 		pure_mass_assembler_->set_size(mass_assembler_->size());
 
 		temperature_assembler_->set_size(1);
+		temperature_assembler_->set_materials(body_ids, args["materials"], units, root_path);
 		temperature_mass_assembler_->set_size(1);
+		temperature_mass_assembler_->set_materials(body_ids, args["materials"], units, root_path);
 		temperature_pure_mass_assembler_->set_size(1);
 
 		problem->init(mesh);

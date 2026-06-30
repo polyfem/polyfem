@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 // local assembler for laplace equation
@@ -11,13 +12,16 @@ namespace polyfem
 		class Laplacian : public LinearAssembler, public NLAssembler
 		{
 		public:
+			explicit Laplacian(const std::string &conductivity_param_name = "");
+
 			using LinearAssembler::assemble;
 			using NLAssembler::assemble_energy;
 			using NLAssembler::assemble_gradient;
 			using NLAssembler::assemble_hessian;
 
 			std::string name() const override { return "Laplacian"; }
-			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+			std::map<std::string, ParamFunc> parameters() const override;
+			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 			/// computes local stiffness matrix (1x1) for bases i,j
 			/// where i,j is passed in through data
@@ -48,6 +52,12 @@ namespace polyfem
 			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const override;
 
 			bool is_linear() const override { return true; }
+
+		private:
+			double conductivity(const RowVectorNd &uv, const RowVectorNd &p, double t, int element_id) const;
+
+			std::string conductivity_param_name_;
+			GenericMatParam conductivity_;
 		};
 	} // namespace assembler
 } // namespace polyfem

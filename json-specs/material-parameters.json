@@ -173,7 +173,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "heat_capacity",
+            "conductivity"
         ],
         "doc": "Thermoelastic mixed material. The displacement block currently reuses the nested elastic_material and the temperature block uses a scalar Laplacian."
     },
@@ -218,6 +220,27 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Reference temperature"
+    },
+    {
+        "pointer": "/rho",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Density"
+    },
+    {
+        "pointer": "/heat_capacity",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Specific heat capacity used by the temperature block"
+    },
+    {
+        "pointer": "/conductivity",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Thermal conductivity used by the temperature block"
     },
     {
         "pointer": "/elastic_material",
