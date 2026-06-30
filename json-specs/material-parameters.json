@@ -222,13 +222,6 @@
         "doc": "Reference temperature"
     },
     {
-        "pointer": "/rho",
-        "type": "include",
-        "spec_file": "value1.json",
-        "default": 1,
-        "doc": "Density"
-    },
-    {
         "pointer": "/heat_capacity",
         "type": "include",
         "spec_file": "value1.json",
