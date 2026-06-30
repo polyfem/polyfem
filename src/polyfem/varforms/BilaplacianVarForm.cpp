@@ -27,6 +27,8 @@ namespace polyfem::varform
 	{
 		VarForm::reset();
 		space_.reset();
+		solution_space_id_ = -1;
+		auxiliary_space_id_ = -1;
 		boundary_.reset();
 		ass_vals_cache_.init_empty();
 		mass_ass_vals_cache_.init_empty(true);
@@ -54,6 +56,40 @@ namespace polyfem::varform
 	{
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
+		const json &discr_orders = args.at("space").at("discr_order");
+
+		const json &materials = args.at("materials");
+		if (materials.is_array() && materials.empty())
+			log_and_throw_error("Bilaplacian formulations require at least one material.");
+		const json &first_material = materials.is_array() ? materials.at(0) : materials;
+		solution_space_id_ = first_material.at("solution_space_id").get<int>();
+		auxiliary_space_id_ = first_material.at("auxiliary_space_id").get<int>();
+		if (solution_space_id_ == auxiliary_space_id_)
+			log_and_throw_error("Bilaplacian solution and auxiliary fields must use different FE space IDs.");
+
+		if (discr_orders.is_array())
+		{
+			bool has_solution_space = false;
+			bool has_auxiliary_space = false;
+			for (const json &entry : discr_orders)
+			{
+				const int fe_space_id = entry.at("fe_space").get<int>();
+				has_solution_space |= fe_space_id == solution_space_id_;
+				has_auxiliary_space |= fe_space_id == auxiliary_space_id_;
+			}
+			if (!has_solution_space || !has_auxiliary_space)
+				log_and_throw_error("Bilaplacian discretization-order lists must explicitly name the solution and auxiliary FE spaces.");
+		}
+
+		if (materials.is_array())
+		{
+			for (const json &material : materials)
+			{
+				if (material.at("solution_space_id").get<int>() != solution_space_id_
+					|| material.at("auxiliary_space_id").get<int>() != auxiliary_space_id_)
+					log_and_throw_error("All Bilaplacian materials must use the same solution and auxiliary FE space IDs.");
+			}
+		}
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
 		mass_assembler_ = std::make_shared<assembler::Mass>();
@@ -258,7 +294,8 @@ namespace polyfem::varform
 	std::shared_ptr<assembler::RhsAssembler> BilaplacianVarForm::build_rhs_assembler(
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
-		const assembler::AssemblyValsCache &ass_vals_cache)
+		const assembler::AssemblyValsCache &ass_vals_cache,
+		const int fe_space_id)
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
@@ -271,7 +308,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			n_bases, 1, bases, space_.geometry_basis_list(), ass_vals_cache, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			fe_space_id);
 	}
 
 	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -282,7 +320,7 @@ namespace polyfem::varform
 		assert(pure_mass_assembler_);
 
 		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
+		assign_discr_orders(args["space"]["discr_order"], solution_space_id_, mesh, space_disc_orders);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -354,9 +392,8 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		const int order = args["space"]["pressure_discr_order"];
-		Eigen::VectorXi pressure_disc_orders(mesh.n_elements());
-		pressure_disc_orders.setConstant(order);
+		Eigen::VectorXi pressure_disc_orders;
+		assign_discr_orders(args["space"]["discr_order"], auxiliary_space_id_, mesh, pressure_disc_orders);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(
@@ -458,7 +495,7 @@ namespace polyfem::varform
 		else
 		{
 			Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
-			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_);
+			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_, auxiliary_space_id_);
 			const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 			const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
 			tmp_rhs_assembler->set_bc(

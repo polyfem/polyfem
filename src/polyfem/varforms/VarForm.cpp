@@ -744,6 +744,11 @@ namespace polyfem::varform
 
 	void VarForm::assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
 	{
+		assign_discr_orders(discr_order, -1, mesh, disc_orders);
+	}
+
+	void VarForm::assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
+	{
 		disc_orders.resize(mesh.n_elements());
 
 		if (discr_order.is_number_integer())
@@ -761,35 +766,44 @@ namespace polyfem::varform
 		}
 		else if (discr_order.is_array())
 		{
-			const auto b_discr_orders = discr_order;
-
+			disc_orders.setOnes();
 			std::map<int, int> b_orders;
-			for (size_t i = 0; i < b_discr_orders.size(); ++i)
+			bool has_matching_order = false;
+			for (const json &entry : discr_order)
 			{
-				assert(b_discr_orders[i]["id"].is_array() || b_discr_orders[i]["id"].is_number_integer());
+				if (entry.contains("fe_space"))
+				{
+					const int entry_space_id = entry["fe_space"].get<int>();
+					if (entry_space_id >= 0 && fe_space_id < 0)
+						log_and_throw_error("FE-space-specific discretization orders require an FE space ID.");
+					if (entry_space_id >= 0 && entry_space_id != fe_space_id)
+						continue;
+				}
 
-				const int order = b_discr_orders[i]["order"];
-				for (const int id : utils::json_as_array<int>(b_discr_orders[i]["id"]))
+				has_matching_order = true;
+				const int order = entry["order"];
+				if (!entry.contains("id") || (entry["id"].is_number_integer() && entry["id"].get<int>() < 0))
+				{
+					disc_orders.setConstant(order);
+					continue;
+				}
+
+				for (const int id : utils::json_as_array<int>(entry["id"]))
 				{
 					b_orders[id] = order;
 					logger().trace("bid {}, discr {}", id, order);
 				}
 			}
 
+			if (!has_matching_order)
+				log_and_throw_error("Missing discretization order for FE space {}.", fe_space_id);
+
 			for (int e = 0; e < mesh.n_elements(); ++e)
 			{
 				const int bid = mesh.get_body_id(e);
 				const auto order = b_orders.find(bid);
-				if (order == b_orders.end())
-				{
-					logger().debug("Missing discretization order for body {}; using 1", bid);
-					b_orders[bid] = 1;
-					disc_orders[e] = 1;
-				}
-				else
-				{
+				if (order != b_orders.end())
 					disc_orders[e] = order->second;
-				}
 			}
 		}
 		else

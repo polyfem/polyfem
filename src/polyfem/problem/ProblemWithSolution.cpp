@@ -9,7 +9,7 @@ namespace polyfem
 		{
 		}
 
-		void ProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
@@ -28,7 +28,7 @@ namespace polyfem
 			}
 		}
 
-		void ProblemWithSolution::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ProblemWithSolution::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			exact(pts, t, val);
 		}
@@ -71,7 +71,7 @@ namespace polyfem
 		{
 		}
 
-		void BilaplacianProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void BilaplacianProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val.resize(pts.rows(), 1);
 
@@ -83,7 +83,7 @@ namespace polyfem
 			}
 		}
 
-		void BilaplacianProblemWithSolution::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void BilaplacianProblemWithSolution::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			exact(pts, t, val);
 		}

@@ -235,12 +235,12 @@ namespace polyfem
 		{
 		}
 
-		void MinSurfProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void MinSurfProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = -10 * Eigen::MatrixXd::Ones(pts.rows(), 1);
 		}
 
-		void MinSurfProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void MinSurfProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 		}
@@ -250,17 +250,17 @@ namespace polyfem
 		{
 		}
 
-		void TimeDependentProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TimeDependentProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Ones(pts.rows(), 1);
 		}
 
-		void TimeDependentProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TimeDependentProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 		}
 
-		void TimeDependentProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void TimeDependentProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 		}
@@ -270,7 +270,7 @@ namespace polyfem
 		{
 		}
 
-		void GenericScalarProblemExact::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericScalarProblemExact::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int) const
 		{
 			exact(pts, 0, val);
 		}
@@ -306,7 +306,7 @@ namespace polyfem
 			return res;
 		}
 
-		void GenericScalarProblemExact::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblemExact::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			ProblemWithSolution::rhs(assembler, pts, t, val);
 			if (func_ == 0)

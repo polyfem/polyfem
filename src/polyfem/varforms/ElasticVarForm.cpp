@@ -143,13 +143,18 @@ namespace polyfem::varform
 
 	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
+		build_elastic_basis(mesh, iso_parametric, args, -1);
+	}
+
+	void ElasticVarForm::build_elastic_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args, const int fe_space_id)
+	{
 		assert(problem);
 		assert(primary_assembler_);
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
 
 		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
+		assign_discr_orders(args["space"]["discr_order"], fe_space_id, mesh, space_disc_orders);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -245,7 +250,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			/*fe_space_id=*/-1);
 	}
 
 	void ElasticVarForm::assemble_rhs(const mesh::Mesh &mesh)

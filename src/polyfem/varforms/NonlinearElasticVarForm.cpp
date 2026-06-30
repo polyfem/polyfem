@@ -290,7 +290,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			/*fe_space_id=*/-1);
 		rhs_assembler_ = solve_data.rhs_assembler;
 	}
 

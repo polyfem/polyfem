@@ -13,8 +13,9 @@ namespace polyfem
 		{
 		}
 
-		bool Problem::has_boundary(const BoundaryKind kind, const int tag)
+		bool Problem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
 		{
+			(void)fe_space_id;
 			if (tag <= 0)
 				return false;
 
@@ -40,10 +41,9 @@ namespace polyfem
 			const std::vector<ElementBases> &bases,
 			const std::vector<LocalBoundary> &local_boundary,
 			std::vector<LocalBoundary> &selected_local_boundary,
-			std::vector<int> &boundary_nodes)
+			std::vector<int> &boundary_nodes,
+			const int value_dim)
 		{
-			(void)fe_space_id;
-
 			selected_local_boundary.clear();
 			boundary_nodes.clear();
 
@@ -56,7 +56,7 @@ namespace polyfem
 					const int primitive_g_id = lb.global_primitive_id(i);
 					const int tag = mesh.get_boundary_id(primitive_g_id);
 
-					if (has_boundary(kind, tag))
+					if (has_boundary(kind, tag, fe_space_id))
 						selected_lb.add_boundary_primitive(primitive_g_id, lb[i]);
 				}
 
@@ -67,7 +67,7 @@ namespace polyfem
 			if (kind != BoundaryKind::Dirichlet)
 				return;
 
-			const int dim = is_scalar() ? 1 : mesh.dimension();
+			const int dim = value_dim > 0 ? value_dim : (is_scalar() ? 1 : mesh.dimension());
 
 			for (const LocalBoundary &lb : selected_local_boundary)
 			{
@@ -85,7 +85,7 @@ namespace polyfem
 							const int base_index = bs.global()[g].index * dim;
 							for (int d = 0; d < dim; ++d)
 							{
-								if (is_dimension_dirichet(mesh.get_boundary_id(primitive_global_id), d))
+								if (is_dimension_dirichet(mesh.get_boundary_id(primitive_global_id), d, fe_space_id))
 									boundary_nodes.push_back(base_index + d);
 							}
 						}
@@ -132,21 +132,19 @@ namespace polyfem
 			const int n_bases,
 			std::vector<int> &nodes)
 		{
-			(void)fe_space_id;
-
 			nodes.clear();
 
-			if (kind == BoundaryKind::Dirichlet && !(mesh.has_node_ids() || has_nodal_dirichlet()))
+			if (kind == BoundaryKind::Dirichlet && !(mesh.has_node_ids() || has_nodal_dirichlet(fe_space_id)))
 				return;
-			if (kind == BoundaryKind::Neumann && !(mesh.has_node_ids() || has_nodal_neumann()))
+			if (kind == BoundaryKind::Neumann && !(mesh.has_node_ids() || has_nodal_neumann(fe_space_id)))
 				return;
 			for (int n_id = 0; n_id < n_bases; ++n_id)
 			{
 				const int tag = mesh.get_node_id(n_id);
 
-				if (kind == BoundaryKind::Dirichlet && is_nodal_dirichlet_boundary(n_id, tag))
+				if (kind == BoundaryKind::Dirichlet && is_nodal_dirichlet_boundary(n_id, tag, fe_space_id))
 					nodes.push_back(n_id);
-				else if (kind == BoundaryKind::Neumann && is_nodal_neumann_boundary(n_id, tag))
+				else if (kind == BoundaryKind::Neumann && is_nodal_neumann_boundary(n_id, tag, fe_space_id))
 					nodes.push_back(n_id);
 			}
 		}
@@ -189,7 +187,9 @@ namespace polyfem
 					if (tag <= 0)
 						continue;
 
-					if ((!might_have_no_dirichlet() && boundary_ids_.empty()) || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
+					if ((!might_have_no_dirichlet() && boundary_ids_.empty())
+						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), -1) != boundary_ids_.end()
+						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 						new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 					if (std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);

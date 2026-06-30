@@ -51,6 +51,8 @@ namespace polyfem::varform
 		void build_rhs_assembler() override;
 
 		FESpace pressure_space_;
+		int displacement_space_id_ = -1;
+		int pressure_space_id_ = -1;
 		VarFormBoundaryState pressure_boundary_;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler_ = nullptr;

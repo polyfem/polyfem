@@ -13,6 +13,28 @@ namespace polyfem
 	{
 		namespace
 		{
+			bool matches_fe_space(const int entry_fe_space_id, const int fe_space_id)
+			{
+				return entry_fe_space_id < 0 || fe_space_id < 0 || entry_fe_space_id == fe_space_id;
+			}
+
+			int fe_space_id(const json &entry)
+			{
+				return entry.value("fe_space", -1);
+			}
+
+			template <typename Map>
+			const typename Map::mapped_type *find_for_fe_space(const Map &values, const int fe_space_id)
+			{
+				if (const auto it = values.find(fe_space_id); it != values.end())
+					return &it->second;
+				if (const auto it = values.find(-1); it != values.end())
+					return &it->second;
+				if (fe_space_id < 0 && values.size() == 1)
+					return &values.begin()->second;
+				return nullptr;
+			}
+
 			std::vector<json> flatten_ids(const json &p_j_boundary_tmp)
 			{
 				const std::vector<json> j_boundary_tmp = utils::json_as_array(p_j_boundary_tmp);
@@ -88,7 +110,8 @@ namespace polyfem
 			{
 				for (int i = 0; i < 3; ++i)
 				{
-					rhs_[i].set_unit_type(units.force());
+					for (auto &[fe_space_id, rhs] : rhs_)
+						rhs[i].set_unit_type(units.force());
 					exact_[i].set_unit_type(units.velocity());
 				}
 				for (int i = 0; i < 3; ++i)
@@ -111,15 +134,15 @@ namespace polyfem
 
 				for (auto &v : initial_position_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.velocity());
+						v.value[i].set_unit_type(units.velocity());
 
 				for (auto &v : initial_velocity_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.velocity());
+						v.value[i].set_unit_type(units.velocity());
 
 				for (auto &v : initial_acceleration_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.acceleration());
+						v.value[i].set_unit_type(units.acceleration());
 
 				for (auto &v : nodal_dirichlet_)
 					v.second.set_unit_type(units.velocity());
@@ -131,7 +154,8 @@ namespace polyfem
 			{
 				for (int i = 0; i < 3; ++i)
 				{
-					rhs_[i].set_unit_type(units.acceleration());
+					for (auto &[fe_space_id, rhs] : rhs_)
+						rhs[i].set_unit_type(units.acceleration());
 					exact_[i].set_unit_type(units.length());
 				}
 				for (int i = 0; i < 3; ++i)
@@ -154,15 +178,15 @@ namespace polyfem
 
 				for (auto &v : initial_position_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.length());
+						v.value[i].set_unit_type(units.length());
 
 				for (auto &v : initial_velocity_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.velocity());
+						v.value[i].set_unit_type(units.velocity());
 
 				for (auto &v : initial_acceleration_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.acceleration());
+						v.value[i].set_unit_type(units.acceleration());
 
 				for (auto &v : nodal_dirichlet_)
 					v.second.set_unit_type(units.length());
@@ -172,11 +196,14 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			val.resize(pts.rows(), pts.cols());
+			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+			const auto *rhs_size = find_for_fe_space(rhs_size_, fe_space_id);
+			const int size = rhs_size == nullptr ? pts.cols() : *rhs_size;
+			val.resize(pts.rows(), size);
 
-			if (is_rhs_zero())
+			if (rhs == nullptr || is_rhs_zero(fe_space_id))
 			{
 				val.setZero();
 				return;
@@ -185,28 +212,56 @@ namespace polyfem
 			const bool planar = pts.cols() == 2;
 			for (int i = 0; i < pts.rows(); ++i)
 			{
-				for (int j = 0; j < pts.cols(); ++j)
+				for (int j = 0; j < size; ++j)
 				{
 					double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
-					val(i, j) = rhs_[j](x, y, z, t);
+					val(i, j) = (*rhs)[j](x, y, z, t);
 				}
 			}
 		}
 
-		bool GenericTensorProblem::is_dimension_dirichet(const int tag, const int dim) const
+		bool GenericTensorProblem::is_rhs_zero(const int fe_space_id) const
+		{
+			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+			const auto *rhs_size = find_for_fe_space(rhs_size_, fe_space_id);
+			if (rhs == nullptr || rhs_size == nullptr)
+				return true;
+			for (int i = 0; i < *rhs_size; ++i)
+				if (!(*rhs)[i].is_zero())
+					return false;
+			return true;
+		}
+
+		bool GenericTensorProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
+		{
+			if (tag <= 0)
+				return false;
+
+			if (kind == BoundaryKind::Dirichlet)
+			{
+				for (size_t i = 0; i < boundary_ids_.size(); ++i)
+					if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(displacements_[i].fe_space_id, fe_space_id))
+						return true;
+				return false;
+			}
+
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(forces_[i].fe_space_id, fe_space_id))
+					return true;
+			for (size_t i = 0; i < normal_aligned_neumann_boundary_ids_.size(); ++i)
+				if (normal_aligned_neumann_boundary_ids_[i] == tag && matches_fe_space(normal_aligned_forces_[i].fe_space_id, fe_space_id))
+					return true;
+			return false;
+		}
+
+		bool GenericTensorProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
 			if (all_dimensions_dirichlet())
 				return true;
 
-			if (is_all_)
-			{
-				assert(displacements_.size() == 1);
-				return displacements_[0].dirichlet_dimension[dim];
-			}
-
 			for (size_t b = 0; b < boundary_ids_.size(); ++b)
 			{
-				if (tag == boundary_ids_[b])
+				if ((boundary_ids_[b] < 0 || tag == boundary_ids_[b]) && matches_fe_space(displacements_[b].fe_space_id, fe_space_id))
 				{
 					auto &tmp = displacements_[b].dirichlet_dimension;
 					return tmp[dim];
@@ -217,40 +272,37 @@ namespace polyfem
 			return true;
 		}
 
-		void GenericTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+			int value_size = mesh.dimension();
+			for (const TensorBCValue &displacement : displacements_)
+			{
+				if (displacement.size > 0 && matches_fe_space(displacement.fe_space_id, fe_space_id))
+				{
+					value_size = displacement.size;
+					break;
+				}
+			}
+			val = Eigen::MatrixXd::Zero(pts.rows(), value_size);
 
 			for (long i = 0; i < pts.rows(); ++i)
 			{
-				if (is_all_)
+				const int id = mesh.get_boundary_id(global_ids(i));
+				for (size_t b = 0; b < boundary_ids_.size(); ++b)
 				{
-					assert(displacements_.size() == 1);
-					for (int d = 0; d < val.cols(); ++d)
+					if ((boundary_ids_[b] < 0 || id == boundary_ids_[b]) && matches_fe_space(displacements_[b].fe_space_id, fe_space_id))
 					{
-						val(i, d) = displacements_[0].eval(pts.row(i), d, t);
-					}
-				}
-				else
-				{
-					const int id = mesh.get_boundary_id(global_ids(i));
-					for (size_t b = 0; b < boundary_ids_.size(); ++b)
-					{
-						if (id == boundary_ids_[b])
+						for (int d = 0; d < std::min<int>(val.cols(), displacements_[b].size); ++d)
 						{
-							for (int d = 0; d < val.cols(); ++d)
-							{
-								val(i, d) = displacements_[b].eval(pts.row(i), d, t);
-							}
-
-							break;
+							val(i, d) = displacements_[b].eval(pts.row(i), d, t);
 						}
+						break;
 					}
 				}
 			}
 		}
 
-		void GenericTensorProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -260,9 +312,9 @@ namespace polyfem
 
 				for (size_t b = 0; b < neumann_boundary_ids_.size(); ++b)
 				{
-					if (id == neumann_boundary_ids_[b])
+					if (id == neumann_boundary_ids_[b] && matches_fe_space(forces_[b].fe_space_id, fe_space_id))
 					{
-						for (int d = 0; d < val.cols(); ++d)
+						for (int d = 0; d < std::min<int>(val.cols(), forces_[b].size); ++d)
 						{
 							val(i, d) = forces_[b].eval(pts.row(i), d, t);
 						}
@@ -273,7 +325,7 @@ namespace polyfem
 
 				for (size_t b = 0; b < normal_aligned_neumann_boundary_ids_.size(); ++b)
 				{
-					if (id == normal_aligned_neumann_boundary_ids_[b])
+					if (id == normal_aligned_neumann_boundary_ids_[b] && matches_fe_space(normal_aligned_forces_[b].fe_space_id, fe_space_id))
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
@@ -345,33 +397,20 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
 			const int tag = mesh.get_node_id(node_id);
 
-			if (is_all_)
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
-				assert(nodal_dirichlet_.size() == 1);
-				const auto &tmp = nodal_dirichlet_.begin()->second;
-
-				for (int d = 0; d < val.cols(); ++d)
+				if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(displacements_[i].fe_space_id, fe_space_id))
 				{
-					val(d) = tmp.eval(pt, d, t);
+					val = Eigen::MatrixXd::Zero(1, displacements_[i].size);
+					for (int d = 0; d < val.cols(); ++d)
+						val(d) = displacements_[i].eval(pt, d, t);
+					return;
 				}
-
-				return;
-			}
-
-			const auto it = nodal_dirichlet_.find(tag);
-			if (it != nodal_dirichlet_.end())
-			{
-				for (int d = 0; d < val.cols(); ++d)
-				{
-					val(d) = it->second.eval(pt, d, t);
-				}
-
-				return;
 			}
 
 			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
@@ -393,16 +432,17 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			// TODO implement me;
 			log_and_throw_error("Nodal neumann not implemented");
 		}
 
-		bool GenericTensorProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag)
+		bool GenericTensorProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			if (nodal_dirichlet_.find(tag) != nodal_dirichlet_.end())
-				return true;
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
+				if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(displacements_[i].fe_space_id, fe_space_id))
+					return true;
 
 			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
 			{
@@ -416,28 +456,29 @@ namespace polyfem
 			return false;
 		}
 
-		bool GenericTensorProblem::is_nodal_neumann_boundary(const int n_id, const int tag)
+		bool GenericTensorProblem::is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			return nodal_neumann_.find(tag) != nodal_neumann_.end();
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(forces_[i].fe_space_id, fe_space_id))
+					return true;
+			return false;
 		}
 
-		bool GenericTensorProblem::has_nodal_dirichlet()
+		bool GenericTensorProblem::has_nodal_dirichlet(const int fe_space_id)
 		{
-			return nodal_dirichlet_mat_.size() > 0;
+			return !nodal_dirichlet_mat_.empty();
 		}
 
-		bool GenericTensorProblem::has_nodal_neumann()
+		bool GenericTensorProblem::has_nodal_neumann(const int fe_space_id)
 		{
-			return false; // nodal_neumann_.size() > 0;
+			return false;
 		}
 
-		bool GenericTensorProblem::is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const
+		bool GenericTensorProblem::is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim, const int fe_space_id) const
 		{
-			const auto it = nodal_dirichlet_.find(tag);
-			if (it != nodal_dirichlet_.end())
-			{
-				return it->second.dirichlet_dimension(dim);
-			}
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
+				if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(displacements_[i].fe_space_id, fe_space_id))
+					return displacements_[i].dirichlet_dimension(dim);
 
 			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
 			{
@@ -482,17 +523,32 @@ namespace polyfem
 
 			if (is_param_valid(params, "rhs"))
 			{
-				auto rr = params["rhs"];
-				if (rr.is_array())
+				const json &rr = params["rhs"];
+				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
+				if (has_fe_spaces)
 				{
+					for (const json &entry : rr)
+					{
+						const int id = fe_space_id(entry);
+						const json &value = entry["value"];
+						const int size = value.is_array() ? int(value.size()) : 1;
+						if (size > 3)
+							log_and_throw_error("RHS for FE space {} has {} components; at most 3 are supported.", id, size);
+						rhs_size_[id] = size;
+						for (int k = 0; k < size; ++k)
+							rhs_[id][k].init(value.is_array() ? value[k] : value, root_path);
+					}
+				}
+				else if (rr.is_array() && !rr.empty())
+				{
+					if (rr.size() > 3)
+						log_and_throw_error("RHS has {} components; at most 3 are supported.", rr.size());
+					rhs_size_[-1] = int(rr.size());
 					for (size_t k = 0; k < rr.size(); ++k)
-						rhs_[k].init(rr[k], root_path);
+						rhs_[-1][k].init(rr[k], root_path);
 				}
-				else
-				{
-					logger().warn("Invalid problem rhs: should be an array.");
-					assert(false);
-				}
+				else if (!rr.is_array())
+					log_and_throw_error("Invalid tensor problem RHS: expected an array.");
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
@@ -550,11 +606,11 @@ namespace polyfem
 					}
 
 					int current_id = -1;
+					displacements_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					if (j_boundary[i - offset]["id"] == "all")
 					{
-						assert(boundary_ids_.size() == 1);
-						boundary_ids_.clear();
+						boundary_ids_[i] = -1;
 						is_all_ = true;
 						nodal_dirichlet_[current_id] = TensorBCValue();
 					}
@@ -564,10 +620,14 @@ namespace polyfem
 						current_id = boundary_ids_[i];
 						nodal_dirichlet_[current_id] = TensorBCValue();
 					}
+					nodal_dirichlet_[current_id].fe_space_id = displacements_[i].fe_space_id;
 
 					auto ff = j_boundary[i - offset]["value"];
 					if (ff.is_array())
 					{
+						if (ff.size() > 3)
+							log_and_throw_error("Dirichlet condition for FE space {} has {} components; at most 3 are supported.", displacements_[i].fe_space_id, ff.size());
+						displacements_[i].size = int(ff.size());
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
 							displacements_[i].value[k].init(ff[k], root_path);
@@ -578,11 +638,11 @@ namespace polyfem
 					}
 					else
 					{
-						assert(false);
-						displacements_[i].value[0].init(0);
-						displacements_[i].value[1].init(0);
-						displacements_[i].value[2].init(0);
+						displacements_[i].size = 1;
+						displacements_[i].value[0].init(ff, root_path);
+						nodal_dirichlet_[current_id].value[0].init(ff, root_path);
 					}
+					nodal_dirichlet_[current_id].size = displacements_[i].size;
 
 					displacements_[i].dirichlet_dimension.setConstant(true);
 					nodal_dirichlet_[current_id].dirichlet_dimension.setConstant(true);
@@ -624,12 +684,14 @@ namespace polyfem
 				for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 				{
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
+					forces_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					auto ff = j_boundary[i - offset]["value"];
-					assert(ff.is_array());
-
-					for (size_t k = 0; k < ff.size(); ++k)
-						forces_[i].value[k].init(ff[k], root_path);
+					forces_[i].size = ff.is_array() ? int(ff.size()) : 1;
+					if (forces_[i].size > 3)
+						log_and_throw_error("Neumann condition for FE space {} has {} components; at most 3 are supported.", forces_[i].fe_space_id, forces_[i].size);
+					for (int k = 0; k < forces_[i].size; ++k)
+						forces_[i].value[k].init(ff.is_array() ? ff[k] : ff, root_path);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -656,6 +718,7 @@ namespace polyfem
 				for (size_t i = offset; i < normal_aligned_neumann_boundary_ids_.size(); ++i)
 				{
 					normal_aligned_neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
+					normal_aligned_forces_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					auto ff = j_boundary[i - offset]["value"];
 					normal_aligned_forces_[i].value.init(ff, root_path);
@@ -725,10 +788,14 @@ namespace polyfem
 
 				for (size_t k = 0; k < rr.size(); ++k)
 				{
-					initial_position_[k].first = rr[k]["id"];
+					initial_position_[k].body_id = rr[k]["id"];
+					initial_position_[k].fe_space_id = fe_space_id(rr[k]);
 					const auto v = rr[k]["value"];
-					for (size_t d = 0; d < v.size(); ++d)
-						initial_position_[k].second[d].init(v[d], root_path);
+					initial_position_[k].size = v.is_array() ? int(v.size()) : 1;
+					if (initial_position_[k].size > 3)
+						log_and_throw_error("Initial solution for FE space {} has {} components; at most 3 are supported.", initial_position_[k].fe_space_id, initial_position_[k].size);
+					for (int d = 0; d < initial_position_[k].size; ++d)
+						initial_position_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
 				}
 			}
 
@@ -740,10 +807,14 @@ namespace polyfem
 
 				for (size_t k = 0; k < rr.size(); ++k)
 				{
-					initial_velocity_[k].first = rr[k]["id"];
+					initial_velocity_[k].body_id = rr[k]["id"];
+					initial_velocity_[k].fe_space_id = fe_space_id(rr[k]);
 					const auto v = rr[k]["value"];
-					for (size_t d = 0; d < v.size(); ++d)
-						initial_velocity_[k].second[d].init(v[d], root_path);
+					initial_velocity_[k].size = v.is_array() ? int(v.size()) : 1;
+					if (initial_velocity_[k].size > 3)
+						log_and_throw_error("Initial velocity for FE space {} has {} components; at most 3 are supported.", initial_velocity_[k].fe_space_id, initial_velocity_[k].size);
+					for (int d = 0; d < initial_velocity_[k].size; ++d)
+						initial_velocity_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
 				}
 			}
 
@@ -755,17 +826,28 @@ namespace polyfem
 
 				for (size_t k = 0; k < rr.size(); ++k)
 				{
-					initial_acceleration_[k].first = rr[k]["id"];
+					initial_acceleration_[k].body_id = rr[k]["id"];
+					initial_acceleration_[k].fe_space_id = fe_space_id(rr[k]);
 					const auto v = rr[k]["value"];
-					for (size_t d = 0; d < v.size(); ++d)
-						initial_acceleration_[k].second[d].init(v[d], root_path);
+					initial_acceleration_[k].size = v.is_array() ? int(v.size()) : 1;
+					if (initial_acceleration_[k].size > 3)
+						log_and_throw_error("Initial acceleration for FE space {} has {} components; at most 3 are supported.", initial_acceleration_[k].fe_space_id, initial_acceleration_[k].size);
+					for (int d = 0; d < initial_acceleration_[k].size; ++d)
+						initial_acceleration_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
 				}
 			}
 		}
 
-		void GenericTensorProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			val.resize(pts.rows(), pts.cols());
+			int value_size = pts.cols();
+			for (const TensorInitialValue &entry : initial_position_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					value_size = entry.size;
+					break;
+				}
+			val.resize(pts.rows(), value_size);
 			if (initial_position_.empty())
 			{
 				val.setZero();
@@ -779,7 +861,7 @@ namespace polyfem
 				int index = -1;
 				for (int j = 0; j < initial_position_.size(); ++j)
 				{
-					if (initial_position_[j].first == id)
+					if (initial_position_[j].body_id == id && matches_fe_space(initial_position_[j].fe_space_id, fe_space_id))
 					{
 						index = j;
 						break;
@@ -791,14 +873,21 @@ namespace polyfem
 					continue;
 				}
 
-				for (int j = 0; j < pts.cols(); ++j)
-					val(i, j) = planar ? initial_position_[index].second[j](pts(i, 0), pts(i, 1)) : initial_position_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				for (int j = 0; j < val.cols(); ++j)
+					val(i, j) = planar ? initial_position_[index].value[j](pts(i, 0), pts(i, 1)) : initial_position_[index].value[j](pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 		}
 
-		void GenericTensorProblem::initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			val.resize(pts.rows(), pts.cols());
+			int value_size = pts.cols();
+			for (const TensorInitialValue &entry : initial_velocity_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					value_size = entry.size;
+					break;
+				}
+			val.resize(pts.rows(), value_size);
 			if (initial_velocity_.empty())
 			{
 				val.setZero();
@@ -812,7 +901,7 @@ namespace polyfem
 				int index = -1;
 				for (int j = 0; j < initial_velocity_.size(); ++j)
 				{
-					if (initial_velocity_[j].first == id)
+					if (initial_velocity_[j].body_id == id && matches_fe_space(initial_velocity_[j].fe_space_id, fe_space_id))
 					{
 						index = j;
 						break;
@@ -824,14 +913,21 @@ namespace polyfem
 					continue;
 				}
 
-				for (int j = 0; j < pts.cols(); ++j)
-					val(i, j) = planar ? initial_velocity_[index].second[j](pts(i, 0), pts(i, 1)) : initial_velocity_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				for (int j = 0; j < val.cols(); ++j)
+					val(i, j) = planar ? initial_velocity_[index].value[j](pts(i, 0), pts(i, 1)) : initial_velocity_[index].value[j](pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 		}
 
-		void GenericTensorProblem::initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			val.resize(pts.rows(), pts.cols());
+			int value_size = pts.cols();
+			for (const TensorInitialValue &entry : initial_acceleration_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					value_size = entry.size;
+					break;
+				}
+			val.resize(pts.rows(), value_size);
 			if (initial_acceleration_.empty())
 			{
 				val.setZero();
@@ -845,7 +941,7 @@ namespace polyfem
 				int index = -1;
 				for (int j = 0; j < initial_acceleration_.size(); ++j)
 				{
-					if (initial_acceleration_[j].first == id)
+					if (initial_acceleration_[j].body_id == id && matches_fe_space(initial_acceleration_[j].fe_space_id, fe_space_id))
 					{
 						index = j;
 						break;
@@ -857,8 +953,8 @@ namespace polyfem
 					continue;
 				}
 
-				for (int j = 0; j < pts.cols(); ++j)
-					val(i, j) = planar ? initial_acceleration_[index].second[j](pts(i, 0), pts(i, 1)) : initial_acceleration_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				for (int j = 0; j < val.cols(); ++j)
+					val(i, j) = planar ? initial_acceleration_[index].value[j](pts(i, 0), pts(i, 1)) : initial_acceleration_[index].value[j](pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 		}
 
@@ -883,8 +979,8 @@ namespace polyfem
 			initial_velocity_.clear();
 			initial_acceleration_.clear();
 
-			for (int i = 0; i < rhs_.size(); ++i)
-				rhs_[i].clear();
+			rhs_.clear();
+			rhs_size_.clear();
 			for (int i = 0; i < exact_.size(); ++i)
 				exact_[i].clear();
 			for (int i = 0; i < exact_grad_.size(); ++i)
@@ -909,19 +1005,21 @@ namespace polyfem
 				v.set_unit_type("");
 
 			for (auto &v : initial_solution_)
-				v.second.set_unit_type("");
+				v.value.set_unit_type("");
 
-			rhs_.set_unit_type("");
+			for (auto &[fe_space_id, rhs] : rhs_)
+				rhs.set_unit_type("");
 			exact_.set_unit_type("");
 
 			for (int i = 0; i < 3; ++i)
 				exact_grad_[i].set_unit_type("");
 		}
 
-		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val.resize(pts.rows(), 1);
-			if (is_rhs_zero())
+			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+			if (rhs == nullptr || rhs->is_zero())
 			{
 				val.setZero();
 				return;
@@ -930,37 +1028,52 @@ namespace polyfem
 			for (int i = 0; i < pts.rows(); ++i)
 			{
 				double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
-				val(i) = rhs_(x, y, z, t);
+				val(i) = (*rhs)(x, y, z, t);
 			}
 		}
 
-		void GenericScalarProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		bool GenericScalarProblem::is_rhs_zero(const int fe_space_id) const
+		{
+			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+			return rhs == nullptr || rhs->is_zero();
+		}
+
+		bool GenericScalarProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
+		{
+			if (tag <= 0)
+				return false;
+			if (kind == BoundaryKind::Dirichlet)
+			{
+				for (size_t i = 0; i < boundary_ids_.size(); ++i)
+					if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(dirichlet_[i].fe_space_id, fe_space_id))
+						return true;
+				return false;
+			}
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(neumann_[i].fe_space_id, fe_space_id))
+					return true;
+			return false;
+		}
+
+		void GenericScalarProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
 			for (long i = 0; i < pts.rows(); ++i)
 			{
 				const int id = mesh.get_boundary_id(global_ids(i));
-				if (is_all_)
+				for (size_t b = 0; b < boundary_ids_.size(); ++b)
 				{
-					assert(dirichlet_.size() == 1);
-					val(i) = dirichlet_[0].eval(pts.row(i), t);
-				}
-				else
-				{
-					for (size_t b = 0; b < boundary_ids_.size(); ++b)
+					if ((boundary_ids_[b] < 0 || id == boundary_ids_[b]) && matches_fe_space(dirichlet_[b].fe_space_id, fe_space_id))
 					{
-						if (id == boundary_ids_[b])
-						{
-							val(i) = dirichlet_[b].eval(pts.row(i), t);
-							break;
-						}
+						val(i) = dirichlet_[b].eval(pts.row(i), t);
+						break;
 					}
 				}
 			}
 		}
 
-		void GenericScalarProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -970,7 +1083,7 @@ namespace polyfem
 
 				for (size_t b = 0; b < neumann_boundary_ids_.size(); ++b)
 				{
-					if (id == neumann_boundary_ids_[b])
+					if (id == neumann_boundary_ids_[b] && matches_fe_space(neumann_[b].fe_space_id, fe_space_id))
 					{
 						double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 						val(i) = neumann_[b].eval(pts.row(i), t);
@@ -980,7 +1093,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericScalarProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val.resize(pts.rows(), 1);
 			if (initial_solution_.empty())
@@ -996,7 +1109,7 @@ namespace polyfem
 				int index = -1;
 				for (int j = 0; j < initial_solution_.size(); ++j)
 				{
-					if (initial_solution_[j].first == id)
+					if (initial_solution_[j].body_id == id && matches_fe_space(initial_solution_[j].fe_space_id, fe_space_id))
 					{
 						index = j;
 						break;
@@ -1008,7 +1121,7 @@ namespace polyfem
 					continue;
 				}
 
-				val(i) = planar ? initial_solution_[index].second(pts(i, 0), pts(i, 1)) : initial_solution_[index].second(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i) = planar ? initial_solution_[index].value(pts(i, 0), pts(i, 1)) : initial_solution_[index].value(pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 		}
 
@@ -1121,25 +1234,18 @@ namespace polyfem
 				}
 		}
 
-		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
 			const int tag = mesh.get_node_id(node_id);
 
-			if (is_all_)
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
-				assert(nodal_dirichlet_.size() == 1);
-				const auto &tmp = nodal_dirichlet_.begin()->second;
-
-				val(0) = tmp.eval(pt, t);
-				return;
-			}
-
-			const auto it = nodal_dirichlet_.find(tag);
-			if (it != nodal_dirichlet_.end())
-			{
-				val(0) = it->second.eval(pt, t);
-				return;
+				if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(dirichlet_[i].fe_space_id, fe_space_id))
+				{
+					val(0) = dirichlet_[i].eval(pt, t);
+					return;
+				}
 			}
 
 			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
@@ -1157,16 +1263,17 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			// TODO implement me;
 			log_and_throw_error("Nodal neumann not implemented");
 		}
 
-		bool GenericScalarProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag)
+		bool GenericScalarProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			if (nodal_dirichlet_.find(tag) != nodal_dirichlet_.end())
-				return true;
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
+				if ((boundary_ids_[i] < 0 || boundary_ids_[i] == tag) && matches_fe_space(dirichlet_[i].fe_space_id, fe_space_id))
+					return true;
 
 			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
 			{
@@ -1180,17 +1287,20 @@ namespace polyfem
 			return false;
 		}
 
-		bool GenericScalarProblem::is_nodal_neumann_boundary(const int n_id, const int tag)
+		bool GenericScalarProblem::is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			return nodal_neumann_.find(tag) != nodal_neumann_.end();
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(neumann_[i].fe_space_id, fe_space_id))
+					return true;
+			return false;
 		}
 
-		bool GenericScalarProblem::has_nodal_dirichlet()
+		bool GenericScalarProblem::has_nodal_dirichlet(const int fe_space_id)
 		{
 			return nodal_dirichlet_mat_.size() > 0;
 		}
 
-		bool GenericScalarProblem::has_nodal_neumann()
+		bool GenericScalarProblem::has_nodal_neumann(const int fe_space_id)
 		{
 			return false; // nodal_neumann_.size() > 0;
 		}
@@ -1219,7 +1329,15 @@ namespace polyfem
 
 			if (is_param_valid(params, "rhs"))
 			{
-				rhs_.init(params["rhs"], root_path);
+				const json &rr = params["rhs"];
+				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
+				if (has_fe_spaces)
+				{
+					for (const json &entry : rr)
+						rhs_[fe_space_id(entry)].init(entry["value"], root_path);
+				}
+				else if (!rr.is_array() || !rr.empty())
+					rhs_[-1].init(rr, root_path);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
@@ -1268,13 +1386,12 @@ namespace polyfem
 					}
 
 					int current_id = -1;
+					dirichlet_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					if (j_boundary[i - offset]["id"] == "all")
 					{
-						assert(boundary_ids_.size() == 1);
-
+						boundary_ids_[i] = -1;
 						is_all_ = true;
-						boundary_ids_.clear();
 						nodal_dirichlet_[current_id] = ScalarBCValue();
 					}
 					else
@@ -1283,6 +1400,7 @@ namespace polyfem
 						current_id = boundary_ids_[i];
 						nodal_dirichlet_[current_id] = ScalarBCValue();
 					}
+					nodal_dirichlet_[current_id].fe_space_id = dirichlet_[i].fe_space_id;
 
 					auto ff = j_boundary[i - offset]["value"];
 					dirichlet_[i].value.init(ff, root_path);
@@ -1317,6 +1435,7 @@ namespace polyfem
 				for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 				{
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
+					neumann_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					auto ff = j_boundary[i - offset]["value"];
 					neumann_[i].value.init(ff, root_path);
@@ -1343,8 +1462,9 @@ namespace polyfem
 
 				for (size_t k = 0; k < rr.size(); ++k)
 				{
-					initial_solution_[k].first = rr[k]["id"];
-					initial_solution_[k].second.init(rr[k]["value"], root_path);
+					initial_solution_[k].body_id = rr[k]["id"];
+					initial_solution_[k].fe_space_id = fe_space_id(rr[k]);
+					initial_solution_[k].value.init(rr[k]["value"], root_path);
 				}
 			}
 		}

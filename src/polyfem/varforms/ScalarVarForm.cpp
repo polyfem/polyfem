@@ -157,7 +157,8 @@ namespace polyfem::varform
 			space_.basis_list(),
 			boundary_.total_local_boundary,
 			boundary_.local_boundary,
-			boundary_.boundary_nodes);
+			boundary_.boundary_nodes,
+			/*value_dim=*/1);
 		std::vector<int> unused_neumann_boundary_nodes;
 		problem->setup_bc(
 			mesh,
@@ -166,7 +167,8 @@ namespace polyfem::varform
 			space_.basis_list(),
 			boundary_.total_local_boundary,
 			boundary_.local_neumann_boundary,
-			unused_neumann_boundary_nodes);
+			unused_neumann_boundary_nodes,
+			/*value_dim=*/1);
 
 		problem->setup_nodal_bc(
 			mesh,
@@ -234,7 +236,8 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			/*fe_space_id=*/-1);
 	}
 
 	void ScalarVarForm::assemble_rhs(const mesh::Mesh &mesh)

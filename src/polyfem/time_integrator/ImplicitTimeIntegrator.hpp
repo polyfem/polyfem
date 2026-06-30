@@ -14,7 +14,14 @@ namespace polyfem::time_integrator
 	class ImplicitTimeIntegrator
 	{
 	public:
-		ImplicitTimeIntegrator() {}
+		enum class DynamicOrder
+		{
+			First,
+			Second,
+		};
+
+		ImplicitTimeIntegrator(const DynamicOrder dynamic_order)
+			: dynamic_order_(dynamic_order) {}
 		virtual ~ImplicitTimeIntegrator() = default;
 
 		/// @brief Set the time integrator parameters from a json object.
@@ -66,6 +73,7 @@ namespace polyfem::time_integrator
 		/// @param name name of the type of ImplicitTimeIntegrator to construct
 		/// @return new implicit time integrator of type specfied by name
 		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params);
+		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params, const DynamicOrder dynamic_order);
 
 		/// @brief Get a vector of the names of possible ImplicitTimeIntegrators
 		/// @return names in no particular order
@@ -89,6 +97,8 @@ namespace polyfem::time_integrator
 		int steps() const { return x_prevs_.size(); }
 
 	protected:
+		const DynamicOrder dynamic_order_;
+
 		/// @brief Get the maximum number of steps to use for integration.
 		virtual int max_steps() const { return 1; }
 

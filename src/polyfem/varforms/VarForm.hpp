@@ -122,6 +122,7 @@ namespace polyfem
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
 			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
+			void assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
 			virtual void assemble_rhs(const mesh::Mesh &mesh) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;

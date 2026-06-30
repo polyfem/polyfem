@@ -8,7 +8,56 @@ namespace polyfem::assembler
 		{
 			return (i == j) ? true : false;
 		}
+
+		Eigen::VectorXd local_scalar_values(const NonLinearAssemblerData &data)
+		{
+			assert(data.x.cols() == 1);
+
+			const int n_bases = int(data.vals.basis_values.size());
+			Eigen::VectorXd local_u = Eigen::VectorXd::Zero(n_bases);
+			for (int i = 0; i < n_bases; ++i)
+			{
+				const auto &bs = data.vals.basis_values[i];
+				for (const auto &global : bs.global)
+					local_u(i) += global.val * data.x(global.index);
+			}
+
+			return local_u;
+		}
 	} // namespace
+
+	Laplacian::Laplacian(const std::string &conductivity_param_name)
+		: conductivity_param_name_(conductivity_param_name),
+		  conductivity_(conductivity_param_name.empty() ? "conductivity" : conductivity_param_name)
+	{
+	}
+
+	std::map<std::string, Assembler::ParamFunc> Laplacian::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		if (!conductivity_param_name_.empty())
+		{
+			res[conductivity_param_name_] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				return conductivity(uv, p, t, e);
+			};
+		}
+
+		return res;
+	}
+
+	void Laplacian::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	{
+		if (!conductivity_param_name_.empty())
+			conductivity_.add_multimaterial(index, params, units.thermal_conductivity(), root_path);
+	}
+
+	double Laplacian::conductivity(const RowVectorNd &, const RowVectorNd &p, double t, int element_id) const
+	{
+		if (conductivity_param_name_.empty())
+			return 1.0;
+
+		return conductivity_(p, t, element_id);
+	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Laplacian::assemble(const LinearAssemblerData &data) const
 	{
@@ -19,10 +68,41 @@ namespace polyfem::assembler
 		assert(gradi.rows() == data.da.size());
 		for (int k = 0; k < gradi.rows(); ++k)
 		{
+			const double kappa = conductivity(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.t, data.vals.element_id);
 			// compute grad(phi_i) dot grad(phi_j) weighted by quadrature weights
-			res += gradi.row(k).dot(gradj.row(k)) * data.da(k);
+			res += kappa * gradi.row(k).dot(gradj.row(k)) * data.da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
+	}
+
+	double Laplacian::compute_energy(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		const Eigen::VectorXd local_u = local_scalar_values(data);
+		return 0.5 * local_u.dot(assemble_hessian(data) * local_u);
+	}
+
+	Eigen::VectorXd Laplacian::assemble_gradient(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		return assemble_hessian(data) * local_scalar_values(data);
+	}
+
+	Eigen::MatrixXd Laplacian::assemble_hessian(const NonLinearAssemblerData &data) const
+	{
+		assert(size() == 1);
+
+		const int n_bases = int(data.vals.basis_values.size());
+		Eigen::MatrixXd hessian = Eigen::MatrixXd::Zero(n_bases, n_bases);
+		for (int i = 0; i < n_bases; ++i)
+		{
+			for (int j = 0; j < n_bases; ++j)
+				hessian(i, j) = assemble(LinearAssemblerData(data.vals, data.t, i, j, data.da))(0);
+		}
+
+		return hessian;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::compute_rhs(const AutodiffHessianPt &pt) const
@@ -68,10 +148,11 @@ namespace polyfem::assembler
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
+			const double kappa = conductivity(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 			for (int i = 0, idx = 0; i < dim; i++)
 				for (int j = 0; j < dim; j++)
 				{
-					tensor(p, idx) = delta(i, j);
+					tensor(p, idx) = kappa * delta(i, j);
 					idx++;
 				}
 		}

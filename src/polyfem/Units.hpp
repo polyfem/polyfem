@@ -32,6 +32,11 @@ namespace polyfem
 		std::string pressure() const { return fmt::format("{}*{}/{}", mass_, acceleration(), length_); }
 		std::string energy() const { return fmt::format("{}*{}^2/{}^2", mass_, length_, time_); }
 		std::string viscosity() const { return fmt::format("{}/{}^2*{}", force(), length_, time_); }
+		std::string specific_heat_capacity() const { return fmt::format("{}^2/({}^2*{})", length_, time_, temperature_); }
+		std::string thermal_conductivity() const { return fmt::format("{}*{}/({}^3*{})", mass_, length_, time_, temperature_); }
+
+		std::string temperature() const { return temperature_; }
+		std::string one_over_temperature() const { return fmt::format("1/{}", temperature_); }
 
 	private:
 		std::string length_ = "m";
@@ -39,5 +44,6 @@ namespace polyfem
 		std::string time_ = "s";
 		double characteristic_length_ = 1;
 		std::string coulomb_ = "C";
+		std::string temperature_ = "K";
 	};
 } // namespace polyfem

@@ -25,6 +25,8 @@ namespace polyfem::varform
 	{
 		ElasticVarForm::reset();
 		pressure_space_.reset();
+		displacement_space_id_ = -1;
+		pressure_space_id_ = -1;
 		pressure_boundary_.reset();
 		pressure_ass_vals_cache_.init_empty();
 		mixed_assembler_ = nullptr;
@@ -35,6 +37,41 @@ namespace polyfem::varform
 	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		ElasticVarForm::init(formulation, units, args, out_path);
+		const json &discr_orders = args.at("space").at("discr_order");
+
+		const json &materials = args.at("materials");
+		if (materials.is_array() && materials.empty())
+			log_and_throw_error("Incompressible elasticity requires at least one material.");
+		const json &first_material = materials.is_array() ? materials.at(0) : materials;
+		displacement_space_id_ = first_material.at("displacement_space_id").get<int>();
+		pressure_space_id_ = first_material.at("pressure_space_id").get<int>();
+		if (displacement_space_id_ == pressure_space_id_)
+			log_and_throw_error("Incompressible displacement and pressure must use different FE space IDs.");
+
+		if (discr_orders.is_array())
+		{
+			bool has_displacement_space = false;
+			bool has_pressure_space = false;
+			for (const json &entry : discr_orders)
+			{
+				const int fe_space_id = entry.at("fe_space").get<int>();
+				has_displacement_space |= fe_space_id == displacement_space_id_;
+				has_pressure_space |= fe_space_id == pressure_space_id_;
+			}
+			if (!has_displacement_space || !has_pressure_space)
+				log_and_throw_error("Incompressible discretization-order lists must explicitly name the displacement and pressure FE spaces.");
+		}
+
+		if (materials.is_array())
+		{
+			for (const json &material : materials)
+			{
+				if (material.at("displacement_space_id").get<int>() != displacement_space_id_
+					|| material.at("pressure_space_id").get<int>() != pressure_space_id_)
+					log_and_throw_error("All incompressible materials must use the same displacement and pressure FE space IDs.");
+			}
+		}
+
 		mixed_assembler_ = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler_ = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
 		assert(primary_assembler_->is_linear());
@@ -117,12 +154,13 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			rhs_solver_params);
+			rhs_solver_params,
+			displacement_space_id_);
 	}
 
 	void IncompressibleElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
-		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+		build_elastic_basis(mesh, iso_parametric, args, displacement_space_id_);
 
 		if (space_.disc_orders.maxCoeff() != space_.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
@@ -134,9 +172,8 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		const int order = args["space"]["pressure_discr_order"];
-		Eigen::VectorXi pressure_disc_orders(mesh.n_elements());
-		pressure_disc_orders.setConstant(order);
+		Eigen::VectorXi pressure_disc_orders;
+		assign_discr_orders(args["space"]["discr_order"], pressure_space_id_, mesh, pressure_disc_orders);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(

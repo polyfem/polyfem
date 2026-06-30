@@ -3,296 +3,23 @@
         "pointer": "/type",
         "type": "string",
         "options": [
-            "LinearElasticity",
-            "HookeLinearElasticity",
-            "SaintVenant",
-            "NeoHookean",
-            "MooneyRivlin",
-            "MooneyRivlin3Param",
-            "MooneyRivlin3ParamSymbolic",
-            "UnconstrainedOgden",
-            "IncompressibleOgden",
             "Stokes",
-            "ActiveFiber",
-            "HGOFiber",
-            "IsochoricNeoHookean",
             "NavierStokes",
             "OperatorSplitting",
             "Electrostatics",
-            "MaterialSum",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
             "Bilaplacian",
-            "AMIPS",
-            "FixedCorotational",
-            "VolumePenalty"
+            "ThermoElasticity"
         ],
         "doc": "Type of material"
     },
     {
-        "pointer": "/id",
-        "type": "int",
-        "default": 0,
-        "doc": "Volume selection ID"
-    },
-    {
-        "pointer": "/id",
-        "type": "list",
-        "doc": "Volume selection IDs"
-    },
-    {
-        "pointer": "/id/*",
-        "type": "int",
-        "doc": "Volume selection ID"
-    },
-    {
         "pointer": "/",
-        "type": "object",
-        "type_name": "NeoHookean",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "NeoHookean",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "IsochoricNeoHookean",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "IsochoricNeoHookean",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "MooneyRivlin",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "MooneyRivlin3Param",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "c3",
-            "d1"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "MooneyRivlin3ParamSymbolic",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "c3",
-            "d1"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "UnconstrainedOgden",
-        "required": [
-            "type",
-            "alphas",
-            "mus",
-            "Ds"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "IncompressibleOgden",
-        "required": [
-            "type",
-            "c",
-            "m",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "LinearElasticity",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "LinearElasticity",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "HookeLinearElasticity",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "fiber_direction"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "HookeLinearElasticity",
-        "required": [
-            "type",
-            "elasticity_tensor"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "fiber_direction"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "SaintVenant",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "fiber_direction",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "SaintVenant",
-        "required": [
-            "type",
-            "elasticity_tensor"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "fiber_direction",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json",
+        "doc": "Elastic material parameter variants."
     },
     {
         "pointer": "/",
@@ -300,7 +27,9 @@
         "type_name": "Stokes",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -314,7 +43,9 @@
         "type_name": "NavierStokes",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -328,7 +59,9 @@
         "type_name": "OperatorSplitting",
         "required": [
             "type",
-            "viscosity"
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -357,7 +90,9 @@
         "required": [
             "type",
             "E",
-            "nu"
+            "nu",
+            "displacement_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -368,25 +103,13 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "MaterialSum",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "id",
-            "models",
-            "rho"
-        ],
-        "doc": "Model that is a sum of other models"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
             "lambda",
-            "mu"
+            "mu",
+            "displacement_space_id",
+            "pressure_space_id"
         ],
         "optional": [
             "id",
@@ -426,7 +149,9 @@
         "type": "object",
         "type_name": "Bilaplacian",
         "required": [
-            "type"
+            "type",
+            "solution_space_id",
+            "auxiliary_space_id"
         ],
         "optional": [
             "id",
@@ -437,109 +162,22 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "AMIPS",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "use_rest_pose",
-            "weight",
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "FixedCorotational",
+        "type_name": "ThermoElasticity",
         "required": [
             "type",
-            "E",
-            "nu"
+            "displacement_space_id",
+            "temperature_space_id",
+            "elastic_material",
+            "alpha",
+            "T0"
         ],
         "optional": [
             "id",
             "rho",
-            "phi",
-            "psi"
+            "heat_capacity",
+            "conductivity"
         ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "FixedCorotational",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "VolumePenalty",
-        "required": [
-            "type",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "HGOFiber",
-        "required": [
-            "type",
-            "k1",
-            "k2"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "fiber_direction"
-        ],
-        "doc": "Material Parameters"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "ActiveFiber",
-        "required": [
-            "type",
-            "activation"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "Tmax",
-            "fiber_direction"
-        ],
-        "doc": "Material Parameters"
-    },
-    {
-        "pointer": "/E",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/nu",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Poisson's ratio"
+        "doc": "Thermoelastic mixed material. The displacement block currently reuses the nested elastic_material and the temperature block uses a scalar Laplacian."
     },
     {
         "pointer": "/viscosity",
@@ -548,212 +186,77 @@
         "doc": "Fuild's viscosity"
     },
     {
-        "pointer": "/elasticity_tensor",
-        "type": "list",
-        "doc": "Symmetric elasticity tensor"
+        "pointer": "/velocity_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the fluid velocity"
     },
     {
-        "pointer": "/elasticity_tensor/*",
-        "default": 0,
+        "pointer": "/pressure_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for pressure"
+    },
+    {
+        "pointer": "/displacement_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for displacement"
+    },
+    {
+        "pointer": "/temperature_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for temperature"
+    },
+    {
+        "pointer": "/alpha",
         "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Entries of elasticity tensor"
+        "spec_file": "value-no.json",
+        "doc": "Thermal expansion coefficient"
     },
     {
-        "pointer": "/fiber_direction",
-        "type": "list",
-        "default": [],
-        "doc": "Fiber direction"
-    },
-    {
-        "pointer": "/fiber_direction/*",
-        "default": 0,
+        "pointer": "/T0",
         "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Entries of fiber direction"
+        "spec_file": "value-no.json",
+        "doc": "Reference temperature"
     },
     {
-        "pointer": "/fiber_direction/*",
-        "type": "list",
-        "default": [],
-        "doc": "Fiber direction row"
-    },
-    {
-        "pointer": "/fiber_direction/*/*",
-        "default": 0,
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Entries of fiber direction"
-    },
-    {
-        "pointer": "/rho",
+        "pointer": "/heat_capacity",
         "type": "include",
         "spec_file": "value1.json",
-        "doc": "Density",
-        "default": 1
+        "default": 1,
+        "doc": "Specific heat capacity used by the temperature block"
+    },
+    {
+        "pointer": "/conductivity",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Thermal conductivity used by the temperature block"
+    },
+    {
+        "pointer": "/elastic_material",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json",
+        "doc": "Elastic material object used by the displacement block."
+    },
+    {
+        "pointer": "/solution_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the primary solution"
+    },
+    {
+        "pointer": "/auxiliary_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the auxiliary solution"
     },
     {
         "pointer": "/epsilon",
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "permittivity"
-    },
-    {
-        "pointer": "/phi",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Damping parameter 1",
-        "default": 0
-    },
-    {
-        "pointer": "/psi",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Damping parameter 2",
-        "default": 0
-    },
-    {
-        "pointer": "/k",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
-    },
-    {
-        "pointer": "/mu",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "First Lamé parameters"
-    },
-    {
-        "pointer": "/lambda",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Second Lamé parameter"
-    },
-    {
-        "pointer": "/c1",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "First Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/c2",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Second Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/c3",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Third Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/d1",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Fourth Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/k1",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "First Parameter for HGOFiber"
-    },
-    {
-        "pointer": "/k2",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Second Parameter for HGOFiber"
-    },
-    {
-        "pointer": "/alphas",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Ogden alpha"
-    },
-    {
-        "pointer": "/mus",
-        "type": "list",
-        "doc": "Ogden mu"
-    },
-    {
-        "pointer": "/Ds",
-        "type": "list",
-        "doc": "Ogden D"
-    },
-    {
-        "pointer": "/alphas/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/mus/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/Ds/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/c",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Coefficient(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/m",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Exponent(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/c",
-        "type": "list",
-        "doc": "Coefficient(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/m",
-        "type": "list",
-        "doc": "Exponent(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/c/*",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Coefficient of Incompressible Ogden"
-    },
-    {
-        "pointer": "/m/*",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Exponent(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/activation",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Activation parameter for ActiveFiber"
-    },
-    {
-        "pointer": "/Tmax",
-        "type": "include",
-        "spec_file": "value1.json",
-        "default": 1,
-        "doc": "Maximum tension for ActiveFiber"
-    },
-    {
-        "pointer": "/use_rest_pose",
-        "type": "bool",
-        "default": false,
-        "doc": "Use amips wrt to rest pose or the regular element"
-    },
-    {
-        "pointer": "/weight",
-        "type": "float",
-        "default": 1.0,
-        "doc": "Scale factor for the AMIPS energy."
     }
 ]

@@ -12,8 +12,12 @@ set(SOURCES
     ScalarVarForm.cpp
     NonlinearElasticVarForm.hpp
     NonlinearElasticVarForm.cpp
+    ThermoElasticVarForm.hpp
+    ThermoElasticVarForm.cpp
     FluidVarForm.hpp
     FluidVarForm.cpp
+    OperatorSplittingVarForm.hpp
+    OperatorSplittingVarForm.cpp
     IncompressibleElasticVarForm.hpp
     IncompressibleElasticVarForm.cpp
     BilaplacianVarForm.hpp

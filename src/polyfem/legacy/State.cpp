@@ -715,6 +715,7 @@ namespace polyfem::legacy
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
+				log_and_throw_error("Mixed formulation is not supported anymore for legacy!");
 				const int order = args["space"]["pressure_discr_order"];
 				// todo prism
 				const int orderq = order;
@@ -751,6 +752,8 @@ namespace polyfem::legacy
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
+				log_and_throw_error("Mixed formulation is not supported anymore for legacy!");
+
 				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}

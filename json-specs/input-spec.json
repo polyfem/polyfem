@@ -47,6 +47,7 @@
             "length",
             "mass",
             "time",
+            "temperature",
             "characteristic_length"
         ],
         "doc": "Basic units used in the code."
@@ -68,6 +69,12 @@
         "default": "s",
         "type": "string",
         "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/temperature",
+        "default": "K",
+        "type": "string",
+        "doc": "Temperature unit."
     },
     {
         "pointer": "/units/characteristic_length",
@@ -602,7 +609,6 @@
         "optional": [
             "discr_order",
             "discr_orderq",
-            "pressure_discr_order",
             "basis_type",
             "poly_basis_type",
             "use_p_ref",
@@ -613,64 +619,15 @@
     },
     {
         "pointer": "/space/discr_orderq",
-        "default": 1,
-        "type": "int",
+        "type": "include",
+        "spec_file": "discr_order.json",
         "doc": "Lagrange element order at height dimension for the space for the main unknown, for prism."
     },
     {
         "pointer": "/space/discr_order",
-        "default": 1,
-        "type": "int",
+        "type": "include",
+        "spec_file": "discr_order.json",
         "doc": "Lagrange element order for the space for the main unknown, for all elements."
-    },
-    {
-        "pointer": "/space/discr_order",
-        "type": "file",
-        "extensions": [
-            ".txt",
-            ".bin"
-        ],
-        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
-    },
-    {
-        "pointer": "/space/discr_order",
-        "type": "list",
-        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
-    },
-    {
-        "pointer": "/space/discr_order/*",
-        "type": "object",
-        "required": [
-            "id",
-            "order"
-        ],
-        "doc": "Lagrange element order for the a space tagged with volume ID for the main unknown."
-    },
-    {
-        "pointer": "/space/discr_order/*/id",
-        "type": "int",
-        "doc": "Volume selection ID to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/id",
-        "type": "list",
-        "doc": "List of volume selection IDs to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/id/*",
-        "type": "int",
-        "doc": "Volume selection ID to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/order",
-        "type": "int",
-        "doc": "Lagrange element order for the space for the main unknown, for all elements."
-    },
-    {
-        "pointer": "/space/pressure_discr_order",
-        "default": 1,
-        "type": "int",
-        "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
     },
     {
         "pointer": "/space/basis_type",
@@ -1114,87 +1071,21 @@
     },
     {
         "pointer": "/time/integrator",
-        "type": "string",
+        "type": "include",
+        "spec_file": "time-integrator.json",
         "default": "ImplicitEuler",
-        "options": [
-            "ImplicitEuler",
-            "BDF1",
-            "BDF2",
-            "BDF3",
-            "BDF4",
-            "BDF5",
-            "BDF6",
-            "ImplicitNewmark"
-        ],
         "doc": "Time integrator"
     },
     {
         "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "ImplicitEuler",
-        "required": [
-            "type"
-        ],
-        "doc": "Implicit Euler time integration"
+        "type": "list",
+        "doc": "One time integrator per finite element space."
     },
     {
-        "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "BDF",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "steps"
-        ],
-        "doc": "Backwards differentiation formula time integration"
-    },
-    {
-        "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "ImplicitNewmark",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "gamma",
-            "beta"
-        ],
-        "doc": "Implicit Newmark time integration"
-    },
-    {
-        "pointer": "/time/integrator/type",
-        "type": "string",
-        "options": [
-            "ImplicitEuler",
-            "BDF",
-            "ImplicitNewmark"
-        ],
-        "doc": "Type of time integrator to use"
-    },
-    {
-        "pointer": "/time/integrator/gamma",
-        "type": "float",
-        "default": 0.5,
-        "min": 0,
-        "max": 1,
-        "doc": "Newmark gamma"
-    },
-    {
-        "pointer": "/time/integrator/beta",
-        "type": "float",
-        "default": 0.25,
-        "min": 0,
-        "max": 0.5,
-        "doc": "Newmark beta"
-    },
-    {
-        "pointer": "/time/integrator/steps",
-        "type": "int",
-        "default": 1,
-        "min": 1,
-        "max": 6,
-        "doc": "BDF order"
+        "pointer": "/time/integrator/*",
+        "type": "include",
+        "spec_file": "time-integrator.json",
+        "doc": "Time integrator for a finite element space."
     },
     {
         "pointer": "/time/quasistatic",
@@ -1885,6 +1776,32 @@
         "doc": "Right-hand side of the system being solved, value."
     },
     {
+        "pointer": "/boundary_conditions/rhs/*",
+        "type": "object",
+        "required": [
+            "fe_space",
+            "value"
+        ],
+        "doc": "Right-hand side associated with a finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/fe_space",
+        "type": "int",
+        "doc": "Finite element space ID for the right-hand side."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/value",
+        "type": "list",
+        "doc": "Right-hand side value for a vector-valued finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/value/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "default": 0,
+        "doc": "Right-hand side component."
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "type": "include",
         "spec_file": "boundary-condition.json",
@@ -1899,6 +1816,7 @@
             "value"
         ],
         "optional": [
+            "fe_space",
             "time_reference",
             "interpolation",
             "dimension"
@@ -1920,6 +1838,12 @@
         "type": "include",
         "spec_file": "value0.json",
         "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the Dirichlet boundary condition. If not specified, default to the all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
@@ -1963,9 +1887,16 @@
             "value"
         ],
         "optional": [
+            "fe_space",
             "interpolation"
         ],
         "doc": "Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the Neumann boundary condition. If not specified, default to the all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
@@ -1982,6 +1913,7 @@
             "value"
         ],
         "optional": [
+            "fe_space",
             "interpolation"
         ],
         "doc": "pressure BC entry"
@@ -1998,6 +1930,12 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the normal aligned Neumann boundary condition. If not specified, default to the all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/interpolation",
@@ -2132,12 +2070,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial solution. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/solution/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial solution."
     },
     {
         "pointer": "/initial_conditions/solution/*/value",
@@ -2164,12 +2117,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial velocity. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/velocity/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial velocity."
     },
     {
         "pointer": "/initial_conditions/velocity/*/value",
@@ -2198,12 +2166,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "entries"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial acceleration. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/acceleration/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial acceleration."
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value",

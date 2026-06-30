@@ -11,7 +11,7 @@ namespace polyfem::solver
 	class FullNLProblem : public polysolve::nonlinear::Problem
 	{
 	public:
-		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms);
+		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, const bool is_residual = false);
 		virtual ~FullNLProblem() = default;
 		virtual void init(const TVector &x0) override;
 
@@ -28,6 +28,7 @@ namespace polyfem::solver
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		virtual void set_project_to_psd(bool val) override;
+		bool is_residual() const override { return is_residual_; }
 
 		virtual void solution_changed(const TVector &new_x) override;
 
@@ -50,5 +51,6 @@ namespace polyfem::solver
 
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
+		const bool is_residual_;
 	};
 } // namespace polyfem::solver

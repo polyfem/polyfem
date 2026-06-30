@@ -53,16 +53,19 @@ namespace polyfem::varform
 
 		void build_rhs_assembler() override
 		{
-			rhs_assembler_ = build_rhs_assembler(space_.n_bases, space_.basis_list(), mass_ass_vals_cache_);
+			rhs_assembler_ = build_rhs_assembler(space_.n_bases, space_.basis_list(), mass_ass_vals_cache_, solution_space_id_);
 		}
 
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
-			const assembler::AssemblyValsCache &ass_vals_cache);
+			const assembler::AssemblyValsCache &ass_vals_cache,
+			const int fe_space_id);
 
 		FESpace space_;
 		FESpace pressure_space_;
+		int solution_space_id_ = -1;
+		int auxiliary_space_id_ = -1;
 
 		VarFormBoundaryState boundary_;
 		VarFormBoundaryState pressure_boundary_;

@@ -141,6 +141,21 @@ namespace polyfem::assembler
 		}
 	};
 
+	class ThermalMassDensity : public Density
+	{
+	public:
+		ThermalMassDensity();
+
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path);
+
+		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const override;
+
+	private:
+		GenericMatParam rho_;
+		GenericMatParam heat_capacity_;
+	};
+
 	class FiberDirection
 	{
 	public:

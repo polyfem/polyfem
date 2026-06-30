@@ -4,7 +4,8 @@
 
 namespace polyfem::time_integrator
 {
-	BDF::BDF(const int order)
+	BDF::BDF(const int order, const DynamicOrder dynamic_order)
+		: ImplicitTimeIntegrator(dynamic_order)
 	{
 		if (order < 1 || order > 6)
 			log_and_throw_error("BDF order must be 1 ≤ n ≤ 6");
@@ -94,6 +95,9 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd BDF::x_tilde() const
 	{
+		if (dynamic_order_ == DynamicOrder::First)
+			return weighted_sum_x_prevs();
+
 		return weighted_sum_x_prevs() + betas(steps() - 1) * dt() * weighted_sum_v_prevs();
 	}
 
@@ -104,11 +108,17 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd BDF::compute_acceleration(const Eigen::VectorXd &v) const
 	{
+		if (dynamic_order_ == DynamicOrder::First)
+			return Eigen::VectorXd::Zero(v.size());
+
 		return (v - weighted_sum_v_prevs()) / beta_dt();
 	}
 
 	double BDF::acceleration_scaling() const
 	{
+		if (dynamic_order_ == DynamicOrder::First)
+			return beta_dt();
+
 		const double beta = betas(steps() - 1);
 		return beta * beta * dt() * dt();
 	}
