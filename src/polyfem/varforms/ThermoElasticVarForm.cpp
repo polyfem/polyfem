@@ -50,6 +50,30 @@ namespace polyfem::varform
 			return materials.is_array() ? materials.front() : materials;
 		}
 
+		void disable_newton_psd_projection(json &solver_params)
+		{
+			const auto disable_for_newton = [](json &params) {
+				if (!params.contains("Newton") || params["Newton"].is_null())
+					params["Newton"] = json::object();
+				params["Newton"]["use_psd_projection"] = false;
+			};
+
+			if (solver_params.contains("solver") && solver_params["solver"].is_array())
+			{
+				for (json &strategy : solver_params["solver"])
+				{
+					const std::string type = strategy.value("type", "");
+					if (type == "Newton" || type == "SparseNewton" || type == "sparse_newton"
+						|| type == "DenseNewton" || type == "dense_newton")
+						disable_for_newton(strategy);
+				}
+			}
+			else
+			{
+				disable_for_newton(solver_params);
+			}
+		}
+
 		void assert_same_space_ids(
 			const json &materials,
 			const int displacement_space_id,
@@ -81,6 +105,14 @@ namespace polyfem::varform
 				elastic_material["rho"] = material["rho"];
 
 			return elastic_material;
+		}
+
+		json solver_params_for_residual_mode(const json &solver_params, const bool is_residual)
+		{
+			json params = solver_params;
+			if (is_residual)
+				disable_newton_psd_projection(params);
+			return params;
 		}
 
 		std::string elastic_formulation_from_thermo_materials(const json &materials)
@@ -749,11 +781,9 @@ namespace polyfem::varform
 			temperature_form_->set_weight(temperature_scaling);
 			temperature_body_form_->set_weight(temperature_scaling);
 
-			// The thermoelastic mixed energy is a mechanical potential depending on
-			// both displacement and temperature. Keep it on the same dynamic scale
-			// as the elastic displacement potential; otherwise it dominates the
-			// transient step by a factor of O(1 / dt^2).
-			thermoelastic_form_->set_weight(displacement_time_integrator_->acceleration_scaling());
+			thermoelastic_form_->set_row_weights(
+				displacement_time_integrator_->acceleration_scaling(),
+				temperature_scaling);
 		}
 		else
 		{
@@ -806,9 +836,12 @@ namespace polyfem::varform
 		assert(nl_problem_ != nullptr);
 		solver::NLProblem &nl_problem = *nl_problem_;
 
+		const json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
+		const json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
+
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(
-				args["solver"]["nonlinear"], args["solver"]["linear"],
+				nonlinear_params, args["solver"]["linear"],
 				units.characteristic_length(), logger());
 
 		if (nl_problem.uses_lagging())
@@ -840,10 +873,10 @@ namespace polyfem::varform
 			};
 
 			al_solver.solve_al(
-				nl_problem, solution, args["solver"]["augmented_lagrangian"]["nonlinear"],
+				nl_problem, solution, al_nonlinear_params,
 				args["solver"]["linear"], units.characteristic_length(), nl_solver);
 			al_solver.solve_reduced(
-				nl_problem, solution, args["solver"]["nonlinear"],
+				nl_problem, solution, nonlinear_params,
 				args["solver"]["linear"], units.characteristic_length(), nl_solver);
 			return;
 		}
@@ -914,7 +947,8 @@ namespace polyfem::varform
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density,
 			stacked_lumped_mass_.size() > 0 ? stacked_lumped_mass_ : identity_mass(total_ndof()),
-			mesh_->dimension());
+			mesh_->dimension(),
+			problem->is_time_dependent());
 		nl_problem_->init(sol);
 		nl_problem_->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
 		stats.solver_info = json::array();
@@ -978,6 +1012,13 @@ namespace polyfem::varform
 
 		std::vector<io::OutputField> fields =
 			NonlinearElasticVarForm::output_fields(sample, displacement, options);
+		fields.erase(
+			std::remove_if(
+				fields.begin(), fields.end(),
+				[](const io::OutputField &field) {
+					return field.name == "solution" || field.name == "solution_gradient";
+				}),
+			fields.end());
 
 		if (!mesh_ || temperature.size() <= 0)
 			return fields;

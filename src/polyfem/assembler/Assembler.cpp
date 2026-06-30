@@ -7,6 +7,7 @@
 
 #include <ipc/utils/eigen_ext.hpp>
 
+#include <algorithm>
 #include <cmath>
 
 namespace polyfem::assembler
@@ -129,6 +130,49 @@ namespace polyfem::assembler
 			}
 
 			split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		}
+
+		void compute_mixed_element_values(
+			const int el_index,
+			const bool is_volume,
+			const ElementBases &psi_basis,
+			const ElementBases &phi_basis,
+			const ElementBases &gbasis,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			ElementAssemblyValues &psi_vals,
+			ElementAssemblyValues &phi_vals)
+		{
+			psi_cache.compute(el_index, is_volume, psi_basis, gbasis, psi_vals);
+			phi_cache.compute(el_index, is_volume, phi_basis, gbasis, phi_vals);
+
+			const auto same_quadrature = [&]() {
+				if (psi_vals.quadrature.weights.size() != phi_vals.quadrature.weights.size())
+					return false;
+				if (psi_vals.quadrature.points.rows() != phi_vals.quadrature.points.rows()
+					|| psi_vals.quadrature.points.cols() != phi_vals.quadrature.points.cols())
+					return false;
+				return (psi_vals.quadrature.points - phi_vals.quadrature.points).cwiseAbs().maxCoeff() < 1e-14;
+			};
+
+			if (same_quadrature())
+				return;
+
+			if (phi_vals.quadrature.weights.size() >= psi_vals.quadrature.weights.size())
+			{
+				const Quadrature quadrature = phi_vals.quadrature;
+				psi_vals.compute(el_index, is_volume, quadrature.points, psi_basis, gbasis);
+				psi_vals.quadrature = quadrature;
+			}
+			else
+			{
+				const Quadrature quadrature = psi_vals.quadrature;
+				phi_vals.compute(el_index, is_volume, quadrature.points, phi_basis, gbasis);
+				phi_vals.quadrature = quadrature;
+			}
+
+			assert(psi_vals.quadrature.weights.size() == phi_vals.quadrature.weights.size());
+			assert(psi_vals.quadrature.points.rows() == phi_vals.quadrature.points.rows());
 		}
 	} // namespace
 
@@ -568,8 +612,11 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -626,8 +673,11 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -692,8 +742,11 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -784,8 +837,11 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());

@@ -97,8 +97,9 @@ namespace polyfem::solver
 		const int full_size,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-		const std::shared_ptr<polysolve::linear::Solver> &solver)
-		: FullNLProblem(forms),
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const bool is_residual)
+		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(0),
 		  penalty_forms_(penalty_forms),
@@ -118,8 +119,9 @@ namespace polyfem::solver
 		const double char_length,
 		const double char_force,
 		StiffnessMatrix lumped_mass,
-		const int dimension)
-		: FullNLProblem(forms),
+		const int dimension,
+		const bool is_residual)
+		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(t),
 		  penalty_forms_(penalty_forms),
@@ -177,6 +179,9 @@ namespace polyfem::solver
 
 	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
+		if (is_residual())
+			return 1;
+
 		switch (norm_type)
 		{
 		case polysolve::nonlinear::NormType::EUCLIDEAN:
@@ -205,6 +210,9 @@ namespace polyfem::solver
 
 	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
+		if (is_residual())
+			return 1;
+
 		const double density_scale = dim == 2 ? L * L : L * L * L;
 		return F0 * density_scale * L;
 	}

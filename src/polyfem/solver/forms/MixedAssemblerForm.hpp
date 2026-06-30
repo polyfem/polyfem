@@ -31,6 +31,8 @@ namespace polyfem::solver
 
 		std::string name() const override { return "mixed-assembler"; }
 
+		void set_row_weights(const double phi_weight, const double psi_weight);
+
 		void update_quantities(const double t, const Eigen::VectorXd &x) override
 		{
 			t_ = t;
@@ -60,6 +62,8 @@ namespace polyfem::solver
 		const double dt_;
 		const bool is_volume_;
 		Eigen::VectorXd x_prev_;
+		double phi_row_weight_ = 1;
+		double psi_row_weight_ = 1;
 		mutable std::unique_ptr<utils::MatrixCache> mat_cache_;
 	};
 } // namespace polyfem::solver

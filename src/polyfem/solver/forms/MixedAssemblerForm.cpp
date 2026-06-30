@@ -39,6 +39,14 @@ namespace polyfem::solver
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 	}
 
+	void MixedAssemblerForm::set_row_weights(const double phi_weight, const double psi_weight)
+	{
+		assert(std::isfinite(phi_weight));
+		assert(std::isfinite(psi_weight));
+		phi_row_weight_ = phi_weight;
+		psi_row_weight_ = psi_weight;
+	}
+
 	double MixedAssemblerForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return assembler_.assemble_energy(
@@ -75,6 +83,8 @@ namespace polyfem::solver
 			split_solution(),
 			grad);
 		gradv = grad;
+		gradv.head(phi_ndof()) *= phi_row_weight_;
+		gradv.tail(psi_ndof()) *= psi_row_weight_;
 	}
 
 	void MixedAssemblerForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -94,6 +104,14 @@ namespace polyfem::solver
 			t_, dt_, x, x_prev_,
 			split_solution(),
 			*mat_cache_, hessian);
+
+		for (int k = 0; k < hessian.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(hessian, k); it; ++it)
+			{
+				it.valueRef() *= it.row() < phi_ndof() ? phi_row_weight_ : psi_row_weight_;
+			}
+		}
 	}
 
 	int MixedAssemblerForm::phi_ndof() const
