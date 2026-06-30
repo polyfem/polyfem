@@ -64,6 +64,7 @@ namespace polyfem::varform
 		void build_temperature_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
 		void build_temperature_boundary(mesh::Mesh &mesh);
 		void build_forms(Eigen::MatrixXd &solution, const double t);
+		void update_transient_form_weights();
 		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution);
 
 		void initial_temperature_solution(Eigen::MatrixXd &solution) const;
@@ -98,17 +99,12 @@ namespace polyfem::varform
 		StiffnessMatrix stacked_lumped_mass_;
 		Eigen::MatrixXd temperature_rhs_;
 
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> displacement_time_integrator_;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> temperature_time_integrator_;
 
 		std::shared_ptr<solver::ElasticForm> temperature_form_;
 		std::shared_ptr<solver::MixedAssemblerForm> thermoelastic_form_;
 		std::shared_ptr<solver::BodyForm> temperature_body_form_;
-		std::shared_ptr<solver::InertiaForm> temperature_inertia_form_;
 		std::shared_ptr<solver::StackedForm> stacked_form_;
-		std::shared_ptr<solver::NLProblem> nl_problem_;
-		std::vector<std::shared_ptr<solver::Form>> forms_;
-		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_forms_;
 
 		int displacement_space_id_ = -1;
 		int temperature_space_id_ = -1;

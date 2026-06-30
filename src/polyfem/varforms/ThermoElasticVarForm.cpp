@@ -175,16 +175,11 @@ namespace polyfem::varform
 		temperature_pure_mass_.resize(0, 0);
 		stacked_lumped_mass_.resize(0, 0);
 		temperature_rhs_.resize(0, 0);
-		displacement_time_integrator_ = nullptr;
 		temperature_time_integrator_ = nullptr;
 		temperature_form_ = nullptr;
 		thermoelastic_form_ = nullptr;
 		temperature_body_form_ = nullptr;
-		temperature_inertia_form_ = nullptr;
 		stacked_form_ = nullptr;
-		nl_problem_ = nullptr;
-		forms_.clear();
-		al_forms_.clear();
 		displacement_space_id_ = -1;
 		temperature_space_id_ = -1;
 		elastic_formulation_ = "NeoHookean";
@@ -708,7 +703,7 @@ namespace polyfem::varform
 
 		if (is_time_dependent)
 		{
-			displacement_time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
+			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
 				time_integrator_args(displacement_space_id_),
 				time_integrator::ImplicitTimeIntegrator::DynamicOrder::Second);
 
@@ -717,12 +712,10 @@ namespace polyfem::varform
 			displacement_solution.col(0) = displacement;
 			initial_velocity(displacement_velocity);
 			initial_acceleration(displacement_acceleration);
-			displacement_time_integrator_->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
-			solve_data.time_integrator = displacement_time_integrator_;
+			solve_data.time_integrator->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
 		}
 		else
 		{
-			displacement_time_integrator_ = nullptr;
 			solve_data.time_integrator = nullptr;
 		}
 
@@ -774,30 +767,22 @@ namespace polyfem::varform
 			Eigen::MatrixXd temperature_acceleration = Eigen::MatrixXd::Zero(temperature_solution.rows(), temperature_solution.cols());
 			temperature_time_integrator_->init(temperature_solution, temperature_velocity, temperature_acceleration, dt);
 
-			temperature_inertia_form_ = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
-			stacked_form_->add(temperature_block, temperature_inertia_form_);
+			auto temperature_inertia_form = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
+			stacked_form_->add(temperature_block, temperature_inertia_form);
 
-			const double temperature_scaling = temperature_time_integrator_->acceleration_scaling();
-			temperature_form_->set_weight(temperature_scaling);
-			temperature_body_form_->set_weight(temperature_scaling);
-
-			thermoelastic_form_->set_row_weights(
-				displacement_time_integrator_->acceleration_scaling(),
-				temperature_scaling);
+			update_transient_form_weights();
 		}
 		else
 		{
-			displacement_time_integrator_ = nullptr;
 			temperature_time_integrator_ = nullptr;
-			temperature_inertia_form_ = nullptr;
 		}
 
-		forms_.clear();
-		forms_.push_back(stacked_form_);
-		for (const auto &form : forms_)
+		forms.clear();
+		forms.push_back(stacked_form_);
+		for (const auto &form : forms)
 			form->set_output_dir(output_path);
 
-		al_forms_.clear();
+		solve_data.al_form.clear();
 		if (!boundary_.boundary_nodes.empty() || !temperature_boundary_.boundary_nodes.empty())
 		{
 			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
@@ -827,14 +812,33 @@ namespace polyfem::varform
 						/*obstacle_ndof=*/0, is_time_dependent, t));
 			}
 
-			al_forms_.push_back(stacked_al);
+			solve_data.al_form.push_back(stacked_al);
 		}
+	}
+
+	void ThermoElasticVarForm::update_transient_form_weights()
+	{
+		assert(problem->is_time_dependent());
+		assert(solve_data.time_integrator);
+		assert(temperature_time_integrator_);
+
+		solve_data.update_dt();
+
+		const double displacement_scaling = solve_data.time_integrator->acceleration_scaling();
+		const double temperature_scaling = temperature_time_integrator_->acceleration_scaling();
+
+		if (temperature_form_)
+			temperature_form_->set_weight(temperature_scaling);
+		if (temperature_body_form_)
+			temperature_body_form_->set_weight(temperature_scaling);
+		if (thermoelastic_form_)
+			thermoelastic_form_->set_row_weights(displacement_scaling, temperature_scaling);
 	}
 
 	void ThermoElasticVarForm::solve_nonlinear_step(const int step, Eigen::MatrixXd &solution)
 	{
-		assert(nl_problem_ != nullptr);
-		solver::NLProblem &nl_problem = *nl_problem_;
+		assert(solve_data.nl_problem != nullptr);
+		solver::NLProblem &nl_problem = *solve_data.nl_problem;
 
 		const json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
 		const json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
@@ -852,10 +856,10 @@ namespace polyfem::varform
 			solve_data.update_barrier_stiffness(displacement);
 		};
 
-		if (!al_forms_.empty())
+		if (!solve_data.al_form.empty())
 		{
 			solver::ALSolver al_solver(
-				al_forms_,
+				solve_data.al_form,
 				args["solver"]["augmented_lagrangian"]["initial_weight"],
 				args["solver"]["augmented_lagrangian"]["scaling"],
 				args["solver"]["augmented_lagrangian"]["max_weight"],
@@ -941,16 +945,16 @@ namespace polyfem::varform
 		else
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 
-		nl_problem_ = std::make_shared<solver::NLProblem>(
+		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
 			total_ndof(), nullptr, problem->is_time_dependent() ? t0 + dt : 1.0,
-			forms_, al_forms_,
+			forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density,
 			stacked_lumped_mass_.size() > 0 ? stacked_lumped_mass_ : identity_mass(total_ndof()),
 			mesh_->dimension(),
 			problem->is_time_dependent());
-		nl_problem_->init(sol);
-		nl_problem_->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
+		solve_data.nl_problem->init(sol);
+		solve_data.nl_problem->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
 		stats.solver_info = json::array();
 
 		if (!problem->is_time_dependent())
@@ -969,11 +973,11 @@ namespace polyfem::varform
 
 				Eigen::MatrixXd displacement, temperature;
 				split_solution(sol, displacement, temperature);
-				displacement_time_integrator_->update_quantities(displacement);
+				solve_data.time_integrator->update_quantities(displacement);
 				temperature_time_integrator_->update_quantities(temperature);
-				solve_data.update_dt();
+				update_transient_form_weights();
 				solve_data.update_barrier_stiffness(displacement);
-				nl_problem_->update_quantities(t0 + (t + 1) * dt, sol);
+				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				logger().info("{}/{}  t={}", t, time_steps, time);
 				notify_time_step(t, time_steps, t0, dt);
