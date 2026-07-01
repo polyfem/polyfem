@@ -20,12 +20,14 @@ namespace polyfem::solver
 	enum class ElementInversionCheck
 	{
 		Discrete,
-		Conservative
+		Conservative,
+		Static
 	};
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		polyfem::solver::ElementInversionCheck,
 		{{ElementInversionCheck::Discrete, "Discrete"},
-		 {ElementInversionCheck::Conservative, "Conservative"}})
+		 {ElementInversionCheck::Conservative, "Conservative"},
+		 {ElementInversionCheck::Static, "Static"}})
 
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
@@ -121,6 +123,15 @@ namespace polyfem::solver
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
+
+		/// @brief Merge a subdivision tree into quadrature_hierarchy_ for the
+		/// given element and rebuild its live quadrature if it actually refined.
+		/// Shared by post_step() (deferred commit, once a step is accepted) and
+		/// max_step_size() (immediate commit, only when step == 0 -- such a step
+		/// can never reach post_step(), so deferring it would just discard the
+		/// refinement candidate and leave the next iteration stuck on the same
+		/// too-coarse quadrature).
+		void commit_refinement(const int id, utils::Tree &subdivision_tree) const;
 
 		Eigen::VectorXd x_prev_;
 

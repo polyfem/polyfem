@@ -1685,9 +1685,10 @@
         "default": "Discrete",
         "options": [
             "Discrete",
-            "Conservative"
+            "Conservative",
+            "Static"
         ],
-        "doc": "The method for checking if any element is flipped."
+        "doc": "The method for checking if any element is flipped. \"Static\" approximates the continuous (Conservative) check by testing validity at t=1 and halving the step until a valid configuration is found."
     },
     {
         "pointer": "/solver/advanced/jacobian_threshold",

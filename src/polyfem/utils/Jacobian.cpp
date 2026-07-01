@@ -285,7 +285,7 @@ namespace polyfem::utils
 			if (!info.success())
 			{
 				if (t_lo <= 0)
-					log_and_throw_error("Jacobian batch_minimize gave up with step size 0 after {} iterations", info.numIterations);
+					logger().error("Jacobian batch_minimize gave up with step size 0 after {} iterations", info.numIterations);
 				else
 					logger().warn("Jacobian batch_minimize gave up after {} iterations (step={})", info.numIterations, t_lo);
 			}

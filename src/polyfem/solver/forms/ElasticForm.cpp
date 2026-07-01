@@ -173,7 +173,11 @@ namespace polyfem::solver
 			else
 			{
 				TetQuadrature tet_quadrature(true);
-				tet_quadrature.get_quadrature(order, tmp);
+				// The corner rule for order 4 (Liu-Vinokur 9) has a large negative
+				// weight at the centroid, which corrupts non-polynomial integrands
+				// like NeoHookean near inversion. Order 5 has all-positive weights.
+				const int safe_order = (order == 4) ? 5 : order;
+				tet_quadrature.get_quadrature(safe_order, tmp);
 				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
 				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
 			}
@@ -257,6 +261,14 @@ namespace polyfem::solver
 				else if (gbasis_order != geom_bases_[e].bases.front().order())
 					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
+
+			// Replace the corner quadrature set by LagrangeBasis for every element.
+			// The default corner rule for order 4 has a negative centroid weight
+			// (see refine_quadrature); override it here so the base quadrature is
+			// also safe before any adaptive refinement occurs.
+			const int dim = is_volume_ ? 3 : 2;
+			for (int e = 0; e < (int)bases_.size(); e++)
+				update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
 		}
 	}
 
@@ -316,6 +328,59 @@ namespace polyfem::solver
 			return 1.;
 
 		const int dim = is_volume_ ? 3 : 2;
+
+		if (check_inversion_ == ElementInversionCheck::Static)
+		{
+			constexpr int kMaxHalvings = 50;
+
+			double step = 1.;
+			bool isvalid = false;
+			int invalidID = -1;
+			Tree subdivision_tree;
+
+			double static_check_time = 0;
+			{
+				POLYFEM_SCOPED_TIMER("Static Jacobian Check", static_check_time);
+				for (int i = 0; i < kMaxHalvings; i++)
+				{
+					const Eigen::VectorXd x_t = x0 + step * (x1 - x0);
+					std::tie(isvalid, invalidID, subdivision_tree) = is_valid(dim, bases_, geom_bases_, x_t, 0., conservative_max_iter_);
+					if (isvalid)
+						break;
+					step *= 0.5;
+				}
+			}
+
+			if (!isvalid)
+				step = 0;
+
+			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
+						 "Static Jacobian max step size: {} at element {}, runtime {} sec, tree depth {}", step, invalidID, static_check_time, subdivision_tree.depth());
+
+			if (invalidID >= 0 && step == 0)
+			{
+				// A step of 0 can never be accepted, so it will never reach
+				// post_step(); commit the refinement candidate immediately so
+				// the next iteration's energy/gradient/Hessian actually sees
+				// this near-degenerate point instead of repeating the same
+				// failure against stale quadrature.
+				commit_refinement(invalidID, subdivision_tree);
+				pending_refinement_.reset();
+			}
+			else if (invalidID >= 0 && step <= 0.5)
+			{
+				// Store as a candidate only; committed in post_step() if/when
+				// this step is accepted (see pending_refinement_ in the header).
+				pending_refinement_ = std::make_pair(invalidID, std::move(subdivision_tree));
+			}
+			else
+			{
+				pending_refinement_.reset();
+			}
+
+			return step;
+		}
+
 		double step, invalidStep;
 		int invalidID;
 
@@ -328,10 +393,20 @@ namespace polyfem::solver
 			}
 
 			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
-						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, full tree {}, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree, subdivision_tree.depth());
+						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree.depth());
 		}
 
-		if (invalidID >= 0 && step <= 0.5)
+		if (invalidID >= 0 && step == 0)
+		{
+			// A step of 0 can never be accepted, so it will never reach
+			// post_step(); commit the refinement candidate immediately so
+			// the next iteration's energy/gradient/Hessian actually sees
+			// this near-degenerate point instead of repeating the same
+			// failure against stale quadrature.
+			commit_refinement(invalidID, subdivision_tree);
+			pending_refinement_.reset();
+		}
+		else if (invalidID >= 0 && step <= 0.5)
 		{
 			// Store as a candidate only; committed in post_step() if/when
 			// this step is accepted (see pending_refinement_ in the header).
@@ -378,19 +453,24 @@ namespace polyfem::solver
 		if (!pending_refinement_.has_value())
 			return;
 
-		const int dim = is_volume_ ? 3 : 2;
-		const auto [id, subdivision_tree] = *pending_refinement_;
+		auto [id, subdivision_tree] = *pending_refinement_;
+		commit_refinement(id, subdivision_tree);
 
-		// Commit the accepted candidate: merge into quadrature_hierarchy_
-		// and rebuild the live quadrature for this element.
-		if (quadrature_hierarchy_[id].merge(subdivision_tree)) // if the tree is refined
+		pending_refinement_.reset();
+	}
+
+	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree) const
+	{
+		const int dim = is_volume_ ? 3 : 2;
+
+		// Merge into quadrature_hierarchy_ and rebuild the live quadrature for
+		// this element, if the tree is actually refined.
+		if (quadrature_hierarchy_[id].merge(subdivision_tree))
 		{
 			auto &bs = bases_[id];
 			auto &gbs = geom_bases_[id];
 			update_quadrature(id, dim, quadrature_hierarchy_[id], quadrature_order_, bs, gbs, ass_vals_cache_);
 		}
-
-		pending_refinement_.reset();
 	}
 
 	void ElasticForm::compute_cached_stiffness()
