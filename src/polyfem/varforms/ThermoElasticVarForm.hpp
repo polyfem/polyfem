@@ -106,6 +106,7 @@ namespace polyfem::varform
 		std::shared_ptr<solver::ElasticForm> temperature_form_;
 		std::shared_ptr<solver::MixedAssemblerForm> thermoelastic_form_;
 		std::shared_ptr<solver::BodyForm> temperature_body_form_;
+		std::shared_ptr<solver::InertiaForm> temperature_inertia_form_;
 		std::shared_ptr<solver::StackedForm> stacked_form_;
 
 		int displacement_space_id_ = -1;

@@ -181,6 +181,7 @@ namespace polyfem::varform
 		temperature_form_ = nullptr;
 		thermoelastic_form_ = nullptr;
 		temperature_body_form_ = nullptr;
+		temperature_inertia_form_ = nullptr;
 		stacked_form_ = nullptr;
 		displacement_space_id_ = -1;
 		temperature_space_id_ = -1;
@@ -771,14 +772,36 @@ namespace polyfem::varform
 			Eigen::MatrixXd temperature_acceleration = Eigen::MatrixXd::Zero(temperature_solution.rows(), temperature_solution.cols());
 			temperature_time_integrator_->init(temperature_solution, temperature_velocity, temperature_acceleration, dt);
 
-			auto temperature_inertia_form = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
-			stacked_form_->add(temperature_block, temperature_inertia_form);
+			temperature_inertia_form_ = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
+			if (!temperature_boundary_.boundary_nodes.empty())
+			{
+				temperature_inertia_form_->set_x_tilde_updater(
+					[this, temperature_boundary_samples](
+						const double t,
+						const Eigen::VectorXd &,
+						Eigen::VectorXd &target) {
+						Eigen::MatrixXd projected_target = target;
+						const std::vector<mesh::LocalBoundary> empty_neumann_boundary;
+						temperature_rhs_assembler_->set_bc(
+							temperature_boundary_.local_boundary,
+							temperature_boundary_.boundary_nodes,
+							temperature_boundary_samples,
+							empty_neumann_boundary,
+							projected_target,
+							Eigen::MatrixXd(),
+							t);
+						assert(projected_target.cols() == 1);
+						target = projected_target.col(0);
+					});
+			}
+			stacked_form_->add(temperature_block, temperature_inertia_form_);
 
 			update_transient_form_weights();
 		}
 		else
 		{
 			temperature_time_integrator_ = nullptr;
+			temperature_inertia_form_ = nullptr;
 		}
 
 		forms.clear();
