@@ -10,9 +10,10 @@ namespace polyfem::solver
 {
 	InertiaForm::InertiaForm(const StiffnessMatrix &mass,
 							 const time_integrator::ImplicitTimeIntegrator &time_integrator)
-		: mass_(mass), time_integrator_(time_integrator)
+		: mass_(mass), time_integrator_(time_integrator), x_tilde_(time_integrator.x_tilde())
 	{
 		assert(mass.size() != 0);
+		assert(x_tilde_.size() == mass.rows());
 	}
 
 	void InertiaForm::set_x_tilde_updater(XTildeUpdater updater)

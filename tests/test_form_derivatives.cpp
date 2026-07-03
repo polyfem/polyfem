@@ -426,6 +426,7 @@ TEST_CASE("inertia form derivatives", "[form][form_derivatives][inertia_form]")
 		dt);
 
 	InertiaForm form(state_ptr->mass, time_integrator);
+	form.update_quantities(0, Eigen::VectorXd::Zero(state_ptr->n_bases * dim));
 
 	test_form(form, *state_ptr);
 }
