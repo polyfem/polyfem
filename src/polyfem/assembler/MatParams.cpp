@@ -507,6 +507,16 @@ namespace polyfem::assembler
 		return res;
 	}
 
+	double ThermalMassDensity::rho(const RowVectorNd &p, double t, int el_id) const
+	{
+		return rho_(p, t, el_id);
+	}
+
+	double ThermalMassDensity::heat_capacity(const RowVectorNd &p, double t, int el_id) const
+	{
+		return heat_capacity_(p, t, el_id);
+	}
+
 	FiberDirection::FiberDirection()
 	{
 	}

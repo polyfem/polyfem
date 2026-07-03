@@ -146,9 +146,9 @@ namespace polyfem
 			}
 		}
 
-		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim, const int) const
+		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
-			if (all_dimensions_dirichlet())
+			if (all_dimensions_dirichlet(fe_space_id))
 				return true;
 
 			if (is_all_)

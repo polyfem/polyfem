@@ -680,15 +680,9 @@ namespace polyfem::varform
 		Eigen::MatrixXd &displacement,
 		Eigen::MatrixXd &temperature) const
 	{
-		assert(solution.rows() >= displacement_ndof());
+		assert(solution.rows() == total_ndof());
 		displacement = solution.topRows(displacement_ndof());
-		temperature = solution.middleRows(displacement_ndof(), std::min<int>(temperature_ndof(), solution.rows() - displacement_ndof()));
-		if (temperature.rows() < temperature_ndof())
-		{
-			const int previous_rows = temperature.rows();
-			temperature.conservativeResize(temperature_ndof(), Eigen::NoChange);
-			temperature.bottomRows(temperature_ndof() - previous_rows).setZero();
-		}
+		temperature = solution.bottomRows(temperature_ndof());
 	}
 
 	void ThermoElasticVarForm::build_forms(Eigen::MatrixXd &solution, const double t)
@@ -1059,12 +1053,18 @@ namespace polyfem::varform
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
 
-		const auto append_thermo_material_fields = [&]() {
+		const auto has_field = [&](const std::string &name) {
+			return std::any_of(fields.begin(), fields.end(), [&](const io::OutputField &field) {
+				return field.name == name;
+			});
+		};
+
+		const auto append_material_fields = [&](const assembler::Assembler &assembler) {
 			const auto &paraview_options = args["output"]["paraview"]["options"];
-			if (!paraview_options["material"] || !has_element_samples || !thermoelastic_assembler_)
+			if (!paraview_options["material"] || !has_element_samples)
 				return;
 
-			const auto params = thermoelastic_assembler_->parameters();
+			const auto params = assembler.parameters();
 			std::map<std::string, Eigen::MatrixXd> param_values;
 			for (const auto &[p, _] : params)
 				param_values[p].setZero(output_rows, 1);
@@ -1080,7 +1080,7 @@ namespace polyfem::varform
 			}
 
 			for (const auto &[name, values] : param_values)
-				if (options.export_field(name))
+				if (options.export_field(name) && !has_field(name))
 					fields.push_back({name, values, io::OutputField::Association::Point});
 		};
 
@@ -1154,7 +1154,12 @@ namespace polyfem::varform
 			}
 		}
 
-		append_thermo_material_fields();
+		if (thermoelastic_assembler_)
+			append_material_fields(*thermoelastic_assembler_);
+		if (temperature_assembler_)
+			append_material_fields(*temperature_assembler_);
+		if (temperature_mass_assembler_)
+			append_material_fields(*temperature_mass_assembler_);
 
 		return fields;
 	}

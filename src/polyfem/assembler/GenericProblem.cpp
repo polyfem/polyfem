@@ -256,7 +256,7 @@ namespace polyfem
 
 		bool GenericTensorProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
-			if (all_dimensions_dirichlet())
+			if (all_dimensions_dirichlet(fe_space_id))
 				return true;
 
 			for (size_t b = 0; b < boundary_ids_.size(); ++b)
@@ -269,6 +269,35 @@ namespace polyfem
 			}
 
 			assert(false);
+			return true;
+		}
+
+		bool GenericTensorProblem::all_dimensions_dirichlet(const int fe_space_id) const
+		{
+			for (const TensorBCValue &displacement : displacements_)
+			{
+				if (!matches_fe_space(displacement.fe_space_id, fe_space_id))
+					continue;
+
+				for (int d = 0; d < displacement.dirichlet_dimension.size(); ++d)
+				{
+					if (!displacement.dirichlet_dimension(d))
+						return false;
+				}
+			}
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					for (int d = 1; d < n_dirichlet.cols(); ++d)
+					{
+						if (std::isnan(n_dirichlet(i, d)))
+							return false;
+					}
+				}
+			}
+
 			return true;
 		}
 
@@ -648,7 +677,6 @@ namespace polyfem
 					nodal_dirichlet_[current_id].dirichlet_dimension.setConstant(true);
 					if (j_boundary[i - offset].contains("dimension"))
 					{
-						all_dimensions_dirichlet_ = false;
 						auto &tmp = j_boundary[i - offset]["dimension"];
 						assert(tmp.is_array());
 						for (size_t k = 0; k < tmp.size(); ++k)
@@ -960,7 +988,6 @@ namespace polyfem
 
 		void GenericTensorProblem::clear()
 		{
-			all_dimensions_dirichlet_ = true;
 			has_exact_ = false;
 			has_exact_grad_ = false;
 			is_time_dept_ = false;

@@ -57,7 +57,11 @@ namespace polyfem
 			void set_parameters(const json &params, const std::string &root_path) override;
 
 			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
-			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
+			bool all_dimensions_dirichlet(const int fe_space_id) const override
+			{
+				(void)fe_space_id;
+				return all_dimensions_dirichlet_;
+			}
 
 		private:
 			bool all_dimensions_dirichlet_ = true;

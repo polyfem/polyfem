@@ -131,7 +131,11 @@ namespace polyfem
 			void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 
 			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
-			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
+			bool all_dimensions_dirichlet(const int fe_space_id) const override
+			{
+				(void)fe_space_id;
+				return all_dimensions_dirichlet_;
+			}
 
 		private:
 			bool initialized_ = false;

@@ -56,7 +56,24 @@ namespace polyfem::assembler
 	std::map<std::string, Assembler::ParamFunc> Mass::parameters() const
 	{
 		std::map<std::string, ParamFunc> res;
-		res["rho"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return this->density()(uv, p, t, e); };
+		if (auto thermal_density = std::dynamic_pointer_cast<ThermalMassDensity>(density_))
+		{
+			res["rho"] = [thermal_density](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return thermal_density->rho(p, t, e);
+			};
+			res["heat_capacity"] = [thermal_density](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return thermal_density->heat_capacity(p, t, e);
+			};
+			res["rho_heat_capacity"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				return this->density()(uv, p, t, e);
+			};
+		}
+		else
+		{
+			res["rho"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				return this->density()(uv, p, t, e);
+			};
+		}
 
 		return res;
 	}

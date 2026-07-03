@@ -292,7 +292,7 @@ namespace polyfem
 					for (int s = 0; s < samples.rows(); ++s)
 					{
 						const int tag = mesh_.get_boundary_id(global_primitive_ids(s));
-						if (!problem_.all_dimensions_dirichlet() && !problem_.is_dimension_dirichet(tag, d, fe_space_id_))
+						if (!problem_.all_dimensions_dirichlet(fe_space_id_) && !problem_.is_dimension_dirichet(tag, d, fe_space_id_))
 							continue;
 
 						total_size++;
@@ -353,7 +353,7 @@ namespace polyfem
 					for (int s = 0; s < samples.rows(); ++s)
 					{
 						const int tag = mesh_.get_boundary_id(global_primitive_ids(s));
-						if (!problem_.all_dimensions_dirichlet() && !problem_.is_dimension_dirichet(tag, d, fe_space_id_))
+						if (!problem_.all_dimensions_dirichlet(fe_space_id_) && !problem_.is_dimension_dirichet(tag, d, fe_space_id_))
 							continue;
 
 						for (int j = 0; j < n_local_bases; ++j)
@@ -389,7 +389,7 @@ namespace polyfem
 						for (size_t i = 0; i < indices.size(); ++i)
 						{
 							const int tag = tags[i];
-							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
+							if (problem_.all_dimensions_dirichlet(fe_space_id_) || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
 								rhs(indices[i] * size_ + d) = 0;
 						}
 					}
@@ -417,7 +417,7 @@ namespace polyfem
 						for (long i = 0; i < coeffs.rows(); ++i)
 						{
 							const int tag = tags[i];
-							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
+							if (problem_.all_dimensions_dirichlet(fe_space_id_) || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
 								rhs(indices[i] * size_ + d) = coeffs(i);
 						}
 					}
@@ -480,9 +480,9 @@ namespace polyfem
 
 							for (int d = 0; d < size_; ++d)
 							{
-								if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
+								if (problem_.all_dimensions_dirichlet(fe_space_id_) || problem_.is_dimension_dirichet(tag, d, fe_space_id_))
 								{
-									assert(problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end());
+									assert(problem_.all_dimensions_dirichlet(fe_space_id_) || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end());
 									rhs(glob[ii].index * size_ + d) = rhs_fun(0, d);
 								}
 							}

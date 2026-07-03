@@ -91,7 +91,7 @@ namespace polyfem
 			void set_parameters(const json &params, const std::string &root_path) override;
 
 			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
-			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
+			bool all_dimensions_dirichlet(const int fe_space_id) const override;
 
 			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -103,7 +103,6 @@ namespace polyfem
 			void update_pressure_boundary(const int id, const int time_step, const double val);
 
 		private:
-			bool all_dimensions_dirichlet_ = true;
 			bool has_exact_ = false;
 			bool has_exact_grad_ = false;
 			bool is_time_dept_ = false;

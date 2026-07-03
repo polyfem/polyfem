@@ -67,7 +67,11 @@ namespace polyfem
 			virtual bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const { return true; }
 			virtual bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim, const int fe_space_id = -1) const { return true; }
 
-			virtual bool all_dimensions_dirichlet() const { return true; } // here for efficiency reasons
+			virtual bool all_dimensions_dirichlet(const int fe_space_id) const
+			{
+				(void)fe_space_id;
+				return true;
+			} // here for efficiency reasons
 
 			// Selects local boundary primitives for a BC kind. boundary_nodes contains
 			// constrained DOF ids only for Dirichlet.

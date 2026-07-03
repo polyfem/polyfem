@@ -150,6 +150,8 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path);
 
 		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const override;
+		double rho(const RowVectorNd &p, double t, int el_id) const;
+		double heat_capacity(const RowVectorNd &p, double t, int el_id) const;
 
 	private:
 		GenericMatParam rho_;
