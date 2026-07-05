@@ -128,6 +128,8 @@ namespace polyfem::assembler
 	class NoDensity : public Density
 	{
 	public:
+		using Density::operator();
+
 		NoDensity() {}
 
 		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override
@@ -144,6 +146,8 @@ namespace polyfem::assembler
 	class ThermalMassDensity : public Density
 	{
 	public:
+		using Density::operator();
+
 		ThermalMassDensity();
 
 		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override;
