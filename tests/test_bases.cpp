@@ -38,7 +38,7 @@ using namespace polyfem::quadrature;
 /////////////////////////////////////////
 TEST_CASE("Quadratic B-spline tensor products", "[bases][spline]")
 {
-	const std::array<double, 4> knots = {0, 1, 2, 3};
+	const std::array<double, 4> knots = {{0, 1, 2, 3}};
 
 	QuadraticBSpline spline;
 	spline.init(knots);
