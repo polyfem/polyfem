@@ -17,6 +17,9 @@
 
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 #include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
+#include <polyfem/basis/function/QuadraticBSpline.hpp>
+#include <polyfem/basis/function/QuadraticBSpline2d.hpp>
+#include <polyfem/basis/function/QuadraticBSpline3d.hpp>
 
 #include <finitediff.hpp>
 
@@ -33,6 +36,66 @@ using namespace polyfem::mesh;
 using namespace polyfem::quadrature;
 
 /////////////////////////////////////////
+TEST_CASE("Quadratic B-spline tensor products", "[bases][spline]")
+{
+	const std::array<double, 4> knots = {0, 1, 2, 3};
+
+	QuadraticBSpline spline;
+	spline.init(knots);
+	CHECK(spline.interpolate(-0.5) == Catch::Approx(0.0));
+	CHECK(spline.interpolate(0.5) == Catch::Approx(0.125));
+	CHECK(spline.interpolate(1.5) == Catch::Approx(0.75));
+	CHECK(spline.interpolate(2.5) == Catch::Approx(0.125));
+	CHECK(spline.interpolate(3.5) == Catch::Approx(0.0));
+	CHECK(spline.derivative(0.5) == Catch::Approx(0.5));
+	CHECK(spline.derivative(1.5) == Catch::Approx(0.0));
+	CHECK(spline.derivative(2.5) == Catch::Approx(-0.5));
+
+	Eigen::MatrixXd ts1(3, 1);
+	ts1 << 0.5, 1.5, 2.5;
+	Eigen::MatrixXd values1, grads1;
+	spline.interpolate(ts1, values1);
+	spline.derivative(ts1, grads1);
+	REQUIRE(values1.rows() == 3);
+	REQUIRE(grads1.rows() == 3);
+	CHECK(values1(0, 0) == Catch::Approx(0.125));
+	CHECK(values1(1, 0) == Catch::Approx(0.75));
+	CHECK(grads1(0, 0) == Catch::Approx(0.5));
+	CHECK(grads1(2, 0) == Catch::Approx(-0.5));
+
+	QuadraticBSpline2d spline2d(knots, knots);
+	CHECK(spline2d.interpolate(1.5, 0.5) == Catch::Approx(0.09375));
+	Eigen::MatrixXd ts2(2, 2);
+	ts2 << 1.5, 0.5,
+		2.5, 1.5;
+	Eigen::MatrixXd values2, grads2;
+	spline2d.interpolate(ts2, values2);
+	spline2d.derivative(ts2, grads2);
+	REQUIRE(values2.rows() == 2);
+	REQUIRE(grads2.rows() == 2);
+	REQUIRE(grads2.cols() == 2);
+	CHECK(values2(0, 0) == Catch::Approx(0.09375));
+	CHECK(grads2(0, 0) == Catch::Approx(0.0));
+	CHECK(grads2(0, 1) == Catch::Approx(0.375));
+	CHECK(grads2(1, 0) == Catch::Approx(-0.375));
+	CHECK(grads2(1, 1) == Catch::Approx(0.0));
+
+	QuadraticBSpline3d spline3d(knots, knots, knots);
+	CHECK(spline3d.interpolate(1.5, 0.5, 2.5) == Catch::Approx(0.01171875));
+	Eigen::MatrixXd ts3(1, 3);
+	ts3 << 1.5, 0.5, 2.5;
+	Eigen::MatrixXd values3, grads3;
+	spline3d.interpolate(ts3, values3);
+	spline3d.derivative(ts3, grads3);
+	REQUIRE(values3.rows() == 1);
+	REQUIRE(grads3.rows() == 1);
+	REQUIRE(grads3.cols() == 3);
+	CHECK(values3(0, 0) == Catch::Approx(0.01171875));
+	CHECK(grads3(0, 0) == Catch::Approx(0.0));
+	CHECK(grads3(0, 1) == Catch::Approx(0.046875));
+	CHECK(grads3(0, 2) == Catch::Approx(-0.046875));
+}
+
 constexpr std::array<std::array<int, 2>, 8> linear_tri_local_node = {{
 	{{0, 0}}, // v0  = (0, 0)
 	{{1, 0}}, // v1  = (1, 0)
