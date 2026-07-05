@@ -463,8 +463,21 @@ namespace polyfem
 
 		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			// TODO implement me;
-			log_and_throw_error("Nodal neumann not implemented");
+			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
+			const int tag = mesh.get_node_id(node_id);
+
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			{
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(forces_[i].fe_space_id, fe_space_id))
+				{
+					val = Eigen::MatrixXd::Zero(1, forces_[i].size);
+					for (int d = 0; d < val.cols(); ++d)
+						val(d) = forces_[i].eval(pt, d, t);
+					return;
+				}
+			}
+
+			assert(false);
 		}
 
 		bool GenericTensorProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
@@ -500,6 +513,11 @@ namespace polyfem
 
 		bool GenericTensorProblem::has_nodal_neumann(const int fe_space_id)
 		{
+			for (const TensorBCValue &force : forces_)
+			{
+				if (matches_fe_space(force.fe_space_id, fe_space_id))
+					return true;
+			}
 			return false;
 		}
 
@@ -720,6 +738,7 @@ namespace polyfem
 						log_and_throw_error("Neumann condition for FE space {} has {} components; at most 3 are supported.", forces_[i].fe_space_id, forces_[i].size);
 					for (int k = 0; k < forces_[i].size; ++k)
 						forces_[i].value[k].init(ff.is_array() ? ff[k] : ff, root_path);
+					nodal_neumann_[neumann_boundary_ids_[i]] = forces_[i];
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -730,6 +749,7 @@ namespace polyfem
 					{
 						forces_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"]));
 					}
+					nodal_neumann_[neumann_boundary_ids_[i]].interpolation = forces_[i].interpolation;
 				}
 			}
 
@@ -1031,6 +1051,12 @@ namespace polyfem
 			for (auto &v : dirichlet_)
 				v.set_unit_type("");
 
+			for (auto &v : nodal_dirichlet_)
+				v.second.set_unit_type("");
+
+			for (auto &v : nodal_neumann_)
+				v.second.set_unit_type("");
+
 			for (auto &v : initial_solution_)
 				v.value.set_unit_type("");
 
@@ -1292,8 +1318,19 @@ namespace polyfem
 
 		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			// TODO implement me;
-			log_and_throw_error("Nodal neumann not implemented");
+			val = Eigen::MatrixXd::Zero(1, 1);
+			const int tag = mesh.get_node_id(node_id);
+
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			{
+				if (neumann_boundary_ids_[i] == tag && matches_fe_space(neumann_[i].fe_space_id, fe_space_id))
+				{
+					val(0) = neumann_[i].eval(pt, t);
+					return;
+				}
+			}
+
+			assert(false);
 		}
 
 		bool GenericScalarProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
@@ -1329,7 +1366,12 @@ namespace polyfem
 
 		bool GenericScalarProblem::has_nodal_neumann(const int fe_space_id)
 		{
-			return false; // nodal_neumann_.size() > 0;
+			for (const ScalarBCValue &neumann : neumann_)
+			{
+				if (matches_fe_space(neumann.fe_space_id, fe_space_id))
+					return true;
+			}
+			return false;
 		}
 
 		void GenericScalarProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
@@ -1466,6 +1508,7 @@ namespace polyfem
 
 					auto ff = j_boundary[i - offset]["value"];
 					neumann_[i].value.init(ff, root_path);
+					nodal_neumann_[neumann_boundary_ids_[i]] = neumann_[i];
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1478,6 +1521,7 @@ namespace polyfem
 					}
 					else
 						neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					nodal_neumann_[neumann_boundary_ids_[i]].interpolation = neumann_[i].interpolation;
 				}
 			}
 

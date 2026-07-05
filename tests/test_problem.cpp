@@ -32,6 +32,36 @@ namespace
 		using GenericTensorProblem::GenericTensorProblem;
 		using GenericTensorProblem::has_boundary;
 	};
+
+	class GenericScalarProblemAccess : public GenericScalarProblem
+	{
+	public:
+		using GenericScalarProblem::GenericScalarProblem;
+		using GenericScalarProblem::has_boundary;
+	};
+
+	std::unique_ptr<Mesh> tagged_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(3, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1;
+
+		Eigen::MatrixXi cells(1, 3);
+		cells << 0, 1, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+
+		std::vector<int> boundary_ids(mesh->n_boundary_elements());
+		for (int i = 0; i < mesh->n_boundary_elements(); ++i)
+			boundary_ids[i] = i + 1;
+		mesh->set_boundary_ids(boundary_ids);
+		mesh->compute_node_ids([](const size_t node_id, const RowVectorNd &, const bool) {
+			return int(node_id) + 1;
+		});
+
+		return mesh;
+	}
 } // namespace
 
 json get_params()
@@ -77,6 +107,97 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
 	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, 1));
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
+}
+
+TEST_CASE("generic tensor problem evaluates nodal neumann data by finite element space", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", json::array({"x + 3", "y + 5"})}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", json::array({7, 11})}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 1));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(4, 5)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 11)));
+}
+
+TEST_CASE("generic scalar problem selects finite element space nodal data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"fe_space", 0}, {"value", "x + y + 1"}},
+		{{"fe_space", 1}, {"value", 4}},
+	});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", "x"}, {"interpolation", json::array()}},
+		{{"id", 2}, {"fe_space", 1}, {"value", 8}, {"interpolation", json::array()}},
+	});
+	params["neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", "x + 2"}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", 9}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 0,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, pts, 0, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1);
+	CHECK(values(1) == 6);
+
+	problem.rhs(assembler, pts, 0, values, 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 1));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 3);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 9);
 }
 
 TEST_CASE("franke 2d", "[problem]")

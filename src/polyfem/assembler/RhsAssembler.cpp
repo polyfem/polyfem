@@ -612,7 +612,30 @@ namespace polyfem
 				}
 			}
 
-			// TODO add nodal neumann
+			if (!neumann_nodes_.empty())
+			{
+				assert(neumann_nodes_.size() == neumann_nodes_position_.size());
+
+				Eigen::MatrixXd tmp_val;
+				Eigen::MatrixXd empty_normal;
+				for (int n = 0; n < neumann_nodes_.size(); ++n)
+				{
+					const int n_id = neumann_nodes_[n];
+					const RowVectorNd &pt = neumann_nodes_position_[n];
+
+					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, tmp_val, fe_space_id_);
+					assert(tmp_val.size() == size_);
+
+					for (int d = 0; d < size_; ++d)
+					{
+						const int g_index = n_id * size_ + d;
+						const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) == bounday_nodes.end();
+
+						if (is_neumann)
+							rhs(g_index) += tmp_val(d);
+					}
+				}
+			}
 		}
 
 		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary,
