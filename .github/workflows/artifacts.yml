@@ -2,7 +2,9 @@ name: Artifacts
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
