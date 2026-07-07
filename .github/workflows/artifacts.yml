@@ -2,7 +2,7 @@ name: Artifacts
 
 on:
   push:
-    branches:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
