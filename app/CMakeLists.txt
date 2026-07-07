@@ -79,6 +79,7 @@ if(APPLE)
     set(CPACK_SYSTEM_NAME "macOS")
     set(CPACK_DMG_VOLUME_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/ico.icns")
     set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/resources/splash.png")
+    set(CPACK_DMG_DS_STORE "${CMAKE_CURRENT_SOURCE_DIR}/resources/DS_Store")
     set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sign_macos_bundle.cmake")
     set(POLYFEM_APP_PACKAGE_PLATFORM "macOS")
 
