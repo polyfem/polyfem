@@ -138,7 +138,7 @@ jobs:
         run: cmake --build build && ccache --show-stats
 
       - name: Package
-        run: cpack --config build/CPackConfig.cmake --verbose
+        run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
