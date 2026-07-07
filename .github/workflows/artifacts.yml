@@ -2,8 +2,7 @@ name: Artifacts
 
 on:
   push:
-    branches: ["**"]
-  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -190,7 +189,6 @@ jobs:
 
       - name: Prepare sccache
         run: |
-          sccache --max-size=1.0G
           sccache -V && sccache --show-stats && sccache --zero-stats
 
       - name: Configure

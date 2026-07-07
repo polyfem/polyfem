@@ -91,7 +91,10 @@ elseif(WIN32)
 
     install(RUNTIME_DEPENDENCY_SET polyfem_app_runtime_deps
         DIRECTORIES "$<TARGET_FILE_DIR:polyfem_app>"
-        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        PRE_EXCLUDE_REGEXES
+            "api-ms-"
+            "ext-ms-"
+            "[Hh][Vv][Ss][Ii][Ff][Ii][Ll][Ee][Tt][Rr][Uu][Ss][Tt]\\.dll"
         POST_EXCLUDE_REGEXES "[Ww][Ii][Nn][Dd][Oo][Ww][Ss]/[Ss]ystem32/.*"
         RUNTIME DESTINATION .
         COMPONENT ${POLYFEM_APP_RUNTIME_COMPONENT})
