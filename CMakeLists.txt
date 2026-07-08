@@ -108,9 +108,9 @@ endif()
 
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to use" FORCE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require the selected C++ standard" FORCE)
+    set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler-specific C++ extensions" FORCE)
 endif()
 
 ### Configuration
