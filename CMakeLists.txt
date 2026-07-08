@@ -83,6 +83,12 @@ option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
 option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
 option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
 option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
+option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
+
+if(POLYFEM_PORTABLE_BUILD)
+    set(IPC_TOOLKIT_WITH_SIMD OFF CACHE BOOL "Enable SIMD" FORCE)
+    set(CMAKE_DISABLE_FIND_PACKAGE_AVX ON CACHE BOOL "Disable AVX autodetection for portable builds" FORCE)
+endif()
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
