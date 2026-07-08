@@ -24,8 +24,6 @@ set(LIBIGL_PREDICATES ON CACHE BOOL "Use exact predicates" FORCE)
 include(CMakeDependentOption)
 cmake_dependent_option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON "POLYFEM_WITH_TRIANGLE" ON)
 
-include(eigen)
-
 find_package(Patch REQUIRED)
 set(PATCH_COMMAND_ARGS "-rnN")
 

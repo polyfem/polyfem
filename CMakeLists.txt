@@ -204,12 +204,6 @@ endif()
 # Required libraries
 ################################################################################
 
-if(WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
-
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
@@ -218,11 +212,6 @@ target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 
-if(NOT WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
