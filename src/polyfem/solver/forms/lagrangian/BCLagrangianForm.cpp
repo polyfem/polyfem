@@ -3,6 +3,108 @@
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slice.h>
 
+#ifdef POLYSOLVE_LARGE_INDEX
+#include <unordered_map>
+#include <cassert>
+#endif
+
+#ifdef POLYSOLVE_LARGE_INDEX
+namespace
+{
+	// Custom slice implementation for large indices
+	// Handles StiffnessMatrix with std::ptrdiff_t indices without converting to int
+	template <typename DerivedR>
+	void slice_stiffness_matrix(
+		const polyfem::StiffnessMatrix &X,
+		const Eigen::DenseBase<DerivedR> &R,
+		const int dim,
+		polyfem::StiffnessMatrix &Y)
+	{
+		using StorageIndex = std::ptrdiff_t;
+		
+		// Create a temporary result matrix to handle the case where X and Y are the same object
+		polyfem::StiffnessMatrix result;
+		
+		if (dim == 1) // Slice rows: Y = X(R, :)
+		{
+			const StorageIndex new_rows = R.size();
+			const StorageIndex new_cols = X.cols();
+			
+			std::vector<Eigen::Triplet<double, StorageIndex>> triplets;
+			triplets.reserve(X.nonZeros()); // Upper bound estimate
+			
+			// Create mapping from old row indices to new row indices (supports duplicate indices)
+			std::vector<std::vector<StorageIndex>> row_map;
+			row_map.resize(X.rows());
+			for (StorageIndex i = 0; i < new_rows; ++i)
+			{
+				const StorageIndex old_row = static_cast<StorageIndex>(R(i));
+				assert(old_row >= 0 && old_row < X.rows() && "Row index out of bounds");
+				row_map[old_row].push_back(i);
+			}
+			
+			// Iterate through all non-zero elements (outerSize() = cols for ColMajor)
+			for (StorageIndex k = 0; k < X.outerSize(); ++k)
+			{
+				for (typename polyfem::StiffnessMatrix::InnerIterator it(X, k); it; ++it)
+				{
+					for (const auto &new_row : row_map[it.row()])
+					{
+						triplets.emplace_back(new_row, it.col(), it.value());
+					}
+				}
+			}
+			
+			result.resize(new_rows, new_cols);
+			result.setFromTriplets(triplets.begin(), triplets.end());
+		}
+		else if (dim == 2) // Slice columns: Y = X(:, R)
+		{
+			const StorageIndex new_rows = X.rows();
+			const StorageIndex new_cols = R.size();
+			
+			std::vector<Eigen::Triplet<double, StorageIndex>> triplets;
+			triplets.reserve(X.nonZeros()); // Upper bound estimate
+			
+			// Create mapping from old column indices to new column indices (supports duplicate indices)
+			std::vector<std::vector<StorageIndex>> col_map;
+			col_map.resize(X.cols());
+			for (StorageIndex i = 0; i < new_cols; ++i)
+			{
+				const StorageIndex old_col = static_cast<StorageIndex>(R(i));
+				assert(old_col >= 0 && old_col < X.cols() && "Column index out of bounds");
+				col_map[old_col].push_back(i);
+			}
+			
+			// Iterate through all columns (outerSize() = cols for ColMajor)
+			for (StorageIndex k = 0; k < X.outerSize(); ++k)
+			{
+				if (!col_map[k].empty()) // Only process columns that are selected
+				{
+					for (typename polyfem::StiffnessMatrix::InnerIterator it(X, k); it; ++it)
+					{
+						for (const auto &new_col : col_map[k])
+						{
+							triplets.emplace_back(it.row(), new_col, it.value());
+						}
+					}
+				}
+			}
+			
+			result.resize(new_rows, new_cols);
+			result.setFromTriplets(triplets.begin(), triplets.end());
+		}
+		else
+		{
+			throw std::runtime_error("Invalid dimension for slice_stiffness_matrix (must be 1 or 2)");
+		}
+		
+		result.makeCompressed();
+		Y = std::move(result);
+	}
+}
+#endif
+
 namespace polyfem::solver
 {
 	BCLagrangianForm::BCLagrangianForm(const int ndof,
@@ -92,18 +194,22 @@ namespace polyfem::solver
 		if (obstacle_ndof != 0)
 		{
 			const int n_fe_dof = n_dofs_ - obstacle_ndof;
-			const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
-			for (int i = n_fe_dof; i < n_dofs_; ++i)
-			{
-				masked_lumped_mass_.coeffRef(i, i) = avg_mass;
-			}
+		const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
+		for (int i = n_fe_dof; i < n_dofs_; ++i)
+		{
+			masked_lumped_mass_.coeffRef(i, i) = avg_mass;
 		}
+	}
 
-		igl::slice(masked_lumped_mass_, constraints_, 1, masked_lumped_mass_);
-		igl::slice(masked_lumped_mass_, constraints_, 2, masked_lumped_mass_);
-		assert(boundary_nodes_.size() == masked_lumped_mass_.rows() && boundary_nodes_.size() == masked_lumped_mass_.cols());
-
-		masked_lumped_mass_sqrt_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
+#ifdef POLYSOLVE_LARGE_INDEX
+	slice_stiffness_matrix(masked_lumped_mass_, constraints_, 1, masked_lumped_mass_);
+	slice_stiffness_matrix(masked_lumped_mass_, constraints_, 2, masked_lumped_mass_);
+#else
+	igl::slice(masked_lumped_mass_, constraints_, 1, masked_lumped_mass_);
+	igl::slice(masked_lumped_mass_, constraints_, 2, masked_lumped_mass_);
+#endif
+	assert(boundary_nodes_.size() == masked_lumped_mass_.rows() && boundary_nodes_.size() == masked_lumped_mass_.cols());		
+	masked_lumped_mass_sqrt_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
 		std::vector<Eigen::Triplet<double>> tmp_triplets;
 		tmp_triplets.reserve(masked_lumped_mass_.nonZeros());
 		for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
