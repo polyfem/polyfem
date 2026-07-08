@@ -86,8 +86,14 @@ option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependenc
 option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
 
 if(POLYFEM_PORTABLE_BUILD)
-    set(IPC_TOOLKIT_WITH_SIMD OFF CACHE BOOL "Enable SIMD" FORCE)
     set(CMAKE_DISABLE_FIND_PACKAGE_AVX ON CACHE BOOL "Disable AVX autodetection for portable builds" FORCE)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
+        set(SIMD_C_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C programs with SIMD support" FORCE)
+        set(SIMD_CXX_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C++ programs with SIMD support" FORCE)
+    else()
+        set(IPC_TOOLKIT_WITH_SIMD OFF CACHE BOOL "Enable SIMD" FORCE)
+    endif()
 endif()
 
 add_library(polyfem_coverage_config INTERFACE)
