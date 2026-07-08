@@ -3,6 +3,7 @@ name: Artifacts
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -64,16 +65,23 @@ jobs:
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
+            -DPOLYFEM_WITH_TESTS=OFF \
+            -DPOLYFEM_WITH_PYTHON=OFF \
             -DPOLYFEM_WITH_BEZIER=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
 
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Linux
-          path: build/polyfem_app
+          path: build/packages/PolyFEM-Linux-*.tar.gz
+          if-no-files-found: error
+          archive: false
 
   ####################
   # MacOS
@@ -89,7 +97,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        config: [DebugNoSymbols, Release]
+        config: [Release]
         threading: [TBB]
     steps:
       - name: Checkout repository
@@ -123,22 +131,23 @@ jobs:
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
+            -DPOLYFEM_WITH_TESTS=OFF \
+            -DPOLYFEM_WITH_PYTHON=OFF \
             -DPOLYFEM_WITH_BEZIER=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
 
-      - name: Copy App
-        run: |
-          cd build
-          mkdir polyfem
-          cp -R polyfem_app.app polyfem/polyfem_app.app
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-${{ matrix.os }}
-          path: build/polyfem
+          path: build/packages/PolyFEM-macOS-*.dmg
+          if-no-files-found: error
+          archive: false
 
   ####################
   # Windows
@@ -180,7 +189,6 @@ jobs:
 
       - name: Prepare sccache
         run: |
-          sccache --max-size=1.0G
           sccache -V && sccache --show-stats && sccache --zero-stats
 
       - name: Configure
@@ -194,6 +202,8 @@ jobs:
             -DPOLYFEM_WITH_BEZIER=OFF ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_WITH_APP=ON ^
+            -DPOLYFEM_WITH_TESTS=OFF ^
+            -DPOLYFEM_WITH_PYTHON=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
             -DPOLYSOLVE_WITH_AMGCL=OFF ^
@@ -207,8 +217,16 @@ jobs:
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake --build build && sccache --show-stats
 
+      - name: Package
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cpack --config build\CPackConfig.cmake -B build\packages --verbose
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Windows
-          path: build/polyfem_app.exe
+          path: build/packages/PolyFEM-Windows-*.zip
+          if-no-files-found: error
+          archive: false

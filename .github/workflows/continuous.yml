@@ -64,6 +64,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_PORTABLE_BUILD=ON \
             -DPOLYFEM_WITH_BEZIER=OFF
 
       - name: Build
