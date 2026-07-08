@@ -665,7 +665,7 @@ namespace polyfem::solver
 			return full;
 		}
 
-		TVector reduced(reduced_size());
+		TVector reduced = TVector::Zero(reduced_size());
 		const TVector k = full - Q1R1iTb_;
 		const TVector rhs = Q2t_ * k;
 		solver_->solve(rhs, reduced);
