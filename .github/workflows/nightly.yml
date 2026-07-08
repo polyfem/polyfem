@@ -180,6 +180,7 @@ jobs:
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
             -DPOLYSOLVE_WITH_AMGCL=OFF ^
             -DPOLYSOLVE_WITH_MKL=ON ^
+            -DIPC_TOOLKIT_WITH_ABSEIL=OFF ^
             -B build ^
             -S .
 
