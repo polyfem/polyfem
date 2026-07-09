@@ -7,6 +7,7 @@
 #include <finitediff.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
 #include <iostream>
@@ -100,4 +101,16 @@ TEST_CASE("time integrator", "[time_integrator]")
 		x.setRandom();
 		x /= 100;
 	}
+}
+
+TEST_CASE("ImplicitNewmark parameters", "[time_integrator]")
+{
+	const double dt = 0.1;
+	ImplicitNewmark integrator;
+	integrator.set_parameters(R"({"beta": 0.2, "gamma": 0.6})"_json);
+	integrator.init(Eigen::VectorXd::Zero(1), Eigen::VectorXd::Zero(1), Eigen::VectorXd::Zero(1), dt);
+
+	CHECK(integrator.beta() == Catch::Approx(0.2));
+	CHECK(integrator.gamma() == Catch::Approx(0.6));
+	CHECK(integrator.acceleration_scaling() == Catch::Approx(0.2 * dt * dt));
 }
