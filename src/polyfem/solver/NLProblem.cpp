@@ -124,12 +124,12 @@ namespace polyfem::solver
 		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(t),
-		  penalty_forms_(penalty_forms),
-		  solver_(solver),
-		  L(char_length),
 		  F0(char_force),
+		  L(char_length),
+		  dim(dimension),
 		  lumped_mass_(lumped_mass.diagonal().asDiagonal()),
-		  dim(dimension)
+		  penalty_forms_(penalty_forms),
+		  solver_(solver)
 	{
 		setup_constraints();
 		use_reduced_size();
@@ -190,6 +190,8 @@ namespace polyfem::solver
 			return F0 * (dim == 2 ? L : std::pow(L, 1.5));
 		case polysolve::nonlinear::NormType::Linf:
 			return F0;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -204,6 +206,8 @@ namespace polyfem::solver
 			return dim == 2 ? L * L : std::pow(L, 2.5);
 		case polysolve::nonlinear::NormType::Linf:
 			return L;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -227,6 +231,8 @@ namespace polyfem::solver
 			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
 		case polysolve::nonlinear::NormType::Linf:
 			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -241,6 +247,8 @@ namespace polyfem::solver
 			return sqrt(x.transpose() * current_lumped_mass() * x);
 		case polysolve::nonlinear::NormType::Linf:
 			return x.cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
