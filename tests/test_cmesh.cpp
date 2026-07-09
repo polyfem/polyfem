@@ -42,7 +42,7 @@ namespace
 
 		return Mesh::create(vertices, cells);
 	}
-}
+} // namespace
 
 TEST_CASE("append_2d", "[mesh_test]")
 {
