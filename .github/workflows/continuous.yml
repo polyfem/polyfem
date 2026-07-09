@@ -26,11 +26,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-latest]
         config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-latest
             name: Linux
     steps:
       - name: Checkout repository
