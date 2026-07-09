@@ -250,6 +250,7 @@ namespace polyfem::solver
 		if (penalty_forms_.empty())
 		{
 			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
 			return;
 		}
 		igl::Timer timer;
@@ -297,6 +298,13 @@ namespace polyfem::solver
 		StiffnessMatrix A(index, full_size_);
 		A.setFromTriplets(Ae.begin(), Ae.end());
 		A.makeCompressed();
+
+		if (A.rows() == 0)
+		{
+			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
+			return;
+		}
 
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
@@ -448,6 +456,14 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		if (penalty_forms_.empty())
+		{
+			assert(num_penalty_constraints_ == 0);
+			return;
+		}
+		if (num_penalty_constraints_ == 0)
+			return;
+
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
@@ -547,7 +563,8 @@ namespace polyfem::solver
 		for (auto &f : penalty_forms_)
 			f->update_quantities(t, x);
 
-		update_constraint_values();
+		if (!penalty_forms_.empty())
+			update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
