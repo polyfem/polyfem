@@ -124,12 +124,12 @@ namespace polyfem::solver
 		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(t),
-		  penalty_forms_(penalty_forms),
-		  solver_(solver),
-		  L(char_length),
 		  F0(char_force),
+		  L(char_length),
+		  dim(dimension),
 		  lumped_mass_(lumped_mass.diagonal().asDiagonal()),
-		  dim(dimension)
+		  penalty_forms_(penalty_forms),
+		  solver_(solver)
 	{
 		setup_constraints();
 		use_reduced_size();
@@ -190,6 +190,8 @@ namespace polyfem::solver
 			return F0 * (dim == 2 ? L : std::pow(L, 1.5));
 		case polysolve::nonlinear::NormType::Linf:
 			return F0;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -204,6 +206,8 @@ namespace polyfem::solver
 			return dim == 2 ? L * L : std::pow(L, 2.5);
 		case polysolve::nonlinear::NormType::Linf:
 			return L;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -227,6 +231,8 @@ namespace polyfem::solver
 			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
 		case polysolve::nonlinear::NormType::Linf:
 			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -241,6 +247,8 @@ namespace polyfem::solver
 			return sqrt(x.transpose() * current_lumped_mass() * x);
 		case polysolve::nonlinear::NormType::Linf:
 			return x.cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -250,6 +258,7 @@ namespace polyfem::solver
 		if (penalty_forms_.empty())
 		{
 			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
 			return;
 		}
 		igl::Timer timer;
@@ -297,6 +306,13 @@ namespace polyfem::solver
 		StiffnessMatrix A(index, full_size_);
 		A.setFromTriplets(Ae.begin(), Ae.end());
 		A.makeCompressed();
+
+		if (A.rows() == 0)
+		{
+			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
+			return;
+		}
 
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
@@ -448,6 +464,14 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		if (penalty_forms_.empty())
+		{
+			assert(num_penalty_constraints_ == 0);
+			return;
+		}
+		if (num_penalty_constraints_ == 0)
+			return;
+
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
@@ -547,7 +571,8 @@ namespace polyfem::solver
 		for (auto &f : penalty_forms_)
 			f->update_quantities(t, x);
 
-		update_constraint_values();
+		if (!penalty_forms_.empty())
+			update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
