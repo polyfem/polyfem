@@ -37,6 +37,15 @@ if(POLYFEM_WITH_OPTIMIZATION)
 endif()
 
 add_executable(unit_tests ${test_sources})
+
+if(POLYFEM_WITH_CUDA)
+    set_target_properties(unit_tests PROPERTIES 
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON
+        LINKER_LANGUAGE CUDA
+    )
+endif()
+
 # set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 ################################################################################

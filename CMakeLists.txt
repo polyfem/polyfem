@@ -149,6 +149,10 @@ endif()
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
 
+if(POLYFEM_WITH_CUDA)
+    set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+endif()
+
 target_link_libraries(polyfem PUBLIC polyfem_coverage_config)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
@@ -435,6 +439,14 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         else (DOXYGEN_FOUND)
             message("Doxygen need to be installed to generate the doxygen documentation")
         endif (DOXYGEN_FOUND)
+    endif()
+
+    if(POLYFEM_WITH_CUDA)
+        set_target_properties(${PROJECT_NAME}_bin PROPERTIES 
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_RESOLVE_DEVICE_SYMBOLS ON
+            LINKER_LANGUAGE CUDA
+        )
     endif()
 endif()
 
