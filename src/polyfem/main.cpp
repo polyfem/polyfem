@@ -21,6 +21,8 @@
 #ifdef POLYFEM_WITH_MPI
 #include <mpi.h>
 #include <polysolve/linear/Solver.hpp>
+#include <polysolve/linear/CPUHybridSolver.hpp>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
 using namespace polyfem;
@@ -230,19 +232,10 @@ int main(int argc, char **argv)
 #ifdef POLYFEM_WITH_MPI
 		if (myid != 0)
 		{
+			std::shared_ptr<spdlog::logger> logger = spdlog::stdout_color_mt(fmt::format("solver-child-{}", myid));
+			logger->set_level(spdlog::level::off);
 			utils::apply_common_params(in_args);
-
-			auto solver = polysolve::linear::Solver::create(in_args["solver"]["linear"]["solver"][0], "");
-			solver->set_parameters(in_args["solver"]["linear"]);
-
-			while (true)
-			{
-				Eigen::SparseMatrix<double> A;
-				Eigen::VectorXd b, x;
-				solver->analyze_pattern(A, 0);
-				solver->factorize(A);
-				solver->solve(b, x);
-			}
+			auto solver = polysolve::linear::Solver::create(in_args["solver"]["linear"], *logger);
 		}
 #endif
 
@@ -263,7 +256,8 @@ int main(int argc, char **argv)
 										is_strict, fallback_solver, log_level, in_args);
 
 #ifdef POLYFEM_WITH_MPI
-	MPI_Abort(MPI_COMM_WORLD, 0);
+	polysolve::linear::CPUHybridSolver::SolverCmd cmd = polysolve::linear::CPUHybridSolver::SolverCmd::CMD_EXIT;
+	MPI_Bcast(&cmd, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	int finalized;
 	MPI_Finalized(&finalized);
 	if (!finalized)
