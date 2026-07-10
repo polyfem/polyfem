@@ -12,6 +12,8 @@
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -109,23 +111,27 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
 }
 
-TEST_CASE("generic tensor problem evaluates nodal neumann data by finite element space", "[problem]")
+TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finite element space", "[problem]")
 {
 	const auto mesh = tagged_triangle_mesh();
 	GenericTensorProblemAccess problem("GenericTensor");
 	json params;
 	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", json::array({100, 200})}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
 		{{"id", 2}, {"fe_space", 0}, {"value", json::array({"x + 3", "y + 5"})}, {"interpolation", json::array()}},
 		{{"id", 3}, {"fe_space", 1}, {"value", json::array({7, 11})}, {"interpolation", json::array()}},
 	});
 	problem.set_parameters(params, "");
 
-	CHECK(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
-	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
 	CHECK(problem.has_nodal_neumann(0));
 	CHECK(problem.has_nodal_neumann(1));
 	CHECK_FALSE(problem.has_nodal_neumann(2));
 
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
 	const int tagged_node = 1;
 	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
 	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
@@ -142,6 +148,40 @@ TEST_CASE("generic tensor problem evaluates nodal neumann data by finite element
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 11)));
 }
 
+TEST_CASE("generic tensor problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_tensor_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12 13\n"
+			 << "2 14 15\n";
+	}
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(14, 15)));
+
+	std::filesystem::remove(nodal_neumann_path);
+}
+
 TEST_CASE("generic scalar problem selects finite element space nodal data", "[problem]")
 {
 	const auto mesh = tagged_triangle_mesh();
@@ -156,6 +196,9 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 		{{"id", 2}, {"fe_space", 1}, {"value", 8}, {"interpolation", json::array()}},
 	});
 	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", 42}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
 		{{"id", 2}, {"fe_space", 0}, {"value", "x + 2"}, {"interpolation", json::array()}},
 		{{"id", 3}, {"fe_space", 1}, {"value", 9}, {"interpolation", json::array()}},
 	});
@@ -178,12 +221,13 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 
 	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
-	CHECK(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
-	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
 	CHECK(problem.has_nodal_neumann(0));
 	CHECK(problem.has_nodal_neumann(1));
 	CHECK_FALSE(problem.has_nodal_neumann(2));
 
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
 	const int tagged_node = 1;
 	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
 	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
@@ -198,6 +242,40 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 9);
+}
+
+TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_scalar_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12\n"
+			 << "2 14\n";
+	}
+
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 12);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 14);
+
+	std::filesystem::remove(nodal_neumann_path);
 }
 
 TEST_CASE("franke 2d", "[problem]")

@@ -1667,6 +1667,7 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
+            "nodal_neumann_boundary",
             "normal_aligned_neumann_boundary",
             "pressure_boundary",
             "pressure_cavity",
@@ -1897,6 +1898,37 @@
         "type": "int",
         "default": -1,
         "doc": "Finite element space ID for the Neumann boundary condition. If not specified, default to the all finite element spaces."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Nodal Neumann boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "fe_space",
+            "interpolation"
+        ],
+        "doc": "Nodal Neumann boundary condition."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "string",
+        "doc": "Nodal Neumann boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the nodal Neumann boundary condition. If not specified, default to all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",

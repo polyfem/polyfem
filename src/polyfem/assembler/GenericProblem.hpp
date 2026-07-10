@@ -126,6 +126,7 @@ namespace polyfem
 			std::map<int, TensorBCValue> nodal_dirichlet_;
 			std::map<int, TensorBCValue> nodal_neumann_;
 			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+			std::vector<Eigen::MatrixXd> nodal_neumann_mat_;
 
 			bool is_all_;
 
@@ -176,6 +177,7 @@ namespace polyfem
 			std::map<int, ScalarBCValue> nodal_dirichlet_;
 			std::map<int, ScalarBCValue> nodal_neumann_;
 			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+			std::vector<Eigen::MatrixXd> nodal_neumann_mat_;
 
 			std::map<int, utils::ExpressionValue> rhs_;
 			utils::ExpressionValue exact_;
