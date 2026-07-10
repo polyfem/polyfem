@@ -66,7 +66,16 @@ project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
+# Silently detect MPI to set the default option for PolyFEM
+find_package(MPI QUIET)
+if(MPI_CXX_FOUND)
+    set(POLYFEM_DEFAULT_MPI ON)
+else()
+    set(POLYFEM_DEFAULT_MPI OFF)
+endif()
+
 # Polyfem options for enabling/disabling optional libraries
+option(POLYFEM_WITH_MPI "Enable MPI support" ${POLYFEM_DEFAULT_MPI})
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
 option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
@@ -203,6 +212,23 @@ endif()
 ################################################################################
 # Required libraries
 ################################################################################
+
+if(WIN32)
+    # Eigen
+    include(eigen)
+    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+endif()
+
+# Handle MPI for PolyFEM and force the choice onto PolySolve
+if(POLYFEM_WITH_MPI)
+    find_package(MPI REQUIRED)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MPI)
+    # Note: We don't need to explicitly link MPI::MPI_CXX to polyfem here 
+    # because polysolve links it PUBLICly and will pass it up to us automatically.
+endif()
+
+# FORCE PolySolve to match PolyFEM's MPI setting
+set(POLYSOLVE_WITH_MPI ${POLYFEM_WITH_MPI} CACHE BOOL "Forced by PolyFEM" FORCE)
 
 # polysolve
 include(polysolve)
