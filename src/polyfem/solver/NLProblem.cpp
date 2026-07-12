@@ -395,14 +395,12 @@ namespace polyfem::solver
 		P_ = QR.colsPermutation();
 #endif
 
-		for (; constraint_size >= 0; --constraint_size)
+		while (constraint_size > 0)
 		{
-			const StiffnessMatrix tmp = R.row(constraint_size);
+			const StiffnessMatrix tmp = R.row(constraint_size - 1);
 			if (tmp.nonZeros() != 0)
-			{
-				constraint_size++;
 				break;
-			}
+			--constraint_size;
 		}
 		if (constraint_size != num_penalty_constraints_)
 			logger().warn("Matrix A is not full rank, constraint size: {} instead of {}", constraint_size, num_penalty_constraints_);
