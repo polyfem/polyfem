@@ -13,12 +13,14 @@ var searchData=
   ['operationcache_2ehpp_10',['OperationCache.hpp',['../_operation_cache_8hpp.html',1,'']]],
   ['operatorsplittingsolver_2ecpp_11',['OperatorSplittingSolver.cpp',['../_operator_splitting_solver_8cpp.html',1,'']]],
   ['operatorsplittingsolver_2ehpp_12',['OperatorSplittingSolver.hpp',['../_operator_splitting_solver_8hpp.html',1,'']]],
-  ['optimizations_2ecpp_13',['Optimizations.cpp',['../_optimizations_8cpp.html',1,'']]],
-  ['optimizations_2ehpp_14',['Optimizations.hpp',['../_optimizations_8hpp.html',1,'']]],
-  ['optstate_2ecpp_15',['OptState.cpp',['../_opt_state_8cpp.html',1,'']]],
-  ['optstate_2ehpp_16',['OptState.hpp',['../_opt_state_8hpp.html',1,'']]],
-  ['outdata_2ecpp_17',['outdata.cpp',['../legacy_2io_2_out_data_8cpp.html',1,'(Global Namespace)'],['../io_2_out_data_8cpp.html',1,'(Global Namespace)']]],
-  ['outdata_2ehpp_18',['outdata.hpp',['../legacy_2io_2_out_data_8hpp.html',1,'(Global Namespace)'],['../io_2_out_data_8hpp.html',1,'(Global Namespace)']]],
-  ['outputdata_2ehpp_19',['OutputData.hpp',['../_output_data_8hpp.html',1,'']]],
-  ['outstatsdata_2ehpp_20',['OutStatsData.hpp',['../_out_stats_data_8hpp.html',1,'']]]
+  ['operatorsplittingvarform_2ecpp_13',['OperatorSplittingVarForm.cpp',['../_operator_splitting_var_form_8cpp.html',1,'']]],
+  ['operatorsplittingvarform_2ehpp_14',['OperatorSplittingVarForm.hpp',['../_operator_splitting_var_form_8hpp.html',1,'']]],
+  ['optimizations_2ecpp_15',['Optimizations.cpp',['../_optimizations_8cpp.html',1,'']]],
+  ['optimizations_2ehpp_16',['Optimizations.hpp',['../_optimizations_8hpp.html',1,'']]],
+  ['optstate_2ecpp_17',['OptState.cpp',['../_opt_state_8cpp.html',1,'']]],
+  ['optstate_2ehpp_18',['OptState.hpp',['../_opt_state_8hpp.html',1,'']]],
+  ['outdata_2ecpp_19',['outdata.cpp',['../legacy_2io_2_out_data_8cpp.html',1,'(Global Namespace)'],['../io_2_out_data_8cpp.html',1,'(Global Namespace)']]],
+  ['outdata_2ehpp_20',['outdata.hpp',['../legacy_2io_2_out_data_8hpp.html',1,'(Global Namespace)'],['../io_2_out_data_8hpp.html',1,'(Global Namespace)']]],
+  ['outputdata_2ehpp_21',['OutputData.hpp',['../_output_data_8hpp.html',1,'']]],
+  ['outstatsdata_2ehpp_22',['OutStatsData.hpp',['../_out_stats_data_8hpp.html',1,'']]]
 ];

@@ -1,12 +1,26 @@
 var classpolyfem_1_1assembler_1_1_laplacian =
 [
+    [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html#a885bbb72fdb4851d8d5ba0786f7f8297", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_laplacian.html#a9e73380dbbf595722a010038ca7b4fb6", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#a6f86923f1cf44097bb498d2ca4db9aef", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#adc7b5a738074ba44208a49ea1027fd14", null ],
+    [ "assemble_energy", "classpolyfem_1_1assembler_1_1_laplacian.html#a0dcf0db6270fc7b52a74a498a8d3eb3a", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_laplacian.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_laplacian.html#aa2dd56a300f82f4b97b1d82d2a39bf72", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_laplacian.html#ad2e994c678b777f3eb669cbfc78c35f2", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_laplacian.html#a7234151319ae629f17fc364dcaf4ee9b", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_laplacian.html#a4595a1db8d3337af097a493c671508d1", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_laplacian.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
+    [ "compute_energy", "classpolyfem_1_1assembler_1_1_laplacian.html#a20c869e8471d526f84ad0f775005f272", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_laplacian.html#af1006d1e9e03abac9ccb778d65a03574", null ],
     [ "compute_stiffness_value", "classpolyfem_1_1assembler_1_1_laplacian.html#aa4a5a0741265204aa25f764a87cba4d6", null ],
     [ "compute_stress_grad_multiply_mat", "classpolyfem_1_1assembler_1_1_laplacian.html#a3d5f80d13e63922e9bd626191a9b304d", null ],
+    [ "conductivity", "classpolyfem_1_1assembler_1_1_laplacian.html#a9b98c42866d4ff77cb393de7d6770b38", null ],
+    [ "is_linear", "classpolyfem_1_1assembler_1_1_laplacian.html#af8d3022f2563979fa7fdc725e0b5467f", null ],
     [ "kernel", "classpolyfem_1_1assembler_1_1_laplacian.html#a00b8b3fbdf7427e5a296ad7a77fa547e", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_laplacian.html#af77655474f7b786ef3150c3d5428c658", null ],
-    [ "parameters", "classpolyfem_1_1assembler_1_1_laplacian.html#a2faa13ec486150f9088e1e6248a22dd7", null ]
+    [ "parameters", "classpolyfem_1_1assembler_1_1_laplacian.html#ab67e0d40e79790ecf25db1cf09e74dac", null ],
+    [ "conductivity_", "classpolyfem_1_1assembler_1_1_laplacian.html#aaaa898415ea64adc42e7219a16df1c21", null ],
+    [ "conductivity_param_name_", "classpolyfem_1_1assembler_1_1_laplacian.html#ac09102246bc955dca093b101f3a8eeb3", null ]
 ];

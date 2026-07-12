@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_full_n_l_problem =
 [
-    [ "FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a178d12af13034427c7663f534cb22504", null ],
+    [ "FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ad659a76fa59d21473994cbc086300ffb", null ],
     [ "~FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae2cd463e7800096057fa0c75b7709a4b", null ],
     [ "finish", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#afac15e26d5b6ed4981df5823f16f0a3a", null ],
     [ "forms", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe", null ],
@@ -8,6 +8,7 @@ var classpolyfem_1_1solver_1_1_full_n_l_problem =
     [ "hessian", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1adb9f2892b235bd537cff0a02b35e25", null ],
     [ "init", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a929c7630e9b5945154a75a80fdaacfd2", null ],
     [ "init_lagging", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0e3b514d6a956fd5121b7c67f2af6d75", null ],
+    [ "is_residual", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8b2fb4770f048b504a0322ef670a293f", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a43e2799fdf17d41982b865e6724a4bc8", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a793cb281009ab27f820ec75c7cc7ea4a", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae63f768e702778c005f9071033343674", null ],
@@ -22,5 +23,6 @@ var classpolyfem_1_1solver_1_1_full_n_l_problem =
     [ "update_lagging", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a716b36504c50e7abbbfee7fa621f3dc4", null ],
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a2160af0b5e54c4c57cd7ea99d3bc38d7", null ],
     [ "value", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a900930999cb06a34f25216952acdcb62", null ],
-    [ "forms_", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a4f50a5ba3eaff78160478a6497cc5ad5", null ]
+    [ "forms_", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a4f50a5ba3eaff78160478a6497cc5ad5", null ],
+    [ "is_residual_", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae93fdda569d2577d24c1e983b0852b65", null ]
 ];

@@ -1,6 +1,10 @@
 var classpolyfem_1_1time__integrator_1_1_implicit_time_integrator =
 [
-    [ "ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693", null ],
+    [ "DynamicOrder", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af18582d2f8e496aacff89d56534e12cb", [
+      [ "First", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af18582d2f8e496aacff89d56534e12cba7fb55ed0b7a30342ba6da306428cae04", null ],
+      [ "Second", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af18582d2f8e496aacff89d56534e12cbac22cf8376b1893dcfcef0649fe1a7d87", null ]
+    ] ],
+    [ "ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a6ce5244dd7935cd5767098a3cba67ff6", null ],
     [ "~ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a74403eb9fc355ac9c5231e8bc7f6c46c", null ],
     [ "a_prev", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e", null ],
     [ "a_prevs", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a41c5a430442a287c57dafa041ff57c42", null ],
@@ -25,6 +29,7 @@ var classpolyfem_1_1time__integrator_1_1_implicit_time_integrator =
     [ "x_tilde", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc", null ],
     [ "a_prevs_", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa8b21a3a2ab95e537fb7c2499eefbb32", null ],
     [ "dt_", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#afc77ffae3331f6d4faed02f71b73dd80", null ],
+    [ "dynamic_order_", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab5897321cc2e1b70769e8a86665c6ff6", null ],
     [ "v_prevs_", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae0177678e0042e92c406dfa4c719b8a1", null ],
     [ "x_prevs_", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1efda7db317ac657ed81edc84b253b34", null ]
 ];

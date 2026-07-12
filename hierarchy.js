@@ -76,8 +76,12 @@ var hierarchy =
           [ "polyfem::assembler::OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", null ]
         ] ]
       ] ],
+      [ "polyfem::assembler::MixedNLAssembler", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html", [
+        [ "polyfem::assembler::ThermoElasticity", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html", null ]
+      ] ],
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
         [ "polyfem::assembler::ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", null ],
+        [ "polyfem::assembler::Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", null ],
         [ "polyfem::assembler::NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
         [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", [
           [ "polyfem::assembler::ViscousDampingPrev", "classpolyfem_1_1assembler_1_1_viscous_damping_prev.html", null ]
@@ -93,6 +97,8 @@ var hierarchy =
     [ "polyfem::basis::BarycentricBasis2d", "classpolyfem_1_1basis_1_1_barycentric_basis2d.html", null ],
     [ "polyfem::basis::Basis", "classpolyfem_1_1basis_1_1_basis.html", null ],
     [ "polyfem::problem::PointBasedTensorProblem::BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", null ],
+    [ "polyfem::solver::StackedAugmentedLagrangianForm::Block", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form_1_1_block.html", null ],
+    [ "polyfem::solver::StackedForm::Block", "classpolyfem_1_1solver_1_1_stacked_form_1_1_block.html", null ],
     [ "polyfem::solver::BodyForceDerivative", "classpolyfem_1_1solver_1_1_body_force_derivative.html", null ],
     [ "polyfem::utils::BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
     [ "polyfem::BSplineParametrization", "classpolyfem_1_1_b_spline_parametrization.html", [
@@ -102,7 +108,8 @@ var hierarchy =
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", null ],
     [ "polyfem::CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", null ],
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", [
-      [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ]
+      [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ],
+      [ "polyfem::assembler::ThermalMassDensity", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html", null ]
     ] ],
     [ "polyfem::DiffCache", "classpolyfem_1_1_diff_cache.html", null ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", [
@@ -189,7 +196,8 @@ var hierarchy =
         [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
         [ "polyfem::solver::MacroStrainLagrangianForm", "classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html", null ],
         [ "polyfem::solver::MatrixLagrangianForm", "classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html", null ],
-        [ "polyfem::solver::PeriodicLagrangianForm", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html", null ]
+        [ "polyfem::solver::PeriodicLagrangianForm", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html", null ],
+        [ "polyfem::solver::StackedAugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html", null ]
       ] ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
@@ -203,10 +211,12 @@ var hierarchy =
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
+      [ "polyfem::solver::MixedAssemblerForm", "classpolyfem_1_1solver_1_1_mixed_assembler_form.html", null ],
       [ "polyfem::solver::NormalAdhesionForm", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html", null ],
       [ "polyfem::solver::PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", null ],
       [ "polyfem::solver::QuadraticPenaltyForm", "classpolyfem_1_1solver_1_1_quadratic_penalty_form.html", null ],
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ],
+      [ "polyfem::solver::StackedForm", "classpolyfem_1_1solver_1_1_stacked_form.html", null ],
       [ "polyfem::solver::TangentialAdhesionForm", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html", null ]
     ] ],
     [ "fmt::formatter", null, [
@@ -290,6 +300,7 @@ var hierarchy =
       [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ]
     ] ],
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
+    [ "polyfem::assembler::MixedNonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
@@ -441,6 +452,7 @@ var hierarchy =
     [ "polyfem::io::RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
     [ "polyfem::legacy::io::RuntimeStatsCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
     [ "polyfem::assembler::ScalarBCValue", "structpolyfem_1_1assembler_1_1_scalar_b_c_value.html", null ],
+    [ "polyfem::assembler::ScalarInitialValue", "structpolyfem_1_1assembler_1_1_scalar_initial_value.html", null ],
     [ "JIXIE::INTERNAL::ScalarTypeHelper< T, Enable >", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper.html", null ],
     [ "JIXIE::INTERNAL::ScalarTypeHelper< T, enable_if_t< is_arithmetic< T >::value > >", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper_3_01_t_00_01enable__if__t_3_01is__ara00440a77029283525c7acb539df9499.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
@@ -463,6 +475,9 @@ var hierarchy =
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],
     [ "polyfem::solver::TangentialAdhesionForceDerivative", "classpolyfem_1_1solver_1_1_tangential_adhesion_force_derivative.html", null ],
     [ "polyfem::assembler::TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", null ],
+    [ "polyfem::assembler::TensorInitialValue", "structpolyfem_1_1assembler_1_1_tensor_initial_value.html", null ],
+    [ "polyfem::solver::StackedAugmentedLagrangianForm::Term", "structpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form_1_1_term.html", null ],
+    [ "polyfem::solver::StackedForm::Term", "structpolyfem_1_1solver_1_1_stacked_form_1_1_term.html", null ],
     [ "wmtk::TetMesh", null, [
       [ "polyfem::mesh::WildRemesher< wmtk::TetMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]
     ] ],
@@ -472,6 +487,9 @@ var hierarchy =
     [ "polyfem::assembler::ThermodynamicProcess", "classpolyfem_1_1assembler_1_1_thermodynamic_process.html", [
       [ "polyfem::assembler::AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", null ],
       [ "polyfem::assembler::IsothermalProcess", "classpolyfem_1_1assembler_1_1_isothermal_process.html", null ]
+    ] ],
+    [ "polyfem::assembler::detail::ThermoElasticityModel", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html", [
+      [ "polyfem::assembler::detail::ThermoElasticityModelImpl< Elasticity >", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html", null ]
     ] ],
     [ "polyfem::utils::Timer", "classpolyfem_1_1utils_1_1_timer.html", null ],
     [ "polyfem::utils::Timing", "structpolyfem_1_1utils_1_1_timing.html", null ],
@@ -492,13 +510,15 @@ var hierarchy =
         [ "polyfem::varform::LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", null ],
         [ "polyfem::varform::NonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html", [
           [ "polyfem::varform::NonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form.html", null ],
-          [ "polyfem::varform::NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", null ]
+          [ "polyfem::varform::NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", null ],
+          [ "polyfem::varform::ThermoElasticVarForm", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html", null ]
         ] ]
       ] ],
       [ "polyfem::varform::FluidVarForm", "classpolyfem_1_1varform_1_1_fluid_var_form.html", [
         [ "polyfem::varform::NavierStokesVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html", null ],
         [ "polyfem::varform::StokesVarForm", "classpolyfem_1_1varform_1_1_stokes_var_form.html", null ]
       ] ],
+      [ "polyfem::varform::OperatorSplittingVarForm", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html", null ],
       [ "polyfem::varform::ScalarVarForm", "classpolyfem_1_1varform_1_1_scalar_var_form.html", null ]
     ] ],
     [ "polyfem::varform::VarFormBoundaryState", "structpolyfem_1_1varform_1_1_var_form_boundary_state.html", null ],

@@ -157,6 +157,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:af1cdc00ad2c7026f0d4482b072ba322e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29f04a91c57fc85418c7274d5b9b60be" id="r_a29f04a91c57fc85418c7274d5b9b60be"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html">MixedAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a29f04a91c57fc85418c7274d5b9b60be">make_mixed_assembler</a> (const std::string &amp;formulation)</td></tr>
 <tr class="separator:a29f04a91c57fc85418c7274d5b9b60be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8caa9180d3146279896606acce1db703" id="r_a8caa9180d3146279896606acce1db703"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html">MixedNLAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a8caa9180d3146279896606acce1db703">make_mixed_nl_assembler</a> (const std::string &amp;formulation)</td></tr>
+<tr class="separator:a8caa9180d3146279896606acce1db703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf6064d65afd290473d37c71e256b1b5" id="r_aaf6064d65afd290473d37c71e256b1b5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aaf6064d65afd290473d37c71e256b1b5">merge_mixed_matrices</a> (const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness)</td></tr>
 <tr class="memdesc:aaf6064d65afd290473d37c71e256b1b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness A B B^T C  <br /></td></tr>
 <tr class="separator:aaf6064d65afd290473d37c71e256b1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,7 +204,7 @@ Static Public Member Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a884a904ee9c03603ae89e2824180d93ca711f44effcbd8619148b829b6aa2ed4f" name="a884a904ee9c03603ae89e2824180d93ca711f44effcbd8619148b829b6aa2ed4f"></a>POLY&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00018">18</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00019">19</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
 </div>
 </div>
@@ -258,11 +260,11 @@ Static Public Member Functions</h2></td></tr>
 
 <p>list of all elastic materials </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00247">247</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00256">256</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00247">elastic_materials()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00256">elastic_materials()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00275">polyfem::assembler::AllElasticMaterials::AllElasticMaterials()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00247">elastic_materials()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00265">is_elastic_material()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00290">polyfem::assembler::AllElasticMaterials::AllElasticMaterials()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00256">elastic_materials()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00280">is_elastic_material()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -302,11 +304,11 @@ Here is the caller graph for this function:</div>
 
 <p>utility to check if material is one of the elastic materials </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00265">265</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00280">280</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00247">elastic_materials()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00256">elastic_materials()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00332">polyfem::legacy::State::formulation()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00021">polyfem::varform::formulation_from_args()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="legacy_2_state_8cpp_source.html#l00332">polyfem::legacy::State::formulation()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00023">polyfem::varform::formulation_from_args()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -344,11 +346,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00055">55</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00056">56</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_sum_model_8cpp_source.html#l00012">polyfem::assembler::SumModel::add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00275">polyfem::assembler::AllElasticMaterials::AllElasticMaterials()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00144">polyfem::solver::AMIPSForm::AMIPSForm()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00095">polyfem::varform::VarFormFactory::create()</a>, <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00053">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00062">polyfem::varform::ElasticVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00057">polyfem::varform::FluidVarForm::init()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::IncompressibleElasticVarForm::init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00058">polyfem::varform::ScalarVarForm::init()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00148">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_assembler()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00061">polyfem::varform::VarFormFactory::supports()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_sum_model_8cpp_source.html#l00012">polyfem::assembler::SumModel::add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00290">polyfem::assembler::AllElasticMaterials::AllElasticMaterials()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00144">polyfem::solver::AMIPSForm::AMIPSForm()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00100">polyfem::varform::VarFormFactory::create()</a>, <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00055">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00062">polyfem::varform::ElasticVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">polyfem::varform::FluidVarForm::init()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00037">polyfem::varform::IncompressibleElasticVarForm::init()</a>, <a class="el" href="_operator_splitting_var_form_8cpp_source.html#l00048">polyfem::varform::OperatorSplittingVarForm::init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00058">polyfem::varform::ScalarVarForm::init()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00191">polyfem::varform::ThermoElasticVarForm::init()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00148">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_assembler()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00063">polyfem::varform::VarFormFactory::supports()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -386,11 +388,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00124">124</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00125">125</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00053">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00057">polyfem::varform::FluidVarForm::init()</a>, and <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::IncompressibleElasticVarForm::init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00055">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">polyfem::varform::FluidVarForm::init()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00037">polyfem::varform::IncompressibleElasticVarForm::init()</a>, and <a class="el" href="_operator_splitting_var_form_8cpp_source.html#l00048">polyfem::varform::OperatorSplittingVarForm::init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -399,7 +401,49 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a29f04a91c57fc85418c7274d5b9b60be_icgraph.svg" width="100%" height="482"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a29f04a91c57fc85418c7274d5b9b60be_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a8caa9180d3146279896606acce1db703" name="a8caa9180d3146279896606acce1db703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8caa9180d3146279896606acce1db703">&#9670;&#160;</a></span>make_mixed_nl_assembler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html">MixedNLAssembler</a> &gt; polyfem::assembler::AssemblerUtils::make_mixed_nl_assembler </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>formulation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00137">137</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00191">polyfem::varform::ThermoElasticVarForm::init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a8caa9180d3146279896606acce1db703_cgraph.svg" width="584" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a8caa9180d3146279896606acce1db703_icgraph.svg" width="427" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -476,11 +520,11 @@ Here is the caller graph for this function:</div>
 
 <p>utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness A B B^T C </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00136">136</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00145">145</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::legacy::State::build_stiffness_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00550">polyfem::varform::BilaplacianVarForm::build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00591">polyfem::varform::FluidVarForm::build_stiffness_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00269">polyfem::varform::IncompressibleElasticVarForm::build_stiffness_mat()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00031">polyfem::solver::TransientNavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">polyfem::solver::NavierStokesSolver::minimize()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00161">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">polyfem::solver::NavierStokesSolver::minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00037">polyfem::legacy::State::build_stiffness_mat()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00587">polyfem::varform::BilaplacianVarForm::build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">polyfem::varform::FluidVarForm::build_stiffness_mat()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00306">polyfem::varform::IncompressibleElasticVarForm::build_stiffness_mat()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00031">polyfem::solver::TransientNavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">polyfem::solver::NavierStokesSolver::minimize()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00161">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">polyfem::solver::NavierStokesSolver::minimize_aux()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -513,13 +557,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00043">43</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00044">44</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00053">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00057">polyfem::varform::FluidVarForm::init()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::IncompressibleElasticVarForm::init()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00061">polyfem::varform::VarFormFactory::supports()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00140">polyfem::legacy::State::init()</a>, <a class="el" href="_bilaplacian_var_form_8cpp_source.html#l00055">polyfem::varform::BilaplacianVarForm::init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">polyfem::varform::FluidVarForm::init()</a>, <a class="el" href="_incompressible_elastic_var_form_8cpp_source.html#l00037">polyfem::varform::IncompressibleElasticVarForm::init()</a>, <a class="el" href="_operator_splitting_var_form_8cpp_source.html#l00048">polyfem::varform::OperatorSplittingVarForm::init()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00063">polyfem::varform::VarFormFactory::supports()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a61b3d14e7aa51f30a472ed1fa5a95cfc_icgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils_a61b3d14e7aa51f30a472ed1fa5a95cfc_icgraph.svg" width="100%" height="578"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -572,7 +616,7 @@ Here is the caller graph for this function:</div>
 
 <p>utility for retrieving the needed quadrature order to precisely integrate the given form on the given element basis </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00201">201</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00210">210</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caa2f055a3bf84437b39b826e3d3479e89">CUBE_LAGRANGE</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caf0787a41610bb0d0c715a9eb52fc9e40">PRISM_LAGRANGE</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93ca70ac61256c9769028664d92453214869">PYRAMID_LAGRANGE</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139">SIMPLEX_LAGRANGE</a>.</p>
 

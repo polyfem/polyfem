@@ -3,6 +3,7 @@ var classpolyfem_1_1varform_1_1_var_form =
     [ "~VarForm", "classpolyfem_1_1varform_1_1_var_form.html#a41a9a9f9f676d1ad48cc6a43650c60f3", null ],
     [ "assemble_mass_mat", "classpolyfem_1_1varform_1_1_var_form.html#a775eca87ec2649919081afd9b33311cc", null ],
     [ "assemble_rhs", "classpolyfem_1_1varform_1_1_var_form.html#abefa09bb69d315d9131bf3eaf0dab27f", null ],
+    [ "assign_discr_orders", "classpolyfem_1_1varform_1_1_var_form.html#a11706a0254cff24f8bd36b5fefbe278e", null ],
     [ "assign_discr_orders", "classpolyfem_1_1varform_1_1_var_form.html#aff0f645898337fa1efe5a5db7d9ee4f4", null ],
     [ "build_basis", "classpolyfem_1_1varform_1_1_var_form.html#a78d1f942567289b1e39b6b557077b9ab", null ],
     [ "build_fe_space", "classpolyfem_1_1varform_1_1_var_form.html#ac16f72b9ff477a2f02dc4ee2dd5ec777", null ],

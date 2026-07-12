@@ -157,9 +157,13 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html">NonlinearElasticVarForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html">OperatorSplittingVarForm</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html">ScalarVarForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_stokes_var_form.html">StokesVarForm</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html">ThermoElasticVarForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">VarForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,11 +208,11 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The formulation type as a string. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00021">21</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00023">23</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00265">polyfem::assembler::AssemblerUtils::is_elastic_material()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00280">polyfem::assembler::AssemblerUtils::is_elastic_material()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00243">polyfem::State::init()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00054">uses_varform_state()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00243">polyfem::State::init()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00056">uses_varform_state()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -247,9 +251,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the JSON arguments use a <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">VarForm</a> state, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00054">54</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00056">56</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::apply_common_params()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00095">polyfem::varform::VarFormFactory::create()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00021">formulation_from_args()</a>.</p>
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::apply_common_params()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00100">polyfem::varform::VarFormFactory::create()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00023">formulation_from_args()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00219">forward_simulation()</a>.</p>
 <div class="dynheader">

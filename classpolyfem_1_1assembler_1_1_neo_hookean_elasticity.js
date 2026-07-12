@@ -17,6 +17,7 @@ var classpolyfem_1_1assembler_1_1_neo_hookean_elasticity =
     [ "compute_stress_grad_multiply_mat", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a744e51a3dd9cf27610c3d4c4b3f886f7", null ],
     [ "compute_stress_grad_multiply_stress", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a45f093faeb8903124772a01ddb3b29b6", null ],
     [ "compute_stress_grad_multiply_vect", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5f50060e57eb6f42efaf958d3ef763e0", null ],
+    [ "elastic_energy_density", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a11a2dc0b91fd5aad92095c7840084109", null ],
     [ "lame_params", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ab5714007a064c360a95bad3df98328f6", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a1b5f016e3e82527e4fce98393d0d350a", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a19bf61613ba2ccafc98f0ccde29442ce", null ],

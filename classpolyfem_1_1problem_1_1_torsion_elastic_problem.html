@@ -143,12 +143,12 @@ Collaboration diagram for polyfem::problem::TorsionElasticProblem:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad2c7216c1ceee341b811affdd65ccd5d" id="r_ad2c7216c1ceee341b811affdd65ccd5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ad2c7216c1ceee341b811affdd65ccd5d">TorsionElasticProblem</a> (const std::string &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a>)</td></tr>
 <tr class="separator:ad2c7216c1ceee341b811affdd65ccd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19adbfb8e040746c7f96a7f7b6b3367c" id="r_a19adbfb8e040746c7f96a7f7b6b3367c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a19adbfb8e040746c7f96a7f7b6b3367c">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
-<tr class="separator:a19adbfb8e040746c7f96a7f7b6b3367c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a672f67214e479ec969e874beac25ff" id="r_a6a672f67214e479ec969e874beac25ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a6a672f67214e479ec969e874beac25ff">is_rhs_zero</a> () const override</td></tr>
-<tr class="separator:a6a672f67214e479ec969e874beac25ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfde0cce5e180d73802c0a7c9f66d765" id="r_acfde0cce5e180d73802c0a7c9f66d765"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#acfde0cce5e180d73802c0a7c9f66d765">dirichlet_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
-<tr class="separator:acfde0cce5e180d73802c0a7c9f66d765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9593291b4168a75b0a47cc89f443393" id="r_ab9593291b4168a75b0a47cc89f443393"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab9593291b4168a75b0a47cc89f443393">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const override</td></tr>
+<tr class="separator:ab9593291b4168a75b0a47cc89f443393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae682e35092ec9eccb0fd09c45bfb123e" id="r_ae682e35092ec9eccb0fd09c45bfb123e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ae682e35092ec9eccb0fd09c45bfb123e">is_rhs_zero</a> (const int fe_space_id=-1) const override</td></tr>
+<tr class="separator:ae682e35092ec9eccb0fd09c45bfb123e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a666fd7073793a7099acfec55e20449f7" id="r_a666fd7073793a7099acfec55e20449f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a666fd7073793a7099acfec55e20449f7">dirichlet_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const override</td></tr>
+<tr class="separator:a666fd7073793a7099acfec55e20449f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb3885eab672d0cd8e9824ee134cbfc4" id="r_adb3885eab672d0cd8e9824ee134cbfc4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#adb3885eab672d0cd8e9824ee134cbfc4">has_exact_sol</a> () const override</td></tr>
 <tr class="separator:adb3885eab672d0cd8e9824ee134cbfc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a425e6013607e9f28745d7c8c53434179" id="r_a425e6013607e9f28745d7c8c53434179"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a425e6013607e9f28745d7c8c53434179">is_scalar</a> () const override</td></tr>
@@ -168,26 +168,26 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aedd9fdf5b278fd428d8272deea907fc8 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49bcc436f56b6ac1c201261495bb333c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a49bcc436f56b6ac1c201261495bb333c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a> () const</td></tr>
 <tr class="separator:a49bcc436f56b6ac1c201261495bb333c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a756bb1ea13fad6a955c9b5a884cba9 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a0a756bb1ea13fad6a955c9b5a884cba9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a0a756bb1ea13fad6a955c9b5a884cba9">neumann_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a0a756bb1ea13fad6a955c9b5a884cba9 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa36c5fe73219642abb1862a095f36811 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aa36c5fe73219642abb1862a095f36811"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa36c5fe73219642abb1862a095f36811">neumann_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:aa36c5fe73219642abb1862a095f36811 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2edb8d7fd77d7b5bd5f8b1374837c181 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a2edb8d7fd77d7b5bd5f8b1374837c181"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2edb8d7fd77d7b5bd5f8b1374837c181">pressure_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="separator:a2edb8d7fd77d7b5bd5f8b1374837c181 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82ab6379eb603316ed731ae0145e3a49 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a82ab6379eb603316ed731ae0145e3a49"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a82ab6379eb603316ed731ae0145e3a49">pressure_cavity_bc</a> (const int boundary_id, const double t) const</td></tr>
 <tr class="separator:a82ab6379eb603316ed731ae0145e3a49 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2db5318223744bf5d2be4ed69d2113c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae2db5318223744bf5d2be4ed69d2113c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae2db5318223744bf5d2be4ed69d2113c">is_boundary_pressure</a> (const int boundary_id) const</td></tr>
 <tr class="separator:ae2db5318223744bf5d2be4ed69d2113c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab13e20897bfe1f22d91fa2df4f54434e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab13e20897bfe1f22d91fa2df4f54434e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab13e20897bfe1f22d91fa2df4f54434e">dirichlet_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:ab13e20897bfe1f22d91fa2df4f54434e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53ea1fc8933fca5a88ce52e09a64e4b4 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a53ea1fc8933fca5a88ce52e09a64e4b4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a53ea1fc8933fca5a88ce52e09a64e4b4">neumann_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const Eigen::MatrixXd &amp;normal, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a53ea1fc8933fca5a88ce52e09a64e4b4 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf910233e7b1ba839fd2ad3171396fdf inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_adf910233e7b1ba839fd2ad3171396fdf"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#adf910233e7b1ba839fd2ad3171396fdf">is_nodal_dirichlet_boundary</a> (const int n_id, const int tag)</td></tr>
-<tr class="separator:adf910233e7b1ba839fd2ad3171396fdf inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0ed3c91250b71932acd4534b60fdc19 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aa0ed3c91250b71932acd4534b60fdc19"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa0ed3c91250b71932acd4534b60fdc19">is_nodal_neumann_boundary</a> (const int n_id, const int tag)</td></tr>
-<tr class="separator:aa0ed3c91250b71932acd4534b60fdc19 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff33b353989818b0e80d0a94edfb5e40 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aff33b353989818b0e80d0a94edfb5e40"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aff33b353989818b0e80d0a94edfb5e40">has_nodal_dirichlet</a> ()</td></tr>
-<tr class="separator:aff33b353989818b0e80d0a94edfb5e40 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a135987ed8d0c8214f77507a20f69308e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a135987ed8d0c8214f77507a20f69308e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a135987ed8d0c8214f77507a20f69308e">has_nodal_neumann</a> ()</td></tr>
-<tr class="separator:a135987ed8d0c8214f77507a20f69308e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82005f39d72bee866b7899df93a2ced0 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a82005f39d72bee866b7899df93a2ced0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a82005f39d72bee866b7899df93a2ced0">dirichlet_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:a82005f39d72bee866b7899df93a2ced0 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab182182f00d969c849a20bf4010ca6be inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab182182f00d969c849a20bf4010ca6be"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab182182f00d969c849a20bf4010ca6be">neumann_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const Eigen::MatrixXd &amp;normal, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:ab182182f00d969c849a20bf4010ca6be inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6bd8aa7f321dbfdb6b630128c24291 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_afa6bd8aa7f321dbfdb6b630128c24291"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#afa6bd8aa7f321dbfdb6b630128c24291">is_nodal_dirichlet_boundary</a> (const int n_id, const int tag, const int fe_space_id=-1)</td></tr>
+<tr class="separator:afa6bd8aa7f321dbfdb6b630128c24291 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8004bd5bbb34595f9f4661db6930eb5 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae8004bd5bbb34595f9f4661db6930eb5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8004bd5bbb34595f9f4661db6930eb5">is_nodal_neumann_boundary</a> (const int n_id, const int tag, const int fe_space_id=-1)</td></tr>
+<tr class="separator:ae8004bd5bbb34595f9f4661db6930eb5 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ac3b3d794d7a6939bf15145686fe802 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a9ac3b3d794d7a6939bf15145686fe802"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9ac3b3d794d7a6939bf15145686fe802">has_nodal_dirichlet</a> (const int fe_space_id=-1)</td></tr>
+<tr class="separator:a9ac3b3d794d7a6939bf15145686fe802 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6671341331b06fa03bc958554fd67df inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ac6671341331b06fa03bc958554fd67df"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac6671341331b06fa03bc958554fd67df">has_nodal_neumann</a> (const int fe_space_id=-1)</td></tr>
+<tr class="separator:ac6671341331b06fa03bc958554fd67df inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add068e57938271170ec204f843611cca inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_add068e57938271170ec204f843611cca"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca">exact</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="separator:add068e57938271170ec204f843611cca inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ec16ec0a2556437ba3c67788c7032f4 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a7ec16ec0a2556437ba3c67788c7032f4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7ec16ec0a2556437ba3c67788c7032f4">exact_grad</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
@@ -196,24 +196,24 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2563e3166f5ce50bb630575686b46ebd inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae53c7b454f78ff1d8a4cd24d1a8cc923 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae53c7b454f78ff1d8a4cd24d1a8cc923"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">is_time_dependent</a> () const</td></tr>
 <tr class="separator:ae53c7b454f78ff1d8a4cd24d1a8cc923 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8cf4b02ffd4667accda36a466f790c3 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae8cf4b02ffd4667accda36a466f790c3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:ae8cf4b02ffd4667accda36a466f790c3 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca3a4f086b8a9fcba93d32e4258e4136 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aca3a4f086b8a9fcba93d32e4258e4136"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aca3a4f086b8a9fcba93d32e4258e4136">initial_velocity</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:aca3a4f086b8a9fcba93d32e4258e4136 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8625b12c6eeb7a73a8e7c67d05895367 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a8625b12c6eeb7a73a8e7c67d05895367"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a8625b12c6eeb7a73a8e7c67d05895367">initial_acceleration</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a8625b12c6eeb7a73a8e7c67d05895367 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905d347d5a61d8be6fcf315239fdf3d5 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a905d347d5a61d8be6fcf315239fdf3d5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a905d347d5a61d8be6fcf315239fdf3d5">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:a905d347d5a61d8be6fcf315239fdf3d5 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4797dd5718fb91d12367282464fddd43 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a4797dd5718fb91d12367282464fddd43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a4797dd5718fb91d12367282464fddd43">initial_velocity</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:a4797dd5718fb91d12367282464fddd43 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8cc95f87e9da10bfa00e694b3762ba6 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aa8cc95f87e9da10bfa00e694b3762ba6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa8cc95f87e9da10bfa00e694b3762ba6">initial_acceleration</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:aa8cc95f87e9da10bfa00e694b3762ba6 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80cb152781728efb50d698c19652b9e3 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a80cb152781728efb50d698c19652b9e3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a80cb152781728efb50d698c19652b9e3">initial_density</a> (const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="separator:a80cb152781728efb50d698c19652b9e3 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5e9069b4bf80363dc85825bee00bf1e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aa5e9069b4bf80363dc85825bee00bf1e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa5e9069b4bf80363dc85825bee00bf1e">might_have_no_dirichlet</a> ()</td></tr>
 <tr class="separator:aa5e9069b4bf80363dc85825bee00bf1e inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58751552ead1c373f759824138efcbb9 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a58751552ead1c373f759824138efcbb9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a58751552ead1c373f759824138efcbb9">is_dimension_dirichet</a> (const int tag, const int dim) const</td></tr>
-<tr class="separator:a58751552ead1c373f759824138efcbb9 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0fb2d461731e82f11835e8c754bfa84 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae0fb2d461731e82f11835e8c754bfa84"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae0fb2d461731e82f11835e8c754bfa84">is_nodal_dimension_dirichlet</a> (const int n_id, const int tag, const int dim) const</td></tr>
-<tr class="separator:ae0fb2d461731e82f11835e8c754bfa84 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a6babbba43f88cfb5a966ff68593fab inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a7a6babbba43f88cfb5a966ff68593fab"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7a6babbba43f88cfb5a966ff68593fab">all_dimensions_dirichlet</a> () const</td></tr>
-<tr class="separator:a7a6babbba43f88cfb5a966ff68593fab inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b685aeda5271b1e69d97ce922cbbfbb inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a2b685aeda5271b1e69d97ce922cbbfbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2b685aeda5271b1e69d97ce922cbbfbb">setup_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int fe_space_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;selected_local_boundary, std::vector&lt; int &gt; &amp;boundary_nodes)</td></tr>
-<tr class="separator:a2b685aeda5271b1e69d97ce922cbbfbb inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a8a05c359417115358556e189814510 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a4a8a05c359417115358556e189814510"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a4a8a05c359417115358556e189814510">is_dimension_dirichet</a> (const int tag, const int dim, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:a4a8a05c359417115358556e189814510 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa157e22b747d279c1593d61f857cfffc inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_aa157e22b747d279c1593d61f857cfffc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa157e22b747d279c1593d61f857cfffc">is_nodal_dimension_dirichlet</a> (const int n_id, const int tag, const int dim, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:aa157e22b747d279c1593d61f857cfffc inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38351916d0c7241bc7fdcefd42da9f5c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a38351916d0c7241bc7fdcefd42da9f5c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a38351916d0c7241bc7fdcefd42da9f5c">all_dimensions_dirichlet</a> (const int fe_space_id) const</td></tr>
+<tr class="separator:a38351916d0c7241bc7fdcefd42da9f5c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88edacdb61c6b303a8e113b5cc3209a4 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a88edacdb61c6b303a8e113b5cc3209a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a88edacdb61c6b303a8e113b5cc3209a4">setup_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int fe_space_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;selected_local_boundary, std::vector&lt; int &gt; &amp;boundary_nodes, const int value_dim=-1)</td></tr>
+<tr class="separator:a88edacdb61c6b303a8e113b5cc3209a4 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dced08c8868dfcb5e2f6efe9b69978c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a7dced08c8868dfcb5e2f6efe9b69978c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7dced08c8868dfcb5e2f6efe9b69978c">setup_pressure_cavity_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int fe_space_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity)</td></tr>
 <tr class="separator:a7dced08c8868dfcb5e2f6efe9b69978c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6fd0188ff803d62924ab7d252a14195 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ae6fd0188ff803d62924ab7d252a14195"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae6fd0188ff803d62924ab7d252a14195">setup_nodal_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int fe_space_id, const int n_bases, std::vector&lt; int &gt; &amp;nodes)</td></tr>
@@ -236,6 +236,9 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classpolyfem_1_1assembler_1_1_problem"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1assembler_1_1_problem')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">polyfem::assembler::Problem</a></td></tr>
+<tr class="memitem:a51d4b05b7b10fea113791eaf4605ce9e inherit pro_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a51d4b05b7b10fea113791eaf4605ce9e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a51d4b05b7b10fea113791eaf4605ce9e">has_boundary</a> (const <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8">BoundaryKind</a> kind, const int tag, const int fe_space_id)</td></tr>
+<tr class="separator:a51d4b05b7b10fea113791eaf4605ce9e inherit pro_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_problem')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">polyfem::assembler::Problem</a></td></tr>
 <tr class="memitem:ad36799574a3148a8aaeb05640a3f4bea inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem" id="r_ad36799574a3148a8aaeb05640a3f4bea"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ad36799574a3148a8aaeb05640a3f4bea">boundary_ids_</a></td></tr>
 <tr class="separator:ad36799574a3148a8aaeb05640a3f4bea inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -251,6 +254,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70de874756e51566b3fe1f34279fb08d inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem" id="r_a70de874756e51566b3fe1f34279fb08d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a70de874756e51566b3fe1f34279fb08d">updated_dirichlet_node_ordering_</a> = false</td></tr>
 <tr class="separator:a70de874756e51566b3fe1f34279fb08d inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c5f8ee21d844b1f2a99432a96168e1b inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem" id="r_a8c5f8ee21d844b1f2a99432a96168e1b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a8c5f8ee21d844b1f2a99432a96168e1b">name_</a></td></tr>
+<tr class="separator:a8c5f8ee21d844b1f2a99432a96168e1b inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -274,13 +279,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00039">39</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00113">polyfem::assembler::Problem::boundary_ids_</a>, and <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, and <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="acfde0cce5e180d73802c0a7c9f66d765" name="acfde0cce5e180d73802c0a7c9f66d765"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfde0cce5e180d73802c0a7c9f66d765">&#9670;&#160;</a></span>dirichlet_bc()</h2>
+<a id="a666fd7073793a7099acfec55e20449f7" name="a666fd7073793a7099acfec55e20449f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a666fd7073793a7099acfec55e20449f7">&#9670;&#160;</a></span>dirichlet_bc()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -322,7 +327,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>val</em>&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -337,15 +348,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">polyfem::assembler::Problem</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a51f177f1dbb69d5182d757f887fdfadf">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00053">53</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00113">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00045">coordiante_0_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00046">coordiante_1_</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00044">n_turns_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00045">coordiante_0_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00046">coordiante_1_</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00044">n_turns_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_torsion_elastic_problem_acfde0cce5e180d73802c0a7c9f66d765_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_torsion_elastic_problem_a666fd7073793a7099acfec55e20449f7_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -408,8 +419,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a6a672f67214e479ec969e874beac25ff" name="a6a672f67214e479ec969e874beac25ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a672f67214e479ec969e874beac25ff">&#9670;&#160;</a></span>is_rhs_zero()</h2>
+<a id="ae682e35092ec9eccb0fd09c45bfb123e" name="ae682e35092ec9eccb0fd09c45bfb123e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae682e35092ec9eccb0fd09c45bfb123e">&#9670;&#160;</a></span>is_rhs_zero()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -420,7 +431,8 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="memname">bool polyfem::problem::TorsionElasticProblem::is_rhs_zero </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em> = <code>-1</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -431,7 +443,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac6a1e6b2a2656528cc03695db1bb6834">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00033">33</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
 
@@ -466,8 +478,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a19adbfb8e040746c7f96a7f7b6b3367c" name="a19adbfb8e040746c7f96a7f7b6b3367c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19adbfb8e040746c7f96a7f7b6b3367c">&#9670;&#160;</a></span>rhs()</h2>
+<a id="ab9593291b4168a75b0a47cc89f443393" name="ab9593291b4168a75b0a47cc89f443393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9593291b4168a75b0a47cc89f443393">&#9670;&#160;</a></span>rhs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -497,7 +509,13 @@ Here is the call graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>val</em>&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>fe_space_id</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -512,11 +530,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a74953bb445a5c9d10a4fe25ab5884d2c">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00048">48</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
 
 </div>
 </div>
@@ -558,7 +576,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00080">80</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00113">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00045">coordiante_0_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00046">coordiante_1_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00044">n_turns_</a>, and <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00045">coordiante_0_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00046">coordiante_1_</a>, <a class="el" href="_elastic_problem_8hpp_source.html#l00044">n_turns_</a>, and <a class="el" href="_elastic_problem_8hpp_source.html#l00047">trans_</a>.</p>
 
 </div>
 </div>

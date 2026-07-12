@@ -6,7 +6,7 @@ var searchData=
   ['gbases_5f_3',['gbases_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481',1,'polyfem::assembler::RhsAssembler::gbases_'],['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#a26dd62a660a3f91e72c02afff0a53a46',1,'polyfem::assembler::PressureAssembler::gbases_']]],
   ['gbasis_5f_4',['gbasis_',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a36cd583536e8795003dbf7871c60e60d',1,'polyfem::assembler::ElementAssemblyValues']]],
   ['gbs_5',['gbs',['../classpolyfem_1_1assembler_1_1_output_data.html#a9d5273f72f16e48846d1261068d5439a',1,'polyfem::assembler::OutputData']]],
-  ['geom_5fbases_5f_6',['geom_bases_',['../classpolyfem_1_1legacy_1_1_state.html#a3d4b1b05927e6fc05f4067d2b4b40343',1,'polyfem::legacy::State']]],
+  ['geom_5fbases_5f_6',['geom_bases_',['../classpolyfem_1_1legacy_1_1_state.html#a3d4b1b05927e6fc05f4067d2b4b40343',1,'polyfem::legacy::State::geom_bases_'],['../classpolyfem_1_1solver_1_1_mixed_assembler_form.html#ad3f3fd22c8f14844531dc66eeb7f5305',1,'polyfem::solver::MixedAssemblerForm::geom_bases_']]],
   ['geom_5fmesh_5fnodes_7',['geom_mesh_nodes',['../classpolyfem_1_1legacy_1_1_state.html#a510f61bb6975017ce9c54773729a7e49',1,'polyfem::legacy::State']]],
   ['geom_5fvertices_8',['geom_vertices',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab12dd8964258595195a150b69e434d3e',1,'polyfem::mesh::NCMesh2D::ncElem::geom_vertices'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aa4f6be3020eb1d8caa9b4ce65e6dec87',1,'polyfem::mesh::NCMesh3D::ncElem::geom_vertices']]],
   ['geometry_9',['geometry',['../classpolyfem_1_1varform_1_1_f_e_space.html#a0b607effde4b24ea50bc157b9250fe08',1,'polyfem::varform::FESpace']]],

@@ -4,6 +4,7 @@ var classpolyfem_1_1varform_1_1_elastic_var_form =
     [ "assemble_mass_mat", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a374ff1dc4f6f26c87756e140cc464391", null ],
     [ "assemble_rhs", "classpolyfem_1_1varform_1_1_elastic_var_form.html#acfa0b8da140d260ab53317c4e0517ffd", null ],
     [ "build_basis", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a0c38477ea5ba3f898623028d83e43e5c", null ],
+    [ "build_elastic_basis", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a2c1d7bc59699a9fef4c3919220432a51", null ],
     [ "build_mesh_matrices", "classpolyfem_1_1varform_1_1_elastic_var_form.html#af7630d1fca610a96bea611c90524712c", null ],
     [ "build_rhs_assembler", "classpolyfem_1_1varform_1_1_elastic_var_form.html#aafcf31392e5effcfd12e429717d2ecb1", null ],
     [ "compute_errors", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a36710d6f9fb00ac6b7ca1debee9c9aba", null ],

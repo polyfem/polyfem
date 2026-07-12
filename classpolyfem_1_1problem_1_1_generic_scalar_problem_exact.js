@@ -4,11 +4,11 @@ var classpolyfem_1_1problem_1_1_generic_scalar_problem_exact =
     [ "eval_fun", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a70448aaeba7323f3fba3a5c2d7240aa1", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a5b0a8c52ece27115b0b8b1abf5b02bbf", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a7931602a67dc0c0615273e3ca7825bfe", null ],
-    [ "initial_solution", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783", null ],
+    [ "initial_solution", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7a907bcef2577ed17a499e71a3a0ba8", null ],
     [ "is_constant_in_time", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a110c0e92893a10163bbe95a4623fd099", null ],
     [ "is_scalar", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a66f7414ee04b0dff3b29b064f59c33a6", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ab124ce7b5ee624850580f4b252bdb4c5", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a15cd51761741712279feabcdf28a0a07", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a74bbfd0f274642068ac4349a80f116f9", null ],
     [ "func_", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7", null ]
 ];

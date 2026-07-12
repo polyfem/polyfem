@@ -4,8 +4,8 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
       [ "FULL_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197ab69ff8721a4c15de6f2736e3a9e21744", null ],
       [ "REDUCED_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197a6aa3a7df66536c0f61893e618e0fd6d2", null ]
     ] ],
-    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#a430135a376be93c55e19c3a826504660", null ],
-    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#af239d93a85cbb03165ad6ba61a2cf519", null ],
+    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#afb0ae69c1005786a4fadd675ea39db82", null ],
+    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#afc467028ec706e27608ac50b4ee57a35", null ],
     [ "~NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#abe089a966ba671cee247759584e62868", null ],
     [ "current_lumped_mass", "classpolyfem_1_1solver_1_1_n_l_problem.html#aac350a939eb7e2b0b7ccede4f90401c9", null ],
     [ "current_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2", null ],

@@ -32,6 +32,7 @@ var classpolyfem_1_1varform_1_1_fluid_var_form =
     [ "pressure_assembler_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#aea45de2a9743f795b67fd556b1be6aa8", null ],
     [ "pressure_boundary_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a40c62dde1e2fc3872cc33adb3f68d264", null ],
     [ "pressure_space_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a9217d9bf4c513b63cf6b6324a44bdebe", null ],
+    [ "pressure_space_id_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#ac0e7ee5daddfce9d65f70be98b5ab7b3", null ],
     [ "primary_assembler_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a833605f9987352656965fb38060b73ce", null ],
     [ "pure_mass_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a80bb5796d240dc7583207ed9973e6142", null ],
     [ "pure_mass_ass_vals_cache_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a906b5765121f29e936a8aac3f74ec83a", null ],
@@ -42,5 +43,6 @@ var classpolyfem_1_1varform_1_1_fluid_var_form =
     [ "t0", "classpolyfem_1_1varform_1_1_fluid_var_form.html#aa39384e99833934cbf4c72b68f18f6c0", null ],
     [ "time_integrator", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a5d74ec7c5be915aba1b20bb858db8be7", null ],
     [ "time_steps", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a07a74ae4510238381aebdd1332d90bf8", null ],
-    [ "use_avg_pressure", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a5eef3a0016538dcc624ec49e241c1801", null ]
+    [ "use_avg_pressure", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a5eef3a0016538dcc624ec49e241c1801", null ],
+    [ "velocity_space_id_", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a842c7cd5774ff23997d295410b7817be", null ]
 ];

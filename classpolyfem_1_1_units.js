@@ -10,9 +10,13 @@ var classpolyfem_1_1_units =
     [ "init", "classpolyfem_1_1_units.html#a352084d3e45ca9ab3d5ca0d5d6360a82", null ],
     [ "length", "classpolyfem_1_1_units.html#afc8f93a6ece667e1b93d94dc8265e20b", null ],
     [ "mass", "classpolyfem_1_1_units.html#a59ccb464e73ede2ef896ef07c1284774", null ],
+    [ "one_over_temperature", "classpolyfem_1_1_units.html#ad6ca85cbe33caacd2285973111b3bee3", null ],
     [ "permittivity", "classpolyfem_1_1_units.html#a56eca8453abb760a66a00f98d0ba4d2e", null ],
     [ "pressure", "classpolyfem_1_1_units.html#a60c9936fdb9d44f1e0dd747a8bbba97e", null ],
+    [ "specific_heat_capacity", "classpolyfem_1_1_units.html#a905347680bebc50fd8878701bb14aba4", null ],
     [ "stress", "classpolyfem_1_1_units.html#a2b020eef18641f82a921e06a2a1ed0da", null ],
+    [ "temperature", "classpolyfem_1_1_units.html#a08d2dcd8ca47f461bc41d93c11bd0f40", null ],
+    [ "thermal_conductivity", "classpolyfem_1_1_units.html#ad31d6faf5c6082a0a57ed8fc8c138382", null ],
     [ "time", "classpolyfem_1_1_units.html#a92ba69751b71039087e8b71c0e2ff08f", null ],
     [ "velocity", "classpolyfem_1_1_units.html#a7bfe2242576da6434b6a6e8fd5f15134", null ],
     [ "viscosity", "classpolyfem_1_1_units.html#a38c58f5a4fa4e4cf1fb30e65d526ef3a", null ],
@@ -20,5 +24,6 @@ var classpolyfem_1_1_units =
     [ "coulomb_", "classpolyfem_1_1_units.html#ae01fc6ad9c40d0af0ace00af7efd72cc", null ],
     [ "length_", "classpolyfem_1_1_units.html#a8389db0c957d03a563285851042a7452", null ],
     [ "mass_", "classpolyfem_1_1_units.html#a3ccb8e88e21a60e190519fd6aa1bb42a", null ],
+    [ "temperature_", "classpolyfem_1_1_units.html#a62715fed1e6573fd0bf515f5eb042094", null ],
     [ "time_", "classpolyfem_1_1_units.html#a25dddbee7e0a6e6134d13cab9d37f6a0", null ]
 ];

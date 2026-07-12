@@ -20,10 +20,12 @@ var classpolyfem_1_1varform_1_1_incompressible_elastic_var_form =
     [ "solve_transient_linear", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a46b819041d0e3d5e7155ea78394a33ab", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ab2b87c9760b3de7beaa1414dc1ed3ccf", null ],
     [ "stacked_ndof", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a90e22262aff070cd119b5ee8b1d5949e", null ],
+    [ "displacement_space_id_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0f3cf2b85acadcfe91d1794b789c65e2", null ],
     [ "mixed_assembler_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#aa3172ce56220d2184e69c32117ca1073", null ],
     [ "pressure_ass_vals_cache_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ad7794260c202cb17cbfeb487bf100612", null ],
     [ "pressure_assembler_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ae69af7e90f46f20864d3c9c5b519416a", null ],
     [ "pressure_boundary_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a664c1c4e5223d21b2a9f0d66261a2022", null ],
     [ "pressure_space_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ad06c36e7fb22833e0e76c3d553d15556", null ],
+    [ "pressure_space_id_", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a2b966e24ef2b70ecec9842ea700532d5", null ],
     [ "time_integrator", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a5b5a068c81f57b97a6ab2f5ff49e9a93", null ]
 ];

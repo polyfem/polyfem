@@ -78,6 +78,8 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "Stokes.hpp", "_stokes_8hpp.html", "_stokes_8hpp" ],
     [ "SumModel.cpp", "_sum_model_8cpp.html", null ],
     [ "SumModel.hpp", "_sum_model_8hpp.html", "_sum_model_8hpp" ],
+    [ "ThermoElasticity.cpp", "_thermo_elasticity_8cpp.html", "_thermo_elasticity_8cpp" ],
+    [ "ThermoElasticity.hpp", "_thermo_elasticity_8hpp.html", "_thermo_elasticity_8hpp" ],
     [ "ViscousDamping.cpp", "_viscous_damping_8cpp.html", null ],
     [ "ViscousDamping.hpp", "_viscous_damping_8hpp.html", "_viscous_damping_8hpp" ],
     [ "VolumePenalty.cpp", "_volume_penalty_8cpp.html", null ],

@@ -1,6 +1,6 @@
 var classpolyfem_1_1time__integrator_1_1_implicit_newmark =
 [
-    [ "ImplicitNewmark", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a6c47ec3162c2e873781ddb3d519667b7", null ],
+    [ "ImplicitNewmark", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#abdccba585f4afa0b59e30934f9d5ce66", null ],
     [ "acceleration_scaling", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12", null ],
     [ "beta", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494", null ],
     [ "compute_acceleration", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c", null ],

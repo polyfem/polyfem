@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_driven_cavity =
 [
     [ "DrivenCavity", "classpolyfem_1_1problem_1_1_driven_cavity.html#a041dfbe926bb1646a55768f7db9550f0", null ],
-    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_driven_cavity.html#a1abcfd23ecd2e81b60e8c63e6e8ef658", null ],
-    [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_driven_cavity.html#a5b6d69ad22ed59de9c8411e2b5c7ab49", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_driven_cavity.html#afe6f0ff1ed79473fa8b81ee4c0dfda74", null ]
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_driven_cavity.html#a1637d7fedb113ce2b445110a644efbfd", null ],
+    [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_driven_cavity.html#aec4a4c9a57cbb0920174bc4b2452cdd5", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_driven_cavity.html#ad1e283411bf09474fe3978f46f7767ea", null ]
 ];
