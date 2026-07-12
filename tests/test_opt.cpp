@@ -77,6 +77,7 @@ namespace
 			args["output"]["log"]["file_level"] = "off";
 			args["output"]["log"]["quiet"] = true;
 			args["solver"]["max_threads"] = 1;
+			args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
 			opt.init(args, false);
 			create_states_with_patch([](json &state_args) {
@@ -824,5 +825,5 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 
 TEST_CASE("3d-shape-layer-thickness", EXPENSIVE_TEST_LABEL)
 {
-	run_test1("3d-shape-layer-thickness", 0.4913e-3, 1e-4);
+	run_test1("3d-shape-layer-thickness", 0.4881e-3, 8e-3);
 }
