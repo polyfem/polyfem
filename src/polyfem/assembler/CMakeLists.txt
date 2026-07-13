@@ -13,6 +13,8 @@ set(SOURCES
 	Bilaplacian.hpp
 	AssemblyData.cpp
 	AssemblyData.hpp
+  AssemblyCache.cpp
+	AssemblyCache.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
@@ -89,5 +91,11 @@ set(SOURCES
   DofMappingStore.cpp
 )
 
+if(POLYFEM_WITH_CUDA)
+	set_source_files_properties(
+		AssemblyCache.cpp
+		TARGET_DIRECTORY polyfem
+		PROPERTIES LANGUAGE CUDA)
+endif()
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
