@@ -254,5 +254,30 @@ namespace polyfem
 			return new_nodes.size();
 		}
 
+		int BarycentricBasis2d::build_bases(
+			const std::string &assembler_name,
+			const int dim,
+			const Mesh2D &mesh,
+			const int n_bases,
+			const int quadrature_order,
+			const int mass_quadrature_order,
+			const std::function<void(const Eigen::MatrixXd &, const Eigen::RowVector2d &, Eigen::MatrixXd &, double)> &bc,
+			const std::function<void(const Eigen::MatrixXd &, const Eigen::RowVector2d &, Eigen::MatrixXd &, double)> &bc_prime,
+			std::vector<ElementBases> &bases,
+			assembler::AssemblyData &assembly_data,
+			std::vector<LocalBoundary> &local_boundary,
+			std::map<int, Eigen::MatrixXd> &mapped_boundary)
+		{
+			const int new_bases = build_bases(
+				assembler_name, dim, mesh, n_bases, quadrature_order, mass_quadrature_order,
+				bc, bc_prime, bases, local_boundary, mapped_boundary);
+			for (int e = 0; e < mesh.n_elements(); ++e)
+			{
+				if (mesh.is_polytope(e) && !bases[e].bases.empty())
+					assembly_data.set_legacy_element(e, bases[e]);
+			}
+			return new_bases;
+		}
+
 	} // namespace basis
 } // namespace polyfem

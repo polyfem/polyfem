@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
@@ -62,6 +63,20 @@ namespace polyfem
 				const int mass_quadrature_order,
 				const int integral_constraints,
 				std::vector<ElementBases> &bases,
+				const std::vector<ElementBases> &gbases,
+				const std::map<int, InterfaceData> &poly_face_to_data,
+				std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &mapped_boundary);
+
+			static int build_bases(
+				const assembler::LinearAssembler &assembler,
+				int n_samples_per_edge,
+				const mesh::Mesh3D &mesh,
+				int n_bases,
+				int quadrature_order,
+				int mass_quadrature_order,
+				int integral_constraints,
+				std::vector<ElementBases> &bases,
+				polyfem::assembler::AssemblyData &assembly_data,
 				const std::vector<ElementBases> &gbases,
 				const std::map<int, InterfaceData> &poly_face_to_data,
 				std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &mapped_boundary);
