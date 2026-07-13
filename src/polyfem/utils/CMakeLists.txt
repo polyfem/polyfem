@@ -64,6 +64,8 @@ set(SOURCES
 	svd.hpp
   tcb_span.hpp
  	Span.hpp
+	AtomicAdd.cpp
+	AtomicAdd.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
