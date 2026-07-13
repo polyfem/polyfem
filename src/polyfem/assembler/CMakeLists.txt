@@ -11,6 +11,8 @@ set(SOURCES
 	ActiveFiber.hpp
 	Bilaplacian.cpp
 	Bilaplacian.hpp
+	AssemblyData.cpp
+	AssemblyData.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
