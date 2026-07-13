@@ -61,6 +61,9 @@ bool load_yaml(const std::string &yaml_file, json &out)
 int forward_simulation(const CLI::App &command_line,
 					   const std::string &hdf5_file,
 					   const std::string output_dir,
+					   const int cuda_device,
+					   const bool enable_cuda,
+					   const bool disable_cuda,
 					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
@@ -69,6 +72,8 @@ int forward_simulation(const CLI::App &command_line,
 
 #ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
+							const bool enable_cuda,
+							const bool disable_cuda,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
@@ -79,10 +84,11 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 										  const std::vector<Eigen::MatrixXi> &cells,
 										  const std::vector<Eigen::MatrixXd> &vertices,
 										  json &in_args,
-										  const bool is_strict)
+										  const bool is_strict,
+										  ExecutionPolicy policy)
 {
 	State state;
-	state.init(in_args, is_strict);
+	state.init(in_args, is_strict, policy);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	Eigen::MatrixXd sol;
@@ -153,6 +159,15 @@ int main(int argc, char **argv)
 	unsigned max_threads = std::numeric_limits<unsigned>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
+	int cuda_device = 0;
+	command_line.add_option("--cuda-device", cuda_device, "CUDA device index")->check(CLI::NonNegativeNumber);
+
+	bool enable_cuda = false;
+	bool disable_cuda = false;
+	auto cuda_flag = command_line.add_flag("--cuda", enable_cuda, "Use hybrid execution");
+	auto no_cuda_flag = command_line.add_flag("--no-cuda", disable_cuda, "Use cpu execution");
+	cuda_flag->excludes(no_cuda_flag);
+
 	auto input = command_line.add_option_group("input");
 
 	std::string json_file = "";
@@ -204,21 +219,44 @@ int main(int argc, char **argv)
 #ifndef POLYFEM_WITH_OPTIMIZATION
 			log_and_throw_error("PolyFEM was built without optimization support.");
 #else
-			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
+			return optimization_simulation(command_line, enable_cuda, disable_cuda, max_threads, is_strict, log_level, in_args);
 #endif
 		}
 		else
-			return forward_simulation(command_line, "", output_dir, max_threads,
-									  is_strict, fallback_solver, log_level, in_args);
+			return forward_simulation(
+				command_line,
+				"",
+				output_dir,
+				cuda_device,
+				enable_cuda,
+				disable_cuda,
+				max_threads,
+				is_strict,
+				fallback_solver,
+				log_level,
+				in_args);
 	}
 	else
-		return forward_simulation(command_line, hdf5_file, output_dir, max_threads,
-								  is_strict, fallback_solver, log_level, in_args);
+		return forward_simulation(
+			command_line,
+			hdf5_file,
+			output_dir,
+			cuda_device,
+			enable_cuda,
+			disable_cuda,
+			max_threads,
+			is_strict,
+			fallback_solver,
+			log_level,
+			in_args);
 }
 
 int forward_simulation(const CLI::App &command_line,
 					   const std::string &hdf5_file,
 					   const std::string output_dir,
+					   const int cuda_device,
+					   const bool enable_cuda,
+					   const bool disable_cuda,
 					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
@@ -257,6 +295,8 @@ int forward_simulation(const CLI::App &command_line,
 		}
 	}
 
+	utils::apply_common_params(in_args);
+
 	json tmp = json::object();
 	if (has_arg(command_line, "log_level"))
 		tmp["/output/log/level"_json_pointer] = int(log_level);
@@ -266,22 +306,41 @@ int forward_simulation(const CLI::App &command_line,
 		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
 	if (has_arg(command_line, "enable_overwrite_solver"))
 		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	if (enable_cuda)
+		tmp["/execution/mode"_json_pointer] = "hybrid";
+	if (disable_cuda)
+		tmp["/execution/mode"_json_pointer] = "cpu";
+	if (has_arg(command_line, "cuda-device"))
+		tmp["/execution/cuda_device"_json_pointer] = cuda_device;
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
 	if (varform::uses_varform_state(in_args))
-		return forward_simulation_with_varform_state(names, cells, vertices, in_args, is_strict);
+	{
+		ExecutionRuntime execution_runtime(utils::execution_mode(in_args), utils::cuda_device(in_args));
+		return forward_simulation_with_varform_state(
+			names, cells, vertices, in_args, is_strict, execution_runtime.policy());
+	}
 
 	return forward_simulation_with_legacy_state(names, cells, vertices, in_args, is_strict);
 }
 
 #ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
+							const bool enable_cuda,
+							const bool disable_cuda,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args)
 {
+	(void)disable_cuda;
+
+	if (enable_cuda)
+	{
+		log_and_throw_error("Execution CLI overrides are not supported for optimization runs yet.");
+	}
+
 	json tmp = json::object();
 	if (has_arg(command_line, "log_level"))
 		tmp["/output/log/level"_json_pointer] = int(log_level);

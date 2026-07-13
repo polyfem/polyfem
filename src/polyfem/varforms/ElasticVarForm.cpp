@@ -1,10 +1,12 @@
 #include "ElasticVarForm.hpp"
 
+#include <polyfem/assembler/ComputeAssemblyCache.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 #include <polyfem/assembler/MultiModel.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases_nodes.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 #include <polyfem/autogen/prism_bases.hpp>
 
@@ -16,6 +18,8 @@
 
 #include <polyfem/mesh/Obstacle.hpp>
 
+#include <polyfem/materials/BuildMaterialExprFromJson.hpp>
+
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 
@@ -25,6 +29,7 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/BlockCSRMatrix.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
@@ -46,6 +51,8 @@ namespace polyfem::varform
 		ass_vals_cache_.init_empty();
 		mass_ass_vals_cache_.init_empty(true);
 		pure_mass_ass_vals_cache_.init_empty(true);
+		ng_ass_cache_.clear();
+		material_expr_registry_.reset();
 		rhs_assembler_ = nullptr;
 		mass_.resize(0, 0);
 		pure_mass_.resize(0, 0);
@@ -59,9 +66,9 @@ namespace polyfem::varform
 		dt = 0;
 	}
 
-	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy)
 	{
-		VarForm::init(formulation, units, args, out_path);
+		VarForm::init(formulation, units, args, out_path, policy);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
@@ -120,6 +127,8 @@ namespace polyfem::varform
 		set_materials(*primary_assembler_, mesh.dimension());
 		set_materials(*mass_assembler_, mesh.dimension());
 		pure_mass_assembler_->set_size(mass_assembler_->size());
+		material_expr_registry_ =
+			material::build_material_expr_registry_from_json(args["materials"], mesh, units, root_path);
 
 		problem->init(mesh);
 
@@ -235,6 +244,15 @@ namespace polyfem::varform
 			mass_ass_vals_cache_.init_empty(true);
 			pure_mass_ass_vals_cache_.init_empty(true);
 		}
+
+		// IF NG assembly data data is populated, compute NG assembly cache.
+		if (space_.assembly_data && space_.geometry->assembly_data)
+		{
+			ng_ass_cache_ = assembler::compute_assembly_cache_batched(
+				space_.assembly_data->view(),
+				space_.geometry->assembly_data->view(),
+				false);
+		}
 	}
 
 	void ElasticVarForm::build_rhs_assembler()
@@ -302,7 +320,34 @@ namespace polyfem::varform
 		timer.start();
 		logger().info("Assembling mass mat...");
 
-		mass_assembler_->assemble(mesh.is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, 0, mass_, true);
+		assert(space_.assembly_data);
+		assert(space_.geometry);
+		assert(space_.geometry->assembly_data);
+		assert(material_expr_registry_);
+
+		std::optional<BSRSparsityPattern> pattern =
+			mass_assembler_->hessian_sparsity_pattern_ng(space_.n_bases, *space_.assembly_data);
+		assert(pattern);
+
+		BSRMatrix mass_bsr(*pattern);
+		assembler::AssemblyCache mass_cache;
+		mass_assembler_->assemble_hessian_ng(
+			mesh.is_volume(),
+			space_.n_bases,
+			*space_.assembly_data,
+			*space_.geometry->assembly_data,
+			mass_cache,
+			*material_expr_registry_,
+			{}, // x
+			{}, // x_prev
+			0,  // t
+			0,  // dt
+			mass_bsr,
+			false, // project to psd
+			1.0,   // extra scaling.
+			{}     // execution policy. Force CPU assembly cause GPU is overkill.
+		);
+		mass_ = mass_bsr.to_stiffness_matrix(execution_policy_);
 		if (!primary_assembler_->is_linear())
 			pure_mass_assembler_->assemble(mesh.is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), pure_mass_ass_vals_cache_, 0, pure_mass_, true);
 

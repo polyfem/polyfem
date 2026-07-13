@@ -42,6 +42,8 @@ namespace polyfem::solver
 
 		std::string name() const override { return "friction"; }
 
+		void second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const override;
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

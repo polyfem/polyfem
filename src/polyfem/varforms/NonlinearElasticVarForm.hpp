@@ -15,7 +15,7 @@ namespace polyfem::varform
 	class NonlinearElasticVarForm : public ElasticVarForm
 	{
 	public:
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy) override;
 
 		bool is_contact_enabled() const override
 		{

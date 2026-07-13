@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/ExecutionPolicy.hpp>
 #include <polysolve/JSONUtils.hpp>
 
 #include <Eigen/Core>
@@ -12,6 +13,8 @@ namespace polyfem
 	namespace utils
 	{
 		void apply_common_params(json &args);
+		ExecutionMode execution_mode(const json &args);
+		int cuda_device(const json &args);
 
 		// Templated degree to radians so a scalar or vector can be given
 		template <typename T>

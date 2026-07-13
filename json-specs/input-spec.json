@@ -11,6 +11,7 @@
             "preset_problem",
             "common",
             "root_path",
+            "execution",
             "space",
             "time",
             "contact",
@@ -38,6 +39,33 @@
         "default": "",
         "type": "string",
         "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
+    },
+    {
+        "pointer": "/execution",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "mode",
+            "cuda_device"
+        ],
+        "doc": "Execution backend settings."
+    },
+    {
+        "pointer": "/execution/mode",
+        "default": "cpu",
+        "type": "string",
+        "options": [
+            "cpu",
+            "hybrid"
+        ],
+        "doc": "Execution mode. cpu uses host execution; hybrid uses CUDA-backed paths where available."
+    },
+    {
+        "pointer": "/execution/cuda_device",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "CUDA device index used by hybrid execution."
     },
     {
         "pointer": "/units",

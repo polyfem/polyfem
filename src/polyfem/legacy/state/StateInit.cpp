@@ -8,6 +8,7 @@
 #include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/ExecutionPolicy.hpp>
 #include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -228,6 +229,9 @@ namespace polyfem::legacy
 			this->args["output"]["log"]["quiet"]);
 
 		logger().info("Saving output to {}", output_dir);
+
+		if (execution_mode_from_string(args["execution"]["mode"].get<std::string>()) != ExecutionMode::CPU)
+			log_and_throw_error("Hybrid execution is not supported by legacy::State.");
 
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
 		set_max_threads(thread_in);

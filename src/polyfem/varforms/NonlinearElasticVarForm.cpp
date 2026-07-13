@@ -44,12 +44,12 @@ namespace polyfem::varform
 	using namespace solver;
 	using namespace time_integrator;
 
-	void NonlinearElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void NonlinearElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy)
 	{
 		json clean_args = args;
 		const bool contact_dhat_was_explicit = clean_args["contact"].value("_dhat_was_explicit", false);
 		clean_args["contact"].erase("_dhat_was_explicit");
-		ElasticVarForm::init(formulation, units, clean_args, out_path);
+		ElasticVarForm::init(formulation, units, clean_args, out_path, policy);
 		contact_dhat_was_explicit_ = contact_dhat_was_explicit;
 	}
 
@@ -640,7 +640,12 @@ namespace polyfem::varform
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
-			args["solver"]["rayleigh_damping"]);
+			args["solver"]["rayleigh_damping"],
+			// Optional NG elastic assembly sources
+			space_.assembly_data.get(),
+			space_.geometry->assembly_data.get(),
+			&ng_ass_cache_,
+			material_expr_registry_ ? &*material_expr_registry_ : nullptr);
 
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
@@ -741,9 +746,17 @@ namespace polyfem::varform
 
 		const int ndof = space_.n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
-			ndof, nullptr, t, forms, solve_data.al_form,
+			ndof,
+			nullptr,
+			t,
+			forms,
+			solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
-			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
+			characteristic_length,
+			characteristic_force_density,
+			pure_mass_,
+			mesh_->dimension(),
+			execution_policy_);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------

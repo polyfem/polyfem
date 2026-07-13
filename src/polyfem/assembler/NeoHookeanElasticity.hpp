@@ -22,6 +22,68 @@ namespace polyfem::assembler
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
+		bool has_ng_assembly_support() const override { return true; }
+
+		double assemble_energy_ng(
+			bool is_volume,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			double t,
+			double dt,
+			ExecutionPolicy policy) const override;
+
+		void assemble_energy_per_element_ng(
+			bool is_volume,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			double t,
+			double dt,
+			DualVector &energy,
+			ExecutionPolicy policy) const override;
+
+		std::optional<BSRSparsityPattern> hessian_sparsity_pattern_ng(
+			int n_basis,
+			const AssemblyData &data) const override;
+
+		void assemble_gradient_ng(
+			bool is_volume,
+			int n_basis,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			double t,
+			double dt,
+			DualVector &grad,
+			double scale,
+			ExecutionPolicy policy) const override;
+
+		void assemble_hessian_ng(
+			bool is_volume,
+			int n_basis,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			double t,
+			double dt,
+			BSRMatrix &hessian,
+			bool project_to_psd,
+			double scale,
+			ExecutionPolicy policy) const override;
+
 		// rhs for fabbricated solution, compute with automatic sympy code
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 

@@ -58,6 +58,20 @@ namespace polyfem
 			args.erase("common"); // Remove common params from the final json
 		}
 
+		ExecutionMode execution_mode(const json &args)
+		{
+			if (!is_param_valid(args, "execution") || !args["execution"].is_object())
+				return ExecutionMode::CPU;
+			return execution_mode_from_string(json_value<std::string>(args["execution"], "mode", "cpu"));
+		}
+
+		int cuda_device(const json &args)
+		{
+			if (!is_param_valid(args, "execution") || !args["execution"].is_object())
+				return 0;
+			return json_value<int>(args["execution"], "cuda_device", 0);
+		}
+
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode)
 		{
 			std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);

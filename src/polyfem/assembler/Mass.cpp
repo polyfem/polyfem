@@ -2,8 +2,45 @@
 
 #include <utility>
 
+#include <polyfem/assembler/Assemble.hpp>
+#include <polyfem/assembler/ComputeSparsityPattern.hpp>
+
 namespace polyfem::assembler
 {
+	namespace
+	{
+
+		template <int value_dim, int dim>
+		struct MassMatrixKernel
+		{
+			using Material = material::Density<double>;
+			static constexpr int VALUE_DIM = value_dim;
+			static constexpr int DIM = dim;
+			static constexpr bool SUPPORT_DEVICE_EVAL = true;
+
+			using Mat = Eigen::Matrix<double, VALUE_DIM, VALUE_DIM, Eigen::RowMajor>;
+			POLYFEM_BOTH Mat eval_matrix(
+				int element_id,
+				int quad_id,
+				int bi,
+				int bj,
+				const AssemblyDataView &data,
+				const ElementAssemblyCacheView &cache,
+				const Material &material,
+				Span<const double> unknown) const
+			{
+				(void)element_id;
+				(void)quad_id;
+				(void)data;
+				(void)unknown;
+
+				double value = material.rho * cache.get_basis_value(bi, quad_id) * cache.get_basis_value(bj, quad_id);
+				return value * Mat::Identity();
+			}
+		};
+
+	} // namespace
+
 	Mass::Mass()
 		: density_(std::make_shared<Density>())
 	{
@@ -33,6 +70,96 @@ namespace polyfem::assembler
 			res(i * size() + i) = tmp;
 
 		return res;
+	}
+
+	std::optional<BSRSparsityPattern> Mass::hessian_sparsity_pattern_ng(
+		const int n_basis,
+		const AssemblyData &data) const
+	{
+		return compute_sparsity_pattern(data.view(), n_basis, size());
+	}
+
+	void Mass::assemble_hessian_ng(
+		const bool is_volume,
+		const int n_basis,
+		const AssemblyData &data,
+		const AssemblyData &geom_data,
+		const AssemblyCache &cache,
+		const material::MaterialExprRegistry &materials,
+		Span<const double> x,
+		Span<const double> x_prev,
+		const double t,
+		const double dt,
+		BSRMatrix &hessian,
+		const bool project_to_psd,
+		const double scale,
+		ExecutionPolicy policy) const
+	{
+		(void)n_basis;
+		(void)x;
+		(void)x_prev;
+		(void)dt;
+		(void)project_to_psd;
+
+		assert(has_ng_assembly_support());
+		assert(hessian.rows() == size() * n_basis);
+		assert(hessian.cols() == size() * n_basis);
+
+		// TODO: better way to get space dimension.
+		int dim = data.view().element_desc.front().basis_desc.dim;
+		switch (dim)
+		{
+		case 1:
+			switch (size())
+			{
+			case 1:
+				assemble_matrix(MassMatrixKernel<1, 1>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 2:
+				assemble_matrix(MassMatrixKernel<2, 1>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 3:
+				assemble_matrix(MassMatrixKernel<3, 1>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			default:
+				log_and_throw_error("Unsupported NG mass value dimension {}.", size());
+			}
+			break;
+		case 2:
+			switch (size())
+			{
+			case 1:
+				assemble_matrix(MassMatrixKernel<1, 2>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 2:
+				assemble_matrix(MassMatrixKernel<2, 2>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 3:
+				assemble_matrix(MassMatrixKernel<3, 2>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			default:
+				log_and_throw_error("Unsupported NG mass value dimension {}.", size());
+			}
+			break;
+		case 3:
+			switch (size())
+			{
+			case 1:
+				assemble_matrix(MassMatrixKernel<1, 3>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 2:
+				assemble_matrix(MassMatrixKernel<2, 3>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			case 3:
+				assemble_matrix(MassMatrixKernel<3, 3>{}, data, geom_data, cache, materials, {}, hessian, false, t, scale, true, policy);
+				break;
+			default:
+				log_and_throw_error("Unsupported NG mass value dimension {}.", size());
+			}
+			break;
+		default:
+			log_and_throw_error("Unsupported NG mass geometric dimension {}.", dim);
+		}
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Mass::compute_rhs(const AutodiffHessianPt &pt) const

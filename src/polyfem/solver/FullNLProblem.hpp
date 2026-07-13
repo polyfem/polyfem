@@ -1,9 +1,12 @@
 #pragma once
 
 #include <polyfem/solver/forms/Form.hpp>
+#include <polyfem/utils/BlockCSRMatrix.hpp>
 #include <polysolve/nonlinear/Problem.hpp>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace polyfem::solver
@@ -11,7 +14,7 @@ namespace polyfem::solver
 	class FullNLProblem : public polysolve::nonlinear::Problem
 	{
 	public:
-		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, const bool is_residual = false);
+		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, ExecutionPolicy policy = {}, const bool is_residual = false);
 		virtual ~FullNLProblem() = default;
 		virtual void init(const TVector &x0) override;
 
@@ -51,6 +54,9 @@ namespace polyfem::solver
 
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
+		ExecutionPolicy execution_policy_;
 		const bool is_residual_;
+		mutable std::vector<uint8_t> form_enabled_mask_;
+		mutable std::optional<BSRMatrix> hessian_bsr_;
 	};
 } // namespace polyfem::solver

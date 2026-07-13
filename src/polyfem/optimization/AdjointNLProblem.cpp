@@ -122,7 +122,7 @@ namespace polyfem::solver
 									   const std::vector<std::shared_ptr<legacy::State>> &all_states,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args)
-		: FullNLProblem({form}),
+		: FullNLProblem({form}, ExecutionPolicy{}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),

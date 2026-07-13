@@ -12,6 +12,7 @@
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
+#include <polyfem/utils/ExecutionPolicy.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/varforms/FESpace.hpp>
 
@@ -65,7 +66,12 @@ namespace polyfem
 			/// @param units unit system to use for the formulation
 			/// @param args json input arguments, used to initialize the formulation
 			/// @param out_path output path for the formulation, used to save intermediate data
-			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
+			virtual void init(
+				const std::string &formulation,
+				const Units &units,
+				const json &args,
+				const std::string &out_path,
+				ExecutionPolicy policy);
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
@@ -204,6 +210,7 @@ namespace polyfem
 			std::unique_ptr<mesh::Mesh> mesh_;
 
 			std::function<void(int, int, double, double)> time_callback;
+			ExecutionPolicy execution_policy_;
 
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;

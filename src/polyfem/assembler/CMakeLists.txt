@@ -105,8 +105,11 @@ set(SOURCES
 if(POLYFEM_WITH_CUDA)
 	set_source_files_properties(
 		AssemblyCache.cpp
+		Mass.cpp
+		NeoHookeanElasticity.cpp
 		TARGET_DIRECTORY polyfem
 		PROPERTIES LANGUAGE CUDA)
 endif()
+
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

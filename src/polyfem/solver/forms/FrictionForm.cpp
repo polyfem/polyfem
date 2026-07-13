@@ -88,6 +88,23 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
+	void FrictionForm::second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const
+	{
+		(void)policy;
+
+		const ipc::PSDProjectionMethod psd_projection_method =
+			project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE;
+
+		StiffnessMatrix local_hessian =
+			dv_dx() * friction_potential_.hessian(friction_collision_set_, collision_mesh_, compute_surface_velocities(x), psd_projection_method);
+		local_hessian = collision_mesh_.to_full_dof(local_hessian);
+
+		assert(local_hessian.rows() == hessian.rows());
+		assert(local_hessian.cols() == hessian.cols());
+
+		append_sparse_matrix_to_triplets(local_hessian, hessian.dynamic_view(), weighted_scale());
+	}
+
 	void FrictionForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);

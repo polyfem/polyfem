@@ -277,12 +277,18 @@ namespace polyfem::varform
 		mesh_ = nullptr;
 	}
 
-	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void VarForm::init(
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path,
+		ExecutionPolicy policy)
 	{
 		reset();
 
 		this->units = units;
 		this->args = args;
+		execution_policy_ = policy;
 
 		if (utils::is_param_valid(args, "root_path"))
 			root_path = args["root_path"].get<std::string>();
@@ -347,7 +353,7 @@ namespace polyfem::varform
 
 		space.value_dim = value_dim;
 
-		space.bases = std::make_shared<std::vector<basis::ElementBases>>();
+		space.assembly_data = std::make_shared<assembler::AssemblyData>();
 		space.geometry = build_geom_mapping ? std::make_shared<GeometryMapping>() : std::move(geometry);
 		assert(space.geometry);
 
@@ -365,7 +371,7 @@ namespace polyfem::varform
 			else
 				geom_disc_orders = mesh.orders();
 
-			space.geometry->bases = std::make_shared<std::vector<basis::ElementBases>>();
+			space.geometry->assembly_data = std::make_shared<assembler::AssemblyData>();
 			space.geometry->disc_orders = geom_disc_orders;
 		}
 
@@ -389,7 +395,7 @@ namespace polyfem::varform
 			{
 				space.n_bases = basis::SplineBasis3d::build_bases(
 					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
-					*space.bases, boundary.local_boundary, space.poly_edge_to_data);
+					*space.assembly_data, boundary.local_boundary, space.poly_edge_to_data);
 			}
 			else
 			{
@@ -398,7 +404,7 @@ namespace polyfem::varform
 						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
 						geom_disc_orders, geom_disc_ordersq, false, false, has_polys,
 						!use_continuous_gbasis, use_corner_quadrature,
-						*space.geometry->bases, boundary.local_boundary, poly_edge_to_data_geom,
+						*space.geometry->assembly_data, boundary.local_boundary, poly_edge_to_data_geom,
 						space.geometry->mesh_nodes);
 
 				space.n_bases = basis::LagrangeBasis3d::build_bases(
@@ -407,7 +413,7 @@ namespace polyfem::varform
 					basis_type == "Bernstein",
 					basis_type == "Serendipity",
 					has_polys, false, use_corner_quadrature,
-					*space.bases, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
+					*space.assembly_data, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
 			}
 		}
 		else
@@ -418,7 +424,7 @@ namespace polyfem::varform
 			{
 				space.n_bases = basis::SplineBasis2d::build_bases(
 					tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
-					*space.bases, boundary.local_boundary, space.poly_edge_to_data);
+					*space.assembly_data, boundary.local_boundary, space.poly_edge_to_data);
 			}
 			else
 			{
@@ -427,7 +433,7 @@ namespace polyfem::varform
 						tmp_mesh, space_assembler_name, quadrature_order, mass_quadrature_order,
 						geom_disc_orders, false, false, has_polys,
 						!use_continuous_gbasis, use_corner_quadrature,
-						*space.geometry->bases, boundary.local_boundary, poly_edge_to_data_geom,
+						*space.geometry->assembly_data, boundary.local_boundary, poly_edge_to_data_geom,
 						space.geometry->mesh_nodes);
 
 				space.n_bases = basis::LagrangeBasis2d::build_bases(
@@ -436,8 +442,15 @@ namespace polyfem::varform
 					basis_type == "Bernstein",
 					basis_type == "Serendipity",
 					has_polys, false, use_corner_quadrature,
-					*space.bases, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
+					*space.assembly_data, boundary.local_boundary, space.poly_edge_to_data, space.mesh_nodes);
 			}
+		}
+
+		space.bases = space.assembly_data->legacy_bases_ptr();
+		if (build_geom_mapping && !iso_parametric)
+		{
+			assert(space.geometry->assembly_data);
+			space.geometry->bases = space.geometry->assembly_data->legacy_bases_ptr();
 		}
 
 		const bool use_fe_space_as_geometry = build_geom_mapping ? iso_parametric : space.is_iso_parametric();
@@ -527,6 +540,7 @@ namespace polyfem::varform
 					mass_quadrature_order,
 					integral_constraints,
 					*space.bases,
+					*space.assembly_data,
 					*space.bases,
 					space.poly_edge_to_data,
 					space.polys_3d);
@@ -540,7 +554,7 @@ namespace polyfem::varform
 						space_assembler.name(), dim, mesh_2d, space.n_bases,
 						quadrature_order,
 						mass_quadrature_order,
-						*space.bases, boundary.local_boundary, space.polys);
+						*space.bases, *space.assembly_data, boundary.local_boundary, space.polys);
 				}
 				else if (poly_basis_type == "Wachspress")
 				{
@@ -548,7 +562,7 @@ namespace polyfem::varform
 						space_assembler.name(), dim, mesh_2d, space.n_bases,
 						quadrature_order,
 						mass_quadrature_order,
-						*space.bases, boundary.local_boundary, space.polys);
+						*space.bases, *space.assembly_data, boundary.local_boundary, space.polys);
 				}
 				else
 				{
@@ -563,6 +577,7 @@ namespace polyfem::varform
 						mass_quadrature_order,
 						integral_constraints,
 						*space.bases,
+						*space.assembly_data,
 						*space.bases,
 						space.poly_edge_to_data,
 						space.polys);
@@ -589,6 +604,7 @@ namespace polyfem::varform
 					mass_quadrature_order,
 					integral_constraints,
 					*space.bases,
+					*space.assembly_data,
 					*space.geometry->bases,
 					space.poly_edge_to_data,
 					space.polys_3d);
@@ -602,7 +618,7 @@ namespace polyfem::varform
 						space_assembler.name(), dim, mesh_2d, space.n_bases,
 						quadrature_order,
 						mass_quadrature_order,
-						*space.bases, boundary.local_boundary, space.polys);
+						*space.bases, *space.assembly_data, boundary.local_boundary, space.polys);
 				}
 				else if (poly_basis_type == "Wachspress")
 				{
@@ -610,7 +626,7 @@ namespace polyfem::varform
 						space_assembler.name(), dim, mesh_2d, space.n_bases,
 						quadrature_order,
 						mass_quadrature_order,
-						*space.bases, boundary.local_boundary, space.polys);
+						*space.bases, *space.assembly_data, boundary.local_boundary, space.polys);
 				}
 				else
 				{
@@ -625,6 +641,7 @@ namespace polyfem::varform
 						mass_quadrature_order,
 						integral_constraints,
 						*space.bases,
+						*space.assembly_data,
 						*space.geometry->bases,
 						space.poly_edge_to_data,
 						space.polys);

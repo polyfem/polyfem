@@ -39,7 +39,7 @@ namespace polyfem::varform
 	public:
 		std::string name() const override { return "ThermoElastic"; }
 
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy) override;
 
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 

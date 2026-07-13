@@ -46,9 +46,9 @@ namespace polyfem::varform
 		dt = 0;
 	}
 
-	void OperatorSplittingVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void OperatorSplittingVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy)
 	{
-		VarForm::init(formulation, units, args, out_path);
+		VarForm::init(formulation, units, args, out_path, policy);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);

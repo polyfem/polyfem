@@ -3,12 +3,20 @@
 #include <polyfem/Units.hpp>
 
 #include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/AssemblyCache.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/materials/MaterialExprRegistry.hpp>
 
 #include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/BlockCSRMatrix.hpp>
+#include <polyfem/utils/DualVector.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Span.hpp>
+
+#include <optional>
 
 #include <functional>
 
@@ -98,6 +106,39 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
 
+		/// NG assembly API.
+		virtual double assemble_energy_ng(
+			const bool is_volume,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			const double t,
+			const double dt,
+			ExecutionPolicy policy) const
+		{
+			log_and_throw_error("NG assemble energy not implemented by {}!", name());
+		}
+
+		/// NG assembly API.
+		virtual void assemble_energy_per_element_ng(
+			const bool is_volume,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			const double t,
+			const double dt,
+			DualVector &energy,
+			ExecutionPolicy policy) const
+		{
+			log_and_throw_error("NG assemble energy per element not implemented by {}!", name());
+		}
+
 		// assemble gradient of energy (rhs)
 		virtual void assemble_gradient(
 			const bool is_volume,
@@ -125,6 +166,55 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
+
+		/// NG assembly API.
+		virtual bool has_ng_assembly_support() const { return false; }
+
+		/// NG assembly API.
+		virtual std::optional<BSRSparsityPattern> hessian_sparsity_pattern_ng(
+			const int n_basis,
+			const AssemblyData &data) const
+		{
+			return std::nullopt;
+		}
+
+		/// NG assembly API.
+		virtual void assemble_gradient_ng(
+			const bool is_volume,
+			const int n_basis,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			const double t,
+			const double dt,
+			DualVector &grad,
+			const double scale,
+			ExecutionPolicy policy) const
+		{
+			log_and_throw_error("NG assemble grad not implemented by {}!", name());
+		}
+
+		virtual void assemble_hessian_ng(
+			const bool is_volume,
+			const int n_basis,
+			const AssemblyData &data,
+			const AssemblyData &geom_data,
+			const AssemblyCache &cache,
+			const material::MaterialExprRegistry &materials,
+			Span<const double> x,
+			Span<const double> x_prev,
+			const double t,
+			const double dt,
+			BSRMatrix &hessian,
+			const bool project_to_psd,
+			const double scale,
+			ExecutionPolicy policy) const
+		{
+			log_and_throw_error("NG assemble hessian not implemented by {}!", name());
+		}
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
