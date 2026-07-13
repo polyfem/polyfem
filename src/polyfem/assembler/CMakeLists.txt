@@ -17,6 +17,8 @@ set(SOURCES
 	AssemblyCache.hpp
 	ComputeAssemblyCache.cpp
 	ComputeAssemblyCache.hpp
+	ComputeSparsityPattern.cpp
+	ComputeSparsityPattern.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
   ComputeGeometryMapping.cpp
