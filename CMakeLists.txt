@@ -217,12 +217,6 @@ endif()
 # Required libraries
 ################################################################################
 
-if(WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
-
 # Handle MPI for PolyFEM and force the choice onto PolySolve
 if(POLYFEM_WITH_MPI)
     find_package(MPI REQUIRED)
