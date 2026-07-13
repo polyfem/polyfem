@@ -2,6 +2,8 @@ set(SOURCES
 	autodiff.h
 	AutodiffTypes.hpp
 	Bessel.hpp
+	BlockCSRMatrix.cpp
+	BlockCSRMatrix.hpp
 	BoundarySampler.cpp
 	BoundarySampler.hpp
 	ClipperUtils.cpp
@@ -68,6 +70,12 @@ set(SOURCES
 	AtomicAdd.hpp
   AutoDiff.hpp
 )
+
+if(POLYFEM_WITH_CUDA)
+	list(APPEND SOURCES
+		BlockCSRMatrix.cu
+	)
+endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
