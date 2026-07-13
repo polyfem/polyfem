@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
@@ -22,6 +23,15 @@ namespace polyfem
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,
+				std::vector<mesh::LocalBoundary> &local_boundary,
+				std::map<int, InterfaceData> &poly_face_to_data);
+
+			static int build_bases(
+				const mesh::Mesh3D &mesh,
+				const std::string &assembler,
+				int quadrature_order,
+				int mass_quadrature_order,
+				polyfem::assembler::AssemblyData &data,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_face_to_data);
 
