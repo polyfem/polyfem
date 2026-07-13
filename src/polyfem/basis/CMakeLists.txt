@@ -34,6 +34,8 @@ set(SOURCES
 	barycentric/MVPolygonalBasis2d.hpp
 	barycentric/WSPolygonalBasis2d.cpp
 	barycentric/WSPolygonalBasis2d.hpp
+  BasisStore.hpp
+  BasisStore.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
