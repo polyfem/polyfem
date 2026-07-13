@@ -1,11 +1,16 @@
 #pragma once
 
-#include <Eigen/Dense>
+#include <polyfem/utils/CudaBoth.hpp>
+#include <polyfem/utils/Span.hpp>
 #include <cassert>
+#include <cstddef>
+#include <cmath>
 
 namespace polyfem {
 namespace autogen {
-void q_basis_value_3d(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+POLYFEM_BOTH int q_basis_count_3d(const int q);
+
+POLYFEM_BOTH void q_basis_value_3d(const int q, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val);
 
 
 }}

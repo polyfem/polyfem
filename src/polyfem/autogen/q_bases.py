@@ -167,29 +167,23 @@ if __name__ == "__main__":
         namen = f"auto_q_bases_{dim}d_nodes"
         nameg = f"auto_q_bases_{dim}d_grad"
 
-        cppv = f"#include \"{namev}.hpp\"\n\n\n"
-        cppv = cppv + \
-            "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+        cppv = f"#include \"{namev}.hpp\"\n\n"
+        cppv = cppv + "namespace polyfem {\nnamespace autogen " + "{\n"
 
         cppn = f"#include \"{namen}.hpp\"\n\n\n"
         cppn = cppn + \
             "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
-        cppg = f"#include \"{nameg}.hpp\"\n\n\n"
-        cppg = cppg + \
-            "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
-        if dim == 3:
-            cppg = "#include <Eigen/Dense>\n#include <cassert>\n\nnamespace polyfem {\nnamespace autogen {\nnamespace {\n"
+        cppg = f"#include \"{nameg}.hpp\"\n\n"
+        cppg = cppg + "namespace polyfem {\nnamespace autogen " + "{\n"
 
-        eextern = ""
-
-        hppv = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
+        hppv = "#pragma once\n\n#include <polyfem/utils/CudaBoth.hpp>\n#include <polyfem/utils/Span.hpp>\n#include <cassert>\n#include <cstddef>\n#include <cmath>\n\n"
         hppv = hppv + "namespace polyfem {\nnamespace autogen " + "{\n"
 
         hppn = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
         hppn = hppn + "namespace polyfem {\nnamespace autogen " + "{\n"
 
-        hppg = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
+        hppg = "#pragma once\n\n#include <polyfem/utils/CudaBoth.hpp>\n#include <polyfem/utils/Span.hpp>\n#include <cassert>\n#include <cstddef>\n#include <cmath>\n\n"
         hppg = hppg + "namespace polyfem {\nnamespace autogen " + "{\n"
 
         print(str(dim) + "D")
@@ -198,13 +192,16 @@ if __name__ == "__main__":
         unique_nodes = "void q_nodes" + suffix + \
             "(const int q, Eigen::MatrixXd &val)"
 
-        unique_fun = "void q_basis_value" + suffix + \
-            "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = "void q_grad_basis_value" + suffix + \
-            "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        unique_fun = "POLYFEM_BOTH void q_basis_value" + suffix + \
+            "(const int q, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+        dunique_fun = "POLYFEM_BOTH void q_grad_basis_value" + suffix + \
+            "(const int q, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
+        count_fun = "POLYFEM_BOTH int q_basis_count" + suffix + "(const int q)"
+        count_cases = count_fun + "{\nswitch(q){\n"
 
         hppn = hppn + unique_nodes + ";\n\n"
 
+        hppv = hppv + count_fun + ";\n\n"
         hppv = hppv + unique_fun + ";\n\n"
         hppg = hppg + dunique_fun + ";\n\n"
 
@@ -551,9 +548,6 @@ if __name__ == "__main__":
                 str(order) + ": " + "q_" + orderN + \
                 "_nodes" + suffix + "(val); break;\n"
 
-            eextern = eextern + \
-                f"extern \"C++\" void q_{orderN}_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);\n"
-
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ("" if dim == 1 else (", " + ccode(fe.points[ii][1]) + (
                     (", " + ccode(fe.points[ii][2])) if dim == 3 else ""))) + ",\n"
@@ -567,19 +561,20 @@ if __name__ == "__main__":
             # Both function evaluates quadrature points in batch by dispatching the "single" basis
             # kernel inside a for loop. In this script the single kernel related codegen variable
             # is denoted with scalar_ prefix.
-            func = "void q_" + orderN + "_basis_value" + suffix + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void q_" + orderN + "_basis_grad_value" + suffix + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = "POLYFEM_BOTH void q_" + orderN + "_basis_value" + suffix + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+            dfunc = "POLYFEM_BOTH void q_" + orderN + "_basis_grad_value" + suffix + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
             scalar_func_name = f"q_{orderN}_basis_value{suffix}_single"
             scalar_dfunc_name = f"q_{orderN}_basis_grad_value{suffix}_single"
 
             unique_fun = unique_fun + "\tcase " + \
                 str(order) + ": " + "q_" + orderN + "_basis_value" + \
-                suffix + "(local_index, uv, val); break;\n"
+                suffix + "(local_index, x, y, z, val); break;\n"
             dunique_fun = dunique_fun + "\tcase " + \
                 str(order) + ": " + "q_" + orderN + "_basis_grad_value" + \
-                suffix + "(local_index, uv, val); break;\n"
+                suffix + "(local_index, x, y, z, grad_x, grad_y, grad_z); break;\n"
+            count_cases = count_cases + "\tcase " + str(order) + ": return " + str(fe.nbf()) + ";\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
@@ -607,47 +602,46 @@ if __name__ == "__main__":
 
             cppv = cppv + base + "\n\n"
             cppv = cppv + func + "{\n"
-            cppv = cppv + "result_0.resize(uv.rows(), 1);\n"
+            cppv = cppv + "assert(val.size() == x.size());\n"
+            if dim >= 2:
+                cppv = cppv + "assert(y.size() == x.size());\n"
+            if dim >= 3:
+                cppv = cppv + "assert(z.size() == x.size());\n"
             cppv = cppv + base_cases + "\n}\n"
 
             cppg = cppg + dbase + "\n\n"
-            if dim == 3:
-                cppg = cppg + "}\n\n"
             cppg = cppg + dfunc + "{\n"
-            cppg = cppg + f"val.resize(uv.rows(), {dim});\n"
+            cppg = cppg + "assert(grad_x.size() == x.size());\n"
+            if dim >= 2:
+                cppg = cppg + "assert(y.size() == x.size());\n"
+                cppg = cppg + "assert(grad_y.size() == x.size());\n"
+            if dim >= 3:
+                cppg = cppg + "assert(z.size() == x.size());\n"
+                cppg = cppg + "assert(grad_z.size() == x.size());\n"
             cppg = cppg + f"double gradient[{dim}];\n"
             cppg = cppg + dbase_cases + "\n}\n\n"
             cppn = cppn + nodes + "\n\n"
 
             if dim == 3:
                 with open(os.path.join(path, f"{nameg}_{order}.cpp"), "w") as file:
-                    file.write(cppg+"}}")
-                    cppg = "#include <Eigen/Dense>\n#include <cassert>\n\nnamespace polyfem {\nnamespace autogen {\nnamespace {\n"
+                    file.write(f"#include \"{nameg}.hpp\"\n")
 
-        if dim == 3:
-            cppg = ""
         unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
         unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
         dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
+        count_cases = count_cases + "\tdefault: assert(false); return 0;\n}}\n"
 
-        cppv = cppv + "}\n\n"
         cppn = cppn + "}\n\n"
-        if dim != 3:
-            cppg = cppg + "}\n\n"
 
         cppn = cppn + unique_nodes + "\n}}\n"
-        cppv = cppv + unique_fun + "\n}}\n"
-        cppg = cppg + dunique_fun + "\n}}\n"
+        cppv = cppv + count_cases + "\n" + unique_fun + "\n"
+        cppg = cppg + dunique_fun + "\n"
         hppv = hppv + "\n}}\n"
         hppn = hppn + "\n}}\n"
         hppg = hppg + "\n}}\n"
-
-        if dim == 3:
-            tcppg = f"#include \"{nameg}.hpp\"\n\n\n"
-            tcppg = tcppg + "namespace polyfem {\nnamespace autogen {\n"
-            tcppg = tcppg + eextern + "\n"
-            cppg = tcppg+cppg
+        cppv = cppv + "\n}}\n"
+        cppg = cppg + "\n}}\n"
 
         print("saving...")
         with open(os.path.join(path, f"{namev}.cpp"), "w") as file:

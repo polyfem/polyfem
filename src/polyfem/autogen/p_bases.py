@@ -184,52 +184,72 @@ if __name__ == "__main__":
 
     bletter = "b" if args.bernstein else "p"
 
-    cpp = f"#include \"auto_{bletter}_bases.hpp\""
+    cpp = f"#include \"auto_{bletter}_bases.hpp\"\n"
     if not args.bernstein:
-        cpp = cpp + "\n#include \"auto_b_bases.hpp\""
-        cpp = cpp + "\n#include \"p_n_bases.hpp\""
-    cpp = cpp + "\n\n\n" \
-        "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+        cpp += "#include \"p_n_bases.hpp\"\n"
+    cpp += "\n"
+    cpp += "namespace polyfem {\nnamespace autogen {\n"
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n"
+    hpp = "#pragma once\n\n"
+    hpp += "#include <polyfem/utils/CudaBoth.hpp>\n"
+    hpp += "#include <polyfem/utils/Span.hpp>\n"
+    hpp += "#include <cassert>\n"
+    hpp += "#include <cstddef>\n"
+    hpp += "#include <cmath>\n"
+    if not args.bernstein:
+        hpp += "\n#include \"auto_b_bases.hpp\"\n"
+    hpp += "\nnamespace polyfem {\nnamespace autogen " + "{\n"
 
-    hpp = hpp + "\nnamespace polyfem {\nnamespace autogen " + "{\n"
+    nodes_hpp = None
+    nodes_cpp = None
+    if not args.bernstein:
+        nodes_hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        nodes_hpp += "namespace polyfem {\nnamespace autogen {\n"
+        nodes_cpp = "#include \"auto_p_bases_nodes.hpp\"\n"
+        nodes_cpp += "#include \"p_n_bases.hpp\"\n\n"
+        nodes_cpp += "namespace polyfem {\nnamespace autogen {\nnamespace {\n"
 
     for dim in dims:
         assert dim in (2, 3), "P simplex autogen supports only triangles and tetrahedra"
         print(str(dim) + "D " + bletter)
         suffix = "2d" if dim == 2 else "3d"
 
-        unique_nodes = f"void {bletter}_nodes_{suffix}" + \
-            f"(const int {bletter}, Eigen::MatrixXd &val)"
+        if not args.bernstein:
+            unique_nodes = f"void {bletter}_nodes_{suffix}" + \
+                f"(const int {bletter}, Eigen::MatrixXd &val)"
 
         if args.bernstein:
-            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
-                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
-                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            unique_fun = f"POLYFEM_BOTH void {bletter}_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+            dunique_fun = f"POLYFEM_BOTH void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
         else:
-            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
-                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
-                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            unique_fun = f"POLYFEM_BOTH void {bletter}_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+            dunique_fun = f"POLYFEM_BOTH void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
+
+        count_fun = f"POLYFEM_BOTH int {bletter}_basis_count_{suffix}(const int {bletter})"
+        count_cases = f"{count_fun} {{\nswitch({bletter}) {{\n"
 
         if not args.bernstein:
-            hpp = hpp + unique_nodes + ";\n\n"
+            nodes_hpp = nodes_hpp + unique_nodes + ";\n\n"
 
+        hpp = hpp + count_fun + ";\n\n"
         hpp = hpp + unique_fun + ";\n\n"
         hpp = hpp + dunique_fun + ";\n\n"
 
-        unique_nodes = unique_nodes + f"{{\nswitch({bletter})" + "{\n"
+        if not args.bernstein:
+            unique_nodes = unique_nodes + f"{{\nswitch({bletter})" + "{\n"
 
         unique_fun = unique_fun + "{\n"
         dunique_fun = dunique_fun + "{\n"
 
         if not args.bernstein:
             unique_fun = unique_fun + \
-                f"if(bernstein) {{ b_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+                f"if(bernstein) {{ b_basis_value_{suffix}(p, local_index, x, y, z, val); return; }}\n\n"
             dunique_fun = dunique_fun + \
-                f"if(bernstein) {{ b_grad_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+                f"if(bernstein) {{ b_grad_basis_value_{suffix}(p, local_index, x, y, z, grad_x, grad_y, grad_z); return; }}\n\n"
 
         unique_fun = unique_fun + f"\nswitch({bletter})" + "{\n"
         dunique_fun = dunique_fun + f"\nswitch({bletter})" + "{\n"
@@ -398,8 +418,9 @@ if __name__ == "__main__":
             # nodes code gen
             nodes = f"void {bletter}_{order}_nodes_{suffix}(Eigen::MatrixXd &res) {{\n res.resize(" + str(
                 len(indices)) + ", " + str(dim) + "); res << \n"
-            unique_nodes = unique_nodes + f"\tcase {order}: " + \
-                f"{bletter}_{order}_nodes_{suffix}(val); break;\n"
+            if not args.bernstein:
+                unique_nodes = unique_nodes + f"\tcase {order}: " + \
+                    f"{bletter}_{order}_nodes_{suffix}(val); break;\n"
 
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + (
@@ -414,24 +435,23 @@ if __name__ == "__main__":
             # Both function evaluates quadrature points in batch by dispatching the "xxx_single" basis
             # kernel inside a for loop. In this script the single kernel related codegen variable
             # is denoted with scalar_ prefix.
-            func = f"void {bletter}_{order}_basis_value_{suffix}" + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = f"void {bletter}_{order}_basis_grad_value_{suffix}" + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = f"POLYFEM_BOTH void {bletter}_{order}_basis_value_{suffix}" + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+            dfunc = f"POLYFEM_BOTH void {bletter}_{order}_basis_grad_value_{suffix}" + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
             scalar_func_name = f"{bletter}_{order}_basis_value_{suffix}_single"
             scalar_dfunc_name = f"{bletter}_{order}_basis_grad_value_{suffix}_single"
 
             unique_fun = unique_fun + \
-                f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, uv, val); break;\n"
+                f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, x, y, z, val); break;\n"
             dunique_fun = dunique_fun + \
-                f"\tcase {order}: {bletter}_{order}_basis_grad_value_{suffix}(local_index, uv, val); break;\n"
+                f"\tcase {order}: {bletter}_{order}_basis_grad_value_{suffix}(local_index, x, y, z, grad_x, grad_y, grad_z); break;\n"
+            count_cases = count_cases + f"\tcase {order}: return {fe.nbf()};\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
 
             if not args.bernstein:
-                default_base = "p_n_basis_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_value_2d(p, local_index, uv, val);"
-                default_dbase = "p_n_basis_grad_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_grad_value_2d(p, local_index, uv, val);"
                 default_nodes = "p_n_nodes_3d(p, val);" if dim == 3 else "p_n_nodes_2d(p, val);"
 
             # Single basis kernel.
@@ -457,39 +477,58 @@ if __name__ == "__main__":
 
             cpp = cpp + base + "\n\n"
             cpp = cpp + func + "{\n"
-            cpp = cpp + "result_0.resize(uv.rows(), 1);\n"
+            cpp = cpp + "assert(val.size() == x.size());\n"
+            if dim >= 2:
+                cpp = cpp + "assert(y.size() == x.size());\n"
+            if dim >= 3:
+                cpp = cpp + "assert(z.size() == x.size());\n"
             cpp = cpp + base_cases + "\n}\n"
 
             cpp = cpp + dbase + "\n\n"
             cpp = cpp + dfunc + "{\n"
-            cpp = cpp + f"val.resize(uv.rows(), {dim});\n"
+            cpp = cpp + "assert(grad_x.size() == x.size());\n"
+            if dim >= 2:
+                cpp = cpp + "assert(y.size() == x.size());\n"
+                cpp = cpp + "assert(grad_y.size() == x.size());\n"
+            if dim >= 3:
+                cpp = cpp + "assert(z.size() == x.size());\n"
+                cpp = cpp + "assert(grad_z.size() == x.size());\n"
             cpp = cpp + f"double gradient[{dim}];\n"
             cpp = cpp + dbase_cases + "\n}\n\n\n"
 
             if not args.bernstein:
-                cpp = cpp + nodes + "\n\n\n"
+                nodes_cpp = nodes_cpp + nodes + "\n\n\n"
 
         if args.bernstein:
             unique_nodes = ""
         else:
             unique_nodes = unique_nodes + "\tdefault: "+default_nodes+"\n}}"
+            nodes_cpp = nodes_cpp + "}\n\n" + unique_nodes + "\n\nnamespace {\n"
 
         if args.bernstein:
             unique_fun = unique_fun + "\tdefault: assert(false); \n}}"
             dunique_fun = dunique_fun + "\tdefault: assert(false); \n}}"
         else:
-            unique_fun = unique_fun + "\tdefault: "+default_base+"\n}}"
-            dunique_fun = dunique_fun + "\tdefault: "+default_dbase+"\n}}"
+            host_value = f"p_n_basis_value_{suffix}(p, local_index, x, y" + (", z" if dim == 3 else "") + ", val);"
+            host_grad = f"p_n_basis_grad_value_{suffix}(p, local_index, x, y" + (", z" if dim == 3 else "") + ", grad_x, grad_y" + (", grad_z" if dim == 3 else "") + ");"
+            fallback = "\tdefault:\n#ifdef __CUDA_ARCH__\n\t\tassert(false && \"generic Pn evaluation is host-only\");\n#else\n\t\t{}\n#endif\n}}}}"
+            unique_fun = unique_fun + fallback.format(host_value)
+            dunique_fun = dunique_fun + fallback.format(host_grad)
 
-        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + \
-            "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
-        hpp = hpp + "\n"
+        count_formula = "(p + 1) * (p + 2) / 2" if dim == 2 else "(p + 1) * (p + 2) * (p + 3) / 6"
+        count_cases = count_cases + f"\tdefault: return {count_formula};\n}}}}\n"
+
+        cpp = cpp + count_cases + "\n"
+        cpp = cpp + unique_fun + "\n\n" + dunique_fun + "\n\n"
 
     hpp = hpp + \
         f"\nstatic const int MAX_{bletter.capitalize()}_BASES = {max(orders)};\n"
 
-    cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
+    cpp = cpp + "\n}}\n"
+    if not args.bernstein:
+        nodes_cpp = nodes_cpp + "\n}}}\n"
+        nodes_hpp = nodes_hpp + "}}\n"
 
     path = os.path.abspath(args.output)
 
@@ -499,5 +538,10 @@ if __name__ == "__main__":
 
     with open(os.path.join(path, f"auto_{bletter}_bases.hpp"), "w") as file:
         file.write(hpp)
+    if not args.bernstein:
+        with open(os.path.join(path, "auto_p_bases_nodes.cpp"), "w") as file:
+            file.write(nodes_cpp)
+        with open(os.path.join(path, "auto_p_bases_nodes.hpp"), "w") as file:
+            file.write(nodes_hpp)
 
     print("done!")

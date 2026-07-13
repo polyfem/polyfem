@@ -1,12 +1,8 @@
 #include "auto_pyramid_bases.hpp"
-#include "auto_b_bases.hpp"
-#include "p_n_bases.hpp"
-
 
 namespace polyfem {
 namespace autogen {
-namespace {
-double pyramid_0_basis_value_3d_single_0(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_0_basis_value_3d_single_0(double x, double y, double z) {
 double result;
 result = 1;
 return result;
@@ -14,17 +10,19 @@ return result;
 
 
 
-void pyramid_0_basis_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0){
-result_0.resize(uv.rows(), 1);
+POLYFEM_BOTH void pyramid_0_basis_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
+assert(val.size() == x.size());
+assert(y.size() == x.size());
+assert(z.size() == x.size());
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_0_basis_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_0_basis_value_3d_single_0(x[i], y[i], z[i]);
 		break;
 	default: assert(false);
 }
 }
-void pyramid_0_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_0_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
 {val[0] = 0;}
 {val[1] = 0;}
 {val[2] = 0;}
@@ -32,16 +30,20 @@ void pyramid_0_basis_grad_value_3d_single_0(double x, double y, double z, double
 
 
 
-void pyramid_0_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
-val.resize(uv.rows(), 3);
+POLYFEM_BOTH void pyramid_0_basis_grad_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
+assert(grad_x.size() == x.size());
+assert(y.size() == x.size());
+assert(grad_y.size() == x.size());
+assert(z.size() == x.size());
+assert(grad_z.size() == x.size());
 double gradient[3];
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_0_basis_grad_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_0_basis_grad_value_3d_single_0(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	default: assert(false);
@@ -49,40 +51,34 @@ switch(local_index){
 }
 
 
-void pyramid_0_nodes_3d(Eigen::MatrixXd &res) {
- res.resize(1, 3); res << 
-0.40000000000000002, 0.40000000000000002, 0.20000000000000001;
-}
-
-
-double pyramid_1_basis_value_3d_single_0(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_1_basis_value_3d_single_0(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 result = -(helper_0*(helper_0 + x + y) + x*y)/helper_0;
 return result;
 }
 
-double pyramid_1_basis_value_3d_single_1(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_1_basis_value_3d_single_1(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 result = x*(helper_0 + y)/helper_0;
 return result;
 }
 
-double pyramid_1_basis_value_3d_single_2(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_1_basis_value_3d_single_2(double x, double y, double z) {
 double result;
 result = -x*y/(z - 1);
 return result;
 }
 
-double pyramid_1_basis_value_3d_single_3(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_1_basis_value_3d_single_3(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 result = y*(helper_0 + x)/helper_0;
 return result;
 }
 
-double pyramid_1_basis_value_3d_single_4(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_1_basis_value_3d_single_4(double x, double y, double z) {
 double result;
 result = z;
 return result;
@@ -90,33 +86,35 @@ return result;
 
 
 
-void pyramid_1_basis_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0){
-result_0.resize(uv.rows(), 1);
+POLYFEM_BOTH void pyramid_1_basis_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
+assert(val.size() == x.size());
+assert(y.size() == x.size());
+assert(z.size() == x.size());
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_1_basis_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_1_basis_value_3d_single_0(x[i], y[i], z[i]);
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_1_basis_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_1_basis_value_3d_single_1(x[i], y[i], z[i]);
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_1_basis_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_1_basis_value_3d_single_2(x[i], y[i], z[i]);
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_1_basis_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_1_basis_value_3d_single_3(x[i], y[i], z[i]);
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_1_basis_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_1_basis_value_3d_single_4(x[i], y[i], z[i]);
 		break;
 	default: assert(false);
 }
 }
-void pyramid_1_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_1_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 val[0] = -(helper_0 + y)/helper_0;}
 {double helper_0 = z - 1;
@@ -126,27 +124,27 @@ double helper_1 = pow(z, 2);
 val[2] = (helper_0 - helper_1 + x*y - 1)/(-helper_0 + helper_1 + 1);}
 }
 
-void pyramid_1_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_1_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 val[0] = (helper_0 + y)/helper_0;}
 {val[1] = x/(z - 1);}
 {val[2] = -x*y/pow(z - 1, 2);}
 }
 
-void pyramid_1_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_1_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
 {val[0] = -y/(z - 1);}
 {val[1] = -x/(z - 1);}
 {val[2] = x*y/pow(z - 1, 2);}
 }
 
-void pyramid_1_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_1_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
 {val[0] = y/(z - 1);}
 {double helper_0 = z - 1;
 val[1] = (helper_0 + x)/helper_0;}
 {val[2] = -x*y/pow(z - 1, 2);}
 }
 
-void pyramid_1_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_1_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
 {val[0] = 0;}
 {val[1] = 0;}
 {val[2] = 1;}
@@ -154,48 +152,52 @@ void pyramid_1_basis_grad_value_3d_single_4(double x, double y, double z, double
 
 
 
-void pyramid_1_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
-val.resize(uv.rows(), 3);
+POLYFEM_BOTH void pyramid_1_basis_grad_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
+assert(grad_x.size() == x.size());
+assert(y.size() == x.size());
+assert(grad_y.size() == x.size());
+assert(z.size() == x.size());
+assert(grad_z.size() == x.size());
 double gradient[3];
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_1_basis_grad_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_1_basis_grad_value_3d_single_0(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_1_basis_grad_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_1_basis_grad_value_3d_single_1(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_1_basis_grad_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_1_basis_grad_value_3d_single_2(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_1_basis_grad_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_1_basis_grad_value_3d_single_3(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_1_basis_grad_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_1_basis_grad_value_3d_single_4(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	default: assert(false);
@@ -203,17 +205,7 @@ switch(local_index){
 }
 
 
-void pyramid_1_nodes_3d(Eigen::MatrixXd &res) {
- res.resize(5, 3); res << 
-0, 0, 0,
-1, 0, 0,
-1, 1, 0,
-0, 1, 0,
-0, 0, 1;
-}
-
-
-double pyramid_2_basis_value_3d_single_0(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_0(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -225,7 +217,7 @@ result = (helper_0*helper_4*(6*x + 6*y + 1) + helper_1*(helper_0 + 2*helper_1 + 
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_1(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_1(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -234,7 +226,7 @@ result = x*(helper_0*y*(helper_2 + 6*x) + helper_1*(helper_2 + 2*x) + 4*x*pow(y,
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_2(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_2(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -243,7 +235,7 @@ result = helper_2*(helper_0*(2*x + 2*y + 1) + 2*helper_1 + 4*helper_2)/helper_1;
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_3(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_3(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -252,13 +244,13 @@ result = y*(helper_0*x*(helper_2 + 6*y) + helper_1*(helper_2 + 2*y) + 4*pow(x, 2
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_4(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_4(double x, double y, double z) {
 double result;
 result = z*(2*z - 1);
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_5(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_5(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -266,7 +258,7 @@ result = -4*x*(helper_0*y*(3*x + 2*y) + helper_1*(helper_0 + x + 3*y) + 2*x*pow(
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_6(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_6(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -275,7 +267,7 @@ result = -4*x*y*(helper_0*(helper_2 + y) + helper_1 + helper_2*y)/helper_1;
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_7(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_7(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -284,7 +276,7 @@ result = -4*x*y*(helper_0*(helper_2 + x) + helper_1 + helper_2*x)/helper_1;
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_8(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_8(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -292,33 +284,33 @@ result = -4*y*(helper_0*x*(2*x + 3*y) + helper_1*(helper_0 + 3*x + y) + 2*pow(x,
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_9(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_9(double x, double y, double z) {
 double result;
 result = -4*z*(x*y + x*z - x + y*z - y + pow(z, 2) - 2*z + 1)/(z - 1);
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_10(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_10(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 result = 4*x*z*(helper_0 + y)/helper_0;
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_11(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_11(double x, double y, double z) {
 double result;
 result = -4*x*y*z/(z - 1);
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_12(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_12(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 result = 4*y*z*(helper_0 + x)/helper_0;
 return result;
 }
 
-double pyramid_2_basis_value_3d_single_13(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_2_basis_value_3d_single_13(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -329,69 +321,71 @@ return result;
 
 
 
-void pyramid_2_basis_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0){
-result_0.resize(uv.rows(), 1);
+POLYFEM_BOTH void pyramid_2_basis_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
+assert(val.size() == x.size());
+assert(y.size() == x.size());
+assert(z.size() == x.size());
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_0(x[i], y[i], z[i]);
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_1(x[i], y[i], z[i]);
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_2(x[i], y[i], z[i]);
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_3(x[i], y[i], z[i]);
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_4(x[i], y[i], z[i]);
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_5(x[i], y[i], z[i]);
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_6(x[i], y[i], z[i]);
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_7(x[i], y[i], z[i]);
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_8(x[i], y[i], z[i]);
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_9(x[i], y[i], z[i]);
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_10(x[i], y[i], z[i]);
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_11(x[i], y[i], z[i]);
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_12(x[i], y[i], z[i]);
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_2_basis_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_2_basis_value_3d_single_13(x[i], y[i], z[i]);
 		break;
 	default: assert(false);
 }
 }
-void pyramid_2_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 6*x;
@@ -415,7 +409,7 @@ double helper_10 = 6*helper_9*y;
 val[2] = -(-helper_0*helper_2 - helper_0*helper_3 + 15*helper_0 - 21*helper_1 + helper_10*z - helper_10 + helper_2 + helper_3 + helper_4*z - helper_4 - helper_5*x - helper_5*y + 8*helper_6*helper_9 + helper_7*z - helper_7 + helper_8*x + helper_8*y - 4*pow(z, 4) + 13*z - 3)/(helper_0 - 3*helper_1 + 3*z - 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -433,7 +427,7 @@ double helper_2 = x*y;
 val[2] = -helper_2*(helper_0*z - helper_0 + helper_1*z - helper_1 + 8*helper_2 - z + 1)/(pow(z, 3) - 3*pow(z, 2) + 3*z - 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 2*y;
@@ -450,7 +444,7 @@ double helper_2 = x*y;
 val[2] = -helper_2*(helper_0*z - helper_0 + helper_1*z - helper_1 + 8*helper_2 + z - 1)/(pow(z, 3) - 3*pow(z, 2) + 3*z - 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 2*x;
@@ -468,13 +462,13 @@ double helper_2 = x*y;
 val[2] = -helper_2*(helper_0*z - helper_0 + helper_1*z - helper_1 + 8*helper_2 - z + 1)/(pow(z, 3) - 3*pow(z, 2) + 3*z - 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
 {val[0] = 0;}
 {val[1] = 0;}
 {val[2] = 4*z - 1;}
 }
 
-void pyramid_2_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 2*pow(y, 2);
@@ -491,7 +485,7 @@ double helper_2 = 4*x;
 val[2] = helper_2*(helper_0*y*(3*x + 2*y) - helper_1 + helper_2*pow(y, 2))/helper_1;}
 }
 
-void pyramid_2_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 2*x;
@@ -505,7 +499,7 @@ double helper_1 = 4*x*y;
 val[2] = helper_1*(helper_0*(2*x + y) + helper_1)/pow(helper_0, 3);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 2*y;
@@ -519,7 +513,7 @@ double helper_1 = 4*x*y;
 val[2] = helper_1*(helper_0*(x + 2*y) + helper_1)/pow(helper_0, 3);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = 4*y;
@@ -536,7 +530,7 @@ double helper_2 = 4*y;
 val[2] = helper_2*(helper_0*x*(2*x + 3*y) - helper_1 + helper_2*pow(x, 2))/helper_1;}
 }
 
-void pyramid_2_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 val[0] = -4*z*(helper_0 + y)/helper_0;}
 {double helper_0 = z - 1;
@@ -546,7 +540,7 @@ double helper_1 = pow(z, 2);
 val[2] = -4*(-helper_0*x - helper_0*y + helper_1*x + helper_1*y - 5*helper_1 - x*y + x + y + 2*pow(z, 3) + 4*z - 1)/(-helper_0 + helper_1 + 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 val[0] = 4*z*(helper_0 + y)/helper_0;}
 {val[1] = 4*x*z/(z - 1);}
@@ -555,13 +549,13 @@ double helper_1 = pow(z, 2);
 val[2] = -4*x*(helper_0 - helper_1 + y - 1)/(-helper_0 + helper_1 + 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
 {val[0] = -4*y*z/(z - 1);}
 {val[1] = -4*x*z/(z - 1);}
 {val[2] = 4*x*y/pow(z - 1, 2);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
 {val[0] = 4*y*z/(z - 1);}
 {double helper_0 = z - 1;
 val[1] = 4*z*(helper_0 + x)/helper_0;}
@@ -570,7 +564,7 @@ double helper_1 = pow(z, 2);
 val[2] = -4*y*(helper_0 - helper_1 + x - 1)/(-helper_0 + helper_1 + 1);}
 }
 
-void pyramid_2_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_2_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 val[0] = 16*y*(helper_0*(x + y) + helper_1 + x*y + x*(helper_0 + y))/helper_1;}
@@ -583,120 +577,124 @@ val[2] = -16*helper_0*(2*helper_0 + x*z - x + y*z - y)/(pow(z, 3) - 3*pow(z, 2) 
 
 
 
-void pyramid_2_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
-val.resize(uv.rows(), 3);
+POLYFEM_BOTH void pyramid_2_basis_grad_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
+assert(grad_x.size() == x.size());
+assert(y.size() == x.size());
+assert(grad_y.size() == x.size());
+assert(z.size() == x.size());
+assert(grad_z.size() == x.size());
 double gradient[3];
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_0(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_1(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_2(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_3(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_4(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_5(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_6(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_7(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_8(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_9(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_10(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_11(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_12(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_2_basis_grad_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_2_basis_grad_value_3d_single_13(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	default: assert(false);
@@ -704,26 +702,7 @@ switch(local_index){
 }
 
 
-void pyramid_2_nodes_3d(Eigen::MatrixXd &res) {
- res.resize(14, 3); res << 
-0, 0, 0,
-1, 0, 0,
-1, 1, 0,
-0, 1, 0,
-0, 0, 1,
-1.0/2.0, 0, 0,
-1, 1.0/2.0, 0,
-1.0/2.0, 1, 0,
-0, 1.0/2.0, 0,
-0, 0, 1.0/2.0,
-1.0/2.0, 0, 1.0/2.0,
-1.0/2.0, 1.0/2.0, 1.0/2.0,
-0, 1.0/2.0, 1.0/2.0,
-1.0/2.0, 1.0/2.0, 0;
-}
-
-
-double pyramid_3_basis_value_3d_single_0(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_0(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -738,7 +717,7 @@ result = -(helper_0*helper_4*helper_5*(40.499999999999936*x + 40.499999999999886
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_1(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_1(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -754,7 +733,7 @@ result = (-helper_1*(-1.2795320358804834e-14*helper_0*helper_4 + 9.4979579756681
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_2(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_2(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -771,7 +750,7 @@ result = -(-helper_1*(-1.6930901125533511e-14*helper_0*helper_4 + 4.056477376224
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_3(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_3(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -786,7 +765,7 @@ result = (-helper_1*(-3.4722225095151544e-14*helper_0*helper_4 + 3.0625000000000
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_4(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_4(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -802,7 +781,7 @@ result = (-helper_1*(-4.5000000000000044*pow(helper_0, 3) + helper_0*helper_8 + 
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_5(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_5(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -819,7 +798,7 @@ result = (helper_1*(-3.6914915568787465e-15*helper_0*helper_4 - 6.75681732786867
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_6(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_6(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -836,7 +815,7 @@ result = -(-helper_1*(-13.49999999999995*helper_0*helper_4 + 4.9085735476239521e
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_7(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_7(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -852,7 +831,7 @@ result = -(-helper_1*(-5.0043302834978628e-14*helper_0*helper_4 + 3.013977956101
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_8(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_8(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -869,7 +848,7 @@ result = (-helper_1*(-5.814793091474222e-14*helper_0*helper_4 + 1.10567804911809
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_9(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_9(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -886,7 +865,7 @@ result = (-helper_1*(-6.5752958633424404e-14*helper_0*helper_4 + 2.7555735471196
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_10(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_10(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -901,7 +880,7 @@ result = -(-helper_1*(-8.3683060481120581e-14*helper_0*helper_4 - 3.937499999999
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_11(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_11(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -917,7 +896,7 @@ result = -(-helper_1*(-13.500000000000105*helper_0*helper_4 + 4.5000000000003775
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_12(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_12(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -934,7 +913,7 @@ result = (helper_1*(-9.5010804779249371e-14*helper_0*helper_4 - 1.35374350618277
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_13(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_13(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -950,7 +929,7 @@ result = (helper_1*(13.499999999999979*pow(helper_0, 3) + helper_0*helper_8 + he
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_14(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_14(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -966,7 +945,7 @@ result = -(helper_1*(13.500000000000011*pow(helper_0, 3) - helper_0*helper_8 + h
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_15(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_15(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -981,7 +960,7 @@ result = (-helper_1*(4.09672296086681e-14*pow(helper_0, 3) - helper_0*helper_7 +
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_16(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_16(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -997,7 +976,7 @@ result = -(-helper_1*(1.4488410471358173e-14*pow(helper_0, 3) + helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_17(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_17(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1012,7 +991,7 @@ result = (-helper_1*(2.1205259770340335e-14*pow(helper_0, 3) + helper_0*helper_7
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_18(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_18(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1027,7 +1006,7 @@ result = -(-helper_1*(1.3565537582138529e-14*pow(helper_0, 3) + helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_19(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_19(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1042,7 +1021,7 @@ result = (-helper_1*(2.2981616609740545e-14*pow(helper_0, 3) + helper_0*helper_7
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_20(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_20(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1057,7 +1036,7 @@ result = -(-helper_1*(1.598721155460215e-14*pow(helper_0, 3) + helper_0*helper_7
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_21(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_21(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1073,7 +1052,7 @@ result = -(helper_1*(-6.8944849829221956e-14*pow(helper_0, 3) + helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_22(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_22(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1089,7 +1068,7 @@ result = -(-helper_1*(4.7961634663806485e-14*pow(helper_0, 3) + helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_23(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_23(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1104,7 +1083,7 @@ result = -(-helper_1*(2.9976021664878968e-14*pow(helper_0, 3) + helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_24(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_24(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1118,7 +1097,7 @@ result = -(helper_1*(-4.7961634663806422e-14*pow(helper_0, 3) - helper_0*helper_
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_25(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_25(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -1135,7 +1114,7 @@ result = -(-helper_1*(-1.9109713811360436e-13*helper_0*helper_4 + 4.147931997877
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_26(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_26(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -1152,7 +1131,7 @@ result = (-helper_1*(-2.5404678360985013e-13*helper_0*helper_4 + 3.6111738599408
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_27(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_27(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -1169,7 +1148,7 @@ result = (-helper_1*(-1.489641743290796e-13*helper_0*helper_4 + 3.81260994997133
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_28(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_28(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -1186,7 +1165,7 @@ result = -(-helper_1*(-2.0458634786279948e-13*helper_0*helper_4 + 3.439748486044
 return result;
 }
 
-double pyramid_3_basis_value_3d_single_29(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_3_basis_value_3d_single_29(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
@@ -1203,133 +1182,135 @@ return result;
 
 
 
-void pyramid_3_basis_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0){
-result_0.resize(uv.rows(), 1);
+POLYFEM_BOTH void pyramid_3_basis_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
+assert(val.size() == x.size());
+assert(y.size() == x.size());
+assert(z.size() == x.size());
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_0(x[i], y[i], z[i]);
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_1(x[i], y[i], z[i]);
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_2(x[i], y[i], z[i]);
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_3(x[i], y[i], z[i]);
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_4(x[i], y[i], z[i]);
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_5(x[i], y[i], z[i]);
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_6(x[i], y[i], z[i]);
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_7(x[i], y[i], z[i]);
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_8(x[i], y[i], z[i]);
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_9(x[i], y[i], z[i]);
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_10(x[i], y[i], z[i]);
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_11(x[i], y[i], z[i]);
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_12(x[i], y[i], z[i]);
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_13(x[i], y[i], z[i]);
 		break;
 	case 14:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_14(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_14(x[i], y[i], z[i]);
 		break;
 	case 15:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_15(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_15(x[i], y[i], z[i]);
 		break;
 	case 16:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_16(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_16(x[i], y[i], z[i]);
 		break;
 	case 17:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_17(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_17(x[i], y[i], z[i]);
 		break;
 	case 18:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_18(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_18(x[i], y[i], z[i]);
 		break;
 	case 19:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_19(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_19(x[i], y[i], z[i]);
 		break;
 	case 20:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_20(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_20(x[i], y[i], z[i]);
 		break;
 	case 21:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_21(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_21(x[i], y[i], z[i]);
 		break;
 	case 22:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_22(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_22(x[i], y[i], z[i]);
 		break;
 	case 23:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_23(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_23(x[i], y[i], z[i]);
 		break;
 	case 24:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_24(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_24(x[i], y[i], z[i]);
 		break;
 	case 25:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_25(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_25(x[i], y[i], z[i]);
 		break;
 	case 26:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_26(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_26(x[i], y[i], z[i]);
 		break;
 	case 27:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_27(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_27(x[i], y[i], z[i]);
 		break;
 	case 28:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_28(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_28(x[i], y[i], z[i]);
 		break;
 	case 29:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_3_basis_value_3d_single_29(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_3_basis_value_3d_single_29(x[i], y[i], z[i]);
 		break;
 	default: assert(false);
 }
 }
-void pyramid_3_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1375,7 +1356,7 @@ double helper_23 = 80.999999999999858*helper_16;
 val[2] = (helper_0*helper_11 + 16.56249999999973*helper_0*helper_14 + helper_0*helper_18 + 93.062499999999659*helper_0*helper_21 - helper_0*helper_22 - 81.0*helper_0*helper_6 + 16.562499999999886*helper_0*helper_8 + 215.99999999999946*helper_0*x - 118.4999999999976*helper_0 + 53.999999999999886*helper_1*helper_4 + 53.999999999999972*helper_1*helper_6 - 233.99999999999716*helper_1*y + 183.99999999999639*helper_1 - 49.499999999999801*helper_10*z + helper_11 + 219.24999999999829*helper_12*y - 233.99999999999932*helper_12 - 54.812499999999602*helper_13*y + 125.9999999999996*helper_13 - 33.124999999999574*helper_14*z + 16.562499999999787*helper_14 - 161.9999999999996*helper_15*helper_6 + 80.999999999999773*helper_15*helper_9 + 53.999999999999901*helper_15 + 60.749999999999943*helper_16*helper_9 - 49.499999999999972*helper_17*z + helper_18 - 327.87499999999767*helper_19*x + 215.99999999999778*helper_19 - helper_2*helper_5 - 13.5*helper_2*helper_6 + 125.99999999999832*helper_2*y - 158.49999999999699*helper_2 + helper_20*helper_23 + 54.000000000000043*helper_20 + 68.937499999999929*helper_21 - helper_22*helper_9 - helper_23*helper_6 + 217.24999999999866*helper_3*y - 98.999999999999773*helper_3 - helper_5 - 13.500000000000011*helper_6 - 26.999999999999908*helper_7*x - 26.999999999999602*helper_7*y + 71.99999999999865*helper_7 - 33.124999999999886*helper_8*z + 16.562499999999972*helper_8 - 53.812499999999737*x*y + 17.999999999999964*x - 98.999999999999204*y*z + 17.999999999999908*y - 13.49999999999975*pow(z, 6) + 39.999999999999147*z - 5.4999999999998703)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1421,7 +1402,7 @@ double helper_23 = 80.999999999999687*helper_16*helper_7;
 val[2] = -(helper_0*helper_12 + helper_0*helper_18 + 19.375000000000576*helper_0*helper_3 - 7.6771922152828969e-14*helper_0*helper_7 - 9.6250785119877421e-13*helper_0*y + 7.4148326367761767e-13*helper_0 + helper_1*helper_19 - 5.1514348342607491e-14*helper_1*helper_6 + 1.1524670107121361e-12*helper_1*y - 1.3854611902175322e-12*helper_1 - helper_10*helper_13 - helper_10*x + 60.749999999999801*helper_11*helper_16 - 8.9999999999998401*helper_11*helper_4 + helper_12 - 3.6770586575585023e-13*helper_13 - 12.250000000000407*helper_14*y + 4.471978343190179e-13*helper_14 + helper_15*helper_21 - 4.973799150320719e-14*helper_15 - 49.499999999999915*helper_17*z + helper_18 + helper_19*z + 3.0625000000001013*helper_2*helper_3 + 1.2823075934420432e-14*helper_2*helper_6 - helper_2*helper_8 - 2.6432675492848935e-13*helper_2*x - 6.7121308511275058e-13*helper_2*y + 1.3590274738905982e-12*helper_2 - 80.99999999999946*helper_20*z + 52.56249999999968*helper_20 - helper_21*helper_6 + 28.437499999999766*helper_22*helper_7 - 16.562500000000057*helper_22*y + 7.8159700933610831e-14*helper_22 + helper_23*z - helper_23 + 4.0625000000000657*helper_3 + 15.124999999999837*helper_4*helper_7 - 14.25000000000033*helper_4*y + 1.4210854715202004e-13*helper_4 + 33.125000000000099*helper_5*helper_6 + 3.8627434584270209e-13*helper_5 - 16.56250000000005*helper_6*y + 1.2434497875801753e-14*helper_6 - helper_8 + 6.0947774604969128e-14*helper_9*x + 1.5323853297388597e-13*helper_9*y - 6.8051120294398586e-13*helper_9 - 2.042810365310288e-14*x - 5.8258953217205052e-14*y + 1.3772316620475016e-13*pow(z, 6) - 1.86475834773602e-13*z + 1.4214324162153806e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1468,7 +1449,7 @@ double helper_24 = 40.499999999999602*helper_15*helper_5;
 val[2] = (helper_0*helper_12 + 7.5624999999999041*helper_0*helper_13 + helper_0*helper_17 + 32.312499999999645*helper_0*helper_22 + 1.1790568521519039e-13*helper_0*helper_4 - 1.0158540675320223e-13*helper_0*helper_5 + helper_0*helper_9 - 4.1736752942611038e-13*helper_0*x + 9.2246349447932297e-13*helper_0 - helper_1*helper_14 + helper_1*helper_21 + 4.9849707695059526e-13*helper_1*x - 1.55218893294061e-12*helper_1 + 60.749999999999645*helper_10*helper_15 - 8.9999999999998188*helper_11*z + helper_12 - 15.12499999999978*helper_13*z + 7.5624999999998899*helper_13 - helper_14*z - 8.9999999999998863*helper_16*z + helper_17 - 44.374999999999048*helper_18*x - 7.0904393467684895e-13*helper_18 + 30.249999999999346*helper_19*x + 9.2131857698517505e-13*helper_19 + 1.9650947535865132e-14*helper_2*helper_4 - helper_2*helper_6 - 2.8981331223753888e-13*helper_2*x + 1.4298527639677748e-12*helper_2 - 7.562499999999833*helper_20*x - 5.6679660964675168e-13*helper_20 + helper_21*z - 40.499999999999382*helper_22*z + 8.1874999999997371*helper_22 + helper_23*z - helper_23 + helper_24*z - helper_24 + 28.24999999999941*helper_3*x + 2.4838464618426037e-13*helper_3 + 1.9650947535865129e-14*helper_4 - helper_6 + 6.6075617199955358e-14*helper_7*x + 1.3458678616018289e-13*helper_7*y - 6.8783867490651109e-13*helper_7 - 15.124999999999979*helper_8*z + helper_9 - 6.5624999999998712*x*y + 1.6811899095081459e-13*x*z - 2.5510843437714458e-14*x - 2.8449465006019611e-14*y + 1.355582313067305e-13*pow(z, 6) - 2.8192725931574832e-13*z + 3.4080377409040567e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1511,7 +1492,7 @@ double helper_20 = 40.499999999999446*helper_14;
 val[2] = -(helper_0*helper_11 + helper_0*helper_16 + 19.375000000000302*helper_0*helper_3 - 2.0605739337042938e-13*helper_0*helper_6 - 16.562499999999844*helper_0*helper_8 - 3.5426522826397996e-13*helper_0*x - 3.3750779948604814e-13*helper_0*y + 4.9889953279701864e-13*helper_0 - 1.8207657603851775e-14*helper_1*helper_5 + 1.3855583347322004e-13*helper_1*helper_6 + 4.809486142676169e-13*helper_1*y - 9.8189512076628111e-13*helper_1 - 49.499999999999744*helper_10*z + helper_11 - 12.250000000000218*helper_12*y + 4.2740117001116169e-13*helper_12 + helper_13*helper_18 - 1.8207657603851772e-14*helper_13 + 60.749999999999517*helper_14*helper_9 - 8.9999999999998188*helper_15*z + helper_16 + helper_17*helper_20 - 80.999999999999062*helper_17*helper_5 + 33.124999999999716*helper_17*x + 1.3500311979441883e-13*helper_17 - helper_18*helper_5 + 28.437499999999616*helper_19*helper_6 - 7.5624999999999822*helper_19*y + 2.7311486405777582e-14*helper_19 + 3.0625000000000551*helper_2*helper_3 + 4.551914400962943e-15*helper_2*helper_5 - 3.4722225095151184e-14*helper_2*helper_6 - 2.5026855587917179e-13*helper_2*x - 3.1155633628542845e-13*helper_2*y + 9.9556821120393414e-13*helper_2 - helper_20*helper_6 - 14.250000000000167*helper_3*z + 4.0625000000000266*helper_3 + 15.124999999999968*helper_4*helper_5 + 9.7699626167013548e-14*helper_4 + 52.562499999999439*helper_5*helper_6 - 7.5624999999999858*helper_5*y + 4.5519144009629399e-15*helper_5 - 3.5527136788004504e-14*helper_6 + 5.7367305350551685e-14*helper_7*x + 7.6577633123518216e-14*helper_7*y - 5.1053605787387177e-13*helper_7 - 16.562499999999858*helper_8 + 1.4056464325839919e-13*x*z - 2.0799334476961759e-14*x - 5.3290705182007514e-15*y + 1.0524914273446335e-13*pow(z, 6) - 1.1320111514834019e-13*z + 5.9154070530807229e-15)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -1543,7 +1524,7 @@ double helper_12 = helper_5*helper_8;
 val[2] = -(-helper_0*helper_11 - 1.9317880628477796e-14*helper_0*helper_4 + 4.862776847858245e-14*helper_0*x + 43.499999999999979*helper_0 - 8.0*helper_1*helper_2 + 6.4392935428259316e-15*helper_1*helper_4 + helper_1*helper_6 - 3.8413716652030069e-14*helper_1*x - 1.5365486660812225e-13*helper_1*y - 68.500000000000028*helper_1 + 24.000000000000028*helper_10*x + 1.7319479184152503e-13*helper_10 + helper_11*z + helper_12*z + helper_12 - 24.000000000000039*helper_2*z + 8.0000000000000231*helper_2 + 8.000000000000032*helper_3*helper_5 - 2.642330798607882e-14*helper_3 + 1.9317880628477793e-14*helper_4*z - 6.4392935428259324e-15*helper_4 - 8.0000000000000302*helper_5*x - helper_6 + 1.1102230246251592e-14*helper_7*x + 4.7961634663806548e-14*helper_7*y + 49.500000000000043*helper_7 + helper_9*z - helper_9 + 5.1070259132757367e-15*x - 7.7271522513911236e-14*y*z + 9.7699626167014028e-15*y - 13.500000000000012*pow(z, 5) - 11.999999999999968*z + 1.0)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1589,7 +1570,7 @@ double helper_23 = helper_0*helper_5;
 val[2] = -(helper_0*helper_11 + 14.062499999999488*helper_0*helper_14 + helper_0*helper_17 - 161.99999999999966*helper_0*helper_4 - 5.2481907708567845e-12*helper_0*y + 5.0678697349759506e-12*helper_0 - helper_1*helper_19 + 107.99999999999983*helper_1*helper_4 - 251.99999999999818*helper_1*x - 8.1701173604286869e-12*helper_1 - 80.999999999999432*helper_10*z + helper_11 - 381.37499999999488*helper_12*y + 242.99999999999841*helper_12 - 63.562499999999091*helper_13*y + 130.49999999999886*helper_13 - 28.124999999998977*helper_14*z + 14.062499999999545*helper_14 + helper_15*helper_21 + 107.99999999999966*helper_15 - 148.49999999999983*helper_16*helper_3 + 182.24999999999969*helper_16*helper_9 + helper_17 + 254.24999999999636*helper_18*x + 6.5995542364305194e-12*helper_18 - helper_19*z - 26.999999999999943*helper_2*helper_4 + helper_2*helper_6 - 3.9754588510021263e-12*helper_2*y + 7.3015170298784391e-12*helper_2 - 404.99999999999858*helper_20*z + 192.93749999999955*helper_20 - helper_21*helper_4 + helper_22*z - helper_22 + 212.06249999999903*helper_23*helper_4 + 9.5625000000000071*helper_23*x + 2.2148949341272479e-14*helper_23 + 254.24999999999696*helper_3*x + 1.9484136526415244e-12*helper_3 - 26.999999999999929*helper_4 + helper_6 - 26.999999999999744*helper_7*x + 9.3022811675779819e-13*helper_7*y - 3.4358627054586911e-12*helper_7 - 19.124999999999901*helper_8*z + 9.5624999999999218*helper_8 - 63.562499999999361*x*y - 116.99999999999937*x*z + 22.499999999999908*x - 2.5454638397093014e-13*y + 6.6613381477509079e-13*pow(z, 6) - 1.6489448695366983e-12*z + 2.1940435579459307e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1634,7 +1615,7 @@ double helper_22 = 242.9999999999992*helper_15*helper_6;
 val[2] = (helper_0*helper_16 + 152.43749999999915*helper_0*helper_19 - 7.494005416218595e-15*helper_0*helper_6 - 4.2765790908560804e-12*helper_0*y + 3.7369482508431232e-12*helper_0 + helper_1*helper_18 + 53.999999999999829*helper_1*helper_5 - 17.999999999998444*helper_1*x - 6.3515442905170672e-12*helper_1 + 182.24999999999952*helper_10*helper_15 - 40.49999999999946*helper_10*helper_3 + helper_11*helper_12 + helper_11*x - helper_12*helper_9 - 64.124999999996504*helper_12*y + 26.999999999998721*helper_12 - 10.687499999999389*helper_13*y + 4.4999999999990852*helper_13 + helper_14*helper_20 - 323.99999999999852*helper_14*helper_6 + 53.999999999999801*helper_14 - 148.49999999999972*helper_15*helper_4 + helper_16 + 42.749999999997556*helper_17*x + 5.258293800380871e-12*helper_17 + helper_18*z + 171.56249999999929*helper_19 - 13.49999999999995*helper_2*helper_5 - helper_2*helper_7 - 3.1200042549528308e-12*helper_2*y + 5.8807021752204935e-12*helper_2 - helper_20*helper_5 - 14.062500000000206*helper_21*y - 80.999999999999773*helper_21 + helper_22*z - helper_22 + 19.124999999999865*helper_3*helper_6 - 17.999999999999503*helper_3 + 28.125000000000639*helper_4*helper_5 + 42.74999999999789*helper_4*x + 1.6474321906656461e-12*helper_4 - 14.06250000000032*helper_5*y - 13.499999999999943*helper_5 - helper_7 + 2.1055032717320901e-13*helper_8*x + 7.2217232194304456e-13*helper_8*y - 2.835232049136481e-12*helper_8 - helper_9*x - 10.687499999999568*x*y + 4.4999999999999289*x - 2.3131496718065e-13*y + 5.5905280404999576e-13*pow(z, 6) - 1.1202289096345845e-12*z + 1.3030201917452128e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1682,7 +1663,7 @@ double helper_25 = 202.49999999999915*helper_17*helper_8;
 val[2] = (-helper_0*helper_11 + helper_0*helper_14 + helper_0*helper_19 - 23.624999999998149*helper_0*helper_3 - 3.0025981700987111e-13*helper_0*helper_8 - 1.1818393486073778e-12*helper_0*x - 2.5239810241828139e-12*helper_0*y + 2.4203625215157701e-12*helper_0 - helper_1*helper_16 + helper_1*helper_21 + 1.4234377565536187e-12*helper_1*x - 4.3922782078098279e-12*helper_1 + 1.9066345724461009e-13*helper_10*x + 4.3323677978434909e-13*helper_10*y - 2.0985990722976908e-12*helper_10 - helper_11 + 182.24999999999937*helper_12*helper_17 - 26.999999999999503*helper_13*z + helper_14 - helper_15*helper_24 - helper_15*helper_6 - helper_16*z - 80.999999999999773*helper_18*z + helper_19 - 3.9374999999996732*helper_2*helper_3 + helper_2*helper_7 - helper_2*helper_9 - 8.3251808224993007e-13*helper_2*x - 1.8647861033116317e-12*helper_2*y + 4.2362537089335251e-12*helper_2 + 15.749999999998693*helper_20*x + 3.1267766154030394e-12*helper_20 + helper_21*z - 202.49999999999858*helper_22*z + 110.81249999999922*helper_22 + helper_23*z - helper_23 + 91.687499999999375*helper_24*helper_8 + 2.9530544676248256e-13*helper_24 + helper_25*z - helper_25 - 3.9374999999997797*helper_3 + 10.124999999999602*helper_4*helper_8 + 4.7012047033056826e-13*helper_4 + 19.125000000000341*helper_5*helper_6 + 15.749999999998913*helper_5*x + 9.605927164812938e-13*helper_5 + helper_7 - helper_9 - 6.9864253271489348e-14*x - 1.31838984174236e-13*y + 4.2166270475263208e-13*pow(z, 6) - 6.4588612236348859e-13*z + 5.8484467269081721e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1728,7 +1709,7 @@ double helper_23 = 161.99999999999898*helper_18*helper_7;
 val[2] = -(5.0625000000000959*helper_0*helper_10 + helper_0*helper_13 + helper_0*helper_16 + helper_0*helper_19 + 90.562499999999147*helper_0*helper_21 - 57.374999999997819*helper_0*helper_3 + 2.9849039906437457e-13*helper_0*helper_5 - 3.4888758548845428e-13*helper_0*helper_7 - 1.1218664885958947e-12*helper_0*x - 2.1386781234866497e-12*helper_0*y + 2.5033100592430735e-12*helper_0 - helper_1*helper_17 + helper_1*helper_20 + 2.7357560661300528e-12*helper_1*y - 4.4233366969237102e-12*helper_1 - 10.125000000000192*helper_10*z + 5.0625000000001101*helper_10 + 182.24999999999915*helper_11*helper_18 - 26.999999999999446*helper_12*z + helper_13 + 38.249999999998494*helper_14*y + 1.3430020984195259e-12*helper_14 - 19.124999999999559*helper_15*z + helper_16 - helper_17*z - 40.499999999999702*helper_18*helper_4 + helper_19 - 9.5624999999996199*helper_2*helper_3 + helper_2*helper_6 - helper_2*helper_8 - 7.8206885412157196e-13*helper_2*x - 1.6664170043867292e-12*helper_2*y + 4.2021074120323912e-12*helper_2 + helper_20*z - 161.99999999999832*helper_21*z + 71.437499999999176*helper_21 + helper_22*z - helper_22 + helper_23*z - helper_23 - 9.5624999999997229*helper_3 + 38.249999999998693*helper_4*x + 7.7080009042162208e-13*helper_4 + helper_6 - helper_8 + 1.7852733180667624e-13*helper_9*x + 3.9299119514168686e-13*helper_9*y - 2.0628498909047584e-12*helper_9 + 4.5036543938614327e-13*x*z - 6.7959526894867016e-14*x - 9.4452223819983097e-14*y + 4.1217029789208669e-13*pow(z, 6) - 7.0381200867330412e-13*z + 7.2410827334223011e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1776,7 +1757,7 @@ double helper_25 = 121.49999999999864*helper_17*helper_6;
 val[2] = -(helper_0*helper_12 + helper_0*helper_19 + 90.562499999998892*helper_0*helper_22 - 3.9451775180054635e-13*helper_0*helper_6 + 9.5625000000001421*helper_0*helper_9 - 1.7164603072216996e-12*helper_0*y + 2.2790450082687858e-12*helper_0 - helper_1*helper_16 + helper_1*helper_21 + 2.2675750166456215e-12*helper_1*y - 4.0131092893247051e-12*helper_1 + 182.24999999999881*helper_10*helper_17 - 40.499999999999304*helper_11*z + helper_12 - 57.374999999997762*helper_13*y - 1.1211101491603773e-12*helper_13 + 38.249999999998465*helper_14*y + 1.3351889038837211e-12*helper_14 + helper_15*helper_24 + helper_15*helper_4 - helper_16*z - 26.999999999999574*helper_18*z + helper_19 + helper_2*helper_5 - helper_2*helper_7 - 7.7463382930353254e-13*helper_2*x + 3.8136681312916532e-12*helper_2 - 9.5624999999996128*helper_20*x - 1.4093448630347708e-12*helper_20 + helper_21*z - 161.99999999999778*helper_22*z + 71.437499999998892*helper_22 + helper_23*z - helper_23 + 2.5779378631795903e-13*helper_24 + helper_25*z - helper_25 - 10.124999999999613*helper_3*helper_4 + 38.249999999998629*helper_3*x + 5.8267279889888879e-13*helper_3 + helper_5 - helper_7 + 1.7633464133304125e-13*helper_8*x + 3.369804435493462e-13*helper_8*y - 1.8762214004652627e-12*helper_8 - 19.125000000000256*helper_9*z + 9.5625000000001137*helper_9 - 9.5624999999997105*x*y + 4.5351569721851266e-13*x*z - 6.9295263971368867e-14*x - 6.1423088837385321e-14*y + 3.7603253844053613e-13*pow(z, 6) - 6.4852290204696455e-13*z + 6.9107913835963801e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1824,7 +1805,7 @@ double helper_25 = helper_0*helper_7;
 val[2] = (helper_0*helper_12 + helper_0*helper_17 + 91.687499999998835*helper_0*helper_21 - 1.4588330543574353e-12*helper_0*y + 1.9796039807395737e-12*helper_0 - helper_1*helper_14 + helper_1*helper_20 + 1.2949571970288684e-12*helper_1*x - 3.6162323135968265e-12*helper_1 + 182.24999999999869*helper_10*helper_15 - 80.999999999999233*helper_11*z + helper_12 - 23.624999999998245*helper_13*y - 1.0826547991449224e-12*helper_13 - helper_14*z - 26.999999999999517*helper_16*z + helper_17 + 15.749999999998764*helper_18*x + 1.9759194280765917e-12*helper_18 - 3.9374999999996909*helper_19*x - 1.2465029008978759e-12*helper_19 + helper_2*helper_6 - helper_2*helper_8 - 7.5362979745640445e-13*helper_2*x + 3.518216967757189e-12*helper_2 + helper_20*z - 202.49999999999747*helper_21*z + 110.81249999999864*helper_21 + helper_22*z - helper_22 - 5.0625000000001137*helper_23*y + 1.8318679906314964e-13*helper_23 + helper_24*z - helper_24 - 9.5624999999997229*helper_25*x - 5.0209836288672301e-13*helper_25 + 19.124999999999503*helper_3*helper_7 + 4.3517620063048888e-13*helper_3 + 10.125000000000199*helper_4*helper_5 + 15.749999999998948*helper_4*x + 4.7087334031913604e-13*helper_4 - 5.0625000000000924*helper_5*y + helper_6 - 9.5624999999997513*helper_7*x - helper_8 + 1.7195619927967663e-13*helper_9*x + 3.0100921755148966e-13*helper_9*y - 1.7590928713673069e-12*helper_9 - 3.9374999999997873*x*y - 6.5805000337704592e-14*x - 4.2466030691910584e-14*y + 3.5671465781205982e-13*pow(z, 6) - 5.2820248175321584e-13*z + 4.8992060408535686e-14)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1870,7 +1851,7 @@ double helper_23 = 161.99999999999881*helper_16;
 val[2] = (-14.062499999999645*helper_0*helper_10 + helper_0*helper_13 + 152.43749999999898*helper_0*helper_21 + 3.4851288521764157e-13*helper_0*helper_5 - 81.000000000000625*helper_0*helper_7 - 1.3694947953446427e-12*helper_0*x + 2.9039479154668678e-12*helper_0 - helper_1*helper_15 + 54.000000000000426*helper_1*helper_7 - 17.999999999997058*helper_1*y - 4.8536313856928004e-12*helper_1 - 14.062499999999702*helper_10 + 182.24999999999901*helper_11*helper_16 - 148.4999999999992*helper_12*z + helper_13 + 42.749999999998238*helper_14*y + 1.6113152478958069e-12*helper_14 - helper_15*z - 40.499999999999645*helper_16*helper_4 + helper_17*helper_18 + helper_17*y - 9.5625000000001634*helper_18*helper_5 - 64.124999999997584*helper_18*x + 26.999999999997826*helper_18 - 10.687499999999559*helper_19*x + 4.4999999999981526*helper_19 + helper_2*helper_6 - helper_2*helper_8 - 9.2656785022348773e-13*helper_2*x + 4.4570631907436496e-12*helper_2 + helper_20*helper_23 - 323.99999999999773*helper_20*helper_5 + 28.124999999999403*helper_20*x + 54.000000000000398*helper_20 + 171.56249999999881*helper_21 + helper_22*z - helper_22 - helper_23*helper_7 + 42.749999999998586*helper_3*y + 5.6383717139673868e-13*helper_3 + 19.125000000000384*helper_4*helper_5 - 17.999999999999289*helper_4 - 9.5625000000001918*helper_5*y + helper_6 - helper_8 + 2.094956152998141e-13*helper_9*x + 4.451716772990676e-13*helper_9*y - 2.1417867479556046e-12*helper_9 - 10.687499999999719*x*y - 8.8585389024231669e-14*x + 4.4999999999999307*y + 4.2216230511371214e-13*pow(z, 6) - 8.9929452773417876e-13*z + 1.1153925005835568e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -1918,7 +1899,7 @@ double helper_25 = 202.49999999999937*helper_18;
 val[2] = -(helper_0*helper_11 + helper_0*helper_14 - 162.00000000000045*helper_0*helper_7 - 1.6763535004571318e-12*helper_0*x + 4.5117035107899817e-12*helper_0 - helper_1*helper_17 + 108.00000000000028*helper_1*helper_7 - 251.99999999999505*helper_1*y - 7.076214614265525e-12*helper_1 - 28.125000000000171*helper_10*z + helper_11 + 182.24999999999957*helper_12*helper_18 - 148.49999999999932*helper_13*z + helper_14 + 254.24999999999693*helper_15*y + 1.947102201693688e-12*helper_15 + helper_16*helper_20 + helper_16*y - helper_17*z - 80.999999999999858*helper_18*helper_4 + helper_19*helper_20 + helper_19*y + helper_2*helper_6 - helper_2*helper_8 - 1.1089254514651214e-12*helper_2*x + 6.1992598554549705e-12*helper_2 - 381.37499999999568*helper_20*x + 242.99999999999613*helper_20 - 63.562499999999204*helper_21*x + 130.49999999999696*helper_21 + helper_22*helper_25 - 404.99999999999852*helper_22*helper_5 + 108.00000000000034*helper_22 + helper_23*z - helper_23 + 212.06249999999909*helper_24*helper_7 + 5.7006482867549572e-13*helper_24 - helper_25*helper_7 + 254.24999999999747*helper_3*y + 7.0280239961028885e-13*helper_3 - 19.124999999999105*helper_4*helper_5 - 116.99999999999864*helper_4 + 192.93749999999946*helper_5*helper_7 + helper_6 - helper_8 + 2.4885996041667903e-13*helper_9*x - 26.999999999999275*helper_9*y - 2.8752000780229866e-12*helper_9 - 63.562499999999474*x*y - 1.1348560979840261e-13*x + 22.499999999999851*y + 5.5155879863377535e-13*pow(z, 6) - 1.5251550022909953e-12*z + 2.1404752970077502e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -1947,7 +1928,7 @@ double helper_10 = 35.999999999999915*helper_5*helper_7;
 val[2] = -(229.49999999999943*helper_0*helper_2 + 40.499999999999972*helper_0*helper_5 + 40.499999999999979*helper_0*helper_7 - 229.49999999999989*helper_0*x - 229.49999999999918*helper_0*y + 202.49999999999909*helper_0 - 76.499999999999801*helper_1*helper_2 - helper_1*helper_6 - helper_1*helper_8 + 184.49999999999994*helper_1*x + 184.49999999999929*helper_1*y - 265.4999999999992*helper_1 + helper_10*z + helper_10 + 71.999999999999886*helper_2 + 49.499999999999929*helper_3*helper_7 - 224.99999999999952*helper_3*y + 121.5*helper_3 + 49.499999999999929*helper_4*helper_5 + 121.49999999999963*helper_4 - 49.499999999999936*helper_5*y - 40.499999999999964*helper_5*z + helper_6 - 49.499999999999936*helper_7*x - 40.499999999999972*helper_7*z + helper_8 - 53.999999999999979*helper_9*x - 53.999999999999773*helper_9*y + 166.49999999999969*helper_9 - 22.5*x - 22.499999999999961*y - 40.499999999999929*pow(z, 5) - 71.999999999999517*z + 8.9999999999998934)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_14(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_14(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -1982,7 +1963,7 @@ double helper_15 = helper_5*helper_7;
 val[2] = (-helper_0*helper_12 + helper_0*helper_14 + 94.500000000000028*helper_0*helper_2 - 94.499999999999901*helper_0*x - 94.499999999999631*helper_0*y + 161.99999999999983*helper_0 + helper_1*helper_6 - helper_1*helper_8 + 85.499999999999915*helper_1*x - 233.99999999999994*helper_1 + helper_10*helper_3 - helper_10*x + helper_11*helper_4 - helper_11*y + helper_12*z - 31.500000000000011*helper_13*x + 85.499999999999659*helper_13 - helper_14*z + 18.000000000000068*helper_15*z + 18.00000000000006*helper_15 + 22.50000000000005*helper_2 + 40.499999999999943*helper_3 - 85.500000000000071*helper_4*x + 40.499999999999829*helper_4 - helper_6 + helper_8 - 26.999999999999975*helper_9*x - 26.999999999999897*helper_9*y + 157.50000000000006*helper_9 - 4.4999999999999885*x - 4.4999999999999787*y - 40.500000000000028*pow(z, 5) - 49.499999999999844*z + 4.4999999999999574)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_15(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_15(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2015,7 +1996,7 @@ double helper_12 = 35.999999999999787*helper_4*helper_5;
 val[2] = -(-helper_0*helper_11 + 67.499999999999119*helper_0*helper_2 + 40.49999999999995*helper_0*helper_4 - 13.499999999999911*helper_0*x + 8.0452311479461575e-13*helper_0*y - 8.8254403785014792e-13*helper_0 - 13.499999999999982*helper_1*helper_4 + helper_1*helper_6 - 7.0249361883156518e-13*helper_1*y + 9.8207553200779361e-13*helper_1 + helper_10*helper_9 - 40.499999999999943*helper_10 + helper_11*z + helper_12*z + helper_12 - 71.99999999999919*helper_2*z + 26.999999999999766*helper_2 + 22.499999999999787*helper_3*helper_5 + 13.499999999999959*helper_3 - helper_4*helper_9 + 13.499999999999984*helper_4 - 22.49999999999978*helper_5*x - helper_6 + 2.3314683517127827e-14*helper_7*x + 2.1715962361667991e-13*helper_7*y - 5.4878324107221266e-13*helper_7 - 22.499999999999709*helper_8*y + 4.4999999999999236*helper_8 - 4.4999999999999885*x - 3.7020386756125779e-13*y*z + 5.1014747981525817e-14*y + 1.2290168882600417e-13*pow(z, 5) + 3.9948599983574463e-13*z - 7.3135941747181846e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_16(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_16(double x, double y, double z, double *val) {
 {double helper_0 = pow(z, 2);
 double helper_1 = 4.1633363423442758e-14*x;
 double helper_2 = 35.99999999999973*x;
@@ -2048,7 +2029,7 @@ double helper_14 = helper_5*helper_9;
 val[2] = (-helper_0*helper_11 - helper_0*helper_13 + 94.500000000000114*helper_0*x - 3.1699642910609565e-13*helper_0 - 4.4999999999998419*helper_1*helper_2 + 2.0816681711721572e-14*helper_1*helper_4 + helper_1*helper_6 - 85.500000000000071*helper_1*x - 3.1707969583294582e-13*helper_1*y + 3.5146885402070464e-13*helper_1 + helper_10*z - helper_10 + helper_11*z + 13.499999999999531*helper_12*x + 3.597122599785491e-13*helper_12 + helper_13*z + helper_14*z + helper_14 - 22.499999999999552*helper_2*z + 13.499999999999867*helper_2 + helper_3*helper_8 - 40.500000000000057*helper_3 - 2.0816681711721568e-14*helper_4 - helper_6 + 27.000000000000021*helper_7*x + 9.8587804586713282e-14*helper_7*y - 1.9534374118279506e-13*helper_7 - helper_8*x + 4.5000000000000142*x - 1.6253665080512143e-13*y*z + 2.1316282072802879e-14*y + 4.3465231414075144e-14*pow(z, 5) + 1.4363510381087816e-13*z - 2.6229018956769188e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_17(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_17(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2079,7 +2060,7 @@ double helper_12 = helper_4*helper_6;
 val[2] = -(-helper_0*helper_10 - helper_0*helper_11 + 67.499999999999346*helper_0*helper_2 + 1.5287771049088201e-13*helper_0*x + 4.4514392172345384e-13*helper_0*y - 5.5946913768422787e-13*helper_0 - 22.499999999999787*helper_1*helper_2 + helper_1*helper_5 + helper_1*helper_7 - 1.171285290979528e-13*helper_1*x - 3.9973580001628458e-13*helper_1*y + 5.7506777118021112e-13*helper_1 + helper_10*z + helper_11*z + 35.999999999999837*helper_12*z + 35.999999999999844*helper_12 - 62.999999999999389*helper_2*z + 17.999999999999822*helper_2 + 22.499999999999822*helper_3*helper_4 - 1.9378942894831916e-13*helper_3 - 22.499999999999826*helper_4*y - helper_5 - helper_7 + 3.3084646133829166e-14*helper_8*x + 1.2567724638756684e-13*helper_8*y - 3.0031532816110267e-13*helper_8 + 22.499999999999865*helper_9*z - 22.499999999999861*helper_9 - 8.6708418223225294e-14*x*z + 1.7874590696464926e-14*x + 2.2704060853584347e-14*y + 6.3615779311020056e-14*pow(z, 5) + 2.769173779171277e-13*z - 5.5816462563029202e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_18(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_18(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2112,7 +2093,7 @@ double helper_13 = helper_3*helper_5;
 val[2] = (-helper_0*helper_11 + helper_0*helper_12 + 2.6378899065093603e-13*helper_0*y - 3.6987080065386838e-13*helper_0 - 31.499999999999851*helper_1*helper_2 + helper_1*helper_4 - helper_1*helper_6 - 6.0562665993302706e-14*helper_1*x - 2.4247270857813505e-13*helper_1*y + 3.7403413699621322e-13*helper_1 + helper_10*z - helper_10 + helper_11*z - helper_12*z + 17.99999999999989*helper_13*z + 17.999999999999897*helper_13 - 85.499999999999574*helper_2*z + 22.499999999999879*helper_2 - helper_4 + helper_6 + 1.6986412276764791e-14*helper_7*x + 7.7271522513910239e-14*helper_7*y - 1.9319962296648732e-13*helper_7 + helper_8*z - helper_8 + 94.499999999999545*helper_9*y + 7.9769524319316008e-14*helper_9 - 4.5796699765787411e-14*x*z + 9.6034291630075394e-15*x - 1.092459456231153e-13*y*z + 1.0658141036401402e-14*y + 4.0696612746415964e-14*pow(z, 5) + 1.8695461845297311e-13*z - 3.8614944575243947e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_19(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_19(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2143,7 +2124,7 @@ double helper_12 = 35.999999999999787*helper_3*helper_5;
 val[2] = -(helper_0*helper_11 - helper_0*helper_9 - 13.499999999999531*helper_0*y - 6.767086890846447e-13*helper_0 + helper_1*helper_4 - 13.499999999999989*helper_1*helper_5 - 1.1268763699945225e-13*helper_1*x + 6.6921468366842308e-13*helper_1 - 22.49999999999973*helper_10*x + 4.4999999999995666*helper_10 - helper_11*z + helper_12*z + helper_12 + 22.49999999999978*helper_2*helper_3 - 71.999999999999233*helper_2*x + 13.499999999999808*helper_2 - 22.499999999999783*helper_3*y - helper_4 + 13.5*helper_5 + 2.9531932455028949e-14*helper_6*x + 1.3811174426336894e-13*helper_6*y - 3.3673064336880715e-13*helper_6 + 49.499999999999801*helper_7*z - 49.499999999999815*helper_7 + 67.499999999999204*helper_8*y + 1.6087131626818448e-13*helper_8 + helper_9*z + 26.99999999999978*x*y - 1.0180745135812558e-13*x*z + 2.4091839634366001e-14*x - 4.4999999999999822*y + 6.8944849829221918e-14*pow(z, 5) + 3.4797165149313626e-13*z - 7.2691852537331506e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_20(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_20(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2175,7 +2156,7 @@ double helper_13 = 17.999999999999886*helper_5*helper_6;
 val[2] = (-helper_0*helper_10 - helper_0*helper_12 + 1.0641487691032066e-13*helper_0*x - 3.2249203307798911e-13*helper_0 - 4.4999999999998579*helper_1*helper_2 + 1.8152146452621208e-14*helper_1*helper_5 + 9.7699626167013271e-15*helper_1*helper_6 - 7.6549877547903471e-14*helper_1*x - 85.500000000000256*helper_1*y + 3.6684544291176513e-13*helper_1 + helper_10*z + 13.499999999999574*helper_11*x + 94.500000000000284*helper_11 + helper_12*z + helper_13*z + helper_13 - 22.499999999999595*helper_2*z + 13.499999999999881*helper_2 + helper_3*helper_8 - 6.533662499919026e-14*helper_3 + helper_4*helper_9 - 40.500000000000128*helper_4 - 1.8152146452621212e-14*helper_5 - 9.7699626167013255e-15*helper_6 + 2.0539125955565289e-14*helper_7*x + 27.000000000000078*helper_7*y - 2.0961010704922791e-13*helper_7 - helper_8*x - helper_9*y + 1.4932499681208289e-14*x + 4.5000000000000142*y + 4.7961634663806548e-14*pow(z, 5) + 1.4307999229856505e-13*z - 2.5784929746919119e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_21(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_21(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2211,7 +2192,7 @@ double helper_15 = helper_4*helper_9;
 val[2] = (helper_0*helper_12 - helper_0*helper_14 - 242.99999999999986*helper_0*x - 1.5242807016591016e-12*helper_0 - helper_1*helper_5 + helper_1*helper_7 - 1.0701439734361841e-12*helper_1*y + 1.671163207817009e-12*helper_1 - 80.999999999999517*helper_10*y + 188.99999999999989*helper_10 + helper_11*helper_3 - helper_11*y - helper_12*z + 242.99999999999855*helper_13*x + 1.1960432644286811e-12*helper_13 + helper_14*z + helper_15*z + helper_15 + helper_2*helper_9 - 242.99999999999866*helper_2*y + 134.99999999999994*helper_2 - 5.2458037913538445e-13*helper_3 + helper_5 - helper_7 - 53.999999999999964*helper_8*x + 3.3573144264664582e-13*helper_8*y - 9.262590694447683e-13*helper_8 - helper_9*x + 80.999999999999631*x*y - 27.0*x + 6.2949645496246376e-14*y + 2.0683454948766575e-13*pow(z, 5) + 7.0593531020790276e-13*z - 1.3339329640871223e-13)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_22(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_22(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2246,7 +2227,7 @@ double helper_15 = helper_11*helper_7;
 val[2] = (-helper_0*helper_12 - helper_0*helper_14 + 2.2598589666245049e-13*helper_0*x - 1.0656475701864513e-12*helper_0 - 26.999999999999602*helper_1*helper_2 + helper_1*helper_6 + helper_1*helper_8 - 1.7724710588140556e-13*helper_1*x - 8.7840845708341911e-13*helper_1*y + 1.1705636460135273e-12*helper_1 + helper_10*helper_3 - helper_10*x + helper_11*helper_4 - helper_11*y + helper_12*z + 80.999999999998778*helper_13*x + 1.0098588631990367e-12*helper_13 + helper_14*z + helper_15*z + helper_15 - 80.999999999998849*helper_2*z + 26.999999999999662*helper_2 - 1.2406742300186092e-13*helper_3 - 4.6807002718196398e-13*helper_4 - helper_6 - helper_8 + 5.0959236830294004e-14*helper_9*x + 2.7089441800853547e-13*helper_9*y - 6.4748206796138655e-13*helper_9 + 2.4369395390522211e-14*x + 6.5725203057808863e-14*y + 1.4388490399141966e-13*pow(z, 5) + 4.9010795422077283e-13*z - 9.1426866077880379e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_23(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_23(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2279,7 +2260,7 @@ double helper_14 = helper_5*helper_7;
 val[2] = (-helper_0*helper_12 - helper_0*helper_13 + 6.7446048745977826e-13*helper_0*y - 8.0485618170200087e-13*helper_0 - 26.999999999999645*helper_1*helper_2 + helper_1*helper_6 + 5.9952043329757128e-15*helper_1*helper_7 - 1.8435253323900679e-13*helper_1*x - 6.0851323979704416e-13*helper_1*y + 8.1984419253443968e-13*helper_1 + 80.99999999999892*helper_10*y + 2.47302178735252e-13*helper_10 + helper_11*helper_4 - helper_11*y + helper_12*z + helper_13*z + 53.99999999999973*helper_14*z + 53.999999999999744*helper_14 - 80.999999999998991*helper_2*z + 26.999999999999709*helper_2 + helper_3*helper_9 - 1.4538370507466301e-13*helper_3 - 2.9076741014932602e-13*helper_4 - helper_6 - 5.9952043329757144e-15*helper_7 + 5.0959236830294004e-14*helper_8*x + 1.9184653865522619e-13*helper_8*y - 4.2565950764128204e-13*helper_8 - helper_9*x + 3.1474822748123188e-14*x + 3.2973623831367301e-14*y + 8.9928064994636872e-14*pow(z, 5) + 4.0317749139262287e-13*z - 8.2434059578417343e-14)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_24(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_24(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2313,7 +2294,7 @@ double helper_15 = helper_4*helper_6;
 val[2] = (-helper_0*helper_12 + helper_0*helper_14 - 242.99999999999903*helper_0*y - 1.362410184668753e-12*helper_0 + helper_1*helper_5 - helper_1*helper_7 - 1.6481260800560406e-13*helper_1*x + 1.3654077868352411e-12*helper_1 + 242.99999999999852*helper_10*y + 2.3131496718065e-13*helper_10 + helper_11*helper_3 - helper_11*y + helper_12*z - 80.999999999999503*helper_13*x + 188.99999999999915*helper_13 - helper_14*z + 53.999999999999616*helper_15*z + 53.999999999999631*helper_15 + helper_2*helper_9 - 1.4360734823526299e-13*helper_2 - 242.99999999999864*helper_3*x + 134.9999999999996*helper_3 - helper_5 + helper_7 + 4.385380947269345e-14*helper_8*x - 53.999999999999723*helper_8*y - 6.954437026251922e-13*helper_8 - helper_9*x + 80.999999999999616*x*y + 3.3251179587523571e-14*x - 26.999999999999957*y + 1.4388490399141966e-13*pow(z, 5) + 6.9094729937546294e-13*z - 1.4238610290817532e-13)/(-3.0*helper_0 + 1.0*helper_1 + 3.0*z - 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_25(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_25(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -2360,7 +2341,7 @@ double helper_24 = 607.49999999999795*helper_18;
 val[2] = (helper_0*helper_11 + helper_0*helper_14 + 5.0624999999991207*helper_0*helper_16 + helper_0*helper_19 + 511.3124999999975*helper_0*helper_22 + 1.2949641359227788e-12*helper_0*helper_6 - 1.1465828286816276e-12*helper_0*helper_8 - 4.4947170985132176e-12*helper_0*x + 1.0875113309882729e-11*helper_0 - helper_1*helper_17 + 7.6438855245441705e-13*helper_1*helper_8 + 1.3026080214473205e-11*helper_1*y - 1.814635941510537e-11*helper_1 + 6.9834762972398081e-13*helper_10*x + 1.8772483567630511e-12*helper_10*y - 7.9631301552751342e-12*helper_10 + helper_11 + 546.74999999999852*helper_12*helper_18 - 242.99999999999818*helper_13*z + helper_14 + 344.24999999999295*helper_15*y + 5.3243034980887461e-12*helper_15 + 5.062499999999007*helper_16 - helper_17*z - 242.99999999999949*helper_18*helper_5 + helper_19 - 86.062499999998238*helper_2*helper_3 + helper_2*helper_7 - helper_2*helper_9 - 3.0769449488321373e-12*helper_2*x - 7.9496409455259305e-12*helper_2*y + 1.6620673587430733e-11*helper_2 - 516.37499999999011*helper_20*x - 1.0152878537894542e-11*helper_20 + helper_21*helper_24 + 7.6438855245441836e-13*helper_21 - 1012.4999999999953*helper_22*z + 501.18749999999784*helper_22 + helper_23*z - helper_23 - helper_24*helper_8 - 86.062499999998806*helper_3 - 10.125000000000789*helper_4*helper_8 + 344.24999999999409*helper_4*y + 1.8325653494688413e-12*helper_4 - 10.124999999998241*helper_5*helper_6 + 3.6398384306579391e-12*helper_5 + helper_7 - helper_9 - 2.8355442993621527e-13*x - 4.4064751847372236e-13*y + 1.5647483309066892e-12*pow(z, 6) - 3.3666819332367316e-12*z + 4.1563627539708815e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_26(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_26(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -2409,7 +2390,7 @@ double helper_26 = 485.9999999999967*helper_17*helper_7;
 val[2] = -(helper_0*helper_13 + helper_0*helper_19 - 1.5242807016591008e-12*helper_0*helper_7 + 8.4009674217177522e-12*helper_0 - helper_1*helper_16 + helper_1*helper_22 + 4.5554185423845859e-12*helper_1*x - 1.4443571338951147e-11*helper_1 - helper_10*helper_14 - helper_10*x + 546.74999999999716*helper_11*helper_17 - 242.99999999999784*helper_12*z + helper_13 - 3.8331837703964069e-12*helper_14 - 35.437499999998778*helper_15*y - 2.6388266571863816e-12*helper_15 - helper_16*z - 121.49999999999901*helper_18*z + helper_19 + helper_2*helper_6 - helper_2*helper_8 - 5.4653781500490581e-12*helper_2*y + 1.3514220992272193e-11*helper_2 - 212.62499999999307*helper_20*x - 6.6681660193523226e-12*helper_20 + 141.74999999999523*helper_21*x + 8.7994611597252194e-12*helper_21 + helper_22*z - 809.99999999999409*helper_23*z + 410.06249999999687*helper_23 + helper_24*z - helper_24 + 399.93749999999716*helper_25*helper_7 - 5.062500000000643*helper_25*y + 9.6279234584883279e-13*helper_25 + helper_26*z - helper_26 + 10.124999999998561*helper_3*helper_7 + 141.74999999999588*helper_3*y + 1.5554744992041127e-12*helper_3 + 10.125000000001286*helper_4*helper_5 + 2.2684354394897108e-12*helper_4 - 5.0625000000005862*helper_5*y + helper_6 - helper_8 + 5.9998880863609494e-13*helper_9*x + 1.3062051440471014e-12*helper_9*y - 6.578237954357701e-12*helper_9 - 35.43749999999919*x*y - 2.3887142264200513e-13*x - 2.405575738606515e-13*y + 1.3084533456719687e-12*pow(z, 6) - 2.4876350979141264e-12*z + 2.8580263156108131e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_27(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_27(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -2457,7 +2438,7 @@ double helper_25 = 607.49999999999795*helper_18*helper_8;
 val[2] = -(helper_0*helper_14 + helper_0*helper_20 + 399.93749999999784*helper_0*helper_22 - 8.9378504597447803e-13*helper_0*helper_8 - 9.1617269326604371e-12*helper_0*y + 9.4310323439649805e-12*helper_0 - helper_1*helper_17 + helper_1*helper_21 + 1.1524503573667677e-11*helper_1*y - 1.6227366672616406e-11*helper_1 + 6.2022262325988993e-13*helper_10*x + 1.6250056855682177e-12*helper_10*y - 7.3515082910091355e-12*helper_10 - helper_11*helper_15 - helper_11*x + 546.74999999999841*helper_12*helper_18 - 121.49999999999835*helper_13*z + helper_14 - 212.62499999999218*helper_15*y - 3.9146602626160936e-12*helper_15 + 141.7499999999946*helper_16*y + 4.6771822526103596e-12*helper_16 - helper_17*z - 242.99999999999949*helper_19*z - 35.437499999998636*helper_2*helper_3 + helper_2*helper_7 - helper_2*helper_9 - 2.7198521213023124e-12*helper_2*x - 6.9436401073374662e-12*helper_2*y + 1.5153104465648255e-11*helper_2 + helper_20 + helper_21*z - 809.99999999999568*helper_22*z + 410.06249999999784*helper_22 + helper_23*z - helper_23 - 5.0625000000006608*helper_24*y + 1.0560094465539263e-12*helper_24 + helper_25*z - helper_25 - 35.437499999999048*helper_3 + 10.124999999999027*helper_4*helper_8 + 141.7499999999954*helper_4*y + 1.5760691363109132e-12*helper_4 + 10.125000000001549*helper_5*helper_6 + 3.3994751458265931e-12*helper_5 - 5.0625000000007745*helper_6*y + helper_7 - helper_9 - 2.3896162826275501e-13*x - 4.4361736506459597e-13*y + 1.4565015860057356e-12*pow(z, 6) - 2.7738505936625152e-12*z + 3.1208716166908119e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_28(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_28(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -2503,7 +2484,7 @@ double helper_23 = 485.9999999999967*helper_18;
 val[2] = (helper_0*helper_12 + 5.06249999999946*helper_0*helper_16 + helper_0*helper_19 + 329.06249999999727*helper_0*helper_21 + 8.9028784344690647e-13*helper_0*helper_4 - 1.2275180871767971e-12*helper_0*helper_6 + 5.0625000000005471*helper_0*helper_9 - 6.4568350666149256e-12*helper_0*y + 7.9816778186802508e-12*helper_0 - helper_1*helper_17 + 8.1834539145119905e-13*helper_1*helper_6 + 8.358813641251498e-12*helper_1*y - 1.3924236763607115e-11*helper_1 + 546.74999999999727*helper_10*helper_18 - 121.49999999999812*helper_11*z + helper_12 - 151.87499999999349*helper_13*y - 3.536983206320319e-12*helper_13 + 101.24999999999551*helper_14*y + 4.2249329035292924e-12*helper_14 - 25.312499999998877*helper_15*y - 2.4564413003691337e-12*helper_15 - 10.12499999999892*helper_16*z + 5.0624999999994031*helper_16 - helper_17*z - 121.49999999999906*helper_18*helper_3 + helper_19 + helper_2*helper_5 - helper_2*helper_7 - 5.1303961079440344e-12*helper_2*y + 1.3137085169700937e-11*helper_2 + helper_20*helper_23 + 8.1834539145119652e-13*helper_20 - 647.99999999999432*helper_21*z + 318.9374999999971*helper_21 + helper_22*z - helper_22 - helper_23*helper_6 + 101.24999999999622*helper_3*x + 2.2774282459891758e-12*helper_3 + helper_5 - helper_7 + 5.6008322979472396e-13*helper_8*x + 1.2162770790524633e-12*helper_8*y - 6.4253602438668154e-12*helper_8 - 10.125000000001094*helper_9*z + 5.0625000000005187*helper_9 - 25.312499999999222*x*y + 1.4245167545556748e-12*x*z - 2.1610838119023739e-13*x - 2.6528779173417838e-13*y + 1.2814749261735778e-12*pow(z, 6) - 2.3010343630502726e-12*z + 2.5039345596944166e-13)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_3_basis_grad_value_3d_single_29(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_3_basis_grad_value_3d_single_29(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 2);
 double helper_2 = pow(y, 2);
@@ -2538,248 +2519,252 @@ val[2] = -(-helper_0*helper_10 - helper_0*helper_12 + 5.755396159656764e-13*help
 
 
 
-void pyramid_3_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
-val.resize(uv.rows(), 3);
+POLYFEM_BOTH void pyramid_3_basis_grad_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
+assert(grad_x.size() == x.size());
+assert(y.size() == x.size());
+assert(grad_y.size() == x.size());
+assert(z.size() == x.size());
+assert(grad_z.size() == x.size());
 double gradient[3];
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_0(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_1(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_2(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_3(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_4(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_5(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_6(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_7(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_8(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_9(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_10(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_11(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_12(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_13(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 14:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_14(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_14(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 15:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_15(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_15(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 16:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_16(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_16(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 17:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_17(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_17(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 18:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_18(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_18(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 19:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_19(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_19(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 20:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_20(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_20(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 21:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_21(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_21(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 22:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_22(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_22(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 23:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_23(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_23(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 24:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_24(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_24(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 25:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_25(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_25(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 26:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_26(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_26(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 27:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_27(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_27(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 28:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_28(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_28(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 29:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_3_basis_grad_value_3d_single_29(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_3_basis_grad_value_3d_single_29(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	default: assert(false);
@@ -2787,42 +2772,7 @@ switch(local_index){
 }
 
 
-void pyramid_3_nodes_3d(Eigen::MatrixXd &res) {
- res.resize(30, 3); res << 
-0, 0, 0,
-1, 0, 0,
-1, 1, 0,
-0, 1, 0,
-0, 0, 1,
-1.0/3.0, 0, 0,
-2.0/3.0, 0, 0,
-1, 1.0/3.0, 0,
-1, 2.0/3.0, 0,
-2.0/3.0, 1, 0,
-1.0/3.0, 1, 0,
-0, 2.0/3.0, 0,
-0, 1.0/3.0, 0,
-0, 0, 1.0/3.0,
-0, 0, 2.0/3.0,
-2.0/3.0, 0, 1.0/3.0,
-1.0/3.0, 0, 2.0/3.0,
-2.0/3.0, 2.0/3.0, 1.0/3.0,
-1.0/3.0, 1.0/3.0, 2.0/3.0,
-0, 2.0/3.0, 1.0/3.0,
-0, 1.0/3.0, 2.0/3.0,
-1.0/3.0, 0, 1.0/3.0,
-2.0/3.0, 1.0/3.0, 1.0/3.0,
-1.0/3.0, 2.0/3.0, 1.0/3.0,
-0, 1.0/3.0, 1.0/3.0,
-1.0/3.0, 1.0/3.0, 0,
-1.0/3.0, 2.0/3.0, 0,
-2.0/3.0, 1.0/3.0, 0,
-2.0/3.0, 2.0/3.0, 0,
-0.25, 0.25, 1.0/2.0;
-}
-
-
-double pyramid_4_basis_value_3d_single_0(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_0(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2844,7 +2794,7 @@ result = (helper_1*(47.999999999998813*helper_0*helper_10 + 428.20629715364714*h
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_1(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_1(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2868,7 +2818,7 @@ result = (helper_1*(1.3033310856030047e-13*helper_0*helper_10 + 3.28997469794708
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_2(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_2(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2890,7 +2840,7 @@ result = (helper_1*(59.328210733877711*helper_0*helper_13 + 59.328210733873618*h
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_3(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_3(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2915,7 +2865,7 @@ result = (helper_1*(-9.5355979057079837e-14*helper_0*helper_10 - 3.4737644859374
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_4(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_4(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -2937,7 +2887,7 @@ result = (helper_0*helper_7*(1.5527832046920039e-12*helper_4 + 2.225608289006302
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_5(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_5(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2959,7 +2909,7 @@ result = -(helper_0*helper_4*helper_5*(1137.7777777778233*x + 1024.0000000000314
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_6(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_6(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -2984,7 +2934,7 @@ result = (helper_1*(128.00000000000253*helper_0*helper_4 - 15.999999999997325*he
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_7(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_7(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3007,7 +2957,7 @@ result = -(helper_0*helper_4*helper_5*(1137.7777777778158*x + 796.44444444446913
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_8(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_8(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3026,7 +2976,7 @@ result = -(-helper_1*(-14.713305898461797*helper_0*helper_10*x - 2.2005397047314
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_9(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_9(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3051,7 +3001,7 @@ result = (helper_1*(2.3576648178350676e-13*helper_0*helper_10 + 1.28947835491194
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_10(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_10(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3074,7 +3024,7 @@ result = -(helper_0*helper_4*helper_5*(796.44444444444912*x + 682.66666666666742
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_11(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_11(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3097,7 +3047,7 @@ result = -(helper_0*helper_4*helper_5*(682.66666666667231*x + 796.44444444444628
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_12(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_12(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3122,7 +3072,7 @@ result = (helper_1*(1.9584864137396319e-12*helper_0*helper_4 - 3.977882266837844
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_13(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_13(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3142,7 +3092,7 @@ result = -(-helper_1*(-34.417009602203947*helper_0*helper_12 - 1.518099470244619
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_14(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_14(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3167,7 +3117,7 @@ result = -(helper_0*helper_4*helper_5*(796.44444444445537*x + 1137.777777777784*
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_15(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_15(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3193,7 +3143,7 @@ result = (helper_1*(1.2765755530854894e-12*helper_0*helper_4 - 1.607520700915134
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_16(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_16(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3215,7 +3165,7 @@ result = -(helper_0*helper_4*helper_5*(1024.0000000000327*x + 1137.7777777778006
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_17(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_17(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3238,7 +3188,7 @@ result = -(helper_0*helper_7*(249.00000000007782*helper_4 + 474.00000000009538*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_18(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_18(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3259,7 +3209,7 @@ result = (helper_1*(64.0*pow(helper_0, 4) + helper_0*helper_12 - helper_0*helper
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_19(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_19(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3282,7 +3232,7 @@ result = -(helper_0*helper_7*(27.000000000012804*helper_4 + 54.000000000017017*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_20(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_20(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3305,7 +3255,7 @@ result = (helper_0*helper_7*(249.00000000003811*helper_4 + 474.0000000000415*x +
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_21(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_21(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3329,7 +3279,7 @@ result = -(helper_0*helper_7*(101.25000000000925*helper_4 + 166.50000000000838*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_22(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_22(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3352,7 +3302,7 @@ result = (helper_1*(helper_0*helper_13 + helper_0*helper_14 + 4.4362661692311778
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_23(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_23(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3374,7 +3324,7 @@ result = -(helper_0*helper_7*(249.00000000002979*helper_4 + 273.0000000000307*x 
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_24(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_24(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3396,7 +3346,7 @@ result = (helper_0*helper_7*(101.25000000002478*helper_4 + 137.25000000003007*x 
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_25(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_25(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3419,7 +3369,7 @@ result = -(helper_0*helper_7*(27.000000000005947*helper_4 + 27.000000000007574*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_26(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_26(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3443,7 +3393,7 @@ result = (helper_0*helper_7*(249.00000000003479*helper_4 + 273.00000000003519*x 
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_27(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_27(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3459,7 +3409,7 @@ result = -(helper_0*helper_4*helper_6*(101.25000000000739*helper_5 + 137.2500000
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_28(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_28(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3483,7 +3433,7 @@ result = (helper_1*(helper_0*helper_13 + helper_0*helper_14 - helper_0*helper_15
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_29(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_29(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3506,7 +3456,7 @@ result = (helper_0*helper_7*(576.00000000015746*helper_4 + 1152.0000000001889*x 
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_30(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_30(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3527,7 +3477,7 @@ result = (-helper_1*(-helper_0*helper_12 - helper_0*helper_13 - 2.47801779096325
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_31(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_31(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3551,7 +3501,7 @@ result = -(helper_0*helper_7*(576.00000000012835*helper_4 + 1152.0000000001492*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_32(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_32(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3575,7 +3525,7 @@ result = -(helper_0*helper_7*(576.00000000006844*helper_4 + 936.00000000006878*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_33(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_33(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3598,7 +3548,7 @@ result = -(helper_0*helper_7*(1.8950232008599917e-11*helper_4 + 72.0000000000260
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_34(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_34(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3619,7 +3569,7 @@ result = (helper_1*(helper_0*helper_12 - helper_0*helper_13 - helper_0*helper_14
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_35(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_35(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3641,7 +3591,7 @@ result = (helper_1*(helper_0*helper_12 - helper_0*helper_13 - helper_0*helper_14
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_36(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_36(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3663,7 +3613,7 @@ result = -(helper_0*helper_7*(2.2410008012700788e-11*helper_4 + 3.08152761933866
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_37(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_37(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3683,7 +3633,7 @@ result = -(-helper_1*(-helper_0*helper_12 + 4.0856207306207568e-13*helper_0*help
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_38(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_38(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3706,7 +3656,7 @@ result = -(helper_0*helper_7*(576.00000000012483*helper_4 + 792.00000000014199*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_39(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_39(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3729,7 +3679,7 @@ result = (helper_0*helper_7*(5.1216843266486259e-14*helper_4 + 71.99999999999880
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_40(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_40(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3752,7 +3702,7 @@ result = (helper_1*(helper_0*helper_13 + helper_0*helper_14 - helper_0*helper_15
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_41(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_41(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3775,7 +3725,7 @@ result = (helper_1*(1336.1865569273252*helper_0*helper_12 + 1336.1865569272309*h
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_42(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_42(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3799,7 +3749,7 @@ result = -(-helper_1*(-1181.7613168724481*helper_0*helper_12 - 7.211085866521058
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_43(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_43(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3824,7 +3774,7 @@ result = (helper_1*(5.5604671910953163e-12*helper_0*helper_4 - 2.221226403540841
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_44(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_44(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3844,7 +3794,7 @@ result = -(-helper_1*(-1181.7613168722344*helper_0*helper_12 - 5.7751480780939e-
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_45(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_45(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3865,7 +3815,7 @@ result = (helper_1*(923.75308641964921*helper_0*helper_13 + 923.75308641946413*h
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_46(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_46(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3888,7 +3838,7 @@ result = -(helper_0*helper_4*helper_5*(4778.6666666667152*x + 5461.3333333333539
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_47(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_47(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3911,7 +3861,7 @@ result = (helper_1*(3.0534038946097039e-12*helper_0*helper_4 - 49.39734796521801
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_48(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_48(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3935,7 +3885,7 @@ result = -(helper_0*helper_4*helper_5*(5461.333333333404*x + 4778.6666666667024*
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_49(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_49(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
@@ -3960,7 +3910,7 @@ result = (helper_1*(4.2804924366507697e-12*helper_0*helper_4 - 2.612928925204448
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_50(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_50(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -3982,7 +3932,7 @@ result = (helper_0*helper_7*(2.6651694767140311e-11*helper_4 + 3.829780291725993
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_51(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_51(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -4005,7 +3955,7 @@ result = -(helper_0*helper_7*(1845.2812500004031*helper_4 + 3075.4687500004652*x
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_52(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_52(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -4028,7 +3978,7 @@ result = (helper_1*(helper_0*helper_13 - helper_0*helper_14 - helper_0*helper_15
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_53(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_53(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -4051,7 +4001,7 @@ result = (helper_1*(helper_0*helper_13 - helper_0*helper_14 - helper_0*helper_15
 return result;
 }
 
-double pyramid_4_basis_value_3d_single_54(double x, double y, double z) {
+inline POLYFEM_BOTH double pyramid_4_basis_value_3d_single_54(double x, double y, double z) {
 double result;
 double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
@@ -4076,233 +4026,235 @@ return result;
 
 
 
-void pyramid_4_basis_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0){
-result_0.resize(uv.rows(), 1);
+POLYFEM_BOTH void pyramid_4_basis_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
+assert(val.size() == x.size());
+assert(y.size() == x.size());
+assert(z.size() == x.size());
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_0(x[i], y[i], z[i]);
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_1(x[i], y[i], z[i]);
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_2(x[i], y[i], z[i]);
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_3(x[i], y[i], z[i]);
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_4(x[i], y[i], z[i]);
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_5(x[i], y[i], z[i]);
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_6(x[i], y[i], z[i]);
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_7(x[i], y[i], z[i]);
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_8(x[i], y[i], z[i]);
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_9(x[i], y[i], z[i]);
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_10(x[i], y[i], z[i]);
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_11(x[i], y[i], z[i]);
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_12(x[i], y[i], z[i]);
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_13(x[i], y[i], z[i]);
 		break;
 	case 14:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_14(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_14(x[i], y[i], z[i]);
 		break;
 	case 15:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_15(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_15(x[i], y[i], z[i]);
 		break;
 	case 16:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_16(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_16(x[i], y[i], z[i]);
 		break;
 	case 17:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_17(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_17(x[i], y[i], z[i]);
 		break;
 	case 18:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_18(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_18(x[i], y[i], z[i]);
 		break;
 	case 19:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_19(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_19(x[i], y[i], z[i]);
 		break;
 	case 20:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_20(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_20(x[i], y[i], z[i]);
 		break;
 	case 21:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_21(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_21(x[i], y[i], z[i]);
 		break;
 	case 22:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_22(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_22(x[i], y[i], z[i]);
 		break;
 	case 23:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_23(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_23(x[i], y[i], z[i]);
 		break;
 	case 24:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_24(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_24(x[i], y[i], z[i]);
 		break;
 	case 25:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_25(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_25(x[i], y[i], z[i]);
 		break;
 	case 26:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_26(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_26(x[i], y[i], z[i]);
 		break;
 	case 27:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_27(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_27(x[i], y[i], z[i]);
 		break;
 	case 28:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_28(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_28(x[i], y[i], z[i]);
 		break;
 	case 29:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_29(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_29(x[i], y[i], z[i]);
 		break;
 	case 30:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_30(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_30(x[i], y[i], z[i]);
 		break;
 	case 31:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_31(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_31(x[i], y[i], z[i]);
 		break;
 	case 32:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_32(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_32(x[i], y[i], z[i]);
 		break;
 	case 33:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_33(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_33(x[i], y[i], z[i]);
 		break;
 	case 34:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_34(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_34(x[i], y[i], z[i]);
 		break;
 	case 35:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_35(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_35(x[i], y[i], z[i]);
 		break;
 	case 36:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_36(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_36(x[i], y[i], z[i]);
 		break;
 	case 37:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_37(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_37(x[i], y[i], z[i]);
 		break;
 	case 38:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_38(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_38(x[i], y[i], z[i]);
 		break;
 	case 39:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_39(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_39(x[i], y[i], z[i]);
 		break;
 	case 40:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_40(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_40(x[i], y[i], z[i]);
 		break;
 	case 41:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_41(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_41(x[i], y[i], z[i]);
 		break;
 	case 42:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_42(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_42(x[i], y[i], z[i]);
 		break;
 	case 43:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_43(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_43(x[i], y[i], z[i]);
 		break;
 	case 44:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_44(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_44(x[i], y[i], z[i]);
 		break;
 	case 45:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_45(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_45(x[i], y[i], z[i]);
 		break;
 	case 46:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_46(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_46(x[i], y[i], z[i]);
 		break;
 	case 47:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_47(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_47(x[i], y[i], z[i]);
 		break;
 	case 48:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_48(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_48(x[i], y[i], z[i]);
 		break;
 	case 49:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_49(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_49(x[i], y[i], z[i]);
 		break;
 	case 50:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_50(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_50(x[i], y[i], z[i]);
 		break;
 	case 51:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_51(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_51(x[i], y[i], z[i]);
 		break;
 	case 52:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_52(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_52(x[i], y[i], z[i]);
 		break;
 	case 53:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_53(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_53(x[i], y[i], z[i]);
 		break;
 	case 54:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i)
-			result_0(i, 0) = pyramid_4_basis_value_3d_single_54(uv(i, 0), uv(i, 1), uv(i, 2));
+		for (std::size_t i = 0; i < x.size(); ++i)
+			val[i] = pyramid_4_basis_value_3d_single_54(x[i], y[i], z[i]);
 		break;
 	default: assert(false);
 }
 }
-void pyramid_4_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_0(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4367,7 +4319,7 @@ double helper_27 = 1712.8251886145886*helper_0*helper_12 + 42.666666666666487*he
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(807.56250000007196*helper_7 + 248.88888888890159*helper_8 + 248.8888888888961*helper_9 + 181.78549382720408*x + 181.78549382721039*y + 22.179941129401165) + helper_11*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_27) + 3*helper_14*helper_26 + helper_15*(128.00000000000171*helper_0*helper_8 + 127.99999999999879*helper_0*helper_9 + 42.666666666666664*helper_11 + 428.20629715364714*helper_12 + 428.20629715364294*helper_13 + 128.0*helper_21 + 95.999999999997925*helper_22 + 127.99999999999858*helper_23 + 95.999999999999773*helper_24 + 472.41105109739544*helper_25 + 42.666666666667389*helper_3 + 42.666666666666487*helper_4 + 48.0*helper_6 + 209.94102223365456*helper_7 + 48.000000000000668*helper_8 + 47.999999999998813*helper_9 + 14.666666666666524*x + 14.666666666666892*y + 14.666666666666664*z - 13.666666666666664) + helper_5) + 455.11111111112319*helper_1*helper_2 + helper_10*helper_6*(3230.2500000002879*helper_7 + 995.55555555560636*helper_8 + 995.55555555558442*helper_9 + 727.14197530881631*x + 727.14197530884155*y + 88.719764517604659) + 4*helper_11*helper_14*helper_7 + helper_15*(-helper_16*helper_17 - helper_16*helper_18 - helper_16*helper_19 - helper_16*helper_20 + helper_27))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_1(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4430,7 +4382,7 @@ double helper_24 = -24.094564471911767*helper_0*helper_10*x + 1.3159898791788353
 val[2] = -(-helper_0*(2*helper_0*helper_11*(78.222222222226705*helper_10 + 330.21527777776021*helper_8 + 248.88888888889772*helper_9 - 181.78549382721192*x - 107.56867283955444*y + 22.179941129403684) + 3*helper_14*helper_23 + helper_15*helper_24 + helper_16*(1.3033310856030047e-13*helper_10 - 6.0236411179779417*helper_12 - 9.1293509945225182*helper_13 + 6.1185624468165188e-15*helper_17 - 6.3210887237034262e-13*helper_18 + 10.187285665297129*helper_19 + 4.7211617331619765e-13*helper_20 + 5.3464257483943942e-13*helper_21 - 2.2943746810997277e-13*helper_22 + 1.1684480543612302e-13*helper_3 + 3.2899746979470883e-13*helper_5 + 12.606917295384916*helper_8 + 2.2816316737187219e-13*helper_9 + 3.4540271877191976e-15*x - 1.0068469025672859e-13*y) + helper_3*helper_6) + 455.11111111111688*helper_1*helper_2 + helper_11*helper_7*(312.88888888890682*helper_10 + 1320.8611111110408*helper_8 + 995.5555555555909*helper_9 - 727.14197530884769*x - 430.27469135821775*y + 88.719764517614735) + 4*helper_14*helper_15*x*y + helper_16*helper_24 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_2(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4495,7 +4447,7 @@ double helper_28 = 237.31284293551084*helper_0*helper_12 + 237.31284293549447*he
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_21*(78.222222222224332*helper_6 + 352.45138888888886*helper_7 + 78.222222222223422*helper_8 + 107.5686728394939*x + 107.5686728394987*y + 22.17994112940077) + helper_11*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_28) + 3*helper_14*helper_26 + helper_15*(3.0948083601996672e-13*helper_0*helper_6 + 59.328210733877711*helper_12 + 59.328210733873618*helper_13 - 3.8153915992917065e-13*helper_20 - 5.723816482514479e-15*helper_22 + 2.9230898680077835e-13*helper_23 - 1.5987211554602254e-14*helper_24 - 7.9575092514416626e-14*helper_25 + 53.755186899858529*helper_27 + 7.1843765504638054e-14*helper_3 + 1.7149528634559446e-13*helper_4 + 1.0342344264953093e-13*helper_6 + 39.724201245997087*helper_7 - 2.7227177417081992e-14*helper_8 - 1.1842378929348466e-15*x + 5.2924131222120068e-14*y) + helper_5) + 455.11111111110819*helper_1*helper_2 + helper_10*helper_6*(312.88888888889733*helper_6 + 1409.8055555555554*helper_7 + 312.88888888889369*helper_8 + 430.2746913579756*x + 430.27469135799481*y + 88.719764517603082) + 4*helper_11*helper_14*helper_7 + helper_15*(-helper_16*helper_17 - helper_16*helper_18 - helper_16*helper_19 + helper_28))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_3(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4558,7 +4510,7 @@ double helper_24 = helper_0*helper_9;
 val[2] = -(4*helper_0*helper_3*helper_5 - helper_0*(3*helper_13*helper_22 + helper_14*helper_23 + helper_15*(-9.1293509945063498*helper_11 - 6.0236411179684168*helper_12 + 6.5330457093494568e-14*helper_16 - 1.1084576853025167e-12*helper_17 + 10.18728566530195*helper_18 + 1.0658141036401503e-14*helper_19 + 1.1052887000714448e-13*helper_20 - 6.0802891642463148e-13*helper_21 + 4.992285163223972e-13*helper_24 - 3.4737644859374424e-14*helper_3 + 4.4064555768889643e-13*helper_4 + 12.606917295385802*helper_7 + 2.881645539472296e-14*helper_8 - 9.5355979057079837e-14*helper_9 + 2.9235872981793912e-14*x - 2.1005095287349963e-13*y) + 2*helper_24*helper_8*(330.21527777777135*helper_7 + 78.222222222225511*helper_8 + 248.88888888889079*helper_9 - 107.56867283952414*x - 181.78549382717242*y + 22.179941129401517) + helper_3*helper_5) + 455.11111111110836*helper_1*helper_2 + helper_10*helper_6*(1320.8611111110854*helper_7 + 312.88888888890204*helper_8 + 995.55555555556316*helper_9 - 430.27469135809656*x - 727.14197530868967*y + 88.719764517606066) + 4*helper_13*helper_14*x*y + helper_15*helper_23)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_4(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -4626,7 +4578,7 @@ double helper_30 = helper_0*helper_10;
 val[2] = -(-190.03472222220785*helper_0*helper_14 + 55.694444444441672*helper_0*helper_23 + helper_0*helper_28 + 367.9166666666336*helper_0*helper_3 - 1.1860423518006709e-26*helper_0*helper_7 - 6.5475402877264629e-13*helper_0*helper_9 - 6.9185803855039155e-27*helper_0*x + 112.66666666666657*helper_0 + helper_1*helper_20 - helper_1*helper_22 - 479.30555555551121*helper_1*helper_3 + 7.4829031859731865e-13*helper_1*helper_9 - 5.3003897567307e-13*helper_1*y - 326.66666666666657*helper_1 + helper_10*helper_15 - helper_10*helper_24 - 1.144132721648323e-12*helper_10*helper_4 + helper_11*helper_2 + helper_11 - 3.9534745060022374e-27*helper_12*helper_6 + 9.3536289824664895e-14*helper_12*helper_9 - 2.416354153803732e-13*helper_12*y - 462.66666666666663*helper_12 + 4.6768144912330264e-14*helper_13*y + 218.66666666666663*helper_13 - 35.104166666663886*helper_14*helper_2 - 14.513888888888403*helper_14 + helper_15*helper_30 + 140.41666666665554*helper_16*helper_9 + 7.9069490120044763e-27*helper_16 - 70.208333333326649*helper_17*y + 9.8836862650055936e-28*helper_17 + 99.236111111105075*helper_18*z - 14.513888888888538*helper_18 + helper_19*helper_21 + helper_19*y + 295.34722222219432*helper_2*helper_3 - helper_2*helper_8 - 4.2091330421098824e-13*helper_2*helper_9 - 4.4476588192525178e-27*helper_2*x + 5.0275755780754966e-13*helper_2*y + 518.33333333333326*helper_2 + helper_20*z + 2.8840356029269156e-13*helper_21 - helper_22*z - 70.208333333332391*helper_23*z + 14.513888888890705*helper_23 + helper_24*helper_30 - 190.03472222220859*helper_25*y + 3.063942742151735e-26*helper_25 + 140.41666666665606*helper_26*y - 3.3604533301019021e-26*helper_26 - 35.104166666664014*helper_27*y + 1.8284819590260352e-26*helper_27 - helper_28 + 3.1055664093840078e-12*helper_29*z + 1.5527832046920045e-12*helper_29 - 128.263888888878*helper_3*z + 14.513888888887848*helper_3 + 1.8707257964933241e-13*helper_30 + 99.236111111104606*helper_4*helper_9 + 2.9651058795016781e-27*helper_4 - 1.3589851807354905e-12*helper_5*helper_7 - 7.0152217368488006e-14*helper_5 - 1.3837160771007837e-26*helper_6*z + 2.4709215662513998e-27*helper_6 - helper_8 + 2.8060886947399049e-13*helper_9*z - 4.6768144912331356e-14*helper_9 - 4.9418431325027968e-28*x + 3.897345409359001e-15*y - 42.666666666666657*pow(z, 7) - 18.666666666666629*z + 1.0)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_5(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4693,7 +4645,7 @@ double helper_27 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(2721.7777777779193*helper_7 + 995.55555555560318*helper_8 + 739.55555555558215*helper_9 + 315.6543209876541*x + 256.64197530867182*y + 11.184270690453683) + helper_11*(-helper_16*helper_27 - helper_17*helper_27 - helper_18*helper_27 + helper_26) + 3*helper_14*helper_24 + helper_15*(575.00960219480862*helper_12 + 897.13305898491092*helper_13 + 63.999999999999226*helper_19 - 5.4858912718098876e-12*helper_20 + 128.00000000000009*helper_21 - 1.6580573219845601e-12*helper_22 - 3.1432351006408479e-12*helper_23 + 533.62414266120118*helper_25 - 256.00000000000557*helper_27*helper_8 + 128.00000000000225*helper_3 + 1.4529362319279368e-13*helper_4 + 149.99634202105338*helper_7 + 64.000000000002188*helper_8 - 2.3206331689390451e-12*helper_9 + 5.3333333333329165*x + 7.2438869412868359e-13*y) + helper_5) + 1820.4444444444873*helper_1*helper_2 + helper_10*helper_6*(10887.111111111677*helper_7 + 3982.2222222224127*helper_8 + 2958.2222222223286*helper_9 + 1262.6172839506164*x + 1026.5679012346873*y + 44.737082761814733) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_26))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_6(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4760,7 +4712,7 @@ double helper_28 = 255.99999999999886*helper_1 + 6799.4650205757353*helper_10 - 
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(3413.3333333334008*helper_7 + 1493.3333333333992*helper_8 + 810.66666666670278*helper_9 - 1.6090477098866693e-10*x - 30.703703703822818*y - 9.1371742112297678) - 3*helper_13*helper_26 + helper_14*(helper_0*helper_18 + helper_0*helper_19 + helper_28) + helper_16*(206.53292181069202*helper_11 + 578.56995884770049*helper_12 - 5.5274895314738677e-12*helper_20 + 6.1298565674706518e-13*helper_21 - 2.4984897552793167e-12*helper_22 + 128.00000000000654*helper_23 + 4.2632564145606011e-14*helper_24 - 32.000000000000831*helper_25 + 90.473251028831427*helper_27 + 128.00000000000253*helper_3 + 1.0493206669370273e-12*helper_4 - 67.900548696816301*helper_7 - 15.999999999997325*helper_8 - 1.1615262935284924e-12*helper_9 - 4.0000000000004237*x + 7.4573326480586356e-13*y) + helper_5) + 2730.6666666667229*helper_1*helper_2 + helper_10*helper_6*(13653.333333333603*helper_7 + 5973.3333333335968*helper_8 + 3242.6666666668111*helper_9 - 6.4361908395466772e-10*x - 122.81481481529127*y - 36.548696844919071) - 4*helper_13*helper_15*y + helper_16*(-helper_17*helper_18 - helper_17*helper_19 + helper_28))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_7(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4821,7 +4773,7 @@ double helper_24 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(1829.3333333333139*helper_7 + 995.55555555559613*helper_8 + 398.222222222244*helper_9 - 315.65432098782526*x - 228.69135802484072*y + 11.184270690455484) + helper_11*(-helper_16*helper_24 - helper_17*helper_24 - helper_18*helper_24 + helper_23) + 3*helper_14*helper_22 - helper_15*(-1.6265032302264444e-12*helper_0*helper_9 + 15.906721536340115*helper_0*x*y + 2.8105912658957958e-13*helper_0*x + 2.708199614877424e-12*helper_0*y - 10.466392318221381*helper_12 - 72.836762688578077*helper_13 - 3.366393583645822e-12*helper_21 - 42.666666666667808*helper_3 - 1.0727958682961118e-12*helper_4 + 9.3021520984415258e-13*helper_6*y + 31.999999999998646*helper_8 - 1.6864653249586023e-13*helper_9 + 35.880201188827797*x*y - 5.3333333333331847*x - 1.5007237945851064e-13*y) + helper_5) + 1820.4444444444771*helper_1*helper_2 + helper_10*helper_6*(7317.3333333332557*helper_7 + 3982.2222222223845*helper_8 + 1592.888888888976*helper_9 - 1262.617283951301*x - 914.7654320993629*y + 44.737082761821938) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_23))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_8(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4881,7 +4833,7 @@ double helper_21 = 3.8287605063251794e-12*helper_0*helper_5 - 2.1535585386314029
 val[2] = (-helper_0*(2*helper_0*helper_11*(312.88888888890267*helper_10 + 1374.2222222221708*helper_8 + 739.55555555558067*helper_9 - 256.64197530879864*x - 169.67901234582294*y + 11.184270690450631) + helper_12*helper_21 + 3*helper_15*helper_20 - helper_16*(1.5307371282734299e-14*helper_0*x + 1.9822686397376672e-12*helper_0*y - 2.2005397047314326e-13*helper_10 - 14.713305898461797*helper_13 - 34.417009602158231*helper_14 - 2.5624142661189566*helper_17 - 1.7049516805226763e-12*helper_18 - 1.5400648292079538e-12*helper_19 - 4.2496596091233571e-13*helper_3 - 9.5719012658129484e-13*helper_5 + 8.1712414612412026e-14*helper_7*x + 5.9700027271995675e-13*helper_7*y - 7.2146404077273267e-13*helper_9 + 8.86785550982448*x*y + 5.3838963465785072e-15*x + 9.4794161851107983e-14*y) + helper_3*helper_6) + 1820.4444444444548*helper_1*helper_2 + helper_11*helper_7*(1251.5555555556107*helper_10 + 5496.8888888886831*helper_8 + 2958.2222222223227*helper_9 - 1026.5679012351945*x - 678.71604938329176*y + 44.737082761802526) + 4*helper_12*helper_15*helper_8 + helper_16*helper_21 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_9(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -4947,7 +4899,7 @@ double helper_28 = -6.6317322004277741e-13*helper_1 + 2303.9094650198022*helper_
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(2047.9999999999293*helper_7 + 810.66666666668925*helper_8 + 469.33333333334576*helper_9 + 30.703703703520048*x - 1.6292567295295157e-10*y - 9.1371742112418541) + 3*helper_13*helper_26 + helper_14*(helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_0*helper_21 + helper_28) + helper_16*(2.1115619540945576e-12*helper_0*helper_8 + 2.2055224587664463e-12*helper_0*helper_9 + 75.94032921806712*helper_11 + 106.64403292175646*helper_12 - 1.496745114691937e-15*helper_22 - 2.4435510770726414e-12*helper_23 - 1.0835776720341593e-13*helper_24 - 5.8146765865897472e-13*helper_25 + 23.880658436206467*helper_27 + 4.8557043159979316e-13*helper_3 + 1.2894783549119472e-12*helper_4 - 5.1968449931387983*helper_7 + 8.3446829693107209e-13*helper_8 + 2.3576648178350676e-13*helper_9 + 5.6169061171711329e-15*x + 3.4624109706313257e-14*y) + helper_5) + 2730.6666666666574*helper_1*helper_2 + helper_10*helper_6*(8191.9999999997171*helper_7 + 3242.666666666757*helper_8 + 1877.3333333333831*helper_9 + 122.81481481408019*x - 6.5170269181180629e-10*y - 36.548696844967417) + 4*helper_13*helper_15*y + helper_16*(-helper_17*helper_18 - helper_17*helper_19 - helper_17*helper_20 - helper_17*helper_21 + helper_28))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_10(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5013,7 +4965,7 @@ double helper_27 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_10*(1356.4444444444148*helper_7 + 398.22222222223274*helper_8 + 312.88888888889488*helper_9 + 228.69135802460218*x + 169.679012345606*y + 11.184270690445402) + helper_11*(-helper_16*helper_27 - helper_17*helper_27 - helper_18*helper_27 - helper_19*helper_27 + helper_26) + 3*helper_14*helper_24 + helper_15*(102.4170096021729*helper_12 + 125.87379972561695*helper_13 - 6.2764608325475887e-14*helper_20 + 6.008910790055075e-15*helper_21 - 1.4904042030402106e-12*helper_22 - 3.0409876720102356e-13*helper_23 + 61.031550068577154*helper_25 - 1.1902029430609377e-12*helper_27*helper_8 - 1.4216849005772435e-12*helper_27*helper_9 + 2.623306236161534e-13*helper_3 + 8.0747175445056228e-13*helper_4 + 31.033379058068025*helper_7 + 4.4001016821887629e-13*helper_8 + 9.5539031647129252e-14*helper_9 + 8.4322124043058815e-15*x + 9.9250892522065064e-14*y) + helper_5) + 1820.4444444444337*helper_1*helper_2 + helper_10*helper_6*(5425.7777777776591*helper_7 + 1592.888888888931*helper_8 + 1251.5555555555795*helper_9 + 914.76543209840872*x + 678.71604938242399*y + 44.737082761781608) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_26))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_11(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5082,7 +5034,7 @@ double helper_28 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_22*(312.88888888889971*helper_6 + 1356.4444444444287*helper_7 + 398.22222222222865*helper_8 + 169.67901234560549*x + 228.6913580246389*y + 11.184270690444221) + helper_11*(-helper_16*helper_28 - helper_17*helper_28 - helper_18*helper_28 - helper_19*helper_28 + helper_27) + 3*helper_14*helper_25 + helper_15*(125.87379972563949*helper_12 + 102.41700960216426*helper_13 - 4.2632564145606011e-14*helper_20 + 5.5264435003551792e-14*helper_21 - 5.3418632114890018e-13*helper_23 - 1.9147382962805046e-12*helper_24 + 61.03155006857952*helper_26 - 8.4001941205422109e-13*helper_28*helper_6 - 1.7623835632747835e-12*helper_28*helper_8 + 1.4526651486653642e-13*helper_3 + 1.0529379532580463e-12*helper_4 + 3.0000693287651213e-13*helper_6 + 31.033379058068263*helper_7 + 5.1387792055474153e-14*helper_8 + 3.4342898895065417e-14*x - 6.8265999468202367e-14*y) + helper_5) + 1820.4444444444364*helper_1*helper_2 + helper_10*helper_6*(1251.5555555555989*helper_6 + 5425.7777777777146*helper_7 + 1592.8888888889146*helper_8 + 678.71604938242194*x + 914.76543209855561*y + 44.737082761776882) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_27))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_12(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5143,7 +5095,7 @@ double helper_22 = 303.76131687228258*helper_0*helper_14 + 7.8339456549585278e-1
 val[2] = -(-helper_0*(helper_12*helper_22 + 3*helper_15*helper_21 + helper_16*(23.88065843621645*helper_0*helper_8 - 3.6932201695592946e-12*helper_0*y + 106.64403292180516*helper_13 + 75.940329218070644*helper_14 + 1.8947806286934155e-13*helper_17 + 1.1747639897901247e-12*helper_18 + 3.076035996563542e-12*helper_19 - 1.3040378105191897e-12*helper_20 + 1.3263464400859518e-13*helper_3 + 1.9584864137396319e-12*helper_5 + 3.8336960492340746e-14*helper_7 - 5.1968449931366933*helper_8 + 4.0737783516916456e-13*helper_9 + 8.3488771451802003e-14*x - 3.9778822668378445e-13*y) + 2*helper_19*helper_9*(810.66666666667686*helper_7 + 2047.9999999999641*helper_8 + 469.33333333335042*helper_9 - 1.2232703738845942e-10*x + 30.703703703616192*y - 9.1371742112458758) + helper_3*helper_6) + 2730.6666666666524*helper_1*helper_2 + helper_11*helper_7*(3242.6666666667074*helper_7 + 8191.9999999998563*helper_8 + 1877.3333333334017*helper_9 - 4.8930814955383767e-10*x + 122.81481481446477*y - 36.548696844983503) + 4*helper_12*helper_15*helper_8 + helper_16*helper_22 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_13(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5206,7 +5158,7 @@ double helper_24 = -helper_0;
 val[2] = (-helper_0*(helper_12*helper_23 + 3*helper_15*helper_22 + helper_16*(34.417009602203947*helper_13 + 14.713305898478637*helper_14 + 1.6184584536756495e-13*helper_17 - 3.272331346603573e-12*helper_18 + 2.5624142661310358*helper_19 - 1.4682292875774719e-12*helper_21 - 2.0952750280114628e-12*helper_24*helper_7 - 6.1264573661099873e-13*helper_24*helper_9 + 3.1579677145207259e-15*helper_3 + 1.5180994702446193e-12*helper_5 - 1.5329964092843262e-13*helper_7 - 8.8678555098217515*helper_8 + 2.1474180458530425e-13*helper_9 + 7.5199106201270218e-14*x - 4.9078193117494846e-13*y) + 2*helper_20*helper_7*(739.55555555556305*helper_7 + 1374.2222222221999*helper_8 + 312.88888888890165*helper_9 - 169.67901234575672*x - 256.64197530869535*y + 11.184270690445679) + helper_3*helper_6) + 1820.4444444444355*helper_1*helper_2 + helper_11*helper_7*(2958.2222222222522*helper_7 + 5496.8888888887996*helper_8 + 1251.5555555556066*helper_9 - 678.71604938302687*x - 1026.5679012347814*y + 44.737082761782716) + 4*helper_12*helper_15*helper_8 + helper_16*helper_23 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_14(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_14(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5272,7 +5224,7 @@ double helper_28 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_23*(398.22222222223951*helper_6 + 1829.3333333333414*helper_7 + 995.55555555556634*helper_8 - 228.69135802474733*x - 315.65432098768412*y + 11.184270690447443) + 3*helper_13*helper_25 + helper_14*(-helper_17*helper_28 - helper_18*helper_28 - helper_19*helper_28 + helper_27) + helper_16*(72.836762688635503*helper_11 + 10.466392318241702*helper_12 - 5.1283830101320026e-12*helper_20 + 8.5572152930085358e-14*helper_21 + 4.3816802038539886e-14*helper_22 - 2.8135975488182504e-12*helper_24 - 15.906721536327737*helper_26 - 1.2982756159568925e-12*helper_28*helper_6 - 1.4027809549528796e-12*helper_28*helper_8 + 2.8083982327612313e-13*helper_3 + 42.666666666668263*helper_4 + 4.8053742055486116e-13*helper_6 - 35.880201188827044*helper_7 - 32.000000000001037*helper_8 + 2.1568480883316888e-14*x + 5.3333333333326181*y) + helper_5) + 1820.4444444444403*helper_1*helper_2 + helper_10*helper_6*(1592.888888888958*helper_6 + 7317.3333333333658*helper_7 + 3982.2222222222654*helper_8 - 914.76543209898932*x - 1262.6172839507365*y + 44.737082761789772) + 4*helper_13*helper_15*y + helper_16*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_27))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_15(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_15(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5333,7 +5285,7 @@ double helper_22 = -64.000000000010587*helper_0*helper_10 + 5.1063022123419574e-
 val[2] = -(-helper_0*(3*helper_14*helper_19 + helper_15*helper_22 + helper_16*(-2.4008778504384658e-13*helper_0*x - 16.000000000002647*helper_10 + 578.56995884777257*helper_12 + 206.53292181070069*helper_13 + 3.8191014137169125e-12*helper_17 - 4.9343560787410303e-12*helper_18 + 128.00000000000065*helper_20 + 90.473251028841759*helper_21*x - 32.000000000008782*helper_21 + 128.0000000000019*helper_3 + 1.2765755530854894e-12*helper_5 + 7.9936057773012028e-14*helper_7*x - 67.900548696817808*helper_8 + 1.4747955942894571e-12*helper_9 - 1.6075207009151348e-13*x - 4.0000000000006661*y) + 2*helper_20*helper_9*(1493.3333333333546*helper_10 + 3413.3333333334231*helper_8 + 810.66666666670142*helper_9 - 30.703703703729026*x + 1.4287238059296214e-11*y - 9.1371742112398202) + helper_3*helper_6) + 2730.6666666666706*helper_1*helper_2 + helper_11*helper_7*(5973.3333333334185*helper_10 + 13653.333333333692*helper_8 + 3242.6666666668057*helper_9 - 122.8148148149161*x + 5.7148952237184858e-11*y - 36.548696844959281) + 4*helper_14*helper_15*x*y + helper_16*helper_22 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_16(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_16(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -5402,7 +5354,7 @@ double helper_28 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_21*(739.55555555559181*helper_6 + 2721.7777777779265*helper_7 + 995.55555555557748*helper_8 + 256.64197530868802*x + 315.65432098772709*y + 11.184270690449567) + helper_11*(-helper_16*helper_28 - helper_17*helper_28 - helper_18*helper_28 - helper_19*helper_28 + helper_27) + 3*helper_14*helper_25 + helper_15*(897.1330589849432*helper_12 + 575.00960219479771*helper_13 + 127.99999999999588*helper_20 + 63.99999999999315*helper_22 - 4.9944136617912803e-13*helper_23 + 6.2764608325475975e-14*helper_24 + 533.6241426612014*helper_26 - 4.2193957518598271e-12*helper_28*helper_6 - 255.99999999999864*helper_28*helper_8 + 1.6340289889349434e-12*helper_3 + 128.00000000000063*helper_4 + 1.6643805675241655e-12*helper_6 + 149.99634202105079*helper_7 + 63.999999999997122*helper_8 - 2.8357014952924765e-13*x + 5.3333333333333792*y) + helper_5) + 1820.4444444444703*helper_1*helper_2 + helper_10*helper_6*(2958.2222222223672*helper_6 + 10887.111111111706*helper_7 + 3982.2222222223099*helper_8 + 1026.5679012347521*x + 1262.6172839509084*y + 44.73708276179827) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_27))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_17(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_17(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5465,7 +5417,7 @@ double helper_25 = helper_0*helper_7;
 val[2] = -(4064.8888888888919*helper_0*helper_10 - 474.00000000009265*helper_0*helper_21 - 1599.9999999999861*helper_0*helper_6 + 2336.0000000000023*helper_0*x - 938.6666666666664*helper_0 - 2795.6666666666624*helper_1*helper_10 - 2795.6666666666742*helper_1*helper_13 - helper_1*helper_20 + 1920.0000000000077*helper_1*helper_4 - 170.66666666666856*helper_1*helper_5 + 1919.9999999999839*helper_1*helper_6 - 4117.3333333333367*helper_1*x + 2218.6666666666661*helper_1 - 2538.4444444444603*helper_10*z + 570.30555555556452*helper_10 + 535.33333333336327*helper_11*z - 267.66666666668164*helper_11 + 698.91666666666561*helper_12*helper_6 - 4840.638888888755*helper_12*y + 3909.3333333333358*helper_12 - 2538.4444444444716*helper_13*z + 570.30555555556725*helper_13 + 535.33333333337032*helper_14*z - 267.66666666668505*helper_14 + 4064.8888888889096*helper_15*helper_4 - 6679.1666666665005*helper_15*x + 2335.9999999999982*helper_15 + 8177.5555555553383*helper_16*x - 4117.3333333333267*helper_16 + 698.91666666666833*helper_17*helper_4 + 3909.3333333333267*helper_17 + 1118.4999999999682*helper_18*x - 1919.9999999999964*helper_18 + 2089.8333333335195*helper_19*helper_4 + 639.99999999999432*helper_19 - 1120.0000000000043*helper_2*helper_4 + 42.66666666666714*helper_2*helper_5 - 1119.9999999999907*helper_2*helper_6 + 42.666666666665805*helper_2*helper_7 - 2981.333333333333*helper_2 - helper_20*z + 474.00000000009277*helper_21 - 1141.527777777861*helper_22*helper_6 - 1600.0000000000068*helper_22 - 498.00000000015569*helper_23*z - 249.00000000007776*helper_23 - 474.00000000009527*helper_24*helper_6 - 267.66666666668516*helper_24*y + 256.00000000000296*helper_24 - 267.66666666668186*helper_25*x + 255.99999999999494*helper_25 + 2595.7222222221653*helper_3*x - 661.33333333333371*helper_3 - 948.30555555565866*helper_4*helper_6 + 256.00000000000091*helper_4*helper_8 + 640.00000000000307*helper_4*z - 96.00000000000054*helper_4 + 474.00000000009538*helper_5*helper_6 - 170.66666666666859*helper_5*z + 42.666666666667147*helper_5 + 255.99999999999778*helper_6*helper_8 - 95.999999999999091*helper_6 + 42.666666666665812*helper_7 - 1920.0000000000009*helper_8*x + 2314.6666666666665*helper_8 + 384.00000000000011*helper_9*x + 383.99999999999926*helper_9*y - 970.66666666666652*helper_9 - 371.97222222221598*x*y - 661.33333333333405*x*z + 69.333333333333428*x + 69.333333333333655*y + 170.66666666666663*pow(z, 7) + 202.66666666666652*z - 15.999999999999972)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_18(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_18(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5532,7 +5484,7 @@ double helper_28 = helper_0*helper_10;
 val[2] = -(65.250000000007162*helper_0*helper_17 + 643.18750000000819*helper_0*helper_21 + 4442.6249999997963*helper_0*helper_3 - 8.8729024128060908e-13*helper_0*helper_7 - 1703.9999999999991*helper_0*x - 1703.9999999999977*helper_0*y + 1064.0*helper_0 + helper_1*helper_18 - helper_1*helper_20 - 5957.4999999997308*helper_1*helper_3 - 832.0000000000025*helper_1*helper_6 - 831.99999999999181*helper_1*helper_9 - 2752.0*helper_1 - 166.50000000003399*helper_10*helper_6 + helper_11*helper_2 + helper_11 - 128.00000000000026*helper_12*helper_6 - 127.99999999999895*helper_12*helper_9 + 1823.9999999999977*helper_12*y - 3224.0*helper_12 - 384.0*helper_13*x - 383.99999999999955*helper_13*y + 1408.0*helper_13 - 130.50000000001302*helper_14*z + 65.250000000006509*helper_14 + 1551.2499999999463*helper_15*helper_9 + 3375.9999999999995*helper_15 - 901.12499999996021*helper_16*y + 1824.0*helper_16 - 130.50000000001427*helper_17*z + 65.250000000007105*helper_17 + helper_18*z + 1551.2499999999482*helper_19*helper_6 + 3375.9999999999945*helper_19 + 3742.1874999998327*helper_2*helper_3 - helper_2*helper_8 - 3484.0*helper_2*x - 3483.999999999995*helper_2*y + 3948.0*helper_2 - helper_20*z - 980.62500000004127*helper_21*z + 337.43750000003286*helper_21 - 2125.9999999999336*helper_22*y + 608.00000000000216*helper_22 - 387.81249999998681*helper_23*y + 528.00000000000136*helper_23 + helper_24*helper_26 - helper_24*helper_9 + 202.50000000005488*helper_25*z + 101.2500000000274*helper_25 - 2125.9999999999322*helper_26*x + 607.99999999999307*helper_26 - 387.81249999998658*helper_27*x + 527.99999999999523*helper_27 + 166.50000000003394*helper_28*helper_6 + 65.250000000006565*helper_28*x + 2.2996604620573535e-12*helper_28 - 1475.8749999999297*helper_3*z + 149.68749999999238*helper_3 + 1149.4999999999709*helper_4*helper_9 + 399.99999999999972*helper_4 + 1149.4999999999727*helper_5*helper_6 + 399.99999999999966*helper_5 - 186.93749999999932*helper_6*y - 192.00000000000097*helper_6*z + 16.000000000000156*helper_6 - helper_8 - 186.93749999999886*helper_9*x - 191.99999999999716*helper_9*z + 15.999999999999559*helper_9 - 27.999999999999943*x - 28.000000000000057*y - 256.0*pow(z, 7) - 200.0*z + 12.0)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_19(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_19(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5597,7 +5549,7 @@ double helper_28 = helper_0*helper_10;
 val[2] = (-928.88888888884389*helper_0*helper_14 + helper_0*helper_18 + 297.02777777777692*helper_0*helper_23 + 54.00000000001701*helper_0*helper_26 + 1805.499999999874*helper_0*helper_3 - 2.87769807982931e-13*helper_0*helper_7 - 3.0849952222429133e-12*helper_0*helper_9 - 415.99999999999989*helper_0*x - 415.99999999999852*helper_0*y + 554.66666666666629*helper_0 + helper_1*helper_19 - helper_1*helper_22 - 2413.555555555386*helper_1*helper_3 - 8.1534778928497406e-13*helper_1*helper_6 + 3.569774105945483e-12*helper_1*helper_9 - 1536.0*helper_1 - 54.00000000000739*helper_10*helper_4 - 54.000000000016527*helper_10*helper_6 + 27.000000000003702*helper_10*x + helper_11*helper_2 + helper_11 - 9.5923269327644537e-14*helper_12*helper_6 + 4.5393318733506227e-13*helper_12*helper_9 + 575.99999999999886*helper_12*y - 1994.6666666666665*helper_12 - 128.0*helper_13*x - 127.9999999999998*helper_13*y + 906.66666666666652*helper_13 - 167.4166666666577*helper_14*helper_2 - 91.805555555555259*helper_14 + 669.66666666663104*helper_15*helper_9 + 917.33333333333326*helper_15 - 366.16666666664128*helper_16*y + 576.0*helper_16 - 54.00000000000864*helper_17*z + helper_18 + helper_19*z + 1518.8055555554499*helper_2*helper_3 - helper_2*helper_8 - 2.0272764948240262e-12*helper_2*helper_9 - 1029.3333333333333*helper_2*x - 1029.333333333331*helper_2*y + 2330.6666666666665*helper_2 + 669.66666666663264*helper_20*helper_6 + 917.33333333333076*helper_20 - 442.833333333349*helper_21*helper_6 + 1.3001081692701707e-12*helper_21 - helper_22*z + 145.8055555555722*helper_23 - 928.88888888884662*helper_24*y + 7.4340533728923433e-13*helper_24 - 167.41666666665822*helper_25*y + 4.4364512064035225e-13*helper_25 - 54.000000000017025*helper_26 + 54.000000000025608*helper_27*z + 27.000000000012804*helper_27 + 54.000000000016513*helper_28*helper_6 + 27.000000000003709*helper_28*x + 9.7633012785537276e-13*helper_28 - 614.72222222218056*helper_3*z + 70.138888888884821*helper_3 + 518.44444444442593*helper_4*helper_9 + 85.333333333333258*helper_4 + 518.44444444442809*helper_5*helper_6 + 85.333333333332916*helper_5 - 91.805555555555827*helper_6*y - 3.3573144264675371e-13*helper_6*z + 5.9952043329777234e-14*helper_6 - helper_8 - 2.1154374548377671e-13*helper_9 - 5.3333333333333144*x - 5.3333333333333002*y - 170.66666666666663*pow(z, 7) - 95.999999999999886*z + 5.3333333333333144)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_20(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_20(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5662,7 +5614,7 @@ double helper_27 = helper_0*helper_8;
 val[2] = -(-251.11111111113229*helper_0*helper_10 + helper_0*helper_12 + 267.66666666667106*helper_0*helper_17 - 105.16666666668391*helper_0*helper_3 - 4.791667063131118e-12*helper_0*helper_7 - 32.000000000001748*helper_0*x - 2.12291295653734e-12*helper_0*y - helper_1*helper_21 - 128.00000000000773*helper_1*helper_5 + 170.66666666666845*helper_1*helper_6 + 5.3667810936040736e-12*helper_1*helper_7 - 95.69444444444747*helper_10 - 133.33333333334235*helper_11*z + helper_12 + 124.33333333334792*helper_13*helper_7 + 310.88888888890568*helper_13*y + 21.333333333335418*helper_13 - 31.083333333336981*helper_14*helper_7 - 5.3333333333345898*helper_14 - 8.9883656073660105e-13*helper_15*helper_5 + 6.5170091545499819e-13*helper_15*helper_7 + 3.383959779057674e-13*helper_15*x - 2.1316282072803006e-14*helper_16*x - 2.4846791291113043e-13*helper_16*y - 535.3333333333419*helper_17*z + 267.66666666667084*helper_17 + 416.3333333333444*helper_18*helper_5 + 2.2773634829798064e-12*helper_18 + 71.166666666668277*helper_19*x + 1.0040301923198621e-12*helper_19 - 255.6388888888971*helper_2*helper_3 - 42.666666666667112*helper_2*helper_6 - 2.9709475620385138e-12*helper_2*helper_7 + helper_2*helper_9 - 1.8370767869889597e-12*helper_2*y - 754.16666666675383*helper_20*helper_5 + 253.55555555556884*helper_20*x + 2.1082765163290796e-12*helper_20 - helper_21*z + helper_22*helper_27 - helper_22*helper_8 + 280.47222222226571*helper_23*helper_7 - 753.111111111127*helper_23*y + 192.00000000000711*helper_23 - 104.08333333333616*helper_24*y + 32.000000000004178*helper_24 + 498.00000000007628*helper_25*z + 249.00000000003809*helper_25 + 474.00000000004161*helper_26*helper_7 - 256.00000000000273*helper_26 + 2.5941471193392749e-12*helper_27 - 55.611111111102275*helper_3*z + 34.361111111109295*helper_3 + 673.55555555556532*helper_4*helper_5 + 1.232699127958567e-12*helper_4 + 473.69444444448783*helper_5*helper_7 - 232.6944444444465*helper_5*y - 128.00000000000324*helper_5*z + 32.000000000000583*helper_5 - 474.0000000000415*helper_6*helper_7 + 170.6666666666685*helper_6*z - 42.666666666667119*helper_6 - 3.6414390021851975e-13*helper_7 + helper_9 + 21.333333333334057*x*z - 5.3333333333334512*x - 3.0563514682080475e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_21(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_21(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5723,7 +5675,7 @@ double helper_23 = helper_0*helper_9;
 val[2] = -(-454.99999999998835*helper_0*helper_11 - 951.49999999999318*helper_0*helper_13 - 137.25000000000881*helper_0*helper_19 - 166.50000000000836*helper_0*helper_21 + 1265.1249999999789*helper_0*helper_3 + 8.8729024128047105e-13*helper_0*helper_6 - 1.9447360388724241e-12*helper_0*helper_8 - 151.99999999999946*helper_0*x + 373.24999999999091*helper_1*helper_11 + 768.24999999999409*helper_1*helper_13 - helper_1*helper_15 - helper_1*helper_18 - 1713.49999999997*helper_1*helper_3 - 831.99999999999739*helper_1*helper_5 + 2.197436677064907e-12*helper_1*helper_8 + 207.99999999999937*helper_1*x - 3.2755465007029122e-12*helper_1*y + helper_10*helper_2 + helper_10 - 93.312499999997726*helper_11*helper_2 + 163.49999999999488*helper_11*z + 11.562500000000171*helper_11 - 258.62499999999511*helper_12*helper_3 - 127.99999999999972*helper_12*helper_5 + 2.7028379534498689e-13*helper_12*helper_8 + 31.999999999999929*helper_12*x - 1.4529905056903868e-12*helper_12*y - 192.06249999999852*helper_13*helper_2 + 366.49999999999818*helper_13*z + 8.8124999999993179*helper_13 + 130.49999999999886*helper_14*z - 65.249999999999432*helper_14 - helper_15*z - 65.249999999999432*helper_16*helper_6 + 2.1172924524749017e-12*helper_16 + 18.37500000001927*helper_17*helper_5 + 8.4601770033996956e-13*helper_17 - helper_18*z + 137.25000000000875*helper_19 + 1074.9374999999802*helper_2*helper_3 + 527.99999999999864*helper_2*helper_5 + helper_2*helper_7 - 1.2250686576286952e-12*helper_2*helper_8 - 131.99999999999966*helper_2*x + 2.9617211461108717e-12*helper_2*y + 143.68749999998846*helper_20*helper_8 + 607.99999999999773*helper_20 + 166.50000000000841*helper_21 - 202.50000000001847*helper_22*z - 101.25000000000927*helper_22 - 35.999999999999872*helper_23*x + 1.0841327835461696e-13*helper_23 - 396.37499999999415*helper_3*z + 28.437499999999773*helper_3 + 71.999999999999687*helper_4*helper_9 + 47.999999999999773*helper_4 - 162.06250000000773*helper_5*helper_8 - 191.99999999999889*helper_5*z + 15.999999999999801*helper_5 + helper_7 - 1.4393347624874509e-13*helper_8 - 35.999999999999844*helper_9*x - 3.9999999999999609*x + 2.9792834865816616e-13*y*pow(z, 6) - 7.7744755078161165e-13*y*z + 1.2904260993097247e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_22(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_22(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5787,7 +5739,7 @@ double helper_27 = helper_0*helper_8;
 val[2] = -(604.88888888888573*helper_0*helper_11 + 442.88888888888778*helper_0*helper_17 + 26.999999999998678*helper_0*helper_18 - 135.027777777778*helper_0*helper_22 - 840.83333333331723*helper_0*helper_3 - 2.8776980798282896e-13*helper_0*helper_6 - 3.763656053479369e-13*helper_0*helper_9 - 1.0612806929562488e-12*helper_0*y - 453.66666666666333*helper_1*helper_11 - 345.6666666666647*helper_1*helper_17 + helper_1*helper_19 + helper_1*helper_21 - 8.1534778928468093e-13*helper_1*helper_5 - 1.9489225048611639e-12*helper_1*helper_8 + 917.33333333333326*helper_1*x - helper_10*helper_2 - helper_10 + 113.41666666666583*helper_11*helper_2 - 302.44444444444457*helper_11*z + 37.805555555556452*helper_11 - helper_12*helper_13 - helper_12*x - 415.99999999999989*helper_13 - 9.5923269327608502e-14*helper_14*helper_5 - 2.4639549659848016e-13*helper_14*helper_8 + 9.2783188539631549e-13*helper_14*y + 141.49999999999616*helper_15*y + 576.0*helper_15 - 128.0*helper_16*x - 1.8851586958135024e-13*helper_16*y + 86.416666666666174*helper_17*helper_2 - 194.44444444444599*helper_17*z + 10.805555555556765*helper_17 - 53.999999999997385*helper_18*z + 26.999999999998685*helper_18 + helper_19*z - 614.47222222220694*helper_2*helper_3 + 4.4364512064019408e-13*helper_2*helper_5 - helper_2*helper_7 + 1.1032193677114859e-12*helper_2*helper_8 - 1029.3333333333333*helper_2*x - 1.8557840449536323e-12*helper_2*y + 1042.8888888888653*helper_20*x + 1.9151347174783781e-12*helper_20 + helper_21*z + 118.83333333333712*helper_22*z + 16.194444444440876*helper_22 + helper_23*helper_24 - helper_23*helper_5 + 7.4340533728897473e-13*helper_24 + helper_25*helper_27 - helper_25*helper_8 + 53.99999999999811*helper_26*z + 26.999999999999062*helper_26 + 1.6914062742993524e-12*helper_27 - 32.472222222222072*helper_3 + 2.1742607714259021e-12*helper_4*helper_9 + 303.38888888888448*helper_4*y + 85.333333333333258*helper_4 - 3.357314426466335e-13*helper_5*z + 5.9952043329755676e-14*helper_5 - helper_7 - 7.1694502186877337e-13*helper_8*z + 1.176373813175742e-13*helper_8 - 5.3333333333333144*x + 2.9222920379841039e-13*y*z - 2.9615199181873842e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_23(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_23(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5853,7 +5805,7 @@ double helper_27 = helper_0*helper_10;
 val[2] = (-948.88888888888778*helper_0*helper_12 + 66.666666666668135*helper_0*helper_16 + helper_0*helper_23 + 1049.1666666666065*helper_0*helper_3 - 1.4548362514689701e-12*helper_0*helper_7 - 3.5741409831757745e-12*helper_0*helper_9 - 8.4865448002356649e-13*helper_0*x - 1.0816347817413681e-12*helper_0*y - helper_1*helper_19 - 4.1220360458287489e-12*helper_1*helper_6 - helper_10*helper_20 + helper_11*helper_2 + helper_11 - 104.30555555555674*helper_12 - 133.3333333333423*helper_13*z + 66.666666666671119*helper_13 + helper_14*helper_7 + helper_14*x - 204.49999999999022*helper_15*helper_3 - 4.849454171563224e-13*helper_15*helper_6 + 5.6066262743571617e-13*helper_15*helper_9 + 1.2123635428908222e-13*helper_15*x - 2.829403378256129e-13*helper_15*y - 133.33333333333638*helper_16*z + 66.666666666668192*helper_16 + 675.66666666665151*helper_17*helper_6 - 1377.5555555554829*helper_17*x + 3.0753177782153369e-13*helper_17 - 883.83333333339192*helper_18*helper_6 + 546.44444444444582*helper_18*x + 1.4483229430576631e-12*helper_18 - helper_19*z + 855.63888888884617*helper_2*helper_3 - helper_2*helper_8 - 5.4556359430086342e-13*helper_2*x + 3.6567970873565012e-13*helper_2*y + helper_20*helper_27 + 538.52777777780466*helper_21*helper_9 - 948.88888888886765*helper_21*y + 3.7583269829614652e-12*helper_21 - 168.91666666666288*helper_22*y + 2.2428725543479957e-12*helper_22 - helper_23 + 498.00000000005957*helper_24*z + 249.00000000002979*helper_24 + 675.6666666666647*helper_25*x + 4.2516360802362237e-12*helper_25 - 168.91666666666612*helper_26*x - 2.4645655886483348e-12*helper_26 + 66.666666666671176*helper_27*x + 1.5760726057579352e-12*helper_27 + 42.972222222218718*helper_3 - 365.72222222219841*helper_4*y + 3.6370906286724228e-13*helper_4 + 546.44444444443252*helper_5*helper_6 + 8.7491125455600274e-13*helper_5 + 345.30555555558675*helper_6*helper_9 - 104.30555555555338*helper_6*y - 1.697308960047133e-12*helper_6*z + 3.0309088572270222e-13*helper_6 + 9.6989083431264762e-13*helper_7*z - helper_8 - 2.2191507890548736e-13*helper_9 - 6.0618177144541108e-14*x + 5.2957638274599412e-14*y*pow(z, 6) - 2.3650525982080386e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_24(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_24(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5920,7 +5872,7 @@ double helper_29 = helper_0*helper_10;
 val[2] = -(helper_0*helper_19 + 555.43750000002888*helper_0*helper_23 - 4.3381132019960904e-12*helper_0*helper_9 + 805.25000000000614*helper_1*helper_17 - helper_1*helper_22 - 2161.49999999995*helper_1*helper_3 - 2.0723422977657736e-12*helper_1*helper_6 - 1.9315105070913685e-12*helper_1*y - 137.25000000003058*helper_10*helper_6 + helper_11*helper_2 + helper_11 - 72.000000000011596*helper_12*z + 36.000000000005784*helper_12 - 1103.0000000000143*helper_13*helper_9 - 4.2665870836354055e-13*helper_13 + helper_14*helper_7 + helper_14*x - 201.31250000000193*helper_15*helper_9 - 2.7428059823370591e-13*helper_15 - 330.6249999999925*helper_16*helper_3 - 2.438049762077386e-13*helper_16*helper_6 + 6.4531713306339698e-13*helper_16*helper_9 + 6.095124405193465e-14*helper_16*x - 1.0971917818735549e-12*helper_16*y - 96.437500000004263*helper_17 - 72.000000000011141*helper_18*z + helper_19 + 1366.9374999999686*helper_2*helper_3 + 1.1275980149607894e-12*helper_2*helper_6 - helper_2*helper_8 - 2.8740759772106724e-12*helper_2*helper_9 + 1601.1249999999627*helper_20*x + 6.0250415767602796e-13*helper_20 - 201.31250000000159*helper_21*helper_6 + 2.1621246459878121e-12*helper_21 - helper_22*z - 805.12500000006344*helper_23*z + 249.68750000003456*helper_23 - 1103.0000000000123*helper_24*y + 1.8894885656099707e-12*helper_24 + helper_25*helper_27 - helper_25*helper_7 + 202.50000000004957*helper_26*z + 101.25000000002478*helper_26 - 7.3141492862321388e-13*helper_27 + 805.25000000000773*helper_28*x + 5.0431325782087184e-12*helper_28 + 137.25000000003064*helper_29*helper_6 + 36.000000000005798*helper_29*x + 1.5104584250026256e-12*helper_29 - 532.37499999998761*helper_3*z + 56.437499999998806*helper_3 + 595.50000000001307*helper_4*helper_9 + 1.8285373215580395e-13*helper_4 + 595.50000000001182*helper_5*helper_6 + 1.5050460877587289e-13*helper_5 - 8.5331741672708313e-13*helper_6*z + 1.5237811012983661e-13*helper_6 + 4.8760995241547518e-13*helper_7*z - helper_8 - 96.437500000004604*helper_9*x + 1.8165469128917306e-12*helper_9*z - 2.9280744495708298e-13*helper_9 - 3.0475622025967325e-14*x + 2.1274648709378356e-13*y*pow(z, 6) - 9.9177610568573783e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_25(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_25(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -5984,7 +5936,7 @@ double helper_27 = helper_1*helper_7;
 val[2] = (-604.88888888888425*helper_0*helper_10 + helper_0*helper_12 + 216.02777777778238*helper_0*helper_21 + helper_0*helper_25 + 1427.4999999999714*helper_0*helper_3 - 1.4388490399146106e-13*helper_0*helper_5 - 2.4660643897315606e-12*helper_0*helper_7 + 7.9003470432327523e-13*helper_0*helper_8 - 8.3932860661685614e-14*helper_0*x - helper_1*helper_20 - 1981.5555555555175*helper_1*helper_3 - 1.48851301654902e-12*helper_1*y - 113.41666666666555*helper_10*helper_2 - 37.80555555555631*helper_10 - 3.446132268436498e-12*helper_11*z + helper_12 + helper_13*helper_5 + helper_13*x - 312.16666666666094*helper_14*helper_3 - 4.796163466382035e-14*helper_14*helper_4 + 3.5208872854279229e-13*helper_14*helper_7 + 1.1990408665955061e-14*helper_14*x - 6.9723856318165008e-13*helper_14*y + 302.44444444444383*helper_15*z - 37.80555555555631*helper_15 + helper_16*helper_18 + helper_16*y - 3.4070524179696808e-12*helper_17*y + 9.59232693276407e-14*helper_17 - 604.88888888888425*helper_18*helper_4 + 7.4331281870354965e-13*helper_18 + 302.44444444444383*helper_19*x + 1.0572283789163844e-12*helper_19 + 1275.8055555555318*helper_2*helper_3 - helper_2*helper_6 - 1.5846398267645737e-12*helper_2*helper_7 + helper_2*helper_9 - 5.3956838996797413e-14*helper_2*x + 1.4496459588286234e-12*helper_2*y - helper_20*z - 280.83333333334645*helper_21*z + 64.805555555564126*helper_21 + 27.000000000007773*helper_22*helper_8 + 3.7170266864460712e-13*helper_22 + 453.66666666666242*helper_23*y - 4.07673894642473e-13*helper_23 - 113.41666666666561*helper_24*y + 2.2182256032016868e-13*helper_24 - helper_25 + 54.000000000011902*helper_26*z + 27.00000000000594*helper_26 + 453.66666666666219*helper_27*x + 2.8176720216303538e-12*helper_27 - 452.72222222221251*helper_3*z + 43.138888888887891*helper_3 - 27.000000000007766*helper_4*helper_8 - 1.6786572132337123e-13*helper_4*z + 2.9976021664887721e-14*helper_4 - helper_6 - 1.7628491259339769e-13*helper_7 + helper_9 + 3.5971225997865264e-14*x*z - 5.9952043329775319e-15*x + 1.3311574065255142e-13*y*pow(z, 6) - 1.3217205108159103e-13*y*z - 8.1508873724633332e-15*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_26(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_26(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6047,7 +5999,7 @@ double helper_23 = helper_2*helper_9;
 val[2] = -(-255.9999999999992*helper_0*helper_10 + 267.66666666666799*helper_0*helper_13 + 66.666666666667425*helper_0*helper_16 - 105.16666666671541*helper_0*helper_3 - 1.4122036873233877e-12*helper_0*helper_7 - 8.2378548427197621e-13*helper_0*x - 32.000000000001563*helper_0*y + 170.66666666666617*helper_1*helper_10 + 416.33333333332621*helper_1*helper_12 + 310.88888888894337*helper_1*helper_3 - 4.0012437807496005e-12*helper_1*helper_6 - 127.99999999999807*helper_1*helper_9 + 474.00000000003558*helper_10*helper_19 - 474.0000000000357*helper_10*helper_6 + 170.66666666666612*helper_10*z - helper_11*helper_2 - helper_11 - 232.69444444444252*helper_12 - 535.33333333333644*helper_13*z + 267.66666666666822*helper_13 + helper_14*helper_7 + helper_14*x + 71.166666666673237*helper_15*helper_3 - 4.7073456244112999e-13*helper_15*helper_6 + 3.5771385853423321e-13*helper_15*helper_9 + 1.1768364061028277e-13*helper_15*x - 5.3211139198561884e-13*helper_15*y + 66.66666666666751*helper_16 + 124.33333333331973*helper_17*helper_6 + 21.333333333333975*helper_17 - 754.16666666672927*helper_18*z + 473.69444444447595*helper_18 - 251.11111111109051*helper_19*y + 3.6481928589187515e-12*helper_19 - 255.63888888891896*helper_2*helper_3 - helper_2*helper_8 - 5.2957638274626995e-13*helper_2*x - 5.333333333332849*helper_2*y - 31.083333333329918*helper_20*y + 2.1771473512902224e-12*helper_20 + 498.00000000006958*helper_21*z + 249.00000000003479*helper_21 + 280.47222222225309*helper_22*helper_6 + 273.00000000003513*helper_22*helper_7 - 753.11111111110029*helper_22*x + 191.99999999999886*helper_22 - 104.08333333333155*helper_23*x + 31.999999999998607*helper_23 + 34.361111111107377*helper_3 + 673.55555555554815*helper_4*helper_9 + 3.5305092183084658e-13*helper_4 + 253.55555555554167*helper_5*helper_6 - 133.33333333333496*helper_5*helper_7 - 55.611111111089599*helper_5*x + 21.333333333334451*helper_5 - 95.694444444440904*helper_6*y - 1.6475709685439524e-12*helper_6*z + 2.9420910152570612e-13*helper_6 - 273.00000000003524*helper_7*helper_9 + 9.4146912488225816e-13*helper_7*z - helper_8 - 127.99999999999986*helper_9*z + 32.00000000000005*helper_9 - 5.8841820305141968e-14*x + 1.3711254354117922e-13*y*pow(z, 6) - 5.3333333333336101*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_27(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_27(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6107,7 +6059,7 @@ double helper_24 = helper_0*helper_9;
 val[2] = -(-951.4999999999967*helper_0*helper_11 - 455.00000000000642*helper_0*helper_15 - helper_0*helper_19 - helper_0*helper_20 + 1265.1249999999886*helper_0*helper_3 - 1.8894885656096246e-12*helper_0*helper_5 + 4.2665870836346316e-13*helper_0*x - 151.99999999999841*helper_0*y + 768.24999999999636*helper_1*helper_11 + 373.25000000000284*helper_1*helper_15 - helper_1*helper_18 - 1713.4999999999804*helper_1*helper_3 + 2.0723422977653952e-12*helper_1*helper_5 - 831.99999999999875*helper_1*helper_8 + 207.99999999999778*helper_1*y + helper_10*helper_2 + helper_10 - 192.06249999999909*helper_11*helper_2 + 366.50000000000068*helper_11*z + 8.8124999999987494*helper_11 + 130.49999999999818*helper_12*z - 65.249999999999062*helper_12 - helper_13*helper_6 - helper_13*x - 258.62499999999636*helper_14*helper_3 + 2.4380497620769402e-13*helper_14*helper_5 - 127.99999999999989*helper_14*helper_8 - 6.0951244051923505e-14*helper_14*x + 31.999999999999233*helper_14*y - 93.312500000000739*helper_15*helper_2 + 163.50000000000716*helper_15*z + 11.562499999997101*helper_15 + 18.375000000009891*helper_16*helper_8 + 8.5331741672692632e-13*helper_16 - helper_17*helper_22 - helper_17*helper_6 - helper_18*z + helper_19 + 1074.9374999999857*helper_2*helper_3 - 1.1275980149605826e-12*helper_2*helper_5 + helper_2*helper_7 + 527.99999999999943*helper_2*helper_8 + 2.7428059823365492e-13*helper_2*x - 131.99999999999824*helper_2*y + helper_20 - 202.50000000001478*helper_21*z - 101.25000000000739*helper_21 + 7.3141492862308201e-13*helper_22 + 143.68749999999312*helper_23*helper_5 + 607.99999999999875*helper_23 - 65.249999999999091*helper_24*x + 5.9618976422365643e-14*helper_24 - 396.37499999999841*helper_3*z + 28.437500000000512*helper_3 + 71.99999999999568*helper_4*helper_6 + 47.999999999999346*helper_4 - 162.06250000000301*helper_5*helper_8 - 1.5237811012980877e-13*helper_5 - 4.8760995241538804e-13*helper_6*z + helper_7 - 191.99999999999943*helper_8*z + 15.999999999999886*helper_8 - 1.828537321557705e-13*x*z + 3.0475622025961752e-14*x + 1.4080403509808982e-13*y*pow(z, 6) - 3.9999999999998863*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_28(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_28(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6168,7 +6120,7 @@ double helper_25 = helper_0*helper_8;
 val[2] = -(442.88888888888607*helper_0*helper_11 + 26.999999999998991*helper_0*helper_12 + 604.88888888889073*helper_0*helper_17 - 135.02777777777823*helper_0*helper_21 - 4.1877612488861869e-13*helper_0*helper_9 - 416.0000000000008*helper_0*y - 345.66666666666356*helper_1*helper_11 - 453.66666666666697*helper_1*helper_17 + helper_1*helper_20 - 4.0767389464232083e-13*helper_1*helper_5 - 1.9096576172236008e-12*helper_1*helper_8 - helper_10*helper_2 - helper_10 + 86.41666666666589*helper_11*helper_2 - 194.44444444444468*helper_11*z + 10.805555555556396*helper_11 - 53.999999999998039*helper_12*z + 26.999999999999019*helper_12 - 840.83333333331927*helper_13*y - 8.3932860661653908e-14*helper_13 + helper_14*helper_6 + helper_14*x - 4.7961634663801947e-14*helper_15*helper_5 - 2.2833586873124314e-13*helper_15*helper_8 + 576.00000000000057*helper_15*y + 141.49999999999648*helper_16*y + 1.1990408665950627e-14*helper_16 + 113.41666666666674*helper_17*helper_2 - 302.44444444444787*helper_17*z + 37.805555555557248*helper_17 - helper_18*helper_24 - helper_18*helper_6 + 1042.8888888888678*helper_19*x + 917.33333333333462*helper_19 - 614.4722222222083*helper_2*helper_3 + 2.2182256032008666e-13*helper_2*helper_5 - helper_2*helper_7 + 1.0482540761340087e-12*helper_2*helper_8 - 5.3956838996778487e-14*helper_2*x - 1029.3333333333346*helper_2*y + helper_20*z + 118.83333333333741*helper_21*z + 16.194444444440848*helper_21 + 53.999999999998096*helper_22*helper_9 + 3.7170266864446899e-13*helper_22 + 53.999999999998494*helper_23*z + 26.999999999999247*helper_23 - 1.4388490399140585e-13*helper_24 + 26.99999999999757*helper_25*helper_6 + 1.7228070821791827e-12*helper_25 - 32.472222222222157*helper_3 + 3.2862601528904634e-12*helper_4*helper_6 + 303.38888888888516*helper_4*x + 85.333333333333513*helper_4 - 53.99999999999811*helper_5*helper_9 - 1.6786572132330923e-13*helper_5*z + 2.9976021664876936e-14*helper_5 - 26.999999999997577*helper_6*helper_8 + 9.5923269327604665e-14*helper_6*z - helper_7 - 7.6797827356738249e-13*helper_8*z + 1.349106012090346e-13*helper_8 + 3.5971225997852327e-14*x*z - 5.995204332975312e-15*x - 128.00000000000011*y*pow(z, 6) - 5.3333333333333428*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_29(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_29(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6237,7 +6189,7 @@ double helper_30 = helper_0*helper_10;
 val[2] = -(360.00000000003001*helper_0*helper_12 + helper_0*helper_18 + 2038.6666666668634*helper_0*helper_22 + 1152.0000000001887*helper_0*helper_26 + 7639.9999999998772*helper_0*helper_3 + 3392.0000000000177*helper_0*helper_6 - 768.00000000000682*helper_0*helper_7 - 2.9798385980940242e-11*helper_0*helper_9 - 7.2333250500382731e-12*helper_1*helper_10 + helper_1*helper_19 - 1.040945107888401e-11*helper_1*y - helper_10*helper_23 - 720.00000000006003*helper_10*helper_4 - 7.2333250500382747e-12*helper_10*z + helper_11*helper_2 + helper_11 + 360.0000000000299*helper_12 - 4853.3333333334467*helper_13*helper_9 - 2752.0000000000018*helper_13 - 9013.333333333172*helper_14*y + 4608.0000000000036*helper_14 - 1175.9999999999759*helper_15*helper_3 - 512.00000000000227*helper_15*helper_6 + 4.3733905386035968e-12*helper_15*helper_9 + 1984.0000000000002*helper_15*x - 5.9499072335707746e-12*helper_15*y - 384.0*helper_16*x + 1.1137757383038866e-12*helper_16*y - 1408.0000000000673*helper_17*z + helper_18 + helper_19*z + 5193.3333333332339*helper_2*helper_3 - helper_2*helper_8 - 4192.0000000000018*helper_2*x + 1.1908252162128503e-11*helper_2*y - 7653.333333333464*helper_20*helper_6 + 2.5712765250304412e-12*helper_20 - 3944.0000000004088*helper_21*helper_6 + 1.2576606422954171e-11*helper_21 + 1905.3333333335463*helper_22 + helper_23*helper_30 + 5168.0000000000855*helper_24*y - 3968.00000000002*helper_24 - 1292.0000000000205*helper_25*y + 2272.0000000000109*helper_25 - 1152.0000000001892*helper_26 + 1152.0000000003151*helper_27*z + 576.00000000015734*helper_27 + 3280.0000000000709*helper_28*x + 3.4443559115972149e-11*helper_28 - 820.00000000001774*helper_29*x - 1.9544366125502031e-11*helper_29 + 489.33333333332871*helper_3 + 1.0849987575057412e-11*helper_30 + 3146.6666666667529*helper_4*helper_9 - 3133.3333333332912*helper_4*y + 832.00000000000091*helper_4 + 4970.6666666667634*helper_5*helper_6 + 1.519673276107678e-12*helper_5 - 1193.3333333333615*helper_6*y - 1408.000000000008*helper_6*z + 224.00000000000148*helper_6 - helper_8 - 753.33333333335872*helper_9*x - 2.0508039710876433e-12*helper_9 - 96.000000000000171*x - 7.536193891157259e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_30(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_30(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6308,7 +6260,7 @@ double helper_32 = helper_2*helper_8;
 val[2] = -(helper_0*helper_19 - 329.33333333332098*helper_0*helper_24 - 1.7886930154496482e-26*helper_0*helper_6 - 1.1297629498585163e-12*helper_0*helper_9 - 2.2319923687063937e-12*helper_0*y - 559.99999999997431*helper_1*helper_11 + helper_1*helper_20 + helper_1*helper_23 - 4.7286619064833189e-12*helper_1*helper_8 - 3583.9999999999986*helper_1*x - helper_10*helper_2 - helper_10 - 181.33333333331439*helper_11*z - 49.333333333336327*helper_11 - 143.99999999999937*helper_12*z + 71.999999999999687*helper_12 + 650.6666666666315*helper_13*helper_8 + 71.999999999999744*helper_13*helper_9 - 3047.9999999999281*helper_13*y + 1855.9999999999991*helper_13 - 2774.6666666666106*helper_14*y + 3615.9999999999991*helper_14 + 256.0*helper_15*helper_5 - 5.7198690228686258e-13*helper_15*helper_8 - 1856.0000000000002*helper_15*x + 384.0*helper_16*x - 2.7178259642823257e-13*helper_16*y + 279.99999999998181*helper_17*helper_8 - 789.33333333331393*helper_17*y + 384.0*helper_17 - 3.0996967868645718e-13*helper_18*z + helper_19 - helper_2*helper_7 - 3.180122831736239e-12*helper_2*y + helper_20*z + 4298.6666666665733*helper_21*x + 3.616662525018853e-12*helper_21 + 679.99999999998681*helper_22*x + 1.4539480730490745e-12*helper_22 + helper_23*z + 49.333333333339169*helper_24 + helper_25*helper_26 - helper_25*helper_5 + 1754.666666666631*helper_26*y - 1216.0*helper_26 - 1359.9999999999736*helper_27*y + 1664.0*helper_27 + 339.99999999999341*helper_28*y - 1056.0*helper_28 + helper_29*helper_31 - helper_29*helper_8 + helper_3*helper_5 - helper_3*x + 6.3118083351070442e-12*helper_30*z + 3.1559041675535237e-12*helper_30 + 4.2330583482906692e-12*helper_31 + 139.99999999999358*helper_32*x + 2.6121327323379843e-12*helper_32 + 898.66666666664059*helper_4*x + 6.9544370262519947e-13*helper_4 - 32.0*helper_5 - helper_7 - 1.8687273950490082e-12*helper_8*z + 3.241851231905339e-13*helper_8 - 447.99999999999943*x*z + 31.999999999999886*x - 8.2156503822264676e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_31(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_31(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6373,7 +6325,7 @@ double helper_26 = helper_0*helper_10;
 val[2] = (704.00000000002274*helper_0*helper_15 + 1417.3333333334922*helper_0*helper_18 + helper_0*helper_22 + 2215.9999999999404*helper_0*helper_3 - 768.00000000000682*helper_0*helper_7 - 448.00000000000398*helper_0*x - 1.3207213100952268e-12*helper_0*y - 6.011191544530807e-12*helper_1*helper_10 + 3280.0000000000682*helper_1*helper_14 + helper_1*helper_16 - 2250.6666666665933*helper_1*helper_3 - 2176.0000000000196*helper_1*helper_6 + 512.00000000000443*helper_1*x - 2.9771740628336457e-12*helper_1*y - helper_10*helper_19 + 1.5027978861327005e-12*helper_10*helper_2 - 432.00000000004343*helper_10*helper_4 + 216.00000000002171*helper_10*x - 6.0111915445308054e-12*helper_10*z + 1.5027978861327018e-12*helper_10 - 332.0000000000166*helper_11*helper_9 - 288.0000000000025*helper_11 - 256.00000000000227*helper_12*helper_6 + 3.2578384434602003e-12*helper_12*helper_9 - 2.2923885012457284e-12*helper_12*y - 231.99999999999011*helper_13*y + 64.000000000000568*helper_13 - 918.66666666668561*helper_14 + 704.00000000002296*helper_15 + helper_16*z - 2968.0000000003242*helper_17*helper_6 + 9.7486463346288815e-12*helper_17 + 1550.6666666668327*helper_18 + helper_19*helper_26 + 1142.6666666666229*helper_2*helper_3 - helper_2*helper_8 - 1.465405574663298e-11*helper_2*helper_9 + 4.5834447348617507e-12*helper_2*y - 5018.6666666667679*helper_20*y + 1984.000000000018*helper_20 - 820.00000000001728*helper_21*y + 1184.0000000000107*helper_21 - helper_22 + 1152.0000000002569*helper_23*z + 576.00000000012824*helper_23 - 2058.6666666667675*helper_24*x - 2.2767565610593824e-11*helper_24 + 1328.0000000000659*helper_25*x + 2.6037838551929886e-11*helper_25 + 216.00000000002149*helper_26*x + 9.0167873167962077e-12*helper_26 + 214.66666666666316*helper_3 + 1461.333333333404*helper_4*helper_9 - 1090.6666666666429*helper_4*y + 192.00000000000171*helper_4 + 3477.3333333334049*helper_5*helper_6 - 1408.0000000000455*helper_5*helper_7 + 2.4309443347198526e-12*helper_5 - 896.00000000000819*helper_6*z + 160.00000000000151*helper_6 - helper_8 - 398.66666666668544*helper_9*x - 1.6227019727921712e-12*helper_9 - 32.000000000000284*x + 3.7836400679219423e-13*y*pow(z, 6) - 8.0246920219919926e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_32(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_32(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6434,7 +6386,7 @@ double helper_25 = helper_1*helper_9;
 val[2] = (4.5989878572074044e-12*helper_0*helper_10 + 128.00000000000654*helper_0*helper_13 + 360.00000000000227*helper_0*helper_17 + 599.99999999990189*helper_0*helper_3 - 4.9880100050362749e-12*helper_0*helper_7 - 2.9096725029378272e-12*helper_0*x - 5.3885784723213496e-12*helper_0*y - helper_1*helper_19 - 586.66666666655567*helper_1*helper_3 - 1.4132695014269446e-11*helper_1*helper_6 + 576.00000000007481*helper_10*helper_21 - 256.00000000001285*helper_10*helper_4 - 576.00000000007458*helper_10*helper_6 + helper_11*helper_2 + helper_11 - 155.99999999999937*helper_12*helper_2 - 190.66666666666634*helper_12 + 128.00000000000642*helper_13 + helper_14*helper_7 + helper_14*x - 1.6626700016787572e-12*helper_15*helper_6 + 1.2683187833318115e-12*helper_15*helper_9 + 1.7514878436488919e-12*helper_15*y - 55.999999999986372*helper_16*y + 4.156675004196889e-13*helper_16 + 360.00000000000216*helper_17 + 1039.9999999999768*helper_18*helper_6 + 5.4605209243171826e-12*helper_18 - helper_19*z + 286.66666666660478*helper_2*helper_3 - helper_2*helper_8 - 5.7613913639898689e-12*helper_2*helper_9 - 1.8705037518886031e-12*helper_2*x - 3.7587710721715124e-12*helper_2*y - 1672.0000000001298*helper_20*z + 902.66666666673268*helper_20 + 769.33333333339715*helper_21*helper_9 - 1626.6666666666324*helper_21*y + 1.288569251301038e-11*helper_21 - 259.9999999999942*helper_22*y + 7.6898487577642594e-12*helper_22 + 1152.0000000001369*helper_23*z + 576.00000000006844*helper_23 + 936.00000000006889*helper_24*helper_7 - 970.66666666666333*helper_24*x - 9.2019725173031992e-12*helper_24 + 623.99999999999773*helper_25*x + 1.0362377622641468e-11*helper_25 + 62.666666666659381*helper_3 + 693.33333333333167*helper_4*helper_9 - 306.66666666662394*helper_4*y + 1.2470025012590687e-12*helper_4 + 1173.3333333333107*helper_5*helper_6 - 720.00000000000455*helper_5*helper_7 + 3.055333763768762e-12*helper_5 - 326.66666666666083*helper_6*y - 5.8193450058756575e-12*helper_6*z + 1.0391687510492247e-12*helper_6 - 936.00000000006867*helper_7*helper_9 + 3.3253400033575169e-12*helper_7*z - helper_8 + 4.0207837059824677e-12*helper_9*z - 6.8811623066266546e-13*helper_9 - 2.0783375020984445e-13*x - 3.9701575360600253e-13*y*pow(z, 6) - 7.229772336359703e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_33(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_33(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6497,7 +6449,7 @@ double helper_25 = helper_0*helper_9;
 val[2] = (-842.66666666667788*helper_0*helper_11 + 72.000000000007276*helper_0*helper_15 + 545.33333333335668*helper_0*helper_18 + 1623.9999999999623*helper_0*helper_3 - 6.3864469268539177e-12*helper_0*helper_8 - 2.2382096176451251e-13*helper_0*x + 2.5126567493314786e-12*helper_0*y + 1424.0000000000118*helper_1*helper_14 - helper_1*helper_17 - 2122.6666666666119*helper_1*helper_3 - 1.0871303857133469e-12*helper_1*helper_5 - 4.6860293423376895e-12*helper_1*y + helper_10*helper_2 + helper_10 - 156.00000000000125*helper_11*helper_2 - 62.666666666671915*helper_11 + helper_12*helper_6 + helper_12*x - 311.99999999999113*helper_13*helper_3 - 1.2789769243686347e-13*helper_13*helper_5 + 8.9883656073655521e-13*helper_13*helper_8 + 3.1974423109215868e-14*helper_13*x - 2.1103119252074378e-12*helper_13*y + 1045.333333333353*helper_14*z - 166.66666666667356*helper_14 - 144.00000000001455*helper_15*z + 72.000000000007248*helper_15 - 356.00000000000296*helper_16*helper_5 + 1310.6666666666308*helper_16*x + 4.435563027982322e-12*helper_16 - helper_17*z - 712.00000000005525*helper_18*z + 166.66666666669835*helper_18 + helper_19*helper_25 - helper_19*helper_9 + 5.9152682752049353e-13*helper_2*helper_5 - helper_2*helper_7 - 4.0605296902641687e-12*helper_2*helper_8 - 1.4388490399147141e-13*helper_2*x - 1946.6666666666888*helper_20*y + 9.9120711638570024e-13*helper_20 + helper_21*helper_23 - helper_21*helper_6 + 3.7900464017199847e-11*helper_22*z + 1.8950232008599907e-11*helper_22 - 3.8369307731059042e-13*helper_23 + 624.000000000005*helper_24*x + 7.2537531536911271e-12*helper_24 + 5.6275366311369456e-12*helper_25*x + 1.8918200339613685e-12*helper_25 - 562.66666666665628*helper_3*z + 62.666666666666288*helper_3 + 437.33333333334633*helper_4*helper_8 - 1.1255073262273882e-11*helper_4*helper_9 + 9.5923269327647604e-14*helper_4 - 4.4764192352902503e-13*helper_5*z + 7.9936057773040314e-14*helper_5 + 2.5579538487372992e-13*helper_6*z - helper_7 + 2.7595703500083549e-12*helper_8*z - 4.6518344731795261e-13*helper_8 + 5.6275366311369408e-12*helper_9*x - 1.5987211554608057e-14*x + 4.023448241241489e-13*y*pow(z, 6) - 5.7198690228678311e-13*y*z + 1.7763568393980189e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_34(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_34(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6559,7 +6511,7 @@ double helper_25 = helper_0*helper_10;
 val[2] = -(-1333.3333333333305*helper_0*helper_12 + 128.00000000000801*helper_0*helper_13 + 216.00000000000227*helper_0*helper_17 + 958.66666666672745*helper_0*helper_19 + 792.00000000006776*helper_0*helper_22 + 1191.9999999998852*helper_0*helper_3 - 4.2206238504153594e-12*helper_0*helper_7 - 8.1104012394917178e-12*helper_0*helper_9 - 2.4620305794089576e-12*helper_0*x - 4.1895376057261757e-12*helper_0*y - 2.5899282718456625e-12*helper_1*helper_10 - 1461.3333333331989*helper_1*helper_3 - 1.1958434242843512e-11*helper_1*helper_6 - 256.00000000001626*helper_10*helper_4 - 576.00000000007458*helper_10*helper_6 - 2.5899282718456617e-12*helper_10*z + helper_11*helper_2 + helper_11 - 193.33333333333445*helper_12 + 128.00000000000813*helper_13 + helper_14*helper_7 + helper_14*x - 227.9999999999992*helper_15*helper_9 - 1.5827339439057597e-12*helper_15 - 199.99999999998266*helper_16*helper_3 - 1.4068746168051189e-12*helper_16*helper_6 + 1.1759482276829836e-12*helper_16*helper_9 + 3.5171865420128084e-13*helper_16*x + 7.7093886829995074e-13*helper_16*y + 216.00000000000233*helper_17 + 1263.9999999999714*helper_18*helper_6 + 3.577582674552911e-12*helper_18 - 1784.0000000001273*helper_19*z + 825.33333333339965*helper_19 + 865.33333333325618*helper_2*helper_3 - helper_2*helper_8 - 5.2715609655252313e-12*helper_2*helper_9 - 1.9291235275892504e-12*helper_2*y - 1829.3333333332912*helper_20*y + 1.0903278280239676e-11*helper_20 - 315.99999999999272*helper_21*y + 6.5067951027236764e-12*helper_21 - 792.00000000006753*helper_22 + 1152.0000000001332*helper_23*z + 576.00000000006685*helper_23 + 911.99999999999727*helper_24*x + 9.3267615852710926e-12*helper_24 + 576.00000000007481*helper_25*helper_6 + 3.884892407768494e-12*helper_25 + 65.333333333325811*helper_3 + 842.66666666666731*helper_4*helper_9 - 461.33333333328585*helper_4*y + 1.0551559626038392e-12*helper_4 + 1130.6666666666406*helper_5*helper_6 - 432.00000000000455*helper_5*helper_7 + 2.5792701308094892e-12*helper_5 - 249.33333333332763*helper_6*y - 4.9240611588179192e-12*helper_6*z + 8.7929663550320011e-13*helper_6 + 2.8137492336102387e-12*helper_7*z - helper_8 + 3.4470204468561719e-12*helper_9*z - 5.6776805479329708e-13*helper_9 - 1.7585932710064042e-13*x - 1.785238623597698e-13*y*pow(z, 6) - 6.3060667798715606e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_35(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_35(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6624,7 +6576,7 @@ double helper_26 = helper_0*helper_10;
 val[2] = -(127.99999999999983*helper_0*helper_15 + 958.66666666671927*helper_0*helper_20 + helper_0*helper_22 + 1191.9999999998613*helper_0*helper_3 - 3.0695446184839737e-12*helper_0*helper_7 - 1.7905676941156514e-12*helper_0*x - 3.3137936839018652e-12*helper_0*y - helper_1*helper_19 - 1461.3333333331702*helper_1*helper_3 - 8.6970430857045956e-12*helper_1*helper_6 - 432.00000000001273*helper_10*helper_4 - 792.00000000007071*helper_10*helper_6 + 216.00000000000642*helper_10*x + helper_11*helper_2 + helper_11 - 315.99999999999557*helper_12*helper_2 - 249.33333333333144*helper_12 + helper_13*helper_7 + helper_13*x - 199.99999999997868*helper_14*helper_3 - 1.023181539494658e-12*helper_14*helper_6 + 1.0551559626037498e-12*helper_14*helper_9 + 2.5579538487366449e-13*helper_14*x - 6.8300920474912569e-13*helper_14*y - 255.99999999999989*helper_15*z + 127.99999999999994*helper_15 + 911.99999999995134*helper_16*helper_6 + 1.5845103007458819e-12*helper_16 - 227.99999999998795*helper_17*helper_6 + 865.33333333323912*helper_17*x + 4.8538950636548271e-13*helper_17 - 1784.0000000001121*helper_18*helper_6 + 1130.6666666666538*helper_18*x + 2.0108359422010237e-12*helper_18 - helper_19*z + 4.7322146201627939e-12*helper_2*helper_6 - helper_2*helper_8 - 4.4595438453143175e-12*helper_2*helper_9 - 1.1510792319314901e-12*helper_2*x + 825.33333333339283*helper_20 - 1333.3333333332628*helper_21*y + 7.9296569310836018e-12*helper_21 - helper_22 + 1152.0000000001296*helper_23*z + 576.00000000006503*helper_23 - 1829.3333333333096*helper_24*x - 5.6541438198109132e-12*helper_24 + 1263.9999999999823*helper_25*x + 7.2866157552197725e-12*helper_25 + 792.00000000007049*helper_26*helper_6 + 216.00000000000648*helper_26*x + 2.8350655156829056e-12*helper_26 - 461.33333333327641*helper_3*z + 65.333333333324447*helper_3 + 7.6738615462099342e-13*helper_4 + 842.66666666662309*helper_5*helper_6 + 2.3563373474647541e-12*helper_5 - 193.33333333332359*helper_6*y - 3.5811353882313056e-12*helper_6*z + 6.3948846218416236e-13*helper_6 + 2.0463630789893159e-12*helper_7*z - helper_8 - 2.3891999489931864e-13*helper_9 - 1.2789769243683076e-13*x + 1.6520118606417159e-13*y*pow(z, 6) - 5.9463545198929826e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_36(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_36(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6689,7 +6641,7 @@ double helper_27 = helper_0*helper_7;
 val[2] = (-1946.6666666666883*helper_0*helper_10 + helper_0*helper_12 + 8.415334202775892e-12*helper_0*helper_17 + 545.33333333336259*helper_0*helper_21 + 1623.9999999999663*helper_0*helper_3 - 1.6421677987239059e-25*helper_0*helper_5 + 8.3133500083943536e-13*helper_0*helper_8 - 9.5793121592227852e-26*helper_0*x + 1.3029577416998779e-12*helper_0*y + 624.00000000001614*helper_1*helper_15 + helper_1*helper_18 - helper_1*helper_20 - 2122.6666666666156*helper_1*helper_3 - 4.6528087630510677e-25*helper_1*helper_4 + 3.6131098113403635e-12*helper_1*helper_7 - 2.8492763703978055e-12*helper_1*y - 356.00000000000273*helper_10*helper_2 - 166.66666666667379*helper_10 - 144.0000000000141*helper_11*z + helper_12 + 1424.0000000000114*helper_13*helper_7 + 1.0947785324826043e-25*helper_13 - 311.99999999999142*helper_14*helper_3 - 5.4738926624130193e-26*helper_14*helper_4 + 4.7961634663810216e-13*helper_14*helper_7 + 1.3684731656032548e-26*helper_14*x - 1.5054624213916686e-12*helper_14*y - 62.666666666675042*helper_15 + 437.33333333335804*helper_16*y - 1.9158624318445577e-25*helper_16 - 1.6830668405551797e-11*helper_17*z + 8.4153342027758952e-12*helper_17 + helper_18*z + 1045.3333333333535*helper_19*x + 1.2150280781498525e-12*helper_19 + 1310.6666666666324*helper_2*helper_3 - helper_2*helper_6 - 2.1023183194303471e-12*helper_2*helper_7 + helper_2*helper_9 - 6.1581292452146477e-26*helper_2*x + 2.9571900483914519e-12*helper_2*y - helper_20*z - 712.00000000006764*helper_21*z + 166.66666666670483*helper_21 + helper_22*helper_23 - helper_22*helper_4 - 842.66666666669516*helper_23*y + 4.2422668133700916e-25*helper_23 - 156.00000000000404*helper_24*y + 2.5316753563660219e-25*helper_24 + helper_25*helper_27 - helper_25*helper_7 + 4.4820016025401582e-11*helper_26*z + 2.2410008012700785e-11*helper_26 - 3.0215829838200345e-12*helper_27 - 562.66666666665833*helper_3*z + 62.666666666666686*helper_3 + 3.4211829140081392e-26*helper_4 - helper_6 - 1.8385293287793779e-13*helper_7 + helper_9 + 4.1054194968097647e-26*x*z - 6.8423658280162755e-27*x + 3.037570195374342e-13*y*pow(z, 6) - 1.8207657603840948e-13*y*z - 2.7089441800880575e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_37(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_37(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6750,7 +6702,7 @@ double helper_26 = helper_2*helper_9;
 val[2] = (2.4513724383724305e-12*helper_0*helper_10 + 360.00000000000455*helper_0*helper_12 + 127.99999999999943*helper_0*helper_16 + 599.99999999986687*helper_0*helper_3 - 4.5350390109887433e-12*helper_0*helper_9 - 3.3510971775293007e-12*helper_0*y - helper_1*helper_19 - 586.6666666665127*helper_1*helper_3 - 8.5762508206254109e-12*helper_1*helper_6 + helper_11*helper_2 + helper_11 - 720.00000000000864*helper_12*z + 360.00000000000432*helper_12 - 1626.6666666666351*helper_13*helper_9 - 1.7656986983640549e-12*helper_13 + helper_14*helper_7 + helper_14*x - 55.99999999998046*helper_15*helper_3 - 1.0089706847794596e-12*helper_15*helper_6 + 9.9120711638533855e-13*helper_15*helper_9 + 2.5224267119486556e-13*helper_15*x - 1.0507150705049565e-12*helper_15*y + 127.99999999999937*helper_16 + 623.99999999995134*helper_17*helper_6 + 1.3429257705874959e-12*helper_17 - 155.99999999998784*helper_18*helper_6 + 9.85433956656611e-13*helper_18 - helper_19*z + 286.66666666657932*helper_2*helper_3 + 4.6664894171050016e-12*helper_2*helper_6 - helper_2*helper_8 - 1.1350920203768919e-12*helper_2*x - 1672.0000000001125*helper_20*z + 902.6666666667254*helper_20 + helper_21*helper_22 - helper_21*helper_6 + 769.33333333338669*helper_22*helper_9 - 970.66666666659455*helper_22*y + 7.819522807040817e-12*helper_22 + 1152.0000000001351*helper_23*z + 576.00000000006753*helper_23 + 576.00000000006571*helper_24*helper_9 - 3.026912054338379e-12*helper_24 + 1039.9999999999782*helper_25*x + 6.3273830619436308e-12*helper_25 - 259.99999999999454*helper_26*x - 4.0598635564492522e-12*helper_26 + 62.666666666657505*helper_3 + 1173.3333333333144*helper_4*helper_9 + 7.5672801358459455e-13*helper_4 + 693.3333333332871*helper_5*helper_6 - 255.99999999999886*helper_5*helper_7 - 306.66666666661047*helper_5*x + 2.4185098368437722e-12*helper_5 - 190.6666666666558*helper_6*y - 3.5313973967281103e-12*helper_6*z + 6.3060667798716323e-13*helper_6 - 576.00000000006594*helper_7*helper_9 + 2.01794136955892e-12*helper_7*z - helper_8 - 326.66666666666259*helper_9*x + 1.371347480016931e-12*helper_9*z - 9.5035090907898708e-14*helper_9 - 1.2612133559743306e-13*x + 2.6112445539178027e-13*y*pow(z, 6) - 6.0618177144540151e-13*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_38(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_38(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6812,7 +6764,7 @@ double helper_23 = helper_2*helper_9;
 val[2] = (-767.99999999999613*helper_0*helper_10 + 704.00000000001637*helper_0*helper_11 + 216.00000000001864*helper_0*helper_15 + 2215.9999999998827*helper_0*helper_3 - 4.2206238504157552e-12*helper_0*helper_7 - 2.4620305794091858e-12*helper_0*x - 448.00000000000273*helper_0*y + 511.99999999999727*helper_1*helper_10 - 1.1958434242844643e-11*helper_1*helper_6 + 1152.0000000001387*helper_10*helper_18 - 127.99999999999932*helper_10*helper_2 - 1152.0000000001392*helper_10*helper_6 + 511.99999999999739*helper_10*z - 127.99999999999935*helper_10 - 1408.0000000000318*helper_11*z + 704.00000000001592*helper_11 + helper_12*helper_7 + helper_12*x - 1.4068746168052516e-12*helper_13*helper_6 - 255.99999999999829*helper_13*helper_9 + 63.9999999999972*helper_13*y - 231.99999999998124*helper_14*y + 3.5171865420131381e-13*helper_14 - 432.00000000003706*helper_15*z + 216.00000000001853*helper_15 + 1328.0000000000282*helper_16*helper_6 - 2250.6666666665265*helper_16*x + 511.99999999999864*helper_16 - 2968.0000000002879*helper_17*z + 1550.6666666668148*helper_17 + 1417.3333333334722*helper_18*helper_9 - 2058.6666666667115*helper_18*y + 1.0903278280240728e-11*helper_18 - 332.00000000000682*helper_19*y + 6.5067951027242888e-12*helper_19 + 1142.6666666665847*helper_2*helper_3 - helper_2*helper_8 - 1.5827339439059122e-12*helper_2*x - 287.99999999999579*helper_2*y + 1152.0000000002497*helper_20*z + 576.00000000012483*helper_20 + 792.00000000014211*helper_21*helper_7 - 5018.6666666667079*helper_21*x + 1983.9999999999907*helper_21 + 3280.0000000000255*helper_22*x - 2175.9999999999882*helper_22 - 820.00000000000637*helper_23*x + 1183.9999999999927*helper_23 + 214.66666666665967*helper_3 + 3477.3333333333649*helper_4*helper_9 - 1090.6666666666199*helper_4*y + 1.0551559626039366e-12*helper_4 + 1461.3333333333674*helper_5*helper_6 + 192.00000000000279*helper_5 - 398.66666666667675*helper_6*y - 4.9240611588183821e-12*helper_6*z + 8.7929663550328291e-13*helper_6 - 792.00000000014188*helper_7*helper_9 + 2.8137492336105032e-12*helper_7*z - helper_8 - 918.66666666667595*helper_9*x - 895.99999999999659*helper_9*z + 159.99999999999957*helper_9 - 1.7585932710065691e-13*x + 6.1017857433391323e-13*y*pow(z, 6) - 32.000000000000774*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_39(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_39(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6875,7 +6827,7 @@ double helper_25 = 71.999999999998806*helper_6*helper_8;
 val[2] = -(1754.6666666666372*helper_0*helper_11 - 1.2021997980449238e-12*helper_0*helper_12 + 71.999999999998778*helper_0*helper_17 + helper_0*helper_19 - 329.33333333332575*helper_0*helper_22 - helper_0*helper_23 + helper_0*helper_25 - 3047.99999999993*helper_0*helper_3 - 3.8369307731045188e-13*helper_0*helper_6 - 1215.999999999997*helper_0*helper_8 - 7.5139894306628242e-13*helper_0*helper_9 - 2.2382096176442734e-13*helper_0*x - 1359.9999999999782*helper_1*helper_11 - 559.99999999997829*helper_1*helper_16 + helper_1*helper_21 + 4298.6666666665751*helper_1*helper_3 - 1.0871303857129367e-12*helper_1*helper_5 + 1663.9999999999968*helper_1*helper_8 - 3583.9999999999973*helper_1*y - helper_10*helper_2 - helper_10 + 339.99999999999454*helper_11*helper_2 - 789.33333333331848*helper_11*z + 54.666666666664923*helper_11 - 1.2021997980449202e-12*helper_12 + helper_13*helper_6 + helper_13*x - helper_14*helper_19 - 1.278976924368144e-13*helper_14*helper_5 + 255.9999999999996*helper_14*helper_8 + 679.99999999998681*helper_15*y + 3.19744231092036e-14*helper_15 - 181.33333333331893*helper_16*z - 49.333333333335077*helper_16 - 143.99999999999767*helper_17*z + 71.999999999998835*helper_17 + 1.0243368653297294e-13*helper_18*helper_9 + 2.5579538487363475e-13*helper_18 + 5.9152682752027482e-13*helper_2*helper_5 - helper_2*helper_7 - 1055.999999999998*helper_2*helper_8 - 1.4388490399141759e-13*helper_2*x + 139.99999999999454*helper_20*helper_5 - 2774.6666666666106*helper_20*x + 3615.9999999999973*helper_20 + helper_21*z + 279.99999999999227*helper_22*z + 49.333333333333371*helper_22 + helper_23 + 650.66666666663764*helper_24*y + 9.9120711638532421e-13*helper_24 - helper_25 - 54.6666666666639*helper_3 + 2.4043995960898428e-12*helper_4*helper_9 + 898.66666666664241*helper_4*y + 9.5923269327613096e-14*helper_4 - 4.4764192352885559e-13*helper_5*z + 7.9936057773009428e-14*helper_5 + 5.1216843266486468e-14*helper_6*helper_9 - helper_7 + 383.99999999999881*helper_8*z - 31.999999999999829*helper_8 - 1.5987211554602002e-14*x + 383.99999999999977*y*pow(z, 6) - 447.99999999999977*y*z + 32.0*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_40(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_40(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -6936,7 +6888,7 @@ double helper_24 = helper_2*helper_9;
 val[2] = -(-767.99999999999227*helper_0*helper_10 + helper_0*helper_12 + 360.00000000002933*helper_0*helper_15 + 2038.6666666668389*helper_0*helper_17 + 7639.9999999998272*helper_0*helper_3 - 4.9880100050368678e-12*helper_0*helper_7 - 2.9096725029381729e-12*helper_0*x - 2751.9999999999991*helper_0*y + 511.99999999999477*helper_1*helper_10 - 9013.3333333331138*helper_1*helper_3 - 1.4132695014271126e-11*helper_1*helper_6 - 127.99999999999875*helper_10*helper_2 + 511.99999999999488*helper_10*z - 127.99999999999872*helper_10 - 1408.0000000000473*helper_11*z + helper_12 + helper_13*helper_7 + helper_13*x - 1175.9999999999688*helper_14*helper_3 - 1.6626700016789545e-12*helper_14*helper_6 - 511.9999999999967*helper_14*helper_9 + 4.1566750041973863e-13*helper_14*x + 1983.9999999999941*helper_14*y - 720.00000000005866*helper_15*z + 360.00000000002944*helper_15 + 3280.0000000000464*helper_16*helper_6 + 4607.9999999999909*helper_16 - 3944.0000000003656*helper_17*z + 1905.3333333335258*helper_17 + helper_18*helper_19 - helper_18*helper_6 - 4853.3333333334112*helper_19*y + 1.2885692513011906e-11*helper_19 + 5193.3333333332012*helper_2*helper_3 - helper_2*helper_8 - 1.8705037518888176e-12*helper_2*x - 4191.9999999999882*helper_2*y - 820.00000000001182*helper_20*y + 7.689848757765169e-12*helper_20 + 1152.0000000003047*helper_21*z + 576.00000000015234*helper_21 + 936.00000000018031*helper_22*helper_7 - 7653.3333333333894*helper_22*x + 3391.9999999999795*helper_22 + 5168.0000000000364*helper_23*x - 3967.9999999999754*helper_23 - 1292.0000000000082*helper_24*x + 2271.9999999999854*helper_24 - 3133.3333333332703*helper_3*z + 489.3333333333253*helper_3 + 4970.6666666667152*helper_4*helper_9 + 1.2470025012592172e-12*helper_4 + 3146.6666666667297*helper_5*helper_6 + 832.00000000000193*helper_5 - 753.33333333335349*helper_6*y - 5.819345005876349e-12*helper_6*z + 1.0391687510493491e-12*helper_6 - 936.00000000018008*helper_7*helper_9 + 3.3253400033579127e-12*helper_7*z - helper_8 - 1193.3333333333496*helper_9*x - 1407.999999999992*helper_9*z + 223.99999999999886*helper_9 - 2.0783375020986843e-13*x - 383.99999999999886*y*pow(z, 6) - 96.000000000000739*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_41(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_41(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7002,7 +6954,7 @@ double helper_29 = 5344.7462277093009*helper_0*helper_11 + 5344.7462277089235*he
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_22*(2958.2222222223568*helper_6 + 9443.555555555793*helper_7 + 2958.2222222223018*helper_8 + 366.61728395038023*x + 366.61728395049875*y + 1.8728852309417623) + 3*helper_13*helper_28 + helper_14*(helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_29) + helper_16*(1.4173660873232414e-11*helper_0*helper_6 + 1336.1865569273252*helper_11 + 1336.1865569272309*helper_12 - 1.8559320213874365e-11*helper_21 + 7.9145103822325637e-13*helper_23 - 9.5062576923209813e-12*helper_24 - 1.4307348173146771e-12*helper_25 + 1.4210854715202097e-13*helper_26 + 687.58299039786277*helper_27 + 5.2204715173529575e-12*helper_3 + 3.4886868580708816e-12*helper_4 + 5.6435514697690756e-12*helper_6 + 89.664380429872352*helper_7 - 5.8503837348468797e-12*helper_8 - 8.2352780287860203e-13*x + 6.0347763975448381e-13*y) + helper_5) + 7281.7777777778665*helper_1*helper_2 + helper_10*helper_6*(11832.888888889427*helper_6 + 37774.222222223172*helper_7 + 11832.888888889207*helper_8 + 1466.4691358015209*x + 1466.469135801995*y + 7.4915409237670492) + 4*helper_13*helper_15*y + helper_16*(-helper_17*helper_18 - helper_17*helper_19 - helper_17*helper_20 + helper_29))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_42(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_42(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7064,7 +7016,7 @@ double helper_25 = -4727.0452674897924*helper_0*helper_12 - 2.8844343466084232e-
 val[2] = (helper_0*(3*helper_10*helper_14*x*y + helper_15*helper_25 - helper_17*(1181.7613168724481*helper_12 + 750.35390946489917*helper_13 - 7.0133199659304485e-13*helper_18 - 2.4672780508191256e-11*helper_19 + 315.52263374492492*helper_20 + 1.8474111129762736e-13*helper_21 + 1.370031660136059e-11*helper_22 - 1.1834412736472371e-11*helper_23 + 6.7599369175037632e-12*helper_24 + 4.3632587255199022e-12*helper_3 + 7.211085866521058e-12*helper_5 - 5.6345367329378288e-12*helper_7 - 37.750342935457439*helper_8 + 5.3081489820926787e-12*helper_9 - 4.7974792862627778e-13*x - 1.071782351941171e-12*y) - 2*helper_24*helper_9*(4437.3333333334131*helper_7 + 12288.000000000078*helper_8 + 3242.6666666667984*helper_9 - 47.407407407859139*x - 2.8492763703980017e-10*y - 3.5116598079220265) - helper_3*helper_6) + 10922.666666666682*helper_1*helper_2 + helper_11*helper_7*(17749.333333333652*helper_7 + 49152.000000000313*helper_8 + 12970.666666667194*helper_9 - 189.62962963143656*x - 1.1397105481592007e-9*y - 14.046639231688106) - 4*helper_14*helper_16*x - helper_17*helper_25 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_43(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_43(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7131,7 +7083,7 @@ double helper_29 = -1.3137145692276102e-12*helper_1 + 1.3417736971796902e-11*hel
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_23*(1592.8888888889512*helper_6 + 6940.4444444444007*helper_7 + 2958.2222222222599*helper_8 - 316.04938271637133*x - 366.61728395083333*y + 1.8728852309241883) + 3*helper_13*helper_27 + helper_14*(helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_29) + helper_16*(5.4071424978094138e-12*helper_0*helper_6 + 407.00137174212671*helper_11 + 230.01371742104607*helper_12 + 2.1772432964886639e-13*helper_21 + 1.0421293457814887e-13*helper_22 - 6.8454725198815014e-12*helper_24 - 1.4814420076282477e-11*helper_25 + 6.7088684858984509e-12*helper_26 + 68.126200274388168*helper_28 + 1.2540640679540876e-12*helper_3 + 5.5604671910953163e-12*helper_4 + 2.0024146949626341e-12*helper_6 - 49.397347965212845*helper_7 - 2.2212264035408417e-12*helper_8 + 4.1755350891532838e-14*x - 1.5012475335415458e-12*y) + helper_5) + 7281.7777777777519*helper_1*helper_2 + helper_10*helper_6*(6371.5555555558049*helper_6 + 27761.777777777603*helper_7 + 11832.88888888904*helper_8 - 1264.1975308654853*x - 1466.4691358033333*y + 7.4915409236967534) + 4*helper_13*helper_15*y + helper_16*(-helper_17*helper_18 - helper_17*helper_19 - helper_17*helper_20 + helper_29))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_44(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_44(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7193,7 +7145,7 @@ double helper_25 = 2.31005923123756e-11*helper_0*helper_5 - 3.486396356796368e-1
 val[2] = (helper_0*(-2*helper_0*helper_21*(3242.6666666667738*helper_7 + 12288.000000000035*helper_8 + 4437.3333333335195*helper_9 - 6.9849193096162502e-10*x - 47.407407407944319*y - 3.5116598079059691) + 3*helper_10*helper_14*x*y - helper_15*helper_25 - helper_17*(750.35390946494999*helper_12 + 1181.7613168722344*helper_13 - 1.5158245029550218e-12*helper_18 - 1.9296151325165411e-11*helper_19 + 315.5226337448974*helper_20 + 1.7886729134868485e-11*helper_22 - 8.0002945283635969e-12*helper_23 + 6.3304533083336773e-12*helper_24 + 6.2148804621153866e-12*helper_3 + 5.7751480780939e-12*helper_5 - 3.3988724043756669e-12*helper_7 - 37.750342935460864*helper_8 + 7.2001663890360602e-12*helper_9 - 8.6686213762739776e-13*x + 1.0775888640473118e-12*y) - helper_3*helper_6) + 10922.666666666777*helper_1*helper_2 + helper_11*helper_7*(12970.666666667095*helper_7 + 49152.000000000138*helper_8 + 17749.333333334078*helper_9 - 2.7939677238465001e-9*x - 189.62962963177728*y - 14.046639231623876) - 4*helper_14*helper_16*x + helper_17*helper_25 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_45(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_45(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7257,7 +7209,7 @@ double helper_27 = 3695.0123456785968*helper_0*helper_12 + 3695.0123456778565*he
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_20*(4864.0000000001037*helper_6 + 16383.999999999827*helper_7 + 4864.0000000001764*helper_8 - 9.7907104645856842e-10*x - 7.5138473221159074e-10*y + 1.2510288066333635) + helper_11*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_27) + 3*helper_14*helper_26 + helper_15*(1.7962520360016231e-11*helper_0*helper_8 + 923.75308641964921*helper_12 + 923.75308641946413*helper_13 - 2.6104843938080297e-11*helper_21 - 6.8212102632985531e-13*helper_22 + 1.3805615087340737e-11*helper_23 - 1.0062288451022951e-11*helper_24 + 311.50617283953511*helper_25 + 5.3432813729163492e-12*helper_3 + 1.0171638565720142e-11*helper_4 - 2.9482013538288553e-12*helper_6 + 13.00411522640205*helper_7 + 6.9917405198797711e-12*helper_8 - 4.6540549192295004e-13*x - 3.9826441184798304e-13*y) + helper_5) + 16383.999999999996*helper_1*helper_2 + helper_10*helper_6*(19456.000000000415*helper_6 + 65535.999999999309*helper_7 + 19456.000000000706*helper_8 - 3.9162841858342737e-9*x - 3.005538928846363e-9*y + 5.0041152265334539) + 4*helper_11*helper_14*helper_7 + helper_15*(-helper_16*helper_17 - helper_16*helper_18 - helper_16*helper_19 + helper_27))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_46(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_46(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7323,7 +7275,7 @@ double helper_27 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_21*(2389.3333333334185*helper_6 + 9557.3333333331739*helper_7 + 3242.666666666717*helper_8 - 5.8450192833940567e-10*x + 47.407407406969142*y - 3.5116598079369936) + helper_11*(-helper_16*helper_27 - helper_17*helper_27 - helper_18*helper_27 + helper_26) + 3*helper_14*helper_25 + helper_15*(508.57613168719013*helper_12 + 418.50205761299151*helper_13 + 3.0316490059089018e-13*helper_20 - 1.6014562332852268e-11*helper_22 - 5.8911668410488767e-12*helper_23 + 154.33744855967862*helper_24 - 7.5791225147748517e-12*helper_27*helper_6 - 1.1105563656617523e-11*helper_27*helper_8 + 1.6674069532505725e-12*helper_3 + 7.4596606897975807e-12*helper_4 + 2.8042753304667231e-12*helper_6 + 9.6570644719053078*helper_7 - 8.3039199659101745e-13*helper_8 + 9.0002079862900619e-14*x - 1.1278897340561557e-12*y) + helper_5) + 10922.666666666622*helper_1*helper_2 + helper_10*helper_6*(9557.3333333336741*helper_6 + 38229.333333332695*helper_7 + 12970.666666666868*helper_8 - 2.3380077133576227e-9*x + 189.62962962787657*y - 14.046639231747974) + 4*helper_11*helper_14*helper_7 + helper_15*(helper_0*helper_16 + helper_0*helper_17 + helper_0*helper_18 + helper_26))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_47(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_47(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7385,7 +7337,7 @@ double helper_23 = helper_0*x;
 val[2] = -(-helper_0*(3*helper_14*helper_20 + helper_15*helper_22 + helper_16*(-1.6105635343895704e-13*helper_10*x + 230.01371742103106*helper_12 + 407.00137174195936*helper_13 - 9.4299809540043607e-12*helper_17 + 9.637415694018566e-12*helper_18 - 3.116208708542863e-12*helper_19 + 5.8026633338285921e-12*helper_21 + 68.126200274355881*helper_23*y - 5.9983842310220473e-13*helper_23 + 3.9148041613793381e-12*helper_3 + 3.0534038946097039e-12*helper_5 - 1.3747485089011398e-13*helper_7 - 49.39734796521801*helper_8 + 3.9424595275638797e-12*helper_9 - 3.3228838062462068e-13*x + 4.5175538359635091e-13*y) + 2*helper_21*helper_9*(1592.8888888889528*helper_7 + 6940.4444444443361*helper_8 + 2958.2222222223354*helper_9 - 366.61728395119536*x - 316.04938271654316*y + 1.8728852309409447) + helper_3*helper_6) + 7281.7777777778374*helper_1*helper_2 + helper_11*helper_7*(6371.5555555558112*helper_7 + 27761.777777777344*helper_8 + 11832.888888889342*helper_9 - 1466.4691358047814*x - 1264.1975308661727*y + 7.4915409237637789) + 4*helper_14*helper_15*x*y + helper_16*helper_22 + 4*helper_4*helper_6)/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_48(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_48(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7453,7 +7405,7 @@ double helper_29 = -helper_0;
 val[2] = (4*helper_0*helper_5 - helper_0*(2*helper_0*helper_22*(2389.3333333333935*helper_6 + 9557.3333333331084*helper_7 + 3242.6666666667716*helper_8 + 47.407407406674288*x - 6.1127281014705659e-10*y - 3.5116598079273431) + 3*helper_13*helper_27 + helper_14*(-helper_17*helper_29 - helper_18*helper_29 - helper_19*helper_29 - helper_20*helper_29 + helper_28) + helper_16*(418.50205761304238*helper_11 + 508.57613168702301*helper_12 - 1.283299209924684e-11*helper_21 - 2.2237355989535025e-13*helper_23 - 3.9173383330019637e-12*helper_24 - 2.1316282072803142e-13*helper_25 + 154.33744855965705*helper_26 - 9.7127025215458309e-12*helper_29*helper_6 - 1.019286712646712e-11*helper_29*helper_8 + 2.7421686320817338e-12*helper_3 + 6.1242350925330335e-12*helper_4 + 1.1234360492676968e-13*helper_6 + 9.6570644719010446*helper_7 + 3.992855429007624e-12*helper_8 - 1.4079272727101529e-13*x + 4.5484420984428143e-14*y) + helper_5) + 10922.66666666665*helper_1*helper_2 + helper_10*helper_6*(9557.333333333574*helper_6 + 38229.333333332434*helper_7 + 12970.666666667086*helper_8 + 189.62962962669715*x - 2.4450912405882264e-9*y - 14.046639231709372) + 4*helper_13*helper_15*y + helper_16*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_28))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_49(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_49(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 4);
 double helper_2 = pow(x, 3);
@@ -7520,7 +7472,7 @@ double helper_28 = 1299.3141289432199*helper_0*helper_13 - 1.313714569227601e-12
 val[2] = -(4*helper_0*helper_5 - helper_0*(2*helper_0*helper_23*(1592.8888888889178*helper_6 + 5802.6666666665324*helper_7 + 1592.8888888889385*helper_8 + 316.04938271564748*x + 316.04938271572934*y + 1.8728852309204287) + helper_11*(helper_0*helper_17 + helper_0*helper_18 + helper_0*helper_19 + helper_0*helper_20 + helper_28) + 3*helper_14*helper_26 + helper_15*(7.0905001120621918e-12*helper_0*helper_6 + 4.6604585759832735e-12*helper_0*helper_8 + 324.82853223587227*helper_12 + 324.82853223580497*helper_13 - 1.2316074086508481e-13*helper_21 + 1.7702163466216195e-13*helper_22 - 2.2815183670067639e-12*helper_24 - 7.9663177441666785e-12*helper_25 + 131.33607681753972*helper_27 + 9.5651333218876562e-13*helper_3 + 4.2804924366507697e-12*helper_4 + 3.1930653822904682e-13*helper_6 + 39.096479195247909*helper_7 + 1.7224082242778284e-12*helper_8 + 7.8247422258989439e-14*x - 2.6129289252044484e-13*y) + helper_5) + 7281.7777777777428*helper_1*helper_2 + helper_10*helper_6*(6371.5555555556712*helper_6 + 23210.666666666129*helper_7 + 6371.5555555557539*helper_8 + 1264.1975308625899*x + 1264.1975308629173*y + 7.4915409236817148) + 4*helper_11*helper_14*helper_7 + helper_15*(-helper_16*helper_17 - helper_16*helper_18 - helper_16*helper_19 - helper_16*helper_20 + helper_28))/pow(helper_0, 5);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_50(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_50(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -7578,7 +7530,7 @@ double helper_23 = helper_0*helper_8;
 val[2] = -(-3455.99999999998*helper_0*helper_10 + 9.7091990209407114e-12*helper_0*helper_11 + 1080.0000000000227*helper_0*helper_19 + helper_0*helper_21 + 6479.9999999998563*helper_0*helper_3 + 5.2723687213210162e-25*helper_0*helper_5 - 2.0409169243823282e-25*helper_0*helper_6 - 1.2086331935279424e-11*helper_0*helper_7 - 1.190534872556358e-25*helper_0*x + 2591.9999999999873*helper_1*helper_15 - 8639.9999999998035*helper_1*helper_3 - 5.7825979524165969e-25*helper_1*helper_5 + 1.3606112829215518e-25*helper_1*helper_6 + 1.3812950783176506e-11*helper_1*helper_7 - 2.3021584638627973e-12*helper_1*helper_8 - 9.7841734714162257e-12*helper_1*y - 216.00000000000614*helper_10 + 9.7091990209407276e-12*helper_11 + 2591.9999999999782*helper_12*helper_7 + 1.3606112829215523e-25*helper_12 - 647.99999999999454*helper_13*helper_7 - 7.653438466433733e-26*helper_13 - 1295.99999999997*helper_14*helper_3 - 6.8030564146077591e-26*helper_14*helper_5 + 1.7266188478970685e-12*helper_14*helper_7 + 1.7007641036519398e-26*helper_14*x - 4.4604320237339279e-12*helper_14*y + 1728.0000000000118*helper_15*z - 216.00000000000864*helper_15 - 2.34840628388946e-11*helper_16*z + 1.17420314194473e-11*helper_16 - 3455.9999999999932*helper_17*helper_5 + 1.1742031419447306e-11*helper_17*helper_6 + 5.3237414476822372e-12*helper_17 - 647.99999999999682*helper_18*helper_5 + 9.2805763074463662e-12*helper_18 - 1296.0000000000682*helper_19*z + 216.00000000004547*helper_19 + 5399.9999999998745*helper_2*helper_3 + 3.1464135917560892e-25*helper_2*helper_5 - 3.4015282073038796e-26*helper_2*helper_6 - 7.7697848155367941e-12*helper_2*helper_7 + helper_2*helper_9 + helper_20*helper_23 - helper_20*helper_8 - helper_21 + 5.3303389534280615e-11*helper_22*z + 2.6651694767140317e-11*helper_22 + 3.453237695794196e-12*helper_23 - 2159.9999999999545*helper_3*z + 215.99999999999636*helper_3 + 1728.0000000000018*helper_4*helper_7 - 1.9418398041881436e-11*helper_4*helper_8 + 5.1022923109558205e-26*helper_4 - 2.3810697451127168e-25*helper_5*z + 4.2519102591298523e-26*helper_5 + 1.3606112829215523e-25*helper_6*z - 3.4015282073038801e-26*helper_6 + 5.1798565436911707e-12*helper_7*z - 8.6330942394852627e-13*helper_7 - 2.3021584638627981e-12*helper_8*z + helper_9 - 8.5038205182597004e-27*x + 8.6330942394850234e-13*y*pow(z, 6) - 1.2949641359226249e-12*y*z + 7.1942451995676179e-14*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_51(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_51(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -7640,7 +7592,7 @@ double helper_24 = helper_2*helper_8;
 val[2] = (1230.1875000000668*helper_0*helper_10 + helper_0*helper_15 + 3075.4687500004648*helper_0*helper_22 + 11994.328124999603*helper_0*helper_3 - 1.6389389845275212e-11*helper_0*helper_6 - 5.5723925473929242e-11*helper_0*helper_8 + 2.1852519793698475e-11*helper_0*helper_9 - 3.4258377384948141e-12*helper_0*y - 13805.437499999502*helper_1*helper_3 - 1.4568346529132312e-11*helper_1*helper_9 - 1.179125547201157e-11*helper_1*y - 2460.3750000001319*helper_10*z + 1230.1875000000659*helper_10 - 12575.2500000002*helper_11*helper_8 - 9.5604774097438691e-12*helper_11 + helper_12*helper_6 + helper_12*x - 5.4631299484250687e-12*helper_13*helper_5 + 8.6044296687685368e-12*helper_13*helper_8 - 1.0163698008213156e-11*helper_13*y - 1742.7656249999291*helper_14*y + 1.3657824871062682e-12*helper_14 + helper_15 + 3690.5625000008067*helper_16*helper_9 + 1.0926259896850139e-11*helper_16 + 8337.9375000001564*helper_17*x + 2.2808567534671928e-11*helper_17 - 10354.078125000964*helper_18*z + 5142.8671875005039*helper_18 + 5211.2109375004584*helper_19*helper_8 + 3075.4687500004666*helper_19*helper_9 - 12575.250000000178*helper_19*y + 4.2339257100294289e-11*helper_19 + 7808.2734374996962*helper_2*helper_3 - helper_2*helper_7 + 3.6420866322830781e-12*helper_2*helper_9 - 6.1460211919782068e-12*helper_2*x + 1.8455135857017915e-11*helper_2*y + 8406.2812500001091*helper_20*y - 4.6436604561613089e-11*helper_20 - 2101.5703125000273*helper_21*y + 2.5266976011465944e-11*helper_21 - 3075.4687500004657*helper_22 + 8406.2812500001201*helper_23*x + 6.5830715878514653e-11*helper_23 - 2101.5703125000309*helper_24*x - 3.7968753141550012e-11*helper_24 + 837.21093749998113*helper_3 + 8337.9375000001437*helper_4*helper_5 - 2460.3750000001346*helper_4*helper_6 - 5091.6093749998536*helper_4*x + 7.3410808681970228e-12*helper_4 - 3075.4687500004675*helper_5*helper_9 - 2067.398437500045*helper_5*y - 1.9120954819487745e-11*helper_5*z + 3.4144562177656704e-12*helper_5 + 1845.2812500004029*helper_6*helper_9 - helper_7 - 2067.3984375000487*helper_8*x - 3.5510344664758463e-12*helper_8 - 1.4568346529132315e-11*helper_9*z + 3.6420866322830789e-12*helper_9 + 4.0973474613188005e-12*x*z - 6.8289124355313409e-13*x + 1.980384606303573e-12*y*pow(z, 6) - 2.395810112798971e-12*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_52(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_52(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -7699,7 +7651,7 @@ double helper_22 = helper_2*helper_8;
 val[2] = -(1230.1875000000446*helper_0*helper_11 + 615.09375000003843*helper_0*helper_15 + helper_0*helper_20 + 5228.2968749996407*helper_0*helper_3 - 1.3111511876220098e-11*helper_0*helper_6 - 2.9330178910604062e-11*helper_0*helper_8 + 1.2974933627508621e-11*helper_0*helper_9 - 9.4125176403090563e-12*helper_0*y - 3.7149283649290293e-11*helper_1*helper_5 + 8.7410079174800685e-12*helper_1*helper_6 + 3.6398103281378005e-11*helper_1*helper_8 - 8.6499557516724162e-12*helper_1*helper_9 + helper_10*helper_2 + helper_10 - 2460.3750000000919*helper_11*z + 1230.1875000000464*helper_11 - 9568.1250000001091*helper_12*helper_8 - 7.6483819277950591e-12*helper_12 + 6355.9687500000691*helper_13*helper_8 - 5877.5624999995689*helper_13*y + 8.7410079174800653e-12*helper_13 - 717.60937499994225*helper_14*helper_3 - 4.3705039587400342e-12*helper_14*helper_5 + 5.0533952022926457e-12*helper_14*helper_8 + 1.0926259896850084e-12*helper_14*x - 5.0647767230173106e-12*helper_14*y + 615.09375000003888*helper_15 + 3895.5937500000182*helper_16*helper_5 + 3.1868258032824331e-13*helper_16 - 8098.7343750007276*helper_17*helper_5 + 6424.3125000000873*helper_17*x + 1.1131127269914775e-11*helper_17 + 4015.1953125003511*helper_18*helper_8 + 3075.4687500003693*helper_18*helper_9 - 5877.5625000000355*helper_18*y + 3.3871405680235271e-11*helper_18 - 973.89843750000455*helper_19*y + 2.0213580809172657e-11*helper_19 + 3263.4140624997481*helper_2*helper_3 - helper_2*helper_7 - 4.9168169535825381e-12*helper_2*x + 7.1191412140379301e-12*helper_2*y - helper_20 + 3690.5625000006503*helper_21*z + 1845.2812500003247*helper_21 - 1588.9921875000173*helper_22*x - 2.1733013826076119e-11*helper_22 + 392.97656249997874*helper_3 + 3963.9375000000368*helper_4*helper_5 - 1230.1875000000778*helper_4*helper_6 - 2289.5156249998572*helper_4*x + 8.1605503604602742e-12*helper_4 + 4083.5390625003774*helper_5*helper_8 - 3075.4687500003683*helper_5*helper_9 - 1008.0703125000143*helper_5*y - 1.5296763855590125e-11*helper_5*z + 2.7315649742125226e-12*helper_5 + 8.7410079174800653e-12*helper_6*z - helper_7 - 1623.1640625000268*helper_8*x - 1.5194330169055311e-12*helper_8 - 8.6499557516724178e-12*helper_9*z + 3.2778779690550253e-12*x*z - 5.4631299484250418e-13*x + 1.0926259896846574e-12*y*pow(z, 6) - 2.21370578118474e-12*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_53(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_53(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -7762,7 +7714,7 @@ double helper_27 = helper_0*helper_9;
 val[2] = -(-5877.5625000001164*helper_0*helper_11 + 1230.1875000000391*helper_0*helper_15 + 4015.1953125003383*helper_0*helper_20 + helper_0*helper_24 + 5228.296874999668*helper_0*helper_3 - 1.6389389845274575e-11*helper_0*helper_6 - 4.5207400323211741e-11*helper_0*helper_8 - 9.5604774097435008e-12*helper_0*x - 9.2759393915983065e-12*helper_0*y + helper_1*helper_16 - 4.6436604561611279e-11*helper_1*helper_5 - 1.2747303212990578e-11*helper_1*helper_9 + 1.0926259896849717e-11*helper_1*x + helper_10*helper_2 + helper_10 - 973.89843750001774*helper_11*helper_2 - 1008.0703125000255*helper_11 - 1230.1875000000887*helper_12*z + 615.09375000004411*helper_12 - 5.4631299484248554e-12*helper_13*helper_5 + 6.6923341868199206e-12*helper_13*helper_8 - 2.9478138680029842e-12*helper_13*y - 717.6093749999477*helper_14*y + 1.3657824871062138e-12*helper_14 + 1230.1875000000373*helper_15 + helper_16*z + 6355.9687500000327*helper_17*helper_5 - 5877.5624999996053*helper_17*x + 1.1381520725916959e-12*helper_17 + 3263.4140624997708*helper_18*x + 4.6948772994248162e-12*helper_18 - 8098.7343750006985*helper_19*helper_5 + 3963.9375000000873*helper_19*x + 1.8984376570774735e-11*helper_19 - helper_2*helper_7 - 2.9842347343268349e-11*helper_2*helper_8 - 6.1460211919779652e-12*helper_2*x + 4083.539062500362*helper_20 + helper_21*helper_27 - helper_21*helper_9 - 9568.1250000000509*helper_22*y + 4.2339257100292648e-11*helper_22 - 1588.9921875000073*helper_23*y + 2.5266976011464962e-11*helper_23 - helper_24 + 3690.5625000006266*helper_25*z + 1845.2812500003138*helper_25 + 3895.5937500000728*helper_26*x + 5.244604750487422e-11*helper_26 + 615.09375000004502*helper_27*x + 1.9120954819485871e-11*helper_27 + 392.97656249997948*helper_3 + 6424.3125000000409*helper_4*helper_5 - 2460.3750000000755*helper_4*helper_6 - 2289.5156249998654*helper_4*x + 8.2288394848155223e-12*helper_4 - 1623.1640625000143*helper_5*y - 1.9120954819487008e-11*helper_5*z + 3.4144562177655375e-12*helper_5 - helper_7 - 3.0730105959886765e-12*helper_8 - 1.2747303212990579e-11*helper_9*z + 4.097347461318643e-12*x*z - 6.828912435531046e-13*x + 4.7802387048694361e-13*y*pow(z, 6) - 2.3161394677176832e-12*y)/(6.0*helper_0 - 4.0*helper_1 + 1.0*helper_2 - 4.0*z + 1.0);}
 }
 
-void pyramid_4_basis_grad_value_3d_single_54(double x, double y, double z, double *val) {
+inline POLYFEM_BOTH void pyramid_4_basis_grad_value_3d_single_54(double x, double y, double z, double *val) {
 {double helper_0 = z - 1;
 double helper_1 = pow(helper_0, 3);
 double helper_2 = pow(x, 2);
@@ -7827,448 +7779,452 @@ val[2] = (615.09375000003229*helper_0*helper_12 + 615.09375000001751*helper_0*he
 
 
 
-void pyramid_4_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
-val.resize(uv.rows(), 3);
+POLYFEM_BOTH void pyramid_4_basis_grad_value_3d(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
+assert(grad_x.size() == x.size());
+assert(y.size() == x.size());
+assert(grad_y.size() == x.size());
+assert(z.size() == x.size());
+assert(grad_z.size() == x.size());
 double gradient[3];
 switch(local_index){
 	case 0:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_0(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_0(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 1:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_1(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_1(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 2:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_2(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_2(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 3:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_3(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_3(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 4:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_4(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_4(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 5:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_5(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_5(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 6:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_6(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_6(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 7:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_7(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_7(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 8:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_8(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_8(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 9:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_9(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_9(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 10:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_10(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_10(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 11:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_11(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_11(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 12:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_12(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_12(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 13:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_13(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_13(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 14:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_14(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_14(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 15:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_15(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_15(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 16:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_16(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_16(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 17:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_17(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_17(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 18:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_18(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_18(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 19:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_19(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_19(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 20:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_20(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_20(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 21:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_21(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_21(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 22:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_22(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_22(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 23:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_23(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_23(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 24:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_24(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_24(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 25:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_25(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_25(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 26:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_26(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_26(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 27:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_27(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_27(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 28:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_28(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_28(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 29:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_29(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_29(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 30:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_30(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_30(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 31:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_31(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_31(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 32:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_32(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_32(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 33:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_33(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_33(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 34:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_34(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_34(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 35:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_35(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_35(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 36:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_36(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_36(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 37:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_37(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_37(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 38:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_38(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_38(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 39:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_39(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_39(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 40:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_40(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_40(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 41:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_41(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_41(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 42:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_42(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_42(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 43:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_43(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_43(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 44:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_44(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_44(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 45:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_45(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_45(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 46:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_46(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_46(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 47:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_47(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_47(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 48:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_48(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_48(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 49:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_49(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_49(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 50:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_50(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_50(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 51:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_51(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_51(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 52:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_52(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_52(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 53:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_53(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_53(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	case 54:
-		for (Eigen::Index i = 0; i < uv.rows(); ++i) {
-			pyramid_4_basis_grad_value_3d_single_54(uv(i, 0), uv(i, 1), uv(i, 2), gradient);
-			val(i, 0) = gradient[0];
-			val(i, 1) = gradient[1];
-			val(i, 2) = gradient[2];
+		for (std::size_t i = 0; i < x.size(); ++i) {
+			pyramid_4_basis_grad_value_3d_single_54(x[i], y[i], z[i], gradient);
+			grad_x[i] = gradient[0];
+			grad_y[i] = gradient[1];
+			grad_z[i] = gradient[2];
 		}
 		break;
 	default: assert(false);
@@ -8276,99 +8232,37 @@ switch(local_index){
 }
 
 
-void pyramid_4_nodes_3d(Eigen::MatrixXd &res) {
- res.resize(55, 3); res << 
-0, 0, 0,
-1, 0, 0,
-1, 1, 0,
-0, 1, 0,
-0, 0, 1,
-1.0/4.0, 0, 0,
-1.0/2.0, 0, 0,
-3.0/4.0, 0, 0,
-1, 1.0/4.0, 0,
-1, 1.0/2.0, 0,
-1, 3.0/4.0, 0,
-3.0/4.0, 1, 0,
-1.0/2.0, 1, 0,
-1.0/4.0, 1, 0,
-0, 3.0/4.0, 0,
-0, 1.0/2.0, 0,
-0, 1.0/4.0, 0,
-0, 0, 1.0/4.0,
-0, 0, 1.0/2.0,
-0, 0, 3.0/4.0,
-3.0/4.0, 0, 1.0/4.0,
-1.0/2.0, 0, 1.0/2.0,
-1.0/4.0, 0, 3.0/4.0,
-3.0/4.0, 3.0/4.0, 1.0/4.0,
-1.0/2.0, 1.0/2.0, 1.0/2.0,
-1.0/4.0, 1.0/4.0, 3.0/4.0,
-0, 3.0/4.0, 1.0/4.0,
-0, 1.0/2.0, 1.0/2.0,
-0, 1.0/4.0, 3.0/4.0,
-1.0/4.0, 0, 1.0/4.0,
-1.0/4.0, 0, 1.0/2.0,
-1.0/2.0, 0, 1.0/4.0,
-3.0/4.0, 1.0/4.0, 1.0/4.0,
-1.0/2.0, 1.0/4.0, 1.0/2.0,
-3.0/4.0, 1.0/2.0, 1.0/4.0,
-1.0/2.0, 3.0/4.0, 1.0/4.0,
-1.0/4.0, 1.0/2.0, 1.0/2.0,
-1.0/4.0, 3.0/4.0, 1.0/4.0,
-0, 1.0/2.0, 1.0/4.0,
-0, 1.0/4.0, 1.0/2.0,
-0, 1.0/4.0, 1.0/4.0,
-1.0/4.0, 1.0/4.0, 0,
-1.0/4.0, 1.0/2.0, 0,
-1.0/4.0, 3.0/4.0, 0,
-1.0/2.0, 1.0/4.0, 0,
-1.0/2.0, 1.0/2.0, 0,
-1.0/2.0, 3.0/4.0, 0,
-3.0/4.0, 1.0/4.0, 0,
-3.0/4.0, 1.0/2.0, 0,
-3.0/4.0, 3.0/4.0, 0,
-0.16666666666666666, 0.16666666666666666, 2.0/3.0,
-2.0/9.0, 2.0/9.0, 1.0/3.0,
-2.0/9.0, 4.0/9.0, 1.0/3.0,
-4.0/9.0, 2.0/9.0, 1.0/3.0,
-4.0/9.0, 4.0/9.0, 1.0/3.0;
-}
-
-
-}
-
-void pyramid_nodes_3d(const int pyramid, Eigen::MatrixXd &val){
-switch(pyramid){
-	case 0: pyramid_0_nodes_3d(val); break;
-	case 1: pyramid_1_nodes_3d(val); break;
-	case 2: pyramid_2_nodes_3d(val); break;
-	case 3: pyramid_3_nodes_3d(val); break;
-	case 4: pyramid_4_nodes_3d(val); break;
-	default: assert(false);
+POLYFEM_BOTH int pyramid_basis_count_3d(const int pyramid) {
+switch(pyramid) {
+	case 0: return 1;
+	case 1: return 5;
+	case 2: return 14;
+	case 3: return 30;
+	case 4: return 55;
+	default: assert(false); return 0;
 }}
-void pyramid_basis_value_3d(const int pyramid, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+
+POLYFEM_BOTH void pyramid_basis_value_3d(const int pyramid, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val){
 
 switch(pyramid){
-	case 0: pyramid_0_basis_value_3d(local_index, uv, val); break;
-	case 1: pyramid_1_basis_value_3d(local_index, uv, val); break;
-	case 2: pyramid_2_basis_value_3d(local_index, uv, val); break;
-	case 3: pyramid_3_basis_value_3d(local_index, uv, val); break;
-	case 4: pyramid_4_basis_value_3d(local_index, uv, val); break;
+	case 0: pyramid_0_basis_value_3d(local_index, x, y, z, val); break;
+	case 1: pyramid_1_basis_value_3d(local_index, x, y, z, val); break;
+	case 2: pyramid_2_basis_value_3d(local_index, x, y, z, val); break;
+	case 3: pyramid_3_basis_value_3d(local_index, x, y, z, val); break;
+	case 4: pyramid_4_basis_value_3d(local_index, x, y, z, val); break;
 	default: assert(false); 
 }}
 
-void pyramid_grad_basis_value_3d(const int pyramid, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+POLYFEM_BOTH void pyramid_grad_basis_value_3d(const int pyramid, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z){
 
 switch(pyramid){
-	case 0: pyramid_0_basis_grad_value_3d(local_index, uv, val); break;
-	case 1: pyramid_1_basis_grad_value_3d(local_index, uv, val); break;
-	case 2: pyramid_2_basis_grad_value_3d(local_index, uv, val); break;
-	case 3: pyramid_3_basis_grad_value_3d(local_index, uv, val); break;
-	case 4: pyramid_4_basis_grad_value_3d(local_index, uv, val); break;
+	case 0: pyramid_0_basis_grad_value_3d(local_index, x, y, z, grad_x, grad_y, grad_z); break;
+	case 1: pyramid_1_basis_grad_value_3d(local_index, x, y, z, grad_x, grad_y, grad_z); break;
+	case 2: pyramid_2_basis_grad_value_3d(local_index, x, y, z, grad_x, grad_y, grad_z); break;
+	case 3: pyramid_3_basis_grad_value_3d(local_index, x, y, z, grad_x, grad_y, grad_z); break;
+	case 4: pyramid_4_basis_grad_value_3d(local_index, x, y, z, grad_x, grad_y, grad_z); break;
 	default: assert(false); 
 }}
 
-namespace {
 
-}}}
+}}

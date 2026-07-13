@@ -1,7 +1,8 @@
 #include "prism_bases.hpp"
 
-#include "auto_p_bases.hpp"
-#include "auto_q_bases.hpp"
+#include "auto_p_bases_nodes.hpp"
+#include "legacy_auto_p_bases.hpp"
+#include "legacy_auto_q_bases.hpp"
 
 namespace polyfem
 {

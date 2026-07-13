@@ -5,6 +5,7 @@
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases_nodes.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>

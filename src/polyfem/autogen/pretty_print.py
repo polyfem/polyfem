@@ -40,16 +40,16 @@ def scalar_args(dim):
 
 def scalar_call_args(dim):
     """
-    Return scalar function call args: uv(i, 0), uv(i, 1)
-    This is for unpacking quadrature points in Eigen matrix.
+    Return scalar function call args: x[i], y[i], z[i].
+    This is for unpacking quadrature points in separate coordinate spans.
     """
-    return ", ".join(f"uv(i, {d})" for d in range(dim))
+    return ", ".join(f"{SCALAR_COORDS[d].name}[i]" for d in range(dim))
 
 
 def C99_print_scalar_value_function(function_name, expr, dim):
     """Print function that evaluate basis value at one quadrature point."""
     return (
-        f"double {function_name}({scalar_args(dim)}) {{\n"
+        f"inline POLYFEM_BOTH double {function_name}({scalar_args(dim)}) {{\n"
         "double result;\n"
         f"{C99_print_scalar(expr, 'result')}\n"
         "return result;\n"
@@ -59,7 +59,7 @@ def C99_print_scalar_value_function(function_name, expr, dim):
 def C99_print_scalar_gradient_function(function_name, expr, dim):
     """Print function that evaluate basis gradient at one quadrature point."""
     assert 1 <= dim <= len(SCALAR_COORDS)
-    lines = [f"void {function_name}({scalar_args(dim)}, double *val) {{"]
+    lines = [f"inline POLYFEM_BOTH void {function_name}({scalar_args(dim)}, double *val) {{"]
     for d, coord in enumerate(SCALAR_COORDS[:dim]):
         derivative = simplify(diff(expr, coord))
         lines.append("{" + C99_print_scalar(derivative, f"val[{d}]") + "}")
@@ -71,19 +71,20 @@ def C99_print_scalar_value_case(local_index, function_name, dim):
     """Generate one local_index switch case for basis values function."""
     return (
         f"\tcase {local_index}:\n"
-        "\t\tfor (Eigen::Index i = 0; i < uv.rows(); ++i)\n"
-        f"\t\t\tresult_0(i, 0) = {function_name}({scalar_call_args(dim)});\n"
+        "\t\tfor (std::size_t i = 0; i < x.size(); ++i)\n"
+        f"\t\t\tval[i] = {function_name}({scalar_call_args(dim)});\n"
         "\t\tbreak;\n")
 
 
 def C99_print_scalar_gradient_case(local_index, function_name, dim):
     """Generate one local_index switch case for basis gradients."""
+    outputs = ["grad_x", "grad_y", "grad_z"]
     lines = [
         f"\tcase {local_index}:",
-        "\t\tfor (Eigen::Index i = 0; i < uv.rows(); ++i) {",
+        "\t\tfor (std::size_t i = 0; i < x.size(); ++i) {",
         f"\t\t\t{function_name}({scalar_call_args(dim)}, gradient);",
     ]
-    lines.extend(f"\t\t\tval(i, {d}) = gradient[{d}];" for d in range(dim))
+    lines.extend(f"\t\t\t{outputs[d]}[i] = gradient[{d}];" for d in range(dim))
     lines.extend(["\t\t}", "\t\tbreak;"])
     return "\n".join(lines) + "\n"
 
