@@ -358,7 +358,7 @@ TEST_CASE("boundary sampler local coordinates and triangle-edge quadrature", "[u
 	CHECK((global_ids.array() == 0).all());
 
 	Eigen::MatrixXd normals;
-	BoundarySampler::boundary_quadrature(local_boundary, {2, 0}, *mesh, false, uv, points, normals, weights, global_ids);
+	BoundarySampler::boundary_quadrature(local_boundary, {{2, 0}}, *mesh, false, uv, points, normals, weights, global_ids);
 	REQUIRE(points.rows() == weights.size());
 	REQUIRE(normals.rows() == weights.size());
 	REQUIRE(global_ids.size() == weights.size());
