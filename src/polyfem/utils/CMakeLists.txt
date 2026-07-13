@@ -62,6 +62,8 @@ set(SOURCES
 	svd/ImplicitQRSVD.h
 	svd/Tools.h
 	svd.hpp
+  tcb_span.hpp
+ 	Span.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
