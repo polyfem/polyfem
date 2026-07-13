@@ -15,8 +15,12 @@ set(SOURCES
 	AssemblyData.hpp
   AssemblyCache.cpp
 	AssemblyCache.hpp
+	ComputeAssemblyCache.cpp
+	ComputeAssemblyCache.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
+  ComputeGeometryMapping.cpp
+	ComputeGeometryMapping.hpp
 	GenericElastic.cpp
 	GenericElastic.hpp
 	GenericFiber.cpp
