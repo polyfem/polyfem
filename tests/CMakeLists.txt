@@ -84,4 +84,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS)
+catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS EXTRA_ARGS --rng-seed 1)
