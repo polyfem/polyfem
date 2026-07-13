@@ -2,6 +2,10 @@ set(SOURCES
 	Assembler.cpp
 	Assembler.hpp
 	AssemblerData.hpp
+	Assemble.hpp
+	AssembleOnHost.hpp
+	AssembleOnHost.cpp
+	AssembleOnDevice.cuh
 	AssemblerUtils.cpp
 	AssemblerUtils.hpp
 	AssemblyValsCache.cpp
@@ -95,6 +99,7 @@ set(SOURCES
 	SumModel.cpp
   DofMappingStore.hpp
   DofMappingStore.cpp
+  AutoDiffKernel.hpp
 )
 
 if(POLYFEM_WITH_CUDA)
