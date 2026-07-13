@@ -9,6 +9,8 @@ set(SOURCES
 	ClipperUtils.cpp
 	ClipperUtils.hpp
 	DisableWarnings.hpp
+	DualVector.cpp
+	DualVector.hpp
 	EdgeSampler.cpp
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
