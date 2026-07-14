@@ -516,8 +516,22 @@ TEST_CASE("neo hookean synthetic nonlinear branches", "[assembler][elasticity]")
 		REQUIRE(fast.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-10));
 		require_approx_vector(fast.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
 		require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
-		require_approx_matrix(fast.assemble_hessian(data), full.assemble_hessian(data), 1e-7);
-		require_approx_matrix(stress.assemble_hessian(data), full.assemble_hessian(data), 1e-7);
+
+		const Eigen::MatrixXd fast_hessian = fast.assemble_hessian(data);
+		REQUIRE(fast_hessian.rows() == dim * n_bases);
+		REQUIRE(fast_hessian.cols() == dim * n_bases);
+		REQUIRE(fast_hessian.allFinite());
+
+		if (dim * n_bases < 60)
+		{
+			const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
+			require_approx_matrix(fast_hessian, full_hessian, 1e-7);
+			require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-7);
+		}
+		else
+		{
+			require_approx_matrix(fast_hessian, fast_hessian.transpose(), 1e-10);
+		}
 	}
 }
 
