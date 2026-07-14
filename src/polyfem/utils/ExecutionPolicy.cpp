@@ -52,6 +52,7 @@ namespace polyfem
 			throw std::runtime_error("Invalid CUDA device index " + std::to_string(cuda_device) + ".");
 
 		cuda_data.emplace(cuda::devices[cuda_device]);
+		cudaSetDevice(cuda_device);
 #endif
 	}
 
