@@ -1780,14 +1780,24 @@
         "pointer": "/boundary_conditions/rhs/*",
         "type": "object",
         "required": [
-            "fe_space",
             "value"
         ],
-        "doc": "Right-hand side associated with a finite element space."
+        "optional": [
+            "id",
+            "fe_space"
+        ],
+        "doc": "Right-hand side associated with a body ID and/or finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/id",
+        "type": "int",
+        "default": -1,
+        "doc": "Body ID for the right-hand side."
     },
     {
         "pointer": "/boundary_conditions/rhs/*/fe_space",
         "type": "int",
+        "default": -1,
         "doc": "Finite element space ID for the right-hand side."
     },
     {

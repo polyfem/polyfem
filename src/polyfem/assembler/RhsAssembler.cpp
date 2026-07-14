@@ -81,7 +81,7 @@ namespace polyfem
 					const Quadrature &quadrature = vals.quadrature;
 
 					// compute rhs values in physical space
-					problem_.rhs(assembler_, vals.val, t, rhs_fun, fe_space_id_);
+					problem_.rhs(assembler_, mesh_, vals.element_id, vals.val, t, rhs_fun, fe_space_id_);
 
 					for (int d = 0; d < size_; ++d)
 					{
@@ -719,7 +719,7 @@ namespace polyfem
 						const Quadrature &quadrature = vals.quadrature;
 						const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-						problem_.rhs(assembler_, vals.val, t, forces, fe_space_id_);
+						problem_.rhs(assembler_, mesh_, vals.element_id, vals.val, t, forces, fe_space_id_);
 						assert(forces.rows() == da.size());
 						assert(forces.cols() == size_);
 

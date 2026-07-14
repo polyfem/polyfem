@@ -23,6 +23,16 @@ namespace polyfem
 				return entry.value("fe_space", -1);
 			}
 
+			bool is_body_value_entry(const json &entry)
+			{
+				return entry.is_object() && entry.contains("id") && entry.contains("value");
+			}
+
+			bool has_body_value_entries(const json &value)
+			{
+				return is_body_value_entry(value) || (value.is_array() && !value.empty() && is_body_value_entry(value.front()));
+			}
+
 			template <typename Map>
 			const typename Map::mapped_type *find_for_fe_space(const Map &values, const int fe_space_id)
 			{
@@ -220,15 +230,72 @@ namespace polyfem
 			}
 		}
 
+		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				rhs(assembler, pts, t, val, fe_space_id);
+				return;
+			}
+
+			int value_size = pts.cols();
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					value_size = entry.size;
+					break;
+				}
+			}
+
+			val.resize(pts.rows(), value_size);
+			val.setZero();
+
+			const int body_id = mesh.get_body_id(element_id);
+			const TensorInitialValue *body_rhs = nullptr;
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (entry.body_id == body_id && matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					body_rhs = &entry;
+					break;
+				}
+			}
+
+			if (body_rhs == nullptr)
+				return;
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				for (int j = 0; j < val.cols(); ++j)
+				{
+					const double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
+					val(i, j) = body_rhs->value[j](x, y, z, t);
+				}
+			}
+		}
+
 		bool GenericTensorProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
 			const auto *rhs_size = find_for_fe_space(rhs_size_, fe_space_id);
-			if (rhs == nullptr || rhs_size == nullptr)
-				return true;
-			for (int i = 0; i < *rhs_size; ++i)
-				if (!(*rhs)[i].is_zero())
-					return false;
+			if (rhs != nullptr && rhs_size != nullptr)
+			{
+				for (int i = 0; i < *rhs_size; ++i)
+					if (!(*rhs)[i].is_zero())
+						return false;
+			}
+
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (!matches_fe_space(entry.fe_space_id, fe_space_id))
+					continue;
+				for (int i = 0; i < entry.size; ++i)
+					if (!entry.value[i].is_zero())
+						return false;
+			}
+
 			return true;
 		}
 
@@ -604,7 +671,24 @@ namespace polyfem
 			{
 				const json &rr = params["rhs"];
 				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
-				if (has_fe_spaces)
+				const bool has_body_ids = has_body_value_entries(rr);
+				if (has_body_ids)
+				{
+					const std::vector<json> entries = flatten_ids(rr);
+					body_rhs_.resize(entries.size());
+					for (size_t k = 0; k < entries.size(); ++k)
+					{
+						body_rhs_[k].body_id = entries[k]["id"];
+						body_rhs_[k].fe_space_id = fe_space_id(entries[k]);
+						const auto &value = entries[k]["value"];
+						body_rhs_[k].size = value.is_array() ? int(value.size()) : 1;
+						if (body_rhs_[k].size > 3)
+							log_and_throw_error("RHS for body {} and FE space {} has {} components; at most 3 are supported.", body_rhs_[k].body_id, body_rhs_[k].fe_space_id, body_rhs_[k].size);
+						for (int d = 0; d < body_rhs_[k].size; ++d)
+							body_rhs_[k].value[d].init(value.is_array() ? value[d] : value, root_path);
+					}
+				}
+				else if (has_fe_spaces)
 				{
 					for (const json &entry : rr)
 					{
@@ -1103,6 +1187,7 @@ namespace polyfem
 
 			rhs_.clear();
 			rhs_size_.clear();
+			body_rhs_.clear();
 			for (int i = 0; i < exact_.size(); ++i)
 				exact_[i].clear();
 			for (int i = 0; i < exact_grad_.size(); ++i)
@@ -1160,10 +1245,50 @@ namespace polyfem
 			}
 		}
 
+		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				rhs(assembler, pts, t, val, fe_space_id);
+				return;
+			}
+
+			val.resize(pts.rows(), 1);
+			val.setZero();
+
+			const int body_id = mesh.get_body_id(element_id);
+			const ScalarInitialValue *body_rhs = nullptr;
+			for (const ScalarInitialValue &entry : body_rhs_)
+			{
+				if (entry.body_id == body_id && matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					body_rhs = &entry;
+					break;
+				}
+			}
+
+			if (body_rhs == nullptr)
+				return;
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				const double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
+				val(i) = body_rhs->value(x, y, z, t);
+			}
+		}
+
 		bool GenericScalarProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
-			return rhs == nullptr || rhs->is_zero();
+			if (rhs != nullptr && !rhs->is_zero())
+				return false;
+
+			for (const ScalarInitialValue &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id) && !entry.value.is_zero())
+					return false;
+
+			return true;
 		}
 
 		bool GenericScalarProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
@@ -1505,7 +1630,19 @@ namespace polyfem
 			{
 				const json &rr = params["rhs"];
 				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
-				if (has_fe_spaces)
+				const bool has_body_ids = has_body_value_entries(rr);
+				if (has_body_ids)
+				{
+					const std::vector<json> entries = flatten_ids(rr);
+					body_rhs_.resize(entries.size());
+					for (size_t k = 0; k < entries.size(); ++k)
+					{
+						body_rhs_[k].body_id = entries[k]["id"];
+						body_rhs_[k].fe_space_id = fe_space_id(entries[k]);
+						body_rhs_[k].value.init(entries[k]["value"], root_path);
+					}
+				}
+				else if (has_fe_spaces)
 				{
 					for (const json &entry : rr)
 						rhs_[fe_space_id(entry)].init(entry["value"], root_path);
@@ -1694,6 +1831,7 @@ namespace polyfem
 			nodal_neumann_mat_.clear();
 
 			rhs_.clear();
+			body_rhs_.clear();
 			exact_.clear();
 			for (int i = 0; i < exact_grad_.size(); ++i)
 				exact_grad_[i].clear();

@@ -64,6 +64,23 @@ namespace
 
 		return mesh;
 	}
+
+	std::unique_ptr<Mesh> two_body_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1,
+			1, 1;
+
+		Eigen::MatrixXi cells(2, 3);
+		cells << 0, 1, 2,
+			1, 3, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+		mesh->set_body_ids({5, 8});
+		return mesh;
+	}
 } // namespace
 
 json get_params()
@@ -109,6 +126,39 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
 	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, 1));
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
+}
+
+TEST_CASE("generic tensor problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + t", "2*y"})}},
+		{{"id", 8}, {"fe_space", 1}, {"value", json::array({7, 8})}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 1, 2,
+		3, 4;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.5, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(1.5, 4)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(3.5, 8)));
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 8)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(7, 8)));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
 }
 
 TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finite element space", "[problem]")
@@ -416,6 +466,38 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 9);
+}
+
+TEST_CASE("generic scalar problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", "x + y + t"}},
+		{{"id", 8}, {"fe_space", 1}, {"value", 4}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 1,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.25, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1.25);
+	CHECK(values(1) == 5.25);
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
 }
 
 TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[problem]")
