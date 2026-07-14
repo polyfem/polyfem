@@ -207,6 +207,12 @@ TEST_CASE("matrix utils row-major transforms and sparse mappings", "[utils][matr
 	mat_expected << 1, 2,
 		3, 4;
 	REQUIRE(mat.isApprox(mat_expected));
+	Eigen::VectorXd vec9 = Eigen::VectorXd::LinSpaced(9, 1, 9);
+	vector2matrix(vec9, mat);
+	REQUIRE(mat.isApprox(unflatten(vec9, 3)));
+	REQUIRE_THROWS(vector2matrix(Eigen::Vector3d::Ones(), mat));
+
+	show_matrix_stats(Eigen::Matrix2d::Identity());
 
 	Eigen::SparseMatrix<double> sparse(3, 3);
 	const std::vector<Eigen::Triplet<double>> sparse_entries = {
@@ -233,6 +239,9 @@ TEST_CASE("matrix utils row-major transforms and sparse mappings", "[utils][matr
 	reduced_expected << 1, 3,
 		9, 11;
 	require_sparse_equal(reduced, reduced_expected);
+
+	full_to_reduced_matrix(4, 4, {}, full, reduced);
+	require_sparse_equal(reduced, full_dense);
 }
 
 TEST_CASE("matrix utils reorder and scatter block data", "[utils][matrix]")
@@ -294,6 +303,39 @@ TEST_CASE("matrix utils reorder and scatter block data", "[utils][matrix]")
 	require_sparse_equal(Aout, scatter_expected);
 	REQUIRE(bout.isApprox(Eigen::Vector4d(10, 20, 30, 40)));
 
+	Eigen::MatrixXd b_scalar(2, 1);
+	b_scalar << 100, 200;
+	Eigen::MatrixXd A_scalar(2, 4);
+	A_scalar << 1, 2, 0, 3,
+		0, 4, 5, 0;
+	scatter_matrix(6, 2, A_scalar, b_scalar, {2, 0}, Aout, bout);
+	Eigen::MatrixXd scalar_scatter_expected = Eigen::MatrixXd::Zero(2, 6);
+	scalar_scatter_expected(0, 4) = 1;
+	scalar_scatter_expected(0, 5) = 2;
+	scalar_scatter_expected(0, 1) = 3;
+	scalar_scatter_expected(1, 5) = 4;
+	scalar_scatter_expected(1, 0) = 5;
+	require_sparse_equal(Aout, scalar_scatter_expected);
+	REQUIRE(bout.isApprox(b_scalar));
+
+	REQUIRE_THROWS(scatter_matrix_col(4, 2, A, b, {1, 0}, Aout, bout));
+
+	scatter_matrix(4, 2, {2, 2}, {0, 0, 1}, {0, 1, 1}, {1, 2, 0}, b, {1, 0}, Aout, bout);
+	Eigen::MatrixXd sparse_scatter_expected = Eigen::MatrixXd::Zero(4, 4);
+	sparse_scatter_expected(0, 2) = 1;
+	sparse_scatter_expected(1, 3) = 1;
+	sparse_scatter_expected(0, 0) = 2;
+	sparse_scatter_expected(1, 1) = 2;
+	require_sparse_equal(Aout, sparse_scatter_expected);
+	REQUIRE(bout.isApprox(Eigen::Vector4d(10, 20, 30, 40)));
+
+	scatter_matrix(4, 2, {2, 4}, {0, 1}, {0, 3}, {5, 6}, b_scalar, {1, 0}, Aout, bout);
+	Eigen::MatrixXd sparse_scalar_expected = Eigen::MatrixXd::Zero(2, 4);
+	sparse_scalar_expected(0, 2) = 5;
+	sparse_scalar_expected(1, 1) = 6;
+	require_sparse_equal(Aout, sparse_scalar_expected);
+	REQUIRE(bout.isApprox(b_scalar));
+
 	scatter_matrix_col(4, 2, {2, 2}, {0, 1}, {1, 0}, {2, 3}, b, {1, 0}, Aout, bout);
 	Eigen::MatrixXd scatter_col_expected = Eigen::MatrixXd::Zero(4, 4);
 	scatter_col_expected(2, 2) = 2;
@@ -301,6 +343,15 @@ TEST_CASE("matrix utils reorder and scatter block data", "[utils][matrix]")
 	scatter_col_expected(0, 0) = 3;
 	scatter_col_expected(1, 1) = 3;
 	require_sparse_equal(Aout, scatter_col_expected);
+	REQUIRE(bout.isApprox(Eigen::Vector4d(30, 40, 10, 20)));
+
+	Eigen::MatrixXd b_col_scalar(4, 1);
+	b_col_scalar << 10, 20, 30, 40;
+	scatter_matrix_col(4, 2, {4, 2}, {0, 3}, {1, 0}, {7, 8}, b_col_scalar, {1, 0}, Aout, bout);
+	Eigen::MatrixXd scatter_col_scalar_expected = Eigen::MatrixXd::Zero(4, 2);
+	scatter_col_scalar_expected(2, 1) = 7;
+	scatter_col_scalar_expected(1, 0) = 8;
+	require_sparse_equal(Aout, scatter_col_scalar_expected);
 	REQUIRE(bout.isApprox(Eigen::Vector4d(30, 40, 10, 20)));
 }
 

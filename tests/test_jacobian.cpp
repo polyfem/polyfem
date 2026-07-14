@@ -218,3 +218,133 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 }
 
 #endif
+
+#include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
+namespace
+{
+	polyfem::basis::ElementBases make_linear_simplex_basis(
+		const int dim,
+		const int global_offset = 0,
+		const Eigen::RowVectorXd &translation = Eigen::RowVectorXd())
+	{
+		Eigen::MatrixXd nodes;
+		if (dim == 2)
+			polyfem::autogen::p_nodes_2d(1, nodes);
+		else
+			polyfem::autogen::p_nodes_3d(1, nodes);
+
+		if (translation.size() == dim)
+			nodes.rowwise() += translation;
+
+		polyfem::basis::ElementBases element;
+		element.bases.resize(nodes.rows());
+		for (int i = 0; i < nodes.rows(); ++i)
+		{
+			polyfem::RowVectorNd node = nodes.row(i);
+			element.bases[i].init(1, global_offset + i, i, node);
+			element.bases[i].set_basis([dim, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+				if (dim == 2)
+					polyfem::autogen::p_basis_value_2d(false, 1, i, uv, val);
+				else
+					polyfem::autogen::p_basis_value_3d(false, 1, i, uv, val);
+			});
+			element.bases[i].set_grad([dim, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+				if (dim == 2)
+					polyfem::autogen::p_grad_basis_value_2d(false, 1, i, uv, val);
+				else
+					polyfem::autogen::p_grad_basis_value_3d(false, 1, i, uv, val);
+			});
+		}
+
+		return element;
+	}
+
+	Eigen::MatrixXd nodal_displacements_to_matrix(const Eigen::VectorXd &u, const int dim)
+	{
+		Eigen::MatrixXd U(u.size() / dim, dim);
+		for (int i = 0; i < U.rows(); ++i)
+			U.row(i) = u.segment(i * dim, dim).transpose();
+		return U;
+	}
+} // namespace
+
+TEST_CASE("jacobian extract nodes on linear simplexes", "[jacobian][utils]")
+{
+	for (const int dim : {2, 3})
+	{
+		const auto basis = make_linear_simplex_basis(dim);
+		const int n_nodes = dim + 1;
+
+		Eigen::VectorXd u(n_nodes * dim);
+		for (int i = 0; i < u.size(); ++i)
+			u(i) = 0.05 * (i + 1);
+
+		Eigen::MatrixXd reference_nodes;
+		if (dim == 2)
+			polyfem::autogen::p_nodes_2d(1, reference_nodes);
+		else
+			polyfem::autogen::p_nodes_3d(1, reference_nodes);
+
+		const Eigen::MatrixXd cp = polyfem::utils::extract_nodes(dim, basis, basis, u, 1);
+		const Eigen::MatrixXd expected = reference_nodes + nodal_displacements_to_matrix(u, dim);
+
+		REQUIRE(cp.rows() == expected.rows());
+		REQUIRE(cp.cols() == expected.cols());
+		for (int r = 0; r < cp.rows(); ++r)
+			for (int c = 0; c < cp.cols(); ++c)
+				REQUIRE(cp(r, c) == Catch::Approx(expected(r, c)).margin(1e-12));
+	}
+}
+
+TEST_CASE("jacobian extract nodes over element ranges", "[jacobian][utils]")
+{
+	const int dim = 2;
+	const int n_nodes_per_element = dim + 1;
+	const auto basis0 = make_linear_simplex_basis(dim, 0);
+	const auto basis1 = make_linear_simplex_basis(dim, n_nodes_per_element, (Eigen::RowVector2d() << 2.0, -1.0).finished());
+
+	const std::vector<polyfem::basis::ElementBases> bases = {basis0, basis1};
+	const std::vector<polyfem::basis::ElementBases> gbases = bases;
+
+	Eigen::VectorXd u(bases.size() * n_nodes_per_element * dim);
+	for (int i = 0; i < u.size(); ++i)
+		u(i) = 0.01 * (i + 1);
+
+	const Eigen::MatrixXd all_cp = polyfem::utils::extract_nodes(dim, bases, gbases, u, 1);
+	const Eigen::MatrixXd first_cp = polyfem::utils::extract_nodes(dim, bases, gbases, u, 1, 1);
+
+	REQUIRE(all_cp.rows() == 2 * n_nodes_per_element);
+	REQUIRE(first_cp.rows() == n_nodes_per_element);
+	REQUIRE(first_cp.cols() == dim);
+
+	for (int r = 0; r < first_cp.rows(); ++r)
+		for (int c = 0; c < first_cp.cols(); ++c)
+			REQUIRE(first_cp(r, c) == Catch::Approx(all_cp(r, c)).margin(1e-12));
+}
+
+#ifndef POLYFEM_WITH_BEZIER
+TEST_CASE("jacobian robust checks require bezier support", "[jacobian][utils]")
+{
+	const int dim = 2;
+	const auto basis = make_linear_simplex_basis(dim);
+	const std::vector<polyfem::basis::ElementBases> bases = {basis};
+	const Eigen::VectorXd u0 = Eigen::VectorXd::Zero((dim + 1) * dim);
+	Eigen::VectorXd u1 = u0;
+	u1(0) = 0.1;
+
+	Eigen::MatrixXd cp;
+	polyfem::autogen::p_nodes_2d(1, cp);
+	const Eigen::MatrixXd uv = cp;
+
+	REQUIRE_THROWS(polyfem::utils::robust_evaluate_jacobian(1, cp, uv));
+	REQUIRE_THROWS(polyfem::utils::count_invalid(dim, bases, bases, u0));
+	REQUIRE_THROWS(polyfem::utils::is_valid(dim, bases, bases, u0));
+	REQUIRE_THROWS(polyfem::utils::is_valid(dim, bases, bases, u0, u1));
+	REQUIRE_THROWS(polyfem::utils::max_time_step(dim, bases, bases, u0, u1));
+}
+#endif

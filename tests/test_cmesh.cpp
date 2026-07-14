@@ -212,11 +212,102 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 	CHECK(matrix_sol(1, 0) == Catch::Approx(2.0));
 	CHECK(matrix_sol(1, 1) == Catch::Approx(3.0));
 
+	obstacle.change_displacement(
+		0,
+		[](double x, double y, double z, double t) {
+			Eigen::MatrixXd value(1, 2);
+			value << x + t, y + 2 * t;
+			return value;
+		},
+		std::string());
+	matrix_sol.setZero();
+	obstacle.update_displacement(0.5, matrix_sol);
+	CHECK(matrix_sol(0, 0) == Catch::Approx(0.5));
+	CHECK(matrix_sol(0, 1) == Catch::Approx(1.0));
+	CHECK(matrix_sol(1, 0) == Catch::Approx(1.5));
+	CHECK(matrix_sol(1, 1) == Catch::Approx(1.0));
+
+	obstacle.change_displacement(0, json::array({"x", "y"}), "", "");
+	matrix_sol.setZero();
+	obstacle.update_displacement(0.5, matrix_sol);
+	CHECK(matrix_sol(0, 0) == Catch::Approx(0.0));
+	CHECK(matrix_sol(1, 0) == Catch::Approx(1.0));
+
 	obstacle.append_plane(Eigen::Vector2d(0, 0), Eigen::Vector2d(3, 4));
 	REQUIRE(obstacle.planes().size() == 1);
 	CHECK(obstacle.planes()[0].normal().norm() == Catch::Approx(1.0).margin(1e-12));
 	CHECK(obstacle.planes()[0].vis_v().cols() == 2);
 	CHECK(obstacle.planes()[0].vis_e().rows() == 10);
+}
+
+TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh_test]")
+{
+	Obstacle empty_obstacle;
+	Eigen::MatrixXd no_vertices(0, 2);
+	Eigen::VectorXi no_codim_vertices(0);
+	Eigen::MatrixXi no_edges(0, 2);
+	Eigen::MatrixXi no_faces(0, 3);
+	json empty_displacement;
+	empty_displacement["value"] = json::array({0, 0});
+	empty_obstacle.append_mesh(no_vertices, no_codim_vertices, no_edges, no_faces, empty_displacement, "");
+	empty_obstacle.append_mesh_sequence({}, no_codim_vertices, no_edges, no_faces, 24);
+	CHECK(empty_obstacle.n_vertices() == 0);
+	CHECK(empty_obstacle.dim() == 0);
+
+	Obstacle invalid_obstacle;
+	Eigen::MatrixXd vertices2d(3, 2);
+	vertices2d << 0, 0,
+		1, 0,
+		0, 1;
+	Eigen::MatrixXi invalid_faces(1, 4);
+	invalid_faces << 0, 1, 2, 0;
+	REQUIRE_THROWS(invalid_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, invalid_faces, empty_displacement, ""));
+
+	Obstacle obstacle;
+	Eigen::MatrixXd vertices(3, 3);
+	vertices << 0, 0, 0,
+		1, 0, 0,
+		0, 1, 0;
+	Eigen::MatrixXi faces(1, 3);
+	faces << 0, 1, 2;
+	json displacement;
+	displacement["value"] = json::array({"x + t", "y + t", "z + t"});
+	displacement["interpolation"] = {{"type", "linear"}};
+	obstacle.append_mesh(vertices, Eigen::VectorXi(0), Eigen::MatrixXi(0, 2), faces, displacement, "");
+	CHECK(obstacle.dim() == 3);
+	CHECK(obstacle.n_vertices() == 3);
+	CHECK(obstacle.n_faces() == 1);
+	CHECK(obstacle.n_edges() == 3);
+	CHECK(obstacle.get_face_connectivity().rows() == 1);
+
+	Eigen::MatrixXd sol = Eigen::MatrixXd::Zero(obstacle.n_vertices(), obstacle.dim());
+	obstacle.update_displacement(0.5, sol);
+	CHECK(sol(0, 0) == Catch::Approx(0.25));
+	CHECK(sol(1, 0) == Catch::Approx(0.75));
+	CHECK(sol(2, 1) == Catch::Approx(0.75));
+
+	Obstacle array_interp_obstacle;
+	json array_displacement;
+	array_displacement["value"] = json::array({"x + 1", "y + 1"});
+	array_displacement["interpolation"] = json::array({json{{"type", "linear"}}, json{{"type", "none"}}});
+	array_interp_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, no_faces, array_displacement, "");
+	Eigen::MatrixXd array_sol = Eigen::MatrixXd::Zero(array_interp_obstacle.n_vertices(), array_interp_obstacle.dim());
+	array_interp_obstacle.update_displacement(0.5, array_sol);
+	CHECK(array_sol(0, 0) == Catch::Approx(0.5));
+	CHECK(array_sol(0, 1) == Catch::Approx(1.0));
+
+	Obstacle plane_only;
+	plane_only.append_plane(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d::UnitY());
+	plane_only.append_plane(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d::UnitZ());
+	REQUIRE(plane_only.planes().size() == 2);
+	for (const auto &plane : plane_only.planes())
+	{
+		CHECK(plane.normal().norm() == Catch::Approx(1.0).margin(1e-12));
+		CHECK(plane.vis_v().cols() == 3);
+		CHECK(plane.vis_f().cols() == 3);
+		CHECK(plane.vis_f().rows() == 200);
+		CHECK(plane.vis_e().cols() == 2);
+	}
 }
 
 TEST_CASE("obstacle mesh sequence interpolates nodal displacement", "[mesh_test]")
@@ -243,4 +334,11 @@ TEST_CASE("obstacle mesh sequence interpolates nodal displacement", "[mesh_test]
 	CHECK(sol(1, 0) == Catch::Approx(1.0));
 	CHECK(sol(2, 0) == Catch::Approx(0.5));
 	CHECK(sol(3, 0) == Catch::Approx(1.0));
+
+	sol.setZero();
+	obstacle.update_displacement(2.0, sol);
+	CHECK(sol(0, 0) == Catch::Approx(1.0));
+	CHECK(sol(1, 0) == Catch::Approx(2.0));
+	CHECK(sol(2, 0) == Catch::Approx(1.0));
+	CHECK(sol(3, 0) == Catch::Approx(2.0));
 }
