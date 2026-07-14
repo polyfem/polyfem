@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
 
@@ -9,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -42,7 +44,217 @@ namespace
 
 		return Mesh::create(vertices, cells);
 	}
+
+	double geogram_facet_signed_area(const GEO::Mesh &mesh, const int facet)
+	{
+		double area = 0.0;
+		for (GEO::index_t lv = 0; lv < mesh.facets.nb_vertices(facet); ++lv)
+		{
+			const GEO::vec3 p0 = mesh_vertex(mesh, mesh.facets.vertex(facet, lv));
+			const GEO::vec3 p1 = mesh_vertex(mesh, mesh.facets.vertex(facet, (lv + 1) % mesh.facets.nb_vertices(facet)));
+			area += p0[0] * p1[1] - p1[0] * p0[1];
+		}
+		return 0.5 * area;
+	}
 } // namespace
+
+TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")
+{
+	State state;
+
+	Eigen::MatrixXd vertices2d(4, 2);
+	vertices2d << 0, 0,
+		1, 0,
+		1, 1,
+		0, 1;
+	Eigen::MatrixXi quad(1, 4);
+	quad << 0, 1, 2, 3;
+
+	GEO::Mesh geogram_quad;
+	to_geogram_mesh(vertices2d, quad, geogram_quad);
+	REQUIRE(geogram_quad.vertices.nb() == 4);
+	REQUIRE(geogram_quad.facets.nb() == 1);
+	CHECK(is_planar(geogram_quad));
+
+	const GEO::vec3 vertex = mesh_vertex(geogram_quad, 2);
+	CHECK(vertex[0] == Catch::Approx(1.0));
+	CHECK(vertex[1] == Catch::Approx(1.0));
+	CHECK(vertex[2] == Catch::Approx(0.0));
+
+	const GEO::vec3 barycenter = facet_barycenter(geogram_quad, 0);
+	CHECK(barycenter[0] == Catch::Approx(0.5));
+	CHECK(barycenter[1] == Catch::Approx(0.5));
+	CHECK(barycenter[2] == Catch::Approx(0.0));
+
+	const GEO::index_t new_vertex = mesh_create_vertex(geogram_quad, GEO::vec3(2.0, 3.0, 4.0));
+	REQUIRE(new_vertex == 4);
+	const GEO::vec3 created = mesh_vertex(geogram_quad, new_vertex);
+	CHECK(created[0] == Catch::Approx(2.0));
+	CHECK(created[1] == Catch::Approx(3.0));
+	CHECK(created[2] == Catch::Approx(4.0));
+
+	GEO::Attribute<bool> boundary_vertex(geogram_quad.vertices.attributes(), "boundary_vertex");
+	for (GEO::index_t v = 0; v < geogram_quad.vertices.nb(); ++v)
+		boundary_vertex[v] = true;
+	std::vector<ElementType> element_tags;
+	compute_element_tags(geogram_quad, element_tags);
+	REQUIRE(element_tags.size() == 1);
+	CHECK(element_tags[0] == ElementType::REGULAR_BOUNDARY_CUBE);
+
+	Eigen::MatrixXd tri_vertices(3, 3);
+	tri_vertices << 0, 0, 0.25,
+		1, 0, 0.25,
+		0, 1, 0.25;
+	Eigen::MatrixXi tri(1, 3);
+	tri << 0, 1, 2;
+	GEO::Mesh geogram_tri;
+	to_geogram_mesh(tri_vertices, tri, geogram_tri);
+	CHECK(is_planar(geogram_tri));
+	compute_element_tags(geogram_tri, element_tags);
+	REQUIRE(element_tags.size() == 1);
+	CHECK(element_tags[0] == ElementType::SIMPLEX);
+
+	tri_vertices(2, 2) = 2.0;
+	to_geogram_mesh(tri_vertices, tri, geogram_tri);
+	CHECK_FALSE(is_planar(geogram_tri));
+
+	Eigen::MatrixXi unsupported_faces(1, 5);
+	unsupported_faces << 0, 1, 2, 3, 4;
+	REQUIRE_THROWS_AS(to_geogram_mesh(vertices2d, unsupported_faces, geogram_tri), std::runtime_error);
+
+	Eigen::MatrixXd reorder_vertices(4, 2);
+	reorder_vertices << 0, 0,
+		10, 0,
+		20, 0,
+		30, 0;
+	Eigen::MatrixXi reorder_faces(1, 4);
+	reorder_faces << 0, 1, 2, 3;
+	Eigen::VectorXi colors(4);
+	colors << 1, 0, 1, 0;
+	Eigen::VectorXi ranges;
+	reorder_mesh(reorder_vertices, reorder_faces, colors, ranges);
+	REQUIRE(ranges.size() == 3);
+	CHECK(ranges(0) == 0);
+	CHECK(ranges(1) == 2);
+	CHECK(ranges(2) == 4);
+	CHECK(reorder_vertices(0, 0) == Catch::Approx(10.0));
+	CHECK(reorder_vertices(1, 0) == Catch::Approx(30.0));
+	CHECK(reorder_vertices(2, 0) == Catch::Approx(0.0));
+	CHECK(reorder_vertices(3, 0) == Catch::Approx(20.0));
+	CHECK(reorder_faces(0, 0) == 2);
+	CHECK(reorder_faces(0, 1) == 0);
+	CHECK(reorder_faces(0, 2) == 3);
+	CHECK(reorder_faces(0, 3) == 1);
+}
+
+TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_utils]")
+{
+	State state;
+
+	Eigen::MatrixXd tet_vertices(4, 3);
+	tet_vertices << 0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1;
+	Eigen::MatrixXi outward_faces(4, 3);
+	outward_faces << 0, 2, 1,
+		0, 1, 3,
+		0, 3, 2,
+		1, 2, 3;
+
+	CHECK(signed_volume(tet_vertices, outward_faces) == Catch::Approx(1.0 / 6.0).margin(1e-12));
+	Eigen::MatrixXi inward_faces = outward_faces.rowwise().reverse().eval();
+	CHECK(signed_volume(tet_vertices, inward_faces) == Catch::Approx(-1.0 / 6.0).margin(1e-12));
+	orient_closed_surface(tet_vertices, inward_faces, true);
+	CHECK(signed_volume(tet_vertices, inward_faces) == Catch::Approx(1.0 / 6.0).margin(1e-12));
+	orient_closed_surface(tet_vertices, inward_faces, false);
+	CHECK(signed_volume(tet_vertices, inward_faces) == Catch::Approx(-1.0 / 6.0).margin(1e-12));
+
+	Eigen::MatrixXi tri_cells(2, 3);
+	tri_cells << 0, 1, 2,
+		2, 1, 3;
+	CHECK(count_faces(2, tri_cells) == 5);
+
+	Eigen::MatrixXi quad_cells(1, 4);
+	quad_cells << 0, 1, 2, 3;
+	CHECK(count_faces(2, quad_cells) == 4);
+
+	Eigen::MatrixXi tet_cells(2, 4);
+	tet_cells << 0, 1, 2, 3,
+		1, 2, 3, 4;
+	CHECK(count_faces(3, tet_cells) == 7);
+
+	Eigen::MatrixXi hex_cells(1, 8);
+	hex_cells << 0, 1, 2, 3, 4, 5, 6, 7;
+	CHECK(count_faces(3, hex_cells) == 6);
+
+	Eigen::MatrixXi unsupported_cells(1, 5);
+	unsupported_cells << 0, 1, 2, 3, 4;
+	REQUIRE_THROWS_AS(count_faces(3, unsupported_cells), std::runtime_error);
+
+	Eigen::MatrixXd child_vertices(4, 2);
+	child_vertices << 0, 0,
+		0.5, 0,
+		1, 0,
+		1, 1;
+	Eigen::MatrixXi child_edges(3, 2);
+	child_edges << 0, 1,
+		1, 2,
+		2, 3;
+	Eigen::MatrixXd parent_vertices(2, 2);
+	parent_vertices << 0, 0,
+		1, 0;
+	Eigen::MatrixXi parent_edges(1, 2);
+	parent_edges << 0, 1;
+	Eigen::MatrixXi overlapping_edges;
+	extract_parent_edges(child_vertices, child_edges, parent_vertices, parent_edges, overlapping_edges);
+	REQUIRE(overlapping_edges.rows() == 2);
+	CHECK(overlapping_edges.row(0).isApprox(Eigen::RowVector2i(0, 1)));
+	CHECK(overlapping_edges.row(1).isApprox(Eigen::RowVector2i(1, 2)));
+
+	Eigen::MatrixXd two_tet_vertices(5, 3);
+	two_tet_vertices << 0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
+		1, 1, 1;
+	Eigen::MatrixXi two_tets(2, 4);
+	two_tets << 0, 1, 2, 3,
+		1, 2, 3, 4;
+	Eigen::MatrixXd surface_vertices;
+	Eigen::MatrixXi surface_tris;
+	extract_triangle_surface_from_tets(two_tet_vertices, two_tets, surface_vertices, surface_tris);
+	CHECK(surface_vertices.rows() == 5);
+	CHECK(surface_vertices.cols() == 3);
+	CHECK(surface_tris.rows() == 6);
+	CHECK(surface_tris.cols() == 3);
+	CHECK(surface_tris.maxCoeff() < surface_vertices.rows());
+	CHECK(surface_tris.minCoeff() >= 0);
+
+	GEO::Mesh geogram_tri;
+	Eigen::MatrixXd vertices2d(4, 2);
+	vertices2d << 0, 0,
+		1, 0,
+		1, 1,
+		0, 1;
+	Eigen::MatrixXi triangles(2, 3);
+	triangles << 0, 1, 2,
+		0, 2, 3;
+	to_geogram_mesh(vertices2d, triangles, geogram_tri);
+	CHECK(geogram_tri.edges.nb() == 0);
+	generate_edges(geogram_tri);
+	CHECK(geogram_tri.edges.nb() == 5);
+	generate_edges(geogram_tri);
+	CHECK(geogram_tri.edges.nb() == 5);
+
+	GEO::Mesh clockwise_quad;
+	Eigen::MatrixXi clockwise_face(1, 4);
+	clockwise_face << 0, 3, 2, 1;
+	to_geogram_mesh(vertices2d, clockwise_face, clockwise_quad);
+	CHECK(geogram_facet_signed_area(clockwise_quad, 0) < 0);
+	orient_normals_2d(clockwise_quad);
+	CHECK(geogram_facet_signed_area(clockwise_quad, 0) > 0);
+}
 
 TEST_CASE("append_2d", "[mesh_test]")
 {

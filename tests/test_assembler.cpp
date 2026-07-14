@@ -8,6 +8,7 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
@@ -18,6 +19,8 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 using namespace polyfem;
 using namespace polyfem::assembler;
@@ -105,6 +108,20 @@ namespace
 		return result;
 	}
 
+	ElementBases make_synthetic_element_bases(const int dim, const int n_bases)
+	{
+		ElementBases bases;
+		bases.bases.resize(n_bases);
+		for (int i = 0; i < n_bases; ++i)
+		{
+			RowVectorNd node(dim);
+			for (int d = 0; d < dim; ++d)
+				node(d) = 0.01 * (i + 1) * (d + 1);
+			bases.bases[i].init(1, i, i, node);
+		}
+		return bases;
+	}
+
 	void require_approx_vector(const Eigen::VectorXd &actual, const Eigen::VectorXd &expected, const double margin = 1e-8)
 	{
 		REQUIRE(actual.size() == expected.size());
@@ -118,6 +135,60 @@ namespace
 		REQUIRE(actual.cols() == expected.cols());
 		for (int i = 0; i < actual.size(); ++i)
 			REQUIRE(actual(i) == Catch::Approx(expected(i)).margin(margin));
+	}
+
+	template <int N>
+	DScalar1<double, Eigen::Matrix<double, N, 1>> tagged_gradient_energy(const double tag)
+	{
+		Eigen::Matrix<double, N, 1> gradient;
+		gradient.setConstant(tag);
+		return DScalar1<double, Eigen::Matrix<double, N, 1>>(tag, gradient);
+	}
+
+	template <int N>
+	DScalar2<double, Eigen::Matrix<double, N, 1>, Eigen::Matrix<double, N, N>> tagged_hessian_energy(const double tag)
+	{
+		Eigen::Matrix<double, N, 1> gradient;
+		gradient.setConstant(tag);
+		Eigen::Matrix<double, N, N> hessian;
+		hessian.setConstant(tag);
+		return DScalar2<double, Eigen::Matrix<double, N, 1>, Eigen::Matrix<double, N, N>>(tag, gradient, hessian);
+	}
+
+	DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>> tagged_small_gradient_energy(const int n, const double tag)
+	{
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1> gradient(n);
+		gradient.setConstant(tag);
+		return DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>(tag, gradient);
+	}
+
+	DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>> tagged_big_gradient_energy(const int n, const double tag)
+	{
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1> gradient(n);
+		gradient.setConstant(tag);
+		return DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>(tag, gradient);
+	}
+
+	DScalar1<double, Eigen::VectorXd> tagged_dynamic_gradient_energy(const int n, const double tag)
+	{
+		Eigen::VectorXd gradient = Eigen::VectorXd::Constant(n, tag);
+		return DScalar1<double, Eigen::VectorXd>(tag, gradient);
+	}
+
+	DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>> tagged_small_hessian_energy(const int n, const double tag)
+	{
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1> gradient(n);
+		gradient.setConstant(tag);
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N> hessian(n, n);
+		hessian.setConstant(tag);
+		return DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>(tag, gradient, hessian);
+	}
+
+	DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd> tagged_dynamic_hessian_energy(const int n, const double tag)
+	{
+		Eigen::VectorXd gradient = Eigen::VectorXd::Constant(n, tag);
+		Eigen::MatrixXd hessian = Eigen::MatrixXd::Constant(n, n, tag);
+		return DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(tag, gradient, hessian);
 	}
 } // namespace
 
@@ -537,6 +608,131 @@ TEST_CASE("generic elastic autodiff modes and stress products", "[assembler][ela
 	REQUIRE(col_result.rows() == 9);
 	REQUIRE(col_result.cols() == 3);
 	require_approx_matrix(col_stress, stress, 1e-12);
+}
+
+TEST_CASE("elasticity utilities conversions stresses and dispatch", "[assembler][elasticity]")
+{
+	for (const bool is_volume : {false, true})
+	{
+		const double E = 12.0;
+		const double nu = 0.23;
+		const double lambda = convert_to_lambda(is_volume, E, nu);
+		const double mu = convert_to_mu(E, nu);
+
+		REQUIRE(convert_to_E(is_volume, lambda, mu) == Catch::Approx(E).margin(1e-12));
+		REQUIRE(convert_to_nu(is_volume, lambda, mu) == Catch::Approx(nu).margin(1e-12));
+
+		const double eps = 1e-6;
+		Eigen::Matrix2d numeric_d_lame;
+		numeric_d_lame(0, 0) = (convert_to_lambda(is_volume, E + eps, nu) - convert_to_lambda(is_volume, E - eps, nu)) / (2 * eps);
+		numeric_d_lame(0, 1) = (convert_to_lambda(is_volume, E, nu + eps) - convert_to_lambda(is_volume, E, nu - eps)) / (2 * eps);
+		numeric_d_lame(1, 0) = (convert_to_mu(E + eps, nu) - convert_to_mu(E - eps, nu)) / (2 * eps);
+		numeric_d_lame(1, 1) = (convert_to_mu(E, nu + eps) - convert_to_mu(E, nu - eps)) / (2 * eps);
+		require_approx_matrix(d_lambda_mu_d_E_nu(is_volume, E, nu), numeric_d_lame, 1e-6);
+
+		Eigen::Matrix2d numeric_d_young;
+		numeric_d_young(0, 0) = (convert_to_E(is_volume, lambda + eps, mu) - convert_to_E(is_volume, lambda - eps, mu)) / (2 * eps);
+		numeric_d_young(0, 1) = (convert_to_E(is_volume, lambda, mu + eps) - convert_to_E(is_volume, lambda, mu - eps)) / (2 * eps);
+		numeric_d_young(1, 0) = (convert_to_nu(is_volume, lambda + eps, mu) - convert_to_nu(is_volume, lambda - eps, mu)) / (2 * eps);
+		numeric_d_young(1, 1) = (convert_to_nu(is_volume, lambda, mu + eps) - convert_to_nu(is_volume, lambda, mu - eps)) / (2 * eps);
+		require_approx_matrix(d_E_nu_d_lambda_mu(is_volume, lambda, mu), numeric_d_young, 1e-6);
+	}
+
+	Eigen::Matrix2d stress2;
+	stress2 << 2.0, 0.5,
+		0.25, 3.0;
+	const double expected_vm2 = std::sqrt(std::fabs(stress2(0, 0) * stress2(0, 0) - stress2(0, 0) * stress2(1, 1) + stress2(1, 1) * stress2(1, 1) + 3.0 * stress2(0, 1) * stress2(1, 0)));
+	REQUIRE(von_mises_stress_for_stress_tensor(stress2) == Catch::Approx(expected_vm2).margin(1e-12));
+
+	Eigen::Matrix3d stress3;
+	stress3 << 2.0, 0.5, -0.25,
+		0.5, 3.0, 0.75,
+		-0.25, 0.75, 4.0;
+	double expected_vm3 = 0.5 * std::pow(stress3(0, 0) - stress3(1, 1), 2) + 3.0 * stress3(0, 1) * stress3(1, 0);
+	expected_vm3 += 0.5 * std::pow(stress3(2, 2) - stress3(1, 1), 2) + 3.0 * stress3(2, 1) * stress3(2, 1);
+	expected_vm3 += 0.5 * std::pow(stress3(2, 2) - stress3(0, 0), 2) + 3.0 * stress3(2, 0) * stress3(2, 0);
+	REQUIRE(von_mises_stress_for_stress_tensor(stress3) == Catch::Approx(std::sqrt(std::fabs(expected_vm3))).margin(1e-12));
+
+	Eigen::Matrix3d F;
+	F << 1.2, 0.1, 0.0,
+		0.0, 0.9, 0.2,
+		0.1, 0.0, 1.1;
+	require_approx_matrix(pk1_from_cauchy(stress3, F), F.determinant() * stress3 * F.inverse().transpose(), 1e-12);
+	require_approx_matrix(pk2_from_cauchy(stress3, F), F.determinant() * F.inverse() * stress3 * F.inverse().transpose(), 1e-12);
+
+	Eigen::Matrix3d nan_F = F;
+	nan_F(0, 0) = std::numeric_limits<double>::quiet_NaN();
+	REQUIRE(std::isnan(pk1_from_cauchy(stress3, nan_F)(0, 0)));
+	REQUIRE(std::isnan(pk2_from_cauchy(stress3, nan_F)(0, 0)));
+
+	Eigen::Matrix3d nan_stress = stress3;
+	nan_stress(0, 0) = std::numeric_limits<double>::quiet_NaN();
+	require_approx_matrix(pk1_from_cauchy(nan_stress, F), F, 1e-12);
+	require_approx_matrix(pk2_from_cauchy(nan_stress, F), F, 1e-12);
+
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(3, 4);
+	const Eigen::MatrixXd local_pts = fixture.vals.quadrature.points;
+	Eigen::MatrixXd expected_grad = Eigen::MatrixXd::Zero(3, 3);
+	for (std::size_t j = 0; j < fixture.vals.basis_values.size(); ++j)
+	{
+		const auto &basis = fixture.vals.basis_values[j];
+		for (int d = 0; d < 3; ++d)
+			for (const auto &g : basis.global)
+				expected_grad.row(d) += g.val * basis.grad.row(0) * fixture.x(g.index * 3 + d);
+	}
+
+	Eigen::MatrixXd displacement_grad = Eigen::MatrixXd::Zero(3, 3);
+	compute_diplacement_grad(3, fixture.vals, local_pts, 0, fixture.x, displacement_grad);
+	require_approx_matrix(displacement_grad, expected_grad, 1e-12);
+
+	const ElementBases bases = make_synthetic_element_bases(3, 4);
+	displacement_grad.setZero();
+	compute_diplacement_grad(3, bases, fixture.vals, local_pts, 0, fixture.x, displacement_grad);
+	require_approx_matrix(displacement_grad, expected_grad, 1e-12);
+
+	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+	const auto g6 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<6>(6); };
+	const auto g8 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<8>(8); };
+	const auto g12 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<12>(12); };
+	const auto g18 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<18>(18); };
+	const auto g24 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<24>(24); };
+	const auto g30 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<30>(30); };
+	const auto g60 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<60>(60); };
+	const auto g81 = [](const NonLinearAssemblerData &) { return tagged_gradient_energy<81>(81); };
+	const auto gN = [](const NonLinearAssemblerData &) { return tagged_small_gradient_energy(7, 7); };
+	const auto gBigN = [](const NonLinearAssemblerData &) { return tagged_big_gradient_energy(SMALL_N + 2, 101); };
+	const auto gn = [](const NonLinearAssemblerData &) { return tagged_dynamic_gradient_energy(5, 202); };
+
+	for (const auto &[product, tag] : std::vector<std::pair<int, double>>{{6, 6}, {8, 8}, {12, 12}, {18, 18}, {24, 24}, {30, 30}, {60, 60}, {81, 81}})
+	{
+		const Eigen::VectorXd grad = gradient_from_energy(product, 1, data, g6, g8, g12, g18, g24, g30, g60, g81, gN, gBigN, gn);
+		REQUIRE(grad.size() == product);
+		REQUIRE(grad(0) == Catch::Approx(tag));
+	}
+	REQUIRE(gradient_from_energy(7, 1, data, g6, g8, g12, g18, g24, g30, g60, g81, gN, gBigN, gn)(0) == Catch::Approx(7));
+	REQUIRE(gradient_from_energy(SMALL_N + 2, 1, data, g6, g8, g12, g18, g24, g30, g60, g81, gN, gBigN, gn)(0) == Catch::Approx(101));
+	REQUIRE(gradient_from_energy(BIG_N + 1, 1, data, g6, g8, g12, g18, g24, g30, g60, g81, gN, gBigN, gn)(0) == Catch::Approx(202));
+
+	const auto h6 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<6>(6); };
+	const auto h8 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<8>(8); };
+	const auto h12 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<12>(12); };
+	const auto h18 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<18>(18); };
+	const auto h24 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<24>(24); };
+	const auto h30 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<30>(30); };
+	const auto h60 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<60>(60); };
+	const auto h81 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<81>(81); };
+	const auto hN = [](const NonLinearAssemblerData &) { return tagged_small_hessian_energy(7, 7); };
+	const auto hn = [](const NonLinearAssemblerData &) { return tagged_dynamic_hessian_energy(5, 202); };
+
+	for (const auto &[product, tag] : std::vector<std::pair<int, double>>{{6, 6}, {8, 8}, {12, 12}, {18, 18}, {24, 24}, {30, 30}, {60, 60}, {81, 81}})
+	{
+		const Eigen::MatrixXd hessian = hessian_from_energy(product, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn);
+		REQUIRE(hessian.rows() == product);
+		REQUIRE(hessian.cols() == product);
+		REQUIRE(hessian(0, 0) == Catch::Approx(tag));
+	}
+	REQUIRE(hessian_from_energy(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(7));
+	REQUIRE(hessian_from_energy(SMALL_N + 2, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
 }
 
 TEST_CASE("material parameter helpers", "[assembler][mat_params]")
