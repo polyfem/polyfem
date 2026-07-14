@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstdint>
 
 #if defined(_MSC_VER)
 #include <intrin.h>
