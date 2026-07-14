@@ -1019,21 +1019,19 @@ TEST_CASE("LagrangeBasis2d mixed conforming triangle orders", "[bases][lagrange2
 	CHECK(local_boundary.size() == 2);
 }
 
-TEST_CASE("LagrangeBasis2d mixed conforming quad orders", "[bases][lagrange2d]")
+TEST_CASE("LagrangeBasis2d conforming two-quad order", "[bases][lagrange2d]")
 {
 	const auto mesh = make_lagrange_two_quad_mesh();
 	const auto &mesh2d = dynamic_cast<const Mesh2D &>(*mesh);
-	Eigen::VectorXi orders(2);
-	orders << 1, 2;
 
 	std::vector<ElementBases> bases;
 	std::vector<LocalBoundary> local_boundary;
 	std::map<int, InterfaceData> poly_edge_to_data;
 	std::shared_ptr<MeshNodes> mesh_nodes;
-	const int n_bases = LagrangeBasis2d::build_bases(mesh2d, "Laplacian", 2, 2, orders, false, false, false, false, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-	CHECK(n_bases >= 6);
+	const int n_bases = LagrangeBasis2d::build_bases(mesh2d, "Laplacian", 2, 2, 2, false, false, false, false, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+	CHECK(n_bases == 15);
 	REQUIRE(bases.size() == 2);
-	REQUIRE(bases[0].bases.size() == 4);
+	REQUIRE(bases[0].bases.size() == 9);
 	REQUIRE(bases[1].bases.size() == 9);
 
 	Eigen::MatrixXd samples(3, 2);
