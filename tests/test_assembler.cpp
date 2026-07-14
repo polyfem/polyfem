@@ -7,6 +7,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
@@ -44,6 +45,80 @@ namespace
 		std::vector<json> materials;
 		std::vector<std::string> root_paths;
 	};
+
+	class ConfigurableNeoHookeanAutodiff : public NeoHookeanAutodiff
+	{
+	public:
+		void set_autodiff_type(const AutodiffType type) { autodiff_type_ = type; }
+	};
+
+	class ConfigurableVolumePenalty : public VolumePenalty
+	{
+	public:
+		void set_autodiff_type(const AutodiffType type) { autodiff_type_ = type; }
+	};
+
+	struct SyntheticNonlinearElement
+	{
+		ElementAssemblyValues vals;
+		Eigen::MatrixXd x;
+		Eigen::MatrixXd x_prev;
+		QuadratureVector da;
+	};
+
+	SyntheticNonlinearElement make_synthetic_nonlinear_element(const int dim, const int n_bases)
+	{
+		SyntheticNonlinearElement result;
+		result.vals.element_id = 0;
+		result.vals.is_volume_ = dim == 3;
+		result.vals.basis_values.resize(n_bases);
+		result.vals.val.resize(1, dim);
+		for (int d = 0; d < dim; ++d)
+			result.vals.val(0, d) = 0.1 * (d + 1);
+		result.vals.quadrature.points = result.vals.val;
+		result.vals.quadrature.weights = Eigen::VectorXd::Ones(1);
+		result.vals.det = Eigen::VectorXd::Ones(1);
+		result.vals.jac_it = {Eigen::MatrixXd::Identity(dim, dim)};
+
+		for (int i = 0; i < n_bases; ++i)
+		{
+			AssemblyValues &basis = result.vals.basis_values[i];
+			RowVectorNd node(dim);
+			for (int d = 0; d < dim; ++d)
+				node(d) = 0.01 * (i + 1) * (d + 1);
+			basis.global = {Local2Global(i, node, 1.0)};
+			basis.val = Eigen::MatrixXd::Constant(1, 1, 1.0 / n_bases);
+			basis.grad.resize(1, dim);
+			for (int d = 0; d < dim; ++d)
+				basis.grad(0, d) = 0.015 * (i + 1) * (d + 1) / n_bases;
+			basis.grad_t_m = basis.grad;
+		}
+
+		result.x.resize(n_bases * dim, 1);
+		result.x_prev.resize(n_bases * dim, 1);
+		for (int i = 0; i < result.x.rows(); ++i)
+		{
+			result.x(i) = 0.002 * (i + 1);
+			result.x_prev(i) = -0.001 * (i + 1);
+		}
+		result.da = QuadratureVector::Constant(1, 1.25);
+		return result;
+	}
+
+	void require_approx_vector(const Eigen::VectorXd &actual, const Eigen::VectorXd &expected, const double margin = 1e-8)
+	{
+		REQUIRE(actual.size() == expected.size());
+		for (int i = 0; i < actual.size(); ++i)
+			REQUIRE(actual(i) == Catch::Approx(expected(i)).margin(margin));
+	}
+
+	void require_approx_matrix(const Eigen::MatrixXd &actual, const Eigen::MatrixXd &expected, const double margin = 1e-8)
+	{
+		REQUIRE(actual.rows() == expected.rows());
+		REQUIRE(actual.cols() == expected.cols());
+		for (int i = 0; i < actual.size(); ++i)
+			REQUIRE(actual(i) == Catch::Approx(expected(i)).margin(margin));
+	}
 } // namespace
 
 TEST_CASE("hessian_lin", "[assembler]")
@@ -337,6 +412,131 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 			}
 		}
 	}
+}
+
+TEST_CASE("neo hookean synthetic nonlinear branches", "[assembler][elasticity]")
+{
+	const std::vector<std::pair<int, int>> cases = {
+		{2, 3}, {2, 6}, {2, 10}, {2, 5}, {3, 4}, {3, 10}, {3, 20}, {3, 5}};
+
+	for (const auto &[dim, n_bases] : cases)
+	{
+		CAPTURE(dim);
+		CAPTURE(n_bases);
+
+		Units units;
+		NeoHookeanElasticity fast;
+		ConfigurableNeoHookeanAutodiff full;
+		ConfigurableNeoHookeanAutodiff stress;
+		fast.set_size(dim);
+		full.set_size(dim);
+		stress.set_size(dim);
+		full.set_autodiff_type(AutodiffType::FULL);
+		stress.set_autodiff_type(AutodiffType::STRESS);
+
+		const json material = {{"E", 12.0}, {"nu", 0.23}};
+		fast.add_multimaterial(0, material, units, "");
+		full.add_multimaterial(0, material, units, "");
+		stress.add_multimaterial(0, material, units, "");
+
+		const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+
+		REQUIRE(fast.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-10));
+		require_approx_vector(fast.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
+		require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
+		require_approx_matrix(fast.assemble_hessian(data), full.assemble_hessian(data), 1e-7);
+		require_approx_matrix(stress.assemble_hessian(data), full.assemble_hessian(data), 1e-7);
+	}
+}
+
+TEST_CASE("generic elastic autodiff modes and stress products", "[assembler][elasticity]")
+{
+	const std::vector<std::pair<int, int>> cases = {
+		{2, 3}, {2, 6}, {2, 10}, {2, 5}, {3, 4}, {3, 10}, {3, 20}, {3, 5}};
+
+	for (const auto &[dim, n_bases] : cases)
+	{
+		CAPTURE(dim);
+		CAPTURE(n_bases);
+
+		Units units;
+		ConfigurableVolumePenalty full;
+		ConfigurableVolumePenalty stress;
+		ConfigurableVolumePenalty no_ad;
+		full.set_size(dim);
+		stress.set_size(dim);
+		no_ad.set_size(dim);
+		full.set_autodiff_type(AutodiffType::FULL);
+		stress.set_autodiff_type(AutodiffType::STRESS);
+		no_ad.set_autodiff_type(AutodiffType::NONE);
+
+		const json material = {{"k", 3.0}};
+		full.add_multimaterial(0, material, units, "");
+		stress.add_multimaterial(0, material, units, "");
+		no_ad.add_multimaterial(0, material, units, "");
+
+		const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+
+		REQUIRE(stress.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
+		REQUIRE(no_ad.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
+		require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
+		require_approx_vector(no_ad.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
+		require_approx_matrix(stress.assemble_hessian(data), full.assemble_hessian(data), 1e-8);
+		require_approx_matrix(no_ad.assemble_hessian(data), full.assemble_hessian(data), 1e-8);
+	}
+
+	ConfigurableVolumePenalty assembler;
+	assembler.set_size(3);
+	assembler.set_autodiff_type(AutodiffType::STRESS);
+	Units units;
+	assembler.add_multimaterial(0, {{"k", 3.0}}, units, "");
+
+	Eigen::MatrixXd grad_u(3, 3);
+	grad_u << 0.03, 0.01, 0.00,
+		-0.02, 0.02, 0.01,
+		0.00, -0.01, 0.04;
+	Eigen::MatrixXd local_pt(1, 3);
+	local_pt << 0.1, 0.2, 0.3;
+	Eigen::MatrixXd global_pt(1, 3);
+	global_pt << 0.4, 0.5, 0.6;
+	const OptAssemblerData opt_data(0.2, 0.01, 0, local_pt, global_pt, grad_u);
+
+	Eigen::MatrixXd stress;
+	Eigen::MatrixXd mat_result;
+	assembler.compute_stress_grad_multiply_mat(opt_data, Eigen::Matrix3d::Identity(), stress, mat_result);
+	REQUIRE(stress.rows() == 3);
+	REQUIRE(stress.cols() == 3);
+	REQUIRE(mat_result.rows() == 3);
+	REQUIRE(mat_result.cols() == 3);
+
+	Eigen::MatrixXd stress_again;
+	Eigen::MatrixXd stress_result;
+	assembler.compute_stress_grad_multiply_stress(opt_data, stress_again, stress_result);
+	require_approx_matrix(stress_again, stress, 1e-12);
+
+	Eigen::MatrixXd expected_stress_result_stress;
+	Eigen::MatrixXd expected_stress_result;
+	assembler.compute_stress_grad_multiply_mat(opt_data, stress, expected_stress_result_stress, expected_stress_result);
+	require_approx_matrix(expected_stress_result_stress, stress, 1e-12);
+	require_approx_matrix(stress_result, expected_stress_result, 1e-12);
+
+	const Eigen::RowVector3d row_vect(1, 2, 3);
+	Eigen::MatrixXd row_stress;
+	Eigen::MatrixXd row_result;
+	assembler.compute_stress_grad_multiply_vect(opt_data, row_vect, row_stress, row_result);
+	REQUIRE(row_result.rows() == 9);
+	REQUIRE(row_result.cols() == 3);
+	require_approx_matrix(row_stress, stress, 1e-12);
+
+	const Eigen::Vector3d col_vect(1, -1, 2);
+	Eigen::MatrixXd col_stress;
+	Eigen::MatrixXd col_result;
+	assembler.compute_stress_grad_multiply_vect(opt_data, col_vect, col_stress, col_result);
+	REQUIRE(col_result.rows() == 9);
+	REQUIRE(col_result.cols() == 3);
+	require_approx_matrix(col_stress, stress, 1e-12);
 }
 
 TEST_CASE("material parameter helpers", "[assembler][mat_params]")
