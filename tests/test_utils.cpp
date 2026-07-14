@@ -41,6 +41,52 @@ namespace
 		return Mesh::create(vertices, cells);
 	}
 
+	std::unique_ptr<Mesh> create_test_quad_mesh()
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			2, 0,
+			2, 1,
+			0, 1;
+
+		Eigen::MatrixXi cells(1, 4);
+		cells << 0, 1, 2, 3;
+
+		return Mesh::create(vertices, cells);
+	}
+
+	std::unique_ptr<Mesh> create_test_tetra_mesh()
+	{
+		Eigen::MatrixXd vertices(4, 3);
+		vertices << 0, 0, 0,
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1;
+
+		Eigen::MatrixXi cells(1, 4);
+		cells << 0, 1, 2, 3;
+
+		return Mesh::create(vertices, cells);
+	}
+
+	std::unique_ptr<Mesh> create_test_hex_mesh()
+	{
+		Eigen::MatrixXd vertices(8, 3);
+		vertices << 0, 0, 0,
+			1, 0, 0,
+			1, 1, 0,
+			0, 1, 0,
+			0, 0, 1,
+			1, 0, 1,
+			1, 1, 1,
+			0, 1, 1;
+
+		Eigen::MatrixXi cells(1, 8);
+		cells << 0, 1, 2, 3, 4, 5, 6, 7;
+
+		return Mesh::create(vertices, cells);
+	}
+
 	void require_sparse_equal(const StiffnessMatrix &actual, const Eigen::MatrixXd &expected)
 	{
 		const Eigen::MatrixXd dense(actual);
@@ -415,6 +461,128 @@ TEST_CASE("boundary sampler local coordinates and triangle-edge quadrature", "[u
 	REQUIRE(global_ids.size() == weights.size());
 	CHECK((global_ids.array() == 0).all());
 	CHECK(weights.sum() == Catch::Approx(mesh->edge_length(0)).margin(1e-12));
+}
+
+TEST_CASE("boundary sampler quad and volume face sampling", "[utils][boundary_sampler]")
+{
+	Eigen::MatrixXd uv, samples;
+	BoundarySampler::sample_parametric_quad_edge(1, 4, uv, samples);
+	REQUIRE(uv.rows() == 4);
+	REQUIRE(uv.cols() == 2);
+	REQUIRE(samples.rows() == 4);
+	REQUIRE(samples.cols() == 2);
+	for (int i = 0; i < uv.rows(); ++i)
+		CHECK(uv.row(i).sum() == Catch::Approx(1.0).margin(1e-12));
+	CHECK(samples.topRows(1).isApprox(BoundarySampler::quad_local_node_coordinates_from_edge(1).topRows(1)));
+	CHECK(samples.bottomRows(1).isApprox(BoundarySampler::quad_local_node_coordinates_from_edge(1).bottomRows(1)));
+
+	BoundarySampler::sample_parametric_quad_face(0, 3, uv, samples);
+	REQUIRE(samples.rows() == 9);
+	REQUIRE(samples.cols() == 3);
+	CHECK((samples.array() >= -1e-12).all());
+	CHECK((samples.array() <= 1 + 1e-12).all());
+
+	BoundarySampler::sample_parametric_tri_face(2, 4, uv, samples);
+	REQUIRE(samples.cols() == 3);
+	REQUIRE(uv.cols() == 3);
+	REQUIRE(samples.rows() == uv.rows());
+	for (int i = 0; i < uv.rows(); ++i)
+		CHECK(uv.row(i).sum() == Catch::Approx(1.0).margin(1e-12));
+
+	BoundarySampler::sample_parametric_prism_face(0, 4, uv, samples);
+	REQUIRE(samples.cols() == 3);
+	REQUIRE(uv.cols() == 3);
+	for (int i = 0; i < uv.rows(); ++i)
+		CHECK(uv.row(i).sum() == Catch::Approx(1.0).margin(1e-12));
+
+	BoundarySampler::sample_parametric_prism_face(3, 3, uv, samples);
+	REQUIRE(samples.rows() == 9);
+	REQUIRE(samples.cols() == 3);
+
+	BoundarySampler::sample_parametric_pyramid_face(0, 3, uv, samples);
+	REQUIRE(samples.rows() == 9);
+	REQUIRE(samples.cols() == 3);
+
+	BoundarySampler::sample_parametric_pyramid_face(2, 4, uv, samples);
+	REQUIRE(samples.cols() == 3);
+	REQUIRE(uv.cols() == 3);
+	for (int i = 0; i < uv.rows(); ++i)
+		CHECK(uv.row(i).sum() == Catch::Approx(1.0).margin(1e-12));
+
+	Eigen::MatrixXd normal;
+	for (int face = 0; face < 5; ++face)
+	{
+		BoundarySampler::normal_for_prism_face(face, normal);
+		REQUIRE(normal.rows() == 1);
+		REQUIRE(normal.cols() == 3);
+		CHECK(normal.norm() == Catch::Approx(1.0).margin(1e-12));
+
+		BoundarySampler::normal_for_pyramid_face(face, normal);
+		REQUIRE(normal.rows() == 1);
+		REQUIRE(normal.cols() == 3);
+		CHECK(normal.norm() == Catch::Approx(1.0).margin(1e-12));
+	}
+}
+
+TEST_CASE("boundary sampler quadrature dispatch for quads and 3d faces", "[utils][boundary_sampler]")
+{
+	const auto quad_mesh = create_test_quad_mesh();
+	const auto tet_mesh = create_test_tetra_mesh();
+	const auto hex_mesh = create_test_hex_mesh();
+
+	Eigen::MatrixXd uv, points, normals;
+	Eigen::VectorXd weights;
+	Eigen::VectorXi global_ids;
+
+	BoundarySampler::quadrature_for_quad_edge(0, 2, 0, *quad_mesh, uv, points, weights);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(points.cols() == 2);
+	CHECK(weights.sum() == Catch::Approx(quad_mesh->edge_length(0)).margin(1e-12));
+
+	BoundarySampler::quadrature_for_tri_face(0, 2, 0, *tet_mesh, uv, points, weights);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(points.cols() == 3);
+	CHECK(weights.sum() == Catch::Approx(tet_mesh->tri_area(0)).margin(1e-12));
+
+	BoundarySampler::quadrature_for_quad_face(0, 2, 0, *hex_mesh, uv, points, weights);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(points.cols() == 3);
+	CHECK(weights.sum() == Catch::Approx(hex_mesh->quad_area(0)).margin(1e-12));
+
+	BoundarySampler::quadrature_for_prism_face(0, 2, 2, 0, *tet_mesh, uv, points, weights);
+	CHECK(weights.sum() == Catch::Approx(tet_mesh->tri_area(0)).margin(1e-12));
+	BoundarySampler::quadrature_for_prism_face(3, 2, 2, 0, *hex_mesh, uv, points, weights);
+	CHECK(weights.sum() == Catch::Approx(hex_mesh->quad_area(0)).margin(1e-12));
+
+	BoundarySampler::quadrature_for_pyramid_face(2, 2, 0, *tet_mesh, uv, points, weights);
+	CHECK(weights.sum() == Catch::Approx(tet_mesh->tri_area(0)).margin(1e-12));
+	BoundarySampler::quadrature_for_pyramid_face(0, 2, 0, *hex_mesh, uv, points, weights);
+	CHECK(weights.sum() == Catch::Approx(hex_mesh->quad_area(0)).margin(1e-12));
+
+	LocalBoundary quad_boundary(0, BoundaryType::QUAD_LINE);
+	quad_boundary.add_boundary_primitive(0, 0);
+	BoundarySampler::sample_boundary(quad_boundary, 3, *quad_mesh, false, uv, points, global_ids);
+	REQUIRE(points.rows() == 3);
+	CHECK((global_ids.array() == 0).all());
+
+	BoundarySampler::boundary_quadrature(quad_boundary, {{2, 0}}, *quad_mesh, false, uv, points, normals, weights, global_ids);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(normals.rows() == weights.size());
+	CHECK(weights.sum() == Catch::Approx(quad_mesh->edge_length(0)).margin(1e-12));
+
+	LocalBoundary tri_face_boundary(0, BoundaryType::TRI);
+	tri_face_boundary.add_boundary_primitive(0, 0);
+	BoundarySampler::boundary_quadrature(tri_face_boundary, {{2, 0}}, *tet_mesh, 0, false, uv, points, normals, weights);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(normals.rows() == weights.size());
+	CHECK(weights.sum() == Catch::Approx(tet_mesh->tri_area(0)).margin(1e-12));
+
+	LocalBoundary quad_face_boundary(0, BoundaryType::QUAD);
+	quad_face_boundary.add_boundary_primitive(0, 0);
+	BoundarySampler::boundary_quadrature(quad_face_boundary, {{2, 0}}, *hex_mesh, 0, false, uv, points, normals, weights);
+	REQUIRE(points.rows() == weights.size());
+	REQUIRE(normals.rows() == weights.size());
+	CHECK(weights.sum() == Catch::Approx(hex_mesh->quad_area(0)).margin(1e-12));
 }
 
 #ifdef POLYFEM_WITH_ITR
