@@ -498,7 +498,8 @@ namespace polyfem::assembler
 		auto d_cache = cache.device_view(p);
 		auto d_unknown = copy_to_device_async(unknown, policy);
 		auto d_scalar_out = cuda::make_buffer<double>(*p.stream, *p.mr, 1, 0.0);
-		auto d_error = copy_to_device_async(detail::DeviceAssemblyError{}, policy);
+		auto h_error = detail::DeviceAssemblyError{};
+		auto d_error = copy_to_device_async(h_error, policy);
 
 		// If material is device compatible, get material store view and eval on the fly.
 		// Else precompute them on host.
@@ -564,7 +565,8 @@ namespace polyfem::assembler
 		auto d_data = data.device_view(p);
 		auto d_cache = cache.device_view(p);
 		auto d_unknown = copy_to_device_async(unknown, policy);
-		auto d_error = copy_to_device_async(detail::DeviceAssemblyError{}, policy);
+		auto h_error = detail::DeviceAssemblyError{};
+		auto d_error = copy_to_device_async(h_error, policy);
 
 		// If material is device compatible, get material store view and eval on the fly.
 		// Else precompute them on host.
@@ -629,7 +631,8 @@ namespace polyfem::assembler
 		int task_num = d_data.vector_assembly_tasks.size();
 		auto d_cache = cache.device_view(p);
 		auto d_unknown = copy_to_device_async(unknown, policy);
-		auto d_error = copy_to_device_async(detail::DeviceAssemblyError{}, policy);
+		auto h_error = detail::DeviceAssemblyError{};
+		auto d_error = copy_to_device_async(h_error, policy);
 
 		// If material is device compatible, get material store view and eval on the fly.
 		// Else precompute them on host.
@@ -694,7 +697,8 @@ namespace polyfem::assembler
 		int task_num = d_data.matrix_assembly_tasks.size();
 		auto d_cache = cache.device_view(p);
 		auto d_unknown = copy_to_device_async(unknown, policy);
-		auto d_error = copy_to_device_async(detail::DeviceAssemblyError{}, policy);
+		auto h_error = detail::DeviceAssemblyError{};
+		auto d_error = copy_to_device_async(h_error, policy);
 
 		// If material is device compatible, get material store view and eval on the fly.
 		// Else precompute them on host.
