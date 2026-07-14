@@ -96,7 +96,7 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	GenericTensorProblemAccess problem("GenericTensor");
 	json params;
 	params["rhs"] = json::array({
-		{{"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
+		{{"id", -1}, {"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
 		{{"fe_space", 1}, {"value", 300}},
 	});
 	params["dirichlet_boundary"] = json::array({
@@ -412,7 +412,7 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 	GenericScalarProblemAccess problem("GenericScalar");
 	json params;
 	params["rhs"] = json::array({
-		{{"fe_space", 0}, {"value", "x + y + 1"}},
+		{{"id", -1}, {"fe_space", 0}, {"value", "x + y + 1"}},
 		{{"fe_space", 1}, {"value", 4}},
 	});
 	params["dirichlet_boundary"] = json::array({

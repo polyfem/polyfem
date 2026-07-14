@@ -25,7 +25,19 @@ namespace polyfem
 
 			bool is_body_value_entry(const json &entry)
 			{
-				return entry.is_object() && entry.contains("id") && entry.contains("value");
+				if (!entry.is_object() || !entry.contains("id") || !entry.contains("value"))
+					return false;
+
+				const json &id = entry["id"];
+				if (id.is_array())
+				{
+					for (const json &value : id)
+						if (value.is_number_integer() && value.get<int>() != -1)
+							return true;
+					return false;
+				}
+
+				return id.is_number_integer() && id.get<int>() != -1;
 			}
 
 			bool has_body_value_entries(const json &value)
