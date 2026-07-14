@@ -3,6 +3,12 @@ set(SOURCES
 	Basis.hpp
 	ElementBases.cpp
 	ElementBases.hpp
+	EvalBasis.cpp
+	EvalBasis.hpp
+	EvalLagrangeBasis.cpp
+	EvalLagrangeBasis.hpp
+	EvalRationalBasis.cpp
+	EvalRationalBasis.hpp
 	LagrangeBasis2d.cpp
 	LagrangeBasis2d.hpp
 	LagrangeBasis3d.cpp
@@ -34,7 +40,18 @@ set(SOURCES
 	barycentric/MVPolygonalBasis2d.hpp
 	barycentric/WSPolygonalBasis2d.cpp
 	barycentric/WSPolygonalBasis2d.hpp
+  BasisStore.hpp
+  BasisStore.cpp
 )
+
+if(POLYFEM_WITH_CUDA)
+	set_source_files_properties(
+		EvalBasis.cpp
+		EvalLagrangeBasis.cpp
+		EvalRationalBasis.cpp
+		TARGET_DIRECTORY polyfem
+		PROPERTIES LANGUAGE CUDA)
+endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

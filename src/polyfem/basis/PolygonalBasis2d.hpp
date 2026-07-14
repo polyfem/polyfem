@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
@@ -63,6 +64,20 @@ namespace polyfem
 				const int mass_quadrature_order,
 				const int integral_constraints,
 				std::vector<ElementBases> &bases,
+				const std::vector<ElementBases> &gbases,
+				const std::map<int, InterfaceData> &poly_edge_to_data,
+				std::map<int, Eigen::MatrixXd> &mapped_boundary);
+
+			static int build_bases(
+				const assembler::LinearAssembler &assembler,
+				int n_samples_per_edge,
+				const mesh::Mesh2D &mesh,
+				int n_bases,
+				int quadrature_order,
+				int mass_quadrature_order,
+				int integral_constraints,
+				std::vector<ElementBases> &bases,
+				polyfem::assembler::AssemblyData &assembly_data,
 				const std::vector<ElementBases> &gbases,
 				const std::map<int, InterfaceData> &poly_edge_to_data,
 				std::map<int, Eigen::MatrixXd> &mapped_boundary);

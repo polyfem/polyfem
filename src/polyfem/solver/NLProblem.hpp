@@ -26,6 +26,7 @@ namespace polyfem::solver
 			const std::vector<std::shared_ptr<Form>> &forms,
 			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 			const std::shared_ptr<polysolve::linear::Solver> &solver,
+			ExecutionPolicy policy = {},
 			const bool is_residual = false);
 
 	public:
@@ -39,6 +40,7 @@ namespace polyfem::solver
 				  const double char_force,
 				  StiffnessMatrix lumped_mass,
 				  const int dimension,
+				  ExecutionPolicy policy = {},
 				  const bool is_residual = false);
 		virtual ~NLProblem() = default;
 

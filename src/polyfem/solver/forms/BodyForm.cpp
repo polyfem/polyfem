@@ -33,7 +33,22 @@ namespace polyfem::solver
 
 	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return rhs_assembler_.compute_energy(x, x_prev_, local_neumann_boundary_, density_, n_boundary_samples_, t_);
+		if (current_rhs_.size() == 0)
+			return rhs_assembler_.compute_energy(x, x_prev_, local_neumann_boundary_, density_, n_boundary_samples_, t_);
+
+		assert(current_rhs_.cols() == 1);
+		assert(current_rhs_.rows() == x.size());
+
+		// For fixed t_ and x_prev_, the body/traction potential is linear in
+		// the queried displacement x.
+		//
+		// The gradient remains valid during line search because Neumann tractions that
+		// depend on deformed normals are assembled with x_prev_. And Mixed pressure rows,
+		// when present, are padded with zeros in update_current_rhs, so they add no work.
+		//
+		// The first derivative path alreay take advantage of this and cache the gradient.
+		// To save compute during line search, cache energy too.
+		return -x.dot(current_rhs_.col(0));
 	}
 
 	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const

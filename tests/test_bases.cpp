@@ -10,10 +10,10 @@
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
 
 #include <polyfem/basis/LagrangeBasis3d.hpp>
-#include <polyfem/autogen/auto_p_bases.hpp>
-#include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/legacy_auto_p_bases.hpp>
+#include <polyfem/autogen/legacy_auto_q_bases.hpp>
 #include <polyfem/autogen/prism_bases.hpp>
-#include <polyfem/autogen/auto_pyramid_bases.hpp>
+#include <polyfem/autogen/legacy_auto_pyramid_bases.hpp>
 
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 #include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>

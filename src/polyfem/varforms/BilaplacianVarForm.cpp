@@ -52,9 +52,9 @@ namespace polyfem::varform
 		time_integrator = nullptr;
 	}
 
-	void BilaplacianVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void BilaplacianVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy)
 	{
-		VarForm::init(formulation, units, args, out_path);
+		VarForm::init(formulation, units, args, out_path, policy);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 		const json &discr_orders = args.at("space").at("discr_order");
 

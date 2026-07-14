@@ -5,6 +5,7 @@
 #include <polyfem/legacy/State.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases_nodes.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>

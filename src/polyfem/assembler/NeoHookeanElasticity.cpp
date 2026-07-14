@@ -1,5 +1,8 @@
 #include "NeoHookeanElasticity.hpp"
 
+#include <polyfem/assembler/Assemble.hpp>
+#include <polyfem/assembler/ComputeSparsityPattern.hpp>
+#include <polyfem/assembler/AutoDiffKernel.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
@@ -13,10 +16,198 @@ namespace polyfem::assembler
 		{
 			return (i == j) ? true : false;
 		}
+
+		template <int dim>
+		struct NeoHookeanEnergy
+		{
+			using Material = polyfem::material::NeoHookean<double>;
+			static constexpr int VALUE_DIM = dim;
+			static constexpr int DIM = dim;
+			static constexpr bool NEED_UNKNOWN_VALUE = false;
+			static constexpr bool NEED_UNKNOWN_GRAD = true;
+			static constexpr bool SUPPORT_DEVICE_EVAL = true;
+
+			template <typename Scalar>
+			POLYFEM_BOTH Scalar eval_scalar(
+				Span<const Scalar> u,
+				Span<const Scalar> gradu,
+				const Material &material) const
+			{
+				assert(gradu.size() == dim * dim);
+
+				// Deformation grad type.
+				using FType = Eigen::Matrix<Scalar, dim, dim, Eigen::RowMajor>;
+
+				auto [lambda, mu] = material::lambda_mu<dim>(material.lame);
+				auto F = Eigen::Map<const FType>(gradu.data()) + FType::Identity();
+				Scalar log_J = log(F.determinant());
+				// μ/2 [ trace(FF^T)^2 - dim ]  - μ log(J) + λ/2 log(J)^2
+				return 0.5 * mu * (F.squaredNorm() - dim) - mu * log_J + 0.5 * lambda * log_J * log_J;
+			}
+		};
 	} // namespace
 
 	NeoHookeanElasticity::NeoHookeanElasticity()
 	{
+	}
+
+	std::optional<BSRSparsityPattern> NeoHookeanElasticity::hessian_sparsity_pattern_ng(
+		int n_basis,
+		const AssemblyData &data) const
+	{
+		return compute_sparsity_pattern(data.view(), n_basis, size());
+	}
+
+	double NeoHookeanElasticity::assemble_energy_ng(
+		const bool is_volume,
+		const AssemblyData &data,
+		const AssemblyData &geom_data,
+		const AssemblyCache &cache,
+		const material::MaterialExprRegistry &materials,
+		Span<const double> x,
+		Span<const double> x_prev,
+		const double t,
+		const double dt,
+		ExecutionPolicy policy) const
+	{
+		(void)x_prev;
+		(void)dt;
+
+		switch (size())
+		{
+		case 2:
+		{
+			using Kernel = AutoDiffScalarKernel<NeoHookeanEnergy<2>>;
+			return assemble_scalar(Kernel{}, data, geom_data, cache, materials, x, t, policy);
+		}
+		case 3:
+		{
+			using Kernel = AutoDiffScalarKernel<NeoHookeanEnergy<3>>;
+			return assemble_scalar(Kernel{}, data, geom_data, cache, materials, x, t, policy);
+		}
+		default:
+			log_and_throw_error("Unsupported NG NeoHookean dimension {}.", size());
+		}
+	}
+
+	void NeoHookeanElasticity::assemble_energy_per_element_ng(
+		const bool is_volume,
+		const AssemblyData &data,
+		const AssemblyData &geom_data,
+		const AssemblyCache &cache,
+		const material::MaterialExprRegistry &materials,
+		Span<const double> x,
+		Span<const double> x_prev,
+		const double t,
+		const double dt,
+		DualVector &energy,
+		ExecutionPolicy policy) const
+	{
+		(void)x_prev;
+		(void)dt;
+		assert(energy.size() == data.view().element_desc.size());
+
+		switch (size())
+		{
+		case 2:
+		{
+			using Kernel = AutoDiffScalarKernel<NeoHookeanEnergy<2>>;
+			assemble_scalar_per_element(Kernel{}, data, geom_data, cache, materials, x, energy, t, policy);
+			break;
+		}
+		case 3:
+		{
+			using Kernel = AutoDiffScalarKernel<NeoHookeanEnergy<3>>;
+			assemble_scalar_per_element(Kernel{}, data, geom_data, cache, materials, x, energy, t, policy);
+			break;
+		}
+		default:
+			log_and_throw_error("Unsupported NG NeoHookean dimension {}.", size());
+		}
+	}
+
+	void NeoHookeanElasticity::assemble_gradient_ng(
+		const bool is_volume,
+		const int n_basis,
+		const AssemblyData &data,
+		const AssemblyData &geom_data,
+		const AssemblyCache &cache,
+		const material::MaterialExprRegistry &materials,
+		Span<const double> x,
+		Span<const double> x_prev,
+		const double t,
+		const double dt,
+		DualVector &grad,
+		const double scale,
+		ExecutionPolicy policy) const
+	{
+		(void)n_basis;
+		(void)x_prev;
+		(void)dt;
+		assert(grad.size() == x.size());
+
+		switch (size())
+		{
+		case 2:
+		{
+			using Kernel = AutoDiffGradientVectorKernel<NeoHookeanEnergy<2>>;
+			assemble_vector(Kernel{}, data, geom_data, cache, materials, x, grad, t, scale, policy);
+			break;
+		}
+		case 3:
+		{
+			using Kernel = AutoDiffGradientVectorKernel<NeoHookeanEnergy<3>>;
+			assemble_vector(Kernel{}, data, geom_data, cache, materials, x, grad, t, scale, policy);
+			break;
+		}
+		default:
+			log_and_throw_error("Unsupported NG NeoHookean dimension {}.", size());
+		}
+	}
+
+	void NeoHookeanElasticity::assemble_hessian_ng(
+		const bool is_volume,
+		const int n_basis,
+		const AssemblyData &data,
+		const AssemblyData &geom_data,
+		const AssemblyCache &cache,
+		const material::MaterialExprRegistry &materials,
+		Span<const double> x,
+		Span<const double> x_prev,
+		const double t,
+		const double dt,
+		BSRMatrix &hessian,
+		const bool project_to_psd,
+		const double scale,
+		ExecutionPolicy policy) const
+	{
+		(void)n_basis;
+		(void)x_prev;
+		(void)dt;
+		assert(hessian.rows() == x.size());
+		assert(hessian.cols() == x.size());
+
+		switch (size())
+		{
+		case 2:
+		{
+			using Kernel = AutoDiffHessianMatrixKernel<NeoHookeanEnergy<2>>;
+			assemble_matrix(
+				Kernel{}, data, geom_data, cache, materials, x,
+				hessian, project_to_psd, t, scale, false, policy);
+			break;
+		}
+		case 3:
+		{
+			using Kernel = AutoDiffHessianMatrixKernel<NeoHookeanEnergy<3>>;
+			assemble_matrix(
+				Kernel{}, data, geom_data, cache, materials, x,
+				hessian, project_to_psd, t, scale, false, policy);
+			break;
+		}
+		default:
+			log_and_throw_error("Unsupported NG NeoHookean dimension {}.", size());
+		}
 	}
 
 	void NeoHookeanElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)

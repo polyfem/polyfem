@@ -6,9 +6,11 @@
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases_nodes.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 #include <polyfem/autogen/prism_bases.hpp>
 #include <polyfem/autogen/auto_pyramid_bases.hpp>
+#include <polyfem/autogen/auto_pyramid_bases_nodes.hpp>
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>

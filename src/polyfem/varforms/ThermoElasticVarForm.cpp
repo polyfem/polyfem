@@ -192,9 +192,10 @@ namespace polyfem::varform
 		const std::string &formulation,
 		const Units &units,
 		const json &args,
-		const std::string &out_path)
+		const std::string &out_path,
+		ExecutionPolicy policy)
 	{
-		VarForm::init(formulation, units, args, out_path);
+		VarForm::init(formulation, units, args, out_path, policy);
 		read_material_space_ids(args);
 
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
@@ -973,6 +974,7 @@ namespace polyfem::varform
 			characteristic_length, characteristic_force_density,
 			stacked_lumped_mass_.size() > 0 ? stacked_lumped_mass_ : identity_mass(total_ndof()),
 			mesh_->dimension(),
+			execution_policy_,
 			problem->is_time_dependent());
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);

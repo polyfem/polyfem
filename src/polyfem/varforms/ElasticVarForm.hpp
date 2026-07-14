@@ -1,6 +1,10 @@
 #pragma once
 
+#include <polyfem/assembler/AssemblyCache.hpp>
+#include <polyfem/materials/MaterialExprRegistry.hpp>
 #include <polyfem/varforms/VarForm.hpp>
+
+#include <optional>
 
 namespace polyfem::mesh
 {
@@ -25,7 +29,7 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy) override;
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 		void export_data(const Eigen::MatrixXd &solution) const override;
@@ -80,6 +84,8 @@ namespace polyfem::varform
 		assembler::AssemblyValsCache ass_vals_cache_;
 		assembler::AssemblyValsCache mass_ass_vals_cache_;
 		assembler::AssemblyValsCache pure_mass_ass_vals_cache_;
+		assembler::AssemblyCache ng_ass_cache_;
+		std::optional<material::MaterialExprRegistry> material_expr_registry_;
 
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler_;
 

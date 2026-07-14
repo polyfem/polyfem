@@ -186,6 +186,23 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
+	void BarrierContactForm::second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const
+	{
+		(void)policy;
+
+		const ipc::PSDProjectionMethod psd_projection_method =
+			project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE;
+
+		StiffnessMatrix local_hessian =
+			barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), psd_projection_method);
+		local_hessian = collision_mesh_.to_full_dof(local_hessian);
+
+		assert(local_hessian.rows() == hessian.rows());
+		assert(local_hessian.cols() == hessian.cols());
+
+		append_sparse_matrix_to_triplets(local_hessian, hessian.dynamic_view(), weighted_scale());
+	}
+
 	void BarrierContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);

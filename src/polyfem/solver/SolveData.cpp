@@ -126,7 +126,13 @@ namespace polyfem::solver
 		const int friction_iterations,
 
 		// Rayleigh damping form
-		const json &rayleigh_damping)
+		const json &rayleigh_damping,
+
+		// Optional NG elastic assembly sources
+		const assembler::AssemblyData *ng_bases,
+		const assembler::AssemblyData *ng_geom_bases,
+		const assembler::AssemblyCache *ng_cache,
+		const material::MaterialExprRegistry *ng_materials)
 	{
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
@@ -142,6 +148,7 @@ namespace polyfem::solver
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
 			t, dt, is_volume, jacobian_threshold, check_inversion);
+		elastic_form->set_ng_sources(ng_bases, ng_geom_bases, ng_cache, ng_materials);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)

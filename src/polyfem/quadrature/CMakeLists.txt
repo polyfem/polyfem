@@ -18,12 +18,9 @@ set(QUAD_SOURCES
 	PrismQuadrature.hpp
 	PyramidQuadrature.cpp
 	PyramidQuadrature.hpp
+  QuadratureStore.hpp
+  QuadratureStore.cpp
 )
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${QUAD_SOURCES})
 
-add_library(polyfem_quadrature ${QUAD_SOURCES})
-target_include_directories(polyfem_quadrature PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(polyfem_quadrature PRIVATE Eigen3::Eigen igl::core igl::predicates)
-target_compile_features(polyfem_quadrature PRIVATE cxx_std_17)
-
-target_link_libraries(polyfem PRIVATE polyfem_quadrature)
+target_sources(polyfem PRIVATE ${QUAD_SOURCES})

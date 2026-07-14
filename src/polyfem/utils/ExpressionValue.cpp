@@ -444,6 +444,26 @@ namespace polyfem
 			}
 		}
 
+#ifdef POLYFEM_WITH_CUDA
+		bool ExpressionValue::is_device_compatible() const
+		{
+			return expr_.empty() && mat_.size() == 0 && mat_expr_.empty()
+				   && !sfunc_ && !tfunc_ && t_index_.empty();
+		}
+
+		ExpressionValueView ExpressionValue::device_view(ExecutionPolicy policy) const
+		{
+			// For non device-compatible expression, return default empty view.
+			if (!is_device_compatible())
+			{
+				return {};
+			}
+
+			// Apply unit conversion on the host before transferring the view.
+			return ExpressionValueView{(*this)(0, 0, 0, 0, -1)};
+		}
+#endif
+
 		double ExpressionValue::operator()(double x, double y, double z, double t, int index) const
 		{
 			double result;

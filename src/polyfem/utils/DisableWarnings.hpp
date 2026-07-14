@@ -17,8 +17,6 @@
 // #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wctor-dtor-privacy"
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnull-dereference"
-#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcast-qual"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
@@ -41,8 +39,6 @@
 #pragma GCC diagnostic ignored "-Wnoexcept"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #pragma GCC diagnostic push

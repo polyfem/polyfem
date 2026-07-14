@@ -89,7 +89,6 @@ set(POLYFEM_WARNING_FLAGS
     # GCC 6.1 #
     ###########
 
-    -Wnull-dereference
     -fdelete-null-pointer-checks
     -Wduplicated-cond
     -Wmisleading-indentation

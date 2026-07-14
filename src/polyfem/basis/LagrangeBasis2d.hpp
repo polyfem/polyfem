@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -33,7 +33,7 @@ namespace polyfem
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
-			/// @param[out] bases              List of basis functions per element
+			/// @param[out] data              Storage class for element basis, quadrature, and node mapping.
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
@@ -53,7 +53,7 @@ namespace polyfem
 				const bool has_polys,
 				const bool is_geom_bases,
 				const bool use_corner_quadrature,
-				std::vector<ElementBases> &bases,
+				assembler::AssemblyData &data,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
 				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
@@ -72,7 +72,7 @@ namespace polyfem
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
-			/// @param[out] bases              List of basis functions per element
+			/// @param[out] data              Storage class for element basis, quadrature, and node mapping.
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
@@ -92,7 +92,7 @@ namespace polyfem
 				const bool has_polys,
 				const bool is_geom_bases,
 				const bool use_corner_quadrature,
-				std::vector<ElementBases> &bases,
+				assembler::AssemblyData &data,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
 				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
@@ -101,5 +101,6 @@ namespace polyfem
 			static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
 			static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
 		};
+
 	} // namespace basis
 } // namespace polyfem

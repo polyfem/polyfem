@@ -1,16 +1,18 @@
 #pragma once
 
-#include <Eigen/Dense>
+#include <polyfem/utils/CudaBoth.hpp>
+#include <polyfem/utils/Span.hpp>
 #include <cassert>
+#include <cstddef>
+#include <cmath>
 
 namespace polyfem {
 namespace autogen {
-void pyramid_nodes_3d(const int pyramid, Eigen::MatrixXd &val);
+POLYFEM_BOTH int pyramid_basis_count_3d(const int pyramid);
 
-void pyramid_basis_value_3d(const int pyramid, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+POLYFEM_BOTH void pyramid_basis_value_3d(const int pyramid, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val);
 
-void pyramid_grad_basis_value_3d(const int pyramid, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
+POLYFEM_BOTH void pyramid_grad_basis_value_3d(const int pyramid, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z);
 
 
 static const int MAX_Pyramid_BASES = 4;

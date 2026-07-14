@@ -2,11 +2,15 @@ set(SOURCES
 	autodiff.h
 	AutodiffTypes.hpp
 	Bessel.hpp
+	BlockCSRMatrix.cpp
+	BlockCSRMatrix.hpp
 	BoundarySampler.cpp
 	BoundarySampler.hpp
 	ClipperUtils.cpp
 	ClipperUtils.hpp
 	DisableWarnings.hpp
+	DualVector.cpp
+	DualVector.hpp
 	EdgeSampler.cpp
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
@@ -14,6 +18,8 @@ set(SOURCES
 	EnableWarnings.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	ExecutionPolicy.cpp
+	ExecutionPolicy.hpp
 	GeogramUtils.cpp
 	GeogramUtils.hpp
 	GeometryUtils.cpp
@@ -60,7 +66,18 @@ set(SOURCES
 	svd/ImplicitQRSVD.h
 	svd/Tools.h
 	svd.hpp
+  tcb_span.hpp
+ 	Span.hpp
+	AtomicAdd.cpp
+	AtomicAdd.hpp
+  AutoDiff.hpp
 )
+
+if(POLYFEM_WITH_CUDA)
+	list(APPEND SOURCES
+		BlockCSRMatrix.cu
+	)
+endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

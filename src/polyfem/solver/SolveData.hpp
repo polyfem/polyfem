@@ -1,9 +1,12 @@
 #pragma once
 
 #include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/AssemblyCache.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/materials/MaterialExprRegistry.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -153,7 +156,13 @@ namespace polyfem::solver
 			const int friction_iterations,
 
 			// Rayleigh damping form
-			const json &rayleigh_damping);
+			const json &rayleigh_damping,
+
+			// Optional NG elastic assembly sources
+			const assembler::AssemblyData *ng_bases = nullptr,
+			const assembler::AssemblyData *ng_geom_bases = nullptr,
+			const assembler::AssemblyCache *ng_cache = nullptr,
+			const material::MaterialExprRegistry *ng_materials = nullptr);
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution

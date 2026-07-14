@@ -32,6 +32,9 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
+		std::optional<BSRSparsityPattern> hessian_sparsity_pattern_ng() const override;
+		void second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const override;
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

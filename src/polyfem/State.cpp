@@ -7,6 +7,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
 #include <polyfem/utils/GeogramUtils.hpp>
+#include <polyfem/utils/ExecutionPolicy.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
@@ -240,7 +241,10 @@ namespace polyfem
 		}
 	}
 
-	void State::init(const json &p_args_in, const bool strict_validation)
+	void State::init(
+		const json &p_args_in,
+		const bool strict_validation,
+		ExecutionPolicy policy)
 	{
 		json args_in = p_args_in;
 		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);
@@ -318,6 +322,8 @@ namespace polyfem
 
 		logger().info("Saving output to {}", output_dir);
 
+		logger().info("Execution mode: {}", execution_mode_to_string(policy.mode));
+
 		set_max_threads(args["solver"]["max_threads"]);
 
 		init_time(args, units);
@@ -352,14 +358,17 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args);
-		if (!variational_formulation)
+		auto next_variational_formulation = varform::VarFormFactory::create(formulation, args);
+		if (!next_variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
-		logger().info("Using variational formulation: {}", variational_formulation->name());
+		logger().info("Using variational formulation: {}", next_variational_formulation->name());
 		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
-		variational_formulation->init(formulation, units, args, output_dir);
+		next_variational_formulation->init(formulation, units, args, output_dir, policy);
 		args["contact"].erase("_dhat_was_explicit");
+
+		variational_formulation = std::move(next_variational_formulation);
+		execution_policy = policy;
 	}
 
 	void State::set_max_threads(const int max_threads)

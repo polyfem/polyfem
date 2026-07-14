@@ -2,6 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/ExecutionPolicy.hpp>
 
 #include <Eigen/Dense>
 
@@ -25,6 +26,7 @@ namespace polyfem::varform
 
 namespace polyfem
 {
+
 	/// VarForm-only simulation state.
 	class State
 	{
@@ -35,13 +37,20 @@ namespace polyfem
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
-		void init(const json &args, const bool strict_validation);
+		/// @param[in] policy non-owning execution resources whose runtime must outlive this state
+		void init(
+			const json &args,
+			const bool strict_validation,
+			ExecutionPolicy policy = {});
 
 		/// @param[in] max_threads max number of threads
 		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// main input arguments containing all defaults
 		json args;
+
+		/// Non-owning execution resources. Their runtime must outlive this state.
+		ExecutionPolicy execution_policy;
 
 		/// active variational formulation
 		std::shared_ptr<varform::VarForm> variational_formulation;

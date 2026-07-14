@@ -1,10 +1,26 @@
 #include "FullNLProblem.hpp"
 #include <polyfem/utils/Logger.hpp>
 
+#include <algorithm>
+
 namespace polyfem::solver
 {
-	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, const bool is_residual)
+	namespace
+	{
+		/// Build form enabled/disabled mask.
+		std::vector<uint8_t> build_enabled_mask(const std::vector<std::shared_ptr<Form>> &forms)
+		{
+			std::vector<uint8_t> enabled;
+			enabled.reserve(forms.size());
+			for (const auto &form : forms)
+				enabled.push_back(form->enabled() ? 1 : 0);
+			return enabled;
+		}
+	} // namespace
+
+	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, ExecutionPolicy policy, const bool is_residual)
 		: forms_(forms),
+		  execution_policy_(policy),
 		  is_residual_(is_residual)
 	{
 	}
@@ -105,34 +121,79 @@ namespace polyfem::solver
 		double val = 0;
 		for (auto &f : forms_)
 			if (f->enabled())
-				val += f->value(x);
+				val += f->value_ng(x, execution_policy_);
 		return val;
 	}
 
 	void FullNLProblem::gradient(const TVector &x, TVector &grad)
 	{
-		grad = TVector::Zero(x.size());
+		DualVector grad_dual(x.size());
 		for (auto &f : forms_)
 		{
 			if (!f->enabled())
 				continue;
-			TVector tmp;
-			f->first_derivative(x, tmp);
-			grad += tmp;
+			f->first_derivative_ng(x, grad_dual, execution_policy_);
 		}
+		grad = grad_dual.to_eigen(execution_policy_);
 	}
 
 	void FullNLProblem::hessian(const TVector &x, THessian &hessian)
 	{
-		hessian.resize(x.size(), x.size());
+		std::vector<uint8_t> enabled_mask = build_enabled_mask(forms_);
+
+		// Compute sparsity pattern if cache not exists or form is enabled/disabled.
+		if (!hessian_bsr_ || form_enabled_mask_ != enabled_mask)
+		{
+			std::optional<BSRSparsityPattern> joined_pattern;
+
+			for (auto &f : forms_)
+			{
+				if (!f->enabled())
+				{
+					continue;
+				}
+
+				auto pattern = f->hessian_sparsity_pattern_ng();
+				if (!pattern)
+				{
+					continue;
+				}
+				assert(pattern->rows == pattern->cols);
+				assert(pattern->rows == x.size());
+
+				if (joined_pattern)
+				{
+					joined_pattern->join(*pattern);
+				}
+				else
+				{
+					joined_pattern = std::move(pattern);
+				}
+			}
+
+			if (joined_pattern)
+			{
+				hessian_bsr_.emplace(*joined_pattern);
+			}
+			else
+			{
+				// No pattern available, construct dyanmic only bsr matrix.
+				hessian_bsr_.emplace(x.size(), x.size());
+			}
+
+			form_enabled_mask_ = std::move(enabled_mask);
+		}
+
+		// Reset value ptr to zero.
+		hessian_bsr_->reset(execution_policy_);
 		for (auto &f : forms_)
 		{
 			if (!f->enabled())
 				continue;
-			THessian tmp;
-			f->second_derivative(x, tmp);
-			hessian += tmp;
+			f->second_derivative_ng(x, *hessian_bsr_, execution_policy_);
 		}
+
+		hessian = hessian_bsr_->to_stiffness_matrix(execution_policy_);
 	}
 
 	void FullNLProblem::solution_changed(const TVector &x)

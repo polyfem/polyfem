@@ -642,5 +642,31 @@ namespace polyfem
 
 			return 0;
 		}
+
+		int PolygonalBasis3d::build_bases(
+			const LinearAssembler &assembler,
+			const int n_samples_per_edge,
+			const Mesh3D &mesh,
+			const int n_bases,
+			const int quadrature_order,
+			const int mass_quadrature_order,
+			const int integral_constraints,
+			std::vector<ElementBases> &bases,
+			polyfem::assembler::AssemblyData &assembly_data,
+			const std::vector<ElementBases> &gbases,
+			const std::map<int, InterfaceData> &poly_face_to_data,
+			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &mapped_boundary)
+		{
+			const int new_bases = build_bases(
+				assembler, n_samples_per_edge, mesh, n_bases, quadrature_order,
+				mass_quadrature_order, integral_constraints, bases, gbases,
+				poly_face_to_data, mapped_boundary);
+			for (int e = 0; e < mesh.n_elements(); ++e)
+			{
+				if (mesh.is_polytope(e) && !bases[e].bases.empty())
+					assembly_data.set_legacy_element(e, bases[e]);
+			}
+			return new_bases;
+		}
 	} // namespace basis
 } // namespace polyfem

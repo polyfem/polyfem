@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
-#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/legacy_auto_p_bases.hpp>
 
 #include <iomanip>
 #include <iostream>

@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
@@ -24,6 +25,15 @@ namespace polyfem
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,
+				std::vector<mesh::LocalBoundary> &local_boundary,
+				std::map<int, InterfaceData> &poly_edge_to_data);
+
+			static int build_bases(
+				const mesh::Mesh2D &mesh,
+				const std::string &assembler,
+				int quadrature_order,
+				int mass_quadrature_order,
+				polyfem::assembler::AssemblyData &data,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data);
 

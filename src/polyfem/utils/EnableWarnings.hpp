@@ -8,7 +8,6 @@
 #pragma clang diagnostic pop // -Wstrict-overflow
 // #pragma clang diagnostic pop // -Wnoexcept
 #pragma clang diagnostic pop // -Wctor-dtor-privacy
-#pragma clang diagnostic pop // -Wnull-dereference
 #pragma clang diagnostic pop // -Wcast-qual
 #pragma clang diagnostic pop // -Wmissing-noreturn
 #pragma clang diagnostic pop // -Woverloaded-virtual
@@ -21,7 +20,6 @@
 #pragma GCC diagnostic pop // -Wstrict-overflow
 #pragma GCC diagnostic pop // -Wnoexcept
 #pragma GCC diagnostic pop // -Wctor-dtor-privacy
-#pragma GCC diagnostic pop // -Wnull-dereference
 #pragma GCC diagnostic pop // -Wcast-qual
 #pragma GCC diagnostic pop // -Wmissing-noreturn
 #pragma GCC diagnostic pop // -Woverloaded-virtual

@@ -9,6 +9,7 @@ import pretty_print
 
 x, y, z = symbols('x,y,z')
 
+
 def shuffle(a,b):
     return [a[i] for i in b]
 
@@ -142,15 +143,21 @@ if __name__ == "__main__":
 
     bletter = "pyramid"
 
-    cpp = f"#include \"auto_{bletter}_bases.hpp\""
-    cpp = cpp + "\n#include \"auto_b_bases.hpp\""
-    cpp = cpp + "\n#include \"p_n_bases.hpp\""
-    cpp = cpp + "\n\n\n" \
-        "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+    cpp = f"#include \"auto_{bletter}_bases.hpp\"\n\n"
+    cpp += "namespace polyfem {\nnamespace autogen {\n"
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n"
-
+    hpp = "#pragma once\n\n"
+    hpp += "#include <polyfem/utils/CudaBoth.hpp>\n"
+    hpp += "#include <polyfem/utils/Span.hpp>\n"
+    hpp += "#include <cassert>\n"
+    hpp += "#include <cstddef>\n"
+    hpp += "#include <cmath>\n"
     hpp = hpp + "\nnamespace polyfem {\nnamespace autogen " + "{\n"
+
+    nodes_hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+    nodes_hpp += "namespace polyfem {\nnamespace autogen {\n"
+    nodes_cpp = "#include \"auto_pyramid_bases_nodes.hpp\"\n\n#include <cassert>\n\n"
+    nodes_cpp += "namespace polyfem {\nnamespace autogen {\nnamespace {\n"
 
     for dim in dims:
         assert dim == 3, "Only 3D pyramid is supported"
@@ -160,13 +167,16 @@ if __name__ == "__main__":
         unique_nodes = f"void {bletter}_nodes_{suffix}" + \
             f"(const int {bletter}, Eigen::MatrixXd &val)"
 
-        unique_fun = f"void {bletter}_basis_value_{suffix}" + \
-            f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
-            f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        unique_fun = f"POLYFEM_BOTH void {bletter}_basis_value_{suffix}" + \
+            f"(const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+        dunique_fun = f"POLYFEM_BOTH void {bletter}_grad_basis_value_{suffix}" + \
+            f"(const int {bletter}, const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
+        count_fun = f"POLYFEM_BOTH int {bletter}_basis_count_{suffix}(const int {bletter})"
+        count_cases = f"{count_fun} {{\nswitch({bletter}) {{\n"
 
-        hpp = hpp + unique_nodes + ";\n\n"
+        nodes_hpp = nodes_hpp + unique_nodes + ";\n\n"
 
+        hpp = hpp + count_fun + ";\n\n"
         hpp = hpp + unique_fun + ";\n\n"
         hpp = hpp + dunique_fun + ";\n\n"
 
@@ -380,17 +390,18 @@ if __name__ == "__main__":
             # Both function evaluates quadrature points in batch by dispatching the "xxx_single" basis
             # kernel inside a for loop. In this script the single kernel related codegen variable
             # is denoted with scalar_ prefix.
-            func = f"void {bletter}_{order}_basis_value_{suffix}" + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = f"void {bletter}_{order}_basis_grad_value_{suffix}" + \
-                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = f"POLYFEM_BOTH void {bletter}_{order}_basis_value_{suffix}" + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> val)"
+            dfunc = f"POLYFEM_BOTH void {bletter}_{order}_basis_grad_value_{suffix}" + \
+                "(const int local_index, Span<const double> x, Span<const double> y, Span<const double> z, Span<double> grad_x, Span<double> grad_y, Span<double> grad_z)"
             scalar_func_name = f"{bletter}_{order}_basis_value_{suffix}_single"
             scalar_dfunc_name = f"{bletter}_{order}_basis_grad_value_{suffix}_single"
 
             unique_fun = unique_fun + \
-                f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, uv, val); break;\n"
+                f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, x, y, z, val); break;\n"
             dunique_fun = dunique_fun + \
-                f"\tcase {order}: {bletter}_{order}_basis_grad_value_{suffix}(local_index, uv, val); break;\n"
+                f"\tcase {order}: {bletter}_{order}_basis_grad_value_{suffix}(local_index, x, y, z, grad_x, grad_y, grad_z); break;\n"
+            count_cases = count_cases + f"\tcase {order}: return {fe.nbf()};\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
@@ -418,31 +429,40 @@ if __name__ == "__main__":
 
             cpp = cpp + base + "\n\n"
             cpp = cpp + func + "{\n"
-            cpp = cpp + "result_0.resize(uv.rows(), 1);\n"
+            cpp = cpp + "assert(val.size() == x.size());\n"
+            cpp = cpp + "assert(y.size() == x.size());\n"
+            cpp = cpp + "assert(z.size() == x.size());\n"
             cpp = cpp + base_cases + "\n}\n"
 
             cpp = cpp + dbase + "\n\n"
             cpp = cpp + dfunc + "{\n"
-            cpp = cpp + f"val.resize(uv.rows(), {dim});\n"
+            cpp = cpp + "assert(grad_x.size() == x.size());\n"
+            cpp = cpp + "assert(y.size() == x.size());\n"
+            cpp = cpp + "assert(grad_y.size() == x.size());\n"
+            cpp = cpp + "assert(z.size() == x.size());\n"
+            cpp = cpp + "assert(grad_z.size() == x.size());\n"
             cpp = cpp + f"double gradient[{dim}];\n"
             cpp = cpp + dbase_cases + "\n}\n\n\n"
 
-            cpp = cpp + nodes + "\n\n\n"
+            nodes_cpp = nodes_cpp + nodes + "\n\n\n"
 
         unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
         unique_fun = unique_fun + "\tdefault: assert(false); \n}}"
         dunique_fun = dunique_fun + "\tdefault: assert(false); \n}}"
+        count_cases = count_cases + "\tdefault: assert(false); return 0;\n}}\n"
         
-        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + \
-            "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
-        hpp = hpp + "\n"
+        nodes_cpp = nodes_cpp + "}\n\n" + unique_nodes + "\n\nnamespace {\n"
+        cpp = cpp + count_cases + "\n"
+        cpp = cpp + unique_fun + "\n\n" + dunique_fun + "\n\n"
 
     hpp = hpp + \
         f"\nstatic const int MAX_{bletter.capitalize()}_BASES = {max(orders)};\n"
 
-    cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
+    cpp = cpp + "\n}}\n"
+    nodes_cpp = nodes_cpp + "\n}}}\n"
+    nodes_hpp = nodes_hpp + "}}\n"
 
     path = os.path.abspath(args.output)
 
@@ -452,6 +472,10 @@ if __name__ == "__main__":
 
     with open(os.path.join(path, f"auto_{bletter}_bases.hpp"), "w") as file:
         file.write(hpp)
+    with open(os.path.join(path, f"auto_{bletter}_bases_nodes.cpp"), "w") as file:
+        file.write(nodes_cpp)
+    with open(os.path.join(path, f"auto_{bletter}_bases_nodes.hpp"), "w") as file:
+        file.write(nodes_hpp)
 
     print("done!")
 

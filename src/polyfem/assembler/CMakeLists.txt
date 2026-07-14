@@ -2,6 +2,10 @@ set(SOURCES
 	Assembler.cpp
 	Assembler.hpp
 	AssemblerData.hpp
+	Assemble.hpp
+	AssembleOnHost.hpp
+	AssembleOnHost.cpp
+	AssembleOnDevice.cuh
 	AssemblerUtils.cpp
 	AssemblerUtils.hpp
 	AssemblyValsCache.cpp
@@ -11,8 +15,18 @@ set(SOURCES
 	ActiveFiber.hpp
 	Bilaplacian.cpp
 	Bilaplacian.hpp
+	AssemblyData.cpp
+	AssemblyData.hpp
+  AssemblyCache.cpp
+	AssemblyCache.hpp
+	ComputeAssemblyCache.cpp
+	ComputeAssemblyCache.hpp
+	ComputeSparsityPattern.cpp
+	ComputeSparsityPattern.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
+  ComputeGeometryMapping.cpp
+	ComputeGeometryMapping.hpp
 	GenericElastic.cpp
 	GenericElastic.hpp
 	GenericFiber.cpp
@@ -83,7 +97,19 @@ set(SOURCES
 	VolumePenalty.cpp
 	SumModel.hpp
 	SumModel.cpp
+  DofMappingStore.hpp
+  DofMappingStore.cpp
+  AutoDiffKernel.hpp
 )
+
+if(POLYFEM_WITH_CUDA)
+	set_source_files_properties(
+		AssemblyCache.cpp
+		Mass.cpp
+		NeoHookeanElasticity.cpp
+		TARGET_DIRECTORY polyfem
+		PROPERTIES LANGUAGE CUDA)
+endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

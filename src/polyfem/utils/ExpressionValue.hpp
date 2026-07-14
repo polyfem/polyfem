@@ -1,14 +1,62 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/CudaBoth.hpp>
 #include <map>
 
 #include <units/units.hpp>
+
+#ifdef POLYFEM_WITH_CUDA
+#include <polyfem/utils/ExecutionPolicy.hpp>
+
+#include <cuda/std/limits>
+#include <cuda/std/type_traits>
+#include <cuda/std/variant>
+#endif
 
 namespace polyfem
 {
 	namespace utils
 	{
+#ifdef POLYFEM_WITH_CUDA
+		class ExpressionValueView
+		{
+		private:
+			// TODO: support matrix and tiny expr.
+			using Storage = cuda::std::variant<cuda::std::monostate, double>;
+			Storage storage_;
+
+		public:
+			/// Construct empty expr view.
+			ExpressionValueView() = default;
+			/// Construct Scalar expr view.
+			explicit ExpressionValueView(double value) : storage_(value) {}
+
+			POLYFEM_BOTH bool is_device_compatible() const
+			{
+				return !cuda::std::holds_alternative<cuda::std::monostate>(storage_);
+			}
+
+			/// Eval expression. Return Nan for empty expression.
+			POLYFEM_BOTH double operator()(
+				double x,
+				double y,
+				double z = 0,
+				double t = 0,
+				int index = -1) const
+			{
+				if (const double *value = cuda::std::get_if<double>(&storage_))
+					return *value;
+
+				// Return Nan for empty view.
+				return cuda::std::numeric_limits<double>::quiet_NaN();
+			}
+		};
+
+		// Must be true to be able to copy to device.
+		static_assert(cuda::std::is_trivially_copyable_v<ExpressionValueView>);
+#endif
+
 		class ExpressionValue
 		{
 		public:
@@ -40,6 +88,11 @@ namespace polyfem
 			void set_t(const json &t);
 
 			double operator()(double x, double y, double z = 0, double t = 0, int index = -1) const;
+
+#ifdef POLYFEM_WITH_CUDA
+			bool is_device_compatible() const;
+			ExpressionValueView device_view(ExecutionPolicy policy) const;
+#endif
 
 			void clear();
 

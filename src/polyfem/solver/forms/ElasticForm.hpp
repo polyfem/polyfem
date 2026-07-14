@@ -2,9 +2,12 @@
 
 #include "Form.hpp"
 
+#include <polyfem/assembler/AssemblyCache.hpp>
+#include <polyfem/assembler/AssemblyData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/materials/MaterialExprRegistry.hpp>
 
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixCache.hpp>
@@ -44,6 +47,17 @@ namespace polyfem::solver
 					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
 
 		std::string name() const override { return "elastic"; }
+
+		void set_ng_sources(
+			const assembler::AssemblyData *bases,
+			const assembler::AssemblyData *geom_bases,
+			const assembler::AssemblyCache *cache,
+			const material::MaterialExprRegistry *materials);
+
+		double value_ng(const Eigen::VectorXd &x, ExecutionPolicy policy) const override;
+		void first_derivative_ng(const Eigen::VectorXd &x, DualVector &gradv, ExecutionPolicy policy) const override;
+		std::optional<BSRSparsityPattern> hessian_sparsity_pattern_ng() const override;
+		void second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const override;
 
 	protected:
 		/// @brief Compute the elastic potential value
@@ -115,8 +129,14 @@ namespace polyfem::solver
 		StiffnessMatrix cached_stiffness_;                      ///< Cached stiffness matrix for linear elasticity
 		mutable std::unique_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
+		const assembler::AssemblyData *ng_bases_ = nullptr;
+		const assembler::AssemblyData *ng_geom_bases_ = nullptr;
+		const assembler::AssemblyCache *ng_cache_ = nullptr;
+		const material::MaterialExprRegistry *ng_materials_ = nullptr;
+
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
+		bool can_use_ng_assembly() const;
 
 		Eigen::VectorXd x_prev_;
 

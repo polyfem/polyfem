@@ -200,5 +200,102 @@ namespace polyfem
 			val.col(0) = P(ijk(1), p, y) * (P_prime(ijk(0), p, x) * P(ijk(2), p, 1 - x - y) - P(ijk(0), p, x) * P_prime(ijk(2), p, 1 - x - y));
 			val.col(1) = P(ijk(0), p, x) * (P_prime(ijk(1), p, y) * P(ijk(2), p, 1 - x - y) - P(ijk(1), p, y) * P_prime(ijk(2), p, 1 - x - y));
 		}
+
+		void p_n_basis_value_2d(
+			const int p,
+			const int local_index,
+			Span<const double> x,
+			Span<const double> y,
+			Span<double> val)
+		{
+			assert(x.size() == y.size());
+			assert(x.size() == val.size());
+			const int n = int(x.size());
+			Eigen::MatrixXd uv(n, 2);
+			for (int i = 0; i < n; ++i)
+				uv.row(i) << x[i], y[i];
+			Eigen::MatrixXd values;
+			p_n_basis_value_2d(p, local_index, uv, values);
+			assert(values.size() == n);
+			for (int i = 0; i < n; ++i)
+				val[i] = values(i);
+		}
+
+		void p_n_basis_grad_value_2d(
+			const int p,
+			const int local_index,
+			Span<const double> x,
+			Span<const double> y,
+			Span<double> grad_x,
+			Span<double> grad_y)
+		{
+			assert(x.size() == y.size());
+			assert(x.size() == grad_x.size());
+			assert(x.size() == grad_y.size());
+			const int n = int(x.size());
+			Eigen::MatrixXd uv(n, 2);
+			for (int i = 0; i < n; ++i)
+				uv.row(i) << x[i], y[i];
+			Eigen::MatrixXd gradients;
+			p_n_basis_grad_value_2d(p, local_index, uv, gradients);
+			assert(gradients.rows() == n && gradients.cols() == 2);
+			for (int i = 0; i < n; ++i)
+			{
+				grad_x[i] = gradients(i, 0);
+				grad_y[i] = gradients(i, 1);
+			}
+		}
+
+		void p_n_basis_value_3d(
+			const int p,
+			const int local_index,
+			Span<const double> x,
+			Span<const double> y,
+			Span<const double> z,
+			Span<double> val)
+		{
+			assert(x.size() == y.size());
+			assert(x.size() == z.size());
+			assert(x.size() == val.size());
+			const int n = int(x.size());
+			Eigen::MatrixXd uv(n, 3);
+			for (int i = 0; i < n; ++i)
+				uv.row(i) << x[i], y[i], z[i];
+			Eigen::MatrixXd values;
+			p_n_basis_value_3d(p, local_index, uv, values);
+			assert(values.size() == n);
+			for (int i = 0; i < n; ++i)
+				val[i] = values(i);
+		}
+
+		void p_n_basis_grad_value_3d(
+			const int p,
+			const int local_index,
+			Span<const double> x,
+			Span<const double> y,
+			Span<const double> z,
+			Span<double> grad_x,
+			Span<double> grad_y,
+			Span<double> grad_z)
+		{
+			assert(x.size() == y.size());
+			assert(x.size() == z.size());
+			assert(x.size() == grad_x.size());
+			assert(x.size() == grad_y.size());
+			assert(x.size() == grad_z.size());
+			const int n = int(x.size());
+			Eigen::MatrixXd uv(n, 3);
+			for (int i = 0; i < n; ++i)
+				uv.row(i) << x[i], y[i], z[i];
+			Eigen::MatrixXd gradients;
+			p_n_basis_grad_value_3d(p, local_index, uv, gradients);
+			assert(gradients.rows() == n && gradients.cols() == 3);
+			for (int i = 0; i < n; ++i)
+			{
+				grad_x[i] = gradients(i, 0);
+				grad_y[i] = gradients(i, 1);
+				grad_z[i] = gradients(i, 2);
+			}
+		}
 	} // namespace autogen
 } // namespace polyfem

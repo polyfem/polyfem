@@ -34,9 +34,9 @@ namespace polyfem::varform
 		time_integrator = nullptr;
 	}
 
-	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path, ExecutionPolicy policy)
 	{
-		ElasticVarForm::init(formulation, units, args, out_path);
+		ElasticVarForm::init(formulation, units, args, out_path, policy);
 		const json &discr_orders = args.at("space").at("discr_order");
 
 		const json &materials = args.at("materials");
@@ -71,7 +71,6 @@ namespace polyfem::varform
 					log_and_throw_error("All incompressible materials must use the same displacement and pressure FE space IDs.");
 			}
 		}
-
 		mixed_assembler_ = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler_ = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
 		assert(primary_assembler_->is_linear());

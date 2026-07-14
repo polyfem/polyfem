@@ -1,9 +1,13 @@
 #pragma once
 
+#include <polyfem/utils/BlockCSRMatrix.hpp>
+#include <polyfem/utils/DualVector.hpp>
+#include <polyfem/utils/Span.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polysolve/nonlinear/PostStepData.hpp>
 
 #include <filesystem>
+#include <optional>
 
 namespace polyfem::solver
 {
@@ -26,6 +30,13 @@ namespace polyfem::solver
 		inline virtual double value(const Eigen::VectorXd &x) const
 		{
 			return (weight() / scale_) * value_unweighted(x);
+		}
+
+		/// NG assembly API. Fallbacks to legacy assembly by default.
+		virtual double value_ng(const Eigen::VectorXd &x, ExecutionPolicy policy) const
+		{
+			(void)policy;
+			return value(x);
 		}
 
 		/// @brief Compute the value of the form multiplied with the weigth
@@ -53,6 +64,35 @@ namespace polyfem::solver
 		{
 			second_derivative_unweighted(x, hessian);
 			hessian *= weight() / scale_;
+		}
+
+		/// NG assembly API. Fallbacks to legacy assembly by default.
+		virtual void first_derivative_ng(const Eigen::VectorXd &x, DualVector &gradv, ExecutionPolicy policy) const
+		{
+			(void)policy;
+			Eigen::VectorXd tmp;
+			first_derivative(x, tmp);
+			assert(tmp.size() == gradv.size());
+			Span<double> grad_host = gradv.host_view();
+			for (int i = 0; i < tmp.size(); ++i)
+				grad_host[i] += tmp[i];
+		}
+
+		/// NG assembly API. Return nullopt if not support.
+		virtual std::optional<BSRSparsityPattern> hessian_sparsity_pattern_ng() const
+		{
+			return std::nullopt;
+		}
+
+		/// NG assembly API. Fallbacks to legacy assembly by default.
+		virtual void second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const
+		{
+			(void)policy;
+			StiffnessMatrix tmp;
+			second_derivative(x, tmp);
+			assert(tmp.rows() == hessian.rows());
+			assert(tmp.cols() == hessian.cols());
+			append_sparse_matrix_to_triplets(tmp, hessian.dynamic_view());
 		}
 
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
@@ -142,6 +182,9 @@ namespace polyfem::solver
 		/// @brief sets the scale for the form
 		/// @param scale
 		void virtual set_scale(const double scale) { scale_ = scale; }
+
+		/// Compute final weight.
+		double weighted_scale() const { return weight() / scale_; }
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite

@@ -13,7 +13,7 @@
 #include <polyfem/utils/Types.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/legacy_auto_q_bases.hpp>
 
 #include <Eigen/Sparse>
 
@@ -840,6 +840,31 @@ namespace polyfem
 				setup_data_for_polygons(mesh, e, b, poly_edge_to_data);
 			}
 
+			return n_bases;
+		}
+
+		int SplineBasis2d::build_bases(
+			const Mesh2D &mesh,
+			const std::string &assembler,
+			const int quadrature_order,
+			const int mass_quadrature_order,
+			polyfem::assembler::AssemblyData &data,
+			std::vector<LocalBoundary> &local_boundary,
+			std::map<int, InterfaceData> &poly_edge_to_data)
+		{
+			auto data_view = data.mutable_view();
+			assert(data_view.element_desc->empty());
+			data_view.element_desc->resize(mesh.n_elements());
+			std::vector<ElementBases> legacy_bases;
+			const int n_bases = build_bases(
+				mesh, assembler, quadrature_order, mass_quadrature_order,
+				legacy_bases, local_boundary, poly_edge_to_data);
+
+			for (int e = 0; e < mesh.n_elements(); ++e)
+			{
+				if (!legacy_bases[e].bases.empty())
+					data.set_legacy_element(e, legacy_bases[e]);
+			}
 			return n_bases;
 		}
 

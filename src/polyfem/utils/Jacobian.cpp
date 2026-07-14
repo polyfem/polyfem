@@ -7,6 +7,7 @@ using namespace element_validity;
 #include <polyfem/utils/par_for.hpp>
 #include "Jacobian.hpp"
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases_nodes.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
 using namespace polyfem::assembler;

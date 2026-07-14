@@ -32,6 +32,8 @@ namespace polyfem::solver
 
 		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
+		void second_derivative_ng(const Eigen::VectorXd &x, BSRMatrix &hessian, ExecutionPolicy policy) const override;
+
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
