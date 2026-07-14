@@ -227,12 +227,6 @@ endif()
 # Required libraries
 ################################################################################
 
-if(WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
-
 # CCCL
 if(POLYFEM_WITH_CUDA)
   include(cccl)
