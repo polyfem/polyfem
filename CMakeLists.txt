@@ -207,7 +207,12 @@ endif()
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
- 
+
+if(TARGET MeshFEMSparse)
+    target_link_libraries(polyfem PUBLIC MeshFEMSparse)
+else()
+    message(FATAL_ERROR "PolyFEM requires MeshFEMSparse, but polysolve did not provide the MeshFEMSparse target.")
+endif()
 
 # libigl
 include(libigl)

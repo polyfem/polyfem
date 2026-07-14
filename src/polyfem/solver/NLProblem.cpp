@@ -18,8 +18,6 @@
 #include <igl/cat.h>
 #include <igl/Timer.h>
 
-#include <set>
-
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
@@ -656,18 +654,19 @@ namespace polyfem::solver
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
-		THessian &hessian_ = hessian.get<StiffnessMatrix>();
 		if (full_size() != current_size())
 		{
-			// To DO: implement full_hessian_to_reduced_hessian in our Hessian struct type.
-			full_hessian_to_reduced_hessian(hessian_);
+			full_hessian_to_reduced_hessian(hessian);
 		}
 		else if (penalty_problem_)
 		{
-			throw std::runtime_error("Hessian computation for the full problem with penalty forms is not implemented yet");
-			// THessian tmp;
-			// penalty_problem_->hessian(x, tmp);
-			// hessian_ += tmp;
+			// TODO: implement this this case natively without Eigen fallback?
+			hessian.switch_to_native_type<StiffnessMatrix>();
+			StiffnessMatrix &H_eigen = hessian.get_mutable<StiffnessMatrix>();
+
+			Hessian tmp;
+			penalty_problem_->hessian(x, tmp);
+			H_eigen += tmp.as<StiffnessMatrix>();
 		}
 	}
 
@@ -775,19 +774,24 @@ namespace polyfem::solver
 		return full;
 	}
 
-	void NLProblem::full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const
+	void NLProblem::full_hessian_to_reduced_hessian(Hessian &hessian) const
 	{
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
 			penalty_forms_.front()->project_hessian(hessian);
 		else
 		{
+			// The general multiplication-based projection is currently
+			// supported only for the Eigen Hessian type...
+			hessian.switch_to_native_type<StiffnessMatrix>();
+			auto &H_eigen = hessian.get_mutable<StiffnessMatrix>();
+
 			// arma::sp_mat q2a = fill_arma(Q2_);
 			// arma::sp_mat ha = fill_arma(hessian);
 			// arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
 			// hessian = fill_eigen(q2thq2);
-			hessian = Q2t_ * hessian * Q2_;
+			H_eigen = Q2t_ * H_eigen * Q2_;
 			// remove numerical zeros
-			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+			H_eigen.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
 				return std::abs(value) > 1e-10;
 			});
 		}

@@ -7,7 +7,6 @@
 
 #include <ipc/utils/eigen_ext.hpp>
 
-#include <MeshFEM/newton_optimizer/NewtonHessian.hh>
 #include <unsupported/Eigen/SparseExtra>
 
 #include <algorithm>
@@ -245,7 +244,7 @@ namespace polyfem::assembler
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases, 
 		const AssemblyValsCache &cache, const double t, 
-		NewtonHessian &H, const bool is_mass) const
+		Hessian &H, const bool is_mass) const
 	{
 
 		int dim = size();
@@ -302,26 +301,10 @@ namespace polyfem::assembler
 		};
 
 		size_t n_elems = bases.size();
-		// TODO: use common assembler...
-		if (dim == 2)
-		{
-			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
-			H = m_assembler2D->sparsityPattern(n_elems, stencil);
-			m_assembler2D->assembleHessian(H, n_elems, eval_H_e, stencil);
-			
-		}
-		else if (dim == 3)
-		{
-			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
-			H = m_assembler3D->sparsityPattern(n_elems, stencil);
-			m_assembler3D->assembleHessian(H, n_elems, eval_H_e, stencil);
-		}
-		else
-			throw std::runtime_error("Unsupported dimension for NLAssembler Hessian assembly.");
-		
-
-
-		
+		m_assembler = std::make_unique<FastSystemAssembler>(dim, n_basis);
+		auto H_bcsc = m_assembler->sparsityPattern(n_elems, stencil);
+		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_H_e, stencil);
+		H.emplace<polysolve::BCSCHessianWithFixedVars>(std::move(H_bcsc));
 	}
 
 	void LinearAssembler::assemble(
@@ -334,11 +317,9 @@ namespace polyfem::assembler
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
-		NewtonHessian H;
+		Hessian H;
 		assemble(is_volume, n_basis, bases, gbases, cache, t, H, is_mass);
-
-		NewtonHessian2SparseMatrix(H, stiffness);
-
+		stiffness = H.as<StiffnessMatrix>();
 	}
 
 	void LinearAssembler::assembleImpl(
@@ -1204,7 +1185,7 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
 		MatrixCache &mat_cache,
-		NewtonHessian &H) const {
+		Hessian &H) const {
 	
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
@@ -1255,34 +1236,15 @@ namespace polyfem::assembler
 			return stiffness_val * weight;
 		};
 
-		// NewtonHessian H;
-		if (N == 2)
-		{
-			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
-			H = m_assembler2D->sparsityPattern(n_elems, stencil);
-			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
-			
-			start = std::chrono::steady_clock::now();
-			m_assembler2D->assembleHessian(H, n_elems, eval_H_e, stencil);
-			std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+		m_assembler = std::make_unique<FastSystemAssembler>(N, n_basis);
+		auto H_bcsc = m_assembler->sparsityPattern(n_elems, stencil);
+		std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
-		}
-		else if (N == 3)
-		{
-			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
-			H = m_assembler3D->sparsityPattern(n_elems, stencil);
-			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
-			
-			start = std::chrono::steady_clock::now();
-			
-			m_assembler3D->assembleHessian(H, n_elems, eval_H_e, stencil);
-			std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+		start = std::chrono::steady_clock::now();
+		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_H_e, stencil);
+		H.emplace<polysolve::BCSCHessianWithFixedVars>(std::move(H_bcsc));
+		std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
-		}
-		else
-			throw std::runtime_error("Unsupported dimension for NLAssembler Hessian assembly.");
-		
-		
 		// start = std::chrono::steady_clock::now();
 // 		auto H_scalar = H.toScalar().toSymmetryMode(SuiteSparseMatrix::SymmetryMode::NONE);
 // #ifdef POLYSOLVE_LARGE_INDEX

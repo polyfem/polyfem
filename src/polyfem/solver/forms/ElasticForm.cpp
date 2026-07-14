@@ -315,7 +315,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const
+	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
@@ -323,13 +323,10 @@ namespace polyfem::solver
 		accumulateHessianContribs(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), ElementBasisStencil(bases_));
 	}
 
-
-	NewtonHessian ElasticForm::hessianSparsityPattern() const
+	std::unique_ptr<BCSCHessian> ElasticForm::hessianSparsityPattern() const
 	{
-		size_t numElements = bases_.size();
-		return buildSparsityPattern(numElements, ElementBasisStencil(bases_));
+		return buildSparsityPattern(bases_.size(), ElementBasisStencil(bases_));
 	}
-
 
 	void ElasticForm::finish()
 	{

@@ -323,27 +323,24 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
-		// TODO: avoid the 2D/3D replication here by adding dynamic assembly
-		// routines to the `SystemAssemblerBase` class.
-		std::shared_ptr<SystemAssembler<2>> a2d;
-		std::shared_ptr<SystemAssembler<3>> a3d;
-		if (assembler->size() == 2) a2d = std::make_shared<SystemAssembler<2>>(n_bases);
-		if (assembler->size() == 3) a3d = std::make_shared<SystemAssembler<3>>(n_bases);
+		auto system_assembler = std::make_shared<polyfem::assembler::FastSystemAssembler>(assembler->size(), n_bases);
 
 		for (const auto &form : forms) {
-			form->setSystemAssembler(a2d);
-			form->setSystemAssembler(a3d);
+			form->setSystemAssembler(system_assembler);
 		}
 
-		// Create block-sparse mass matrix.
-		NewtonHessian M_full;
-		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);
-		for (const auto &form : forms) {
-			if (form->name() == "inertia"){
-				dynamic_cast<InertiaForm *>(form.get())->setMass(M_full, mass.diagonal());
-				dynamic_cast<InertiaForm *>(form.get())->useLumpedMass(args["solver"]["advanced"]["lump_mass_matrix"]);
+		{
+			// Evaluate block-sparse mass matrix for the InertiaForm.
+			Hessian M_full;
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);
+			auto &H_bcsc_ptr = M_full.get_mutable<polysolve::BCSCHessianWithFixedVars>().H;
+			for (const auto &form : forms) {
+				if (form->name() == "inertia"){
+					dynamic_cast<InertiaForm *>(form.get())->setMass(std::move(H_bcsc_ptr), mass.diagonal());
+					dynamic_cast<InertiaForm *>(form.get())->useLumpedMass(args["solver"]["advanced"]["lump_mass_matrix"]);
+				}
 			}
-        }
+		}
 
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];

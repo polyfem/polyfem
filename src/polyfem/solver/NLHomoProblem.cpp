@@ -214,12 +214,12 @@ namespace polyfem::solver
 	void NLHomoProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
+		// TODO: implement the following operations natively without the Eigen fallback...
+		hessian.switch_to_native_type<StiffnessMatrix>();
+		StiffnessMatrix &H_eigen = hessian.get_mutable<StiffnessMatrix>();
 
-		THessian &hessian_ = hessian.get<StiffnessMatrix>();
-		full_hessian_to_reduced_hessian(hessian_);
+		full_hessian_to_reduced_hessian(H_eigen);
 		
-		// TODO: need to do this operations on hessian directly.
-		// This is incorrect now.
 		for (auto &form : homo_forms)
 			if (form->enabled())
 			{
@@ -228,7 +228,7 @@ namespace polyfem::solver
 
 				THessian hess;
 				extended_hessian_to_reduced_hessian(hess_extended, hess);
-				hessian_ += hess;
+				H_eigen += hess;
 			}
 	}
 

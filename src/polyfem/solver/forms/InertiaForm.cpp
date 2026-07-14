@@ -1,4 +1,5 @@
 #include "InertiaForm.hpp"
+#include "polyfem/utils/Types.hpp"
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -56,17 +57,9 @@ namespace polyfem::solver
 	}
 
 
-	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const
+	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const
 	{
-		if (m_useLumpedMass) H.H_ss->addDiag((weight * M_lumped).eval());
-        else                 H.H_ss->addWithSubSparsityFast(*(M_full.H_ss), weight);
+		if (m_useLumpedMass) H.addDiag((weight * M_lumped).eval());
+		else                 H.addWithSubSparsityFast(*M_full, weight);
 	}
-
-
-	NewtonHessian InertiaForm::hessianSparsityPattern() const
-	{
-		return M_full;
-	}
-
-	
 } // namespace polyfem::solver

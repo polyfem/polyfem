@@ -269,10 +269,11 @@ namespace polyfem::legacy
 				std::unique_ptr<polysolve::linear::Solver> solver =
 					polysolve::linear::Solver::create(linear_args, logger());
 
-				// Needs to be tested
-				polysolve::Hessian hessian(std::in_place_type<StiffnessMatrix>);
+				Hessian hessian;
 				homo_problem->hessian(reduced_sol, hessian);
-				StiffnessMatrix &A = hessian.get<StiffnessMatrix>();
+				// TODO: update `dirichlet_solve` to operate natively on `Hessian`.
+				hessian.switch_to_native_type<StiffnessMatrix>();
+				StiffnessMatrix &A = hessian.get_mutable<StiffnessMatrix>();
 				Eigen::VectorXd x, b = Eigen::VectorXd::Zero(A.rows());
 				try
 				{

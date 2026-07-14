@@ -2,9 +2,7 @@
 
 #include <polyfem/solver/forms/Form.hpp>
 #include <polysolve/nonlinear/Problem.hpp>
-#include <MeshFEM/SystemAssembler.hh>
-#include <MeshFEM/SparsityLRU.hh>
-
+#include <MeshFEMSparse/SparsityLRU.hh>
 
 #include <memory>
 #include <vector>
@@ -21,7 +19,6 @@ namespace polyfem::solver
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, polysolve::Hessian &hessian) override;
-		NewtonHessian evalHessian(const TVector &x);
 		bool 		 updateHessianSparsityPattern();
 
 		virtual size_t getSparsityPatternID() const override { return m_sparsityPatternID; }
@@ -64,8 +61,8 @@ namespace polyfem::solver
 		// Need to confirm if we actually need it.
 		bool m_fullSparsityRebuildNeeded = true; // Whether all cached sparsity information has been invalidated (e.g., if the list of forms has changed)
 
-		NewtonHessian m_hessianSparsity, m_hessianSparsityStaticPart;
-		std::unique_ptr<SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
-        size_t m_sparsityPatternID = -1;
+		std::unique_ptr<BCSCHessian> m_hessianSparsity, m_hessianSparsityStaticPart;
+		std::unique_ptr<MeshFEM::SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
+		size_t m_sparsityPatternID = -1;
 	};
 } // namespace polyfem::solver

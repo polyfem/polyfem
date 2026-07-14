@@ -125,13 +125,12 @@ namespace polyfem::solver
 
 	void FullNLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
-#if 0
-		hessian = polysolve::Hessian(std::in_place_type<StiffnessMatrix>());
-        auto &H = std::get<StiffnessMatrix>(hessian);
+#if 0 // Original Eigen-based implementation
+		hessian.emplace<StiffnessMatrix>();
+		auto &H = hessian.get_mutable<StiffnessMatrix>(hessian);
 
 		H.resize(x.size(), x.size());
-		for (auto &f : forms_)
-		{
+		for (auto &f : forms_) {
 			if (!f->enabled())
 				continue;
 			THessian tmp;
@@ -139,109 +138,104 @@ namespace polyfem::solver
 			H += tmp;
 		}
 #else
-		hessian = polysolve::Hessian(std::in_place_type<NewtonHessian>);
-        auto &H = hessian.get<NewtonHessian>();
+		hessian.emplace<polysolve::BCSCHessianWithFixedVars>();
+		auto &H = hessian.get_mutable<polysolve::BCSCHessianWithFixedVars>().H;
 
 		bool changed = updateHessianSparsityPattern();
 		if (changed) ++m_sparsityPatternID;
 
-		H = evalHessian(x);
-		
-#endif
-	}
-
-	NewtonHessian FullNLProblem::evalHessian(const TVector &x)
-	{
-		NewtonHessian H = m_hessianSparsity; // Accumulate into a fresh (value-free) copy of the sparsity pattern.
-		for (auto &f : forms_)
-		{
-			if (!f->enabled())
-				continue;
-			f->accumulateHessian(f->weight(), x, H);
+		H = m_hessianSparsity->clone(); // Accumulate into a fresh (value-free) copy of the sparsity pattern.
+		for (auto &f : forms_) {
+			if (!f->enabled()) continue;
+			f->accumulateHessian(f->weight() / f->scale(), x, *H);
 		}
-		return H;
+#endif
 	}
 
 	bool FullNLProblem::updateHessianSparsityPattern()
 	{
-		NewtonHessian dynamicSparsity;
-        const bool force = m_fullSparsityRebuildNeeded;
-        if (force) {
-            m_hessianSparsity = NewtonHessian();
-            m_hessianSparsityStaticPart = NewtonHessian();
+		std::unique_ptr<BCSCHessian> dynamicSparsity;
+		const bool force = m_fullSparsityRebuildNeeded;
+		if (force) {
+			m_hessianSparsity.reset();
+			m_hessianSparsityStaticPart.reset();
 		}
 
-        bool changed = force;
-        bool staticOnly = true;
+		bool changed = force;
+		bool staticOnly = true;
 
-        for (size_t i = 0; i < forms_.size(); ++i) {
-            if (!forms_[i]->enabled())
-				continue;
+		for (size_t i = 0; i < forms_.size(); ++i) {
+			if (!forms_[i]->enabled()) continue;
 			const auto &f = forms_[i];
-        
-            if (f->sparsityPatternIsStatic()) {
-                // Only rebuild the "static" part when the terms might have been invalidated.
-                if (force) { m_hessianSparsityStaticPart.mergeSparsityPattern(f->hessianSparsityPattern()); std::cout << "Building static term sparsity pattern" << std::endl; }
-            }
-            else {
-                dynamicSparsity.mergeSparsityPattern(f->hessianSparsityPattern());
-                changed = true;
-				staticOnly = false;
-            }
-        }
 
-        if (changed) {
+			if (f->sparsityPatternIsStatic()) {
+				// Only rebuild the "static" part when the terms might have been invalidated.
+				if (force) {
+					std::cout << "Building static term sparsity pattern" << std::endl;
+					auto Hsp = f->hessianSparsityPattern();
+					if (!m_hessianSparsityStaticPart) m_hessianSparsityStaticPart = std::move(Hsp);
+					else m_hessianSparsityStaticPart->mergeSparsityPattern(Hsp.get());
+				}
+			}
+			else {
+				auto Hsp = f->hessianSparsityPattern();
+				if (!dynamicSparsity) dynamicSparsity = std::move(Hsp);
+				else dynamicSparsity->mergeSparsityPattern(Hsp.get());
+				changed = true;
+				staticOnly = false;
+			}
+		}
+
+		if (changed && (!m_hessianSparsityStaticPart || m_hessianSparsityStaticPart->nnz() == 0)) {
+			std::cout << "Warning: Hessian sparsity pattern has no static part; bypassing SLRU cache" << std::endl;
+			m_hessianSparsity = std::move(dynamicSparsity);
+			return true;
+		}
+
+		if (changed) {
 			if (force) {
 				// Work around paranoia of the Sparsity LRU object, which checks if all
 				// diagonal blocks are present (technically not needed for the specific
 				// matrix format used here).
-				auto copy = m_hessianSparsityStaticPart.H_ss->clone();
+				auto copy = m_hessianSparsityStaticPart->clone();
 				copy->setIdentity();
-				m_hessianSparsityStaticPart.H_ss->mergeSparsityPattern(*copy);
+				m_hessianSparsityStaticPart->mergeSparsityPattern(*copy);
 			}
 			if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
-            else {
-                if (!m_sparsityLRU){
-				    assert(m_hessianSparsityStaticPart.H_ss && (m_hessianSparsityStaticPart.H_ss->nnz() > 0));
-                    m_sparsityLRU = std::make_unique<SparsityLRU>(*(m_hessianSparsityStaticPart.H_ss));
-                    m_hessianSparsity = std::move(m_hessianSparsityStaticPart.H_ss);
-                }
+			else {
+				if (!m_sparsityLRU){
+					m_sparsityLRU = std::make_unique<MeshFEM::SparsityLRU>(*m_hessianSparsityStaticPart);
+					m_hessianSparsity = m_hessianSparsityStaticPart->clone();
+				}
 
-                if (m_sparsityLRU) {
-                    changed = m_sparsityLRU->update(*(dynamicSparsity.H_ss));
-                    changed |= force; // Ensure the static part rebuild takes effect.
-                    if (changed) {
-                        if (!m_hessianSparsity.H_ss) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
-                        m_hessianSparsity.H_ss->Ap = (*m_sparsityLRU)->Ap;
-                        m_hessianSparsity.H_ss->Ai = (*m_sparsityLRU)->Ai;
-                        m_hessianSparsity.H_ss->nz = (*m_sparsityLRU)->nz;
-                    }
-                }
-                else {
-                    // No static part: hessian is purely dynamic, build it directly.
-                    m_hessianSparsity = m_hessianSparsityStaticPart;
-                    m_hessianSparsity.mergeSparsityPattern(dynamicSparsity);
-                }
-            }
+				changed = m_sparsityLRU->update(*dynamicSparsity);
+				changed |= force; // Ensure the static part rebuild takes effect.
+				if (changed) {
+					if (!m_hessianSparsity) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+					m_hessianSparsity->Ap = (*m_sparsityLRU)->Ap;
+					m_hessianSparsity->Ai = (*m_sparsityLRU)->Ai;
+					m_hessianSparsity->nz = (*m_sparsityLRU)->nz;
+				}
+			}
 
-            m_hessianSparsity.finalize();
-        }
-        else if (m_sparsityLRU) {
-            // Still notify the cache of the sparsity pattern update in case
-            // it triggers a refactorization due to entry expiration.
-            if (m_sparsityLRU->increaseAgeOfOldEntries()) {
-                if (!m_hessianSparsity.H_ss) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
-                m_hessianSparsity.H_ss->Ap = (*m_sparsityLRU)->Ap;
-                m_hessianSparsity.H_ss->Ai = (*m_sparsityLRU)->Ai;
-                m_hessianSparsity.H_ss->nz = (*m_sparsityLRU)->nz;
+			m_hessianSparsity->finalize();
+		}
+		else if (m_sparsityLRU) {
+			// Still notify the cache of the sparsity pattern update in case
+			// it triggers a re-factorization due to entry expiration.
+			if (m_sparsityLRU->increaseAgeOfOldEntries()) {
+				if (!m_hessianSparsity) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+				m_hessianSparsity->Ap = (*m_sparsityLRU)->Ap;
+				m_hessianSparsity->Ai = (*m_sparsityLRU)->Ai;
+				m_hessianSparsity->nz = (*m_sparsityLRU)->nz;
 
-                m_hessianSparsity.finalize();
+				m_hessianSparsity->finalize();
 
-                changed = true;
-            }
-        }
+				changed = true;
+			}
+		}
 
-        m_fullSparsityRebuildNeeded = false;
+		m_fullSparsityRebuildNeeded = false;
 
 		return changed;
 	}

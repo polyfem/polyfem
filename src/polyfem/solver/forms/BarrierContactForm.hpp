@@ -7,8 +7,8 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
-#include <MeshFEM/SystemAssembler.hh>
-#include <MeshFEM/VarStructure.hh>
+#include <MeshFEMSparse/SystemAssembler.hh>
+#include <MeshFEMSparse/VarStructure.hh>
 
 
 namespace polyfem::solver
@@ -17,7 +17,7 @@ namespace polyfem::solver
 	{
 		friend class BarrierContactForceDerivative;
 
-		using StencilMembers = ElementBlockVarsWithSizeRange<1, 4>;
+		using StencilMembers = MeshFEM::ElementBlockVarsWithSizeRange<1, 4>;
 
 	public:
 		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
@@ -79,9 +79,10 @@ namespace polyfem::solver
 
 		int blockVarForCollisionMeshVertex(int vertex_id) const;
 		StencilMembers constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const;
-		virtual NewtonHessian hessianSparsityPattern() const override;
+
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
 		virtual bool sparsityPatternIsStatic() const override { return false; }
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const override;
 		
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 

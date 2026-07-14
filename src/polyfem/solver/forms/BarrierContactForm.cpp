@@ -188,31 +188,30 @@ namespace polyfem::solver
 
 	
 	// Get the block variables *for the full problem* participating in the constraint.
-    BarrierContactForm::StencilMembers BarrierContactForm::constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const {
-        const auto &c = collision_set_[ci];
-        const size_t nv = c.num_vertices();
-        std::array<int, 4> vertex_ids = c.vertex_ids(collision_mesh_.edges(), collision_mesh_.faces());
-        // // Convert to block variables of the global system.
-        StencilMembers result(nv);
-        size_t back = 0;
-        for (int vi : vertex_ids) {
-            if (vi < 0) continue;
-            int bvar = blockVarForCollisionMeshVertex(vi);
+	BarrierContactForm::StencilMembers BarrierContactForm::constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const {
+		const auto &c = collision_set_[ci];
+		const size_t nv = c.num_vertices();
+		std::array<int, 4> vertex_ids = c.vertex_ids(collision_mesh_.edges(), collision_mesh_.faces());
+		// // Convert to block variables of the global system.
+		StencilMembers result(nv);
+		size_t back = 0;
+		for (int vi : vertex_ids) {
+			if (vi < 0) continue;
+			int bvar = blockVarForCollisionMeshVertex(vi);
 			result[back++] = bvar;
 		}
-        result.resize(back);
-        return result;
-    }
-
-	NewtonHessian BarrierContactForm::hessianSparsityPattern() const
-	{
-		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
-			return collision_mesh_.to_full_vertex_id(vertex_id);
-		};
-		return buildSparsityPattern(collision_set_.size(), [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
+		result.resize(back);
+		return result;
 	}
 
-	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const
+	std::unique_ptr<BCSCHessian> BarrierContactForm::hessianSparsityPattern() const
+	{
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) { return collision_mesh_.to_full_vertex_id(vertex_id); };
+		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); };
+		return buildSparsityPattern(collision_set_.size(), contactStencil);
+	}
+
+	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const
 	{
 		ipc::PSDProjectionMethod psd_projection_method;
 
@@ -222,14 +221,12 @@ namespace polyfem::solver
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
-		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
-			return collision_mesh_.to_full_vertex_id(vertex_id);
-		};
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) { return collision_mesh_.to_full_vertex_id(vertex_id); };
+		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); };
 
 		auto X = compute_displaced_surface(x);
 		auto H_eval_e = [&](int ci) -> Eigen::MatrixXd { return (weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method)); };
-		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
-
+		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, contactStencil);
 	}
 
 	void BarrierContactForm::post_step(const polysolve::nonlinear::PostStepData &data)

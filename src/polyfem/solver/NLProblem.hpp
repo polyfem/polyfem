@@ -70,7 +70,7 @@ namespace polyfem::solver
 		virtual TVector full_to_reduced_diag(const TVector &full_diag) const;
 		TVector reduced_to_full(const TVector &reduced) const;
 
-		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
+		void full_hessian_to_reduced_hessian(Hessian &hessian) const;
 
 		double normalize_forms() override;
 

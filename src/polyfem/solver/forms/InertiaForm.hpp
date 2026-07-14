@@ -2,6 +2,7 @@
 
 #include "Form.hpp"
 
+#include <memory>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
@@ -32,7 +33,7 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		void setMass(const NewtonHessian &M, const Eigen::VectorXd &lumped) { M_full = M; M_lumped = lumped; }
+		void setMass(std::unique_ptr<BCSCHessian> &&M, const Eigen::VectorXd &lumped) { M_full = std::move(M); M_lumped = lumped; }
 		void useLumpedMass(bool use_lumped) { m_useLumpedMass = use_lumped; }
 
 	protected:
@@ -51,8 +52,8 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const override;
-		virtual NewtonHessian hessianSparsityPattern() const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override { return M_full->clone(); }
 		virtual bool sparsityPatternIsStatic() const override { return true; }
     
 	private:
@@ -61,7 +62,7 @@ namespace polyfem::solver
 		// TODO mass might be time dependent
 		const StiffnessMatrix &mass_; 
 		bool m_useLumpedMass = false; 
-		NewtonHessian M_full; // full mass matrix, with meshfem integration
+		std::unique_ptr<BCSCHessian> M_full; // full mass matrix, with meshfem integration
 		Eigen::VectorXd M_lumped; // lumped mass matrix, with meshfem integration
 		                            
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator

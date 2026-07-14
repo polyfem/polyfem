@@ -9,8 +9,9 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 
-#include <MeshFEM/SystemAssembler.hh>
+#include <polyfem/assembler/FastSystemAssembler.hpp>
 
 #include <functional>
 
@@ -86,7 +87,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
 			const double t,
-			NewtonHessian &stiffness,
+			Hessian &H,
 			const bool is_mass = true) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
 
 		// assemble energy
@@ -137,7 +138,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
-		
+
 		virtual void assemble_hessian(
 			const bool is_volume,
 			const int n_basis,
@@ -151,7 +152,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
-			NewtonHessian &H) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
+			Hessian &H) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
@@ -227,13 +228,11 @@ namespace polyfem::assembler
 		virtual bool is_solution_displacement() const { return false; }
 		virtual bool is_fluid() const { return false; }
 		virtual bool is_tensor() const { return false; }
-		
+
 	protected:
-		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
-		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
+		mutable std::unique_ptr<FastSystemAssembler> m_assembler;
 
 		int size_ = -1;
-		
 	};
 
 	class MixedNLAssembler : virtual public Assembler
@@ -378,20 +377,20 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
 			const double t,
-			NewtonHessian &stiffness,
+			Hessian &stiffness,
 			const bool is_mass = true) const override;
 
 
 		void assembleImpl(
-		const bool is_volume,
-		const int n_basis,
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &gbases,
-		const AssemblyValsCache &cache,
-		const double t,
-		StiffnessMatrix &stiffness,
-		const bool is_mass) const;
-		
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			StiffnessMatrix &stiffness,
+			const bool is_mass) const;
+
 		virtual bool is_linear() const override { return true; }
 
 		/// local assembly function that defines the bilinear form (LHS)
@@ -469,7 +468,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
-			NewtonHessian &H) const override;
+			Hessian &H) const override;
 
 		
 
@@ -559,10 +558,10 @@ namespace polyfem::assembler
 	};
 
 	struct ElementBasisStencil {
-    	ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
-    	std::vector<int> operator()(int e) const { 
-			std::vector<int> nodesIndices; 
-			const int n_loc_bases = int(m_b[e].bases.size());		
+		ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
+		std::vector<int> operator()(int e) const {
+			std::vector<int> nodesIndices;
+			const int n_loc_bases = int(m_b[e].bases.size());
 			for (int i = 0; i < n_loc_bases; ++i)
 			{
 				const auto global_i = m_b[e].bases[i].global();
@@ -574,7 +573,7 @@ namespace polyfem::assembler
 			return nodesIndices;
 		 }
 	private:
-    	const std::vector<basis::ElementBases> &m_b;
+		const std::vector<basis::ElementBases> &m_b;
 	};
 
 	struct ElementHessianEvaluator {
@@ -599,8 +598,8 @@ namespace polyfem::assembler
 				stiffness_val = ipc::project_to_psd(stiffness_val);
 
 			return stiffness_val * m_weight;
-			
 		}
+
 		private:
 			const NLAssembler &m_assembler;
 			const bool m_is_volume;
