@@ -263,6 +263,8 @@ namespace polyfem
 			else
 #endif
 			{
+				// On Windows/MSVC, the stack-backed dynamic Hessian path can overflow
+				// the stack for modest element sizes. Use the fully dynamic path there.
 				static bool show_message = true;
 
 				if (show_message)
