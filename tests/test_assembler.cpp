@@ -485,93 +485,119 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	}
 }
 
-TEST_CASE("neo hookean synthetic nonlinear branches", "[assembler][elasticity]")
+void check_neo_hookean_synthetic_nonlinear_branch(const int dim, const int n_bases)
 {
-	const std::vector<std::pair<int, int>> cases = {
-		{2, 3}, {2, 6}, {2, 10}, {2, 5}, {3, 4}, {3, 10}, {3, 20}, {3, 5}};
+	CAPTURE(dim);
+	CAPTURE(n_bases);
 
-	for (const auto &[dim, n_bases] : cases)
+	Units units;
+	NeoHookeanElasticity fast;
+	ConfigurableNeoHookeanAutodiff full;
+	ConfigurableNeoHookeanAutodiff stress;
+	fast.set_size(dim);
+	full.set_size(dim);
+	stress.set_size(dim);
+	full.set_autodiff_type(AutodiffType::FULL);
+	stress.set_autodiff_type(AutodiffType::STRESS);
+
+	const json material = {{"E", 12.0}, {"nu", 0.23}};
+	fast.add_multimaterial(0, material, units, "");
+	full.add_multimaterial(0, material, units, "");
+	stress.add_multimaterial(0, material, units, "");
+
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+
+	REQUIRE(fast.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-10));
+	require_approx_vector(fast.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
+	require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
+
+	const Eigen::MatrixXd fast_hessian = fast.assemble_hessian(data);
+	REQUIRE(fast_hessian.rows() == dim * n_bases);
+	REQUIRE(fast_hessian.cols() == dim * n_bases);
+	REQUIRE(fast_hessian.allFinite());
+
+	if (dim * n_bases < 60)
 	{
-		CAPTURE(dim);
-		CAPTURE(n_bases);
-
-		Units units;
-		NeoHookeanElasticity fast;
-		ConfigurableNeoHookeanAutodiff full;
-		ConfigurableNeoHookeanAutodiff stress;
-		fast.set_size(dim);
-		full.set_size(dim);
-		stress.set_size(dim);
-		full.set_autodiff_type(AutodiffType::FULL);
-		stress.set_autodiff_type(AutodiffType::STRESS);
-
-		const json material = {{"E", 12.0}, {"nu", 0.23}};
-		fast.add_multimaterial(0, material, units, "");
-		full.add_multimaterial(0, material, units, "");
-		stress.add_multimaterial(0, material, units, "");
-
-		const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
-		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
-
-		REQUIRE(fast.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-10));
-		require_approx_vector(fast.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
-		require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
-
-		const Eigen::MatrixXd fast_hessian = fast.assemble_hessian(data);
-		REQUIRE(fast_hessian.rows() == dim * n_bases);
-		REQUIRE(fast_hessian.cols() == dim * n_bases);
-		REQUIRE(fast_hessian.allFinite());
-
-		if (dim * n_bases < 60)
-		{
-			const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
-			require_approx_matrix(fast_hessian, full_hessian, 1e-7);
-			require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-7);
-		}
-		else
-		{
-			require_approx_matrix(fast_hessian, fast_hessian.transpose(), 1e-10);
-		}
+		const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
+		require_approx_matrix(fast_hessian, full_hessian, 1e-7);
+		require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-7);
+	}
+	else
+	{
+		require_approx_matrix(fast_hessian, fast_hessian.transpose(), 1e-10);
 	}
 }
 
-TEST_CASE("generic elastic autodiff modes and stress products", "[assembler][elasticity]")
+void check_generic_elastic_autodiff_mode(const int dim, const int n_bases)
 {
-	const std::vector<std::pair<int, int>> cases = {
-		{2, 3}, {2, 6}, {2, 10}, {2, 5}, {3, 4}, {3, 10}, {3, 20}, {3, 5}};
+	CAPTURE(dim);
+	CAPTURE(n_bases);
 
-	for (const auto &[dim, n_bases] : cases)
-	{
-		CAPTURE(dim);
-		CAPTURE(n_bases);
+	Units units;
+	ConfigurableVolumePenalty full;
+	ConfigurableVolumePenalty stress;
+	ConfigurableVolumePenalty no_ad;
+	full.set_size(dim);
+	stress.set_size(dim);
+	no_ad.set_size(dim);
+	full.set_autodiff_type(AutodiffType::FULL);
+	stress.set_autodiff_type(AutodiffType::STRESS);
+	no_ad.set_autodiff_type(AutodiffType::NONE);
 
-		Units units;
-		ConfigurableVolumePenalty full;
-		ConfigurableVolumePenalty stress;
-		ConfigurableVolumePenalty no_ad;
-		full.set_size(dim);
-		stress.set_size(dim);
-		no_ad.set_size(dim);
-		full.set_autodiff_type(AutodiffType::FULL);
-		stress.set_autodiff_type(AutodiffType::STRESS);
-		no_ad.set_autodiff_type(AutodiffType::NONE);
+	const json material = {{"k", 3.0}};
+	full.add_multimaterial(0, material, units, "");
+	stress.add_multimaterial(0, material, units, "");
+	no_ad.add_multimaterial(0, material, units, "");
 
-		const json material = {{"k", 3.0}};
-		full.add_multimaterial(0, material, units, "");
-		stress.add_multimaterial(0, material, units, "");
-		no_ad.add_multimaterial(0, material, units, "");
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
 
-		const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
-		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+	REQUIRE(stress.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
+	REQUIRE(no_ad.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
+	require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
+	require_approx_vector(no_ad.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
+	const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
+	require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-8);
+	require_approx_matrix(no_ad.assemble_hessian(data), full_hessian, 1e-8);
+}
 
-		REQUIRE(stress.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
-		REQUIRE(no_ad.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
-		require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
-		require_approx_vector(no_ad.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
-		require_approx_matrix(stress.assemble_hessian(data), full.assemble_hessian(data), 1e-8);
-		require_approx_matrix(no_ad.assemble_hessian(data), full.assemble_hessian(data), 1e-8);
+#define POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(DIM, N_BASES)                                      \
+	TEST_CASE("neo hookean synthetic nonlinear branches " #DIM "d " #N_BASES " bases", "[assembler][elasticity]") \
+	{                                                                                         \
+		check_neo_hookean_synthetic_nonlinear_branch(DIM, N_BASES);                           \
 	}
 
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(2, 3)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(2, 6)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(2, 10)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(2, 5)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 4)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 10)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 20)
+POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 5)
+
+#undef POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE
+
+#define POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(DIM, N_BASES)                                      \
+	TEST_CASE("generic elastic autodiff modes " #DIM "d " #N_BASES " bases", "[assembler][elasticity]") \
+	{                                                                                            \
+		check_generic_elastic_autodiff_mode(DIM, N_BASES);                                      \
+	}
+
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 3)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 6)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 10)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 5)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 4)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 10)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 20)
+POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 5)
+
+#undef POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE
+
+TEST_CASE("generic elastic stress product operations", "[assembler][elasticity]")
+{
 	ConfigurableVolumePenalty assembler;
 	assembler.set_size(3);
 	assembler.set_autodiff_type(AutodiffType::STRESS);
