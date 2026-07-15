@@ -562,10 +562,10 @@ void check_generic_elastic_autodiff_mode(const int dim, const int n_bases)
 	require_approx_matrix(no_ad.assemble_hessian(data), full_hessian, 1e-8);
 }
 
-#define POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(DIM, N_BASES)                                      \
+#define POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(DIM, N_BASES)                                                          \
 	TEST_CASE("neo hookean synthetic nonlinear branches " #DIM "d " #N_BASES " bases", "[assembler][elasticity]") \
-	{                                                                                         \
-		check_neo_hookean_synthetic_nonlinear_branch(DIM, N_BASES);                           \
+	{                                                                                                             \
+		check_neo_hookean_synthetic_nonlinear_branch(DIM, N_BASES);                                               \
 	}
 
 POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(2, 3)
@@ -579,10 +579,10 @@ POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 5)
 
 #undef POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE
 
-#define POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(DIM, N_BASES)                                      \
+#define POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(DIM, N_BASES)                                             \
 	TEST_CASE("generic elastic autodiff modes " #DIM "d " #N_BASES " bases", "[assembler][elasticity]") \
-	{                                                                                            \
-		check_generic_elastic_autodiff_mode(DIM, N_BASES);                                      \
+	{                                                                                                   \
+		check_generic_elastic_autodiff_mode(DIM, N_BASES);                                              \
 	}
 
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 3)
