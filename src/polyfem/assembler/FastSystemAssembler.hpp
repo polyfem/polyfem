@@ -35,7 +35,7 @@ namespace polyfem::assembler
 		{
 			return std::visit(
 				[&](const auto &assembler) {
-					assembler.assembleHessian(
+					assembler.assembleHessianDynamicPEH(
 						H, num_stencils,
 						std::forward<EvalCallable>(eval),
 						std::forward<StencilCallable>(stencil));

@@ -559,28 +559,39 @@ namespace polyfem::assembler
 
 	struct ElementBasisStencil {
 		ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
-		std::vector<int> operator()(int e) const {
-			std::vector<int> nodesIndices;
+		void operator()(int e, std::vector<int> &stencil) const {
 			const int n_loc_bases = int(m_b[e].bases.size());
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
+			stencil.clear();
+			stencil.reserve(n_loc_bases);
+			for (int i = 0; i < n_loc_bases; ++i) {
 				const auto global_i = m_b[e].bases[i].global();
-				for (size_t ii = 0; ii < global_i.size(); ++ii)
-				{
-					nodesIndices.push_back(global_i[ii].index);
-				} // size of global_i is mostly 1
+				for (size_t ii = 0; ii < global_i.size(); ++ii) // global_i.size() is typically 1
+					stencil.push_back(global_i[ii].index);
 			}
-			return nodesIndices;
-		 }
+		}
+
+		// This version is currently still used by `sparsityPattern`...
+		std::vector<int> operator()(int e) const {
+			std::vector<int> stencil;
+			(*this)(e, stencil);
+			return stencil;
+		}
 	private:
 		const std::vector<basis::ElementBases> &m_b;
 	};
 
 	struct ElementHessianEvaluator {
-		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const Eigen::VectorXd &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const Eigen::MatrixXd &displacement_prev)
+		// Note: this must match the types used by NonLinearAssemblerData
+		// or we pay the extreme overhead of a copy of the entire global
+		// variable vector **for every element**.
+		// TODO: also avoid the single copies that happens when passing from
+		// `Form::assembleHessian` to this method by using consistent types throughout.
+		using GlobalVariableStorage = Eigen::MatrixXd;
+
+		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const GlobalVariableStorage &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const GlobalVariableStorage &displacement_prev)
 			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(x), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_displacement_prev(displacement_prev) {}
 
-		Eigen::MatrixXd operator()(size_t e) const {
+		void operator()(size_t e, Eigen::MatrixXd &H_e) const {
 			ElementAssemblyValues vals;
 			m_cache.compute(e, m_is_volume, m_bases[e], m_gbases[e], vals);
 
@@ -590,14 +601,12 @@ namespace polyfem::assembler
 			QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
-			auto stiffness_val = m_assembler.assemble_hessian(NonLinearAssemblerData(vals, m_t, m_dt, m_x, m_displacement_prev, qVec));
-			assert(stiffness_val.rows() == n_loc_bases * m_assembler.size());
-			assert(stiffness_val.cols() == n_loc_bases * m_assembler.size());
+			H_e = m_assembler.assemble_hessian(NonLinearAssemblerData(vals, m_t, m_dt, m_x, m_displacement_prev, qVec));
+			assert(H_e.rows() == n_loc_bases * m_assembler.size());
+			assert(H_e.cols() == n_loc_bases * m_assembler.size());
 
-			if (m_project_to_psd)
-				stiffness_val = ipc::project_to_psd(stiffness_val);
-
-			return stiffness_val * m_weight;
+			if (m_project_to_psd) H_e = ipc::project_to_psd(H_e); // TODO: avoid memory allocations?
+			H_e *= m_weight;
 		}
 
 		private:
@@ -605,13 +614,13 @@ namespace polyfem::assembler
 			const bool m_is_volume;
 			const bool m_project_to_psd;
 			const double m_weight;
-			const Eigen::VectorXd &m_x;
+			const GlobalVariableStorage &m_x;
 			const std::vector<basis::ElementBases> &m_bases;
 			const std::vector<basis::ElementBases> &m_gbases;
 			const AssemblyValsCache &m_cache;
 			const double m_t;
 			const double m_dt;
-			const Eigen::MatrixXd &m_displacement_prev;
+			const GlobalVariableStorage &m_displacement_prev;
 	};
 
 

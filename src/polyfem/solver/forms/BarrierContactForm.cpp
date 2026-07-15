@@ -222,10 +222,10 @@ namespace polyfem::solver
 		}
 
 		auto blockVarForCollisionMeshVertex = [&](int vertex_id) { return collision_mesh_.to_full_vertex_id(vertex_id); };
-		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); };
+		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci, StencilMembers &stencil) { stencil = constraintStencil(ci, blockVarForCollisionMeshVertex); };
 
 		auto X = compute_displaced_surface(x);
-		auto H_eval_e = [&](int ci) -> Eigen::MatrixXd { return (weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method)); };
+		auto H_eval_e = [&](int ci, Eigen::MatrixXd &H_e) { H_e = weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method); };
 		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, contactStencil);
 	}
 

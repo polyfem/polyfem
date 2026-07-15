@@ -249,25 +249,11 @@ namespace polyfem::assembler
 
 		int dim = size();
 		// Computes the list of global node indices corresponding to the local basis functions on element `e`.
-		auto stencil = [&](size_t e) { 
-			std::vector<int> nodesIndices; 
-			const int n_loc_bases = int(bases[e].bases.size());		
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
-				const auto global_i = bases[e].bases[i].global();
-				for (size_t ii = 0; ii < global_i.size(); ++ii)
-				{
-					nodesIndices.push_back(global_i[ii].index);
-				} // size of global_i is mostly 1
-			}
-			return nodesIndices; };
+		ElementBasisStencil stencil(bases);
 
 		// Computes the local stiffness matrix for element e
-		auto eval_H_e = [&](size_t e) -> Eigen::MatrixXd {
+		auto eval_He = [&](size_t e, Eigen::MatrixXd &H_e) {
 			ElementAssemblyValues vals;
-			Eigen::MatrixXd H_e;
-			
-			
 			cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -279,7 +265,7 @@ namespace polyfem::assembler
 
 			for (int i = 0; i < n_loc_bases; ++i)
 			{
-			    // loop over other bases up to the current one, taking advantage of symmetry
+				// loop over other bases up to the current one, taking advantage of symmetry
 				for (int j = 0; j <= i; ++j)
 				{
 					const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, qVec));
@@ -296,14 +282,12 @@ namespace polyfem::assembler
 
 			assert(H_e.rows() == n_loc_bases * dim);
 			assert(H_e.cols() == n_loc_bases * dim);
-	
-			return H_e;
 		};
 
 		size_t n_elems = bases.size();
 		m_assembler = std::make_unique<FastSystemAssembler>(dim, n_basis);
 		auto H_bcsc = m_assembler->sparsityPattern(n_elems, stencil);
-		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_H_e, stencil);
+		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_He, stencil);
 		H.emplace<polysolve::BCSCHessianWithFixedVars>(std::move(H_bcsc));
 	}
 
@@ -1201,47 +1185,14 @@ namespace polyfem::assembler
 		timer.start();
 		
 		auto start = std::chrono::steady_clock::now();
-		
-		auto stencil = [&](size_t e) { 
-			std::vector<int> nodesIndices; 
-			const int n_loc_bases = int(bases[e].bases.size());		
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
-				const auto global_i = bases[e].bases[i].global();
-				for (size_t ii = 0; ii < global_i.size(); ++ii)
-				{
-					nodesIndices.push_back(global_i[ii].index);
-				} // size of global_i is mostly 1
-			}
-			return nodesIndices; };
-
-		// TODO: do we still need this?
-		auto eval_H_e = [&](size_t e) -> Eigen::MatrixXd {
-			ElementAssemblyValues vals;
-			cache.compute(e, is_volume, bases[e], gbases[e], vals);
-
-			const Quadrature &quadrature = vals.quadrature;
-
-			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
-			const int n_loc_bases = int(vals.basis_values.size());
-
-			auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, qVec));
-			assert(stiffness_val.rows() == n_loc_bases * size());
-			assert(stiffness_val.cols() == n_loc_bases * size());
-	
-			if (project_to_psd)
-				stiffness_val = ipc::project_to_psd(stiffness_val);
-
-			return stiffness_val * weight;
-		};
-
+		ElementBasisStencil stencil(bases);
 		m_assembler = std::make_unique<FastSystemAssembler>(N, n_basis);
 		auto H_bcsc = m_assembler->sparsityPattern(n_elems, stencil);
 		std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
 		start = std::chrono::steady_clock::now();
-		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_H_e, stencil);
+		ElementHessianEvaluator eval_He(*this, is_volume, project_to_psd, weight, displacement, bases, gbases, cache, t, dt, displacement_prev);
+		m_assembler->assembleHessian(*H_bcsc, n_elems, eval_He, stencil);
 		H.emplace<polysolve::BCSCHessianWithFixedVars>(std::move(H_bcsc));
 		std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
