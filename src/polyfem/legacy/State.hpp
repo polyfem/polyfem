@@ -791,6 +791,8 @@ namespace polyfem::legacy
 		//---------------------------------------------------
 	public:
 		bool optimization_enabled = false;
+		std::shared_ptr<polysolve::nonlinear::Solver> full_nl_solver;    // nonlinear solver state for full-space AL solves
+		std::shared_ptr<polysolve::nonlinear::Solver> reduced_nl_solver; // nonlinear solver state for reduced solves
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------

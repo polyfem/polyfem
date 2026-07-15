@@ -394,7 +394,11 @@ namespace polyfem::legacy
 
 		// ---------------------------------------------------------------------
 
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+		const bool reuse_full_solver = args["solver"]["advanced"].value("reuse_full_solver", false);
+		if (!reuse_full_solver) full_nl_solver.reset();
+
+		const bool reuse_reduced_solver = args["solver"]["advanced"].value("reuse_reduced_solver", false);
+		if (!reuse_reduced_solver) reduced_nl_solver.reset();
 
 		ALSolver al_solver(
 			solve_data.al_form,
@@ -407,20 +411,21 @@ namespace polyfem::legacy
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
+			const auto &info_solver = al_weight == 0 ? reduced_nl_solver : full_nl_solver;
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", step}, // TODO: null if static?
-				 {"info", nl_solver->info()}});
+				 {"info", info_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 		};
 		Eigen::MatrixXd prev_sol = sol;
 		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), &full_nl_solver);
 
 		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), &reduced_nl_solver);
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -439,6 +444,7 @@ namespace polyfem::legacy
 			bool lagging_converged = !nl_problem.uses_lagging();
 			for (int lag_i = 1; !lagging_converged; lag_i++)
 			{
+				// TODO: can't this `full_to_reduced` just be a slicing operation in most cases rather than a linear solve?
 				Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 				// Update the lagging before checking for convergence
@@ -482,7 +488,8 @@ namespace polyfem::legacy
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
 				nl_problem.normalize_forms();
-				nl_solver->minimize(nl_problem, tmp_sol);
+				assert(reduced_nl_solver != nullptr);
+				reduced_nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
@@ -491,7 +498,7 @@ namespace polyfem::legacy
 					{{"type", "rc"},
 					 {"t", step}, // TODO: null if static?
 					 {"lag_i", lag_i},
-					 {"info", nl_solver->info()}});
+					 {"info", reduced_nl_solver->info()}});
 				save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

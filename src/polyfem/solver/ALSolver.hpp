@@ -38,10 +38,16 @@ namespace polyfem::solver
 					  const double characteristic_length,
 					  std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = nullptr);
 
+		void solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+					  const json &nl_solver_params,
+					  const json &linear_solver,
+					  const double characteristic_length,
+					  std::shared_ptr<polysolve::nonlinear::Solver> *nl_solver_cache);
+
 		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
 						   std::shared_ptr<polysolve::nonlinear::Solver> nl_solver)
 		{
-			solve_al(nl_problem, sol, json{}, json{}, 1, nl_solver);
+			solve_reduced(nl_problem, sol, json{}, json{}, 1, nl_solver);
 		}
 
 		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
@@ -49,6 +55,12 @@ namespace polyfem::solver
 						   const json &linear_solver,
 						   const double characteristic_length,
 						   std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = nullptr);
+
+		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+						   const json &nl_solver_params,
+						   const json &linear_solver,
+						   const double characteristic_length,
+						   std::shared_ptr<polysolve::nonlinear::Solver> *nl_solver_cache);
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 

@@ -1628,6 +1628,8 @@
             "lump_mass_matrix",
             "lagged_regularization_weight",
             "lagged_regularization_iterations",
+            "reuse_full_solver",
+            "reuse_reduced_solver",
             "check_inversion",
             "jacobian_threshold",
             "conservative_max_iter",
@@ -1671,6 +1673,18 @@
         "default": 1,
         "type": "int",
         "doc": "Number of regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/reuse_full_solver",
+        "default": true,
+        "type": "bool",
+        "doc": "Reuse the full-space augmented Lagrangian nonlinear solver across tensor nonlinear solves so the linear solver can preserve ordering and factorization state."
+    },
+    {
+        "pointer": "/solver/advanced/reuse_reduced_solver",
+        "default": true,
+        "type": "bool",
+        "doc": "Reuse the reduced nonlinear solver across tensor nonlinear solves so the linear solver can preserve ordering and factorization state."
     },
     {
         "pointer": "/materials",
