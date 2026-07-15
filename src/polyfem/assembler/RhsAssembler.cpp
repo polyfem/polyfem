@@ -842,6 +842,25 @@ namespace polyfem
 				}
 			}
 
+			if (!neumann_nodes_.empty())
+			{
+				assert(neumann_nodes_.size() == neumann_nodes_position_.size());
+
+				Eigen::MatrixXd nodal_force;
+				Eigen::MatrixXd empty_normal;
+				for (int n = 0; n < neumann_nodes_.size(); ++n)
+				{
+					const int n_id = neumann_nodes_[n];
+					const RowVectorNd &pt = neumann_nodes_position_[n];
+
+					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, nodal_force, fe_space_id_);
+					assert(nodal_force.size() == size_);
+
+					for (int d = 0; d < size_; ++d)
+						res -= nodal_force(d) * displacement(n_id * size_ + d);
+				}
+			}
+
 			return res;
 		}
 
