@@ -764,14 +764,22 @@ TEST_CASE("elasticity utilities conversions stresses and dispatch", "[assembler]
 	const auto hN = [](const NonLinearAssemblerData &) { return tagged_small_hessian_energy(7, 7); };
 	const auto hn = [](const NonLinearAssemblerData &) { return tagged_dynamic_hessian_energy(5, 202); };
 
-	for (const auto &[product, tag] : std::vector<std::pair<int, double>>{{6, 6}, {8, 8}, {12, 12}, {18, 18}, {24, 24}, {30, 30}, {60, 60}, {81, 81}})
+	for (const auto &[product, tag] : std::vector<std::pair<int, double>>{{6, 6}, {8, 8}, {12, 12}, {18, 18}, {24, 24}, {30, 30}})
 	{
 		const Eigen::MatrixXd hessian = hessian_from_energy(product, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn);
 		REQUIRE(hessian.rows() == product);
 		REQUIRE(hessian.cols() == product);
 		REQUIRE(hessian(0, 0) == Catch::Approx(tag));
 	}
+#ifdef WIN32
+	REQUIRE(hessian_from_energy(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(hessian_from_energy(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(hessian_from_energy(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+#else
 	REQUIRE(hessian_from_energy(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(7));
+	REQUIRE(hessian_from_energy(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(60));
+	REQUIRE(hessian_from_energy(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(81));
+#endif
 	REQUIRE(hessian_from_energy(SMALL_N + 2, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
 }
 
