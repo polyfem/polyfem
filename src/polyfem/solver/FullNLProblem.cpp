@@ -126,8 +126,7 @@ namespace polyfem::solver
 	void FullNLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 #if 0 // Original Eigen-based implementation
-		hessian.emplace<StiffnessMatrix>();
-		auto &H = hessian.get_mutable<StiffnessMatrix>(hessian);
+		auto &H = hessian.emplace<StiffnessMatrix>();
 
 		H.resize(x.size(), x.size());
 		for (auto &f : forms_) {
@@ -138,8 +137,7 @@ namespace polyfem::solver
 			H += tmp;
 		}
 #else
-		hessian.emplace<polysolve::BCSCHessianWithFixedVars>();
-		auto &H = hessian.get_mutable<polysolve::BCSCHessianWithFixedVars>().H;
+		auto &H = hessian.emplace<polysolve::BCSCHessianWithFixedVars>().H;
 
 		bool changed = updateHessianSparsityPattern();
 		if (changed) ++m_sparsityPatternID;
