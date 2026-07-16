@@ -21,10 +21,12 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1b7fc8839de0ef0634e3b201f654e459", null ],
     [ "neumann_nodal_value", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a98e809a0a5b1256e8245dee5282b70af", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ab2af0c2229a9f17c9eb56cbb753e6cdd", null ],
+    [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af22ea5f20dbc05677a6696e64dd3e8fa", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af19715a20a188f76baa8ac2b124321d4", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad65948c645dd5271889a5914add45adb", null ],
     [ "set_units", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad1a65ec58b4e1fcf8d41339b77759234", null ],
     [ "update_nodes", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a3f25b6e94ffe26d31a9a24643700ff0a", null ],
+    [ "body_rhs_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a5efb0c86c62e6a7258b92abb41cecd60", null ],
     [ "dirichlet_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aeef2772d66a6bc593b96c5dfd255e304", null ],
     [ "exact_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b", null ],
     [ "exact_grad_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6eeadd2af638293255d87291f3b77741", null ],
@@ -37,5 +39,6 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "nodal_dirichlet_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa3e9751756f5f98f3efe4e0d3f01e43a", null ],
     [ "nodal_dirichlet_mat_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#afcce216163e564b5422f68622867fc34", null ],
     [ "nodal_neumann_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae4ed4859a8b89d01b136853bc9aa67d1", null ],
+    [ "nodal_neumann_mat_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a2ff18115c307ad96548cd71ea89b84ff", null ],
     [ "rhs_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a8b7aba4a0ea177d34d0cdad105229f99", null ]
 ];

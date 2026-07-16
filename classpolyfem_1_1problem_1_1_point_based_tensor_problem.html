@@ -190,6 +190,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aedd9fdf5b278fd428d8272deea907fc8 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49bcc436f56b6ac1c201261495bb333c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a49bcc436f56b6ac1c201261495bb333c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a> () const</td></tr>
 <tr class="separator:a49bcc436f56b6ac1c201261495bb333c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8a5e18b12fc8001f45db9c48edd602c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab8a5e18b12fc8001f45db9c48edd602c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab8a5e18b12fc8001f45db9c48edd602c">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int element_id, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const</td></tr>
+<tr class="separator:ab8a5e18b12fc8001f45db9c48edd602c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2edb8d7fd77d7b5bd5f8b1374837c181 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a2edb8d7fd77d7b5bd5f8b1374837c181"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2edb8d7fd77d7b5bd5f8b1374837c181">pressure_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="separator:a2edb8d7fd77d7b5bd5f8b1374837c181 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82ab6379eb603316ed731ae0145e3a49 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_a82ab6379eb603316ed731ae0145e3a49"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a82ab6379eb603316ed731ae0145e3a49">pressure_cavity_bc</a> (const int boundary_id, const double t) const</td></tr>
@@ -400,7 +402,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00158">158</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00121">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00127">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -532,7 +534,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00175">175</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00121">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00127">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -669,7 +671,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00193">193</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00121">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00127">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -780,7 +782,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00120">120</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -862,7 +864,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00217">217</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00134">all_dimensions_dirichlet()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00134">all_dimensions_dirichlet()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1006,7 +1008,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00139">139</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00121">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00488">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00127">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1113,7 +1115,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00234">234</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00120">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00141">initialized_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00121">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">rhs_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, and <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>.</p>
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00146">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00126">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00141">initialized_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00147">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00127">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">rhs_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00144">scaling_</a>, and <a class="el" href="_point_based_problem_8hpp_source.html#l00145">translation_</a>.</p>
 
 </div>
 </div>

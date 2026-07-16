@@ -33,6 +33,7 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "pressure_bc", "classpolyfem_1_1assembler_1_1_problem.html#a2edb8d7fd77d7b5bd5f8b1374837c181", null ],
     [ "pressure_cavity_bc", "classpolyfem_1_1assembler_1_1_problem.html#a82ab6379eb603316ed731ae0145e3a49", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_problem.html#a74953bb445a5c9d10a4fe25ab5884d2c", null ],
+    [ "rhs", "classpolyfem_1_1assembler_1_1_problem.html#ab8a5e18b12fc8001f45db9c48edd602c", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba", null ],
     [ "set_units", "classpolyfem_1_1assembler_1_1_problem.html#a91d7b46070a342c902c52805391cb903", null ],
     [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#a88edacdb61c6b303a8e113b5cc3209a4", null ],
