@@ -14,6 +14,8 @@
 #include <polyfem/assembler/FastSystemAssembler.hpp>
 
 #include <functional>
+#include <tbb/enumerable_thread_specific.h>
+#include <utility>
 
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
@@ -564,7 +566,7 @@ namespace polyfem::assembler
 			stencil.clear();
 			stencil.reserve(n_loc_bases);
 			for (int i = 0; i < n_loc_bases; ++i) {
-				const auto global_i = m_b[e].bases[i].global();
+				const auto &global_i = m_b[e].bases[i].global();
 				for (size_t ii = 0; ii < global_i.size(); ++ii) // global_i.size() is typically 1
 					stencil.push_back(global_i[ii].index);
 			}
@@ -584,24 +586,25 @@ namespace polyfem::assembler
 		// Note: this must match the types used by NonLinearAssemblerData
 		// or we pay the extreme overhead of a copy of the entire global
 		// variable vector **for every element**.
-		// TODO: also avoid the single copies that happens when passing from
-		// `Form::assembleHessian` to this method by using consistent types throughout.
+		// TODO: switch these back to references once NonLinearAssemblerData and
+		// its callers agree on vector-shaped solution storage.
 		using GlobalVariableStorage = Eigen::MatrixXd;
 
-		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const GlobalVariableStorage &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const GlobalVariableStorage &displacement_prev)
-			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(x), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_displacement_prev(displacement_prev) {}
+		// Note: there is an intentional but wasteful copy of `x` and `x_prev` here!! See note above.
+		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, GlobalVariableStorage x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, GlobalVariableStorage x_prev)
+			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(std::move(x)), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_x_prev(std::move(x_prev)) {}
 
 		void operator()(size_t e, Eigen::MatrixXd &H_e) const {
-			ElementAssemblyValues vals;
-			m_cache.compute(e, m_is_volume, m_bases[e], m_gbases[e], vals);
+			LocalData &local = m_localData.local();
+			m_cache.compute(e, m_is_volume, m_bases[e], m_gbases[e], local.vals);
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = local.vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
-			const int n_loc_bases = int(vals.basis_values.size());
+			local.qVec = local.vals.det.array() * quadrature.weights.array();
+			const int n_loc_bases = int(local.vals.basis_values.size());
 
-			H_e = m_assembler.assemble_hessian(NonLinearAssemblerData(vals, m_t, m_dt, m_x, m_displacement_prev, qVec));
+			H_e = m_assembler.assemble_hessian(NonLinearAssemblerData(local.vals, m_t, m_dt, m_x, m_x_prev, local.qVec));
 			assert(H_e.rows() == n_loc_bases * m_assembler.size());
 			assert(H_e.cols() == n_loc_bases * m_assembler.size());
 
@@ -610,17 +613,23 @@ namespace polyfem::assembler
 		}
 
 		private:
+			struct LocalData {
+				ElementAssemblyValues vals;
+				QuadratureVector qVec;
+			};
+
 			const NLAssembler &m_assembler;
 			const bool m_is_volume;
 			const bool m_project_to_psd;
 			const double m_weight;
-			const GlobalVariableStorage &m_x;
+			const GlobalVariableStorage m_x;
 			const std::vector<basis::ElementBases> &m_bases;
 			const std::vector<basis::ElementBases> &m_gbases;
 			const AssemblyValsCache &m_cache;
 			const double m_t;
 			const double m_dt;
-			const GlobalVariableStorage &m_displacement_prev;
+			const GlobalVariableStorage m_x_prev;
+			mutable tbb::enumerable_thread_specific<LocalData> m_localData;
 	};
 
 
