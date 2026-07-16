@@ -847,11 +847,19 @@ namespace polyfem
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
-		logger().info("Building collision mesh...");
-		build_collision_mesh();
-		if (periodic_bc && args["contact"]["periodic"])
-			build_periodic_collision_mesh();
-		logger().info("Done!");
+		// Only build the collision mesh when it will actually be used (contact
+		// enabled).  It is unused for contact-free solves, and its construction
+		// (extract_boundary_mesh -> ipc::CollisionMesh) throws "Unable to find
+		// edge!" on the high-order boundary produced by anisotropic prism orders
+		// (p != q), which was aborting otherwise-valid contact-free simulations.
+		if (is_contact_enabled())
+		{
+			logger().info("Building collision mesh...");
+			build_collision_mesh();
+			if (periodic_bc && args["contact"]["periodic"])
+				build_periodic_collision_mesh();
+			logger().info("Done!");
+		}
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
