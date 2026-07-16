@@ -677,16 +677,25 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				ElementAssemblyValues &vals = local_storage.vals;
+				// Thread-owned scratch: keep `vals`/`da` local to this loop body
+				// rather than aliasing the shared per-thread `local_storage`.
+				// The reused `local_storage.vals` was the site of a cross-thread
+				// use-after-free: its <Dynamic,3> basis-gradient buffers get
+				// resized as element types change on hybrid meshes (tet 10 /
+				// pyramid 14 / prism 18), so one worker could free/realloc a
+				// buffer another was still reading.  Only the accumulation cache
+				// needs to persist per thread.
+				ElementAssemblyValues vals;
+				QuadratureVector da;
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
+				da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, da));
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 
