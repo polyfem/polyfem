@@ -181,6 +181,11 @@ namespace polyfem::solver
 				auto Hsp = f->hessianSparsityPattern();
 				if (!dynamicSparsity) dynamicSparsity = std::move(Hsp);
 				else dynamicSparsity->mergeSparsityPattern(Hsp.get());
+				// TODO: use `MeshFEM::SystemAssembler::detectChangedEntries` to
+				// avoid unnecessary rebuilds of the dynamic sparsity pattern
+				// and calls to `m_sparsityLRU::update`. This requires caching a
+				// copy of each dynamic term's pattern, which is generally
+				// quite small.
 				changed = true;
 				staticOnly = false;
 			}
@@ -193,11 +198,11 @@ namespace polyfem::solver
 		}
 
 		if (changed) {
-			if (force) {
+			if (force && (m_hessianSparsityStaticPart->numDiagonalBlocks() < m_hessianSparsityStaticPart->m)) {
 				// Work around paranoia of the Sparsity LRU object, which checks if all
 				// diagonal blocks are present (technically not needed for the specific
 				// matrix format used here).
-				auto copy = m_hessianSparsityStaticPart->clone();
+				auto copy = m_hessianSparsityStaticPart->emptyClone();
 				copy->setIdentity();
 				m_hessianSparsityStaticPart->mergeSparsityPattern(*copy);
 			}
