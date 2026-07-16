@@ -2337,8 +2337,6 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 		}
 		else if (n_face_nodes == 4)
 		{
-			std::cout << "ASdasdasd" << std::endl;
-			// This is ONLY for non conforming, not to support 33 prism face
 			assert(p == 3 && q == 3);
 
 			Eigen::MatrixXd nodes;
