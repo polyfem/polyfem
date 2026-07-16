@@ -24,6 +24,7 @@
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
+#include <polyfem/assembler/ThermoElasticity.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/FixedCorotational.hpp>
 
@@ -131,6 +132,14 @@ namespace polyfem
 				return std::make_shared<StokesMixed>();
 
 			log_and_throw_error("Inavalid mixed assembler name {}", formulation);
+		}
+
+		std::shared_ptr<MixedNLAssembler> AssemblerUtils::make_mixed_nl_assembler(const std::string &formulation)
+		{
+			if (formulation == "ThermoElasticity")
+				return std::make_shared<ThermoElasticity>();
+
+			log_and_throw_error("Inavalid mixed nonlinear assembler name {}", formulation);
 		}
 
 		void AssemblerUtils::merge_mixed_matrices(
@@ -253,9 +262,15 @@ namespace polyfem
 				"NeoHookean",
 				"MooneyRivlin",
 				"MooneyRivlin3Param",
+				"MooneyRivlin3ParamSymbolic",
 				"UnconstrainedOgden",
 				"IncompressibleOgden",
+				"IsochoricNeoHookean",
+				"HGOFiber",
+				"ActiveFiber",
 				"FixedCorotational",
+				"VolumePenalty",
+				"AMIPS",
 				"MaterialSum",
 				"MultiModels"};
 

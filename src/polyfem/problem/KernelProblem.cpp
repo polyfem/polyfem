@@ -200,7 +200,7 @@ namespace polyfem
 			return res;
 		}
 
-		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);

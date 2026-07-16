@@ -11,7 +11,7 @@
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/BuildFromJson.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
 
@@ -143,7 +143,8 @@ namespace polyfem
 		states = from_json::build_states(
 			root_path(),
 			args["states"],
-			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads,
+			args["output"]["log"]);
 
 		diff_caches.resize(states.size());
 		for (auto &diff_cache : diff_caches)
@@ -160,13 +161,13 @@ namespace polyfem
 	{
 		for (int i = 0; i < states.size(); ++i)
 		{
-			const State &state = *states[i];
+			const legacy::State &state = *states[i];
 
 			// No transient linear support.
 			if (state.problem->is_time_dependent() && state.is_problem_linear())
 			{
 				log_and_throw_adjoint_error(
-					"State {}: transient linear problem is not supported in optimization.", i);
+					"legacy::State {}: transient linear problem is not supported in optimization.", i);
 			}
 
 			if (state.is_contact_enabled())
@@ -176,14 +177,14 @@ namespace polyfem
 					&& !state.args["contact"]["use_convergent_formulation"].get<bool>())
 				{
 					log_and_throw_adjoint_error(
-						"State {}: non-convergent contact formulation is not supported in optimization.", i);
+						"legacy::State {}: non-convergent contact formulation is not supported in optimization.", i);
 				}
 
 				// No non-const barrier stiffness support.
 				if (state.args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
 					log_and_throw_adjoint_error(
-						"State {}: only constant barrier stiffness is supported in optimization.", i);
+						"legacy::State {}: only constant barrier stiffness is supported in optimization.", i);
 				}
 			}
 
@@ -194,7 +195,7 @@ namespace polyfem
 				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
 				{
 					log_and_throw_adjoint_error(
-						"State {}: only constant rhs over space is supported in optimization.", i);
+						"legacy::State {}: only constant rhs over space is supported in optimization.", i);
 				}
 			}
 
@@ -206,7 +207,7 @@ namespace polyfem
 					if (basis.order() > 1)
 					{
 						log_and_throw_adjoint_error(
-							"State {}: high-order geometry basis is not supported in optimization.", i);
+							"legacy::State {}: high-order geometry basis is not supported in optimization.", i);
 					}
 				}
 			}
@@ -215,7 +216,38 @@ namespace polyfem
 
 	void OptState::init_variables()
 	{
-		/* DOFS */
+		const json &parameters = args["parameters"];
+		bool is_auto = parameters.is_string() && parameters.get<std::string>() == "auto";
+
+		// Auto mode.
+		// In auto mode optimization parameters dof is inferred. No need to parse json.
+		if (is_auto)
+		{
+			if (args["variable_to_simulation"].size() != 1)
+			{
+				log_and_throw_adjoint_error(
+					"Auto parameters are only supported with a single variable to simulation.");
+			}
+
+			for (auto &composition : utils::json_as_array(args["variable_to_simulation"][0]["composition"]))
+			{
+				if (composition["type"].get<std::string>() == "slice")
+				{
+					log_and_throw_adjoint_error("Auto parameters do not support slice maps in composition.");
+				}
+			}
+
+			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], states, diff_caches, {});
+
+			ndof = variable_to_simulations.data[0]->inverse_dof();
+			variable_sizes = {ndof};
+
+			return;
+		}
+
+		// Manual mode.
+		// We need to parse optimization parameter blocks to load dof first.
+		variable_sizes.clear();
 		ndof = 0;
 		for (const auto &arg : args["parameters"])
 		{
@@ -227,6 +259,19 @@ namespace polyfem
 		/* variable to simulations */
 		variable_to_simulations = from_json::build_variable_to_simulation_group(
 			args["variable_to_simulation"], states, diff_caches, variable_sizes);
+
+		// Verify varaible dof.
+		for (int i = 0; i < variable_to_simulations.data.size(); ++i)
+		{
+			auto &var2sim = variable_to_simulations.data[i];
+			int inv_dof = var2sim->inverse_dof();
+			if (inv_dof != ndof)
+			{
+				log_and_throw_adjoint_error(
+					"VariableToSimulation {} (type {}) expects {} DOF, but parameters define {} DOF.",
+					i, var2sim->name(), inv_dof, ndof);
+			}
+		}
 	}
 
 	void OptState::create_problem()

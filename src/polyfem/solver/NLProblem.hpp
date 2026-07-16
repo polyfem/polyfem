@@ -25,7 +25,8 @@ namespace polyfem::solver
 			const int full_size,
 			const std::vector<std::shared_ptr<Form>> &forms,
 			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-			const std::shared_ptr<polysolve::linear::Solver> &solver);
+			const std::shared_ptr<polysolve::linear::Solver> &solver,
+			const bool is_residual = false);
 
 	public:
 		NLProblem(const int full_size,
@@ -37,7 +38,8 @@ namespace polyfem::solver
 				  const double char_length,
 				  const double char_force,
 				  StiffnessMatrix lumped_mass,
-				  const int dimension);
+				  const int dimension,
+				  const bool is_residual = false);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -118,7 +120,7 @@ namespace polyfem::solver
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;
-		int num_penalty_constraints_;
+		int num_penalty_constraints_ = 0;
 
 		void setup_constraints();
 		void update_constraint_values();

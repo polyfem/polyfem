@@ -11,6 +11,12 @@ namespace polyfem
 {
 	namespace assembler
 	{
+		enum class BoundaryKind
+		{
+			Dirichlet,
+			Neumann
+		};
+
 		class Problem
 		{
 		public:
@@ -24,22 +30,28 @@ namespace polyfem
 
 			virtual bool is_scalar() const = 0;
 
-			virtual void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
-			virtual bool is_rhs_zero() const = 0;
+			virtual void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;
+			virtual void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const
+			{
+				(void)mesh;
+				(void)element_id;
+				rhs(assembler, pts, t, val, fe_space_id);
+			}
+			virtual bool is_rhs_zero(const int fe_space_id = -1) const = 0;
 
-			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
-			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
+			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;
+			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
 			virtual void pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
 			virtual double pressure_cavity_bc(const int boundary_id, const double t) const { return 0; }
 
 			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
 
-			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const {}
-			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
-			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
-			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag) { return false; }
-			virtual bool has_nodal_dirichlet() { return false; }
-			virtual bool has_nodal_neumann() { return false; }
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
+			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
+			virtual bool has_nodal_dirichlet(const int fe_space_id = -1) { return false; }
+			virtual bool has_nodal_neumann(const int fe_space_id = -1) { return false; }
 
 			virtual bool has_exact_sol() const = 0;
 			virtual void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const {};
@@ -50,19 +62,53 @@ namespace polyfem
 			virtual bool is_time_dependent() const { return false; }
 			virtual bool is_constant_in_time() const { return true; }
 
-			virtual void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
-			virtual void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
-			virtual void initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
+			virtual void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
 			virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 
 			virtual void set_parameters(const json &params, const std::string &root_path) {}
 
 			virtual bool might_have_no_dirichlet() { return false; }
-			virtual bool is_dimension_dirichet(const int tag, const int dim) const { return true; }
-			virtual bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const { return true; }
+			virtual bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const { return true; }
+			virtual bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim, const int fe_space_id = -1) const { return true; }
 
-			virtual bool all_dimensions_dirichlet() const { return true; } // here for efficiency reasons
+			virtual bool all_dimensions_dirichlet(const int fe_space_id) const
+			{
+				(void)fe_space_id;
+				return true;
+			} // here for efficiency reasons
 
+			// Selects local boundary primitives for a BC kind. boundary_nodes contains
+			// constrained DOF ids only for Dirichlet.
+			void setup_bc(
+				const mesh::Mesh &mesh,
+				const BoundaryKind kind,
+				const int fe_space_id,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &selected_local_boundary,
+				std::vector<int> &boundary_nodes,
+				const int value_dim = -1);
+
+			// Cavity BCs are grouped by boundary tag, so they keep a separate API from
+			// ordinary Dirichlet/Neumann boundary selection.
+			void setup_pressure_cavity_bc(
+				const mesh::Mesh &mesh,
+				const int fe_space_id,
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity);
+
+			// Returns nodal BC node ids, not constrained DOF ids.
+			void setup_nodal_bc(
+				const mesh::Mesh &mesh,
+				const BoundaryKind kind,
+				const int fe_space_id,
+				const int n_bases,
+				std::vector<int> &nodes);
+
+			/// @deprecated Legacy all-in-one BC setup. New VarForm code should use the
+			/// BoundaryKind overloads above and request only the BC data it owns.
 			void setup_bc(const mesh::Mesh &mesh,
 						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
 						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
@@ -75,6 +121,8 @@ namespace polyfem
 			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node) {}
 
 		protected:
+			virtual bool has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id);
+
 			std::vector<int> boundary_ids_;
 			std::vector<int> neumann_boundary_ids_;
 			std::vector<int> normal_aligned_neumann_boundary_ids_;
@@ -84,7 +132,6 @@ namespace polyfem
 
 			bool updated_dirichlet_node_ordering_ = false;
 
-		private:
 			std::string name_;
 		};
 	} // namespace assembler

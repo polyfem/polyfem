@@ -4,11 +4,16 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 
+#include <memory>
+
 namespace polyfem::assembler
 {
 	class Mass : public LinearAssembler
 	{
 	public:
+		Mass();
+		explicit Mass(std::shared_ptr<Density> density);
+
 		using LinearAssembler::assemble;
 
 		/// computes and returns local stiffness matrix (1x1) for
@@ -26,14 +31,14 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		/// class that stores and compute density per point
-		const Density &density() const { return density_; }
+		const Density &density() const { return *density_; }
 
 		std::string name() const override { return "Mass"; }
 		virtual std::map<std::string, ParamFunc> parameters() const override;
 
 	private:
 		// class that stores and compute density per point
-		Density density_;
+		std::shared_ptr<Density> density_;
 	};
 
 	class HRZMass : public LinearAssembler

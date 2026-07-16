@@ -65,6 +65,23 @@ namespace polyfem::assembler
 		bool allow_inversion() const override { return false; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
+		template <typename T>
+		T elastic_energy_density(
+			const RowVectorNd &uv,
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const
+		{
+			double lambda, mu;
+			params_.lambda_mu(uv, p, t, el_id, lambda, mu);
+
+			using std::log;
+			const T log_det_j = log(polyfem::utils::determinant(F));
+			return T(mu / 2.0) * ((F.transpose() * F).trace() - T(size()) - T(2) * log_det_j)
+				   + T(lambda / 2.0) * log_det_j * log_det_j;
+		}
+
 		void assign_stress_tensor(const OutputData &data,
 								  const int all_size,
 								  const ElasticityTensorType &type,

@@ -7,6 +7,9 @@
 
 #include <ipc/utils/eigen_ext.hpp>
 
+#include <algorithm>
+#include <cmath>
+
 namespace polyfem::assembler
 {
 	using namespace basis;
@@ -92,6 +95,85 @@ namespace polyfem::assembler
 				val = 0;
 			}
 		};
+
+		void split_mixed_solution(
+			const MixedNLAssembler::SolutionSplitter &split_solution,
+			const Eigen::MatrixXd &x,
+			const int phi_ndof,
+			const int psi_ndof,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)
+		{
+			assert(split_solution);
+
+			split_solution(x, x_phi, x_psi);
+
+			assert(x_phi.rows() == phi_ndof);
+			assert(x_phi.cols() == 1);
+			assert(x_psi.rows() == psi_ndof);
+			assert(x_psi.cols() == 1);
+		}
+
+		void split_mixed_previous_solution(
+			const MixedNLAssembler::SolutionSplitter &split_solution,
+			const Eigen::MatrixXd &x,
+			const int phi_ndof,
+			const int psi_ndof,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)
+		{
+			if (x.size() == 0)
+			{
+				x_phi.resize(0, 1);
+				x_psi.resize(0, 1);
+				return;
+			}
+
+			split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		}
+
+		void compute_mixed_element_values(
+			const int el_index,
+			const bool is_volume,
+			const ElementBases &psi_basis,
+			const ElementBases &phi_basis,
+			const ElementBases &gbasis,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			ElementAssemblyValues &psi_vals,
+			ElementAssemblyValues &phi_vals)
+		{
+			psi_cache.compute(el_index, is_volume, psi_basis, gbasis, psi_vals);
+			phi_cache.compute(el_index, is_volume, phi_basis, gbasis, phi_vals);
+
+			const auto same_quadrature = [&]() {
+				if (psi_vals.quadrature.weights.size() != phi_vals.quadrature.weights.size())
+					return false;
+				if (psi_vals.quadrature.points.rows() != phi_vals.quadrature.points.rows()
+					|| psi_vals.quadrature.points.cols() != phi_vals.quadrature.points.cols())
+					return false;
+				return (psi_vals.quadrature.points - phi_vals.quadrature.points).cwiseAbs().maxCoeff() < 1e-14;
+			};
+
+			if (same_quadrature())
+				return;
+
+			if (phi_vals.quadrature.weights.size() >= psi_vals.quadrature.weights.size())
+			{
+				const Quadrature quadrature = phi_vals.quadrature;
+				psi_vals.compute(el_index, is_volume, quadrature.points, psi_basis, gbasis);
+				psi_vals.quadrature = quadrature;
+			}
+			else
+			{
+				const Quadrature quadrature = psi_vals.quadrature;
+				phi_vals.compute(el_index, is_volume, quadrature.points, phi_basis, gbasis);
+				phi_vals.quadrature = quadrature;
+			}
+
+			assert(psi_vals.quadrature.weights.size() == phi_vals.quadrature.weights.size());
+			assert(psi_vals.quadrature.points.rows() == phi_vals.quadrature.points.rows());
+		}
 	} // namespace
 
 	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units, const std::string &root_path)
@@ -490,6 +572,368 @@ namespace polyfem::assembler
 
 		// stiffness.resize(n_basis*size(), n_basis*size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
+	}
+
+	double MixedNLAssembler::assemble_energy(
+		const bool is_volume,
+		const int n_psi_basis,
+		const int n_phi_basis,
+		const std::vector<ElementBases> &psi_bases,
+		const std::vector<ElementBases> &phi_bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &psi_cache,
+		const AssemblyValsCache &phi_cache,
+		const double t,
+		const double dt,
+		const Eigen::MatrixXd &x,
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution) const
+	{
+		assert(size() > 0);
+		assert(rows() > 0);
+		assert(cols() > 0);
+		assert(phi_bases.size() == psi_bases.size());
+		assert(phi_bases.size() == gbases.size());
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
+
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(phi_bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &phi_vals = local_storage.vals;
+			ElementAssemblyValues psi_vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
+
+				const Quadrature &quadrature = phi_vals.quadrature;
+				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
+
+				local_storage.val += compute_energy(
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
+			}
+		});
+
+		double res = 0;
+		for (const LocalThreadScalarStorage &local_storage : storage)
+			res += local_storage.val;
+		return res;
+	}
+
+	Eigen::VectorXd MixedNLAssembler::assemble_energy_per_element(
+		const bool is_volume,
+		const int n_psi_basis,
+		const int n_phi_basis,
+		const std::vector<ElementBases> &psi_bases,
+		const std::vector<ElementBases> &phi_bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &psi_cache,
+		const AssemblyValsCache &phi_cache,
+		const double t,
+		const double dt,
+		const Eigen::MatrixXd &x,
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution) const
+	{
+		assert(size() > 0);
+		assert(rows() > 0);
+		assert(cols() > 0);
+		assert(phi_bases.size() == psi_bases.size());
+		assert(phi_bases.size() == gbases.size());
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
+
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(phi_bases.size());
+		Eigen::VectorXd out(phi_bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &phi_vals = local_storage.vals;
+			ElementAssemblyValues psi_vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
+
+				const Quadrature &quadrature = phi_vals.quadrature;
+				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
+
+				out(e) = compute_energy(
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
+			}
+		});
+
+#ifndef NDEBUG
+		const double assemble_val = assemble_energy(
+			is_volume, n_psi_basis, n_phi_basis,
+			psi_bases, phi_bases, gbases,
+			psi_cache, phi_cache, t, dt, x, x_prev, split_solution);
+		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * std::abs(assemble_val), 1e-10));
+#endif
+
+		return out;
+	}
+
+	void MixedNLAssembler::assemble_gradient(
+		const bool is_volume,
+		const int n_psi_basis,
+		const int n_phi_basis,
+		const std::vector<ElementBases> &psi_bases,
+		const std::vector<ElementBases> &phi_bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &psi_cache,
+		const AssemblyValsCache &phi_cache,
+		const double t,
+		const double dt,
+		const Eigen::MatrixXd &x,
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution,
+		Eigen::MatrixXd &grad) const
+	{
+		assert(size() > 0);
+		assert(rows() > 0);
+		assert(cols() > 0);
+		assert(phi_bases.size() == psi_bases.size());
+		assert(phi_bases.size() == gbases.size());
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
+
+		grad.resize(phi_ndof + psi_ndof, 1);
+		grad.setZero();
+
+		auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
+		const int n_bases = int(phi_bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &phi_vals = local_storage.vals;
+			ElementAssemblyValues psi_vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
+
+				const Quadrature &quadrature = phi_vals.quadrature;
+				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
+
+				const Eigen::VectorXd local_grad = compute_gradient(
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
+
+				const int n_phi_loc_bases = int(phi_vals.basis_values.size());
+				const int n_psi_loc_bases = int(psi_vals.basis_values.size());
+				assert(local_grad.size() == n_phi_loc_bases * rows() + n_psi_loc_bases * cols());
+
+				for (int i = 0; i < n_phi_loc_bases; ++i)
+				{
+					const auto &global_i = phi_vals.basis_values[i].global;
+					for (int d = 0; d < rows(); ++d)
+					{
+						const double local_value = local_grad(i * rows() + d);
+						for (const auto &global : global_i)
+							local_storage.vec(global.index * rows() + d) += local_value * global.val;
+					}
+				}
+
+				const int local_psi_offset = n_phi_loc_bases * rows();
+				for (int i = 0; i < n_psi_loc_bases; ++i)
+				{
+					const auto &global_i = psi_vals.basis_values[i].global;
+					for (int d = 0; d < cols(); ++d)
+					{
+						const double local_value = local_grad(local_psi_offset + i * cols() + d);
+						for (const auto &global : global_i)
+							local_storage.vec(phi_ndof + global.index * cols() + d) += local_value * global.val;
+					}
+				}
+			}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			grad += local_storage.vec;
+	}
+
+	void MixedNLAssembler::assemble_hessian(
+		const bool is_volume,
+		const int n_psi_basis,
+		const int n_phi_basis,
+		const bool project_to_psd,
+		const std::vector<ElementBases> &psi_bases,
+		const std::vector<ElementBases> &phi_bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &psi_cache,
+		const AssemblyValsCache &phi_cache,
+		const double t,
+		const double dt,
+		const Eigen::MatrixXd &x,
+		const Eigen::MatrixXd &x_prev,
+		const SolutionSplitter &split_solution,
+		MatrixCache &mat_cache,
+		StiffnessMatrix &hessian) const
+	{
+		assert(size() > 0);
+		assert(rows() > 0);
+		assert(cols() > 0);
+		assert(phi_bases.size() == psi_bases.size());
+		assert(phi_bases.size() == gbases.size());
+
+		const int phi_ndof = n_phi_basis * rows();
+		const int psi_ndof = n_psi_basis * cols();
+		const int total_ndof = phi_ndof + psi_ndof;
+		Eigen::MatrixXd x_phi, x_psi;
+		Eigen::MatrixXd x_phi_prev, x_psi_prev;
+		split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
+		split_mixed_previous_solution(split_solution, x_prev, phi_ndof, psi_ndof, x_phi_prev, x_psi_prev);
+
+		const int max_triplets_size = int(1e7);
+		const int buffer_size = std::min(max_triplets_size, total_ndof);
+
+		mat_cache.init(total_ndof);
+		mat_cache.set_zero();
+
+		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
+		const int n_bases = int(phi_bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &phi_vals = local_storage.vals;
+			ElementAssemblyValues psi_vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				compute_mixed_element_values(
+					e, is_volume,
+					psi_bases[e], phi_bases[e], gbases[e],
+					psi_cache, phi_cache,
+					psi_vals, phi_vals);
+
+				const Quadrature &quadrature = phi_vals.quadrature;
+				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
+
+				Eigen::MatrixXd local_hessian = compute_hessian(
+					MixedNonLinearAssemblerData(psi_vals, phi_vals, t, dt, x_phi, x_psi, x_phi_prev, x_psi_prev, local_storage.da));
+
+				const int n_phi_loc_bases = int(phi_vals.basis_values.size());
+				const int n_psi_loc_bases = int(psi_vals.basis_values.size());
+				const int local_size = n_phi_loc_bases * rows() + n_psi_loc_bases * cols();
+				assert(local_hessian.rows() == local_size);
+				assert(local_hessian.cols() == local_size);
+
+				if (project_to_psd)
+					local_hessian = ipc::project_to_psd(local_hessian);
+
+				const auto local_index_data = [&](
+												  const int local_index,
+												  const std::vector<basis::Local2Global> *&global,
+												  int &component,
+												  int &component_count,
+												  int &global_offset) {
+					assert(local_index >= 0);
+					assert(local_index < local_size);
+
+					const int phi_local_size = n_phi_loc_bases * rows();
+					if (local_index < phi_local_size)
+					{
+						const int basis_index = local_index / rows();
+						global = &phi_vals.basis_values[basis_index].global;
+						component = local_index % rows();
+						component_count = rows();
+						global_offset = 0;
+						return;
+					}
+
+					const int psi_local_index = local_index - phi_local_size;
+					const int basis_index = psi_local_index / cols();
+					global = &psi_vals.basis_values[basis_index].global;
+					component = psi_local_index % cols();
+					component_count = cols();
+					global_offset = phi_ndof;
+				};
+
+				for (int i = 0; i < local_size; ++i)
+				{
+					const std::vector<basis::Local2Global> *global_i = nullptr;
+					int component_i = -1;
+					int component_count_i = -1;
+					int global_offset_i = -1;
+					local_index_data(i, global_i, component_i, component_count_i, global_offset_i);
+
+					for (int j = 0; j < local_size; ++j)
+					{
+						const double local_value = local_hessian(i, j);
+						if (local_value == 0)
+							continue;
+
+						const std::vector<basis::Local2Global> *global_j = nullptr;
+						int component_j = -1;
+						int component_count_j = -1;
+						int global_offset_j = -1;
+						local_index_data(j, global_j, component_j, component_count_j, global_offset_j);
+
+						for (const auto &gi : *global_i)
+						{
+							const int row = global_offset_i + gi.index * component_count_i + component_i;
+							for (const auto &gj : *global_j)
+							{
+								const int col = global_offset_j + gj.index * component_count_j + component_j;
+								local_storage.cache->add_value(e, row, col, local_value * gi.val * gj.val);
+							}
+						}
+
+						if (local_storage.cache->entries_size() >= max_triplets_size)
+						{
+							local_storage.cache->prune();
+							logger().debug("cleaning memory...");
+						}
+					}
+				}
+			}
+		});
+
+		for (LocalThreadMatStorage &local_storage : storage)
+		{
+			local_storage.cache->prune();
+			mat_cache += *local_storage.cache;
+		}
+		hessian = mat_cache.get_matrix();
 	}
 
 	double NLAssembler::assemble_energy(

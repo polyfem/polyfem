@@ -1,19 +1,58 @@
 #include "Parametrizations.hpp"
+
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
+#include <string_view>
+
 namespace polyfem::solver
 {
+	namespace
+	{
+		constexpr std::string_view ERR_STRING =
+			"Please check your variable to simulation and composition chain.";
+
+		void check_from_to(int from, int to, std::string_view name)
+		{
+			// If from != -1, [from, to] implies a range.
+			// range size must > 0.
+			if (from >= 0 && from >= to)
+			{
+				log_and_throw_adjoint_error(
+					"Invalid composition {}. Reason: [from, to] = [{}, {}] is not a valid range. {}", name, from, to, ERR_STRING);
+			}
+		}
+
+		void check_non_empty(int size, std::string_view name)
+		{
+			if (size <= 0)
+				log_and_throw_adjoint_error(
+					"Invalid composition {}. Reason: Empty or negative optimization parameter DOF {}. {}", name, size, ERR_STRING);
+		}
+
+	} // namespace
+
 	ExponentialMap::ExponentialMap(const int from, const int to)
 		: from_(from), to_(to)
 	{
-		assert(from_ < to_ || from_ < 0);
+		check_from_to(from, to, "exp");
 	}
 
-	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y)
+	int ExponentialMap::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "ExponentialMap::inverse_size");
+		return y_size;
+	}
+
+	int ExponentialMap::size(const int x_size) const
+	{
+		return x_size;
+	}
+
+	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		if (from_ >= 0)
 		{
@@ -52,11 +91,21 @@ namespace polyfem::solver
 	Scaling::Scaling(const double scale, const int from, const int to)
 		: from_(from), to_(to), scale_(scale)
 	{
-		assert(from_ < to_ || from_ < 0);
-		assert(scale_ != 0);
+		check_from_to(from, to, "scale");
 	}
 
-	Eigen::VectorXd Scaling::inverse_eval(const Eigen::VectorXd &y)
+	int Scaling::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "Scaling::inverse_size");
+		return y_size;
+	}
+
+	int Scaling::size(const int x_size) const
+	{
+		return x_size;
+	}
+
+	Eigen::VectorXd Scaling::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		if (from_ >= 0)
 		{
@@ -92,7 +141,24 @@ namespace polyfem::solver
 			return scale_ * grad.array();
 	}
 
-	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y)
+	PowerMap::PowerMap(const double power, const int from, const int to)
+		: power_(power), from_(from), to_(to)
+	{
+		check_from_to(from, to, "power");
+	}
+
+	int PowerMap::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "PowerMap::inverse_size");
+		return y_size;
+	}
+
+	int PowerMap::size(const int x_size) const
+	{
+		return x_size;
+	}
+
+	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		if (from_ >= 0)
 		{
@@ -133,7 +199,22 @@ namespace polyfem::solver
 	{
 	}
 
-	Eigen::VectorXd ENu2LambdaMu::inverse_eval(const Eigen::VectorXd &y)
+	int ENu2LambdaMu::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "E-nu-to-lambda-mu");
+		if (y_size % 2 != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition E-nu-to-lambda-mu. Reason: Expect output dof be multiple of 2 but instead get {}. {}", y_size, ERR_STRING);
+		}
+		return y_size;
+	}
+
+	int ENu2LambdaMu::size(const int x_size) const
+	{
+		return x_size;
+	}
+
+	Eigen::VectorXd ENu2LambdaMu::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		const int size = y.size() / 2;
 		assert(size * 2 == y.size());
@@ -185,35 +266,77 @@ namespace polyfem::solver
 	PerBody2PerNode::PerBody2PerNode(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const int n_bases) : mesh_(mesh), bases_(bases), full_size_(n_bases)
 	{
 		reduced_size_ = 0;
-		std::map<int, int> body_id_map;
+		std::map<int, int> body_id_to_compacted_id;
 		for (int e = 0; e < mesh.n_elements(); e++)
 		{
 			const int body_id = mesh.get_body_id(e);
-			if (!body_id_map.count(body_id))
+			if (!body_id_to_compacted_id.count(body_id))
 			{
-				body_id_map[body_id] = reduced_size_;
+				body_id_to_compacted_id[body_id] = reduced_size_;
 				reduced_size_++;
 			}
 		}
 		logger().info("{} objects found!", reduced_size_);
 
-		node_id_to_body_id_.resize(full_size_);
-		node_id_to_body_id_.setConstant(-1);
+		compacted_body_node_num_ = Eigen::VectorXi::Zero(reduced_size_);
+		node_id_to_compacted_body_ = Eigen::VectorXi::Constant(full_size_, -1);
 		for (int e = 0; e < bases.size(); e++)
 		{
 			const int body_id = mesh_.get_body_id(e);
-			const int id = body_id_map.at(body_id);
+			const int id = body_id_to_compacted_id.at(body_id);
 			for (const auto &bs : bases[e].bases)
 			{
 				for (const auto &g : bs.global())
 				{
-					if (node_id_to_body_id_(g.index) < 0)
-						node_id_to_body_id_(g.index) = id;
-					else if (node_id_to_body_id_(g.index) != id)
+					if (node_id_to_compacted_body_(g.index) < 0)
+					{
+						compacted_body_node_num_(id)++;
+						node_id_to_compacted_body_(g.index) = id;
+					}
+					else if (node_id_to_compacted_body_(g.index) != id)
+					{
 						log_and_throw_adjoint_error("Same node on different bodies!");
+					}
 				}
 			}
 		}
+	}
+
+	int PerBody2PerNode::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "PerBody2PerNode::inverse_size");
+		if (y_size % full_size_ != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition per-body-to-per-node. Reason: Expect output dof be multiple of mesh node num but instead get mesh node num = {} and output size = {}. {}", full_size_, y_size, ERR_STRING);
+		}
+		int dim = y_size / full_size_;
+		return reduced_size_ * dim;
+	}
+
+	Eigen::VectorXd PerBody2PerNode::inverse_eval(const Eigen::VectorXd &y) const
+	{
+		// Inverse does not exists. Choose average as a good enough alternative.
+
+		Eigen::VectorXd x = Eigen::VectorXd::Zero(inverse_size(y.size()));
+		assert(y.size() % full_size_ == 0);
+		int dim = y.size() / full_size_;
+		for (int i = 0; i < full_size_; i++)
+		{
+			for (int d = 0; d < dim; d++)
+			{
+				x(node_id_to_compacted_body_(i) * dim + d) += y(i * dim + d);
+			}
+		}
+		for (int i = 0; i < reduced_size_; i++)
+		{
+			for (int d = 0; d < dim; d++)
+			{
+				assert(compacted_body_node_num_(i) != 0);
+				x(i * dim + d) /= static_cast<double>(compacted_body_node_num_(i));
+			}
+		}
+
+		return x;
 	}
 
 	Eigen::VectorXd PerBody2PerNode::eval(const Eigen::VectorXd &x) const
@@ -226,7 +349,7 @@ namespace polyfem::solver
 		{
 			for (int d = 0; d < dim; d++)
 			{
-				y(i * dim + d) = x(node_id_to_body_id_(i) * dim + d);
+				y(i * dim + d) = x(node_id_to_compacted_body_(i) * dim + d);
 			}
 		}
 
@@ -250,7 +373,7 @@ namespace polyfem::solver
 		{
 			for (int d = 0; d < dim; d++)
 			{
-				grad_body(node_id_to_body_id_(i) * dim + d) += grad(i * dim + d);
+				grad_body(node_id_to_compacted_body_(i) * dim + d) += grad(i * dim + d);
 			}
 		}
 
@@ -260,16 +383,59 @@ namespace polyfem::solver
 	PerBody2PerElem::PerBody2PerElem(const mesh::Mesh &mesh) : mesh_(mesh), full_size_(mesh_.n_elements())
 	{
 		reduced_size_ = 0;
+		std::map<int, int> compacted_body_id_map;
 		for (int e = 0; e < mesh.n_elements(); e++)
 		{
 			const int body_id = mesh.get_body_id(e);
-			if (!body_id_map_.count(body_id))
+			if (!compacted_body_id_map.count(body_id))
 			{
-				body_id_map_[body_id] = {{e, reduced_size_}};
+				compacted_body_id_map[body_id] = reduced_size_;
 				reduced_size_++;
 			}
 		}
 		logger().info("{} objects found!", reduced_size_);
+
+		compacted_body_elem_num_ = Eigen::VectorXi::Zero(reduced_size_);
+		elem_id_to_compacted_body_id_ = Eigen::VectorXi::Constant(full_size_, -1);
+		for (int e = 0; e < mesh.n_elements(); e++)
+		{
+			const int body_id = mesh_.get_body_id(e);
+			const int id = compacted_body_id_map.at(body_id);
+			compacted_body_elem_num_(id)++;
+			elem_id_to_compacted_body_id_(e) = id;
+		}
+	}
+
+	int PerBody2PerElem::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "PerBody2PerElem::inverse_size");
+		if (y_size % full_size_ != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition per-body-to-per-elem. Reason: Expect output dof be multiple of mesh element num but instead get mesh element num = {} and output size = {}. {}", full_size_, y_size, ERR_STRING);
+		}
+		int dim = y_size / full_size_;
+		return reduced_size_ * dim;
+	}
+
+	Eigen::VectorXd PerBody2PerElem::inverse_eval(const Eigen::VectorXd &y) const
+	{
+		// Inverse does not exists. Choose average as a good enough alternative.
+
+		Eigen::VectorXd x = Eigen::VectorXd::Zero(inverse_size(y.size()));
+		assert(y.size() % full_size_ == 0);
+		int dim = y.size() / full_size_;
+		for (int e = 0; e < mesh_.n_elements(); e++)
+		{
+			int id = elem_id_to_compacted_body_id_(e);
+			x(Eigen::seq(id, x.size() - 1, reduced_size_)) += y(Eigen::seq(e, y.size() - 1, full_size_));
+		}
+		for (int i = 0; i < reduced_size_; i++)
+		{
+			assert(compacted_body_elem_num_(i) != 0);
+			x(Eigen::seq(i, x.size() - 1, reduced_size_)) /= compacted_body_elem_num_(i);
+		}
+
+		return x;
 	}
 
 	Eigen::VectorXd PerBody2PerElem::eval(const Eigen::VectorXd &x) const
@@ -279,10 +445,8 @@ namespace polyfem::solver
 
 		for (int e = 0; e < mesh_.n_elements(); e++)
 		{
-			const int body_id = mesh_.get_body_id(e);
-			const auto &entry = body_id_map_.at(body_id);
-			// y(e) = x(entry[1]);
-			y(Eigen::seq(e, y.size() - 1, full_size_)) = x(Eigen::seq(entry[1], x.size() - 1, reduced_size_));
+			const auto &id = elem_id_to_compacted_body_id_(e);
+			y(Eigen::seq(e, y.size() - 1, full_size_)) = x(Eigen::seq(id, x.size() - 1, reduced_size_));
 		}
 
 		return y;
@@ -302,10 +466,8 @@ namespace polyfem::solver
 
 		for (int e = 0; e < mesh_.n_elements(); e++)
 		{
-			const int body_id = mesh_.get_body_id(e);
-			const auto &entry = body_id_map_.at(body_id);
-			// grad_body(entry[1]) += grad(e);
-			grad_body(Eigen::seq(entry[1], x.size() - 1, reduced_size_)) += grad(Eigen::seq(e, grad.size() - 1, full_size_));
+			int id = elem_id_to_compacted_body_id_(e);
+			grad_body(Eigen::seq(id, x.size() - 1, reduced_size_)) += grad(Eigen::seq(e, grad.size() - 1, full_size_));
 		}
 
 		return grad_body;
@@ -317,25 +479,41 @@ namespace polyfem::solver
 			log_and_throw_adjoint_error("Invalid Slice Map input!");
 	}
 
-	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y)
+	int SliceMap::inverse_size(int y_size) const
 	{
 		if (total_ == -1)
-			return y;
-		else
 		{
-			if (y.size() != size(0))
-				log_and_throw_adjoint_error("Inverse eval on SliceMap is inconsistent in size!");
-			Eigen::VectorXd y_;
-			y_.setZero(total_);
-			y_.segment(from_, to_ - from_) = y;
-			return y_;
+			log_and_throw_adjoint_error("SliceMap with unknown total is impossible to inverse!");
 		}
+		if (y_size != to_ - from_)
+		{
+			log_and_throw_adjoint_error("Invalid composition slice. Reason: Output DOF {} and [from, to] = [{}, {}] size mismatch. {}", y_size, from_, to_, ERR_STRING);
+		}
+		return total_;
+	}
+
+	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y) const
+	{
+		if (total_ == -1)
+		{
+			log_and_throw_adjoint_error("SliceMap with unknown total is impossible to inverse!");
+		}
+		if (y.size() != size(0))
+		{
+			log_and_throw_adjoint_error("Inverse eval on SliceMap is inconsistent in size!");
+		}
+
+		Eigen::VectorXd y_;
+		y_.setZero(total_);
+		y_.segment(from_, to_ - from_) = y;
+		return y_;
 	}
 
 	Eigen::VectorXd SliceMap::eval(const Eigen::VectorXd &x) const
 	{
 		return x.segment(from_, to_ - from_);
 	}
+
 	Eigen::VectorXd SliceMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd grad_full;
@@ -360,7 +538,16 @@ namespace polyfem::solver
 		return x_size + values_.size();
 	}
 
-	Eigen::VectorXd InsertConstantMap::inverse_eval(const Eigen::VectorXd &y)
+	int InsertConstantMap::inverse_size(int y_size) const
+	{
+		if (y_size < values_.size())
+		{
+			log_and_throw_adjoint_error("Invalid composition append-const. Reason: Output DOF {} is smaller than append size {}. {}", y_size, values_.size(), ERR_STRING);
+		}
+		return y_size - values_.size();
+	}
+
+	Eigen::VectorXd InsertConstantMap::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		if (start_index_ >= 0)
 		{
@@ -390,6 +577,7 @@ namespace polyfem::solver
 
 		return y;
 	}
+
 	Eigen::VectorXd InsertConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		assert(x.size() == grad.size() - values_.size());
@@ -443,10 +631,31 @@ namespace polyfem::solver
 			tt_radius_adjacency_row_sum(i) = tt_radius_adjacency.row(i).sum();
 	}
 
+	int LinearFilter::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "LinearFilter::inverse_size");
+		if (y_size != tt_radius_adjacency.rows())
+		{
+			log_and_throw_adjoint_error("Invalid composition linear-filter. Reason: Output DOF {} and mesh element count {} mismatch. {}", y_size, tt_radius_adjacency.rows(), ERR_STRING);
+		}
+		return y_size;
+	}
+
+	int LinearFilter::size(const int x_size) const
+	{
+		return x_size;
+	}
+
 	Eigen::VectorXd LinearFilter::eval(const Eigen::VectorXd &x) const
 	{
 		assert(x.size() == tt_radius_adjacency.rows());
 		return (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
+	}
+
+	Eigen::VectorXd LinearFilter::inverse_eval(const Eigen::VectorXd &y) const
+	{
+		// No inverse exists. Choose identity as reasonable alternative.
+		return y;
 	}
 
 	Eigen::VectorXd LinearFilter::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
@@ -455,7 +664,20 @@ namespace polyfem::solver
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
 	}
 
-	Eigen::VectorXd ScalarVelocityParametrization::inverse_eval(const Eigen::VectorXd &y)
+	ScalarVelocityParametrization::ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
+
+	int ScalarVelocityParametrization::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "ScalarVelocityParametrization::inverse_size");
+		return y_size;
+	}
+
+	int ScalarVelocityParametrization::size(const int x_size) const
+	{
+		return x_size;
+	}
+
+	Eigen::VectorXd ScalarVelocityParametrization::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		Eigen::VectorXd x;
 		x.setZero(size(y.size()));

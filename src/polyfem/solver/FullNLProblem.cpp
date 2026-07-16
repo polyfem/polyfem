@@ -3,8 +3,9 @@
 
 namespace polyfem::solver
 {
-	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms)
-		: forms_(forms)
+	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, const bool is_residual)
+		: forms_(forms),
+		  is_residual_(is_residual)
 	{
 	}
 

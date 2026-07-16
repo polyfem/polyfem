@@ -14,6 +14,7 @@ namespace polyfem::assembler
 
 		static std::shared_ptr<Assembler> make_assembler(const std::string &formulation);
 		static std::shared_ptr<MixedAssembler> make_mixed_assembler(const std::string &formulation);
+		static std::shared_ptr<MixedNLAssembler> make_mixed_nl_assembler(const std::string &formulation);
 
 		enum class BasisType
 		{

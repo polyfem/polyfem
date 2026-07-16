@@ -1,6 +1,6 @@
 #include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/StateDiff.hpp>
@@ -29,6 +29,8 @@
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
 #include <jse/jse.h>
+#include <polyfem/embedded_spec/polyfem_opt.hpp>
+#include <polyfem/embedded_spec/polyfem_objective.hpp>
 
 #include <Eigen/Core>
 
@@ -78,6 +80,20 @@ namespace polyfem::solver
 
 	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim)
 	{
+		// Auto mode, pure inverse eval.
+		if (args.is_string() && args.get<std::string>() == "auto")
+		{
+			Eigen::VectorXd x = var2sim.data[0]->inverse_eval();
+			if (x.size() != ndof)
+			{
+				log_and_throw_adjoint_error("inverse_eval() returned {} DOF, expected {}.", x.size(), ndof);
+			}
+			return x;
+		}
+
+		// Manual mode.
+		// 1. Try get initial specified by user first.
+		// 2. Fallback to inverse_eval.
 		Eigen::VectorXd x;
 		x.setZero(ndof);
 		int accumulative = 0;
@@ -96,8 +112,19 @@ namespace polyfem::solver
 				tmp.setConstant(arg_initial.get<double>());
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else // arg["initial"] is empty array
+			else
+			{
+				// We seem to assume var2sim maps to parameter block in perfect order.
+				// But since either json spec or other part of the code enforce this, it's
+				// dangerous to rely on it.
+				if (var2sim.data.size() != 1)
+				{
+					logger().warn("Computing initial guess via inverse eval with multiple"
+								  " variable to simulation. You should make sure var2sim maps one"
+								  " to one to optimization parameter blocks in perfect order.");
+				}
 				x += var2sim.data[var]->inverse_eval();
+			}
 
 			accumulative += tmp.size();
 			var++;
@@ -106,7 +133,7 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(State &state)
+	void AdjointOptUtils::solve_pde(legacy::State &state)
 	{
 		state.assemble_rhs();
 		state.assemble_mass_mat();
@@ -151,24 +178,13 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			std::ifstream file(POLYFEM_OPT_INPUT_SPEC);
+			rules = jse::embed::polyfem_opt_spec::polyfem_opt::spec();
 
-			if (file.is_open())
-				file >> rules;
-			else
-			{
-				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
-				throw std::runtime_error("Invalid spec file");
-			}
-
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
-			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
-			rules = jse.inject_include(rules);
-
-			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
 
-		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in.contains("/solver/linear"_json_pointer))
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -180,28 +196,15 @@ namespace polyfem::solver
 
 		json args = jse.inject_defaults(args_in, rules);
 
-		json obj_rules;
-		{
-			const std::string polyfem_objective_spec = POLYFEM_OBJECTIVE_INPUT_SPEC;
-			std::ifstream file(polyfem_objective_spec);
-
-			if (file.is_open())
-				file >> obj_rules;
-			else
-			{
-				logger().error("unable to open {} rules", polyfem_objective_spec);
-				throw std::runtime_error("Invalid spec file");
-			}
-		}
+		const json obj_rules = jse::embed::polyfem_objective_spec::polyfem_objective::spec();
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
-		if (args.contains("stopping_conditions"))
-			apply_objective_json_spec(args["stopping_conditions"], obj_rules);
+		apply_objective_json_spec(args["stopping_conditions"], obj_rules);
 
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<legacy::State>> &states)
 	{
 		if (args["number"].is_number())
 		{

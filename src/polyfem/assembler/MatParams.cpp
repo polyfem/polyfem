@@ -481,6 +481,42 @@ namespace polyfem::assembler
 		rho_[index].set_unit_type(density_unit);
 	}
 
+	ThermalMassDensity::ThermalMassDensity()
+		: rho_("rho"), heat_capacity_("heat_capacity")
+	{
+	}
+
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path)
+	{
+		add_multimaterial(index, params, density_unit, "", root_path);
+	}
+
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path)
+	{
+		rho_.add_multimaterial(index, params, density_unit, root_path);
+		heat_capacity_.add_multimaterial(index, params, heat_capacity_unit, root_path);
+	}
+
+	double ThermalMassDensity::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
+	{
+		const double rho = rho_(x, y, z, t, el_id);
+		const double heat_capacity = heat_capacity_(x, y, z, t, el_id);
+		const double res = rho * heat_capacity;
+		assert(!std::isnan(res));
+		assert(!std::isinf(res));
+		return res;
+	}
+
+	double ThermalMassDensity::rho(const RowVectorNd &p, double t, int el_id) const
+	{
+		return rho_(p, t, el_id);
+	}
+
+	double ThermalMassDensity::heat_capacity(const RowVectorNd &p, double t, int el_id) const
+	{
+		return heat_capacity_(p, t, el_id);
+	}
+
 	FiberDirection::FiberDirection()
 	{
 	}

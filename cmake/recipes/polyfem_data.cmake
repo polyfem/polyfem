@@ -30,7 +30,7 @@ else()
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
         # TODO: update to the merged polyfem-data main SHA once the
         # hybrid-element-tests data PR lands
-        GIT_TAG a034b9dbe07eefaccaceccffa3f7880f7639966c
+        GIT_TAG 23092d36f82d464969655a1bf1de82bee56adec0
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""

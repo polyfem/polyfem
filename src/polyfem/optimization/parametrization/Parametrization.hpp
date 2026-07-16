@@ -14,6 +14,12 @@ namespace polyfem::solver
 	public:
 		virtual ~Parametrization() = default;
 
+		/// @brief Compute DOF of x given DOF of y.
+		/// @param[in] y_size DOF of y.
+		/// @return DOF of x.
+		/// @throw std::runtime_error Throw if inverse not impossible or y_size is invalid.
+		virtual int inverse_size(int y_size) const = 0;
+
 		/// @brief Eval x = f^-1 (y).
 		///
 		/// This is not a strict inverse in mathematical sense,
@@ -21,8 +27,8 @@ namespace polyfem::solver
 		///
 		/// @param[in] y y.
 		/// @return x.
-		/// @throws std::runtime_error Throw if not implemented.
-		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y);
+		/// @throw std::runtime_error Throw if inverse not implemented or is impossible.
+		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const = 0;
 
 		/// @brief Compute DOF of y given DOF of x.
 		/// @param[in] x_size The DOF of x.
@@ -51,8 +57,8 @@ namespace polyfem::solver
 		CompositeParametrization() = default;
 		CompositeParametrization(std::vector<std::shared_ptr<Parametrization>> parametrizations) : parametrizations_(std::move(parametrizations)) {}
 
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
-
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		int size(const int x_size) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override;

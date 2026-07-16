@@ -614,7 +614,7 @@ namespace polyfem::assembler
 				result.row(i) = vect * hess.row(i).reshaped(size(), size());
 			else
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
-				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
+				result.row(i) = (hess.row(i).reshaped(size(), size()) * vect).transpose();
 	}
 
 	template class GenericElastic<MooneyRivlinElasticity>;

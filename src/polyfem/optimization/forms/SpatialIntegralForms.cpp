@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -86,12 +86,12 @@ namespace polyfem::solver
 	void SpatialIntegralForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(time_step < diff_cache_->size());
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, time_step, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, time_step, &x]() {
 			Eigen::VectorXd term;
 			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->diff_cache_->u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			return term;
 		});
-		gradv += variable_to_simulations_.apply_parametrization_jacobian(ParameterType::PeriodicShape, state_.get(), x, [this, time_step, &x]() {
+		gradv += variable_to_simulations_.apply_parametrization_jacobian(ParameterType::PeriodicShape, *state_, x, [this, time_step, &x]() {
 			Eigen::VectorXd term;
 			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->diff_cache_->u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			term *= this->weight();
@@ -111,7 +111,7 @@ namespace polyfem::solver
 		});
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		if (&state != state_.get())
 			return Eigen::VectorXd::Zero(state.ndof());
@@ -181,7 +181,7 @@ namespace polyfem::solver
 	void ElasticEnergyForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, state_.get(), x, [this]() {
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, *state_, x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});
@@ -262,7 +262,7 @@ namespace polyfem::solver
 	void StressNormForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, state_.get(), x, [this]() {
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, *state_, x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});
@@ -310,7 +310,7 @@ namespace polyfem::solver
 	void DirichletEnergyForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, state_.get(), x, [this]() {
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, *state_, x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});
@@ -357,7 +357,7 @@ namespace polyfem::solver
 		const double t = state_->problem->is_time_dependent() ? dt * time_step + state_->args["time"]["t0"].get<double>() : 0;
 
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, state_.get(), x, [this, t, dt, time_step, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, *state_, x, [this, t, dt, time_step, &x]() {
 			const auto &bases = state_->bases;
 			Eigen::VectorXd term = Eigen::VectorXd::Zero(bases.size() * 2);
 			const int dim = state_->mesh->dimension();
@@ -463,7 +463,7 @@ namespace polyfem::solver
 	void StressForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, state_.get(), x, [this]() {
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, *state_, x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});

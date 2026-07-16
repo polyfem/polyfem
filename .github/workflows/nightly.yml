@@ -29,7 +29,7 @@ jobs:
             name: Linux
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -46,7 +46,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -90,7 +90,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -101,7 +101,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -143,12 +143,9 @@ jobs:
         threading: [CPP, NONE]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
-
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Dependencies
         run: |
@@ -158,7 +155,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.SCCACHE_DIR }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -176,6 +173,10 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_STANDARD=17 ^
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON ^
+            -DCMAKE_CXX_EXTENSIONS=OFF ^
+            -DCMAKE_CXX_FLAGS="/std:c++17 /DWIN32 /D_WINDOWS /EHsc" ^
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
             -DPOLYFEM_WITH_BEZIER=OFF ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^

@@ -96,12 +96,12 @@ namespace polyfem
 			values_.init(mesh);
 		}
 
-		void NodeProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		}
 
-		void NodeProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -127,7 +127,7 @@ namespace polyfem
 			}
 		}
 
-		void NodeProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -146,9 +146,9 @@ namespace polyfem
 			}
 		}
 
-		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim) const
+		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
-			if (all_dimensions_dirichlet())
+			if (all_dimensions_dirichlet(fe_space_id))
 				return true;
 
 			if (is_all_)

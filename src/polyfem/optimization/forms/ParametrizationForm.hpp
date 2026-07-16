@@ -8,8 +8,11 @@
 
 namespace polyfem
 {
-	class State;
-}
+	namespace legacy
+	{
+		class State;
+	}
+} // namespace polyfem
 
 namespace polyfem::solver
 {

@@ -18,6 +18,9 @@
 #include <spdlog/sinks/callback_sink.h>
 
 #include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/VarFormFactory.hpp>
 #ifdef POLYFEM_WITH_OPTIMIZATION
 #include <polyfem/optimization/OptState.hpp>
 #endif
@@ -66,38 +69,47 @@ std::string openFileName(const std::string &defaultPath,
 	}
 }
 
-int run_polyfem(std::shared_ptr<State> state)
+int run_varform_polyfem(std::shared_ptr<State> state)
 {
 	try
 	{
-		std::vector<std::string> names;
-		std::vector<Eigen::MatrixXi> cells;
-		std::vector<Eigen::MatrixXd> vertices;
+		state->load_mesh();
+		Eigen::MatrixXd sol;
+		state->solve(sol);
 
-		state->load_mesh(/*non_conforming=*/false, names, cells, vertices);
+		state->variational_formulation->compute_errors(sol);
+		logger().info("total time: {}s", state->variational_formulation->output_timings().total_time());
 
-		if (state->mesh == nullptr)
-		{
-			// Cannot proceed without a mesh.
+		state->variational_formulation->save_json(sol);
+		state->variational_formulation->export_data(sol);
+		return EXIT_SUCCESS;
+	}
+	catch (const std::exception &e)
+	{
+		logger().error("Exception: {}", e.what());
+		return EXIT_FAILURE;
+	}
+}
+
+int run_legacy_polyfem(std::shared_ptr<legacy::State> state)
+{
+	try
+	{
+		state->load_mesh();
+		if (!state->mesh)
 			return EXIT_FAILURE;
-		}
 
 		state->stats.compute_mesh_stats(*state->mesh);
-
 		state->build_basis();
-
 		state->assemble_rhs();
 		state->assemble_mass_mat();
 
 		Eigen::MatrixXd sol;
 		Eigen::MatrixXd pressure;
-
 		state->solve_problem(sol, pressure);
-
 		state->compute_errors(sol);
 
 		logger().info("total time: {}s", state->timings.total_time());
-
 		state->save_json(sol);
 		state->export_data(sol, pressure);
 		return EXIT_SUCCESS;
@@ -320,6 +332,7 @@ int main(int argc, char **argv)
 	set_adjoint_logger(std::make_shared<spdlog::logger>(opt_logger));
 
 	std::shared_ptr<State> state;
+	std::shared_ptr<legacy::State> legacy_state;
 #ifdef POLYFEM_WITH_OPTIMIZATION
 	std::shared_ptr<OptState> opt_state;
 #endif
@@ -472,22 +485,34 @@ int main(int argc, char **argv)
 						}
 						else
 						{
+							set_logger(std::make_shared<spdlog::logger>(logger));
+							polyfem::logger().set_level(static_cast<spdlog::level::level_enum>(log_level));
+							running = true;
 
-							state = std::make_shared<State>();
-							state->init(in_args, true);
-
-							state->time_callback =
+							const auto callback =
 								[&t, &time_steps, &tt, &tend](int tin, int time_stepsin, double ttin, double tendin) {
 									t = tin;
 									time_steps = time_stepsin;
 									tt = ttin;
 									tend = tendin;
 								};
-							set_logger(std::make_shared<spdlog::logger>(logger));
-							polyfem::logger().set_level(static_cast<spdlog::level::level_enum>(log_level));
-							running = true;
 
-							worker = std::make_shared<std::thread>(run_polyfem, state);
+							if (varform::uses_varform_state(in_args))
+							{
+								legacy_state = nullptr;
+								state = std::make_shared<State>();
+								state->init(in_args, true);
+								state->time_callback = callback;
+								worker = std::make_shared<std::thread>(run_varform_polyfem, state);
+							}
+							else
+							{
+								state = nullptr;
+								legacy_state = std::make_shared<legacy::State>();
+								legacy_state->init(in_args, true);
+								legacy_state->time_callback = callback;
+								worker = std::make_shared<std::thread>(run_legacy_polyfem, legacy_state);
+							}
 							worker->detach();
 						}
 					}

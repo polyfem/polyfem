@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
@@ -30,24 +30,13 @@ namespace polyfem::solver
 	namespace
 	{
 
-		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<State> &curr_state, const Eigen::VectorXd &x)
+		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<legacy::State> &curr_state, const Eigen::VectorXd &x)
 		{
 			Eigen::MatrixXd V;
 			curr_state->get_vertices(V);
 			Eigen::VectorXd X = utils::flatten(V);
 
-			for (auto &p : variables_to_simulation.data)
-			{
-				for (const auto &state : p->states)
-					if (state.get() != curr_state.get())
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				auto state_variable = p->parametrization.eval(x);
-				auto output_indexing = p->get_output_indexing(x);
-				for (int i = 0; i < output_indexing.size(); ++i)
-					X(output_indexing(i)) = state_variable(i);
-			}
+			variables_to_simulation.compute_state_variable(ParameterType::Shape, *curr_state, x, X);
 
 			return X;
 		}
@@ -130,7 +119,7 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<legacy::State>> &all_states,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args)
 		: FullNLProblem({form}),
@@ -176,13 +165,10 @@ namespace polyfem::solver
 		{
 			for (const auto &v2sim : variables_to_simulation_.data)
 			{
-				for (const auto &state : v2sim->states)
+				if (v2sim->affect_state(*all_states_[i]))
 				{
-					if (all_states_[i].get() == state.get())
-					{
-						active_state_mask[i] = true;
-						break;
-					}
+					active_state_mask[i] = true;
+					break;
 				}
 			}
 		}
@@ -191,7 +177,7 @@ namespace polyfem::solver
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<legacy::State>> &all_states,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, all_diff_caches, args)
 	{
@@ -242,7 +228,7 @@ namespace polyfem::solver
 
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_.data)
-			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
+			if (v->parameter_type() == ParameterType::Shape || v->parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 
 		if (need_rebuild_basis && smooth_line_search)
@@ -355,10 +341,10 @@ namespace polyfem::solver
 				sol,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
 				tend, dt,
-				io::OutGeometryData::ExportOptions(state->args,
-												   state->mesh->is_linear(),
-												   state->mesh->has_prism(),
-												   state->problem->is_scalar()),
+				legacy::io::OutGeometryData::ExportOptions(state->args,
+														   state->mesh->is_linear(),
+														   state->mesh->has_prism(),
+														   state->problem->is_scalar()),
 				state->is_contact_enabled());
 
 			if (!save_rest_mesh)
@@ -385,7 +371,7 @@ namespace polyfem::solver
 		for (const auto &v : variables_to_simulation_.data)
 		{
 			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
+			if (v->parameter_type() == ParameterType::Shape || v->parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 		}
 
@@ -457,7 +443,7 @@ namespace polyfem::solver
 					auto &diff_cache = all_diff_caches_[i];
 					if (active_state_mask[i] || diff_cache->size() == 0)
 					{
-						const InitialConditionOverride *ic_override = nullptr;
+						const legacy::InitialConditionOverride *ic_override = nullptr;
 						if (!diff_cache->initial_condition_override.is_empty())
 						{
 							ic_override = &diff_cache->initial_condition_override;
@@ -465,7 +451,7 @@ namespace polyfem::solver
 						state->assemble_rhs();
 						state->assemble_mass_mat();
 						Eigen::MatrixXd sol, pressure; // solution is also cached in state
-						auto cache_post_step = [&diff_cache](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+						auto cache_post_step = [&diff_cache](const int step, legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
 							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
 						};
 						state->solve_problem(sol, pressure, cache_post_step, ic_override);
@@ -484,7 +470,7 @@ namespace polyfem::solver
 				auto &diff_cache = all_diff_caches_[i];
 				if (active_state_mask[i] || diff_cache->size() == 0)
 				{
-					const InitialConditionOverride *ic_override = nullptr;
+					const legacy::InitialConditionOverride *ic_override = nullptr;
 					if (!diff_cache->initial_condition_override.is_empty())
 					{
 						ic_override = &diff_cache->initial_condition_override;
@@ -493,7 +479,7 @@ namespace polyfem::solver
 					state->assemble_rhs();
 					state->assemble_mass_mat();
 
-					auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+					auto cache_post_step = [&](const int step, legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
 						diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
 					};
 					state->solve_problem(sol, pressure, cache_post_step, ic_override);

@@ -47,7 +47,7 @@ jobs:
 
 
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-cov-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -80,7 +80,7 @@ jobs:
         run: |
           cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
             -DPOLYFEM_WITH_BEZIER=OFF \
@@ -92,16 +92,16 @@ jobs:
         run: cmake --build build && ccache --show-stats
 
       - name: Run Tests
-        run: ctest --test-dir build --timeout 3000 --output-on-failure
+        run: OMP_NUM_THREADS=1 ctest --test-dir build --timeout 3000 --output-on-failure
 
       - name: Create Coverage
         run: |
           cd build
           lcov --directory . --capture --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' '*/polyfem/legacy/*' --output-file coverage.info
 
       - name: Upload Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/AMIPSForm.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -11,6 +11,7 @@
 #include <polyfem/assembler/GenericElastic.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
 namespace polyfem::solver
 {
@@ -140,7 +141,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("{} is not differentiable!", name());
 	}
 
-	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state)
+	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state)
 		: AdjointForm(variable_to_simulation),
 		  state_(std::move(state))
 	{
@@ -167,7 +168,7 @@ namespace polyfem::solver
 
 	void AMIPSForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
 			const Eigen::VectorXd X = get_updated_mesh_nodes(x);
 			Eigen::MatrixXd grad;
 			amips_energy_->assemble_gradient(state_->mesh->is_volume(), state_->n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(*state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases

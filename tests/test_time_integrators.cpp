@@ -101,3 +101,52 @@ TEST_CASE("time integrator", "[time_integrator]")
 		x /= 100;
 	}
 }
+
+TEST_CASE("first order implicit Euler", "[time_integrator]")
+{
+	const double dt = 0.1;
+	const int n = 10;
+	Eigen::VectorXd x_prev = Eigen::VectorXd::LinSpaced(n, 1, n);
+	Eigen::VectorXd v_prev = Eigen::VectorXd::Ones(n);
+	Eigen::VectorXd a_prev = Eigen::VectorXd::Ones(n);
+
+	ImplicitEuler time_integrator(ImplicitTimeIntegrator::DynamicOrder::First);
+	time_integrator.init(x_prev, v_prev, a_prev, dt);
+
+	CHECK((time_integrator.x_tilde() - x_prev).norm() < 1e-12);
+	CHECK(time_integrator.acceleration_scaling() == dt);
+
+	const Eigen::VectorXd x = 2 * x_prev;
+	CHECK((time_integrator.compute_velocity(x) - (x - x_prev) / dt).norm() < 1e-12);
+	CHECK(time_integrator.compute_acceleration(time_integrator.compute_velocity(x)).norm() < 1e-12);
+
+	time_integrator.update_quantities(x);
+	CHECK((time_integrator.x_prev() - x).norm() < 1e-12);
+	CHECK(time_integrator.a_prev().norm() < 1e-12);
+}
+
+TEST_CASE("first order BDF", "[time_integrator]")
+{
+	const double dt = 0.1;
+	const int n = 10;
+	Eigen::MatrixXd x_prevs(n, 2);
+	x_prevs.col(0) = Eigen::VectorXd::LinSpaced(n, 1, n);
+	x_prevs.col(1) = Eigen::VectorXd::LinSpaced(n, 2, 2 * n);
+	const Eigen::MatrixXd v_prevs = Eigen::MatrixXd::Ones(n, 2);
+	const Eigen::MatrixXd a_prevs = Eigen::MatrixXd::Ones(n, 2);
+
+	BDF time_integrator(2, ImplicitTimeIntegrator::DynamicOrder::First);
+	time_integrator.init(x_prevs, v_prevs, a_prevs, dt);
+
+	const Eigen::VectorXd x_tilde = 4.0 / 3.0 * x_prevs.col(0) - 1.0 / 3.0 * x_prevs.col(1);
+	CHECK((time_integrator.x_tilde() - x_tilde).norm() < 1e-12);
+	CHECK(time_integrator.acceleration_scaling() == 2.0 / 3.0 * dt);
+
+	const Eigen::VectorXd x = 2 * x_prevs.col(0);
+	CHECK((time_integrator.compute_velocity(x) - (x - x_tilde) / (2.0 / 3.0 * dt)).norm() < 1e-12);
+	CHECK(time_integrator.compute_acceleration(time_integrator.compute_velocity(x)).norm() < 1e-12);
+
+	time_integrator.update_quantities(x);
+	CHECK((time_integrator.x_prev() - x).norm() < 1e-12);
+	CHECK(time_integrator.a_prev().norm() < 1e-12);
+}

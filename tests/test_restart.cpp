@@ -11,7 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
-using namespace polyfem::assembler;
 using namespace polyfem::utils;
 
 bool load_json(const std::string &json_file, json &out);
@@ -66,21 +65,9 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	logger().set_level(spdlog::level::info);
 	state.load_mesh();
 
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		FAIL();
-	}
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
+	state.solve(sol);
 
 	return sol;
 }

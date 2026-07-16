@@ -13,6 +13,10 @@ set(SOURCES
 	OBJWriter.hpp
 	OutData.cpp
 	OutData.hpp
+	OutputData.hpp
+	OutStatsData.hpp
+	SolverCSVWriter.cpp
+	SolverCSVWriter.hpp
 	YamlToJson.cpp
 	YamlToJson.hpp
 )

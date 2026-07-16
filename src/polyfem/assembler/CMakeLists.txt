@@ -65,6 +65,8 @@ set(SOURCES
 	SaintVenantElasticity.hpp
 	Stokes.cpp
 	Stokes.hpp
+	ThermoElasticity.cpp
+	ThermoElasticity.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
 	AMIPSEnergy.cpp
