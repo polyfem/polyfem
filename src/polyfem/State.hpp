@@ -306,10 +306,14 @@ namespace polyfem
 			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+			// Include the prism tensor-direction order disc_ordersq: a p<q prism
+			// has quad side faces that vary to order q, so the lsq boundary
+			// projection must be sampled at order max(p,q) or the least-squares
+			// system is rank-deficient (degenerate Dirichlet fit).
+			const int q_order = disc_ordersq.size() > 0 ? disc_ordersq.maxCoeff() : 0;
+			const int discr_order = std::max({disc_orders.maxCoeff(), q_order, gdiscr_order});
 
 			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
-			// todo prism
 			return {{n_b_samples, n_b_samples}};
 		}
 

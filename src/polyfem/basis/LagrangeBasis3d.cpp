@@ -3488,8 +3488,8 @@ int LagrangeBasis3d::build_bases(
 								else if (mesh.is_prism(other_cell))
 								{
 									assert(discr_order > discr_ordersp(other_cell));
-									indices = prism_face_local_nodes(discr_order, 1, mesh, index);
-									autogen::prism_nodes_3d(discr_order, 1, lnodes);
+									indices = prism_face_local_nodes(discr_order, discr_order, mesh, index);
+									autogen::prism_nodes_3d(discr_order, discr_order, lnodes);
 								}
 								else
 								{
@@ -3499,7 +3499,30 @@ int LagrangeBasis3d::build_bases(
 								if (j < 4)
 									node_position = lnodes.row(indices(0));
 								else if (j < 4 + 6 * ln_edge_nodes)
-									node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
+								{
+									if (mesh.is_prism(other_cell))
+									{
+										// Locate the shared edge node directly from its two
+										// endpoint vertices in the prism reference frame.  The
+										// prism-face navigation used below mis-selects the
+										// triangular face for anisotropic prisms (p != q),
+										// placing the node on the wrong z-face and flipping the
+										// tet.  The endpoints are shared prism vertices, so this
+										// is unambiguous; evaluate_bases then handles the prism's
+										// actual (possibly lower) order along the edge.
+										static const int tet_edge_v[6][2] =
+											{{0, 1}, {1, 2}, {2, 0}, {0, 3}, {1, 3}, {2, 3}};
+										const int le2 = -(global_index + 10);
+										const auto pl2g = prism_vertices_local_to_global(mesh, other_cell);
+										const int i0 = find_index(pl2g.begin(), pl2g.end(), v[tet_edge_v[le2][0]]);
+										const int i1 = find_index(pl2g.begin(), pl2g.end(), v[tet_edge_v[le2][1]]);
+										const int k = (j - 4) % ln_edge_nodes;
+										const double t = double(k + 1) / discr_order;
+										node_position = (1.0 - t) * lnodes.row(i0) + t * lnodes.row(i1);
+									}
+									else
+										node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
+								}
 								else if (j < 4 + 6 * ln_edge_nodes + 4 * ln_face_nodes)
 								{
 									// node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
@@ -3676,8 +3699,25 @@ int LagrangeBasis3d::build_bases(
 									assert(j >= 5 + le * ln_edge_nodes);
 									assert(j < 5 + (le + 1) * ln_edge_nodes);
 
-									// we are on a quad face
-									node_position = lnodes.row(indices(4 + edge_offset));
+									if (mesh.is_prism(other_cell))
+									{
+										// Endpoint-based placement (see tet branch): locate the
+										// shared edge node from its two endpoint vertices in the
+										// prism reference frame.  The prism-face navigation
+										// mis-selects the face for anisotropic prisms (p != q),
+										// which for q < p corrupts the prism/pyramid quad-face
+										// interface.
+										static const int pyr_edge_v[4][2] =
+											{{0, 1}, {1, 2}, {2, 3}, {3, 0}};
+										const auto pl2g = prism_vertices_local_to_global(mesh, other_cell);
+										const int i0 = find_index(pl2g.begin(), pl2g.end(), v[pyr_edge_v[le][0]]);
+										const int i1 = find_index(pl2g.begin(), pl2g.end(), v[pyr_edge_v[le][1]]);
+										const double t = double(edge_offset + 1) / discr_order;
+										node_position = (1.0 - t) * lnodes.row(i0) + t * lnodes.row(i1);
+									}
+									else
+										// we are on a quad face
+										node_position = lnodes.row(indices(4 + edge_offset));
 								}
 								else if (j >= quad_face_start && j < quad_face_start + ln_face_nodes)
 								{
