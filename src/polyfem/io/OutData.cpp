@@ -802,6 +802,11 @@ namespace polyfem::io
 					}
 				}
 
+				// downstream consumers (e.g. the shape-derivative code) expect every
+				// FE node to have a row, as the pre-split extraction guaranteed
+				node_positions_vec.resize(
+					std::max(node_positions_vec.size(), size_t(n_bases)), Eigen::Vector3d::Zero());
+
 				node_positions.resize(node_positions_vec.size(), 3);
 				for (int i = 0; i < int(node_positions_vec.size()); ++i)
 					node_positions.row(i) = node_positions_vec[i];
@@ -1253,6 +1258,12 @@ namespace polyfem::io
 
 			if (print_warning.str().size() > 0)
 				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
+
+			// downstream consumers (e.g. the shape-derivative code) expect every
+			// FE node to have a row, as the pre-split extraction guaranteed
+			node_positions_vec.resize(
+				std::max(node_positions_vec.size(), size_t(n_bases + (is_simplicial ? 0 : mesh.n_faces()))),
+				Eigen::Vector3d::Zero());
 
 			node_positions.resize(node_positions_vec.size(), 3);
 			for (int i = 0; i < node_positions_vec.size(); ++i)
