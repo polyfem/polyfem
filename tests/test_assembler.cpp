@@ -7,6 +7,8 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/InversionBarrier.hpp>
+#include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -482,6 +484,261 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 					REQUIRE(stressa(i) == Catch::Approx(stress(i)).margin(1e-12));
 			}
 		}
+	}
+}
+
+namespace
+{
+	// Build a State on plane_hole.obj (2D): mesh + P1 bases only; material type irrelevant.
+	std::shared_ptr<State> make_state_2d()
+	{
+		const std::string path = POLYFEM_DATA_DIR;
+		json in_args = json({});
+		in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+		in_args["geometry"]["surface_selection"] = 7;
+		in_args["materials"]["type"] = "NeoHookean";
+		in_args["materials"]["E"] = 1e5;
+		in_args["materials"]["nu"] = 0.3;
+		// Time block avoids the "Static problem needs Dirichlet nodes" check
+		in_args["time"]["dt"] = 0.001;
+		in_args["time"]["tend"] = 1.0;
+
+		auto state = std::make_shared<State>();
+		state->init_logger("", spdlog::level::err, spdlog::level::off, false);
+		state->init(in_args, true);
+		state->load_mesh();
+		test::VarFormTestAccess::prepare(*state->variational_formulation);
+		return state;
+	}
+
+	// Set up a SumModel combining NeoHookean and InversionBarrier, both with E=1e5, nu=0.3.
+	// This is the composable replacement for the old ModifiedNeoHookeanElasticity.
+	std::shared_ptr<SumModel> make_modified_assembler(const Units &units, const std::string &root_path)
+	{
+		auto a = std::make_shared<SumModel>();
+		a->set_size(2);
+		json mat;
+		mat["type"] = "MaterialSum";
+		mat["models"] = json::array();
+		json neo_mat;
+		neo_mat["type"] = "NeoHookean";
+		neo_mat["E"] = 1e5;
+		neo_mat["nu"] = 0.3;
+		mat["models"].push_back(neo_mat);
+		json barrier_mat;
+		barrier_mat["type"] = "InversionBarrier";
+		barrier_mat["E"] = 1e5;
+		barrier_mat["nu"] = 0.3;
+		mat["models"].push_back(barrier_mat);
+		a->add_multimaterial(0, mat, units, root_path);
+		return a;
+	}
+} // namespace
+
+// Gradient consistency: compare analytic gradient against central-difference of energy.
+TEST_CASE("modified-neohookean-gradient", "[assembler]")
+{
+	auto state = make_state_2d();
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	Units units;
+	units.init(state->args["units"]);
+	auto assembler = make_modified_assembler(units, debug.root_path);
+
+	const int dim = 2;
+	const int el_id = 0;
+	const auto &bs = (*debug.bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+	const int n_local = static_cast<int>(vals.basis_values.size());
+
+	// Correct global DOF vector size
+	Eigen::MatrixXd x0(debug.n_bases * dim, 1);
+	const double eps = 1e-7;
+
+	for (int trial = 0; trial < 5; ++trial)
+	{
+		x0.setRandom();
+		x0 /= 20.0; // keep J > 0 in all trials
+
+		const Eigen::VectorXd grad = assembler->assemble_gradient(NonLinearAssemblerData(vals, 0, 0, x0, x0, da));
+
+		for (int i = 0; i < n_local; ++i)
+		{
+			REQUIRE(vals.basis_values[i].global.size() == 1);
+			const int g = vals.basis_values[i].global[0].index;
+			for (int d = 0; d < dim; ++d)
+			{
+				Eigen::MatrixXd xp = x0, xm = x0;
+				xp(g * dim + d) += eps;
+				xm(g * dim + d) -= eps;
+				const double ep = assembler->compute_energy(NonLinearAssemblerData(vals, 0, 0, xp, xp, da));
+				const double em = assembler->compute_energy(NonLinearAssemblerData(vals, 0, 0, xm, xm, da));
+				REQUIRE(grad(i * dim + d) == Catch::Approx((ep - em) / (2.0 * eps)).margin(1e-5));
+			}
+		}
+	}
+}
+
+// Hessian consistency: compare analytic hessian against central-difference of gradient.
+TEST_CASE("modified-neohookean-hessian", "[assembler]")
+{
+	auto state = make_state_2d();
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	Units units;
+	units.init(state->args["units"]);
+	auto assembler = make_modified_assembler(units, debug.root_path);
+
+	const int dim = 2;
+	const int el_id = 0;
+	const auto &bs = (*debug.bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+	const int n_local = static_cast<int>(vals.basis_values.size());
+
+	Eigen::MatrixXd x0(debug.n_bases * dim, 1);
+	const double eps = 1e-5;
+
+	for (int trial = 0; trial < 3; ++trial)
+	{
+		x0.setRandom();
+		x0 /= 20.0;
+
+		const Eigen::MatrixXd hess = assembler->assemble_hessian(NonLinearAssemblerData(vals, 0, 0, x0, x0, da));
+
+		for (int i = 0; i < n_local; ++i)
+		{
+			const int g = vals.basis_values[i].global[0].index;
+			for (int di = 0; di < dim; ++di)
+			{
+				Eigen::MatrixXd xp = x0, xm = x0;
+				xp(g * dim + di) += eps;
+				xm(g * dim + di) -= eps;
+				const Eigen::VectorXd gp = assembler->assemble_gradient(NonLinearAssemblerData(vals, 0, 0, xp, xp, da));
+				const Eigen::VectorXd gm = assembler->assemble_gradient(NonLinearAssemblerData(vals, 0, 0, xm, xm, da));
+				const Eigen::VectorXd fd_col = (gp - gm) / (2.0 * eps);
+
+				for (int j = 0; j < n_local; ++j)
+				{
+					for (int dj = 0; dj < dim; ++dj)
+						REQUIRE(hess(j * dim + dj, i * dim + di) == Catch::Approx(fd_col(j * dim + dj)).margin(1e-4));
+				}
+			}
+		}
+	}
+}
+
+// Barrier is zero when J >= 0.5: at zero displacement, energy == NeoHookean energy.
+TEST_CASE("modified-neohookean-barrier-zero", "[assembler]")
+{
+	auto state = make_state_2d();
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	Units units;
+	units.init(state->args["units"]);
+	auto modified = make_modified_assembler(units, debug.root_path);
+
+	NeoHookeanElasticity neo;
+	neo.set_size(2);
+	json mat;
+	mat["type"] = "NeoHookean";
+	mat["E"] = 1e5;
+	mat["nu"] = 0.3;
+	neo.add_multimaterial(0, mat, units, debug.root_path);
+
+	const int el_id = 0;
+	const auto &bs = (*debug.bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+	// At zero displacement J = 1 >> 0.5 → barrier = 0 → energies match
+	const Eigen::MatrixXd x_zero = Eigen::MatrixXd::Zero(debug.n_bases * 2, 1);
+	const NonLinearAssemblerData data(vals, 0, 0, x_zero, x_zero, da);
+
+	REQUIRE(modified->compute_energy(data) == Catch::Approx(neo.compute_energy(data)).margin(1e-14));
+
+	const Eigen::VectorXd g_mod = modified->assemble_gradient(data);
+	const Eigen::VectorXd g_neo = neo.assemble_gradient(data);
+	for (int i = 0; i < g_mod.size(); ++i)
+		REQUIRE(g_mod(i) == Catch::Approx(g_neo(i)).margin(1e-14));
+}
+
+// Barrier activates below J=0.5: at large compression e_mod > e_neo.
+TEST_CASE("modified-neohookean-barrier-active", "[assembler]")
+{
+	// Single known triangle: vertices at (0,0),(1,0),(0,1). DOFs are 0,1,2.
+	Eigen::MatrixXd V(3, 2);
+	V << 0, 0,
+		1, 0,
+		0, 1;
+	Eigen::MatrixXi F(1, 3);
+	F << 0, 1, 2;
+
+	json in_args;
+	in_args["geometry"][0]["mesh"] = "";
+	in_args["materials"]["type"] = "NeoHookean";
+	in_args["materials"]["E"] = 1e5;
+	in_args["materials"]["nu"] = 0.3;
+	in_args["time"]["dt"] = 0.001;
+	in_args["time"]["tend"] = 1.0;
+
+	State state;
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+	state.init(in_args, false);
+	state.load_mesh(V, F);
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+
+	const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	Units units;
+	units.init(state.args["units"]);
+
+	auto modified = make_modified_assembler(units, debug.root_path);
+	NeoHookeanElasticity neo;
+	neo.set_size(2);
+	json mat;
+	mat["type"] = "NeoHookean";
+	mat["E"] = 1e5;
+	mat["nu"] = 0.3;
+	neo.add_multimaterial(0, mat, units, debug.root_path);
+
+	const auto &bs = (*debug.bases)[0];
+	ElementAssemblyValues vals;
+	vals.compute(0, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+	// u = (s-1)*V, packed as [u0x,u0y, u1x,u1y, u2x,u2y].
+	// DOFs 0,1,2 correspond directly to triangle vertices 0,1,2.
+	auto make_x = [&](double s) {
+		Eigen::MatrixXd x = Eigen::MatrixXd::Zero(6, 1);
+		for (int i = 0; i < 3; ++i)
+		{
+			x(i * 2) = (s - 1.0) * V(i, 0);
+			x(i * 2 + 1) = (s - 1.0) * V(i, 1);
+		}
+		return x;
+	};
+
+	// Zero displacement: barrier inactive, energies equal.
+	{
+		const auto x = make_x(1.0);
+		const NonLinearAssemblerData data(vals, 0, 0, x, x, da);
+		REQUIRE(modified->compute_energy(data) == Catch::Approx(neo.compute_energy(data)).margin(1e-14));
+	}
+
+	// s=0.9: J=0.81 > 0.5, barrier inactive, energies equal.
+	{
+		const auto x = make_x(0.9);
+		const NonLinearAssemblerData data(vals, 0, 0, x, x, da);
+		REQUIRE(modified->compute_energy(data) == Catch::Approx(neo.compute_energy(data)).margin(1e-10));
+	}
+
+	// s=0.6: J=0.36 < 0.5, barrier active, e_mod > e_neo.
+	{
+		const auto x = make_x(0.6);
+		const NonLinearAssemblerData data(vals, 0, 0, x, x, da);
+		REQUIRE(std::isfinite(modified->compute_energy(data)));
+		REQUIRE(modified->compute_energy(data) > neo.compute_energy(data));
 	}
 }
 

@@ -264,6 +264,7 @@ namespace polyfem::legacy
 			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
+			args["solver"]["advanced"]["conservative_max_iter"],
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary,
 			local_neumann_boundary,

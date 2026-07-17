@@ -1,100 +1,22 @@
 #include <numeric>
-#ifdef POLYFEM_WITH_BEZIER
-#include <element_validity.hpp>
-using namespace element_validity;
-#endif
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include "Jacobian.hpp"
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#ifdef POLYFEM_WITH_MISO
+#include "EigenAdapters.hpp"
+#include <algorithms/solve.hpp>
+#include <algorithms/minimize.hpp>
+#include <algorithms/batch-minimize.hpp>
+using namespace miso;
+#endif
+
 using namespace polyfem::assembler;
 
 namespace polyfem::utils
 {
-	namespace
-	{
-		template <int n, int s, int p>
-		bool check_static(
-			const int n_threads,
-			const Eigen::MatrixXd &cp,
-			int &invalid_id,
-			Tree &tree)
-		{
-#ifdef POLYFEM_WITH_BEZIER
-			std::vector<int> hierarchy;
-			StaticValidator<n, s, p> check(n_threads);
-			const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id);
-			const bool flag = flag_ == Validity::valid;
-			if (!flag)
-			{
-				Tree *dst = &tree;
-				for (const auto i : hierarchy)
-				{
-					dst->add_children(1 << n);
-					dst = &(dst->child(i));
-				}
-			}
-			return flag;
-#else
-			log_and_throw_error("Enable Bezier library to allow robust Jacobian check!");
-			return false;
-#endif
-		}
-
-		template <int n, int s, int p>
-		bool check_transient(
-			const int n_threads,
-			const Eigen::MatrixXd &cp1,
-			const Eigen::MatrixXd &cp2,
-			int &invalid_id)
-		{
-#ifdef POLYFEM_WITH_BEZIER
-			std::vector<int> hierarchy;
-			ContinuousValidator<n, s, p> check(n_threads);
-			check.setPrecisionTarget(1);
-			const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id);
-			return flag_ == 1.;
-#else
-			log_and_throw_error("Enable Bezier library to allow robust Jacobian check!");
-			return false;
-#endif
-		}
-
-		template <int n, int s, int p>
-		void check_transient(
-			const int n_threads,
-			const Eigen::MatrixXd &cp1,
-			const Eigen::MatrixXd &cp2,
-			double &step,
-			int &invalid_id,
-			double &invalid_step,
-			bool &gaveUp,
-			Tree &tree)
-		{
-#ifdef POLYFEM_WITH_BEZIER
-			std::vector<int> hierarchy;
-			ContinuousValidator<n, s, p> check(n_threads);
-			typename ContinuousValidator<n, s, p>::Info info;
-			step = check.maxTimeStep(
-				cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info);
-			gaveUp = !info.success();
-			if (step < 1)
-			{
-				Tree *dst = &tree;
-				for (const auto i : hierarchy)
-				{
-					dst->add_children(1 << n);
-					dst = &(dst->child(i));
-				}
-			}
-#else
-			log_and_throw_error("Enable Bezier library to allow robust Jacobian check!");
-			return;
-#endif
-		}
-	} // namespace
 	Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem)
 	{
 		if (n_elem < 0)
@@ -147,149 +69,131 @@ namespace polyfem::utils
 		const Eigen::MatrixXd &cp,
 		const Eigen::MatrixXd &uv)
 	{
-#ifdef POLYFEM_WITH_BEZIER
-		if (cp.cols() == 2)
+#ifdef POLYFEM_WITH_MISO
+		const int dim = cp.cols();
+		Eigen::VectorXd result(uv.rows());
+
+		// TODO: replace with constant function evaluator (same as used for P=1 static validity)
+		std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
+		for (int bid = 0; bid < cp.rows(); bid++)
 		{
-			switch (order)
-			{
-			case 1:
-			{
-				JacobianEvaluator<2, 2, 1> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			case 2:
-			{
-				JacobianEvaluator<2, 2, 2> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			case 3:
-			{
-				JacobianEvaluator<2, 2, 3> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			case 4:
-			{
-				JacobianEvaluator<2, 2, 4> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
+			if (dim == 2)
+				autogen::p_grad_basis_value_2d(false, order, bid, uv, grads[bid]);
+			else
+				autogen::p_grad_basis_value_3d(false, order, bid, uv, grads[bid]);
 		}
-		else
+		for (int k = 0; k < uv.rows(); k++)
 		{
-			switch (order)
-			{
-			case 1:
-			{
-				JacobianEvaluator<3, 3, 1> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			case 2:
-			{
-				JacobianEvaluator<3, 3, 2> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			case 3:
-			{
-				JacobianEvaluator<3, 3, 3> evaluator(cp);
-				return evaluator.eval(uv, 0);
-			}
-			// case 4: {
-			//     JacobianEvaluator<3, 3, 4> evaluator(cp);
-			//     return evaluator.eval(uv, 0);
-			// }
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
+			Eigen::MatrixXd jac_mat = Eigen::MatrixXd::Zero(dim, dim);
+			for (int bid = 0; bid < cp.rows(); bid++)
+				jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
+			result(k) = jac_mat.determinant();
 		}
+		return result;
 #else
-		log_and_throw_error("Enable Bezier library to allow robust Jacobian evaluation!");
+		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian evaluation!");
 		return Eigen::VectorXd::Zero(uv.rows());
 #endif
 	}
 
+#ifdef POLYFEM_WITH_MISO
+	namespace
+	{
+		void build_tree(Tree &tree, const std::vector<unsigned> &path, unsigned n_spatial)
+		{
+			// Space-time child i maps to spatial child i/2 (even=lower t, odd=upper t).
+			// Children beyond 2*n_spatial are time-only subdivisions and are skipped.
+			Tree *dst = &tree;
+			for (const auto idx : path)
+			{
+				if (idx < 2 * n_spatial)
+				{
+					dst->add_children(n_spatial);
+					dst = &(dst->child(idx / 2));
+				}
+				// else: time-only subdivision, skip
+			}
+		}
+	} // anonymous namespace
+#endif // POLYFEM_WITH_MISO
+
+	// Debug utility: counts elements with invalid Jacobian in a given configuration.
+	// Not used in the solve loop; called for diagnostics and visualization.
 	std::vector<int> count_invalid(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
-		const Eigen::VectorXd &u)
+		const Eigen::VectorXd &u,
+		const unsigned max_iter)
 	{
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-		const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
-
 		std::vector<int> invalidList;
-		const int n_threads = utils::NThread::get().num_threads();
+#ifdef POLYFEM_WITH_MISO
+		RealInterval::init();
+		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
+		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+		const int n_elem = static_cast<int>(bases.size());
 
-#ifdef POLYFEM_WITH_BEZIER
-		if (cp.cols() == 2)
+		auto run_solve = [&](auto problem, int e) {
+			Parameters params;
+			params.constraintEpsilon = {0.0};
+			params.maxIter = max_iter;
+			params.findOne = true;
+			Info info;
+			auto sols = solve(std::move(problem), params, &info);
+			if (!info.success())
+				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
+			return !sols.empty();
+		};
+
+		for (int e = 0; e < n_elem; ++e)
 		{
-			switch (order)
+			const int o = e * n_per;
+			bool invalid = false;
+			if (dim == 2)
 			{
-			case 1:
+				switch (order)
+				{
+				case 1:
+					invalid = JacEval_P1Tri(rv<3>(cp, o, 0, tri1_perm), rv<3>(cp, o, 1, tri1_perm)) <= 0;
+					break;
+				case 2:
+					invalid = run_solve(make_p2tri_val(cp, o), e);
+					break;
+				case 3:
+					invalid = run_solve(make_p3tri_val(cp, o), e);
+					break;
+				case 4:
+					invalid = run_solve(make_p4tri_val(cp, o), e);
+					break;
+				default:
+					throw std::invalid_argument("Order not supported");
+				}
+			}
+			else
 			{
-				StaticValidator<2, 2, 1> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
+				switch (order)
+				{
+				case 1:
+					invalid = JacEval_P1Tet(rv<4>(cp, o, 0, tet1_perm), rv<4>(cp, o, 1, tet1_perm), rv<4>(cp, o, 2, tet1_perm)) <= 0;
+					break;
+				case 2:
+					invalid = run_solve(make_p2tet_val(cp, o), e);
+					break;
+				case 3:
+					invalid = run_solve(make_p3tet_val(cp, o), e);
+					break;
+				default:
+					throw std::invalid_argument("Order not supported");
+				}
 			}
-			case 2:
-			{
-				StaticValidator<2, 2, 2> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			case 3:
-			{
-				StaticValidator<2, 2, 3> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			case 4:
-			{
-				StaticValidator<2, 2, 4> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
+			if (invalid)
+				invalidList.push_back(e);
 		}
-		else
-		{
-			switch (order)
-			{
-			case 1:
-			{
-				StaticValidator<3, 3, 1> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			case 2:
-			{
-				StaticValidator<3, 3, 2> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			case 3:
-			{
-				StaticValidator<3, 3, 3> check(n_threads);
-				check.isValid(cp, nullptr, nullptr, &invalidList);
-				break;
-			}
-			// case 4: {
-			//     StaticValidator<3, 3, 4> check(n_threads);
-			//     check.isValid(cp, nullptr, nullptr, &invalidList);
-			//     break;
-			// }
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
-		}
+		RealInterval::deinit();
 #else
-		log_and_throw_error("Enable Bezier library to allow robust Jacobian check!");
+		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
 #endif
-
 		return invalidList;
 	}
 
@@ -299,111 +203,84 @@ namespace polyfem::utils
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
-		const double threshold)
+		const double threshold,
+		const unsigned max_iter)
 	{
+#ifdef POLYFEM_WITH_MISO
+		RealInterval::init();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-		const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
+		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+		const int n_elem = static_cast<int>(bases.size());
 
-		bool flag = false;
-		int invalid_id = 0;
-		Tree tree;
-
-		const int n_threads = utils::NThread::get().num_threads();
-
-		if (dim == 2)
-		{
-			switch (order)
+		auto run_solve = [threshold, max_iter](auto problem, int e) {
+			Parameters params;
+			params.constraintEpsilon = {threshold};
+			params.maxIter = max_iter;
+			params.findOne = true;
+			Info info;
+			auto sols = solve(std::move(problem), params, &info);
+			if (!info.success())
 			{
-			case 1:
-				flag = check_static<2, 2, 1>(n_threads, cp, invalid_id, tree);
-				break;
-			case 2:
-				flag = check_static<2, 2, 2>(n_threads, cp, invalid_id, tree);
-				break;
-			case 3:
-				flag = check_static<2, 2, 3>(n_threads, cp, invalid_id, tree);
-				break;
-			case 4:
-				flag = check_static<2, 2, 4>(n_threads, cp, invalid_id, tree);
-				break;
-			default:
-				throw std::invalid_argument("Order not supported");
+				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
+				return true; // ambiguous counts as invalid
+			}
+			return !sols.empty();
+		};
+
+		for (int e = 0; e < n_elem; ++e)
+		{
+			const int o = e * n_per;
+			bool invalid = false;
+			if (dim == 2)
+			{
+				switch (order)
+				{
+				case 1:
+					invalid = JacEval_P1Tri(rv<3>(cp, o, 0, tri1_perm), rv<3>(cp, o, 1, tri1_perm)) <= 0;
+					break;
+				case 2:
+					invalid = run_solve(make_p2tri_val(cp, o), e);
+					break;
+				case 3:
+					invalid = run_solve(make_p3tri_val(cp, o), e);
+					break;
+				case 4:
+					invalid = run_solve(make_p4tri_val(cp, o), e);
+					break;
+				default:
+					throw std::invalid_argument("Order not supported");
+				}
+			}
+			else
+			{
+				switch (order)
+				{
+				case 1:
+					invalid = JacEval_P1Tet(rv<4>(cp, o, 0, tet1_perm), rv<4>(cp, o, 1, tet1_perm), rv<4>(cp, o, 2, tet1_perm)) <= 0;
+					break;
+				case 2:
+					invalid = run_solve(make_p2tet_val(cp, o), e);
+					break;
+				case 3:
+					invalid = run_solve(make_p3tet_val(cp, o), e);
+					break;
+				default:
+					throw std::invalid_argument("Order not supported");
+				}
+			}
+			if (invalid)
+			{
+				RealInterval::deinit();
+				return {false, e, Tree{}};
 			}
 		}
-		else
-		{
-			switch (order)
-			{
-			case 1:
-				flag = check_static<3, 3, 1>(n_threads, cp, invalid_id, tree);
-				break;
-			case 2:
-				flag = check_static<3, 3, 2>(n_threads, cp, invalid_id, tree);
-				break;
-			case 3:
-				flag = check_static<3, 3, 3>(n_threads, cp, invalid_id, tree);
-				break;
-			// case 4:
-			//     flag = check_static<3, 3, 4>(n_threads, cp, invalid_id, tree);
-			//     break;
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
-		}
-
-		return {flag, invalid_id, tree};
-	}
-
-	bool is_valid(
-		const int dim,
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &gbases,
-		const Eigen::VectorXd &u1,
-		const Eigen::VectorXd &u2,
-		const double threshold)
-	{
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-		const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-
-		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
-
-		int invalid_id = 0;
-		const int n_threads = utils::NThread::get().num_threads();
-
-		if (dim == 2)
-		{
-			switch (order)
-			{
-			case 1:
-				return check_transient<2, 2, 1>(n_threads, cp1, cp2, invalid_id);
-			case 2:
-				return check_transient<2, 2, 2>(n_threads, cp1, cp2, invalid_id);
-			case 3:
-				return check_transient<2, 2, 3>(n_threads, cp1, cp2, invalid_id);
-			case 4:
-				return check_transient<2, 2, 4>(n_threads, cp1, cp2, invalid_id);
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
-		}
-		else
-		{
-			switch (order)
-			{
-			case 1:
-				return check_transient<3, 3, 1>(n_threads, cp1, cp2, invalid_id);
-			case 2:
-				return check_transient<3, 3, 2>(n_threads, cp1, cp2, invalid_id);
-			case 3:
-				return check_transient<3, 3, 3>(n_threads, cp1, cp2, invalid_id);
-			// case 4:
-			//     return check_transient<3, 3, 4>(n_threads, cp1, cp2, invalid_id);
-			default:
-				throw std::invalid_argument("Order not supported");
-			}
-		}
+		RealInterval::deinit();
+		return {true, -1, Tree{}};
+#else
+		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
+		return {false, -1, Tree{}};
+#endif
 	}
 
 	std::tuple<double, int, double, Tree> max_time_step(
@@ -412,38 +289,76 @@ namespace polyfem::utils
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u1,
 		const Eigen::VectorXd &u2,
-		double precision)
+		double precision,
+		double threshold,
+		const unsigned max_iter)
 	{
+#ifdef POLYFEM_WITH_MISO
+		RealInterval::init();
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-		const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-		Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
+		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
+		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
+		const int n_elem = static_cast<int>(bases.size());
 
-		// logger().debug("Jacobian check order {}, number of nodes per cell {}, number of total nodes {}", order, n_basis_per_cell, cp2.rows());
-
+		double step = 1.0;
 		int invalid_id = -1;
-		bool gaveUp = false;
-		double step = 1;
-		double invalid_step = 1.;
+		double invalid_step = 1.0;
 		Tree tree;
 
-		const int n_threads = utils::NThread::get().num_threads();
+		// Spatial split: 2^dim children (ignore time subdivisions)
+		const unsigned n_children = (dim == 2) ? 4u : 8u;
+
+		// Build a vector of all per-element problems (same type for all elements) and
+		// run a single batch_minimize over the entire mesh.
+		auto run_batch = [&](auto factory) {
+			using ProblemType = decltype(factory(0));
+			std::vector<ProblemType> problems;
+			problems.reserve(n_elem);
+			for (int e = 0; e < n_elem; ++e)
+				problems.push_back(factory(e * n_per));
+
+			Parameters params;
+			params.targetPrecision = precision;
+			params.constraintEpsilon = {threshold};
+			params.maxIter = max_iter;
+			params.requiredMinimum = 0.;
+			params.minBoxWidth = 0.;
+			Info info;
+			auto result = batch_minimize(std::move(problems), params, &info);
+			const double t_lo = lower(result);
+			if (!info.success())
+			{
+				if (t_lo <= 0)
+					logger().error("Jacobian batch_minimize gave up with step size 0 after {} iterations", info.numIterations);
+				else
+					logger().warn("Jacobian batch_minimize gave up after {} iterations (step={})", info.numIterations, t_lo);
+			}
+			if (t_lo < step)
+			{
+				step = t_lo;
+				invalid_id = static_cast<int>(info.pathToFeasibleId);
+				invalid_step = upper(result);
+				tree = Tree{};
+				build_tree(tree, info.pathToFeasible, n_children);
+			}
+		};
 
 		if (dim == 2)
 		{
 			switch (order)
 			{
 			case 1:
-				check_transient<2, 2, 1>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p1tri_cgv(cp1, cp2, o); });
 				break;
 			case 2:
-				check_transient<2, 2, 2>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p2tri_cgv(cp1, cp2, o); });
 				break;
 			case 3:
-				check_transient<2, 2, 3>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p3tri_cgv(cp1, cp2, o); });
 				break;
 			case 4:
-				check_transient<2, 2, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p4tri_cgv(cp1, cp2, o); });
 				break;
 			default:
 				throw std::invalid_argument("Order not supported");
@@ -454,25 +369,24 @@ namespace polyfem::utils
 			switch (order)
 			{
 			case 1:
-				check_transient<3, 3, 1>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p1tet_cgv(cp1, cp2, o); });
 				break;
 			case 2:
-				check_transient<3, 3, 2>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p2tet_cgv(cp1, cp2, o); });
 				break;
 			case 3:
-				check_transient<3, 3, 3>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+				run_batch([&](int o) { return make_p3tet_cgv(cp1, cp2, o); });
 				break;
-			// case 4:
-			//     check_transient<3, 3, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
-			//     break;
 			default:
 				throw std::invalid_argument("Order not supported");
 			}
 		}
 
-		// if (gaveUp)
-		//     logger().warn("Jacobian check gave up!");
-
+		RealInterval::deinit();
 		return {step, invalid_id, invalid_step, tree};
+#else
+		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
+		return {1.0, -1, 1.0, Tree{}};
+#endif
 	}
 } // namespace polyfem::utils

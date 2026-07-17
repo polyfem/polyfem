@@ -117,7 +117,10 @@ namespace polyfem::varform
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(),
 			*primary_assembler_, ass_vals_cache_,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
-			mesh_->is_volume());
+			mesh_->is_volume(),
+			args["solver"]["advanced"]["jacobian_threshold"],
+			args["solver"]["advanced"]["check_inversion"],
+			args["solver"]["advanced"]["conservative_max_iter"]);
 
 		body_form = std::make_shared<solver::BodyForm>(
 			ndof, 0,

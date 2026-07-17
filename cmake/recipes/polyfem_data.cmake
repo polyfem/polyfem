@@ -28,8 +28,6 @@ else()
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-        # TODO: update to the merged polyfem-data main SHA once the
-        # hybrid-element-tests data PR lands
         GIT_TAG 23092d36f82d464969655a1bf1de82bee56adec0
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""

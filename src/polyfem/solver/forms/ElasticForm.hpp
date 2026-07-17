@@ -11,6 +11,8 @@
 #include <polyfem/utils/Types.hpp>
 
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 namespace polyfem::solver
@@ -18,7 +20,7 @@ namespace polyfem::solver
 	enum class ElementInversionCheck
 	{
 		Discrete,
-		Conservative
+		Conservative,
 	};
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		polyfem::solver::ElementInversionCheck,
@@ -41,7 +43,8 @@ namespace polyfem::solver
 					const double t, const double dt,
 					const bool is_volume,
 					const double jacobian_threshold = 0.,
-					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
+					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete,
+					const unsigned conservative_max_iter = 100000);
 
 		std::string name() const override { return "elastic"; }
 
@@ -92,12 +95,12 @@ namespace polyfem::solver
 		/// @return Maximum allowable step size
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
-		/// @brief Update cached fields upon a change in the solution
-		/// @param new_x New solution
-		void solution_changed(const Eigen::VectorXd &new_x) override;
-
 		/// @brief Reset adaptive quadrature refinement after each complete nonlinear solve.
 		void finish() override;
+
+		/// @brief Commit the quadrature refinement candidate found by the
+		/// most recent max_step_size() call, once the step is accepted.
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 	private:
 		const int n_bases_;
@@ -109,6 +112,7 @@ namespace polyfem::solver
 		double t_;
 		const double jacobian_threshold_;
 		const ElementInversionCheck check_inversion_;
+		const unsigned conservative_max_iter_;
 		const double dt_;
 		const bool is_volume_;
 
@@ -118,9 +122,23 @@ namespace polyfem::solver
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
 
+		/// @brief Merge a subdivision tree into quadrature_hierarchy_ for the
+		/// given element and rebuild its live quadrature if it actually refined.
+		/// Shared by post_step() (deferred commit, once a step is accepted) and
+		/// max_step_size() (immediate commit, only when step == 0 -- such a step
+		/// can never reach post_step(), so deferring it would just discard the
+		/// refinement candidate and leave the next iteration stuck on the same
+		/// too-coarse quadrature).
+		void commit_refinement(const int id, utils::Tree &subdivision_tree) const;
+
 		Eigen::VectorXd x_prev_;
 
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
+
+		/// @brief Pending (element id, subdivision tree) candidate from the
+		/// last max_step_size() call; replaced (not accumulated) each call,
+		/// committed in post_step() once a step is accepted.
+		mutable std::optional<std::pair<int, utils::Tree>> pending_refinement_;
 	};
 } // namespace polyfem::solver
