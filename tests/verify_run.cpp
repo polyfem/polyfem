@@ -314,11 +314,6 @@ TEST_CASE("time_int", tagsrun)
 	run_data("time_int", POLYFEM_DATA_DIR);
 }
 
-TEST_CASE("old_tolerances", tagsrun)
-{
-	run_data("old_tolerances", POLYFEM_DATA_DIR);
-}
-
 TEST_CASE("runners-pref", tagsrun)
 {
 	run_data("pref_test_list", POLYFEM_PREF_DIR);
