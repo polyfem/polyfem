@@ -344,6 +344,14 @@ namespace polyfem::varform
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
+			else if (collision_mesh_args.contains("tessellation_type")
+					 && collision_mesh_args["tessellation_type"] == "max_order")
+			{
+				io::OutGeometryData::extract_boundary_mesh_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
+					utils::json_value<int>(collision_mesh_args, "sampling_order", 0));
+			}
 			else if (collision_mesh_args.contains("max_edge_length"))
 			{
 				logger().debug(

@@ -112,7 +112,523 @@ namespace polyfem::io
 			autogen::pyramid_nodes_3d(order, points);
 			avoid_pyramid_apex(points);
 		}
+
+		// ------------------------------------------------------------------
+		// helpers for the hybrid (prism/pyramid) collision-proxy paths
+		// ------------------------------------------------------------------
+
+		// face/edge parameters are fractions k/n with n <= 8, so coordinates
+		// in units of 1/PROXY_PARAM_SCALE are exact integers (lcm of 1..8)
+		constexpr long PROXY_PARAM_SCALE = 840;
+
+		int prism_q_order(const basis::ElementBases &b)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			const int n_tri = (p + 1) * (p + 2) / 2;
+			const int q = (n_tri > 0 && b.bases.size() % n_tri == 0) ? int(b.bases.size()) / n_tri - 1 : p;
+			return std::max(1, q);
+		}
+
+		// reference-node layout of an element (vertices first); false if unsupported
+		bool element_ref_nodes(const mesh::Mesh &mesh, const int el, const basis::ElementBases &b, Eigen::MatrixXd &ref_nodes)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			if (mesh.is_simplex(el))
+				autogen::p_nodes_3d(p, ref_nodes);
+			else if (mesh.is_cube(el))
+				autogen::q_nodes_3d(p, ref_nodes);
+			else if (mesh.is_prism(el))
+				autogen::prism_nodes_3d(p, prism_q_order(b), ref_nodes);
+			else if (mesh.is_pyramid(el))
+				autogen::pyramid_nodes_3d(p, ref_nodes);
+			else
+				return false;
+			return ref_nodes.rows() == long(b.bases.size());
+		}
+
+		int element_n_vertices(const mesh::Mesh &mesh, const int el)
+		{
+			if (mesh.is_simplex(el))
+				return 4;
+			if (mesh.is_pyramid(el))
+				return 5;
+			if (mesh.is_prism(el))
+				return 6;
+			assert(mesh.is_cube(el));
+			return 8;
+		}
+
+		// local vertex pairs forming the element's edges, derived from the
+		// reference vertex coordinates (no vertex-ordering assumptions)
+		std::vector<std::pair<int, int>> element_ref_edges(const mesh::Mesh &mesh, const int el, const Eigen::MatrixXd &ref_nodes)
+		{
+			const int nv = element_n_vertices(mesh, el);
+			const auto n_coord_diffs = [&](int a, int b) {
+				int d = 0;
+				for (int c = 0; c < 3; ++c)
+					if (std::abs(ref_nodes(a, c) - ref_nodes(b, c)) > 1e-12)
+						++d;
+				return d;
+			};
+			int apex = -1;
+			if (mesh.is_pyramid(el))
+				for (int a = 0; a < nv; ++a)
+					if (std::abs(ref_nodes(a, 2) - 1.0) < 1e-12)
+						apex = a;
+
+			std::vector<std::pair<int, int>> edges;
+			for (int a = 0; a < nv; ++a)
+			{
+				for (int b = a + 1; b < nv; ++b)
+				{
+					bool is_edge;
+					if (mesh.is_simplex(el)) // every vertex pair
+						is_edge = true;
+					else if (mesh.is_prism(el)) // triangle x [0,1]
+						is_edge = std::abs(ref_nodes(a, 2) - ref_nodes(b, 2)) < 1e-12
+								  || (std::abs(ref_nodes(a, 0) - ref_nodes(b, 0)) < 1e-12
+									  && std::abs(ref_nodes(a, 1) - ref_nodes(b, 1)) < 1e-12);
+					else if (mesh.is_pyramid(el)) // base square + base-to-apex
+						is_edge = (a == apex || b == apex) || n_coord_diffs(a, b) == 1;
+					else // hex
+						is_edge = n_coord_diffs(a, b) == 1;
+					if (is_edge)
+						edges.emplace_back(a, b);
+				}
+			}
+			return edges;
+		}
+
+		// For every mesh edge, keyed by its endpoint DOFs (smaller first): the
+		// owned edge-interior DOFs located on it as (parameter from the
+		// smaller-DOF endpoint in units of 1/PROXY_PARAM_SCALE, dof, node
+		// position), sorted by parameter.  Built from ALL elements: an edge on
+		// the domain boundary can get its DOFs from an interior element (e.g. a
+		// prism wedged between two promoted tets).  Stitched nodes
+		// (glob.size() != 1, no DOF of their own) are not registered.
+		using EdgeDofs = std::vector<std::tuple<long, int, Eigen::Vector3d>>;
+		std::map<std::pair<int, int>, EdgeDofs> build_edge_dofs(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases)
+		{
+			std::map<std::pair<int, int>, EdgeDofs> edge_dofs;
+			Eigen::MatrixXd ref_nodes;
+			for (int el = 0; el < int(bases.size()); ++el)
+			{
+				const basis::ElementBases &b = bases[el];
+				if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+					continue;
+
+				const int nv = element_n_vertices(mesh, el);
+				std::vector<int> vd(nv, -1);
+				bool ok = true;
+				for (int i = 0; i < nv; ++i)
+				{
+					const auto &glob = b.bases[i].global();
+					assert(glob.size() == 1); // vertices always own their DOF
+					if (glob.size() != 1)
+					{
+						ok = false;
+						break;
+					}
+					vd[i] = glob.front().index;
+				}
+				if (!ok)
+					continue;
+
+				const auto edges = element_ref_edges(mesh, el, ref_nodes);
+				for (int j = nv; j < int(b.bases.size()); ++j)
+				{
+					const auto &glob = b.bases[j].global();
+					if (glob.size() != 1)
+						continue;
+					const Eigen::RowVector3d r = ref_nodes.row(j);
+					for (const auto &e : edges)
+					{
+						const Eigen::RowVector3d pa = ref_nodes.row(e.first);
+						const Eigen::RowVector3d d = ref_nodes.row(e.second) - pa;
+						const double t = (r - pa).dot(d) / d.squaredNorm();
+						if (t < 1e-9 || t > 1 - 1e-9 || ((r - pa) - t * d).norm() > 1e-9)
+							continue; // not on this edge
+						long tl = std::lround(t * PROXY_PARAM_SCALE);
+						assert(std::abs(t * PROXY_PARAM_SCALE - tl) < 1e-6);
+						int va = vd[e.first], vb = vd[e.second];
+						if (va > vb)
+						{
+							std::swap(va, vb);
+							tl = PROXY_PARAM_SCALE - tl;
+						}
+						EdgeDofs &ed = edge_dofs[{va, vb}];
+						const int dof = glob.front().index;
+						bool present = false;
+						for (const auto &existing : ed)
+							if (std::get<1>(existing) == dof)
+							{
+								assert(std::get<0>(existing) == tl);
+								present = true;
+								break;
+							}
+						if (!present)
+							ed.emplace_back(tl, dof, glob.front().node.transpose());
+						break;
+					}
+				}
+			}
+			for (auto &kv : edge_dofs)
+				std::sort(kv.second.begin(), kv.second.end(),
+						  [](const EdgeDofs::value_type &x, const EdgeDofs::value_type &y) { return std::get<0>(x) < std::get<0>(y); });
+			return edge_dofs;
+		}
+
+		// Triangulate a 2D point set in convex position (boundary points lie on
+		// the convex hull, possibly collinear; interior points allowed) into
+		// strictly positive-area CCW triangles via an incremental lexicographic
+		// sweep.  Collinear boundary chains are preserved -- no triangle edge
+		// ever spans a boundary point -- which is what keeps neighboring faces
+		// of the proxy conforming.  Coordinates must be exact integers.
+		void triangulate_convex_pointset(const std::vector<std::array<long, 2>> &pts, std::vector<std::array<int, 3>> &tris)
+		{
+			const int n = int(pts.size());
+			tris.clear();
+			std::vector<int> order(n);
+			for (int i = 0; i < n; ++i)
+				order[i] = i;
+			std::sort(order.begin(), order.end(), [&](int a, int b) { return pts[a] < pts[b]; });
+			const auto orient = [&](int a, int b, int c) -> long long {
+				return (long long)(pts[b][0] - pts[a][0]) * (pts[c][1] - pts[a][1])
+					   - (long long)(pts[b][1] - pts[a][1]) * (pts[c][0] - pts[a][0]);
+			};
+
+			// initial (possibly collinear) chain
+			std::vector<int> hull;
+			int k = 0;
+			for (; k < n; ++k)
+			{
+				if (hull.size() >= 2 && orient(hull[0], hull[1], order[k]) != 0)
+					break;
+				hull.push_back(order[k]);
+			}
+			if (k == n)
+				return; // all points collinear: nothing to emit
+
+			// attach the first off-line point: fan over the chain, make hull CCW
+			{
+				const int p = order[k];
+				const bool left = orient(hull[0], hull[1], p) > 0;
+				for (int i = 0; i + 1 < int(hull.size()); ++i)
+				{
+					if (left)
+						tris.push_back({{hull[i], hull[i + 1], p}});
+					else
+						tris.push_back({{hull[i + 1], hull[i], p}});
+				}
+				if (!left)
+					std::reverse(hull.begin(), hull.end());
+				hull.push_back(p);
+				++k;
+			}
+
+			for (; k < n; ++k)
+			{
+				const int p = order[k];
+				const int m = int(hull.size());
+				// visible hull edges: p strictly right of a->b on the CCW cycle
+				std::vector<bool> vis(m);
+				for (int i = 0; i < m; ++i)
+					vis[i] = orient(hull[i], hull[(i + 1) % m], p) < 0;
+				int s = 0;
+				while (s < m && !(vis[s] && !vis[(s + m - 1) % m]))
+					++s;
+				assert(s < m); // p is outside the hull (lexicographic order)
+				int e = s;
+				while (vis[e % m])
+				{
+					// orient(a, b, p) < 0  =>  (a, p, b) is CCW
+					tris.push_back({{hull[e % m], p, hull[(e + 1) % m]}});
+					++e;
+				}
+				// replace the strictly-visible part of the hull with p
+				std::vector<int> new_hull;
+				new_hull.push_back(p);
+				for (int i = e % m; i != s; i = (i + 1) % m)
+					new_hull.push_back(hull[i]);
+				new_hull.push_back(hull[s]);
+				hull.swap(new_hull);
+			}
+		}
+
 	} // namespace
+
+	void OutGeometryData::extract_boundary_mesh_sampled(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &node_positions,
+		Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+		const int sampling_order)
+	{
+		using namespace polyfem::mesh;
+
+		// Sample every boundary face on a uniform lattice of the globally
+		// maximal order M through the element bases: the proxy is conforming
+		// and watertight regardless of order mismatches across interfaces
+		// (every shared edge is split into M chords on both sides), stitched
+		// interface nodes are handled intrinsically by the basis evaluation,
+		// and the displacement map carries each proxy vertex's (possibly
+		// weighted) dependence on the real DOFs.
+		if (!mesh.is_volume() || mesh.has_poly()
+			|| !dynamic_cast<const Mesh3D &>(mesh).is_conforming())
+		{
+			logger().warn("max_order collision-proxy sampling requires a conforming volume mesh without polytopes; falling back to the standard boundary extraction");
+			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+								  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			return;
+		}
+
+		displacement_map_entries.clear();
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+
+		int M = 1;
+		if (sampling_order > 0)
+			M = sampling_order; // explicit lattice order (finer OR coarser than the elements)
+		else
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				const basis::ElementBases &b = bases[lb.element_id()];
+				if (b.bases.empty())
+					continue;
+				int o = b.bases.front().order();
+				if (mesh.is_prism(lb.element_id()))
+					o = std::max(o, prism_q_order(b));
+				M = std::max(M, o);
+			}
+
+		// samples shared between neighboring faces merge combinatorially, by
+		// the mesh primitive they lie on -- {0, vertex_id} for face corners,
+		// {1, vmin, vmax, step-from-vmin} for edge samples (every face uses
+		// the same global lattice order M, so steps coincide exactly), and
+		// {2, face_id, i, r} for face-interior samples (a boundary face
+		// belongs to exactly one element) -- no floating-point tolerance
+		std::map<std::array<int, 4>, int> vertex_id;
+		std::vector<Eigen::Vector3d> vertices;
+		std::vector<std::tuple<int, int, int>> proxy_tris;
+
+		for (const LocalBoundary &lb : total_local_boundary)
+		{
+			const int el = lb.element_id();
+			const basis::ElementBases &b = bases[el];
+			Eigen::MatrixXd ref_nodes;
+			if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+				continue;
+
+			// the rational pyramid bases are 0/0 at the apex (z=1), which is a
+			// corner of every triangular pyramid face; apex samples are instead
+			// evaluated below via the nodal limit (apex basis 1, all others 0)
+			int apex_node = -1;
+			if (mesh.is_pyramid(el))
+				for (int i = 0; i < ref_nodes.rows(); ++i)
+					if (std::abs(ref_nodes(i, 2) - 1.0) < 1e-12)
+					{
+						apex_node = i;
+						break;
+					}
+
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
+				const int nfv = mesh3d.n_face_vertices(eid);
+				assert(nfv == 3 || nfv == 4);
+				assert(nodes.size() >= nfv);
+
+				// face corners come first in the local ordering (cyclic for quads);
+				// the same order as a next_around_face walk from the lf-scan index
+				// (tet/prism/pyramid/hex *_face_local_nodes all use it), so walking
+				// it again recovers each corner's global mesh vertex id
+				std::vector<Eigen::RowVector3d> c(nfv);
+				for (int k = 0; k < nfv; ++k)
+					c[k] = ref_nodes.row(nodes(k));
+
+				Navigation3D::Index nav;
+				for (int lf = 0; lf < mesh3d.n_cell_faces(el); ++lf)
+				{
+					nav = mesh3d.get_index_from_element(el, lf, 0);
+					if (nav.face == eid)
+						break;
+				}
+				assert(nav.face == eid);
+				std::vector<int> gv(nfv);
+				{
+					Navigation3D::Index cur = nav;
+					for (int k = 0; k < nfv; ++k)
+					{
+						gv[k] = cur.vertex;
+						cur = mesh3d.next_around_face(cur);
+					}
+				}
+
+				Eigen::MatrixXd pts;
+				std::vector<std::array<int, 2>> coords;
+				std::vector<std::tuple<int, int, int>> local_tris;
+				if (nfv == 3)
+				{
+					pts.resize((M + 1) * (M + 2) / 2, 3);
+					coords.resize(pts.rows());
+					std::vector<int> off(M + 2, 0);
+					for (int r = 0; r <= M; ++r)
+						off[r + 1] = off[r] + (M + 1 - r);
+					for (int r = 0; r <= M; ++r)
+						for (int i = 0; i <= M - r; ++i)
+						{
+							pts.row(off[r] + i) = c[0] + (double(i) / M) * (c[1] - c[0]) + (double(r) / M) * (c[2] - c[0]);
+							coords[off[r] + i] = {{i, r}};
+						}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M - r; ++i)
+						{
+							local_tris.emplace_back(off[r] + i, off[r] + i + 1, off[r + 1] + i);
+							if (i + r < M - 1)
+								local_tris.emplace_back(off[r] + i + 1, off[r + 1] + i + 1, off[r + 1] + i);
+						}
+					}
+				}
+				else
+				{
+					pts.resize((M + 1) * (M + 1), 3);
+					coords.resize(pts.rows());
+					const auto gid = [M](const int i, const int r) { return r * (M + 1) + i; };
+					for (int r = 0; r <= M; ++r)
+					{
+						for (int i = 0; i <= M; ++i)
+						{
+							const double u = double(i) / M, v = double(r) / M;
+							pts.row(gid(i, r)) = (1 - u) * (1 - v) * c[0] + u * (1 - v) * c[1] + u * v * c[2] + (1 - u) * v * c[3];
+							coords[gid(i, r)] = {{i, r}};
+						}
+					}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M; ++i)
+						{
+							local_tris.emplace_back(gid(i, r), gid(i + 1, r), gid(i, r + 1));
+							local_tris.emplace_back(gid(i + 1, r + 1), gid(i, r + 1), gid(i + 1, r));
+						}
+					}
+				}
+
+				std::vector<polyfem::assembler::AssemblyValues> vals;
+				b.evaluate_bases(pts, vals);
+
+				const auto edge_key = [M](const int va, const int vb, const int step) {
+					return va < vb ? std::array<int, 4>{{1, va, vb, step}}
+								   : std::array<int, 4>{{1, vb, va, M - step}};
+				};
+
+				std::vector<int> ids(pts.rows());
+				for (int s = 0; s < pts.rows(); ++s)
+				{
+					const int i = coords[s][0], r = coords[s][1];
+					std::array<int, 4> key;
+					if (nfv == 3)
+					{
+						if (r == 0 && i == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (r == 0 && i == M)
+							key = {{0, gv[1], 0, 0}};
+						else if (r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[2], r);
+						else if (i + r == M)
+							key = edge_key(gv[1], gv[2], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+					else
+					{
+						if (i == 0 && r == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (i == M && r == 0)
+							key = {{0, gv[1], 0, 0}};
+						else if (i == M && r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (i == 0 && r == M)
+							key = {{0, gv[3], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == M)
+							key = edge_key(gv[1], gv[2], r);
+						else if (r == M)
+							key = edge_key(gv[3], gv[2], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[3], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+
+					const auto it = vertex_id.find(key);
+					if (it != vertex_id.end())
+					{
+						ids[s] = it->second;
+						continue;
+					}
+
+					Eigen::Vector3d pos = Eigen::Vector3d::Zero();
+					std::map<int, double> weights;
+					if (apex_node >= 0 && std::abs(pts(s, 2) - 1.0) < 1e-12)
+					{
+						for (const auto &g : b.bases[apex_node].global())
+						{
+							pos += g.val * g.node.transpose();
+							weights[g.index] += g.val;
+						}
+					}
+					else
+						for (size_t i2 = 0; i2 < vals.size(); ++i2)
+						{
+							const double Ni = vals[i2].val(s);
+							if (std::abs(Ni) < 1e-12)
+								continue;
+							for (const auto &g : b.bases[i2].global())
+							{
+								pos += Ni * g.val * g.node.transpose();
+								weights[g.index] += Ni * g.val;
+							}
+						}
+					assert(pos.allFinite());
+
+					const int vid = int(vertices.size());
+					vertex_id[key] = vid;
+					vertices.push_back(pos);
+					for (const auto &kv : weights)
+						if (std::abs(kv.second) > 1e-10)
+							displacement_map_entries.emplace_back(vid, kv.first, kv.second);
+					ids[s] = vid;
+				}
+
+				for (const auto &t : local_tris)
+					proxy_tris.emplace_back(ids[std::get<0>(t)], ids[std::get<1>(t)], ids[std::get<2>(t)]);
+			}
+		}
+
+		node_positions.resize(vertices.size(), 3);
+		for (int i = 0; i < int(vertices.size()); ++i)
+			node_positions.row(i) = vertices[i];
+
+		boundary_triangles.resize(proxy_tris.size(), 3);
+		for (int i = 0; i < int(proxy_tris.size()); ++i)
+			boundary_triangles.row(i) << std::get<0>(proxy_tris[i]), std::get<2>(proxy_tris[i]), std::get<1>(proxy_tris[i]);
+
+		if (boundary_triangles.rows() > 0)
+			igl::edges(boundary_triangles, boundary_edges);
+
+		if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+			igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
+	}
 
 	void OutGeometryData::extract_boundary_mesh(
 		const mesh::Mesh &mesh,
@@ -154,13 +670,15 @@ namespace polyfem::io
 			// Hybrid (prism/pyramid) meshes: element orders can differ across an
 			// interface (anisotropic prisms promote their tet/pyramid neighbors),
 			// so tessellating each boundary face at its own order produces
-			// T-junctions along shared edges (non-conforming triangle pairs the
-			// contact intersection check rejects), and stitched interface nodes
-			// have no own DOF and used to punch holes in the surface.  Instead,
-			// sample every boundary face on a uniform lattice of the globally
-			// maximal order M through the element bases: the proxy is conforming
-			// and watertight, and the displacement map carries each proxy
-			// vertex's (possibly weighted) dependence on the real DOFs.
+			// T-junctions along shared edges, and stitched interface nodes have
+			// no DOF of their own.  Build the proxy from the DOFs on the
+			// boundary instead: every proxy vertex IS a global DOF (weight-1
+			// displacement map), each face edge is subdivided by the DOFs
+			// located on it -- a property of the edge, not of the element
+			// looking at it, so neighboring faces conform by construction --
+			// and face interiors by the element's own owned face nodes.
+			// Stitched nodes are skipped; the DOFs they depend on subdivide the
+			// edge instead.
 			bool has_prism_or_pyramid = false;
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
@@ -173,47 +691,24 @@ namespace polyfem::io
 
 			if (has_prism_or_pyramid && mesh3d.is_conforming())
 			{
-				const auto prism_q_order = [](const basis::ElementBases &b) -> int {
-					const int p = b.bases.empty() ? 1 : b.bases.front().order();
-					const int n_tri = (p + 1) * (p + 2) / 2;
-					const int q = (n_tri > 0 && b.bases.size() % n_tri == 0) ? int(b.bases.size()) / n_tri - 1 : p;
-					return std::max(1, q);
+				const auto edge_dofs = build_edge_dofs(mesh, bases);
+				constexpr long S = PROXY_PARAM_SCALE;
+
+				const auto emit_dof = [&](const int gindex, const Eigen::Vector3d &pos) {
+					if (gindex >= int(node_positions_vec.size()))
+						node_positions_vec.resize(gindex + 1, Eigen::Vector3d::Zero());
+					node_positions_vec[gindex] = pos;
+					if (!visited_node[gindex])
+						displacement_map_entries.emplace_back(gindex, gindex, 1);
+					visited_node[gindex] = true;
 				};
 
-				int M = 1;
-				for (const LocalBoundary &lb : total_local_boundary)
-				{
-					const basis::ElementBases &b = bases[lb.element_id()];
-					if (b.bases.empty())
-						continue;
-					int o = b.bases.front().order();
-					if (mesh.is_prism(lb.element_id()))
-						o = std::max(o, prism_q_order(b));
-					M = std::max(M, o);
-				}
-
-				std::map<std::array<long, 3>, int> vertex_id;
-				std::vector<Eigen::Vector3d> vertices;
-				std::vector<std::tuple<int, int, int>> proxy_tris;
-
+				Eigen::MatrixXd ref_nodes;
 				for (const LocalBoundary &lb : total_local_boundary)
 				{
 					const int el = lb.element_id();
 					const basis::ElementBases &b = bases[el];
-					if (b.bases.empty())
-						continue;
-
-					Eigen::MatrixXd ref_nodes;
-					const int p_el = b.bases.front().order();
-					if (mesh.is_simplex(el))
-						autogen::p_nodes_3d(p_el, ref_nodes);
-					else if (mesh.is_cube(el))
-						autogen::q_nodes_3d(p_el, ref_nodes);
-					else if (mesh.is_prism(el))
-						autogen::prism_nodes_3d(p_el, prism_q_order(b), ref_nodes);
-					else if (mesh.is_pyramid(el))
-						autogen::pyramid_nodes_3d(p_el, ref_nodes);
-					else
+					if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
 						continue;
 
 					for (int j = 0; j < lb.size(); ++j)
@@ -224,103 +719,96 @@ namespace polyfem::io
 						assert(nfv == 3 || nfv == 4);
 						assert(nodes.size() >= nfv);
 
+						// exact face parameters (units of 1/S) and the DOF of each point
+						std::vector<std::array<long, 2>> pts;
+						std::vector<int> dof;
+
 						// face corners come first in the local ordering (cyclic for quads)
-						std::vector<Eigen::RowVector3d> c(nfv);
-						for (int k = 0; k < nfv; ++k)
-							c[k] = ref_nodes.row(nodes(k));
-
-						Eigen::MatrixXd pts;
-						std::vector<std::tuple<int, int, int>> local_tris;
+						std::array<std::array<long, 2>, 4> cp;
 						if (nfv == 3)
-						{
-							pts.resize((M + 1) * (M + 2) / 2, 3);
-							std::vector<int> off(M + 2, 0);
-							for (int r = 0; r <= M; ++r)
-								off[r + 1] = off[r] + (M + 1 - r);
-							for (int r = 0; r <= M; ++r)
-								for (int i = 0; i <= M - r; ++i)
-									pts.row(off[r] + i) = c[0] + (double(i) / M) * (c[1] - c[0]) + (double(r) / M) * (c[2] - c[0]);
-							for (int r = 0; r < M; ++r)
-							{
-								for (int i = 0; i < M - r; ++i)
-								{
-									local_tris.emplace_back(off[r] + i, off[r] + i + 1, off[r + 1] + i);
-									if (i + r < M - 1)
-										local_tris.emplace_back(off[r] + i + 1, off[r + 1] + i + 1, off[r + 1] + i);
-								}
-							}
-						}
+							cp = {{{{0, 0}}, {{S, 0}}, {{0, S}}, {{0, 0}}}};
 						else
+							cp = {{{{0, 0}}, {{S, 0}}, {{S, S}}, {{0, S}}}};
+						std::array<int, 4> cd{{-1, -1, -1, -1}};
+						bool ok = true;
+						for (int k = 0; k < nfv; ++k)
 						{
-							pts.resize((M + 1) * (M + 1), 3);
-							const auto gid = [M](const int i, const int r) { return r * (M + 1) + i; };
-							for (int r = 0; r <= M; ++r)
+							const auto &glob = b.bases[nodes(k)].global();
+							assert(glob.size() == 1); // face corners always own their DOF
+							if (glob.size() != 1)
 							{
-								for (int i = 0; i <= M; ++i)
-								{
-									const double u = double(i) / M, v = double(r) / M;
-									pts.row(gid(i, r)) = (1 - u) * (1 - v) * c[0] + u * (1 - v) * c[1] + u * v * c[2] + (1 - u) * v * c[3];
-								}
+								ok = false;
+								break;
 							}
-							for (int r = 0; r < M; ++r)
+							cd[k] = glob.front().index;
+							pts.push_back(cp[k]);
+							dof.push_back(cd[k]);
+							emit_dof(cd[k], glob.front().node.transpose());
+						}
+						if (!ok)
+							continue;
+
+						// edge subdivision: the DOFs located on each face edge
+						for (int k = 0; k < nfv; ++k)
+						{
+							const int va = cd[k], vb = cd[(k + 1) % nfv];
+							const auto it = edge_dofs.find({std::min(va, vb), std::max(va, vb)});
+							if (it == edge_dofs.end())
+								continue;
+							for (const auto &ed : it->second)
 							{
-								for (int i = 0; i < M; ++i)
-								{
-									local_tris.emplace_back(gid(i, r), gid(i + 1, r), gid(i, r + 1));
-									local_tris.emplace_back(gid(i + 1, r + 1), gid(i, r + 1), gid(i + 1, r));
-								}
+								const long s = va < vb ? std::get<0>(ed) : S - std::get<0>(ed);
+								const auto &A = cp[k];
+								const auto &B = cp[(k + 1) % nfv];
+								pts.push_back({{(A[0] * (S - s) + B[0] * s) / S, (A[1] * (S - s) + B[1] * s) / S}});
+								dof.push_back(std::get<1>(ed));
+								emit_dof(std::get<1>(ed), std::get<2>(ed));
 							}
 						}
 
-						std::vector<polyfem::assembler::AssemblyValues> vals;
-						b.evaluate_bases(pts, vals);
-
-						std::vector<int> ids(pts.rows());
-						for (int s = 0; s < pts.rows(); ++s)
+						// owned face-interior nodes at the element's own resolution
+						// (reference faces are planar parallelograms -> affine map)
+						const Eigen::RowVector3d c0 = ref_nodes.row(nodes(0));
+						const Eigen::RowVector3d A3 = ref_nodes.row(nodes(1)) - c0;
+						const Eigen::RowVector3d B3 = ref_nodes.row(nodes(nfv - 1)) - c0;
+						const double aa = A3.squaredNorm(), bb = B3.squaredNorm(), ab = A3.dot(B3);
+						const double det = aa * bb - ab * ab;
+						for (long n = nfv; n < nodes.size(); ++n)
 						{
-							Eigen::Vector3d pos = Eigen::Vector3d::Zero();
-							std::map<int, double> weights;
-							for (size_t i2 = 0; i2 < vals.size(); ++i2)
-							{
-								const double Ni = vals[i2].val(s);
-								if (std::abs(Ni) < 1e-12)
-									continue;
-								for (const auto &g : b.bases[i2].global())
-								{
-									pos += Ni * g.val * g.node.transpose();
-									weights[g.index] += Ni * g.val;
-								}
-							}
-							// shared corners/edge samples of neighboring faces
-							// must merge into one vertex -> key on rounded position
-							const std::array<long, 3> key{{std::lround(pos[0] * 1e8), std::lround(pos[1] * 1e8), std::lround(pos[2] * 1e8)}};
-							const auto it = vertex_id.find(key);
-							if (it == vertex_id.end())
-							{
-								const int vid = int(vertices.size());
-								vertex_id[key] = vid;
-								vertices.push_back(pos);
-								for (const auto &kv : weights)
-									if (std::abs(kv.second) > 1e-10)
-										displacement_map_entries.emplace_back(vid, kv.first, kv.second);
-								ids[s] = vid;
-							}
-							else
-								ids[s] = it->second;
+							const auto &glob = b.bases[nodes(n)].global();
+							if (glob.size() != 1)
+								continue; // stitched interface node
+							const Eigen::RowVector3d d3 = ref_nodes.row(nodes(n)) - c0;
+							const double du = d3.dot(A3), dv = d3.dot(B3);
+							const double u = (du * bb - dv * ab) / det;
+							const double v = (dv * aa - du * ab) / det;
+							const long lu = std::lround(u * S), lv = std::lround(v * S);
+							assert(std::abs(u * S - lu) < 1e-6 && std::abs(v * S - lv) < 1e-6);
+							// nodes on a face edge already subdivide the edge above
+							const bool on_edge = nfv == 3
+													 ? (lu == 0 || lv == 0 || lu + lv == S)
+													 : (lu == 0 || lu == S || lv == 0 || lv == S);
+							if (on_edge)
+								continue;
+							pts.push_back({{lu, lv}});
+							dof.push_back(glob.front().index);
+							emit_dof(glob.front().index, glob.front().node.transpose());
 						}
 
+						std::vector<std::array<int, 3>> local_tris;
+						triangulate_convex_pointset(pts, local_tris);
 						for (const auto &t : local_tris)
-							proxy_tris.emplace_back(ids[std::get<0>(t)], ids[std::get<1>(t)], ids[std::get<2>(t)]);
+							tris.emplace_back(dof[t[0]], dof[t[1]], dof[t[2]]);
 					}
 				}
 
-				node_positions.resize(vertices.size(), 3);
-				for (int i = 0; i < int(vertices.size()); ++i)
-					node_positions.row(i) = vertices[i];
+				node_positions.resize(node_positions_vec.size(), 3);
+				for (int i = 0; i < int(node_positions_vec.size()); ++i)
+					node_positions.row(i) = node_positions_vec[i];
 
-				boundary_triangles.resize(proxy_tris.size(), 3);
-				for (int i = 0; i < int(proxy_tris.size()); ++i)
-					boundary_triangles.row(i) << std::get<0>(proxy_tris[i]), std::get<2>(proxy_tris[i]), std::get<1>(proxy_tris[i]);
+				boundary_triangles.resize(tris.size(), 3);
+				for (int i = 0; i < int(tris.size()); ++i)
+					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 
 				if (boundary_triangles.rows() > 0)
 					igl::edges(boundary_triangles, boundary_edges);

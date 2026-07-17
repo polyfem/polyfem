@@ -1238,7 +1238,9 @@
         "pointer": "/contact/collision_mesh",
         "type": "object",
         "optional": [
-            "enabled"
+            "enabled",
+            "tessellation_type",
+            "sampling_order"
         ],
         "doc": "Construct a collision mesh."
     },
@@ -1262,10 +1264,18 @@
         "type": "string",
         "options": [
             "regular",
-            "irregular"
+            "irregular",
+            "max_order"
         ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/sampling_order",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Lattice order for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
     },
     {
         "pointer": "/contact/collision_mesh/enabled",
