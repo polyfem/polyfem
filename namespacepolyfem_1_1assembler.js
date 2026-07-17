@@ -34,6 +34,7 @@ var namespacepolyfem_1_1assembler =
     [ "IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed" ],
     [ "IncompressibleLinearElasticityPressure", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure" ],
     [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity" ],
+    [ "InversionBarrier", "classpolyfem_1_1assembler_1_1_inversion_barrier.html", "classpolyfem_1_1assembler_1_1_inversion_barrier" ],
     [ "IsochoricNeoHookean", "classpolyfem_1_1assembler_1_1_isochoric_neo_hookean.html", "classpolyfem_1_1assembler_1_1_isochoric_neo_hookean" ],
     [ "IsothermalProcess", "classpolyfem_1_1assembler_1_1_isothermal_process.html", "classpolyfem_1_1assembler_1_1_isothermal_process" ],
     [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],

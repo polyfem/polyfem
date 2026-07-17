@@ -19,7 +19,8 @@ var searchData=
   ['interfacedata_16',['InterfaceData',['../structpolyfem_1_1basis_1_1_interface_data.html',1,'polyfem::basis']]],
   ['interpolatedfunction2d_17',['InterpolatedFunction2d',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html',1,'polyfem::utils']]],
   ['interpolation_18',['Interpolation',['../classpolyfem_1_1utils_1_1_interpolation.html',1,'polyfem::utils']]],
-  ['inversionbarrierform_19',['InversionBarrierForm',['../classpolyfem_1_1solver_1_1_inversion_barrier_form.html',1,'polyfem::solver']]],
-  ['isochoricneohookean_20',['IsochoricNeoHookean',['../classpolyfem_1_1assembler_1_1_isochoric_neo_hookean.html',1,'polyfem::assembler']]],
-  ['isothermalprocess_21',['IsothermalProcess',['../classpolyfem_1_1assembler_1_1_isothermal_process.html',1,'polyfem::assembler']]]
+  ['inversionbarrier_19',['InversionBarrier',['../classpolyfem_1_1assembler_1_1_inversion_barrier.html',1,'polyfem::assembler']]],
+  ['inversionbarrierform_20',['InversionBarrierForm',['../classpolyfem_1_1solver_1_1_inversion_barrier_form.html',1,'polyfem::solver']]],
+  ['isochoricneohookean_21',['IsochoricNeoHookean',['../classpolyfem_1_1assembler_1_1_isochoric_neo_hookean.html',1,'polyfem::assembler']]],
+  ['isothermalprocess_22',['IsothermalProcess',['../classpolyfem_1_1assembler_1_1_isothermal_process.html',1,'polyfem::assembler']]]
 ];

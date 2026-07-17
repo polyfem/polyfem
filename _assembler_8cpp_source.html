@@ -1366,7 +1366,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="foldopen" id="foldopen01217" data-start="{" data-end="}">
 <div class="line"><a id="l01217" name="l01217"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa58349068263319efc6327e943806cb3"> 1217</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa58349068263319efc6327e943806cb3">ElasticityAssembler::set_use_robust_jacobian</a>()</div>
 <div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>    {</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span><span class="preprocessor">#ifdef POLYFEM_WITH_BEZIER</span></div>
+<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span><span class="preprocessor">#ifdef POLYFEM_WITH_MISO</span></div>
 <div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aff8ca6a03207d0bb8943e10b8712133e">use_robust_jacobian</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Enable Bezier library to use the robust Jacobian check!&quot;</span>);</div>

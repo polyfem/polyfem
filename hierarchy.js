@@ -50,6 +50,7 @@ var hierarchy =
             ] ]
           ] ],
           [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
+          [ "polyfem::assembler::InversionBarrier", "classpolyfem_1_1assembler_1_1_inversion_barrier.html", null ],
           [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
           [ "polyfem::assembler::MooneyRivlin3ParamSymbolic", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html", null ],
           [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
@@ -221,7 +222,8 @@ var hierarchy =
     ] ],
     [ "fmt::formatter", null, [
       [ "fmt::formatter< Eigen::MatrixXd >", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4.html", null ],
-      [ "fmt::formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", null ]
+      [ "fmt::formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", null ],
+      [ "fmt::formatter< polyfem::utils::Tree >", "structfmt_1_1formatter_3_01polyfem_1_1utils_1_1_tree_01_4.html", null ]
     ] ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
