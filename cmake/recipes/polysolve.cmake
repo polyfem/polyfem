@@ -8,4 +8,8 @@ endif()
 message(STATUS "Third-party: creating target 'polysolve'")
 
 include(CPM)
-CPMAddPackage("gh:MeshFEM/catamari2polysolve#integrate")
+CPMAddPackage(
+    NAME polysolve
+    GIT_REPOSITORY https://github.com/MeshFEM/catamari2polysolve.git
+    GIT_TAG integrate
+)
