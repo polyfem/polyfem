@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/InitialConditionVariableToSimulation.hpp>
 
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/var2sims/ActiveSelectionUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -13,22 +13,22 @@
 namespace polyfem::solver
 {
 
-	InitialConditionVariableToSimulation::InitialConditionVariableToSimulation(StatePtrs states,
+	InitialConditionVariableToSimulation::InitialConditionVariableToSimulation(VarFormPtrs varforms,
 																			   DiffCachePtrs diff_caches,
 																			   CompositeParametrization parametrizations,
 																			   Eigen::VectorXi active_dofs)
-		: dof_num_(states[0]->primary_space().ndof()),
-		  states_(std::move(states)),
+		: dof_num_(varforms[0]->primary_space().ndof()),
+		  varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations)),
 		  active_dofs_(std::move(active_dofs))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (!s->get_problem().is_time_dependent())
+			if (!varform->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct initial condition variable to simulation. Reason: Static problem not supported.");
 			}
@@ -36,7 +36,7 @@ namespace polyfem::solver
 
 		// Validate active selection.
 		std::string reason;
-		if (!is_active_dofs_valid(active_dofs_, states_, reason))
+		if (!is_active_dofs_valid(active_dofs_, varforms_, reason))
 		{
 			log_and_throw_adjoint_error("Fail to construct initial condition variable to simulation. Reason: {}", reason);
 		}
@@ -47,12 +47,12 @@ namespace polyfem::solver
 			active_dofs_ = Eigen::VectorXi::LinSpaced(dof_num_, 0, dof_num_ - 1);
 		}
 
-		// Populate baseline initial-condition override for each state.
-		for (int i = 0; i < states_.size(); ++i)
+		// Populate baseline initial-condition override for each varform.
+		for (int i = 0; i < varforms_.size(); ++i)
 		{
 			Eigen::MatrixXd sol, vel;
-			states_[i]->initial_solution(sol);
-			states_[i]->initial_velocity(vel);
+			varforms_[i]->initial_solution(sol);
+			varforms_[i]->initial_velocity(vel);
 
 			// initial condition might return history of position and velocity.
 			// Since we can't handle that, drop all condition from prev time steps.
@@ -91,11 +91,11 @@ namespace polyfem::solver
 		return ParameterType::InitialCondition;
 	}
 
-	bool InitialConditionVariableToSimulation::affect_state(const varform::VarForm &target) const
+	bool InitialConditionVariableToSimulation::affects_varform(const varform::VarForm &target) const
 	{
-		for (const auto &s : states_)
+		for (const auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 			{
 				return true;
 			}
@@ -147,14 +147,14 @@ namespace polyfem::solver
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (int i = 0; i < states_.size(); ++i)
+		for (int i = 0; i < varforms_.size(); ++i)
 		{
-			auto &state = states_[i];
+			auto &varform = varforms_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
-			AdjointTools::dJ_initial_condition_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*varform, *diff_cache, 1);
+			AdjointTools::dJ_initial_condition_adjoint_term(*varform, adjoint_nu, adjoint_p, cur_term);
 
 			if (term.size() != cur_term.size())
 			{

@@ -138,15 +138,15 @@ namespace polyfem
 		utils::NThread::get().set_num_threads(thread_in);
 	}
 
-	void OptState::create_states(const int max_threads)
+	void OptState::create_varforms(const int max_threads)
 	{
-		states = from_json::build_states(
+		varforms = from_json::build_varforms(
 			root_path(),
 			args["states"],
 			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads,
 			args["output"]["log"]);
 
-		diff_caches.resize(states.size());
+		diff_caches.resize(varforms.size());
 		for (auto &diff_cache : diff_caches)
 		{
 			diff_cache = std::make_shared<DiffCache>();
@@ -159,35 +159,35 @@ namespace polyfem
 
 	void OptState::check_unsupported() const
 	{
-		for (int i = 0; i < states.size(); ++i)
+		for (int i = 0; i < varforms.size(); ++i)
 		{
-			const varform::VarForm &state = *states[i];
-			if (!state.solve_data())
+			const varform::VarForm &varform = *varforms[i];
+			if (!varform.solve_data())
 			{
 				log_and_throw_adjoint_error(
 					"varform::VarForm {} ({}) does not expose solve data required by optimization.",
-					i, state.name());
+					i, varform.name());
 			}
 
 			// No transient linear support.
-			if (state.get_problem().is_time_dependent() && state.is_problem_linear())
+			if (varform.get_problem().is_time_dependent() && varform.is_problem_linear())
 			{
 				log_and_throw_adjoint_error(
 					"varform::VarForm {}: transient linear problem is not supported in optimization.", i);
 			}
 
-			if (state.is_contact_enabled())
+			if (varform.is_contact_enabled())
 			{
 				// No non-convergent contact formulation support.
-				if (!state.get_args()["contact"]["use_gcp_formulation"].get<bool>()
-					&& !state.get_args()["contact"]["use_convergent_formulation"].get<bool>())
+				if (!varform.get_args()["contact"]["use_gcp_formulation"].get<bool>()
+					&& !varform.get_args()["contact"]["use_convergent_formulation"].get<bool>())
 				{
 					log_and_throw_adjoint_error(
 						"varform::VarForm {}: non-convergent contact formulation is not supported in optimization.", i);
 				}
 
 				// No non-const barrier stiffness support.
-				if (state.get_args()["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				if (varform.get_args()["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
 					log_and_throw_adjoint_error(
 						"varform::VarForm {}: only constant barrier stiffness is supported in optimization.", i);
@@ -195,9 +195,9 @@ namespace polyfem
 			}
 
 			// No non-const boundary support.
-			if (state.get_args().contains("boundary_conditions") && state.get_args()["boundary_conditions"].contains("rhs"))
+			if (varform.get_args().contains("boundary_conditions") && varform.get_args()["boundary_conditions"].contains("rhs"))
 			{
-				const json &rhs = state.get_args()["boundary_conditions"]["rhs"];
+				const json &rhs = varform.get_args()["boundary_conditions"]["rhs"];
 				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
 				{
 					log_and_throw_adjoint_error(
@@ -206,7 +206,7 @@ namespace polyfem
 			}
 
 			// No high order geometric basis support.
-			for (const auto &element_bases : state.primary_space().geometry_basis_list())
+			for (const auto &element_bases : varform.primary_space().geometry_basis_list())
 			{
 				for (const auto &basis : element_bases.bases)
 				{
@@ -243,7 +243,7 @@ namespace polyfem
 				}
 			}
 
-			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], states, diff_caches, {});
+			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], varforms, diff_caches, {});
 
 			ndof = variable_to_simulations.data[0]->inverse_dof();
 			variable_sizes = {ndof};
@@ -257,14 +257,14 @@ namespace polyfem
 		ndof = 0;
 		for (const auto &arg : args["parameters"])
 		{
-			int size = solver::AdjointOptUtils::compute_variable_size(arg, states);
+			int size = solver::AdjointOptUtils::compute_variable_size(arg, varforms);
 			ndof += size;
 			variable_sizes.push_back(size);
 		}
 
 		/* variable to simulations */
 		variable_to_simulations = from_json::build_variable_to_simulation_group(
-			args["variable_to_simulation"], states, diff_caches, variable_sizes);
+			args["variable_to_simulation"], varforms, diff_caches, variable_sizes);
 
 		// Verify varaible dof.
 		for (int i = 0; i < variable_to_simulations.data.size(); ++i)
@@ -284,16 +284,16 @@ namespace polyfem
 	{
 		/* forms */
 		std::shared_ptr<solver::AdjointForm> obj = from_json::build_form(
-			args["functionals"], variable_to_simulations, states, diff_caches);
+			args["functionals"], variable_to_simulations, varforms, diff_caches);
 
 		/* stopping conditions */
 		std::vector<std::shared_ptr<solver::AdjointForm>> stopping_conditions;
 		for (const auto &arg : args["stopping_conditions"])
 			stopping_conditions.push_back(
-				from_json::build_form(arg, variable_to_simulations, states, diff_caches));
+				from_json::build_form(arg, variable_to_simulations, varforms, diff_caches));
 
 		nl_problem = std::make_unique<solver::AdjointNLProblem>(
-			obj, stopping_conditions, variable_to_simulations, states, diff_caches, args);
+			obj, stopping_conditions, variable_to_simulations, varforms, diff_caches, args);
 	}
 
 	void OptState::initial_guess(Eigen::VectorXd &x)

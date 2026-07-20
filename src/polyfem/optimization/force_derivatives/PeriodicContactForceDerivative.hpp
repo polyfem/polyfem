@@ -14,7 +14,7 @@ namespace polyfem::solver
 	public:
 		static void force_shape_derivative(
 			const PeriodicContactForm &form,
-			const varform::VarForm &state,
+			const varform::VarForm &varform,
 			const DiffCache &diff_cache,
 			const PeriodicMeshToMesh &periodic_mesh_map,
 			const Eigen::VectorXd &periodic_mesh_representation,

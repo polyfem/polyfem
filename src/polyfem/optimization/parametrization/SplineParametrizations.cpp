@@ -142,19 +142,19 @@ namespace polyfem::solver
 			return grad;
 	}
 
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const varform::VarForm &state, const bool allow_rotations)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const varform::VarForm &varform, const bool allow_rotations)
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), allow_rotations_(allow_rotations)
 	{
 		Eigen::MatrixXd V;
-		state.get_vertices(V);
+		varform.get_vertices(V);
 
-		auto map = state.node_to_primitive();
+		auto map = varform.node_to_primitive();
 
 		int f_size = 0;
-		const auto &mesh = state.get_mesh();
-		const auto &bases = state.primary_space().basis_list();
-		const auto &gbases = state.primary_space().geometry_basis_list();
-		for (const auto &lb : state.boundary_state().total_local_boundary)
+		const auto &mesh = varform.get_mesh();
+		const auto &bases = varform.primary_space().basis_list();
+		const auto &gbases = varform.primary_space().geometry_basis_list();
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)
@@ -371,7 +371,7 @@ namespace polyfem::solver
 
 	void BoundedBiharmonicWeights2Dto3D::compute_faces_for_partial_vertices(const Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
 	{
-		// The following implementation is maybe a bit wasteful, but is independent of state or surface selections
+		// The following implementation is maybe a bit wasteful, but is independent of varform or surface selections
 		std::unordered_map<int, int> full_to_reduced_indices;
 
 		Eigen::MatrixXd BV;

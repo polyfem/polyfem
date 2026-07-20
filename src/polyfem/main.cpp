@@ -292,7 +292,7 @@ int optimization_simulation(const CLI::App &command_line,
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states(opt_state.args["solver"]["max_threads"].get<int>());
+	opt_state.create_varforms(opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
 	opt_state.create_problem();
 

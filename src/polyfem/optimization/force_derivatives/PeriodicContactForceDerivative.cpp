@@ -13,7 +13,7 @@ namespace polyfem::solver
 {
 	void PeriodicContactForceDerivative::force_shape_derivative(
 		const PeriodicContactForm &form,
-		const varform::VarForm &state,
+		const varform::VarForm &varform,
 		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,
@@ -71,10 +71,10 @@ namespace polyfem::solver
 
 		Eigen::VectorXd single_term =
 			diff_cache.basis_nodes_to_gbasis_nodes() * form.proj.topRows(dim * form.n_single_dof_) * unit_term;
-		single_term = utils::flatten(utils::unflatten(single_term, dim)(state.primitive_to_node(), Eigen::all));
+		single_term = utils::flatten(utils::unflatten(single_term, dim)(varform.primitive_to_node(), Eigen::all));
 
 		term.setZero(periodic_mesh_representation.size());
-		for (int i = 0; i < state.primary_space().geometry->n_bases; i++)
+		for (int i = 0; i < varform.primary_space().geometry->n_bases; i++)
 			term.segment(periodic_mesh_map.full_to_periodic(i) * dim, dim).array() += single_term.segment(i * dim, dim).array();
 		term.tail(dim * dim) = Eigen::Map<Eigen::VectorXd>(affine_term.data(), dim * dim, 1);
 

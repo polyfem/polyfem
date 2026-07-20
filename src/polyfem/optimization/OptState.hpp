@@ -21,7 +21,7 @@ namespace polyfem
 		class AdjointNLProblem;
 	} // namespace solver
 
-	/// main class that contains the polyfem adjoint solver and all its state
+	/// Main class containing the PolyFEM adjoint solver and its optimization data.
 	class OptState
 	{
 	public:
@@ -61,8 +61,8 @@ namespace polyfem
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void set_log_level(const spdlog::level::level_enum log_level);
 
-		/// @brief create the opt states
-		void create_states(const int max_threads = -1);
+		/// @brief Create the optimization variational formulations.
+		void create_varforms(const int max_threads = -1);
 
 		/// init variables
 		void init_variables();
@@ -76,11 +76,11 @@ namespace polyfem
 		void solve(Eigen::VectorXd &x);
 
 		//---------------------------------------------------
-		//-----------------state--------------------
+		//-----------------varforms--------------------
 		//---------------------------------------------------
 
-		/// varform::VarForm used in the opt
-		std::vector<std::shared_ptr<varform::VarForm>> states;
+		/// Variational formulations used by the optimization.
+		std::vector<std::shared_ptr<varform::VarForm>> varforms;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables

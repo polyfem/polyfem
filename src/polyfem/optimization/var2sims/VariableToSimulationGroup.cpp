@@ -26,7 +26,7 @@ namespace polyfem::solver
 			{
 				continue;
 			}
-			if (!v2s->affect_state(target))
+			if (!v2s->affects_varform(target))
 			{
 				continue;
 			}
@@ -58,7 +58,7 @@ namespace polyfem::solver
 			{
 				continue;
 			}
-			if (!v2s->affect_state(target))
+			if (!v2s->affects_varform(target))
 			{
 				continue;
 			}

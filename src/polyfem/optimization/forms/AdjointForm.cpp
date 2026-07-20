@@ -46,16 +46,16 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("[{}] Second derivatives not implemented", name());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
 	{
-		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, state, diff_cache);
+		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, varform, diff_cache);
 		// Only for homogenization
-		if (!state.get_problem().is_time_dependent() && state.is_homogenization() && state.solve_data()->nl_problem) // nonlinear static solve only
+		if (!varform.get_problem().is_time_dependent() && varform.is_homogenization() && varform.solve_data()->nl_problem) // nonlinear static solve only
 		{
 			Eigen::MatrixXd reduced;
 			for (int i = 0; i < rhs.cols(); i++)
 			{
-				Eigen::VectorXd reduced_vec = state.solve_data()->nl_problem->full_to_reduced_grad(rhs.col(i));
+				Eigen::VectorXd reduced_vec = varform.solve_data()->nl_problem->full_to_reduced_grad(rhs.col(i));
 				if (i == 0)
 					reduced.setZero(reduced_vec.rows(), rhs.cols());
 				reduced.col(i) = reduced_vec;
@@ -83,9 +83,9 @@ namespace polyfem::solver
 		gradv = Eigen::VectorXd::Zero(x.size());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
 	{
-		return Eigen::MatrixXd::Zero(state.primary_space().ndof(), diff_cache.size());
+		return Eigen::MatrixXd::Zero(varform.primary_space().ndof(), diff_cache.size());
 	}
 
 	void AdjointForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -108,16 +108,16 @@ namespace polyfem::solver
 		compute_partial_gradient_step(0, x, gradv);
 	}
 
-	Eigen::VectorXd StaticForm::compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd StaticForm::compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
 	{
-		return Eigen::MatrixXd::Zero(state.primary_space().ndof(), 1);
+		return Eigen::MatrixXd::Zero(varform.primary_space().ndof(), 1);
 	}
 
-	Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
 	{
 		assert(!depends_on_step_prev());
-		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.primary_space().ndof(), diff_cache.size());
-		term.col(0) = compute_adjoint_rhs_step(0, x, state, diff_cache);
+		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(varform.primary_space().ndof(), diff_cache.size());
+		term.col(0) = compute_adjoint_rhs_step(0, x, varform, diff_cache);
 
 		return term;
 	}
@@ -130,21 +130,21 @@ namespace polyfem::solver
 
 	double MaxStressForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		const double t = state_->get_problem().is_time_dependent() ? time_step * state_->get_args()["time"]["dt"].get<double>() + state_->get_args()["time"]["t0"].get<double>() : 0;
+		const double t = varform_->get_problem().is_time_dependent() ? time_step * varform_->get_args()["time"]["dt"].get<double>() + varform_->get_args()["time"]["t0"].get<double>() : 0;
 		Eigen::VectorXd max_stress;
-		max_stress.setZero(state_->primary_space().basis_list().size());
-		utils::maybe_parallel_for(state_->primary_space().basis_list().size(), [&](int start, int end, int thread_id) {
+		max_stress.setZero(varform_->primary_space().basis_list().size());
+		utils::maybe_parallel_for(varform_->primary_space().basis_list().size(), [&](int start, int end, int thread_id) {
 			Eigen::MatrixXd local_vals;
 			assembler::ElementAssemblyValues vals;
 			for (int e = start; e < end; e++)
 			{
-				if (interested_ids_.size() != 0 && interested_ids_.find(state_->get_mesh().get_body_id(e)) == interested_ids_.end())
+				if (interested_ids_.size() != 0 && interested_ids_.find(varform_->get_mesh().get_body_id(e)) == interested_ids_.end())
 					continue;
 
-				state_->assembly_cache().compute(e, state_->get_mesh().is_volume(), state_->primary_space().basis_list()[e], state_->primary_space().geometry_basis_list()[e], vals);
+				varform_->assembly_cache().compute(e, varform_->get_mesh().is_volume(), varform_->primary_space().basis_list()[e], varform_->primary_space().geometry_basis_list()[e], vals);
 				// std::vector<assembler::Assembler::NamedMatrix> result;
-				// state_->primary_assembler().compute_tensor_value(e, state_->primary_space().basis_list()[e], state_->primary_space().geometry_basis_list()[e], vals.quadrature.points, state_->diff_cached.u(time_step), result);
-				dynamic_cast<const assembler::ElasticityAssembler &>(state_->primary_assembler()).compute_stress_tensor(assembler::OutputData(t, e, state_->primary_space().basis_list()[e], state_->primary_space().geometry_basis_list()[e], vals.quadrature.points, diff_cache_->u(time_step)), ElasticityTensorType::PK1, local_vals);
+				// varform_->primary_assembler().compute_tensor_value(e, varform_->primary_space().basis_list()[e], varform_->primary_space().geometry_basis_list()[e], vals.quadrature.points, varform_->diff_cached.u(time_step), result);
+				dynamic_cast<const assembler::ElasticityAssembler &>(varform_->primary_assembler()).compute_stress_tensor(assembler::OutputData(t, e, varform_->primary_space().basis_list()[e], varform_->primary_space().geometry_basis_list()[e], vals.quadrature.points, diff_cache_->u(time_step)), ElasticityTensorType::PK1, local_vals);
 
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
@@ -153,7 +153,7 @@ namespace polyfem::solver
 
 		return max_stress.maxCoeff();
 	}
-	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
 	{
 		log_and_throw_adjoint_error("[{}] Not differentiable!", name());
 		return Eigen::VectorXd();

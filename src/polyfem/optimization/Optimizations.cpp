@@ -3,7 +3,7 @@
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>
@@ -134,10 +134,10 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(varform::VarForm &state)
+	void AdjointOptUtils::solve_pde(varform::VarForm &varform)
 	{
 		Eigen::MatrixXd solution;
-		state.solve(solution, nullptr, {}, false);
+		varform.solve(solution, nullptr, {}, false);
 	}
 
 	void apply_objective_json_spec(json &args, const json &rules)
@@ -203,7 +203,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::VarForm>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::VarForm>> &varforms)
 	{
 		if (args["number"].is_number())
 		{
@@ -219,26 +219,26 @@ namespace polyfem::solver
 			if (selection.contains("surface_selection"))
 			{
 				auto surface_selection = selection["surface_selection"].get<std::vector<int>>();
-				auto state_id = selection["state"];
+				auto varform_id = selection["state"];
 				std::set<int> node_ids = {};
 				for (const auto &surface : surface_selection)
 				{
 					std::vector<int> ids;
-					compute_surface_node_ids(*states[state_id], surface, ids);
+					compute_surface_node_ids(*varforms[varform_id], surface, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
-				return node_ids.size() * states[state_id]->get_mesh().dimension();
+				return node_ids.size() * varforms[varform_id]->get_mesh().dimension();
 			}
 			else if (selection.contains("volume_selection"))
 			{
 				auto volume_selection = selection["volume_selection"].get<std::vector<int>>();
-				auto state_id = selection["state"];
+				auto varform_id = selection["state"];
 				std::set<int> node_ids = {};
 				for (const auto &volume : volume_selection)
 				{
 					std::vector<int> ids;
-					compute_volume_node_ids(*states[state_id], volume, ids);
+					compute_volume_node_ids(*varforms[varform_id], volume, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
@@ -246,12 +246,12 @@ namespace polyfem::solver
 				if (selection["exclude_boundary_nodes"])
 				{
 					std::vector<int> ids;
-					compute_total_surface_node_ids(*states[state_id], ids);
+					compute_total_surface_node_ids(*varforms[varform_id], ids);
 					for (const auto &i : ids)
 						node_ids.erase(i);
 				}
 
-				return node_ids.size() * states[state_id]->get_mesh().dimension();
+				return node_ids.size() * varforms[varform_id]->get_mesh().dimension();
 			}
 		}
 

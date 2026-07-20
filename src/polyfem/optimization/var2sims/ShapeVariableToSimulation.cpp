@@ -2,7 +2,7 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/var2sims/ParameterType.hpp>
 #include <polyfem/optimization/var2sims/ActiveSelectionUtils.hpp>
 
@@ -14,29 +14,29 @@
 namespace polyfem::solver
 {
 
-	ShapeVariableToSimulation::ShapeVariableToSimulation(StatePtrs states,
+	ShapeVariableToSimulation::ShapeVariableToSimulation(VarFormPtrs varforms,
 														 DiffCachePtrs diff_caches,
 														 CompositeParametrization parametrizations,
 														 Eigen::VectorXi active_dimensions,
 														 Eigen::VectorXi active_geom_nodes)
-		: dim_(states[0]->get_mesh().dimension()),
-		  vertex_num_(states[0]->get_mesh().n_vertices()),
-		  states_(std::move(states)),
+		: dim_(varforms[0]->get_mesh().dimension()),
+		  vertex_num_(varforms[0]->get_mesh().n_vertices()),
+		  varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations)),
 		  active_dimensions_(std::move(active_dimensions)),
 		  active_geom_nodes_(std::move(active_geom_nodes))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
 		// Validates active selections.
 		std::string reason;
-		if (!is_active_dims_valid(active_dimensions_, states_, reason))
+		if (!is_active_dims_valid(active_dimensions_, varforms_, reason))
 		{
 			log_and_throw_adjoint_error("Fail to construct shape variable to simulation. Reason: {}", reason);
 		}
-		if (!is_active_geom_nodes_valid(active_geom_nodes_, states_, reason))
+		if (!is_active_geom_nodes_valid(active_geom_nodes_, varforms_, reason))
 		{
 			log_and_throw_adjoint_error("Fail to construct shape variable to simulation. Reason: {}", reason);
 		}
@@ -62,11 +62,11 @@ namespace polyfem::solver
 		return ParameterType::Shape;
 	}
 
-	bool ShapeVariableToSimulation::affect_state(const varform::VarForm &target) const
+	bool ShapeVariableToSimulation::affects_varform(const varform::VarForm &target) const
 	{
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 			{
 				return true;
 			}
@@ -80,10 +80,10 @@ namespace polyfem::solver
 		assert(y.size() == para_out_dof());
 
 		int active_dim_num = active_dimensions_.size();
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
 			Eigen::MatrixXd vertices;
-			s->get_vertices(vertices);
+			varform->get_vertices(vertices);
 			for (int ni = 0; ni < active_geom_nodes_.size(); ++ni)
 			{
 				int node_id = active_geom_nodes_(ni);
@@ -93,7 +93,7 @@ namespace polyfem::solver
 					vertices(node_id, d) = y(ni * active_dim_num + di);
 				}
 			}
-			s->set_vertex_positions(vertices);
+			varform->set_vertex_positions(vertices);
 		}
 	}
 
@@ -119,21 +119,21 @@ namespace polyfem::solver
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (int i = 0; i < states_.size(); ++i)
+		for (int i = 0; i < varforms_.size(); ++i)
 		{
-			auto &state = states_[i];
+			auto &varform = varforms_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			if (state->get_problem().is_time_dependent())
+			if (varform->get_problem().is_time_dependent())
 			{
-				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
-				AdjointTools::dJ_shape_transient_adjoint_term(*state, *diff_cache, adjoint_nu, adjoint_p, cur_term);
+				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*varform, *diff_cache, 1);
+				AdjointTools::dJ_shape_transient_adjoint_term(*varform, *diff_cache, adjoint_nu, adjoint_p, cur_term);
 			}
-			else if (state->is_homogenization())
+			else if (varform->is_homogenization())
 			{
-				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-				AdjointTools::dJ_shape_homogenization_adjoint_term(*state,
+				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+				AdjointTools::dJ_shape_homogenization_adjoint_term(*varform,
 																   *diff_cache,
 																   diff_cache->u(0),
 																   adjoint_p,
@@ -141,8 +141,8 @@ namespace polyfem::solver
 			}
 			else
 			{
-				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-				AdjointTools::dJ_shape_static_adjoint_term(*state,
+				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+				AdjointTools::dJ_shape_static_adjoint_term(*varform,
 														   *diff_cache,
 														   diff_cache->u(0),
 														   adjoint_p,
@@ -188,7 +188,7 @@ namespace polyfem::solver
 		int active_dim_num = active_dimensions_.size();
 		for (int i = 0; i < active_geom_nodes_.size(); ++i)
 		{
-			Eigen::VectorXd p = states_[0]->get_mesh().point(active_geom_nodes_(i));
+			Eigen::VectorXd p = varforms_[0]->get_mesh().point(active_geom_nodes_(i));
 			for (int di = 0; di < active_dimensions_.size(); ++di)
 			{
 				int d = active_dimensions_(di);

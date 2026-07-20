@@ -15,7 +15,7 @@ namespace polyfem::solver
 	public:
 		BoundarySmoothingForm(
 			const VariableToSimulationGroup &variable_to_simulations,
-			std::shared_ptr<const varform::VarForm> state,
+			std::shared_ptr<const varform::VarForm> varform,
 			const bool scale_invariant,
 			const int power,
 			const std::vector<int> &surface_selections,
@@ -25,7 +25,7 @@ namespace polyfem::solver
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
-		std::shared_ptr<const varform::VarForm> state_;
+		std::shared_ptr<const varform::VarForm> varform_;
 		const bool scale_invariant_;
 		const int power_; // only if scale_invariant_ is true
 		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;

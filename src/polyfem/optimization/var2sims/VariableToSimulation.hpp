@@ -21,20 +21,20 @@ namespace polyfem::solver
 
 		virtual ParameterType parameter_type() const = 0;
 
-		/// @brief Return true if current var2sim maps to target state.
-		virtual bool affect_state(const varform::VarForm &target) const = 0;
+		/// @brief Return true if current var2sim maps to target varform.
+		virtual bool affects_varform(const varform::VarForm &target) const = 0;
 
-		/// @brief Update forward simulation states from optimization variables.
+		/// @brief Update forward simulation varforms from optimization variables.
 		/// @param[in] x Optimization variables.
 		virtual void update(const Eigen::VectorXd &x) = 0;
 
-		/// @brief Update state variables from optimization variables.
+		/// @brief Update varform variables from optimization variables.
 		///
-		/// Compared to update() this method update abstract state variables
-		/// instead of writing directly to state.
+		/// Compared to update() this method update abstract varform variables
+		/// instead of writing directly to varform.
 		///
 		/// @param[in] x Optimization variables.
-		/// @param[out] state_variables Abstract state variables update dst.
+		/// @param[out] state_variables Abstract varform variables update dst.
 		virtual void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const = 0;
 
 		/// @brief Compute adjoint contribution of objective gradient.

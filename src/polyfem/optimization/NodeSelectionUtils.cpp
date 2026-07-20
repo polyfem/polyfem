@@ -41,10 +41,10 @@ namespace polyfem
 	} // namespace
 
 	Eigen::VectorXi select_interior_nodes(
-		const varform::VarForm &state,
+		const varform::VarForm &varform,
 		const std::vector<int> &volume_selection)
 	{
-		const auto *mesh = &state.get_mesh();
+		const auto *mesh = &varform.get_mesh();
 
 		std::set<int> node_ids{};
 		for (int e = 0; e < mesh->n_elements(); ++e)
@@ -71,13 +71,13 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes(
-		const varform::VarForm &state,
+		const varform::VarForm &varform,
 		const std::vector<int> &surface_selection)
 	{
-		const auto *mesh = &state.get_mesh();
+		const auto *mesh = &varform.get_mesh();
 
 		std::set<int> node_ids{};
-		for (const auto &lb : state.boundary_state().total_local_boundary)
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			for (int i = 0; i < lb.size(); ++i)
 			{
@@ -102,10 +102,10 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes_excluding_surfaces(
-		const varform::VarForm &state,
+		const varform::VarForm &varform,
 		const std::vector<int> &exclude_surface_selections)
 	{
-		const auto *mesh = &state.get_mesh();
+		const auto *mesh = &varform.get_mesh();
 
 		if (!mesh->is_simplicial())
 		{
@@ -114,7 +114,7 @@ namespace polyfem
 
 		std::set<int> excluded_node_ids{};
 		std::set<int> all_node_ids{};
-		for (const auto &lb : state.boundary_state().total_local_boundary)
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)

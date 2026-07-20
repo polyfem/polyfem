@@ -20,7 +20,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const;
 
 		/// @brief Compute parametrization jacobian for all var2sim matching
-		/// parameter type and output to target state.
+		/// parameter type and output to target varform.
 		Eigen::VectorXd apply_parametrization_jacobian(ParameterType type,
 													   const varform::VarForm &target,
 													   const Eigen::VectorXd &x,

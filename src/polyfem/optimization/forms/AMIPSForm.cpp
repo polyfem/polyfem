@@ -81,14 +81,14 @@ namespace polyfem::solver
 
 	double MinJacobianForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const bool is_volume = state_->get_mesh().is_volume();
+		const bool is_volume = varform_->get_mesh().is_volume();
 		double min_jacs = std::numeric_limits<double>::max();
-		for (size_t e = 0; e < state_->primary_space().geometry_basis_list().size(); ++e)
+		for (size_t e = 0; e < varform_->primary_space().geometry_basis_list().size(); ++e)
 		{
-			if (state_->get_mesh().is_polytope(e))
+			if (varform_->get_mesh().is_polytope(e))
 				continue;
 
-			const auto &gbasis = state_->primary_space().geometry_basis_list()[e];
+			const auto &gbasis = varform_->primary_space().geometry_basis_list()[e];
 			const int n_local_bases = int(gbasis.bases.size());
 
 			quadrature::Quadrature quad;
@@ -142,45 +142,45 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("{} is not differentiable!", name());
 	}
 
-	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::VarForm> state)
+	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::VarForm> varform)
 		: AdjointForm(variable_to_simulation),
-		  state_(std::move(state))
+		  varform_(std::move(varform))
 	{
 		amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
-		amips_energy_->set_size(state_->get_mesh().dimension());
+		amips_energy_->set_size(varform_->get_mesh().dimension());
 
 		json use_rest = {};
 		use_rest["use_rest_pose"] = true;
-		amips_energy_->add_multimaterial(0, use_rest, state_->get_units(), state_->get_root_path());
+		amips_energy_->add_multimaterial(0, use_rest, varform_->get_units(), varform_->get_root_path());
 
 		Eigen::MatrixXd V;
-		state_->get_vertices(V);
-		state_->get_elements(F);
+		varform_->get_vertices(V);
+		varform_->get_elements(F);
 		X_rest = utils::flatten(V);
-		init_geom_bases_ = state_->primary_space().geometry_basis_list();
+		init_geom_bases_ = varform_->primary_space().geometry_basis_list();
 	}
 
 	double AMIPSForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-		return amips_energy_->assemble_energy(state_->get_mesh().is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(*state_, X - X_rest), Eigen::VectorXd());
+		return amips_energy_->assemble_energy(varform_->get_mesh().is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(*varform_, X - X_rest), Eigen::VectorXd());
 	}
 
 	void AMIPSForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *varform_, x, [this, &x]() {
 			const Eigen::VectorXd X = get_updated_mesh_nodes(x);
 			Eigen::MatrixXd grad;
-			amips_energy_->assemble_gradient(state_->get_mesh().is_volume(), state_->primary_space().geometry->n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(*state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
-			return AdjointTools::map_node_to_primitive_order(*state_, grad);
+			amips_energy_->assemble_gradient(varform_->get_mesh().is_volume(), varform_->primary_space().geometry->n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(*varform_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
+			return AdjointTools::map_node_to_primitive_order(*varform_, grad);
 		});
 	}
 
 	bool AMIPSForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		Eigen::VectorXd X = get_updated_mesh_nodes(x1);
-		Eigen::MatrixXd V1 = utils::unflatten(X, state_->get_mesh().dimension());
+		Eigen::MatrixXd V1 = utils::unflatten(X, varform_->get_mesh().dimension());
 		bool flipped = utils::is_flipped(V1, F);
 
 		if (flipped)

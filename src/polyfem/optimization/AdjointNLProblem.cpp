@@ -2,7 +2,7 @@
 
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/Common.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -30,13 +30,13 @@ namespace polyfem::solver
 	namespace
 	{
 
-		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<varform::VarForm> &curr_state, const Eigen::VectorXd &x)
+		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<varform::VarForm> &current_varform, const Eigen::VectorXd &x)
 		{
 			Eigen::MatrixXd V;
-			curr_state->get_vertices(V);
+			current_varform->get_vertices(V);
 			Eigen::VectorXd X = utils::flatten(V);
 
-			variables_to_simulation.compute_state_variable(ParameterType::Shape, *curr_state, x, X);
+			variables_to_simulation.compute_state_variable(ParameterType::Shape, *current_varform, x, X);
 
 			return X;
 		}
@@ -119,13 +119,13 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
+									   const std::vector<std::shared_ptr<varform::VarForm>> &all_varforms,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
-		  all_states_(all_states),
+		  all_varforms_(all_varforms),
 		  all_diff_caches_(all_diff_caches),
 		  save_freq(args["output"]["save_frequency"]),
 		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
@@ -149,8 +149,8 @@ namespace polyfem::solver
 
 		solve_in_order.clear();
 		{
-			Graph G(all_states.size());
-			for (int k = 0; k < all_states.size(); k++)
+			Graph G(all_varforms.size());
+			for (int k = 0; k < all_varforms.size(); k++)
 			{
 				auto &arg = args["states"][k];
 				if (arg["initial_guess"].get<int>() >= 0)
@@ -160,14 +160,14 @@ namespace polyfem::solver
 			solve_in_order = G.topologicalSort();
 		}
 
-		active_state_mask.assign(all_states_.size(), false);
-		for (int i = 0; i < all_states_.size(); i++)
+		active_varform_mask.assign(all_varforms_.size(), false);
+		for (int i = 0; i < all_varforms_.size(); i++)
 		{
 			for (const auto &v2sim : variables_to_simulation_.data)
 			{
-				if (v2sim->affect_state(*all_states_[i]))
+				if (v2sim->affects_varform(*all_varforms_[i]))
 				{
-					active_state_mask[i] = true;
+					active_varform_mask[i] = true;
 					break;
 				}
 			}
@@ -177,9 +177,9 @@ namespace polyfem::solver
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
+									   const std::vector<std::shared_ptr<varform::VarForm>> &all_varforms,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, all_diff_caches, args)
+									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_varforms, all_diff_caches, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -204,8 +204,8 @@ namespace polyfem::solver
 
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
-				for (int i = 0; i < all_states_.size(); i++)
-					solve_adjoint_cached(*all_states_[i], *all_diff_caches_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i], *all_diff_caches_[i]));
+				for (int i = 0; i < all_varforms_.size(); i++)
+					solve_adjoint_cached(*all_varforms_[i], *all_diff_caches_[i], form_->compute_reduced_adjoint_rhs(x, *all_varforms_[i], *all_diff_caches_[i]));
 			}
 
 			{
@@ -236,15 +236,14 @@ namespace polyfem::solver
 			Eigen::MatrixXd X, V0, V1;
 			Eigen::MatrixXi F;
 
-			int state_count = 0;
-			for (auto state_ : all_states_)
+			for (auto varform : all_varforms_)
 			{
 
 				V1 = utils::unflatten(
-					get_updated_mesh_nodes(variables_to_simulation_, state_, x1),
-					state_->get_mesh().dimension());
-				state_->get_vertices(V0);
-				state_->get_elements(F);
+					get_updated_mesh_nodes(variables_to_simulation_, varform, x1),
+					varform->get_mesh().dimension());
+				varform->get_vertices(V0);
+				varform->get_elements(F);
 
 				Eigen::MatrixXd V_smooth;
 				bool slim_success = polyfem::mesh::apply_slim(V0, F, V1, V_smooth);
@@ -263,7 +262,6 @@ namespace polyfem::solver
 					return false;
 				}
 
-				state_count++;
 			}
 		}
 
@@ -311,31 +309,31 @@ namespace polyfem::solver
 		if (iter_num % save_freq != 0)
 			return;
 		adjoint_logger().info("Saving iteration {}", iter_num);
-		for (int i = 0; i < all_states_.size(); ++i)
+		for (int i = 0; i < all_varforms_.size(); ++i)
 		{
-			auto &state = all_states_[i];
+			auto &varform = all_varforms_[i];
 			auto &diff_cache = all_diff_caches_[i];
 
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
-			std::string vis_mesh_path = state->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
-			std::string mesh_ext = state->get_mesh().is_volume() ? ".msh" : ".obj";
-			std::string rest_mesh_path = state->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}" + mesh_ext, id, iter_num));
+			std::string vis_mesh_path = varform->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
+			std::string mesh_ext = varform->get_mesh().is_volume() ? ".msh" : ".obj";
+			std::string rest_mesh_path = varform->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}" + mesh_ext, id, iter_num));
 			id++;
 
 			if (!save_vtu)
 				continue;
 			adjoint_logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
-			double tend = state->get_args().value("tend", 1.0);
+			double tend = varform->get_args().value("tend", 1.0);
 			double dt = 1;
-			if (!state->get_args()["time"].is_null())
-				dt = state->get_args()["time"]["dt"];
+			if (!varform->get_args()["time"].is_null())
+				dt = varform->get_args()["time"]["dt"];
 
 			Eigen::MatrixXd sol = diff_cache->u(-1);
 
-			state->save_vtu(vis_mesh_path, sol, tend, dt);
+			varform->save_vtu(vis_mesh_path, sol, tend, dt);
 
 			if (!save_rest_mesh)
 				continue;
@@ -344,10 +342,10 @@ namespace polyfem::solver
 			// If shape opt, save rest meshes as well
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
-			state->get_vertices(V);
-			state->get_elements(F);
-			if (state->get_mesh().is_volume())
-				io::MshWriter::write(rest_mesh_path, V, F, state->get_mesh().get_body_ids(), true, false);
+			varform->get_vertices(V);
+			varform->get_elements(F);
+			if (varform->get_mesh().is_volume())
+				io::MshWriter::write(rest_mesh_path, V, F, varform->get_mesh().get_body_ids(), true, false);
 			else
 				io::OBJWriter::write(rest_mesh_path, V, F);
 		}
@@ -367,8 +365,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			for (const auto &state : all_states_)
-				state->prepare();
+			for (const auto &varform : all_varforms_)
+				varform->prepare();
 		}
 
 		// solve PDE
@@ -388,31 +386,31 @@ namespace polyfem::solver
 			v->update(x0);
 
 		std::vector<Eigen::MatrixXd> V_old_list;
-		for (auto state : all_states_)
+		for (auto varform : all_varforms_)
 		{
 			Eigen::MatrixXd V;
-			state->get_vertices(V);
+			varform->get_vertices(V);
 			V_old_list.push_back(V);
 		}
 
 		for (const auto &v : variables_to_simulation_.data)
 			v->update(x1);
 
-		// Apply slim to all states on a frequency
-		int state_num = 0;
-		for (auto state : all_states_)
+		// Apply slim to all varforms on a frequency
+		int varform_index = 0;
+		for (auto varform : all_varforms_)
 		{
 			Eigen::MatrixXd V_new, V_smooth;
 			Eigen::MatrixXi F;
-			state->get_vertices(V_new);
-			state->get_elements(F);
+			varform->get_vertices(V_new);
+			varform->get_elements(F);
 
-			bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num++], F, V_new, V_smooth, 50);
+			bool slim_success = polyfem::mesh::apply_slim(V_old_list[varform_index++], F, V_new, V_smooth, 50);
 
 			if (!slim_success)
 				log_and_throw_adjoint_error("SLIM cannot succeed");
 
-			state->set_vertex_positions(V_smooth);
+			varform->set_vertex_positions(V_smooth);
 		}
 		adjoint_logger().debug("SLIM succeeded!");
 
@@ -425,19 +423,19 @@ namespace polyfem::solver
 		{
 			adjoint_logger().info("Run simulations in parallel...");
 
-			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
+			utils::maybe_parallel_for(all_varforms_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
 				{
-					auto &state = all_states_[i];
+					auto &varform = all_varforms_[i];
 					auto &diff_cache = all_diff_caches_[i];
-					if (active_state_mask[i] || diff_cache->size() == 0)
+					if (active_varform_mask[i] || diff_cache->size() == 0)
 					{
 						const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
-						const varform::ForwardStepCallback post_step = [state, diff_cache](const int step, const Eigen::MatrixXd &solution) {
-							diff_cache->cache_transient(step, *state, solution, nullptr, nullptr);
+						const varform::ForwardStepCallback post_step = [varform, diff_cache](const int step, const Eigen::MatrixXd &solution) {
+							diff_cache->cache_transient(step, *varform, solution, nullptr, nullptr);
 						};
 						Eigen::MatrixXd solution;
-						state->solve(solution, initial_conditions, post_step, true);
+						varform->solve(solution, initial_conditions, post_step, true);
 					}
 				}
 			});
@@ -448,16 +446,16 @@ namespace polyfem::solver
 
 			for (int i : solve_in_order)
 			{
-				auto &state = all_states_[i];
+				auto &varform = all_varforms_[i];
 				auto &diff_cache = all_diff_caches_[i];
-				if (active_state_mask[i] || diff_cache->size() == 0)
+				if (active_varform_mask[i] || diff_cache->size() == 0)
 				{
 					const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
-					const varform::ForwardStepCallback post_step = [state, diff_cache](const int step, const Eigen::MatrixXd &solution) {
-						diff_cache->cache_transient(step, *state, solution, nullptr, nullptr);
+					const varform::ForwardStepCallback post_step = [varform, diff_cache](const int step, const Eigen::MatrixXd &solution) {
+						diff_cache->cache_transient(step, *varform, solution, nullptr, nullptr);
 					};
 					Eigen::MatrixXd solution;
-					state->solve(solution, initial_conditions, post_step, true);
+					varform->solve(solution, initial_conditions, post_step, true);
 				}
 			}
 		}

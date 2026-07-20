@@ -1,4 +1,4 @@
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 
 #include <polyfem/varforms/VarForm.hpp>
 
@@ -65,55 +65,54 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void compute_force_jacobian_prev(const varform::VarForm &state, const DiffCache &diff_cache, const int force_step, const int sol_step, StiffnessMatrix &hessian_prev)
+		void compute_force_jacobian_prev(const varform::VarForm &varform, const DiffCache &diff_cache, const int force_step, const int sol_step, StiffnessMatrix &hessian_prev)
 		{
 			assert(force_step > 0);
 			assert(force_step > sol_step);
 
-			auto &s = state;
 
-			if (s.primary_assembler().is_linear() && !s.is_contact_enabled())
+			if (varform.primary_assembler().is_linear() && !varform.is_contact_enabled())
 			{
-				hessian_prev = StiffnessMatrix(s.primary_space().ndof(), s.primary_space().ndof());
+				hessian_prev = StiffnessMatrix(varform.primary_space().ndof(), varform.primary_space().ndof());
 			}
 			else
 			{
 				const Eigen::MatrixXd u = diff_cache.u(force_step);
 				const Eigen::MatrixXd u_prev = diff_cache.u(sol_step);
 				const double beta = time_integrator::BDF::betas(diff_cache.bdf_order(force_step) - 1);
-				const double dt = s.solve_data()->time_integrator->dt();
+				const double dt = varform.solve_data()->time_integrator->dt();
 
 				hessian_prev = StiffnessMatrix(u.size(), u.size());
-				if (s.get_problem().is_time_dependent())
+				if (varform.get_problem().is_time_dependent())
 				{
-					if (s.solve_data()->friction_form)
+					if (varform.solve_data()->friction_form)
 					{
 						if (sol_step == force_step - 1)
 						{
-							Eigen::MatrixXd surface_solution_prev = s.collision_mesh().vertices(utils::unflatten(u_prev, s.get_mesh().dimension()));
-							Eigen::MatrixXd surface_solution = s.collision_mesh().vertices(utils::unflatten(u, s.get_mesh().dimension()));
+							Eigen::MatrixXd surface_solution_prev = varform.collision_mesh().vertices(utils::unflatten(u_prev, varform.get_mesh().dimension()));
+							Eigen::MatrixXd surface_solution = varform.collision_mesh().vertices(utils::unflatten(u, varform.get_mesh().dimension()));
 
 							// TODO: use the time integration to compute the velocity
 							const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 							const double dv_dut = -1 / dt;
 
-							if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(s.solve_data()->contact_form.get()))
+							if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(varform.solve_data()->contact_form.get()))
 							{
 								ipc::BarrierPotential bp = barrier_contact->barrier_potential();
 								bp.set_stiffness(barrier_contact->barrier_stiffness());
 								hessian_prev =
-									s.solve_data()->friction_form->friction_potential().force_jacobian(
+									varform.solve_data()->friction_form->friction_potential().force_jacobian(
 										diff_cache.friction_collision_set(force_step),
-										s.collision_mesh(),
-										s.collision_mesh().rest_positions(),
+										varform.collision_mesh(),
+										varform.collision_mesh().rest_positions(),
 										/*lagged_displacements=*/surface_solution_prev,
 										surface_velocities,
 										bp,
 										ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
-									+ s.solve_data()->friction_form->friction_potential().force_jacobian(
+									+ varform.solve_data()->friction_form->friction_potential().force_jacobian(
 										  diff_cache.friction_collision_set(force_step),
-										  s.collision_mesh(),
-										  s.collision_mesh().rest_positions(),
+										  varform.collision_mesh(),
+										  varform.collision_mesh().rest_positions(),
 										  /*lagged_displacements=*/surface_solution_prev,
 										  surface_velocities,
 										  bp,
@@ -154,7 +153,7 @@ namespace polyfem
 							// 	logger().trace("force Ut derivative error {} {}", (fgrad - hessian_prev).norm(), hessian_prev.norm());
 							// }
 
-							hessian_prev = s.collision_mesh().to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
+							hessian_prev = varform.collision_mesh().to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
 						}
 						else
 						{
@@ -167,52 +166,52 @@ namespace polyfem
 						}
 					}
 
-					if (s.solve_data()->tangential_adhesion_form)
+					if (varform.solve_data()->tangential_adhesion_form)
 					{
 
 						if (sol_step == force_step - 1)
 						{
 							StiffnessMatrix adhesion_hessian_prev(u.size(), u.size());
 
-							Eigen::MatrixXd surface_solution_prev = s.collision_mesh().vertices(utils::unflatten(u_prev, s.get_mesh().dimension()));
-							Eigen::MatrixXd surface_solution = s.collision_mesh().vertices(utils::unflatten(u, s.get_mesh().dimension()));
+							Eigen::MatrixXd surface_solution_prev = varform.collision_mesh().vertices(utils::unflatten(u_prev, varform.get_mesh().dimension()));
+							Eigen::MatrixXd surface_solution = varform.collision_mesh().vertices(utils::unflatten(u, varform.get_mesh().dimension()));
 
 							// TODO: use the time integration to compute the velocity
 							const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 							const double dv_dut = -1 / dt;
 
 							adhesion_hessian_prev =
-								s.solve_data()->tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
+								varform.solve_data()->tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
 									diff_cache.tangential_adhesion_collision_set(force_step),
-									s.collision_mesh(),
-									s.collision_mesh().rest_positions(),
+									varform.collision_mesh(),
+									varform.collision_mesh().rest_positions(),
 									/*lagged_displacements=*/surface_solution_prev,
 									surface_velocities,
-									s.solve_data()->normal_adhesion_form->normal_adhesion_potential(),
+									varform.solve_data()->normal_adhesion_form->normal_adhesion_potential(),
 									ipc::TangentialPotential::DiffWRT::LAGGED_DISPLACEMENTS)
-								+ s.solve_data()->tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
+								+ varform.solve_data()->tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
 									  diff_cache.tangential_adhesion_collision_set(force_step),
-									  s.collision_mesh(),
-									  s.collision_mesh().rest_positions(),
+									  varform.collision_mesh(),
+									  varform.collision_mesh().rest_positions(),
 									  /*lagged_displacements=*/surface_solution_prev,
 									  surface_velocities,
-									  s.solve_data()->normal_adhesion_form->normal_adhesion_potential(),
+									  varform.solve_data()->normal_adhesion_form->normal_adhesion_potential(),
 									  ipc::TangentialPotential::DiffWRT::VELOCITIES)
 									  * dv_dut;
 
 							adhesion_hessian_prev *= -1;
 
-							adhesion_hessian_prev = s.collision_mesh().to_full_dof(adhesion_hessian_prev); // / (beta * dt) / (beta * dt);
+							adhesion_hessian_prev = varform.collision_mesh().to_full_dof(adhesion_hessian_prev); // / (beta * dt) / (beta * dt);
 
 							hessian_prev += adhesion_hessian_prev;
 						}
 					}
 
-					if (s.damping_assembler() && s.damping_assembler()->is_valid() && sol_step == force_step - 1) // velocity in damping uses BDF1
+					if (varform.damping_assembler() && varform.damping_assembler()->is_valid() && sol_step == force_step - 1) // velocity in damping uses BDF1
 					{
 						utils::SparseMatrixCache mat_cache;
 						StiffnessMatrix damping_hessian_prev(u.size(), u.size());
-						s.damping_prev_assembler()->assemble_hessian(s.get_mesh().is_volume(), s.primary_space().n_bases, false, s.primary_space().basis_list(), s.primary_space().geometry_basis_list(), s.assembly_cache(), force_step * s.get_args()["time"]["dt"].get<double>() + s.get_args()["time"]["t0"].get<double>(), dt, u, u_prev, mat_cache, damping_hessian_prev);
+						varform.damping_prev_assembler()->assemble_hessian(varform.get_mesh().is_volume(), varform.primary_space().n_bases, false, varform.primary_space().basis_list(), varform.primary_space().geometry_basis_list(), varform.assembly_cache(), force_step * varform.get_args()["time"]["dt"].get<double>() + varform.get_args()["time"]["t0"].get<double>(), dt, u, u_prev, mat_cache, damping_hessian_prev);
 
 						hessian_prev += damping_hessian_prev;
 					}
@@ -220,51 +219,50 @@ namespace polyfem
 					if (sol_step == force_step - 1)
 					{
 						StiffnessMatrix body_force_hessian(u.size(), u.size());
-						s.solve_data()->body_form->hessian_wrt_u_prev(u_prev, force_step * dt, body_force_hessian);
+						varform.solve_data()->body_form->hessian_wrt_u_prev(u_prev, force_step * dt, body_force_hessian);
 						hessian_prev += body_force_hessian;
 					}
 				}
 			}
 		}
 
-		Eigen::MatrixXd solve_static_adjoint(const varform::VarForm &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
+		Eigen::MatrixXd solve_static_adjoint(const varform::VarForm &varform, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
 		{
-			auto &s = state;
 
 			Eigen::MatrixXd b = adjoint_rhs;
 
 			Eigen::MatrixXd adjoint;
 #if 0 // Periodic/prefactorized legacy path is intentionally deferred.
-			if (s.static_linear_solver_cache)
+			if (varform.static_linear_solver_cache)
 			{
-				b(s.boundary_state().boundary_nodes, Eigen::all).setZero();
+				b(varform.boundary_state().boundary_nodes, Eigen::all).setZero();
 
 				StiffnessMatrix A = diff_cache.gradu_h(0);
 				const int full_size = A.rows();
-				const int problem_dim = s.get_problem().is_scalar() ? 1 : s.get_mesh().dimension();
-				int precond_num = problem_dim * s.primary_space().n_bases;
+				const int problem_dim = varform.get_problem().is_scalar() ? 1 : varform.get_mesh().dimension();
+				int precond_num = problem_dim * varform.primary_space().n_bases;
 
 				b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
 
 				std::vector<int> boundary_nodes_tmp;
-				if (s.has_periodic_bc())
+				if (varform.has_periodic_bc())
 				{
-					boundary_nodes_tmp = s.periodic_bc->full_to_periodic(s.boundary_state().boundary_nodes);
-					precond_num = s.periodic_bc->full_to_periodic(A);
-					b = s.periodic_bc->full_to_periodic(b, true);
+					boundary_nodes_tmp = varform.periodic_bc->full_to_periodic(varform.boundary_state().boundary_nodes);
+					precond_num = varform.periodic_bc->full_to_periodic(A);
+					b = varform.periodic_bc->full_to_periodic(b, true);
 				}
 				else
-					boundary_nodes_tmp = s.boundary_state().boundary_nodes;
+					boundary_nodes_tmp = varform.boundary_state().boundary_nodes;
 
-				adjoint.setZero(s.primary_space().ndof(), adjoint_rhs.cols());
+				adjoint.setZero(varform.primary_space().ndof(), adjoint_rhs.cols());
 				for (int i = 0; i < b.cols(); i++)
 				{
 					Eigen::VectorXd x, tmp;
 					tmp = b.col(i);
-					dirichlet_solve_prefactorized(*s.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, x);
+					dirichlet_solve_prefactorized(*varform.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, x);
 
-					if (s.has_periodic_bc())
-						adjoint.col(i) = s.periodic_bc->periodic_to_full(full_size, x);
+					if (varform.has_periodic_bc())
+						adjoint.col(i) = varform.periodic_bc->periodic_to_full(full_size, x);
 					else
 						adjoint.col(i) = x;
 				}
@@ -272,7 +270,7 @@ namespace polyfem
 			else
 #endif
 			{
-				auto solver = polysolve::linear::Solver::create(s.get_args()["solver"]["adjoint_linear"], adjoint_logger());
+				auto solver = polysolve::linear::Solver::create(varform.get_args()["solver"]["adjoint_linear"], adjoint_logger());
 
 				StiffnessMatrix A = diff_cache.gradu_h(0); // This should be transposed, but A is symmetric in hyper-elastic and diffusion problems
 
@@ -280,20 +278,20 @@ namespace polyfem
 				For non-periodic problems, the adjoint solution p's size is the full size in NLProblem
 				For periodic problems, the adjoint solution p's size is the reduced size in NLProblem
 				*/
-				if (!s.is_homogenization())
+				if (!varform.is_homogenization())
 				{
-					adjoint.setZero(s.primary_space().ndof(), adjoint_rhs.cols());
+					adjoint.setZero(varform.primary_space().ndof(), adjoint_rhs.cols());
 					for (int i = 0; i < b.cols(); i++)
 					{
 						Eigen::VectorXd tmp = b.col(i);
-						tmp(s.boundary_state().boundary_nodes).setZero();
+						tmp(varform.boundary_state().boundary_nodes).setZero();
 
 						Eigen::VectorXd x;
 						x.setZero(tmp.size());
-						dirichlet_solve(*solver, A, tmp, s.boundary_state().boundary_nodes, x, A.rows(), "", false, false, false);
+						dirichlet_solve(*solver, A, tmp, varform.boundary_state().boundary_nodes, x, A.rows(), "", false, false, false);
 
 						adjoint.col(i) = x;
-						adjoint(s.boundary_state().boundary_nodes, i) = -b(s.boundary_state().boundary_nodes, i);
+						adjoint(varform.boundary_state().boundary_nodes, i) = -b(varform.boundary_state().boundary_nodes, i);
 					}
 				}
 				else
@@ -319,20 +317,19 @@ namespace polyfem
 			return adjoint;
 		}
 
-		Eigen::MatrixXd solve_transient_adjoint(const varform::VarForm &state, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
+		Eigen::MatrixXd solve_transient_adjoint(const varform::VarForm &varform, const DiffCache &diff_cache, const Eigen::MatrixXd &adjoint_rhs)
 		{
-			auto &s = state;
 
-			const double dt = s.get_args()["time"]["dt"];
-			const int time_steps = s.get_args()["time"]["time_steps"];
+			const double dt = varform.get_args()["time"]["dt"];
+			const int time_steps = varform.get_args()["time"]["time_steps"];
 
 			int bdf_order = 1;
-			if (s.get_args()["time"]["integrator"].is_string())
+			if (varform.get_args()["time"]["integrator"].is_string())
 				bdf_order = 1;
-			else if (s.get_args()["time"]["integrator"]["type"] == "ImplicitEuler")
+			else if (varform.get_args()["time"]["integrator"]["type"] == "ImplicitEuler")
 				bdf_order = 1;
-			else if (s.get_args()["time"]["integrator"]["type"] == "BDF")
-				bdf_order = s.get_args()["time"]["integrator"]["steps"].get<int>();
+			else if (varform.get_args()["time"]["integrator"]["type"] == "BDF")
+				bdf_order = varform.get_args()["time"]["integrator"]["steps"].get<int>();
 			else
 				log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
 
@@ -340,18 +337,18 @@ namespace polyfem
 
 			const int cols_per_adjoint = time_steps + 1;
 			Eigen::MatrixXd adjoints;
-			adjoints.setZero(s.primary_space().ndof(), cols_per_adjoint * 2);
+			adjoints.setZero(varform.primary_space().ndof(), cols_per_adjoint * 2);
 
 			// set dirichlet rows of mass to identity
 			StiffnessMatrix reduced_mass;
-			replace_rows_by_identity(reduced_mass, s.mass_matrix(), s.boundary_state().boundary_nodes);
+			replace_rows_by_identity(reduced_mass, varform.mass_matrix(), varform.boundary_state().boundary_nodes);
 
 			Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 			for (int i = time_steps; i >= 0; --i)
 			{
 				{
-					sum_alpha_p.setZero(s.primary_space().ndof(), 1);
-					sum_alpha_nu.setZero(s.primary_space().ndof(), 1);
+					sum_alpha_p.setZero(varform.primary_space().ndof(), 1);
+					sum_alpha_nu.setZero(varform.primary_space().ndof(), 1);
 
 					const int num = std::min(bdf_order, time_steps - i);
 
@@ -370,9 +367,9 @@ namespace polyfem
 						break;
 
 					StiffnessMatrix gradu_h_prev;
-					compute_force_jacobian_prev(state, diff_cache, i + j, i, gradu_h_prev);
+					compute_force_jacobian_prev(varform, diff_cache, i + j, i, gradu_h_prev);
 					Eigen::VectorXd tmp = adjoints.col(i + j) * (time_integrator::BDF::betas(diff_cache.bdf_order(i + j) - 1) * dt);
-					tmp(s.boundary_state().boundary_nodes).setZero();
+					tmp(varform.boundary_state().boundary_nodes).setZero();
 					rhs_ += -gradu_h_prev.transpose() * tmp;
 				}
 
@@ -385,24 +382,24 @@ namespace polyfem
 					{
 						StiffnessMatrix A = diff_cache.gradu_h(i).transpose();
 						Eigen::VectorXd b_ = rhs_;
-						b_(s.boundary_state().boundary_nodes).setZero();
+						b_(varform.boundary_state().boundary_nodes).setZero();
 
-						auto solver = polysolve::linear::Solver::create(s.get_args()["solver"]["adjoint_linear"], adjoint_logger());
+						auto solver = polysolve::linear::Solver::create(varform.get_args()["solver"]["adjoint_linear"], adjoint_logger());
 
 						Eigen::VectorXd x;
-						dirichlet_solve(*solver, A, b_, s.boundary_state().boundary_nodes, x, A.rows(), "", false, false, false);
+						dirichlet_solve(*solver, A, b_, varform.boundary_state().boundary_nodes, x, A.rows(), "", false, false, false);
 						adjoints.col(i + cols_per_adjoint) = x;
 					}
 
 					// TODO: generalize to BDFn
-					Eigen::VectorXd tmp = rhs_(s.boundary_state().boundary_nodes);
+					Eigen::VectorXd tmp = rhs_(varform.boundary_state().boundary_nodes);
 					if (i + 1 < cols_per_adjoint)
-						tmp += (-2. / beta_dt) * adjoints(s.boundary_state().boundary_nodes, i + 1);
+						tmp += (-2. / beta_dt) * adjoints(varform.boundary_state().boundary_nodes, i + 1);
 					if (i + 2 < cols_per_adjoint)
-						tmp += (1. / beta_dt) * adjoints(s.boundary_state().boundary_nodes, i + 2);
+						tmp += (1. / beta_dt) * adjoints(varform.boundary_state().boundary_nodes, i + 2);
 
-					tmp -= (diff_cache.gradu_h(i).transpose() * adjoints.col(i + cols_per_adjoint))(s.boundary_state().boundary_nodes);
-					adjoints(s.boundary_state().boundary_nodes, i + cols_per_adjoint) = tmp;
+					tmp -= (diff_cache.gradu_h(i).transpose() * adjoints.col(i + cols_per_adjoint))(varform.boundary_state().boundary_nodes);
+					adjoints(varform.boundary_state().boundary_nodes, i + cols_per_adjoint) = tmp;
 					adjoints.col(i) = beta_dt * adjoints.col(i + cols_per_adjoint) - sum_alpha_p;
 				}
 				else
@@ -414,34 +411,33 @@ namespace polyfem
 			return adjoints;
 		}
 
-		Eigen::MatrixXd solve_adjoint(const varform::VarForm &state, const DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
+		Eigen::MatrixXd solve_adjoint(const varform::VarForm &varform, const DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
 		{
-			if (state.get_problem().is_time_dependent())
-				return solve_transient_adjoint(state, diff_cache, rhs);
+			if (varform.get_problem().is_time_dependent())
+				return solve_transient_adjoint(varform, diff_cache, rhs);
 			else
-				return solve_static_adjoint(state, diff_cache, rhs);
+				return solve_static_adjoint(varform, diff_cache, rhs);
 		}
 	} // namespace
 
-	void solve_adjoint_cached(const varform::VarForm &state, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
+	void solve_adjoint_cached(const varform::VarForm &varform, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
 	{
-		diff_cache.cache_adjoints(solve_adjoint(state, diff_cache, rhs));
+		diff_cache.cache_adjoints(solve_adjoint(varform, diff_cache, rhs));
 	}
 
 	/// @brief Get adjoint parameter nu or p.
 	///
 	/// See Eq.12 in arXiv:2205.13643.
 	///
-	/// @param[in] state Forward simulation state.
+	/// @param[in] varform Forward simulation varform.
 	/// @param[in] diff_cache Cache for differential specific data.
 	/// @param[in] type Return adjoint parameter p if type == 0. Return nu if type == 1.
-	Eigen::MatrixXd get_adjoint_mat(const varform::VarForm &state, const DiffCache &diff_cache, int type)
+	Eigen::MatrixXd get_adjoint_mat(const varform::VarForm &varform, const DiffCache &diff_cache, int type)
 	{
 		assert(diff_cache.adjoint_mat().size() > 0);
 
-		auto &s = state;
 
-		if (s.get_problem().is_time_dependent())
+		if (varform.get_problem().is_time_dependent())
 		{
 			if (type == 0)
 				return diff_cache.adjoint_mat().leftCols(diff_cache.adjoint_mat().cols() / 2);
@@ -454,21 +450,20 @@ namespace polyfem
 		return diff_cache.adjoint_mat();
 	}
 
-	void compute_surface_node_ids(const varform::VarForm &state, const int surface_selection, std::vector<int> &node_ids)
+	void compute_surface_node_ids(const varform::VarForm &varform, const int surface_selection, std::vector<int> &node_ids)
 	{
-		auto &s = state;
 
 		node_ids = {};
 
-		const auto &gbases = s.primary_space().geometry_basis_list();
-		for (const auto &lb : s.boundary_state().total_local_boundary)
+		const auto &gbases = varform.primary_space().geometry_basis_list();
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const int boundary_id = s.get_mesh().get_boundary_id(primitive_global_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, s.get_mesh());
+				const int boundary_id = varform.get_mesh().get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, varform.get_mesh());
 
 				if (boundary_id == surface_selection)
 				{
@@ -484,20 +479,19 @@ namespace polyfem
 		}
 	}
 
-	void compute_total_surface_node_ids(const varform::VarForm &state, std::vector<int> &node_ids)
+	void compute_total_surface_node_ids(const varform::VarForm &varform, std::vector<int> &node_ids)
 	{
-		auto &s = state;
 
 		node_ids = {};
 
-		const auto &gbases = s.primary_space().geometry_basis_list();
-		for (const auto &lb : s.boundary_state().total_local_boundary)
+		const auto &gbases = varform.primary_space().geometry_basis_list();
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, s.get_mesh());
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, varform.get_mesh());
 
 				for (long n = 0; n < nodes.size(); ++n)
 				{
@@ -510,16 +504,15 @@ namespace polyfem
 		}
 	}
 
-	void compute_volume_node_ids(const varform::VarForm &state, const int volume_selection, std::vector<int> &node_ids)
+	void compute_volume_node_ids(const varform::VarForm &varform, const int volume_selection, std::vector<int> &node_ids)
 	{
-		auto &s = state;
 
 		node_ids = {};
 
-		const auto &gbases = s.primary_space().geometry_basis_list();
+		const auto &gbases = varform.primary_space().geometry_basis_list();
 		for (int e = 0; e < gbases.size(); e++)
 		{
-			const int body_id = s.get_mesh().get_body_id(e);
+			const int body_id = varform.get_mesh().get_body_id(e);
 			if (body_id == volume_selection)
 				for (const auto &gbs : gbases[e].bases)
 					for (const auto &g : gbs.global())

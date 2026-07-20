@@ -28,7 +28,7 @@ namespace polyfem
 
 		/// @brief Cache time-dependent adjoint optimization data.
 		/// @param[in] step Current time step.
-		/// @param[in] state Current forward simulation state. Will mutate it to get latest value.
+		/// @param[in] varform Current forward simulation varform. Will mutate it to get latest value.
 		/// @param[in] sol Current solution.
 		/// @param[in] disp_grad Pointer to displacement gradient matrix. Assumes zero if nullptr.
 		/// @param[in] pressure Pointer to pressure matrix. PASS nullptr ONLY.
@@ -36,7 +36,7 @@ namespace polyfem
 		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
 		void cache_transient(
 			int step,
-			varform::VarForm &state,
+			varform::VarForm &varform,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd *disp_grad,
 			const Eigen::MatrixXd *pressure);
