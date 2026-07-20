@@ -54,7 +54,7 @@ namespace polyfem::varform
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(Eigen::MatrixXd &sol, const InitialConditionOverride *, const ForwardStepCallback &, bool) override;
 		void build_rhs_assembler() override;
 
 		void read_material_space_ids(const json &args);
@@ -64,7 +64,7 @@ namespace polyfem::varform
 		void build_displacement_boundary(mesh::Mesh &mesh);
 		void build_temperature_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
 		void build_temperature_boundary(mesh::Mesh &mesh);
-		void build_forms(Eigen::MatrixXd &solution, const double t);
+		void build_forms(Eigen::MatrixXd &solution, const double t, bool is_differentiable);
 		void update_transient_form_weights();
 		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution);
 

@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -18,8 +18,8 @@ namespace polyfem::solver
 		StatePtrs states,
 		DiffCachePtrs diff_caches,
 		CompositeParametrization parametrizations)
-		: dim_(states[0]->mesh->dimension()),
-		  vertex_num_(states[0]->mesh->n_vertices()),
+		: dim_(states[0]->get_mesh().dimension()),
+		  vertex_num_(states[0]->get_mesh().n_vertices()),
 		  states_(std::move(states)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations))
@@ -29,31 +29,25 @@ namespace polyfem::solver
 
 		for (const auto &s : states_)
 		{
-			if (s->mesh->dimension() != dim_)
+			if (s->get_mesh().dimension() != dim_)
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh dimension mismatch between states.");
 			}
-			if (s->mesh->n_vertices() != vertex_num_)
+			if (s->get_mesh().n_vertices() != vertex_num_)
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh vertex num mismatch between states.");
 			}
-			if (s->problem->is_time_dependent())
+			if (s->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: transient simulations are not supported.");
-			}
-			if (!s->has_periodic_bc() || s->periodic_bc == nullptr)
-			{
-				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: periodic boundary conditions are not enabled.");
-			}
-			if (!s->periodic_bc->all_direction_periodic())
-			{
-				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: partial periodicity is not supported.");
 			}
 			if (!s->is_homogenization())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: only homogenization problems are supported.");
 			}
 		}
+
+		log_and_throw_adjoint_error("Periodic shape optimization is not supported by the VarForm simulation path yet.");
 
 		Eigen::MatrixXd V;
 		states_[0]->get_vertices(V);
@@ -70,7 +64,7 @@ namespace polyfem::solver
 		return ParameterType::PeriodicShape;
 	}
 
-	bool PeriodicShapeVariableToSimulation::affect_state(const legacy::State &target) const
+	bool PeriodicShapeVariableToSimulation::affect_state(const varform::VarForm &target) const
 	{
 		for (auto &s : states_)
 		{
@@ -88,10 +82,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd V = utils::unflatten(periodic_mesh_map_->eval(y), dim_);
 
 		for (auto &s : states_)
-		{
-			for (int i = 0; i < vertex_num_; ++i)
-				s->mesh->set_point(i, V.row(i));
-		}
+			s->set_vertex_positions(V);
 	}
 
 	void PeriodicShapeVariableToSimulation::update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const

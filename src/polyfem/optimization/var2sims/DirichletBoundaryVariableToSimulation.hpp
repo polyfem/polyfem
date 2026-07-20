@@ -29,7 +29,7 @@ namespace polyfem::solver
 	class DirichletBoundaryVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using StatePtrs = std::vector<std::shared_ptr<legacy::State>>;
+		using StatePtrs = std::vector<std::shared_ptr<varform::VarForm>>;
 		using DiffCachePtrs = std::vector<std::shared_ptr<DiffCache>>;
 
 		/// @brief Construct DirichletBoundaryVariableToSimulation.
@@ -48,7 +48,7 @@ namespace polyfem::solver
 
 		std::string name() const override;
 		ParameterType parameter_type() const override;
-		bool affect_state(const legacy::State &target) const override;
+		bool affect_state(const varform::VarForm &target) const override;
 		void update(const Eigen::VectorXd &x) override;
 		void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const override;
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -57,7 +57,7 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const override;
 
 	private:
-		/// boundary order in this var2sim -> component (dim) -> offset in state.boundary_nodes
+		/// boundary order in this var2sim -> component (dim) -> offset in state.boundary_state().boundary_nodes
 		using BoundaryNodeMap = std::vector<std::vector<std::vector<int>>>;
 
 		int dim_;

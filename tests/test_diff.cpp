@@ -1,5 +1,3 @@
-#include <polyfem/legacy/State.hpp>
-
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/optimization/Optimizations.hpp>
@@ -64,10 +62,10 @@ namespace
 		return true;
 	}
 
-	void sample_field(const legacy::State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	void sample_field(const varform::VarForm &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
 	{
 		Eigen::MatrixXd tmp;
-		tmp.setZero(1, state.mesh->dimension());
+		tmp.setZero(1, state.get_mesh().dimension());
 		tmp = field(tmp);
 		const int actual_dim = tmp.cols();
 
@@ -81,10 +79,10 @@ namespace
 		else if (order == 0)
 		{
 			Eigen::MatrixXd centers;
-			if (state.mesh->is_volume())
-				state.mesh->cell_barycenters(centers);
+			if (state.get_mesh().is_volume())
+				state.get_mesh().cell_barycenters(centers);
 			else
-				state.mesh->face_barycenters(centers);
+				state.get_mesh().face_barycenters(centers);
 
 			discrete_field = utils::flatten(field(centers));
 		}
@@ -429,7 +427,7 @@ TEST_CASE("node-trajectory", "[opt_gradient]")
 	constexpr int REPEAT = 3;
 	std::mt19937_64 rng(SEED);
 	Eigen::MatrixXd targets =
-		uniform_random_matrix(states[0]->n_bases, states[0]->mesh->dimension(), rng, 0.0, 10.0);
+		uniform_random_matrix(states[0]->primary_space().n_bases, states[0]->get_mesh().dimension(), rng, 0.0, 10.0);
 
 	// All active.
 	std::vector<int> actives(targets.rows());
@@ -532,9 +530,9 @@ TEST_CASE("barycenter", "[opt_gradient]")
 	Eigen::VectorXd x;
 	ctx.opt.initial_guess(x);
 
-	int dof_num = ctx.opt.states[0]->ndof();
+	int dof_num = ctx.opt.states[0]->primary_space().ndof();
 	Eigen::MatrixXd velocity = Eigen::MatrixXd::Zero(ctx.opt.ndof, 1);
-	for (int i = 0; i < ctx.opt.states[0]->n_bases; i++)
+	for (int i = 0; i < ctx.opt.states[0]->primary_space().n_bases; i++)
 	{
 		velocity(dof_num + i * 2 + 0) = -2.0f;
 		velocity(dof_num + i * 2 + 1) = -1.0f;
@@ -556,9 +554,9 @@ TEST_CASE("shape-contact-smooth", "[opt_gradient]")
 	// Because state configs are shared, tailor json args.
 	for (auto &state : ctx.opt.states)
 	{
-		state->args["contact"]["use_gcp_formulation"] = true;
-		state->args["contact"]["use_convergent_formulation"] = false;
-		state->args["contact"]["alpha_t"] = 0.95;
+		state->get_args()["contact"]["use_gcp_formulation"] = true;
+		state->get_args()["contact"]["use_convergent_formulation"] = false;
+		state->get_args()["contact"]["alpha_t"] = 0.95;
 	}
 
 	Eigen::MatrixXd V;
@@ -582,10 +580,10 @@ TEST_CASE("initial-contact-smooth", "[opt_gradient]")
 	// Because state configs are shared, tailor json args.
 	for (auto &state : ctx.opt.states)
 	{
-		state->args["contact"]["use_gcp_formulation"] = true;
-		state->args["contact"]["use_convergent_formulation"] = false;
-		state->args["contact"]["alpha_t"] = 0.95;
-		state->args["contact"]["friction_coefficient"] = 0;
+		state->get_args()["contact"]["use_gcp_formulation"] = true;
+		state->get_args()["contact"]["use_convergent_formulation"] = false;
+		state->get_args()["contact"]["alpha_t"] = 0.95;
+		state->get_args()["contact"]["friction_coefficient"] = 0;
 	}
 
 	Eigen::VectorXd x;
@@ -609,10 +607,10 @@ TEST_CASE("shape-transient-smooth", EXPENSIVE_TEST_LABEL)
 	// Because states are shared, tailor json args.
 	for (auto &state : ctx.opt.states)
 	{
-		state->args["contact"]["use_gcp_formulation"] = true;
-		state->args["contact"]["alpha_t"] = 0.95;
-		state->args["contact"]["friction_coefficient"] = 0;
-		state->args["solver"]["nonlinear"]["grad_norm_tol"] = 1e-8;
+		state->get_args()["contact"]["use_gcp_formulation"] = true;
+		state->get_args()["contact"]["alpha_t"] = 0.95;
+		state->get_args()["contact"]["friction_coefficient"] = 0;
+		state->get_args()["solver"]["nonlinear"]["grad_norm_tol"] = 1e-8;
 	}
 
 	Eigen::MatrixXd V;
@@ -684,7 +682,7 @@ TEST_CASE("homogenize-stress-periodic", EXPENSIVE_TEST_LABEL)
 		Eigen::MatrixXd velocity = uniform_random_matrix(x.size(), 1, rng, 0.0, 1.0);
 		for (int i = 0; i < V.rows(); i++)
 		{
-			auto vert = state.mesh->point(i);
+			auto vert = state.get_mesh().point(i);
 			if (vert(0) < min(0) + BOUNDARY_EPS || vert(0) > max(0) - BOUNDARY_EPS || vert(1) < min(1) + BOUNDARY_EPS || vert(1) > max(1) - BOUNDARY_EPS)
 			{
 				for (int d = 0; d < 2; d++)
@@ -719,7 +717,7 @@ TEST_CASE("homogenize-stress", EXPENSIVE_TEST_LABEL)
 		Eigen::MatrixXd velocity = uniform_random_matrix(x.size(), 1, rng, 0.0, 1.0);
 		for (int i = 0; i < V.rows(); i++)
 		{
-			auto vert = state.mesh->point(i);
+			auto vert = state.get_mesh().point(i);
 			if (vert(0) < min(0) + BOUNDARY_EPS || vert(0) > max(0) - BOUNDARY_EPS || vert(1) < min(1) + BOUNDARY_EPS || vert(1) > max(1) - BOUNDARY_EPS)
 			{
 				for (int d = 0; d < 2; d++)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/utils/Types.hpp>
 
@@ -12,6 +12,7 @@
 #include <Eigen/Core>
 
 #include <cassert>
+#include <optional>
 #include <vector>
 
 namespace polyfem
@@ -21,7 +22,7 @@ namespace polyfem
 	{
 	public:
 		/// Initial-condition override storage for initial condition optimization.
-		legacy::InitialConditionOverride initial_condition_override;
+		std::optional<varform::InitialConditionOverride> initial_condition_override;
 
 		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat);
 
@@ -35,7 +36,7 @@ namespace polyfem
 		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
 		void cache_transient(
 			int step,
-			legacy::State &state,
+			varform::VarForm &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd *disp_grad,
 			const Eigen::MatrixXd *pressure);

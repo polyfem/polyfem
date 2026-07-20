@@ -103,7 +103,7 @@ namespace polyfem::varform
 		std::string name() const override { return "Stokes"; }
 
 	private:
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(Eigen::MatrixXd &sol, const InitialConditionOverride *, const ForwardStepCallback &, bool) override;
 		void solve_static_linear(Eigen::MatrixXd &sol);
 		void solve_transient_linear(Eigen::MatrixXd &sol);
 	};
@@ -114,7 +114,7 @@ namespace polyfem::varform
 		std::string name() const override { return "NavierStokes"; }
 
 	private:
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(Eigen::MatrixXd &sol, const InitialConditionOverride *, const ForwardStepCallback &, bool) override;
 		void build_forms(Eigen::MatrixXd &sol, double t);
 		void solve_nonlinear_step(int step, Eigen::MatrixXd &sol);
 		void update_transient_form_weights();

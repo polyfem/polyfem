@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletNodesVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
@@ -24,8 +24,8 @@ namespace polyfem::solver
 		DiffCachePtrs diff_caches,
 		CompositeParametrization parametrizations,
 		Eigen::VectorXi active_geom_nodes)
-		: dim_(states[0]->mesh->dimension()),
-		  vertex_num_(states[0]->mesh->n_vertices()),
+		: dim_(states[0]->get_mesh().dimension()),
+		  vertex_num_(states[0]->get_mesh().n_vertices()),
 		  states_(std::move(states)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations)),
@@ -37,7 +37,7 @@ namespace polyfem::solver
 		// Quasistatic only.
 		for (auto &s : states_)
 		{
-			if (s->problem->is_time_dependent())
+			if (s->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct dirichlet nodes variable to simulation. Reason: only quasistatic simulations supported.");
 			}
@@ -50,9 +50,9 @@ namespace polyfem::solver
 			std::vector<int> tmp;
 			for (int v_in = 0; v_in < vertex_num_; ++v_in)
 			{
-				int v = s.in_node_to_node(v_in);
-				int tag = s.mesh->get_node_id(v);
-				if (s.problem->is_nodal_dirichlet_boundary(v, tag))
+				int v = s.primary_space().space_in_node_to_node(v_in);
+				int tag = s.get_mesh().get_node_id(v);
+				if (s.get_problem().is_nodal_dirichlet_boundary(v, tag))
 				{
 					tmp.push_back(v_in);
 				}
@@ -79,7 +79,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletNodesVariableToSimulation::affect_state(const legacy::State &target) const
+	bool DirichletNodesVariableToSimulation::affect_state(const varform::VarForm &target) const
 	{
 		for (auto &s : states_)
 		{
@@ -99,15 +99,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd nodal_dirichlet = utils::unflatten(y, dim_);
 
 		for (auto &s : states_)
-		{
-			auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(s->problem);
-			if (!tensor_problem)
-			{
-				log_and_throw_adjoint_error("[{}] Only tensor problems are supported.", name());
-			}
-
-			tensor_problem->update_dirichlet_nodes(s->in_node_to_node, active_geom_nodes_, nodal_dirichlet);
-		}
+			s->set_dirichlet_nodes(active_geom_nodes_, nodal_dirichlet);
 	}
 
 	void DirichletNodesVariableToSimulation::update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const

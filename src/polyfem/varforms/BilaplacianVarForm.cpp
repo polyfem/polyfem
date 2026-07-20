@@ -496,8 +496,7 @@ namespace polyfem::varform
 		{
 			Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
 			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_, auxiliary_space_id_);
-			const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-			const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+			const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 			tmp_rhs_assembler->set_bc(
 				std::vector<mesh::LocalBoundary>(), std::vector<int>(), boundary_samples, boundary_.local_neumann_boundary, tmp);
 			rhs_.bottomRows(pressure_space_.n_bases) = tmp;
@@ -635,8 +634,7 @@ namespace polyfem::varform
 	{
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
 			(primary_assembler_->name() != "Bilaplacian") ? boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs_);
@@ -668,8 +666,7 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness, expanded_mass;
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass_, expanded_mass);
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -707,8 +704,16 @@ namespace polyfem::varform
 		}
 	}
 
-	void BilaplacianVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void BilaplacianVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
+		assert(!initial_condition_override && "Bilaplacian does not support initial-condition overrides");
+		assert(!post_step && "Bilaplacian does not support post-step callbacks");
+		assert(!is_differentiable && "Bilaplacian does not support differentiated solves");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

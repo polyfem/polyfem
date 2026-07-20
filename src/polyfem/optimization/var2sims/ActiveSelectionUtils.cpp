@@ -1,6 +1,6 @@
 #include <polyfem/optimization/var2sims/ActiveSelectionUtils.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <Eigen/Core>
 
@@ -18,16 +18,16 @@ namespace polyfem::solver
 {
 
 	bool is_active_geom_nodes_valid(const Eigen::VectorXi &active_geom_nodes,
-									const std::vector<std::shared_ptr<legacy::State>> &states,
+									const std::vector<std::shared_ptr<varform::VarForm>> &states,
 									std::string &reason)
 	{
 		assert(!states.empty());
 
 		// Check state vertex num consistency.
-		int num = states[0]->mesh->n_vertices();
+		int num = states[0]->get_mesh().n_vertices();
 		for (auto &s : states)
 		{
-			if (s->mesh->n_vertices() != num)
+			if (s->get_mesh().n_vertices() != num)
 			{
 				reason = "Mesh vertex num mismatch between states";
 				return false;
@@ -60,16 +60,16 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dims_valid(const Eigen::VectorXi &active_dimensions,
-							  const std::vector<std::shared_ptr<legacy::State>> &states,
+							  const std::vector<std::shared_ptr<varform::VarForm>> &states,
 							  std::string &reason)
 	{
 		assert(!states.empty());
 
 		// Check state dim consistency.
-		int dim = states[0]->mesh->dimension();
+		int dim = states[0]->get_mesh().dimension();
 		for (auto &s : states)
 		{
-			if (s->mesh->dimension() != dim)
+			if (s->get_mesh().dimension() != dim)
 			{
 				reason = "Mesh dimension mismatch between states";
 				return false;
@@ -102,18 +102,18 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dofs_valid(const Eigen::VectorXi &active_dofs,
-							  const std::vector<std::shared_ptr<legacy::State>> &states,
+							  const std::vector<std::shared_ptr<varform::VarForm>> &states,
 							  std::string &reason)
 	{
 		assert(!states.empty());
 
 		// Check state ndof consistency.
-		int ndof = states[0]->ndof();
+		int ndof = states[0]->primary_space().ndof();
 		for (auto &s : states)
 		{
-			if (s->ndof() != ndof)
+			if (s->primary_space().ndof() != ndof)
 			{
-				reason = "legacy::State ndof mismatch between states";
+				reason = "varform::VarForm ndof mismatch between states";
 				return false;
 			}
 		}
@@ -144,16 +144,16 @@ namespace polyfem::solver
 	}
 
 	bool is_active_time_slices_valid(const Eigen::VectorXi &active_time_slices,
-									 const std::vector<std::shared_ptr<legacy::State>> &states,
+									 const std::vector<std::shared_ptr<varform::VarForm>> &states,
 									 std::string &reason)
 	{
 		assert(!states.empty());
 
 		// Check state time_steps consistency.
-		int time_steps = states[0]->args["time"]["time_steps"];
+		int time_steps = states[0]->get_args()["time"]["time_steps"];
 		for (auto &s : states)
 		{
-			if (int(s->args["time"]["time_steps"]) != time_steps)
+			if (int(s->get_args()["time"]["time_steps"]) != time_steps)
 			{
 				reason = "time_steps mismatch between states";
 				return false;
@@ -186,7 +186,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dirichlet_boundary_ids_valid(const Eigen::VectorXi &active_boundary_ids,
-												const std::vector<std::shared_ptr<legacy::State>> &states,
+												const std::vector<std::shared_ptr<varform::VarForm>> &states,
 												std::string &reason)
 	{
 		assert(!states.empty());
@@ -205,7 +205,7 @@ namespace polyfem::solver
 		}
 
 		// Validate ids exist and dimensions are all active.
-		int dim = states[0]->mesh->dimension();
+		int dim = states[0]->get_mesh().dimension();
 		for (auto &s : states)
 		{
 			// boundary_dims is a map where
@@ -223,7 +223,7 @@ namespace polyfem::solver
 					return false;
 				}
 
-				if (s->mesh->dimension() != dim)
+				if (s->get_mesh().dimension() != dim)
 				{
 					reason = "Inconsistent boundary node dimension";
 					return false;
@@ -245,7 +245,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dirichlet_node_valid(const Eigen::VectorXi &active_dirichlet_nodes,
-										const std::vector<std::shared_ptr<legacy::State>> &states,
+										const std::vector<std::shared_ptr<varform::VarForm>> &states,
 										std::string &reason)
 	{
 		assert(!states.empty());
@@ -256,24 +256,24 @@ namespace polyfem::solver
 			return false;
 		}
 
-		int vertex_num = states[0]->mesh->n_vertices();
-		int dim = states[0]->mesh->dimension();
+		int vertex_num = states[0]->get_mesh().n_vertices();
+		int dim = states[0]->get_mesh().dimension();
 
 		for (auto &s : states)
 		{
-			if (s->mesh->n_vertices() != vertex_num)
+			if (s->get_mesh().n_vertices() != vertex_num)
 			{
 				reason = "Mesh vertex num mismatch between states";
 				return false;
 			}
 
-			if (s->mesh->dimension() != dim)
+			if (s->get_mesh().dimension() != dim)
 			{
 				reason = "Mesh dimension mismatch between states";
 				return false;
 			}
 
-			if (!s->problem->has_nodal_dirichlet())
+			if (!s->get_problem().has_nodal_dirichlet())
 			{
 				reason = "Nodal Dirichlet matrix is missing (cannot update nodal Dirichlet values)";
 				return false;
@@ -282,15 +282,15 @@ namespace polyfem::solver
 			for (int i = 0; i < active_dirichlet_nodes.size(); ++i)
 			{
 				int v_in = active_dirichlet_nodes(i);
-				int v = s->in_node_to_node(v_in);
+				int v = s->primary_space().space_in_node_to_node(v_in);
 				if (v < 0 || v >= vertex_num)
 				{
 					reason = fmt::format("Invalid in_node_to_node mapping: input vertex {} -> {}", v_in, v);
 					return false;
 				}
 
-				int tag = s->mesh->get_node_id(v);
-				if (!s->problem->is_nodal_dirichlet_boundary(v, tag))
+				int tag = s->get_mesh().get_node_id(v);
+				if (!s->get_problem().is_nodal_dirichlet_boundary(v, tag))
 				{
 					reason = fmt::format("Input vertex {} is not a nodal Dirichlet node", v_in);
 					return false;
@@ -298,7 +298,7 @@ namespace polyfem::solver
 
 				for (int d = 0; d < dim; ++d)
 				{
-					if (!s->problem->is_nodal_dimension_dirichlet(v, tag, d))
+					if (!s->get_problem().is_nodal_dimension_dirichlet(v, tag, d))
 					{
 						reason = fmt::format("Nodal Dirichlet at input vertex {} has inactive dimensions (not supported)", v_in);
 						return false;
@@ -311,7 +311,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_pressure_boundary_ids_valid(const Eigen::VectorXi &active_boundary_ids,
-											   const std::vector<std::shared_ptr<legacy::State>> &states,
+											   const std::vector<std::shared_ptr<varform::VarForm>> &states,
 											   std::string &reason)
 	{
 		assert(!states.empty());
@@ -333,7 +333,7 @@ namespace polyfem::solver
 		{
 			for (auto id : active_boundary_ids)
 			{
-				if (!s->problem->is_boundary_pressure(id))
+				if (!s->get_problem().is_boundary_pressure(id))
 				{
 					reason = fmt::format("Invalid pressure boundary id {}", id);
 					return false;

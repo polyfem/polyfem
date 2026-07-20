@@ -41,6 +41,26 @@
 
 namespace polyfem::varform
 {
+	void NonlinearElasticVarForm::invalidate_after_geometry_update()
+	{
+		forms.clear();
+		solve_data_ = solver::SolveData();
+		elasticity_pressure_assembler = nullptr;
+		damping_assembler_ = nullptr;
+		damping_prev_assembler_ = nullptr;
+		ElasticVarForm::invalidate_after_geometry_update();
+	}
+
+	void NonlinearElasticVarForm::invalidate_after_parameter_update()
+	{
+		forms.clear();
+		solve_data_ = solver::SolveData();
+		elasticity_pressure_assembler = nullptr;
+		damping_assembler_ = nullptr;
+		damping_prev_assembler_ = nullptr;
+		ElasticVarForm::invalidate_after_parameter_update();
+	}
+
 	using namespace solver;
 	using namespace time_integrator;
 
@@ -56,13 +76,13 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::reset()
 	{
 		ElasticVarForm::reset();
-		collision_mesh = ipc::CollisionMesh();
+		collision_mesh_ = ipc::CollisionMesh();
 		obstacle.clear();
-		solve_data = solver::SolveData();
+		solve_data_ = solver::SolveData();
 		forms.clear();
 		elasticity_pressure_assembler = nullptr;
-		damping_assembler = nullptr;
-		damping_prev_assembler = nullptr;
+		damping_assembler_ = nullptr;
+		damping_prev_assembler_ = nullptr;
 		contact_dhat_was_explicit_ = false;
 	}
 
@@ -82,7 +102,7 @@ namespace polyfem::varform
 	io::OutputSpace NonlinearElasticVarForm::output_space() const
 	{
 		auto space = ElasticVarForm::output_space();
-		space.collision_mesh = is_contact_enabled() ? &collision_mesh : nullptr;
+		space.collision_mesh = is_contact_enabled() ? &collision_mesh_ : nullptr;
 		space.obstacle = &obstacle;
 		return space;
 	}
@@ -93,8 +113,8 @@ namespace polyfem::varform
 		const io::OutputFieldOptions &options) const
 	{
 		std::vector<io::OutputField> fields = elastic_output_fields(
-			sample, solution, options, &obstacle, solve_data.time_integrator.get(),
-			solve_data.named_forms(), solve_data.elastic_form.get(), solve_data.contact_form.get());
+			sample, solution, options, &obstacle, solve_data_.time_integrator.get(),
+			solve_data_.named_forms(), solve_data_.elastic_form.get(), solve_data_.contact_form.get());
 		if (!mesh_ || !problem || solution.size() <= 0)
 			return fields;
 		if (sample.domain != io::OutputSample::Domain::Contact)
@@ -114,27 +134,27 @@ namespace polyfem::varform
 			if (has_field(name) || dof_values.size() <= 0)
 				return;
 
-			Eigen::MatrixXd values = collision_mesh.map_displacements(utils::unflatten(dof_values, actual_dim));
+			Eigen::MatrixXd values = collision_mesh_.map_displacements(utils::unflatten(dof_values, actual_dim));
 			if (values.rows() == sample.points.rows())
 				fields.push_back({name, values, io::OutputField::Association::Point});
 		};
 
 		const auto append_collision_form_force = [&](const std::string &name, const std::shared_ptr<solver::Form> &form) {
-			if (!form || !form->enabled() || sample.points.rows() != collision_mesh.rest_positions().rows())
+			if (!form || !form->enabled() || sample.points.rows() != collision_mesh_.rest_positions().rows())
 				return;
 
 			Eigen::VectorXd force;
 			form->first_derivative(solution.col(0), force);
 			const double acceleration_scaling =
-				solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1;
+				solve_data_.time_integrator ? solve_data_.time_integrator->acceleration_scaling() : 1;
 			force *= -1.0 / acceleration_scaling;
 			append_collision_dof_field(name, force);
 		};
 
 		if (paraview_options["forces"] && !problem->is_scalar())
 		{
-			const double s = solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1;
-			for (const auto &[name, form] : solve_data.named_forms())
+			const double s = solve_data_.time_integrator ? solve_data_.time_integrator->acceleration_scaling() : 1;
+			for (const auto &[name, form] : solve_data_.named_forms())
 			{
 				const std::string field_name = name + "_forces";
 				if (!options.export_field(field_name))
@@ -154,18 +174,18 @@ namespace polyfem::varform
 			}
 		}
 
-		if (options.export_field("gradient_of_elastic_potential") && solve_data.elastic_form)
+		if (options.export_field("gradient_of_elastic_potential") && solve_data_.elastic_form)
 		{
 			Eigen::VectorXd potential_grad;
-			solve_data.elastic_form->first_derivative(solution, potential_grad);
+			solve_data_.elastic_form->first_derivative(solution, potential_grad);
 			append_collision_dof_field("gradient_of_elastic_potential", potential_grad);
 		}
 
-		if (options.export_field("gradient_of_contact_potential") && solve_data.contact_form && solve_data.contact_form->weight() > 0)
+		if (options.export_field("gradient_of_contact_potential") && solve_data_.contact_form && solve_data_.contact_form->weight() > 0)
 		{
 			Eigen::VectorXd potential_grad;
-			solve_data.contact_form->first_derivative(solution, potential_grad);
-			potential_grad *= -solve_data.contact_form->barrier_stiffness() / solve_data.contact_form->weight();
+			solve_data_.contact_form->first_derivative(solution, potential_grad);
+			potential_grad *= -solve_data_.contact_form->barrier_stiffness() / solve_data_.contact_form->weight();
 			append_collision_dof_field("gradient_of_contact_potential", potential_grad);
 		}
 
@@ -175,38 +195,38 @@ namespace polyfem::varform
 			append_collision_dof_field("solution", solution);
 
 		if ((paraview_options["contact_forces"] || explicit_fields) && options.export_field("contact_forces"))
-			append_collision_form_force("contact_forces", solve_data.contact_form);
+			append_collision_form_force("contact_forces", solve_data_.contact_form);
 		if ((paraview_options["friction_forces"] || explicit_fields) && options.export_field("friction_forces"))
-			append_collision_form_force("friction_forces", solve_data.friction_form);
+			append_collision_form_force("friction_forces", solve_data_.friction_form);
 		if ((paraview_options["normal_adhesion_forces"] || explicit_fields) && options.export_field("normal_adhesion_forces"))
-			append_collision_form_force("normal_adhesion_forces", solve_data.normal_adhesion_form);
+			append_collision_form_force("normal_adhesion_forces", solve_data_.normal_adhesion_form);
 		if ((paraview_options["tangential_adhesion_forces"] || explicit_fields) && options.export_field("tangential_adhesion_forces"))
-			append_collision_form_force("tangential_adhesion_forces", solve_data.tangential_adhesion_form);
+			append_collision_form_force("tangential_adhesion_forces", solve_data_.tangential_adhesion_form);
 
 		if (explicit_fields
 			&& options.export_field("adaptive_dhat")
 			&& args["contact"]["use_gcp_formulation"]
 			&& args["contact"]["use_adaptive_dhat"])
 		{
-			const auto smooth_contact = std::dynamic_pointer_cast<solver::SmoothContactForm>(solve_data.contact_form);
+			const auto smooth_contact = std::dynamic_pointer_cast<solver::SmoothContactForm>(solve_data_.contact_form);
 			if (smooth_contact)
 			{
 				const auto &set = smooth_contact->collision_set();
 				if (actual_dim == 2)
 				{
-					Eigen::VectorXd dhats(collision_mesh.num_edges());
+					Eigen::VectorXd dhats(collision_mesh_.num_edges());
 					for (int e = 0; e < dhats.size(); ++e)
 						dhats(e) = set.get_edge_dhat(e);
 					fields.push_back({"dhat", dhats, io::OutputField::Association::Cell});
 				}
 				else
 				{
-					Eigen::VectorXd dhats(collision_mesh.num_faces());
+					Eigen::VectorXd dhats(collision_mesh_.num_faces());
 					for (int f = 0; f < dhats.size(); ++f)
 						dhats(f) = set.get_face_dhat(f);
 					fields.push_back({"dhat_face", dhats, io::OutputField::Association::Cell});
 
-					Eigen::VectorXd vertex_dhats(collision_mesh.num_vertices());
+					Eigen::VectorXd vertex_dhats(collision_mesh_.num_vertices());
 					for (int v = 0; v < vertex_dhats.size(); ++v)
 						vertex_dhats(v) = set.get_vert_dhat(v);
 					fields.push_back({"dhat_vert", vertex_dhats, io::OutputField::Association::Point});
@@ -250,10 +270,10 @@ namespace polyfem::varform
 			return;
 
 		double min_boundary_edge_length = std::numeric_limits<double>::max();
-		for (const auto &edge : collision_mesh.edges().rowwise())
+		for (const auto &edge : collision_mesh_.edges().rowwise())
 		{
-			const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
-			const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
+			const VectorNd v0 = collision_mesh_.rest_positions().row(edge(0));
+			const VectorNd v1 = collision_mesh_.rest_positions().row(edge(1));
 			min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
 		}
 
@@ -284,7 +304,7 @@ namespace polyfem::varform
 
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
-		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+		solve_data_.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
 			*primary_assembler_, *mesh_, &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
@@ -292,7 +312,7 @@ namespace polyfem::varform
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			/*fe_space_id=*/-1);
-		rhs_assembler_ = solve_data.rhs_assembler;
+		rhs_assembler_ = solve_data_.rhs_assembler;
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -302,7 +322,7 @@ namespace polyfem::varform
 		build_collision_mesh(
 			mesh, space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), boundary_.total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
-			space_.space_in_node_to_node, collision_mesh);
+			space_.space_in_node_to_node, collision_mesh_);
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -315,7 +335,7 @@ namespace polyfem::varform
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
-		ipc::CollisionMesh &collision_mesh)
+		ipc::CollisionMesh &collision_mesh_)
 	{
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
@@ -419,17 +439,17 @@ namespace polyfem::varform
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh = ipc::CollisionMesh(
+		collision_mesh_ = ipc::CollisionMesh(
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
-		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
+		collision_mesh_.can_collide = [&collision_mesh_, num_fe_collision_vertices](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
-			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+			return collision_mesh_.to_full_vertex_id(vi) < num_fe_collision_vertices
+				   || collision_mesh_.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
-		collision_mesh.init_area_jacobians();
+		collision_mesh_.init_area_jacobians();
 	}
 
 	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticVarForm::build_pressure_assembler() const
@@ -445,8 +465,15 @@ namespace polyfem::varform
 			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), *problem);
 	}
 
-	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NonlinearElasticStaticVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
+		assert((!initial_condition_override || (initial_condition_override->velocity.size() == 0 && initial_condition_override->acceleration.size() == 0))
+			   && "Static elasticity does not accept initial velocity or acceleration overrides");
+
 		stats.spectrum.setZero();
 
 		igl::Timer timer;
@@ -462,15 +489,21 @@ namespace polyfem::varform
 			//  args["input"]["data"]["reorder"], in_node_to_node,
 			//  mesh->dimension(), solution);
 
-			if (sol.size() <= 0)
-				initial_elastic_solution(sol);
+			if (initial_condition_override && initial_condition_override->solution.size() != 0)
+				initial_elastic_solution(sol, initial_condition_override);
+			else if (sol.size() <= 0)
+				initial_elastic_solution(sol, initial_condition_override);
 
-			if (sol.cols() > 1) // ignore previous solutions
-				sol.conservativeResize(Eigen::NoChange, 1);
+			if (initial_condition_override && initial_condition_override->solution.size() != 0)
+				assert(sol.cols() == 1 && "Static initial solution override must have exactly one column");
+			else if (sol.cols() != 1)
+				log_and_throw_error("Static elasticity requires exactly one initial solution column.");
 		}
-		init_solve(sol, 1.0);
+		init_solve(sol, 1.0, initial_condition_override, is_differentiable);
 
-		solve_tensor_nonlinear(0, sol, true);
+		solve_tensor_nonlinear(0, sol, is_differentiable, true);
+		if (post_step)
+			post_step(0, sol);
 
 		const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
 		if (!state_path.empty())
@@ -481,7 +514,11 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NonlinearElasticTransientVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NonlinearElasticTransientVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
 		const bool save_stats = args["output"]["stats"];
 		stats.spectrum.setZero();
@@ -499,13 +536,17 @@ namespace polyfem::varform
 			//  args["input"]["data"]["reorder"], in_node_to_node,
 			//  mesh->dimension(), solution);
 
-			if (sol.size() <= 0)
-				initial_elastic_solution(sol);
+			if (initial_condition_override && initial_condition_override->solution.size() != 0)
+				initial_elastic_solution(sol, initial_condition_override);
+			else if (sol.size() <= 0)
+				initial_elastic_solution(sol, initial_condition_override);
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
-		init_solve(sol, t0 + dt);
+		init_solve(sol, t0 + dt, initial_condition_override, is_differentiable);
+		if (post_step)
+			post_step(0, sol);
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -516,7 +557,7 @@ namespace polyfem::varform
 		if (save_stats)
 		{
 			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
-			energy_csv = std::make_unique<io::EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
+			energy_csv = std::make_unique<io::EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data_);
 			const io::OutputSpace space = output_space();
 			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(
 				resolve_output_path("stats.csv"),
@@ -538,8 +579,10 @@ namespace polyfem::varform
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				solve_tensor_nonlinear(t, sol, true);
+				solve_tensor_nonlinear(t, sol, is_differentiable, true);
 			}
+			if (post_step)
+				post_step(t, sol);
 
 			// Always save the solution for consistency
 			if (energy_csv)
@@ -550,18 +593,18 @@ namespace polyfem::varform
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
 
-				solve_data.time_integrator->update_quantities(sol);
+				solve_data_.time_integrator->update_quantities(sol);
 
-				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
+				solve_data_.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
-				solve_data.update_dt();
-				solve_data.update_barrier_stiffness(sol);
+				solve_data_.update_dt();
+				solve_data_.update_barrier_stiffness(sol);
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
 
-			save_elastic_step_state(t0, dt, t, solve_data.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}
@@ -571,21 +614,21 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t)
+	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t, const bool is_differentiable)
 	{
-		damping_assembler = std::make_shared<assembler::ViscousDamping>();
-		set_materials(*damping_assembler, mesh_->dimension());
+		damping_assembler_ = std::make_shared<assembler::ViscousDamping>();
+		set_materials(*damping_assembler_, mesh_->dimension());
 
 		elasticity_pressure_assembler = build_pressure_assembler();
 
 		// for backward solve
-		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
-		set_materials(*damping_prev_assembler, mesh_->dimension());
+		damping_prev_assembler_ = std::make_shared<assembler::ViscousDampingPrev>();
+		set_materials(*damping_prev_assembler_, mesh_->dimension());
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 
 		// NOTE: some stuff are legacy and hardcoded to be off
-		forms = solve_data.init_forms(
+		forms = solve_data_.init_forms(
 			// General
 			units,
 			dim, t, space_.space_in_node_to_node,
@@ -600,14 +643,14 @@ namespace polyfem::varform
 			boundary_.local_pressure_boundary, boundary_.local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
 			args.value("/time/quasistatic"_json_pointer, true), mass_,
-			damping_assembler->is_valid() ? damping_assembler : nullptr,
+			damping_assembler_->is_valid() ? damping_assembler_ : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], collision_mesh_, args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
@@ -616,7 +659,7 @@ namespace polyfem::varform
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			false,
+			is_differentiable,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
@@ -646,11 +689,15 @@ namespace polyfem::varform
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
 
-		if (solve_data.contact_form != nullptr)
-			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
+		if (solve_data_.contact_form != nullptr)
+			solve_data_.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 	}
 
-	void NonlinearElasticVarForm::init_solve(Eigen::MatrixXd &sol, const double t)
+	void NonlinearElasticVarForm::init_solve(
+		Eigen::MatrixXd &sol,
+		const double t,
+		const InitialConditionOverride *initial_condition_override,
+		const bool is_differentiable)
 	{
 		assert(sol.cols() == 1);
 		assert(!problem->is_scalar()); // tensor
@@ -670,14 +717,14 @@ namespace polyfem::varform
 		{
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 
-			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
+			const Eigen::MatrixXd displaced = collision_mesh_.displace_vertices(
 				utils::unflatten(sol, mesh_->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
+			if (ipc::has_intersections(collision_mesh_, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
 			{
 				io::OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
-					collision_mesh.edges(), collision_mesh.faces());
+					collision_mesh_.edges(), collision_mesh_.faces());
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 		}
@@ -687,23 +734,30 @@ namespace polyfem::varform
 		if (problem->is_time_dependent())
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
-			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+			solve_data_.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_elastic_solution(solution); // Reload this because we need all previous solutions
-			solution.col(0) = sol;              // Make sure the current solution is the same as `sol`
+			initial_elastic_solution(solution, initial_condition_override); // Reload this because we need all previous solutions
+			solution.col(0) = sol;                                          // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
-			initial_velocity(velocity);
+			initial_velocity(velocity, initial_condition_override);
 			assert(velocity.rows() == sol.size());
-			initial_acceleration(acceleration);
+			initial_acceleration(acceleration, initial_condition_override);
 			assert(acceleration.rows() == sol.size());
+			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
+			{
+				log_and_throw_error(
+					"Incompatible initial-condition history for transient solve: "
+					"solution has {} columns, velocity has {}, acceleration has {}.",
+					solution.cols(), velocity.cols(), acceleration.cols());
+			}
 
-			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
-			assert(solve_data.time_integrator != nullptr);
+			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
+			assert(solve_data_.time_integrator != nullptr && "Transient nonlinear elasticity requires an initialized time integrator");
 		}
 		else
 		{
-			solve_data.time_integrator = nullptr;
+			solve_data_.time_integrator = nullptr;
 		}
 
 		// --------------------------------------------------------------------
@@ -712,7 +766,7 @@ namespace polyfem::varform
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
-		init_forms(args, mesh_->dimension(), sol, t);
+		init_forms(args, mesh_->dimension(), sol, t, is_differentiable);
 
 		double characteristic_length = 0;
 		if (args["solver"]["advanced"]["characteristic_length"] > 0)
@@ -741,21 +795,25 @@ namespace polyfem::varform
 			pure_mass_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), pure_mass_ass_vals_cache_, 0, pure_mass_, true);
 
 		const int ndof = space_.n_bases * mesh_->dimension();
-		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
-			ndof, nullptr, t, forms, solve_data.al_form,
+		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
+			ndof, nullptr, t, forms, solve_data_.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
-		solve_data.nl_problem->init(sol);
-		solve_data.nl_problem->update_quantities(t, sol);
+		solve_data_.nl_problem->init(sol);
+		solve_data_.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
 	}
 
-	void NonlinearElasticVarForm::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging)
+	void NonlinearElasticVarForm::solve_tensor_nonlinear(
+		const int step,
+		Eigen::MatrixXd &sol,
+		const bool is_differentiable,
+		const bool init_lagging)
 	{
-		assert(solve_data.nl_problem != nullptr);
-		solver::NLProblem &nl_problem = *(solve_data.nl_problem);
+		assert(solve_data_.nl_problem != nullptr && "Nonlinear forms must initialize the nonlinear problem before solving");
+		solver::NLProblem &nl_problem = *(solve_data_.nl_problem);
 
 		assert(sol.size() == rhs_.size());
 
@@ -775,13 +833,13 @@ namespace polyfem::varform
 			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 
 		ALSolver al_solver(
-			solve_data.al_form,
+			solve_data_.al_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
 			[&](const Eigen::VectorXd &x) {
-				this->solve_data.update_barrier_stiffness(sol);
+				this->solve_data_.update_barrier_stiffness(sol);
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
@@ -809,7 +867,7 @@ namespace polyfem::varform
 
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		bool lagging_converged = !nl_problem.uses_lagging();
+		bool lagging_converged = is_differentiable || !nl_problem.uses_lagging();
 		for (int lag_i = 1; !lagging_converged; lag_i++)
 		{
 			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
@@ -849,7 +907,7 @@ namespace polyfem::varform
 
 			logger().info("Lagging iteration {:d}:", lag_i + 1);
 			nl_problem.init(sol);
-			solve_data.update_barrier_stiffness(sol);
+			solve_data_.update_barrier_stiffness(sol);
 			nl_problem.normalize_forms();
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();

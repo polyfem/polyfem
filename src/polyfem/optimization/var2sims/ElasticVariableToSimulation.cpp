@@ -24,10 +24,10 @@ namespace polyfem::solver
 		assert(!states_.empty());
 		assert(states_.size() == diff_caches_.size());
 
-		elem_num_ = states_[0]->bases.size();
+		elem_num_ = states_[0]->primary_space().basis_list().size();
 		for (auto &s : states_)
 		{
-			if (s->bases.size() != elem_num_)
+			if (s->primary_space().basis_list().size() != elem_num_)
 			{
 				log_and_throw_adjoint_error("Fail to construct elastic variable to simulation. Reason: Inconsistent element numbers.");
 			}
@@ -44,7 +44,7 @@ namespace polyfem::solver
 		return ParameterType::LameParameter;
 	}
 
-	bool ElasticVariableToSimulation::affect_state(const legacy::State &target) const
+	bool ElasticVariableToSimulation::affect_state(const varform::VarForm &target) const
 	{
 		for (const auto &s : states_)
 		{
@@ -63,7 +63,7 @@ namespace polyfem::solver
 
 		for (auto &s : states_)
 		{
-			s->assembler->update_lame_params(y.segment(0, elem_num_), y.segment(elem_num_, elem_num_));
+			s->set_lame_parameters(y.segment(0, elem_num_), y.segment(elem_num_, elem_num_));
 		}
 	}
 
@@ -81,7 +81,7 @@ namespace polyfem::solver
 			auto &state = states_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			if (state->problem->is_time_dependent())
+			if (state->get_problem().is_time_dependent())
 			{
 				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
 				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
@@ -116,7 +116,7 @@ namespace polyfem::solver
 	{
 		// Sample lame parameters at barycenter of each mesh element.
 		auto &state = *(states_[0]);
-		auto params_map = state.assembler->parameters();
+		auto params_map = state.primary_assembler().parameters();
 
 		// params_map returns (key, callback). Callback interpolates param usign FE basis.
 		auto search_lambda = params_map.find("lambda");
@@ -126,20 +126,20 @@ namespace polyfem::solver
 			log_and_throw_adjoint_error("[{}] Failed to find Lame parameters!", name());
 		}
 
-		int dim = state.mesh->dimension();
+		int dim = state.get_mesh().dimension();
 		Eigen::VectorXd lambdas(elem_num_);
 		Eigen::VectorXd mus(elem_num_);
 		for (int e = 0; e < elem_num_; ++e)
 		{
 			RowVectorNd barycenter;
-			if (!state.mesh->is_volume())
+			if (!state.get_mesh().is_volume())
 			{
-				auto mesh2d = dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
+				auto mesh2d = dynamic_cast<const mesh::Mesh2D *>(&state.get_mesh());
 				barycenter = mesh2d->face_barycenter(e);
 			}
 			else
 			{
-				auto mesh3d = dynamic_cast<const mesh::Mesh3D *>(state.mesh.get());
+				auto mesh3d = dynamic_cast<const mesh::Mesh3D *>(&state.get_mesh());
 				barycenter = mesh3d->cell_barycenter(e);
 			}
 			// The callback signature is (uv coordinate, world coordinate, time, elem id)

@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
@@ -30,7 +30,7 @@ namespace polyfem::solver
 	namespace
 	{
 
-		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<legacy::State> &curr_state, const Eigen::VectorXd &x)
+		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<varform::VarForm> &curr_state, const Eigen::VectorXd &x)
 		{
 			Eigen::MatrixXd V;
 			curr_state->get_vertices(V);
@@ -119,7 +119,7 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<legacy::State>> &all_states,
+									   const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args)
 		: FullNLProblem({form}),
@@ -177,7 +177,7 @@ namespace polyfem::solver
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<legacy::State>> &all_states,
+									   const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, all_diff_caches, args)
 	{
@@ -242,7 +242,7 @@ namespace polyfem::solver
 
 				V1 = utils::unflatten(
 					get_updated_mesh_nodes(variables_to_simulation_, state_, x1),
-					state_->mesh->dimension());
+					state_->get_mesh().dimension());
 				state_->get_vertices(V0);
 				state_->get_elements(F);
 
@@ -319,33 +319,23 @@ namespace polyfem::solver
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
-			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
-			std::string mesh_ext = state->mesh->is_volume() ? ".msh" : ".obj";
-			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}" + mesh_ext, id, iter_num));
+			std::string vis_mesh_path = state->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
+			std::string mesh_ext = state->get_mesh().is_volume() ? ".msh" : ".obj";
+			std::string rest_mesh_path = state->output_file_path(fmt::format("opt_state_{:d}_iter_{:d}" + mesh_ext, id, iter_num));
 			id++;
 
 			if (!save_vtu)
 				continue;
 			adjoint_logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
-			double tend = state->args.value("tend", 1.0);
+			double tend = state->get_args().value("tend", 1.0);
 			double dt = 1;
-			if (!state->args["time"].is_null())
-				dt = state->args["time"]["dt"];
+			if (!state->get_args()["time"].is_null())
+				dt = state->get_args()["time"]["dt"];
 
 			Eigen::MatrixXd sol = diff_cache->u(-1);
 
-			state->out_geom.save_vtu(
-				vis_mesh_path,
-				*state,
-				sol,
-				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
-				tend, dt,
-				legacy::io::OutGeometryData::ExportOptions(state->args,
-														   state->mesh->is_linear(),
-														   state->mesh->has_prism(),
-														   state->problem->is_scalar()),
-				state->is_contact_enabled());
+			state->save_vtu(vis_mesh_path, sol, tend, dt);
 
 			if (!save_rest_mesh)
 				continue;
@@ -356,8 +346,8 @@ namespace polyfem::solver
 			Eigen::MatrixXi F;
 			state->get_vertices(V);
 			state->get_elements(F);
-			if (state->mesh->is_volume())
-				io::MshWriter::write(rest_mesh_path, V, F, state->mesh->get_body_ids(), true, false);
+			if (state->get_mesh().is_volume())
+				io::MshWriter::write(rest_mesh_path, V, F, state->get_mesh().get_body_ids(), true, false);
 			else
 				io::OBJWriter::write(rest_mesh_path, V, F);
 		}
@@ -378,7 +368,7 @@ namespace polyfem::solver
 		if (need_rebuild_basis)
 		{
 			for (const auto &state : all_states_)
-				state->build_basis();
+				state->prepare();
 		}
 
 		// solve PDE
@@ -422,8 +412,7 @@ namespace polyfem::solver
 			if (!slim_success)
 				log_and_throw_adjoint_error("SLIM cannot succeed");
 
-			for (int i = 0; i < V_smooth.rows(); ++i)
-				state->mesh->set_point(i, V_smooth.row(i));
+			state->set_vertex_positions(V_smooth);
 		}
 		adjoint_logger().debug("SLIM succeeded!");
 
@@ -443,18 +432,12 @@ namespace polyfem::solver
 					auto &diff_cache = all_diff_caches_[i];
 					if (active_state_mask[i] || diff_cache->size() == 0)
 					{
-						const legacy::InitialConditionOverride *ic_override = nullptr;
-						if (!diff_cache->initial_condition_override.is_empty())
-						{
-							ic_override = &diff_cache->initial_condition_override;
-						}
-						state->assemble_rhs();
-						state->assemble_mass_mat();
-						Eigen::MatrixXd sol, pressure; // solution is also cached in state
-						auto cache_post_step = [&diff_cache](const int step, legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
-							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+						const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
+						const varform::ForwardStepCallback post_step = [state, diff_cache](const int step, const Eigen::MatrixXd &solution) {
+							diff_cache->cache_transient(step, *state, solution, nullptr, nullptr);
 						};
-						state->solve_problem(sol, pressure, cache_post_step, ic_override);
+						Eigen::MatrixXd solution;
+						state->solve(solution, initial_conditions, post_step, true);
 					}
 				}
 			});
@@ -463,26 +446,18 @@ namespace polyfem::solver
 		{
 			adjoint_logger().info("Run simulations in serial...");
 
-			Eigen::MatrixXd sol, pressure; // solution is also cached in state
 			for (int i : solve_in_order)
 			{
 				auto &state = all_states_[i];
 				auto &diff_cache = all_diff_caches_[i];
 				if (active_state_mask[i] || diff_cache->size() == 0)
 				{
-					const legacy::InitialConditionOverride *ic_override = nullptr;
-					if (!diff_cache->initial_condition_override.is_empty())
-					{
-						ic_override = &diff_cache->initial_condition_override;
-					}
-
-					state->assemble_rhs();
-					state->assemble_mass_mat();
-
-					auto cache_post_step = [&](const int step, legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
-						diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+					const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
+					const varform::ForwardStepCallback post_step = [state, diff_cache](const int step, const Eigen::MatrixXd &solution) {
+						diff_cache->cache_transient(step, *state, solution, nullptr, nullptr);
 					};
-					state->solve_problem(sol, pressure, cache_post_step, ic_override);
+					Eigen::MatrixXd solution;
+					state->solve(solution, initial_conditions, post_step, true);
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 #include "SplineParametrizations.hpp"
 #include <polyfem/utils/BSplineParametrization.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>
@@ -142,7 +142,7 @@ namespace polyfem::solver
 			return grad;
 	}
 
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const legacy::State &state, const bool allow_rotations)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const varform::VarForm &state, const bool allow_rotations)
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), allow_rotations_(allow_rotations)
 	{
 		Eigen::MatrixXd V;
@@ -151,17 +151,17 @@ namespace polyfem::solver
 		auto map = state.node_to_primitive();
 
 		int f_size = 0;
-		const auto &mesh = state.mesh;
-		const auto &bases = state.bases;
-		const auto &gbases = state.geom_bases();
-		for (const auto &lb : state.total_local_boundary)
+		const auto &mesh = state.get_mesh();
+		const auto &bases = state.primary_space().basis_list();
+		const auto &gbases = state.primary_space().geometry_basis_list();
+		for (const auto &lb : state.boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+				const int boundary_id = mesh.get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, mesh);
 				F_surface_.conservativeResize(++f_size, 3);
 				for (int f = 0; f < nodes.size(); ++f)
 				{

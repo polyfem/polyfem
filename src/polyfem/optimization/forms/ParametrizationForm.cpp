@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <Eigen/Core>
 

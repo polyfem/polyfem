@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -89,7 +89,7 @@ namespace polyfem::solver
 		};
 
 		void compute_collision_mesh_quantities(
-			const legacy::State &state,
+			const varform::VarForm &state,
 			const std::set<int> &boundary_ids,
 			const ipc::CollisionMesh &collision_mesh,
 			Eigen::MatrixXd &node_positions,
@@ -100,8 +100,8 @@ namespace polyfem::solver
 			Eigen::MatrixXi &can_collide_cache)
 		{
 			std::vector<Eigen::Triplet<double>> displacement_map_entries;
-			legacy::io::OutGeometryData::extract_boundary_mesh(*state.mesh, state.n_bases, state.bases, state.total_local_boundary,
-															   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			io::OutGeometryData::extract_boundary_mesh(state.get_mesh(), state.primary_space().n_bases, state.primary_space().basis_list(), state.boundary_state().total_local_boundary,
+													   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 			is_on_surface.resize(node_positions.rows(), false);
 
@@ -110,24 +110,24 @@ namespace polyfem::solver
 			Eigen::MatrixXd points, uv, normals;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;
-			for (const auto &lb : state.total_local_boundary)
+			for (const auto &lb : state.boundary_state().total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), state.get_mesh(), false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
 
-				const basis::ElementBases &bs = state.bases[e];
-				const basis::ElementBases &gbs = state.geom_bases()[e];
+				const basis::ElementBases &bs = state.primary_space().basis_list()[e];
+				const basis::ElementBases &gbs = state.primary_space().geometry_basis_list()[e];
 
-				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
+				vals.compute(e, state.get_mesh().is_volume(), points, bs, gbs);
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state.mesh);
-					const int boundary_id = state.mesh->get_boundary_id(primitive_global_id);
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, state.get_mesh());
+					const int boundary_id = state.get_mesh().get_boundary_id(primitive_global_id);
 
 					if (!std::count(boundary_ids.begin(), boundary_ids.end(), boundary_id))
 						continue;
@@ -145,7 +145,7 @@ namespace polyfem::solver
 
 			if (!displacement_map_entries.empty())
 			{
-				displacement_map.resize(node_positions.rows(), state.n_bases);
+				displacement_map.resize(node_positions.rows(), state.primary_space().n_bases);
 				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 			}
 
@@ -164,7 +164,7 @@ namespace polyfem::solver
 					}
 				}
 
-				if (state.mesh->is_volume())
+				if (state.get_mesh().is_volume())
 				{
 					for (int i = 0; i < boundary_triangles.rows(); ++i)
 					{
@@ -254,7 +254,7 @@ namespace polyfem::solver
 	// {
 	// 	IntegrableFunctional j;
 
-	// 	const std::string formulation = state_.formulation();
+	// 	const std::string formulation = state_.primary_assembler().name();
 	// 	const int power = in_power_;
 
 	// 	if (formulation == "Laplacian")
@@ -263,7 +263,7 @@ namespace polyfem::solver
 	// 	j.set_j([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 	// 		val.setZero(grad_u.rows(), 1);
 	// 		int el_id = params["elem"];
-	// 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+	// 		const double dt = state.get_problem().is_time_dependent() ? state.get_args()["time"]["dt"].get<double>() : 0;
 	// 		const double t = params["t"];
 
 	// 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad_u_local, grad_x;
@@ -277,8 +277,8 @@ namespace polyfem::solver
 
 	// 			reference_normal = reference_normals.row(q);
 	// 			displaced_normal = compute_displaced_normal(reference_normal, grad_x, grad_u_local).transpose();
-	// 			// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
-	// 			state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+	// 			// state.primary_assembler().compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+	// 			state.primary_assembler().compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
 	// 			traction_force = displaced_normal * stress;
 	// 			val(q) = pow(traction_force.squaredNorm(), power / 2.);
 	// 		}
@@ -287,7 +287,7 @@ namespace polyfem::solver
 	// 	auto dj_dgradx = [formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 	// 		val.setZero(grad_u.rows(), grad_u.cols());
 	// 		int el_id = params["elem"];
-	// 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+	// 		const double dt = state.get_problem().is_time_dependent() ? state.get_args()["time"]["dt"].get<double>() : 0;
 	// 		const double t = params["t"];
 	// 		const int dim = sqrt(grad_u.cols());
 
@@ -311,8 +311,8 @@ namespace polyfem::solver
 	// 			displaced_normal.resize(1, dim);
 	// 			for (int i = 0; i < dim; ++i)
 	// 				displaced_normal(i) = n(i).getValue();
-	// 			// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
-	// 			state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+	// 			// state.primary_assembler().compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+	// 			state.primary_assembler().compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
 	// 			traction_force = displaced_normal * stress;
 
 	// 			const double coef = power * pow(traction_force.squaredNorm(), power / 2. - 1.);
@@ -339,7 +339,7 @@ namespace polyfem::solver
 	// 	auto dj_dgradu = [formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 	// 		val.setZero(grad_u.rows(), grad_u.cols());
 	// 		int el_id = params["elem"];
-	// 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+	// 		const double dt = state.get_problem().is_time_dependent() ? state.get_args()["time"]["dt"].get<double>() : 0;
 	// 		const double t = params["t"];
 	// 		const int dim = sqrt(grad_u.cols());
 
@@ -354,8 +354,8 @@ namespace polyfem::solver
 
 	// 			reference_normal = reference_normals.row(q);
 	// 			displaced_normal = compute_displaced_normal(reference_normal, grad_x, grad_u_local).transpose();
-	// 			// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normal, stress, vect_mult_dstress);
-	// 			state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), displaced_normal, stress, vect_mult_dstress);
+	// 			// state.primary_assembler().compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normal, stress, vect_mult_dstress);
+	// 			state.primary_assembler().compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), displaced_normal, stress, vect_mult_dstress);
 	// 			traction_force = displaced_normal * stress;
 
 	// 			const double coef = power * pow(traction_force.squaredNorm(), power / 2. - 1.);
@@ -385,7 +385,7 @@ namespace polyfem::solver
 	// 		for (int q = 0; q < grad_u.rows(); q++)
 	// 		{
 	// 			vector2matrix(grad_u.row(q), grad_u_q);
-	// 			state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normals.row(q), stress, normal_dstress);
+	// 			state.primary_assembler().compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normals.row(q), stress, normal_dstress);
 	// 			traction_force = displaced_normals.row(q) * stress;
 
 	// 			const double coef = power * pow(stress.squaredNorm(), power / 2. - 1.);
@@ -408,7 +408,7 @@ namespace polyfem::solver
 	// 		for (int q = 0; q < u.rows(); q++)
 	// 		{
 	// 			vector2matrix(grad_u.row(q), grad_u_q);
-	// 			state.assembler->compute_stress_grad_multiply_mat(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(grad_u_q.rows(), grad_u_q.cols()), stress, grad_unused);
+	// 			state.primary_assembler().compute_stress_grad_multiply_mat(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(grad_u_q.rows(), grad_u_q.cols()), stress, grad_unused);
 	// 			traction_force = displaced_normals.row(q) * stress;
 
 	// 			Eigen::MatrixXd normal_du = normal_jacobian[q]; // compute this
@@ -522,7 +522,7 @@ namespace polyfem::solver
 	// {
 
 	// 	std::set<int> active_nodes_set = {};
-	// 	dim_ = state_.mesh->dimension();
+	// 	dim_ = state_.get_mesh().dimension();
 	// 	for (const auto &lb : state_.total_local_boundary)
 	// 	{
 	// 		const int e = lb.element_id();
@@ -531,13 +531,13 @@ namespace polyfem::solver
 	// 		for (int i = 0; i < lb.size(); i++)
 	// 		{
 	// 			const int global_primitive_id = lb.global_primitive_id(i);
-	// 			const auto nodes = bs.local_nodes_for_primitive(global_primitive_id, *state_.mesh);
-	// 			if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+	// 			const auto nodes = bs.local_nodes_for_primitive(global_primitive_id, state_.get_mesh());
+	// 			if (ids_.size() != 0 && ids_.find(state_.get_mesh().get_boundary_id(global_primitive_id)) == ids_.end())
 	// 				continue;
 
 	// 			for (long n = 0; n < nodes.size(); ++n)
 	// 			{
-	// 				const auto &b = bs.bases[nodes(n)];
+	// 				const auto &b = bs.bases()[nodes(n)];
 	// 				const int index = b.global()[0].index;
 
 	// 				for (int d = 0; d < dim_; ++d)
@@ -600,7 +600,7 @@ namespace polyfem::solver
 	// 	return sum;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &state) const
 	// {
 	// 	assert(state_.solve_data.time_integrator != nullptr);
 	// 	assert(state_.solve_data.contact_form != nullptr);
@@ -660,7 +660,7 @@ namespace polyfem::solver
 	// 	return gradu;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &state) const
 	// {
 	// 	assert(state_.solve_data.time_integrator != nullptr);
 	// 	assert(state_.solve_data.contact_form != nullptr);
@@ -802,7 +802,7 @@ namespace polyfem::solver
 
 	ProxyContactForceForm::ProxyContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const legacy::State> state,
+		std::shared_ptr<const varform::VarForm> state,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const double dhat,
 		const bool quadratic_potential,
@@ -821,9 +821,9 @@ namespace polyfem::solver
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
 
-		if (state_->problem->is_time_dependent())
+		if (state_->get_problem().is_time_dependent())
 		{
-			int time_steps = state_->args["time"]["time_steps"].get<int>() + 1;
+			int time_steps = state_->get_args()["time"]["time_steps"].get<int>() + 1;
 			collision_set_indicator_.setZero(time_steps);
 			for (int i = 0; i < time_steps + 1; ++i)
 			{
@@ -856,8 +856,8 @@ namespace polyfem::solver
 		// Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		legacy::io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_bases, state_->bases, state_->total_local_boundary,
-														   node_positions_, boundary_edges, boundary_triangles, displacement_map_entries);
+		io::OutGeometryData::extract_boundary_mesh(state_->get_mesh(), state_->primary_space().n_bases, state_->primary_space().basis_list(), state_->boundary_state().total_local_boundary,
+												   node_positions_, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
 		is_on_surface.resize(node_positions_.rows(), false);
@@ -866,24 +866,24 @@ namespace polyfem::solver
 		Eigen::MatrixXd points, uv, normals;
 		Eigen::VectorXd weights;
 		Eigen::VectorXi global_primitive_ids;
-		for (const auto &lb : state_->total_local_boundary)
+		for (const auto &lb : state_->boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), *state_->mesh, false, uv, points, normals, weights, global_primitive_ids);
+			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), state_->get_mesh(), false, uv, points, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
 
-			const basis::ElementBases &bs = state_->bases[e];
-			const basis::ElementBases &gbs = state_->geom_bases()[e];
+			const basis::ElementBases &bs = state_->primary_space().basis_list()[e];
+			const basis::ElementBases &gbs = state_->primary_space().geometry_basis_list()[e];
 
-			vals.compute(e, state_->mesh->is_volume(), points, bs, gbs);
+			vals.compute(e, state_->get_mesh().is_volume(), points, bs, gbs);
 
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state_->mesh);
-				const int boundary_id = state_->mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, state_->get_mesh());
+				const int boundary_id = state_->get_mesh().get_boundary_id(primitive_global_id);
 
 				if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
 					continue;
@@ -902,7 +902,7 @@ namespace polyfem::solver
 		Eigen::SparseMatrix<double> displacement_map;
 		if (!displacement_map_entries.empty())
 		{
-			displacement_map.resize(node_positions_.rows(), state_->n_bases);
+			displacement_map.resize(node_positions_.rows(), state_->primary_space().n_bases);
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
@@ -921,7 +921,7 @@ namespace polyfem::solver
 				}
 			}
 
-			if (state_->mesh->is_volume())
+			if (state_->get_mesh().is_volume())
 			{
 				for (int i = 0; i < boundary_triangles.rows(); ++i)
 				{
@@ -987,8 +987,8 @@ namespace polyfem::solver
 
 	double ProxyContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(state_->solve_data.time_integrator != nullptr);
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(state_->solve_data()->time_integrator != nullptr);
+		assert(state_->solve_data()->contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
@@ -1000,10 +1000,10 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &state, const DiffCache &diff_cache) const
 	{
-		assert(state_->solve_data.time_integrator != nullptr);
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(state_->solve_data()->time_integrator != nullptr);
+		assert(state_->solve_data()->contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
@@ -1038,8 +1038,8 @@ namespace polyfem::solver
 
 	void ProxyContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(state_->solve_data.time_integrator != nullptr);
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(state_->solve_data()->time_integrator != nullptr);
+		assert(state_->solve_data()->contact_form != nullptr);
 
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, time_step, &x]() {
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));

@@ -4,10 +4,12 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/solver/SolveData.hpp>
 
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
@@ -16,8 +18,11 @@
 #include <polyfem/varforms/FESpace.hpp>
 
 #include <Eigen/Dense>
+#include <ipc/collision_mesh.hpp>
 
 #include <functional>
+#include <array>
+#include <cassert>
 #include <iosfwd>
 #include <memory>
 #include <map>
@@ -40,6 +45,16 @@ namespace polyfem
 
 	namespace varform
 	{
+		struct InitialConditionOverride
+		{
+			Eigen::MatrixXd solution;
+			Eigen::MatrixXd velocity;
+			Eigen::MatrixXd acceleration;
+		};
+
+		// So adjoint optimization can cache intermediate state during simulation.
+		using ForwardStepCallback = std::function<void(int step, const Eigen::MatrixXd &solution)>;
+
 		class VarForm
 		{
 			friend class polyfem::test::VarFormTestAccess;
@@ -73,8 +88,80 @@ namespace polyfem
 
 			/// @brief Solve the variational formulation and store the solution in the given matrix
 			/// @param sol matrix to store the solution
-			void solve(Eigen::MatrixXd &sol);
+			/// @param initial_condition_override Optional initial condition.
+			/// @param post_step Post simulation step callback.
+			/// @param is_differentiable True if varform is the forward solve of adjoint optimization.
+			void solve(
+				Eigen::MatrixXd &sol,
+				const InitialConditionOverride *initial_condition_override,
+				const ForwardStepCallback &post_step,
+				bool is_differentiable);
+
+			/// Prepare all discretization and assembly data without running a solve.
+			void prepare();
 			void set_time_callback(const std::function<void(int, int, double, double)> &callback) { time_callback = callback; }
+
+			// -----------------------------------------------
+			// Getter/Setter for adjoint
+			// -----------------------------------------------
+
+			json &get_args() { return args; }
+			const json &get_args() const { return args; }
+			const mesh::Mesh &get_mesh() const;
+			assembler::Problem &get_problem()
+			{
+				assert(problem && "The problem must be initialized before it is accessed");
+				return *problem;
+			}
+			const assembler::Problem &get_problem() const
+			{
+				assert(problem && "The problem must be initialized before it is accessed");
+				return *problem;
+			}
+			const std::string &get_root_path() const { return root_path; }
+			std::string input_path(const std::string &path, const bool only_if_exists = false) const { return resolve_input_path(path, only_if_exists); }
+			std::string output_file_path(const std::string &path) const { return resolve_output_path(path); }
+
+			virtual const FESpace &primary_space() const;
+			virtual const VarFormBoundaryState &boundary_state() const;
+			virtual const assembler::Assembler &primary_assembler() const;
+			virtual const assembler::Mass &mass_assembler() const;
+			virtual const assembler::AssemblyValsCache &assembly_cache() const;
+			virtual const assembler::AssemblyValsCache &mass_assembly_cache() const;
+			virtual const StiffnessMatrix &mass_matrix() const;
+			virtual solver::SolveData *solve_data() { return nullptr; }
+			virtual const solver::SolveData *solve_data() const { return nullptr; }
+			virtual const ipc::CollisionMesh &collision_mesh() const;
+			virtual const mesh::Obstacle &get_obstacle() const;
+			virtual const assembler::ViscousDamping *damping_assembler() const { return nullptr; }
+			virtual const assembler::ViscousDampingPrev *damping_prev_assembler() const { return nullptr; }
+			virtual void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
+			virtual void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const;
+			virtual void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const;
+			void build_stiffness_matrix(StiffnessMatrix &stiffness) const;
+
+			const Units &get_units() const { return units; }
+			std::vector<int> primitive_to_node() const;
+			std::vector<int> node_to_primitive() const;
+			void get_vertices(Eigen::MatrixXd &vertices) const;
+			void get_elements(Eigen::MatrixXi &elements) const;
+			QuadratureOrders n_boundary_samples() const;
+			std::unordered_map<int, std::array<bool, 3>> boundary_conditions_ids(const std::string &bc_type) const;
+			bool is_homogenization() const;
+			bool is_adhesion_enabled() const;
+			bool is_pressure_enabled() const;
+			bool has_constraints() const;
+			bool is_problem_linear() const;
+
+			virtual void set_vertex_positions(const Eigen::MatrixXd &vertices);
+			virtual void set_lame_parameters(const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu);
+			virtual void set_friction_coefficient(double coefficient);
+			virtual void set_damping_coefficients(double psi, double phi);
+			virtual void set_dirichlet_boundary(int boundary_id, int time_step, const Eigen::VectorXd &value);
+			virtual void set_dirichlet_nodes(const Eigen::VectorXi &input_nodes, const Eigen::MatrixXd &values);
+			virtual void set_pressure_boundary(int boundary_id, int time_step, double value);
+
+			// -----------------------------------------------
 
 			/// @brief Get the problem dimension of the variational formulation, for output purposes
 			/// @return Problem dimension
@@ -110,9 +197,13 @@ namespace polyfem
 			/// @brief 	Save the solution to a JSON file, for output purposes
 			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
+			void save_vtu(const std::string &path, const Eigen::MatrixXd &solution, double time, double dt) const;
 			virtual void export_data(const Eigen::MatrixXd &solution) const = 0;
 
 		protected:
+			virtual void invalidate_after_geometry_update();
+			virtual void invalidate_after_parameter_update();
+
 			std::string resolve_output_path(const std::string &path) const;
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
@@ -125,8 +216,11 @@ namespace polyfem
 			void assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
 			virtual void assemble_rhs(const mesh::Mesh &mesh) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
-			void prepare();
+			virtual void solve_problem(
+				Eigen::MatrixXd &sol,
+				const InitialConditionOverride *initial_condition_override,
+				const ForwardStepCallback &post_step,
+				bool is_differentiable) = 0;
 			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
 
 			void build_fe_space(

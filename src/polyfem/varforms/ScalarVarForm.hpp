@@ -18,6 +18,24 @@ namespace polyfem::varform
 	public:
 		std::string name() const override { return "Scalar"; }
 
+		const FESpace &primary_space() const override { return space_; }
+		const VarFormBoundaryState &boundary_state() const override { return boundary_; }
+		const assembler::Assembler &primary_assembler() const override
+		{
+			assert(primary_assembler_ && "The primary assembler must be initialized before it is accessed");
+			return *primary_assembler_;
+		}
+		const assembler::Mass &mass_assembler() const override
+		{
+			assert(mass_assembler_ && "The mass assembler must be initialized before it is accessed");
+			return *mass_assembler_;
+		}
+		const assembler::AssemblyValsCache &assembly_cache() const override { return ass_vals_cache_; }
+		const assembler::AssemblyValsCache &mass_assembly_cache() const override { return mass_ass_vals_cache_; }
+		const StiffnessMatrix &mass_matrix() const override { return mass_; }
+		solver::SolveData *solve_data() override { return &solve_data_; }
+		const solver::SolveData *solve_data() const override { return &solve_data_; }
+
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 		void export_data(const Eigen::MatrixXd &solution) const override;
@@ -30,6 +48,8 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
+		void invalidate_after_geometry_update() override;
+		void invalidate_after_parameter_update() override;
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
@@ -53,6 +73,7 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::Assembler> primary_assembler_ = nullptr;
 		std::shared_ptr<assembler::Mass> mass_assembler_ = nullptr;
 		std::shared_ptr<assembler::HRZMass> pure_mass_assembler_ = nullptr;
+		solver::SolveData solve_data_;
 
 		double t0 = 0;
 		int time_steps = 0;
@@ -62,15 +83,19 @@ namespace polyfem::varform
 
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step,
+			bool is_differentiable) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol);
-		void solve_static(Eigen::MatrixXd &sol);
-		void solve_transient(Eigen::MatrixXd &sol);
+		void solve_static(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
+		void solve_transient(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};

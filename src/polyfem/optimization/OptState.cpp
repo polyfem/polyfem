@@ -113,14 +113,14 @@ namespace polyfem
 		args = solver::AdjointOptUtils::apply_opt_json_spec(args_in, strict_validation);
 
 		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = utils::resolve_path(this->args["output"]["directory"], root_path(), false);
+		const std::string output_dir = utils::resolve_path(args["output"]["directory"], root_path(), false);
 		if (!output_dir.empty())
 		{
 			std::filesystem::create_directories(output_dir);
 		}
 		this->output_dir = output_dir;
 
-		std::string out_path_log = this->args["output"]["log"]["path"];
+		std::string out_path_log = args["output"]["log"]["path"];
 		if (!out_path_log.empty())
 		{
 			out_path_log = utils::resolve_path(out_path_log, root_path(), false);
@@ -128,13 +128,13 @@ namespace polyfem
 
 		init_logger(
 			out_path_log,
-			this->args["output"]["log"]["level"],
-			this->args["output"]["log"]["file_level"],
-			this->args["output"]["log"]["quiet"]);
+			args["output"]["log"]["level"],
+			args["output"]["log"]["file_level"],
+			args["output"]["log"]["quiet"]);
 
 		adjoint_logger().info("Saving adjoint output to {}", output_dir);
 
-		const int thread_in = this->args["solver"]["max_threads"];
+		const int thread_in = args["solver"]["max_threads"];
 		utils::NThread::get().set_num_threads(thread_in);
 	}
 
@@ -161,53 +161,59 @@ namespace polyfem
 	{
 		for (int i = 0; i < states.size(); ++i)
 		{
-			const legacy::State &state = *states[i];
-
-			// No transient linear support.
-			if (state.problem->is_time_dependent() && state.is_problem_linear())
+			const varform::VarForm &state = *states[i];
+			if (!state.solve_data())
 			{
 				log_and_throw_adjoint_error(
-					"legacy::State {}: transient linear problem is not supported in optimization.", i);
+					"varform::VarForm {} ({}) does not expose solve data required by optimization.",
+					i, state.name());
+			}
+
+			// No transient linear support.
+			if (state.get_problem().is_time_dependent() && state.is_problem_linear())
+			{
+				log_and_throw_adjoint_error(
+					"varform::VarForm {}: transient linear problem is not supported in optimization.", i);
 			}
 
 			if (state.is_contact_enabled())
 			{
 				// No non-convergent contact formulation support.
-				if (!state.args["contact"]["use_gcp_formulation"].get<bool>()
-					&& !state.args["contact"]["use_convergent_formulation"].get<bool>())
+				if (!state.get_args()["contact"]["use_gcp_formulation"].get<bool>()
+					&& !state.get_args()["contact"]["use_convergent_formulation"].get<bool>())
 				{
 					log_and_throw_adjoint_error(
-						"legacy::State {}: non-convergent contact formulation is not supported in optimization.", i);
+						"varform::VarForm {}: non-convergent contact formulation is not supported in optimization.", i);
 				}
 
 				// No non-const barrier stiffness support.
-				if (state.args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				if (state.get_args()["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
 					log_and_throw_adjoint_error(
-						"legacy::State {}: only constant barrier stiffness is supported in optimization.", i);
+						"varform::VarForm {}: only constant barrier stiffness is supported in optimization.", i);
 				}
 			}
 
 			// No non-const boundary support.
-			if (state.args.contains("boundary_conditions") && state.args["boundary_conditions"].contains("rhs"))
+			if (state.get_args().contains("boundary_conditions") && state.get_args()["boundary_conditions"].contains("rhs"))
 			{
-				const json &rhs = state.args["boundary_conditions"]["rhs"];
+				const json &rhs = state.get_args()["boundary_conditions"]["rhs"];
 				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
 				{
 					log_and_throw_adjoint_error(
-						"legacy::State {}: only constant rhs over space is supported in optimization.", i);
+						"varform::VarForm {}: only constant rhs over space is supported in optimization.", i);
 				}
 			}
 
 			// No high order geometric basis support.
-			for (const auto &element_bases : state.geom_bases())
+			for (const auto &element_bases : state.primary_space().geometry_basis_list())
 			{
 				for (const auto &basis : element_bases.bases)
 				{
 					if (basis.order() > 1)
 					{
 						log_and_throw_adjoint_error(
-							"legacy::State {}: high-order geometry basis is not supported in optimization.", i);
+							"varform::VarForm {}: high-order geometry basis is not supported in optimization.", i);
 					}
 				}
 			}

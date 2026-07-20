@@ -420,8 +420,16 @@ namespace polyfem::varform
 		}
 	}
 
-	void IncompressibleElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void IncompressibleElasticVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
+		assert(!initial_condition_override && "Incompressible elasticity does not support initial-condition overrides");
+		assert(!post_step && "Incompressible elasticity does not support post-step callbacks");
+		assert(!is_differentiable && "Incompressible elasticity does not support differentiated solves");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -62,55 +62,60 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void compute_force_jacobian(legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
+		void compute_force_jacobian(varform::VarForm &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 		{
 			auto &s = state;
+			const solver::SolveData *solve_data = s.solve_data();
+			assert(solve_data && "Optimization states must expose solve data");
 
-			if (s.problem->is_time_dependent())
+			if (s.get_problem().is_time_dependent())
 			{
 				StiffnessMatrix tmp_hess;
-				s.solve_data.nl_problem->set_project_to_psd(false);
-				s.solve_data.nl_problem->FullNLProblem::solution_changed(sol);
-				s.solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
+				assert(solve_data->nl_problem && "Transient differentiation requires an initialized nonlinear problem");
+				solve_data->nl_problem->set_project_to_psd(false);
+				solve_data->nl_problem->FullNLProblem::solution_changed(sol);
+				solve_data->nl_problem->FullNLProblem::hessian(sol, tmp_hess);
 				hessian.setZero();
-				replace_rows_by_identity(hessian, tmp_hess, s.boundary_nodes);
+				replace_rows_by_identity(hessian, tmp_hess, s.boundary_state().boundary_nodes);
 			}
 			else // static formulation
 			{
-				if (s.assembler->is_linear() && !s.is_contact_enabled() && !s.is_homogenization())
+				if (s.primary_assembler().is_linear() && !s.is_contact_enabled() && !s.is_homogenization())
 				{
 					hessian.setZero();
 					StiffnessMatrix stiffness;
-					s.build_stiffness_mat(stiffness);
-					replace_rows_by_identity(hessian, stiffness, s.boundary_nodes);
+					s.build_stiffness_matrix(stiffness);
+					replace_rows_by_identity(hessian, stiffness, s.boundary_state().boundary_nodes);
 				}
 				else
 				{
-					s.solve_data.nl_problem->set_project_to_psd(false);
+					assert(solve_data->nl_problem && "Nonlinear differentiation requires an initialized nonlinear problem");
+					solve_data->nl_problem->set_project_to_psd(false);
 					if (s.is_homogenization())
 					{
 						Eigen::VectorXd reduced;
-						std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(s.solve_data.nl_problem);
+						std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data->nl_problem);
+						assert(homo_problem && "Homogenization requires NLHomoProblem solve data");
 						reduced = homo_problem->full_to_reduced(sol, disp_grad);
-						s.solve_data.nl_problem->solution_changed(reduced);
-						s.solve_data.nl_problem->hessian(reduced, hessian);
+						solve_data->nl_problem->solution_changed(reduced);
+						solve_data->nl_problem->hessian(reduced, hessian);
 					}
 					else
 					{
 						StiffnessMatrix tmp_hess;
-						s.solve_data.nl_problem->FullNLProblem::solution_changed(sol);
-						s.solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
+						solve_data->nl_problem->FullNLProblem::solution_changed(sol);
+						solve_data->nl_problem->FullNLProblem::hessian(sol, tmp_hess);
 						hessian.setZero();
-						replace_rows_by_identity(hessian, tmp_hess, s.boundary_nodes);
+						replace_rows_by_identity(hessian, tmp_hess, s.boundary_state().boundary_nodes);
 					}
 				}
 			}
 		}
 
-		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const legacy::State &state)
+		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const varform::VarForm &state)
 		{
-			auto &gbases = state.geom_bases();
-			auto &bases = state.bases;
+			auto &gbases = state.primary_space().geometry_basis_list();
+			auto &bases = state.primary_space().basis_list();
 
 			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
@@ -121,9 +126,9 @@ namespace polyfem
 
 				Eigen::MatrixXd local_pts;
 				int order = bs.front().order();
-				if (state.mesh->is_volume())
+				if (state.get_mesh().is_volume())
 				{
-					if (state.mesh->is_simplex(e))
+					if (state.get_mesh().is_simplex(e))
 					{
 						autogen::p_nodes_3d(order, local_pts);
 					}
@@ -134,7 +139,7 @@ namespace polyfem
 				}
 				else
 				{
-					if (state.mesh->is_simplex(e))
+					if (state.get_mesh().is_simplex(e))
 					{
 						autogen::p_nodes_2d(order, local_pts);
 					}
@@ -145,7 +150,7 @@ namespace polyfem
 				}
 
 				assembler::ElementAssemblyValues vals;
-				vals.compute(e, state.mesh->is_volume(), local_pts, gbases[e], gbases[e]);
+				vals.compute(e, state.get_mesh().is_volume(), local_pts, gbases[e], gbases[e]);
 
 				for (int i = 0; i < bs.size(); i++)
 				{
@@ -160,7 +165,7 @@ namespace polyfem
 				}
 			}
 
-			int dim = state.mesh->dimension();
+			int dim = state.get_mesh().dimension();
 			std::vector<Eigen::Triplet<double>> coeffs;
 			coeffs.reserve(pairs.size() * dim);
 			for (const auto &iter : pairs)
@@ -172,7 +177,7 @@ namespace polyfem
 			}
 
 			StiffnessMatrix mapping;
-			mapping.resize(state.n_geom_bases * dim, state.n_bases * dim);
+			mapping.resize(state.primary_space().geometry->n_bases * dim, state.primary_space().n_bases * dim);
 			mapping.setFromTriplets(coeffs.begin(), coeffs.end());
 			return mapping;
 		}
@@ -282,7 +287,7 @@ namespace polyfem
 
 	void DiffCache::cache_transient(
 		int step,
-		legacy::State &state,
+		varform::VarForm &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd *disp_grad,
 		const Eigen::MatrixXd *pressure)
@@ -305,14 +310,14 @@ namespace polyfem
 		}
 		else
 		{
-			int mesh_dim = s.mesh->dimension();
+			int mesh_dim = s.get_mesh().dimension();
 			disp_grad_final = Eigen::MatrixXd::Zero(mesh_dim, mesh_dim);
 		}
 
 		StiffnessMatrix gradu_h(sol.size(), sol.size());
 		if (step == 0)
 		{
-			init(s.mesh->dimension(), s.ndof(), s.problem->is_time_dependent() ? s.args["time"]["time_steps"].get<int>() : 0);
+			init(s.get_mesh().dimension(), s.primary_space().ndof(), s.get_problem().is_time_dependent() ? s.get_args()["time"]["time_steps"].get<int>() : 0);
 		}
 
 		ipc::NormalCollisions cur_collision_set;
@@ -321,23 +326,28 @@ namespace polyfem
 		ipc::NormalCollisions cur_normal_adhesion_set;
 		ipc::TangentialCollisions cur_tangential_adhesion_set;
 
-		if (!s.problem->is_time_dependent() || step > 0)
+		if (!s.get_problem().is_time_dependent() || step > 0)
 			compute_force_jacobian(s, sol, disp_grad_final, gradu_h);
 
-		if (s.solve_data.contact_form)
+		const auto *solve_data = s.solve_data();
+		assert(solve_data && "Optimization states must expose solve data");
+		if (solve_data->contact_form)
 		{
-			if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(s.solve_data.contact_form.get()))
+			if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(solve_data->contact_form.get()))
 				cur_collision_set = barrier_contact->collision_set();
-			else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(s.solve_data.contact_form.get()))
+			else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(solve_data->contact_form.get()))
 				cur_smooth_collision_set = smooth_contact->collision_set();
 		}
-		cur_friction_set = s.solve_data.friction_form ? s.solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
-		cur_normal_adhesion_set = s.solve_data.normal_adhesion_form ? s.solve_data.normal_adhesion_form->collision_set() : ipc::NormalCollisions();
-		cur_tangential_adhesion_set = s.solve_data.tangential_adhesion_form ? s.solve_data.tangential_adhesion_form->tangential_collision_set() : ipc::TangentialCollisions();
+		if (solve_data->friction_form)
+			cur_friction_set = solve_data->friction_form->friction_collision_set();
+		if (solve_data->normal_adhesion_form)
+			cur_normal_adhesion_set = solve_data->normal_adhesion_form->collision_set();
+		if (solve_data->tangential_adhesion_form)
+			cur_tangential_adhesion_set = solve_data->tangential_adhesion_form->tangential_collision_set();
 
-		if (s.problem->is_time_dependent())
+		if (s.get_problem().is_time_dependent())
 		{
-			if (s.args["time"]["quasistatic"].get<bool>())
+			if (s.get_args()["time"]["quasistatic"].get<bool>())
 			{
 				cache_quantities_quasistatic(step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad_final);
 			}
@@ -346,28 +356,28 @@ namespace polyfem
 				Eigen::MatrixXd vel, acc;
 				if (step == 0)
 				{
-					if (dynamic_cast<time_integrator::BDF *>(s.solve_data.time_integrator.get()))
+					if (dynamic_cast<time_integrator::BDF *>(solve_data->time_integrator.get()))
 					{
-						const auto bdf_integrator = dynamic_cast<time_integrator::BDF *>(s.solve_data.time_integrator.get());
+						const auto bdf_integrator = dynamic_cast<time_integrator::BDF *>(solve_data->time_integrator.get());
 						vel = bdf_integrator->weighted_sum_v_prevs();
 					}
-					else if (dynamic_cast<time_integrator::ImplicitEuler *>(s.solve_data.time_integrator.get()))
+					else if (dynamic_cast<time_integrator::ImplicitEuler *>(solve_data->time_integrator.get()))
 					{
-						const auto euler_integrator = dynamic_cast<time_integrator::ImplicitEuler *>(s.solve_data.time_integrator.get());
+						const auto euler_integrator = dynamic_cast<time_integrator::ImplicitEuler *>(solve_data->time_integrator.get());
 						vel = euler_integrator->v_prev();
 					}
 					else
 						log_and_throw_error("Differentiable code doesn't support this time integrator!");
 
-					acc.setZero(s.ndof(), 1);
+					acc.setZero(s.primary_space().ndof(), 1);
 				}
 				else
 				{
-					vel = s.solve_data.time_integrator->compute_velocity(sol);
-					acc = s.solve_data.time_integrator->compute_acceleration(vel);
+					vel = solve_data->time_integrator->compute_velocity(sol);
+					acc = solve_data->time_integrator->compute_acceleration(vel);
 				}
 
-				cache_quantities_transient(step, s.solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set);
+				cache_quantities_transient(step, solve_data->time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set);
 			}
 		}
 		else

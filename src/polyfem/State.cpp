@@ -456,7 +456,7 @@ namespace polyfem
 		assert(variational_formulation != nullptr);
 
 		variational_formulation->set_time_callback(time_callback);
-		variational_formulation->solve(sol);
+		variational_formulation->solve(sol, nullptr, {}, false);
 	}
 
 	void State::load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)

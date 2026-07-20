@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletBoundaryVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
@@ -27,7 +27,7 @@ namespace polyfem::solver
 		CompositeParametrization parametrizations,
 		Eigen::VectorXi active_boundary_ids,
 		Eigen::VectorXi active_time_slices)
-		: dim_(states[0]->mesh->dimension()),
+		: dim_(states[0]->get_mesh().dimension()),
 		  time_steps_(0),
 		  states_(std::move(states)),
 		  diff_caches_(std::move(diff_caches)),
@@ -41,13 +41,13 @@ namespace polyfem::solver
 		// Static problem support is not implemented.
 		for (auto &s : states_)
 		{
-			if (!s->problem->is_time_dependent())
+			if (!s->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct dirichlet boundary variable to simulation. Reason: only transient simulations supported.");
 			}
 		}
 
-		time_steps_ = states_[0]->args["time"]["time_steps"].get<int>();
+		time_steps_ = states_[0]->get_args()["time"]["time_steps"].get<int>();
 
 		// Expand implicit all-active boundary id selection.
 		if (active_boundary_ids_.size() == 0)
@@ -96,7 +96,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletBoundaryVariableToSimulation::affect_state(const legacy::State &target) const
+	bool DirichletBoundaryVariableToSimulation::affect_state(const varform::VarForm &target) const
 	{
 		for (auto &s : states_)
 		{
@@ -116,12 +116,6 @@ namespace polyfem::solver
 		int boundary_num = active_boundary_ids_.size();
 		for (auto &s : states_)
 		{
-			auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(s->problem);
-			if (!tensor_problem)
-			{
-				log_and_throw_adjoint_error("Only tensor problems are supported.");
-			}
-
 			for (int ti = 0; ti < active_time_slices_.size(); ++ti)
 			{
 				int t = active_time_slices_(ti) + 1;
@@ -130,7 +124,7 @@ namespace polyfem::solver
 				{
 					int boundary_id = active_boundary_ids_(bi);
 					int offset = (ti * boundary_num + bi) * dim_;
-					tensor_problem->update_dirichlet_boundary(boundary_id, t, y.segment(offset, dim_));
+					s->set_dirichlet_boundary(boundary_id, t, y.segment(offset, dim_));
 				}
 			}
 		}
@@ -157,7 +151,7 @@ namespace polyfem::solver
 			Eigen::VectorXd node_term;
 			AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, adjoint_nu, adjoint_p, node_term);
 
-			int boundary_node_num = state->boundary_nodes.size();
+			int boundary_node_num = state->boundary_state().boundary_nodes.size();
 			assert(node_term.size() == time_steps_ * boundary_node_num);
 
 			// dJ_dirichlet_transient_adjoint_term compute adjoint terms per boundary node.
@@ -195,7 +189,7 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd y = Eigen::VectorXd::Zero(para_out_dof());
 		std::vector<json> boundary_jsons =
-			utils::json_as_array(states_[0]->args["boundary_conditions"]["dirichlet_boundary"]);
+			utils::json_as_array(states_[0]->get_args()["boundary_conditions"]["dirichlet_boundary"]);
 
 		for (int bi = 0; bi < active_boundary_ids_.size(); ++bi)
 		{
@@ -265,13 +259,13 @@ namespace polyfem::solver
 
 		for (int si = 0; si < states_.size(); ++si)
 		{
-			const legacy::State &state = *states_[si];
+			const varform::VarForm &state = *states_[si];
 
 			// Map boundary node (FE space dof) to offset in boundary_nodes vector.
 			std::unordered_map<int, int> boundary_node_offset;
-			for (int p = 0; p < state.boundary_nodes.size(); ++p)
+			for (int p = 0; p < state.boundary_state().boundary_nodes.size(); ++p)
 			{
-				boundary_node_offset[state.boundary_nodes[p]] = p;
+				boundary_node_offset[state.boundary_state().boundary_nodes[p]] = p;
 			}
 
 			BoundaryNodeMap map(active_boundary_ids_.size(), std::vector<std::vector<int>>(dim_));
@@ -287,15 +281,15 @@ namespace polyfem::solver
 			// 2. Map primitives to geoemtric nodes.
 			// 3. Map geometric nodes to FE dof.
 			// 4. Map FE dof to offset in boundary_nodes.
-			for (auto &lb : state.local_boundary)
+			for (auto &lb : state.boundary_state().local_boundary)
 			{
 				int e = lb.element_id();
-				const basis::ElementBases &bs = state.bases[e];
+				const basis::ElementBases &bs = state.primary_space().basis_list()[e];
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					int primitive_global_id = lb.global_primitive_id(i);
-					int boundary_id = state.mesh->get_boundary_id(primitive_global_id);
+					int boundary_id = state.get_mesh().get_boundary_id(primitive_global_id);
 
 					// 1. Find primitives selected by active boundary id.
 					auto iter = active_boundary_id_offset.find(boundary_id);
@@ -306,7 +300,7 @@ namespace polyfem::solver
 					int boundary_offset = iter->second;
 
 					// 2. Map primitives to geometric nodes.
-					Eigen::VectorXi geom_nodes = bs.local_nodes_for_primitive(primitive_global_id, *state.mesh);
+					Eigen::VectorXi geom_nodes = bs.local_nodes_for_primitive(primitive_global_id, state.get_mesh());
 					for (int geom_node : geom_nodes)
 					{
 						// 3. Map geometric nodes to FE dof.

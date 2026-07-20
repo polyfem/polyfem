@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -16,13 +16,13 @@ namespace polyfem::solver
 {
 	BoundarySmoothingForm::BoundarySmoothingForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const legacy::State> state,
+		std::shared_ptr<const varform::VarForm> state,
 		const bool scale_invariant,
 		const int power,
 		const std::vector<int> &surface_selections,
 		const std::vector<int> &active_dims) : AdjointForm(variable_to_simulations), state_(std::move(state)), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
 	{
-		const auto &mesh = *(state_->mesh);
+		const auto &mesh = state_->get_mesh();
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 		assert(mesh.is_simplicial());
@@ -87,7 +87,7 @@ namespace polyfem::solver
 
 	double BoundarySmoothingForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const auto &mesh = *(state_->mesh);
+		const auto &mesh = state_->get_mesh();
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 
@@ -128,7 +128,7 @@ namespace polyfem::solver
 
 	void BoundarySmoothingForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const auto &mesh = *(state_->mesh);
+		const auto &mesh = state_->get_mesh();
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 

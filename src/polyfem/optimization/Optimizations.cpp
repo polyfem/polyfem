@@ -1,6 +1,6 @@
 #include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/StateDiff.hpp>
@@ -27,6 +27,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem_opt.hpp>
@@ -133,12 +134,10 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(legacy::State &state)
+	void AdjointOptUtils::solve_pde(varform::VarForm &state)
 	{
-		state.assemble_rhs();
-		state.assemble_mass_mat();
-		Eigen::MatrixXd sol, pressure;
-		state.solve_problem(sol, pressure);
+		Eigen::MatrixXd solution;
+		state.solve(solution, nullptr, {}, false);
 	}
 
 	void apply_objective_json_spec(json &args, const json &rules)
@@ -204,7 +203,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<legacy::State>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::VarForm>> &states)
 	{
 		if (args["number"].is_number())
 		{
@@ -229,7 +228,7 @@ namespace polyfem::solver
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
-				return node_ids.size() * states[state_id]->mesh->dimension();
+				return node_ids.size() * states[state_id]->get_mesh().dimension();
 			}
 			else if (selection.contains("volume_selection"))
 			{
@@ -252,7 +251,7 @@ namespace polyfem::solver
 						node_ids.erase(i);
 				}
 
-				return node_ids.size() * states[state_id]->mesh->dimension();
+				return node_ids.size() * states[state_id]->get_mesh().dimension();
 			}
 		}
 

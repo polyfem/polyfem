@@ -847,8 +847,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
 			boundary_.local_neumann_boundary, rhs_);
@@ -882,8 +881,7 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness, expanded_mass;
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass_, expanded_mass);
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -921,8 +919,16 @@ namespace polyfem::varform
 		}
 	}
 
-	void StokesVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void StokesVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
+		assert(!initial_condition_override && "Stokes does not support initial-condition overrides");
+		assert(!post_step && "Stokes does not support post-step callbacks");
+		assert(!is_differentiable && "Stokes does not support differentiated solves");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();
@@ -996,8 +1002,7 @@ namespace polyfem::varform
 		stacked_form_->add(velocity_block, navier_stokes_form_);
 
 		velocity_rhs_ = rhs_.topRows(primary_ndof());
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
 		body_form_ = std::make_shared<solver::BodyForm>(
 			primary_ndof(), /*n_pressure_bases=*/0,
 			boundary_.boundary_nodes, boundary_.local_boundary,
@@ -1127,8 +1132,16 @@ namespace polyfem::varform
 			args["solver"]["linear"], units.characteristic_length(), nl_solver);
 	}
 
-	void NavierStokesVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NavierStokesVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step,
+		const bool is_differentiable)
 	{
+		assert(!initial_condition_override && "Navier-Stokes does not support initial-condition overrides");
+		assert(!post_step && "Navier-Stokes does not support post-step callbacks");
+		assert(!is_differentiable && "Navier-Stokes does not support differentiated solves");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

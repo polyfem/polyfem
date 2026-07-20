@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/varforms/ElasticVarForm.hpp>
+#include <polyfem/solver/SolveData.hpp>
 
 #include <memory>
 
@@ -24,6 +25,8 @@ namespace polyfem::varform
 
 	public:
 		std::string name() const override { return "LinearElastic"; }
+		solver::SolveData *solve_data() override { return &solve_data_; }
+		const solver::SolveData *solve_data() const override { return &solve_data_; }
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -31,10 +34,16 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
+		void invalidate_after_geometry_update() override;
+		void invalidate_after_parameter_update() override;
 		void reset() override;
 
-		void solve_problem(Eigen::MatrixXd &sol) override;
-		void init_linear_solve(Eigen::MatrixXd &sol, const double t);
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step,
+			bool is_differentiable) override;
+		void init_linear_solve(Eigen::MatrixXd &sol, const double t, const InitialConditionOverride *initial_condition_override);
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
@@ -42,13 +51,9 @@ namespace polyfem::varform
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol);
-		void solve_static_linear(Eigen::MatrixXd &sol);
-		void solve_transient_linear(Eigen::MatrixXd &sol);
+		void solve_static_linear(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
+		void solve_transient_linear(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
 
-		std::shared_ptr<solver::ElasticForm> elastic_form;
-		std::shared_ptr<solver::BodyForm> body_form;
-		std::shared_ptr<solver::InertiaForm> inertia_form;
-
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+		solver::SolveData solve_data_;
 	};
 } // namespace polyfem::varform

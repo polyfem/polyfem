@@ -26,7 +26,7 @@ namespace polyfem::solver
 
 		for (auto &s : states_)
 		{
-			if (!s->problem->is_time_dependent())
+			if (!s->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct damping variable to simulation. Reason: Can't optimize damping for static problem.");
 			}
@@ -43,7 +43,7 @@ namespace polyfem::solver
 		return ParameterType::DampingCoefficient;
 	}
 
-	bool DampingVariableToSimulation::affect_state(const legacy::State &target) const
+	bool DampingVariableToSimulation::affect_state(const varform::VarForm &target) const
 	{
 		for (const auto &s : states_)
 		{
@@ -65,28 +65,7 @@ namespace polyfem::solver
 
 		for (auto &s : states_)
 		{
-			if (!s->args["materials"].is_array())
-			{
-				s->args["materials"]["psi"] = psi;
-				s->args["materials"]["phi"] = phi;
-			}
-			else
-			{
-				for (auto &arg : s->args["materials"])
-				{
-					arg["psi"] = psi;
-					arg["phi"] = phi;
-				}
-			}
-
-			if (s->damping_assembler)
-			{
-				json damping_param = {
-					{"psi", psi},
-					{"phi", phi},
-				};
-				s->damping_assembler->add_multimaterial(0, damping_param, s->units, s->root_path());
-			}
+			s->set_damping_coefficients(psi, phi);
 		}
 	}
 
@@ -104,7 +83,7 @@ namespace polyfem::solver
 			auto &state = states_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			assert(state->problem->is_time_dependent());
+			assert(state->get_problem().is_time_dependent());
 			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
 			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
 			AdjointTools::dJ_damping_transient_adjoint_term(*state, *diff_cache, adjoint_nu, adjoint_p, cur_term);
@@ -131,7 +110,7 @@ namespace polyfem::solver
 	Eigen::VectorXd DampingVariableToSimulation::inverse_eval() const
 	{
 		Eigen::VectorXd y(para_out_dof());
-		json material = states_[0]->args["materials"];
+		json material = states_[0]->get_args()["materials"];
 		if (material.is_array())
 		{
 			material = material[0];

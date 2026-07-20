@@ -12,14 +12,6 @@
 #include <vector>
 #include <fstream>
 
-namespace polyfem
-{
-	namespace legacy
-	{
-		class State;
-	}
-} // namespace polyfem
-
 namespace polyfem::solver
 {
 	class AdjointForm;
@@ -29,14 +21,14 @@ namespace polyfem::solver
 	public:
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 						 const VariableToSimulationGroup &variables_to_simulation,
-						 const std::vector<std::shared_ptr<legacy::State>> &all_states,
+						 const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 						 const json &args);
 
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 						 const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 						 const VariableToSimulationGroup &variables_to_simulation,
-						 const std::vector<std::shared_ptr<legacy::State>> &all_states,
+						 const std::vector<std::shared_ptr<varform::VarForm>> &all_states,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 						 const json &args);
 
@@ -61,7 +53,7 @@ namespace polyfem::solver
 	private:
 		std::shared_ptr<AdjointForm> form_;
 		VariableToSimulationGroup variables_to_simulation_;
-		std::vector<std::shared_ptr<legacy::State>> all_states_;
+		std::vector<std::shared_ptr<varform::VarForm>> all_states_;
 		std::vector<std::shared_ptr<DiffCache>> all_diff_caches_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;

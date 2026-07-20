@@ -187,7 +187,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// nonlinear inequality constraints g(x) < 0
 	{
 		auto obj1 = std::make_shared<WeightedVolumeForm>(
-			CompositeParametrization({std::make_shared<LinearFilter>(*ctx.opt.states[0]->mesh, 0.1)}),
+			CompositeParametrization({std::make_shared<LinearFilter>(ctx.opt.states[0]->get_mesh(), 0.1)}),
 			ctx.opt.states[0]);
 		obj1->set_weight(1 / 1.2);
 		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
@@ -260,7 +260,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 	{
 // 		const auto &mesh = states[0]->mesh;
 // 		const auto &bases = states[0]->bases;
-// 		const auto &gbases = states[0]->geom_bases();
+// 		const auto &gbases = states[0]->primary_space().geometry_basis_list();
 // 		dim = mesh->dimension();
 
 // 		std::set<int> node_ids;
@@ -357,7 +357,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 	{
 // 		const auto &mesh = states[0]->mesh;
 // 		const auto &bases = states[0]->bases;
-// 		const auto &gbases = states[0]->geom_bases();
+// 		const auto &gbases = states[0]->primary_space().geometry_basis_list();
 // 		dim = mesh->dimension();
 
 // 		std::set<int> node_ids;

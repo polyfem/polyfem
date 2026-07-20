@@ -38,6 +38,18 @@
 
 namespace polyfem::varform
 {
+	void ElasticVarForm::invalidate_after_geometry_update()
+	{
+		rhs_assembler_ = nullptr;
+		VarForm::invalidate_after_geometry_update();
+	}
+
+	void ElasticVarForm::invalidate_after_parameter_update()
+	{
+		rhs_assembler_ = nullptr;
+		VarForm::invalidate_after_parameter_update();
+	}
+
 	void ElasticVarForm::reset()
 	{
 		VarForm::reset();
@@ -332,9 +344,17 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
+	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override) const
 	{
 		assert(rhs_assembler_ != nullptr);
+		if (override && override->velocity.size() != 0)
+		{
+			velocity = override->velocity;
+			assert(
+				velocity.rows() == space_.ndof() && velocity.cols() >= 1
+				&& "Initial velocity override must match the simulation DOFs");
+			return;
+		}
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
@@ -345,9 +365,22 @@ namespace polyfem::varform
 			rhs_assembler_->initial_velocity(velocity);
 	}
 
-	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void ElasticVarForm::initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override) const
+	{
+		initial_elastic_solution(solution, override);
+	}
+
+	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override) const
 	{
 		assert(rhs_assembler_ != nullptr);
+		if (override && override->acceleration.size() != 0)
+		{
+			acceleration = override->acceleration;
+			assert(
+				acceleration.rows() == space_.ndof() && acceleration.cols() >= 1
+				&& "Initial acceleration override must match the simulation DOFs");
+			return;
+		}
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",
@@ -358,9 +391,17 @@ namespace polyfem::varform
 			rhs_assembler_->initial_acceleration(acceleration);
 	}
 
-	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution) const
+	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override) const
 	{
 		assert(rhs_assembler_ != nullptr);
+		if (override && override->solution.size() != 0)
+		{
+			solution = override->solution;
+			assert(
+				solution.rows() == space_.ndof() && solution.cols() >= 1
+				&& "Initial solution override must match the simulation DOFs");
+			return;
+		}
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
@@ -381,9 +422,7 @@ namespace polyfem::varform
 
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const
 	{
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const int discr_order = std::max(space_.disc_orders.maxCoeff(), gdiscr_order);
-		return n_boundary_samples(discr_order, gdiscr_order);
+		return VarForm::n_boundary_samples();
 	}
 
 	std::vector<int> ElasticVarForm::elastic_primitive_to_node() const

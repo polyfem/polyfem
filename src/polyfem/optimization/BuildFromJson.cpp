@@ -1,6 +1,7 @@
 #include <polyfem/optimization/BuildFromJson.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
@@ -90,7 +91,7 @@ namespace polyfem::from_json
 			return mat.reshaped();
 		}
 
-		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const legacy::State &state)
+		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const varform::VarForm &state)
 		{
 			if (j.is_array())
 			{
@@ -98,7 +99,7 @@ namespace polyfem::from_json
 			}
 			if (j.is_string())
 			{
-				return eigen_vector_xi_from_file(state.resolve_input_path(j.get<std::string>()));
+				return eigen_vector_xi_from_file(state.input_path(j.get<std::string>()));
 			}
 
 			// Advanced selection.
@@ -124,40 +125,34 @@ namespace polyfem::from_json
 
 	} // namespace
 
-	std::shared_ptr<legacy::State> build_state(
+	std::shared_ptr<varform::VarForm> build_state(
 		const json &args,
 		const size_t max_threads)
 	{
-		std::shared_ptr<legacy::State> state = std::make_shared<legacy::State>();
-		state->set_max_threads(max_threads);
-
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
 
-		state->optimization_enabled = true;
-		state->init(in_args, true);
-		state->load_mesh();
-		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
-
-		return state;
+		State state;
+		state.init(in_args, true);
+		state.load_mesh();
+		state.variational_formulation->prepare();
+		return state.variational_formulation;
 	}
 
-	std::vector<std::shared_ptr<legacy::State>> build_states(
+	std::vector<std::shared_ptr<varform::VarForm>> build_states(
 		const std::string &root_path,
 		const json &args,
 		const size_t max_threads,
 		const json &output_log)
 	{
-		std::vector<std::shared_ptr<legacy::State>> states(args.size());
+		std::vector<std::shared_ptr<varform::VarForm>> states(args.size());
 		for (int i = 0; i < args.size(); ++i)
 		{
 			json cur_args;
 			std::string abs_path = utils::resolve_path(args[i]["path"], root_path, false);
 			if (!load_json(abs_path, cur_args))
 			{
-				log_and_throw_adjoint_error("Can't find json for legacy::State {}", i);
+				log_and_throw_adjoint_error("Can't find json for varform::VarForm {}", i);
 			}
 
 			if (!output_log.empty())
@@ -170,7 +165,7 @@ namespace polyfem::from_json
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
 		const json &args,
-		const std::vector<std::shared_ptr<legacy::State>> &states,
+		const std::vector<std::shared_ptr<varform::VarForm>> &states,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
@@ -179,14 +174,14 @@ namespace polyfem::from_json
 		const std::string type = args["type"];
 		if (type == "per-body-to-per-elem")
 		{
-			map = std::make_shared<PerBody2PerElem>(*(states[args["state"]]->mesh));
+			map = std::make_shared<PerBody2PerElem>(states[args["state"]]->get_mesh());
 		}
 		else if (type == "per-body-to-per-node")
 		{
 			auto &s = states[args["state"]];
-			map = std::make_shared<PerBody2PerNode>(*(s->mesh),
-													s->bases,
-													s->n_bases - s->obstacle.n_vertices());
+			map = std::make_shared<PerBody2PerNode>(s->get_mesh(),
+												s->primary_space().basis_list(),
+												s->primary_space().n_bases);
 		}
 		else if (type == "E-nu-to-lambda-mu")
 		{
@@ -243,7 +238,7 @@ namespace polyfem::from_json
 		}
 		else if (type == "linear-filter")
 		{
-			map = std::make_shared<LinearFilter>(*(states[args["state"]]->mesh), args["radius"]);
+			map = std::make_shared<LinearFilter>(states[args["state"]]->get_mesh(), args["radius"]);
 		}
 		else if (type == "bounded-biharmonic-weights")
 		{
@@ -265,14 +260,14 @@ namespace polyfem::from_json
 
 	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
-		const std::vector<std::shared_ptr<legacy::State>> &states,
+		const std::vector<std::shared_ptr<varform::VarForm>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
 
 		// Collect relevant states from state index json.
-		std::vector<std::shared_ptr<legacy::State>> rel_states;
+		std::vector<std::shared_ptr<varform::VarForm>> rel_states;
 		std::vector<std::shared_ptr<DiffCache>> rel_diff_caches;
 		if (args["state"].is_array())
 		{
@@ -390,7 +385,7 @@ namespace polyfem::from_json
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
-		const std::vector<std::shared_ptr<legacy::State>> &states,
+		const std::vector<std::shared_ptr<varform::VarForm>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
@@ -406,7 +401,7 @@ namespace polyfem::from_json
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
-		const std::vector<std::shared_ptr<legacy::State>> &states,
+		const std::vector<std::shared_ptr<varform::VarForm>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches)
 	{
 		using namespace polyfem::solver;
@@ -435,7 +430,7 @@ namespace polyfem::from_json
 				}
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(
-					var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"],
+					var2sim, state->get_args()["time"]["time_steps"], state->get_args()["time"]["dt"],
 					args["integral_type"], args["steps"].get<std::vector<int>>(),
 					static_obj);
 			}
@@ -453,7 +448,7 @@ namespace polyfem::from_json
 				}
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<ProxyTransientForm>(
-					var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"],
+					var2sim, state->get_args()["time"]["time_steps"], state->get_args()["time"]["dt"],
 					args["integral_type"], args["steps"].get<std::vector<int>>(),
 					static_obj);
 			}
@@ -515,7 +510,7 @@ namespace polyfem::from_json
 					std::make_shared<TargetForm>(var2sim, states[args["state"]], diff_caches[args["state"]], args);
 
 				Eigen::VectorXd target_displacement;
-				target_displacement.setZero(states[args["state"]]->mesh->dimension());
+				target_displacement.setZero(states[args["state"]]->get_mesh().dimension());
 				if (target_displacement.size() != args["target_displacement"].size())
 				{
 					log_and_throw_error("Target displacement shape must match the dimension of the simulation");
@@ -550,7 +545,7 @@ namespace polyfem::from_json
 				std::shared_ptr<SDFTargetForm> tmp = std::make_shared<SDFTargetForm>(
 					var2sim, states[args["state"]], diff_caches[args["state"]], args);
 				double delta = args["delta"].get<double>();
-				if (!states[args["state"]]->mesh->is_volume())
+				if (!states[args["state"]]->get_mesh().is_volume())
 				{
 					int dim = 2;
 					Eigen::MatrixXd control_points(args["control_points"].size(), dim);
@@ -601,7 +596,7 @@ namespace polyfem::from_json
 				double delta = args["delta"].get<double>();
 
 				std::string mesh_path =
-					states[args["state"]]->resolve_input_path(args["mesh_path"].get<std::string>());
+					states[args["state"]]->input_path(args["mesh_path"].get<std::string>());
 				Eigen::MatrixXd V;
 				Eigen::MatrixXi E, F;
 				bool read = polyfem::io::OBJReader::read(mesh_path, V, E, F);
