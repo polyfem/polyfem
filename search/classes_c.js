@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['navierstokessolver_0',['NavierStokesSolver',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html',1,'polyfem::solver']]],
+  ['navierstokesform_0',['NavierStokesForm',['../classpolyfem_1_1solver_1_1_navier_stokes_form.html',1,'polyfem::solver']]],
   ['navierstokesvarform_1',['NavierStokesVarForm',['../classpolyfem_1_1varform_1_1_navier_stokes_var_form.html',1,'polyfem::varform']]],
   ['navierstokesvelocity_2',['NavierStokesVelocity',['../classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html',1,'polyfem::assembler']]],
   ['ncboundary_3',['ncboundary',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html',1,'polyfem::mesh::NCMesh2D::ncBoundary'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html',1,'polyfem::mesh::NCMesh3D::ncBoundary']]],

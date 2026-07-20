@@ -2,8 +2,8 @@ var searchData=
 [
   ['navierstokes_2ecpp_0',['NavierStokes.cpp',['../_navier_stokes_8cpp.html',1,'']]],
   ['navierstokes_2ehpp_1',['NavierStokes.hpp',['../_navier_stokes_8hpp.html',1,'']]],
-  ['navierstokessolver_2ecpp_2',['NavierStokesSolver.cpp',['../_navier_stokes_solver_8cpp.html',1,'']]],
-  ['navierstokessolver_2ehpp_3',['NavierStokesSolver.hpp',['../_navier_stokes_solver_8hpp.html',1,'']]],
+  ['navierstokesform_2ecpp_2',['NavierStokesForm.cpp',['../_navier_stokes_form_8cpp.html',1,'']]],
+  ['navierstokesform_2ehpp_3',['NavierStokesForm.hpp',['../_navier_stokes_form_8hpp.html',1,'']]],
   ['navigation_2ecpp_4',['Navigation.cpp',['../_navigation_8cpp.html',1,'']]],
   ['navigation_2ehpp_5',['Navigation.hpp',['../_navigation_8hpp.html',1,'']]],
   ['navigation3d_2ecpp_6',['Navigation3D.cpp',['../_navigation3_d_8cpp.html',1,'']]],

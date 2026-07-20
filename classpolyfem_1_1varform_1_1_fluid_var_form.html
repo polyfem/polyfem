@@ -237,8 +237,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:ae8bbfbdf13a17857aa2765dd3fee013b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac16f72b9ff477a2f02dc4ee2dd5ec777 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ac16f72b9ff477a2f02dc4ee2dd5ec777"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac16f72b9ff477a2f02dc4ee2dd5ec777">build_fe_space</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool iso_parametric, const Eigen::VectorXi &amp;disc_orders, const std::string &amp;basis_type, const std::string &amp;poly_basis_type, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;space_assembler, const int value_dim, const int quadrature_order, const int mass_quadrature_order, const bool use_corner_quadrature, const int n_harmonic_samples, const int integral_constraints, <a class="el" href="classpolyfem_1_1varform_1_1_f_e_space.html">FESpace</a> &amp;space, <a class="el" href="structpolyfem_1_1varform_1_1_var_form_boundary_state.html">VarFormBoundaryState</a> &amp;boundary, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_geometry_mapping.html">GeometryMapping</a> &gt; geometry=nullptr)</td></tr>
 <tr class="separator:ac16f72b9ff477a2f02dc4ee2dd5ec777 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba04d6292a955e3c56d03d62877a3cc2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aba04d6292a955e3c56d03d62877a3cc2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html">time_integrator::BDF</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aba04d6292a955e3c56d03d62877a3cc2">make_bdf_time_integrator</a> () const</td></tr>
-<tr class="separator:aba04d6292a955e3c56d03d62877a3cc2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6869363e7ac85f84fa129c14b97a3c1 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ae6869363e7ac85f84fa129c14b97a3c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ae6869363e7ac85f84fa129c14b97a3c1">save_step_state</a> (const double t0, const double dt, const int t, const <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> *time_integrator, const bool rest_mesh_written=false) const</td></tr>
 <tr class="separator:ae6869363e7ac85f84fa129c14b97a3c1 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab87eb3bfdb267b524bd49a988d9e089b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ab87eb3bfdb267b524bd49a988d9e089b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ab87eb3bfdb267b524bd49a988d9e089b">ensure_output_sampler</a> () const</td></tr>
@@ -353,7 +351,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00015">15</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00028">28</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a06aa725b0244e6445d48dcf2f48a5a6d" name="a06aa725b0244e6445d48dcf2f48a5a6d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a06aa725b0244e6445d48dcf2f48a5a6d">&#9670;&#160;</a></span>assemble_mass_mat()</h2>
@@ -391,9 +389,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a775eca87ec2649919081afd9b33311cc">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">528</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">535</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00029">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">avg_mass_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00064">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">pure_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00065">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">pure_mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00029">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00085">avg_mass_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">pure_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">pure_mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -428,9 +426,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#abefa09bb69d315d9131bf3eaf0dab27f">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">492</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">499</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_stats_data_8hpp_source.html#l00031">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">rhs_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00201">polyfem::varform::VarForm::root_path</a>, and <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_out_stats_data_8hpp_source.html#l00031">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00086">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">rhs_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::root_path</a>, and <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -481,9 +479,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a78d1f942567289b1e39b6b557077b9ab">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">343</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">350</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00062">ass_vals_cache_</a>, <a class="el" href="_var_form_8cpp_source.html#l00745">polyfem::varform::VarForm::assign_discr_orders()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00068">polyfem::varform::FESpace::bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_var_form_8cpp_source.html#l00323">polyfem::varform::VarForm::build_fe_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00165">polyfem::varform::VarFormBoundaryState::clear_boundary_conditions()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01728">polyfem::io::OutStatsData::compute_mesh_size()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01811">polyfem::io::OutStatsData::count_flipped_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00089">polyfem::varform::FESpace::geometry</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00155">polyfem::varform::VarFormBoundaryState::local_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00156">polyfem::varform::VarFormBoundaryState::local_neumann_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00157">polyfem::varform::VarFormBoundaryState::local_pressure_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00158">polyfem::varform::VarFormBoundaryState::local_pressure_cavity</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00064">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00061">polyfem::io::OutStatsData::mesh_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00080">polyfem::io::OutStatsData::n_flipped</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00179">polyfem::varform::VarFormBoundaryState::normalize_boundary_nodes()</a>, <a class="el" href="_a_priori_8cpp_source.html#l00242">polyfem::refinement::APriori::p_refine()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00077">polyfem::varform::FESpace::poly_edge_to_data</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00063">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00060">pressure_boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00057">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00065">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">pure_mass_assembler_</a>, <a class="el" href="_var_form_8cpp_source.html#l01085">polyfem::varform::VarForm::rebuild_node_positions()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>, <a class="el" href="_mesh_8cpp_source.html#l00371">polyfem::mesh::Mesh::update_nodes()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">use_avg_pressure</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00056">velocity_space_id_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">ass_vals_cache_</a>, <a class="el" href="_var_form_8cpp_source.html#l00744">polyfem::varform::VarForm::assign_discr_orders()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00068">polyfem::varform::FESpace::bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_var_form_8cpp_source.html#l00322">polyfem::varform::VarForm::build_fe_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00165">polyfem::varform::VarFormBoundaryState::clear_boundary_conditions()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01728">polyfem::io::OutStatsData::compute_mesh_size()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01811">polyfem::io::OutStatsData::count_flipped_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00089">polyfem::varform::FESpace::geometry</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00155">polyfem::varform::VarFormBoundaryState::local_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00156">polyfem::varform::VarFormBoundaryState::local_neumann_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00157">polyfem::varform::VarFormBoundaryState::local_pressure_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00158">polyfem::varform::VarFormBoundaryState::local_pressure_cavity</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00061">polyfem::io::OutStatsData::mesh_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00080">polyfem::io::OutStatsData::n_flipped</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00179">polyfem::varform::VarFormBoundaryState::normalize_boundary_nodes()</a>, <a class="el" href="_a_priori_8cpp_source.html#l00242">polyfem::refinement::APriori::p_refine()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00077">polyfem::varform::FESpace::poly_edge_to_data</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">pressure_boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">pure_mass_assembler_</a>, <a class="el" href="_var_form_8cpp_source.html#l01066">polyfem::varform::VarForm::rebuild_node_positions()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>, <a class="el" href="_mesh_8cpp_source.html#l00371">polyfem::mesh::Mesh::update_nodes()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">use_avg_pressure</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">velocity_space_id_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -517,11 +515,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a49714e3ac11d29d8d710cc97405f60b1">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">326</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">333</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00064">mass_ass_vals_cache_</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00056">velocity_space_id_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">mass_ass_vals_cache_</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">velocity_space_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -559,9 +557,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">627</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">634</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00062">ass_vals_cache_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00027">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00148">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">mixed_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00063">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00079">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::timings</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">use_avg_pressure</a>, and <a class="el" href="_var_form_utils_8hpp_source.html#l00097">polyfem::varform::internal::write_matrix_market()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">ass_vals_cache_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00027">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00148">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00091">mixed_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00092">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>, <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::timings</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">use_avg_pressure</a>, and <a class="el" href="_var_form_utils_8hpp_source.html#l00097">polyfem::varform::internal::write_matrix_market()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -599,9 +597,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a46b80cd359dd6c0791390959a7753085">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00197">197</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00204">204</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">split_solution()</a>, and <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01856">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">split_solution()</a>, and <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -636,9 +634,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a3e82691900c4d00607a30b907b2c500c">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">212</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">219</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00342">polyfem::io::Evaluator::compute_stress_at_quadrature_points()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00846">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01124">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_var_form_8cpp_source.html#l00860">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8cpp_source.html#l00869">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00208">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00172">output_space()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l01076">polyfem::varform::VarForm::resolve_output_path()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">split_solution()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00342">polyfem::io::Evaluator::compute_stress_at_quadrature_points()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00096">dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00845">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l01124">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_var_form_8cpp_source.html#l00859">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8cpp_source.html#l00868">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00206">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00179">output_space()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l01057">polyfem::varform::VarForm::resolve_output_path()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">split_solution()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -706,9 +704,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac1311771ee2986e9ff8eb12d7cb83860">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">59</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">66</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">dt</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00022">polyfem::problem::ProblemFactory::factory()</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00084">polyfem::problem::ProblemFactory::get_problem()</a>, <a class="el" href="_var_form_8cpp_source.html#l00280">polyfem::varform::VarForm::init()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00057">polyfem::assembler::AssemblerUtils::make_assembler()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00128">polyfem::assembler::AssemblerUtils::make_mixed_assembler()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">mixed_assembler_</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00045">polyfem::assembler::AssemblerUtils::other_assembler_name()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00079">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00057">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">pure_mass_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00201">polyfem::varform::VarForm::root_path</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00081">t0</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">time_steps</a>, <a class="el" href="_var_form_8hpp_source.html#l00193">polyfem::varform::VarForm::units</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00056">velocity_space_id_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00096">dt</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00022">polyfem::problem::ProblemFactory::factory()</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00084">polyfem::problem::ProblemFactory::get_problem()</a>, <a class="el" href="_var_form_8cpp_source.html#l00279">polyfem::varform::VarForm::init()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00057">polyfem::assembler::AssemblerUtils::make_assembler()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00128">polyfem::assembler::AssemblerUtils::make_mixed_assembler()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00091">mixed_assembler_</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00045">polyfem::assembler::AssemblerUtils::other_assembler_name()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00092">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">pure_mass_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::root_path</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00094">t0</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00095">time_steps</a>, <a class="el" href="_var_form_8hpp_source.html#l00191">polyfem::varform::VarForm::units</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">velocity_space_id_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -753,9 +751,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a6c548dd57b1a40789073dc462c0ae30b">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">298</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">305</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">mixed_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00079">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">pure_mass_assembler_</a>, and <a class="el" href="_var_form_8cpp_source.html#l00831">polyfem::varform::VarForm::set_materials()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00153">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00091">mixed_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00092">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">pure_mass_assembler_</a>, and <a class="el" href="_var_form_8cpp_source.html#l00830">polyfem::varform::VarForm::set_materials()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -817,9 +815,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#adf2e3f4a9b321e0c3e9712a540487dcb">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00684">684</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00691">691</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00051">polyfem::io::OutputFieldOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00660">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_output_data_8hpp_source.html#l00051">polyfem::io::OutputSample::node_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">split_solution()</a>.</p>
+<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00051">polyfem::io::OutputFieldOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00660">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_output_data_8hpp_source.html#l00051">polyfem::io::OutputSample::node_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">split_solution()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -856,11 +854,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a3a03b1c1c55ff634ec6472daf851a58f">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00172">172</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00179">179</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00080">polyfem::varform::FESpace::polys</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00083">polyfem::varform::FESpace::polys_3d</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>.</p>
+<p class="reference">References <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00080">polyfem::varform::FESpace::polys</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00083">polyfem::varform::FESpace::polys_3d</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -898,9 +896,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">582</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">589</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l00039">polyfem::varform::VarForm::read_initial_x_from_file()</a>, <a class="el" href="_var_form_8cpp_source.html#l01071">polyfem::varform::VarForm::resolve_input_path()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00321">stacked_ndof()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l00038">polyfem::varform::VarForm::read_initial_x_from_file()</a>, <a class="el" href="_var_form_8cpp_source.html#l01052">polyfem::varform::VarForm::resolve_input_path()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00086">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00328">stacked_ndof()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -932,11 +930,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">316</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">323</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">use_avg_pressure</a>.</p>
+<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">use_avg_pressure</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00321">stacked_ndof()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00328">stacked_ndof()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -968,11 +966,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">311</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">318</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00143">save_json()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00654">solve_linear_system()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">split_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00321">stacked_ndof()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00150">save_json()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00661">solve_linear_system()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">split_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00328">stacked_ndof()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1006,9 +1004,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#afa6a94e0d1ec698fa6f7ff762bf27718">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">29</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">36</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fluid_var_form_8hpp_source.html#l00062">ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">avg_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">dt</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00064">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">mixed_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00063">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00079">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00060">pressure_boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00057">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">pure_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00065">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">pure_mass_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00122">polyfem::varform::FESpace::reset()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00185">polyfem::varform::VarFormBoundaryState::reset()</a>, <a class="el" href="_var_form_8cpp_source.html#l00268">polyfem::varform::VarForm::reset()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00081">t0</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00084">time_integrator</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">time_steps</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">use_avg_pressure</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00056">velocity_space_id_</a>.</p>
+<p class="reference">References <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00085">avg_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00096">dt</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">mass_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00091">mixed_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">pressure_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00092">pressure_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">pressure_boundary_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">pressure_space_id_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">pure_mass_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">pure_mass_ass_vals_cache_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">pure_mass_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00122">polyfem::varform::FESpace::reset()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00185">polyfem::varform::VarFormBoundaryState::reset()</a>, <a class="el" href="_var_form_8cpp_source.html#l00267">polyfem::varform::VarForm::reset()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00086">rhs_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">rhs_assembler_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00094">t0</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00097">time_integrator</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00095">time_steps</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">use_avg_pressure</a>, and <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">velocity_space_id_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1062,9 +1060,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aeabf8ab4b40f55256c46551840d94cc9">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00143">143</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00150">150</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00104">polyfem::varform::FESpace::is_iso_parametric()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm::name()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::problem</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02099">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00104">polyfem::varform::FESpace::is_iso_parametric()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm::name()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">primary_assembler_</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>, <a class="el" href="_var_form_8hpp_source.html#l00190">polyfem::varform::VarForm::problem</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02099">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1125,9 +1123,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00654">654</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00661">661</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00058">polyfem::io::OutStatsData::solver_info</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00054">polyfem::io::OutStatsData::spectrum</a>, <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::stats</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">use_avg_pressure</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00192">polyfem::varform::VarForm::args</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00058">polyfem::io::OutStatsData::solver_info</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00054">polyfem::io::OutStatsData::spectrum</a>, <a class="el" href="_var_form_8hpp_source.html#l00194">polyfem::varform::VarForm::stats</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">use_avg_pressure</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1176,11 +1174,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">609</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">616</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">pressure_space_</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>.</p>
+<p class="reference">References <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">pressure_space_</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00197">compute_errors()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00684">output_fields()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00204">compute_errors()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00691">output_fields()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1217,11 +1215,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00321">321</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00328">328</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>.</p>
+<p class="reference">References <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">prepare_initial_solution()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">prepare_initial_solution()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1256,7 +1254,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00017">17</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00030">30</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -1281,9 +1279,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00062">62</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1307,9 +1305,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">72</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1333,9 +1331,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00072">72</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00172">output_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00654">solve_linear_system()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00179">output_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00661">solve_linear_system()</a>.</p>
 
 </div>
 </div>
@@ -1359,9 +1357,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1385,9 +1383,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">69</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1411,9 +1409,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00064">64</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1437,9 +1435,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1463,9 +1461,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00091">91</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1489,9 +1487,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00063">63</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1515,9 +1513,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1541,9 +1539,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00060">60</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1567,9 +1565,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00068">68</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00143">save_json()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00609">split_solution()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00150">save_json()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00616">split_solution()</a>.</p>
 
 </div>
 </div>
@@ -1593,9 +1591,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1619,9 +1617,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00088">88</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">load_mesh()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00143">save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">load_mesh()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00150">save_json()</a>.</p>
 
 </div>
 </div>
@@ -1645,9 +1643,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1671,9 +1669,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00065">65</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1697,9 +1695,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00298">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00305">load_mesh()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1723,9 +1721,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1749,9 +1747,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">67</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00492">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00499">assemble_rhs()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">prepare_initial_solution()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1775,9 +1773,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00054">54</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00067">67</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00528">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00197">compute_errors()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00212">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00684">output_fields()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00172">output_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00582">prepare_initial_solution()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00311">primary_ndof()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00143">save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00535">assemble_mass_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00204">compute_errors()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00219">export_data()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00691">output_fields()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00179">output_space()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00589">prepare_initial_solution()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00318">primary_ndof()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00150">save_json()</a>.</p>
 
 </div>
 </div>
@@ -1801,9 +1799,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00081">81</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1827,9 +1825,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1853,9 +1851,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>
@@ -1879,9 +1877,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00093">93</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00627">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00316">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00654">solve_linear_system()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00634">build_stiffness_mat()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00323">pressure_block_size()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00661">solve_linear_system()</a>.</p>
 
 </div>
 </div>
@@ -1905,9 +1903,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00056">56</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00069">69</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00343">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00326">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00059">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00029">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_fluid_var_form_8cpp_source.html#l00350">build_basis()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00333">build_rhs_assembler()</a>, <a class="el" href="_fluid_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_fluid_var_form_8cpp_source.html#l00036">reset()</a>.</p>
 
 </div>
 </div>

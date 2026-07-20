@@ -21,13 +21,14 @@ var searchData=
   ['mixedassembler_18',['MixedAssembler',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
   ['mixedassemblerdata_19',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html',1,'polyfem::assembler']]],
   ['mixedassemblerform_20',['MixedAssemblerForm',['../classpolyfem_1_1solver_1_1_mixed_assembler_form.html',1,'polyfem::solver']]],
-  ['mixednlassembler_21',['MixedNLAssembler',['../classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html',1,'polyfem::assembler']]],
-  ['mixednonlinearassemblerdata_22',['MixedNonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html',1,'polyfem::assembler']]],
-  ['mooneyrivlin3paramelasticity_23',['MooneyRivlin3ParamElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html',1,'polyfem::assembler']]],
-  ['mooneyrivlin3paramsymbolic_24',['MooneyRivlin3ParamSymbolic',['../classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html',1,'polyfem::assembler']]],
-  ['mooneyrivlinelasticity_25',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
-  ['mshreader_26',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
-  ['mshwriter_27',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
-  ['multimodel_28',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
-  ['mvpolygonalbasis2d_29',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
+  ['mixedlinearform_21',['MixedLinearForm',['../classpolyfem_1_1solver_1_1_mixed_linear_form.html',1,'polyfem::solver']]],
+  ['mixednlassembler_22',['MixedNLAssembler',['../classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html',1,'polyfem::assembler']]],
+  ['mixednonlinearassemblerdata_23',['MixedNonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html',1,'polyfem::assembler']]],
+  ['mooneyrivlin3paramelasticity_24',['MooneyRivlin3ParamElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html',1,'polyfem::assembler']]],
+  ['mooneyrivlin3paramsymbolic_25',['MooneyRivlin3ParamSymbolic',['../classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html',1,'polyfem::assembler']]],
+  ['mooneyrivlinelasticity_26',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
+  ['mshreader_27',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
+  ['mshwriter_28',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
+  ['multimodel_29',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
+  ['mvpolygonalbasis2d_30',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
 ];

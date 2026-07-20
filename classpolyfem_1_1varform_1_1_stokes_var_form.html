@@ -244,8 +244,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ae8bbfbdf13a17857aa2765dd3fee013b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac16f72b9ff477a2f02dc4ee2dd5ec777 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ac16f72b9ff477a2f02dc4ee2dd5ec777"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac16f72b9ff477a2f02dc4ee2dd5ec777">build_fe_space</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool iso_parametric, const Eigen::VectorXi &amp;disc_orders, const std::string &amp;basis_type, const std::string &amp;poly_basis_type, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;space_assembler, const int value_dim, const int quadrature_order, const int mass_quadrature_order, const bool use_corner_quadrature, const int n_harmonic_samples, const int integral_constraints, <a class="el" href="classpolyfem_1_1varform_1_1_f_e_space.html">FESpace</a> &amp;space, <a class="el" href="structpolyfem_1_1varform_1_1_var_form_boundary_state.html">VarFormBoundaryState</a> &amp;boundary, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_geometry_mapping.html">GeometryMapping</a> &gt; geometry=nullptr)</td></tr>
 <tr class="separator:ac16f72b9ff477a2f02dc4ee2dd5ec777 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba04d6292a955e3c56d03d62877a3cc2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aba04d6292a955e3c56d03d62877a3cc2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html">time_integrator::BDF</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aba04d6292a955e3c56d03d62877a3cc2">make_bdf_time_integrator</a> () const</td></tr>
-<tr class="separator:aba04d6292a955e3c56d03d62877a3cc2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6869363e7ac85f84fa129c14b97a3c1 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ae6869363e7ac85f84fa129c14b97a3c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ae6869363e7ac85f84fa129c14b97a3c1">save_step_state</a> (const double t0, const double dt, const int t, const <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> *time_integrator, const bool rest_mesh_written=false) const</td></tr>
 <tr class="separator:ae6869363e7ac85f84fa129c14b97a3c1 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab87eb3bfdb267b524bd49a988d9e089b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ab87eb3bfdb267b524bd49a988d9e089b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ab87eb3bfdb267b524bd49a988d9e089b">ensure_output_sampler</a> () const</td></tr>
@@ -350,7 +348,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a91d7640579a9bb6f89852ba5a89aa359" name="a91d7640579a9bb6f89852ba5a89aa359"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a91d7640579a9bb6f89852ba5a89aa359">&#9670;&#160;</a></span>name()</h2>
@@ -380,7 +378,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00103">103</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -410,7 +408,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a1084ac626f90fe0123b1a3ac4b936228">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00916">916</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00924">924</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 <div class="dynheader">
@@ -445,7 +443,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00838">838</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00845">845</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
@@ -480,13 +478,13 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00855">855</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00862">862</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_utils_8hpp_source.html#l00079">polyfem::varform::internal::expand_primary_matrix()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00097">polyfem::time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator()</a>, <a class="el" href="_var_form_utils_8hpp_source.html#l00079">polyfem::varform::internal::expand_primary_matrix()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_stokes_var_form_a3a6b795bbfa76c1ee5fb39d317f73c86_cgraph.svg" width="440" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_stokes_var_form_a3a6b795bbfa76c1ee5fb39d317f73c86_cgraph.svg" width="100%" height="472"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

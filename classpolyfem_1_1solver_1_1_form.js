@@ -23,7 +23,7 @@ var classpolyfem_1_1solver_1_1_form =
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b", null ],
     [ "set_enabled", "classpolyfem_1_1solver_1_1_form.html#ad66cd4658b7532e2f73380de56cf276f", null ],
     [ "set_output_dir", "classpolyfem_1_1solver_1_1_form.html#a91f36801ecc871575d13552c8a4f9179", null ],
-    [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4", null ],
+    [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_form.html#a85f5b52b5e34226bc110087e5673ac9b", null ],
     [ "set_scale", "classpolyfem_1_1solver_1_1_form.html#ab16f7de6dc61bd891a72a8d2180dac85", null ],
     [ "set_weight", "classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_form.html#a297e1bb86a754a8240e9c2ef67a169f7", null ],

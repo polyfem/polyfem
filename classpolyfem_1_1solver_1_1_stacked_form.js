@@ -20,6 +20,7 @@ var classpolyfem_1_1solver_1_1_stacked_form =
     [ "name", "classpolyfem_1_1solver_1_1_stacked_form.html#a82a3bd7be39ba017c77c5034f690108e", null ],
     [ "post_step", "classpolyfem_1_1solver_1_1_stacked_form.html#ac9f65e3322d31b850edfead3a17e1c6f", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_stacked_form.html#afaf6207d058f6f41da3388d6a76ca0b0", null ],
+    [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_stacked_form.html#adb279130fa0b05dc869d030e43ea2079", null ],
     [ "size", "classpolyfem_1_1solver_1_1_stacked_form.html#a4f63098b218fa0d486546c3e1273d63e", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_stacked_form.html#a6538945533150e1f9cd497068c117784", null ],
     [ "term_size", "classpolyfem_1_1solver_1_1_stacked_form.html#a3a9e6f9a45d01d6cc863e443e87e8032", null ],

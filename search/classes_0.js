@@ -22,5 +22,6 @@ var searchData=
   ['autodiffallocator_19',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
   ['autodiffallocator_3c_20double_20_3e_20',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
   ['autoflipsvd_21',['AutoFlipSVD',['../classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html',1,'polyfem::utils']]],
-  ['axisplaneselection_22',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
+  ['averagepressureform_22',['AveragePressureForm',['../classpolyfem_1_1solver_1_1_average_pressure_form.html',1,'polyfem::solver']]],
+  ['axisplaneselection_23',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
 ];

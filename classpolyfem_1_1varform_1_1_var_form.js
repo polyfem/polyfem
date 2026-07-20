@@ -17,7 +17,6 @@ var classpolyfem_1_1varform_1_1_var_form =
     [ "init", "classpolyfem_1_1varform_1_1_var_form.html#ac1311771ee2986e9ff8eb12d7cb83860", null ],
     [ "is_contact_enabled", "classpolyfem_1_1varform_1_1_var_form.html#a2bb8e37a98fa8708c2a51c16b03d0b09", null ],
     [ "load_mesh", "classpolyfem_1_1varform_1_1_var_form.html#a6c548dd57b1a40789073dc462c0ae30b", null ],
-    [ "make_bdf_time_integrator", "classpolyfem_1_1varform_1_1_var_form.html#aba04d6292a955e3c56d03d62877a3cc2", null ],
     [ "n_boundary_samples", "classpolyfem_1_1varform_1_1_var_form.html#ae8bbfbdf13a17857aa2765dd3fee013b", null ],
     [ "name", "classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d", null ],
     [ "notify_time_step", "classpolyfem_1_1varform_1_1_var_form.html#a64376ca0210d929849b2f9da7c8efd6e", null ],

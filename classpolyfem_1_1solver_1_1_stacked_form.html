@@ -187,6 +187,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6538945533150e1f9cd497068c117784" id="r_a6538945533150e1f9cd497068c117784"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_stacked_form.html#a6538945533150e1f9cd497068c117784">solution_changed</a> (const Eigen::VectorXd &amp;new_x) override</td></tr>
 <tr class="memdesc:a6538945533150e1f9cd497068c117784"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
 <tr class="separator:a6538945533150e1f9cd497068c117784"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb279130fa0b05dc869d030e43ea2079" id="r_adb279130fa0b05dc869d030e43ea2079"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_stacked_form.html#adb279130fa0b05dc869d030e43ea2079">set_project_to_psd</a> (bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) override</td></tr>
+<tr class="memdesc:adb279130fa0b05dc869d030e43ea2079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set project to psd.  <br /></td></tr>
+<tr class="separator:adb279130fa0b05dc869d030e43ea2079"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0025b388dd25e4c1fcaf4031434c095c" id="r_a0025b388dd25e4c1fcaf4031434c095c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_stacked_form.html#a0025b388dd25e4c1fcaf4031434c095c">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a0025b388dd25e4c1fcaf4031434c095c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time-dependent fields.  <br /></td></tr>
 <tr class="separator:a0025b388dd25e4c1fcaf4031434c095c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -217,9 +220,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
 <tr class="memdesc:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a2847474520e0c403400be6c64423d2e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4">set_project_to_psd</a> (bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
-<tr class="memdesc:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set project to psd.  <br /></td></tr>
-<tr class="separator:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5480916379212a87367e3efce8c441f4 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a5480916379212a87367e3efce8c441f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a5480916379212a87367e3efce8c441f4">is_project_to_psd</a> () const</td></tr>
 <tr class="memdesc:a5480916379212a87367e3efce8c441f4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get if the form's second derivative is projected to psd.  <br /></td></tr>
 <tr class="separator:a5480916379212a87367e3efce8c441f4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -338,7 +338,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00027">27</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00239">validate_block()</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00246">validate_block()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -375,7 +375,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00020">20</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00239">validate_block()</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00246">validate_block()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -402,7 +402,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00009">9</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00074">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00037">size()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00075">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00037">size()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -438,7 +438,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00043">43</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 
 </div>
 </div>
@@ -487,9 +487,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00186">186</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00193">193</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00271">global_index()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00247">term_size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00278">global_index()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00254">term_size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -532,11 +532,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00257">257</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00264">264</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00062">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00074">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00066">polyfem::solver::StackedForm::Term::has_second_block()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00064">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00067">polyfem::solver::StackedForm::Term::has_second_block()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00186">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00205">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00133">update_quantities()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00172">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00193">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00212">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00154">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">update_quantities()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00179">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -584,11 +584,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00271">271</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00278">278</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00062">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00074">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00066">polyfem::solver::StackedForm::Term::has_second_block()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00247">term_size()</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00064">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00067">polyfem::solver::StackedForm::Term::has_second_block()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00254">term_size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00186">first_derivative_unweighted()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00205">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00193">first_derivative_unweighted()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00212">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -638,7 +638,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00036">36</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -681,9 +681,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00140">140</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00147">147</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -733,7 +733,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00065">65</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -790,7 +790,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00049">49</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -846,7 +846,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00097">97</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -884,7 +884,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00106">106</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 
 </div>
 </div>
@@ -915,11 +915,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00154">154</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00161">161</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00154">max_lagging_iterations()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00161">max_lagging_iterations()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00154">max_lagging_iterations()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00161">max_lagging_iterations()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -981,7 +981,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00081">81</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1057,7 +1057,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00112">112</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1111,13 +1111,58 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00205">205</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00212">212</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00271">global_index()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00247">term_size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00278">global_index()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00254">term_size()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_stacked_form_afaf6207d058f6f41da3388d6a76ca0b0_cgraph.svg" width="100%" height="497"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="adb279130fa0b05dc869d030e43ea2079" name="adb279130fa0b05dc869d030e43ea2079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb279130fa0b05dc869d030e43ea2079">&#9670;&#160;</a></span>set_project_to_psd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::StackedForm::set_project_to_psd </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set project to psd. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>If true, the form's second derivative is projected to be positive semidefinite </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a85f5b52b5e34226bc110087e5673ac9b">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00133">133</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00111">polyfem::solver::Form::set_project_to_psd()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_stacked_form_adb279130fa0b05dc869d030e43ea2079_cgraph.svg" width="410" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1147,7 +1192,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00037">37</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00009">add_block()</a>.</p>
 <div class="dynheader">
@@ -1194,7 +1239,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00126">126</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1227,11 +1272,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00247">247</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00254">254</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00062">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00074">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00066">polyfem::solver::StackedForm::Term::has_second_block()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00063">polyfem::solver::StackedForm::Term::a</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00064">polyfem::solver::StackedForm::Term::b</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00067">polyfem::solver::StackedForm::Term::has_second_block()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00186">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00271">global_index()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00205">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00193">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00278">global_index()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00212">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1289,9 +1334,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00147">147</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00154">154</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1345,9 +1390,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00133">133</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00140">140</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1384,9 +1429,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00162">162</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00169">169</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>.</p>
 
 </div>
 </div>
@@ -1414,9 +1459,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00239">239</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00246">246</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00074">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8hpp_source.html#l00075">blocks_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00018">polyfem::solver::StackedForm::Block::id()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00019">polyfem::solver::StackedForm::Block::offset()</a>, and <a class="el" href="_stacked_form_8hpp_source.html#l00020">polyfem::solver::StackedForm::Block::size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00027">add()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00020">add()</a>.</p>
 <div class="dynheader">
@@ -1467,9 +1512,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00172">172</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8cpp_source.html#l00179">179</a> of file <a class="el" href="_stacked_form_8cpp_source.html">StackedForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00075">terms_</a>, <a class="el" href="_form_8hpp_source.html#l00026">polyfem::solver::Form::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00077">size_</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00076">terms_</a>, <a class="el" href="_form_8hpp_source.html#l00026">polyfem::solver::Form::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1499,9 +1544,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00074">74</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00009">add_block()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00271">global_index()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00247">term_size()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00239">validate_block()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00009">add_block()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00278">global_index()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00254">term_size()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00246">validate_block()</a>.</p>
 
 </div>
 </div>
@@ -1525,9 +1570,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00009">add_block()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00186">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00257">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00205">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00037">size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00133">update_quantities()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00172">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00009">add_block()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00193">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00264">gather()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00212">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8hpp_source.html#l00037">size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00154">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">update_quantities()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00179">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1551,9 +1596,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stacked_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_stacked_form_8hpp_source.html">StackedForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00027">add()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00020">add()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00043">finish()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00186">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00106">line_search_end()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00154">max_lagging_iterations()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00205">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00133">update_quantities()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00162">uses_lagging()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00172">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stacked_form_8cpp_source.html#l00027">add()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00020">add()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00043">finish()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00193">first_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00036">init()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00147">init_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00065">is_step_collision_free()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00049">is_step_valid()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00097">line_search_begin()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00106">line_search_end()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00161">max_lagging_iterations()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00112">post_step()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00212">second_derivative_unweighted()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00133">set_project_to_psd()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00126">solution_changed()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00154">update_lagging()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00140">update_quantities()</a>, <a class="el" href="_stacked_form_8cpp_source.html#l00169">uses_lagging()</a>, and <a class="el" href="_stacked_form_8cpp_source.html#l00179">value_unweighted()</a>.</p>
 
 </div>
 </div>

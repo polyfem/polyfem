@@ -83,12 +83,13 @@ var searchData=
   ['min_5fjacobian_80',['min_Jacobian',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a5a54a06c0dafcf90d1d250a3451cdcb2',1,'polyfem::mesh::Mesh_Quality']]],
   ['mixed_5fassembler_81',['mixed_assembler',['../classpolyfem_1_1legacy_1_1_state.html#afb9305f274fc51e7926cde43608812b1',1,'polyfem::legacy::State']]],
   ['mixed_5fassembler_5f_82',['mixed_assembler_',['../classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a4a57c9f2a0dfc2faf7f62b28d154b021',1,'polyfem::varform::OperatorSplittingVarForm::mixed_assembler_'],['../classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#aa3172ce56220d2184e69c32117ca1073',1,'polyfem::varform::IncompressibleElasticVarForm::mixed_assembler_'],['../classpolyfem_1_1varform_1_1_fluid_var_form.html#aee3c37ba5dfc8e6bdb9a6066964af17c',1,'polyfem::varform::FluidVarForm::mixed_assembler_'],['../classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a19f0e0fd0f2b9b8e1bbfd80aa8fe71a8',1,'polyfem::varform::BilaplacianVarForm::mixed_assembler_']]],
-  ['model_5f_83',['model_',['../classpolyfem_1_1assembler_1_1_thermo_elasticity.html#ab975a94dc2e27aada6a7443a5e8077ca',1,'polyfem::assembler::ThermoElasticity']]],
-  ['mu_5f_84',['mu_',['../classpolyfem_1_1solver_1_1_friction_form.html#af9e1b68da993b73f590b6f321472c598',1,'polyfem::solver::FrictionForm::mu_'],['../classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#ae37efab1f95d287a7c11bd25b83dc278',1,'polyfem::solver::TangentialAdhesionForm::mu_']]],
-  ['mu_5fmat_5f_85',['mu_mat_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#aaf21428e08643adcbcfa84e7866aa018',1,'polyfem::assembler::LameParameters']]],
-  ['mu_5for_5fnu_5f_86',['mu_or_nu_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a048dcf13d1fd2334b4f19caaaab92570',1,'polyfem::assembler::LameParameters']]],
-  ['multi_5fmaterial_5fmodels_5f_87',['multi_material_models_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748',1,'polyfem::assembler::MultiModel']]],
-  ['multi_5fsingular_5fboundary_5fcount_88',['multi_singular_boundary_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb',1,'polyfem::io::OutStatsData']]],
-  ['multi_5fsingular_5fcount_89',['multi_singular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6',1,'polyfem::io::OutStatsData']]],
-  ['mus_5f_90',['mus_',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a8d6bd84dc83b5797383e2d4deaf62cc9',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]]
+  ['mixed_5fform_5f_83',['mixed_form_',['../classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a60fac9c4bb4c4493d33ce7d73245bd57',1,'polyfem::varform::NavierStokesVarForm']]],
+  ['model_5f_84',['model_',['../classpolyfem_1_1assembler_1_1_thermo_elasticity.html#ab975a94dc2e27aada6a7443a5e8077ca',1,'polyfem::assembler::ThermoElasticity']]],
+  ['mu_5f_85',['mu_',['../classpolyfem_1_1solver_1_1_friction_form.html#af9e1b68da993b73f590b6f321472c598',1,'polyfem::solver::FrictionForm::mu_'],['../classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#ae37efab1f95d287a7c11bd25b83dc278',1,'polyfem::solver::TangentialAdhesionForm::mu_']]],
+  ['mu_5fmat_5f_86',['mu_mat_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#aaf21428e08643adcbcfa84e7866aa018',1,'polyfem::assembler::LameParameters']]],
+  ['mu_5for_5fnu_5f_87',['mu_or_nu_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a048dcf13d1fd2334b4f19caaaab92570',1,'polyfem::assembler::LameParameters']]],
+  ['multi_5fmaterial_5fmodels_5f_88',['multi_material_models_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748',1,'polyfem::assembler::MultiModel']]],
+  ['multi_5fsingular_5fboundary_5fcount_89',['multi_singular_boundary_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb',1,'polyfem::io::OutStatsData']]],
+  ['multi_5fsingular_5fcount_90',['multi_singular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6',1,'polyfem::io::OutStatsData']]],
+  ['mus_5f_91',['mus_',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a8d6bd84dc83b5797383e2d4deaf62cc9',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]]
 ];

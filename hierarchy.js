@@ -200,6 +200,7 @@ var hierarchy =
         [ "polyfem::solver::PeriodicLagrangianForm", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html", null ],
         [ "polyfem::solver::StackedAugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html", null ]
       ] ],
+      [ "polyfem::solver::AveragePressureForm", "classpolyfem_1_1solver_1_1_average_pressure_form.html", null ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
         [ "polyfem::solver::BarrierContactForm", "classpolyfem_1_1solver_1_1_barrier_contact_form.html", [
@@ -213,6 +214,8 @@ var hierarchy =
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
       [ "polyfem::solver::MixedAssemblerForm", "classpolyfem_1_1solver_1_1_mixed_assembler_form.html", null ],
+      [ "polyfem::solver::MixedLinearForm", "classpolyfem_1_1solver_1_1_mixed_linear_form.html", null ],
+      [ "polyfem::solver::NavierStokesForm", "classpolyfem_1_1solver_1_1_navier_stokes_form.html", null ],
       [ "polyfem::solver::NormalAdhesionForm", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html", null ],
       [ "polyfem::solver::PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", null ],
       [ "polyfem::solver::QuadraticPenaltyForm", "classpolyfem_1_1solver_1_1_quadratic_penalty_form.html", null ],
@@ -306,7 +309,6 @@ var hierarchy =
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
-    [ "polyfem::solver::NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html", null ],
     [ "polyfem::mesh::NCMesh3D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncElem", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html", null ],
@@ -495,7 +497,6 @@ var hierarchy =
     ] ],
     [ "polyfem::utils::Timer", "classpolyfem_1_1utils_1_1_timer.html", null ],
     [ "polyfem::utils::Timing", "structpolyfem_1_1utils_1_1_timing.html", null ],
-    [ "polyfem::solver::TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", null ],
     [ "polyfem::utils::Tree", "classpolyfem_1_1utils_1_1_tree.html", null ],
     [ "polyfem::utils::TriangleClipping", "classpolyfem_1_1utils_1_1_triangle_clipping.html", null ],
     [ "wmtk::TriMesh", null, [
