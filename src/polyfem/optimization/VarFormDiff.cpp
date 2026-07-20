@@ -70,7 +70,6 @@ namespace polyfem
 			assert(force_step > 0);
 			assert(force_step > sol_step);
 
-
 			if (varform.primary_assembler().is_linear() && !varform.is_contact_enabled())
 			{
 				hessian_prev = StiffnessMatrix(varform.primary_space().ndof(), varform.primary_space().ndof());
@@ -435,7 +434,6 @@ namespace polyfem
 	Eigen::MatrixXd get_adjoint_mat(const varform::VarForm &varform, const DiffCache &diff_cache, int type)
 	{
 		assert(diff_cache.adjoint_mat().size() > 0);
-
 
 		if (varform.get_problem().is_time_dependent())
 		{

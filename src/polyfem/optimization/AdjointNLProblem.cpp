@@ -261,7 +261,6 @@ namespace polyfem::solver
 					adjoint_logger().info("Found flipped element in LS, step not valid!");
 					return false;
 				}
-
 			}
 		}
 

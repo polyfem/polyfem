@@ -180,8 +180,8 @@ namespace polyfem::from_json
 		{
 			const auto &varform = varforms[args["state"]];
 			map = std::make_shared<PerBody2PerNode>(varform->get_mesh(),
-												varform->primary_space().basis_list(),
-												varform->primary_space().n_bases);
+													varform->primary_space().basis_list(),
+													varform->primary_space().n_bases);
 		}
 		else if (type == "E-nu-to-lambda-mu")
 		{
