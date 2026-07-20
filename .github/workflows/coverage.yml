@@ -63,13 +63,27 @@ jobs:
           lcov
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
+      - name: Compute CPU cache key
+        run: |
+          # A dependency builds with -march=native, which bakes CPU-specific
+          # instructions (e.g. AVX-512) into the object files. ccache hashes the
+          # literal "-march=native" flag, not the resolved instruction set, so it
+          # will happily reuse objects across different CPUs. GitHub's runner pool
+          # is heterogeneous (some hosts have AVX-512, some don't), so a cache built
+          # on a wider CPU gets replayed onto a narrower one -> SIGILL at runtime.
+          # Fold the CPU feature flags into the cache key so objects are only ever
+          # restored onto a compatible microarchitecture.
+          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
+          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
+          echo "CPU flags hash: $CPU_HASH"
+
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
         run: |
@@ -83,7 +97,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
-            -DPOLYFEM_WITH_BEZIER=OFF \
             -DPOLYSOLVE_WITH_CHOLMOD=OFF \
             -DPOLYSOLVE_WITH_AMGCL=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}

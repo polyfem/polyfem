@@ -431,7 +431,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-#ifdef POLYFEM_WITH_BEZIER
+#ifdef POLYFEM_WITH_MISO
 		if (!mesh->is_simplicial())
 #else
 		if constexpr (true)

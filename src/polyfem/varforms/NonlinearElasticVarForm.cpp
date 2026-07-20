@@ -591,6 +591,7 @@ namespace polyfem::varform
 			dim, t, space_.space_in_node_to_node,
 			// Elastic form
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
+			args["solver"]["advanced"]["conservative_max_iter"],
 			// Body form
 			0, boundary_.boundary_nodes, boundary_.local_boundary,
 			boundary_.local_neumann_boundary,

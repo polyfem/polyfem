@@ -74,7 +74,7 @@ option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
-option(POLYFEM_WITH_BEZIER   "Use bezier, for Jacobian positivity check"    ON)
+set(POLYFEM_WITH_MISO OFF CACHE BOOL "Use miso-generated code for Jacobian check" FORCE)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
@@ -266,10 +266,10 @@ include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # Jacobian
-if(POLYFEM_WITH_BEZIER)
-    include(bezier)
-    target_link_libraries(polyfem PRIVATE bezier)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_BEZIER)
+if(POLYFEM_WITH_MISO)
+    include(hocgv_miso)
+    target_link_libraries(polyfem PRIVATE miso)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
 endif()
 
 # spdlog

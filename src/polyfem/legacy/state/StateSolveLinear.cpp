@@ -188,7 +188,10 @@ namespace polyfem::legacy
 			n_bases, bases, geom_bases(),
 			*assembler, ass_vals_cache,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
-			mesh->is_volume());
+			mesh->is_volume(),
+			args["solver"]["advanced"]["jacobian_threshold"],
+			args["solver"]["advanced"]["check_inversion"],
+			args["solver"]["advanced"]["conservative_max_iter"]);
 
 		solve_data.body_form = std::make_shared<BodyForm>(
 			ndof, n_pressure_bases,

@@ -1578,13 +1578,19 @@
             "Discrete",
             "Conservative"
         ],
-        "doc": "The method for checking if any element is flipped."
+        "doc": "The method for checking if any element is flipped. \"Discrete\" skips the check; \"Conservative\" uses continuous CCD (max_time_step) to guarantee no inversion along the step."
     },
     {
         "pointer": "/solver/advanced/jacobian_threshold",
         "type": "float",
         "default": 0,
         "doc": "."
+    },
+    {
+        "pointer": "/solver/advanced/conservative_max_iter",
+        "type": "int",
+        "default": 100000,
+        "doc": "Maximum number of subdivision iterations for the conservative (robust) Jacobian inversion check."
     },
     {
         "pointer": "/solver/advanced",
@@ -1597,6 +1603,7 @@
             "lagged_regularization_iterations",
             "check_inversion",
             "jacobian_threshold",
+            "conservative_max_iter",
             "characteristic_length",
             "characteristic_force_density"
         ],

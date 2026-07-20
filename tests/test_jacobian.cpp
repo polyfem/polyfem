@@ -1,4 +1,4 @@
-#ifdef POLYFEM_WITH_BEZIER
+#ifdef POLYFEM_WITH_MISO
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
@@ -49,7 +49,7 @@ namespace
 
 			"output": {
 				"log": {
-					"level": "warning"
+					"level": "error"
 				}
 			}
 
@@ -217,6 +217,120 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 	}
 }
 
+TEST_CASE("jacobian-tree", "[jacobian]")
+{
+	// Leaf node
+	Tree t;
+	REQUIRE(!t.has_children());
+	REQUIRE(t.depth() == 0);
+	REQUIRE(t.n_leaves() == 1);
+
+	// One level of children
+	t.add_children(4);
+	REQUIRE(t.has_children());
+	REQUIRE(t.n_children() == 4);
+	REQUIRE(t.depth() == 1);
+	REQUIRE(t.n_leaves() == 4);
+
+	// merge a two-level source: child(0) has 4 grandchildren
+	Tree src;
+	src.add_children(4);
+	src.child(0).add_children(4);
+
+	const bool changed = t.merge(src, 3);
+	REQUIRE(changed);
+	// child(0) expanded to depth 2; children 1-3 remain leaves
+	REQUIRE(t.depth() == 2);
+	REQUIRE(t.n_leaves() == 7); // 4 from child(0) + 1 each from 1,2,3
+
+	// Second merge: no new structure → no change
+	const bool changed2 = t.merge(src, 3);
+	REQUIRE(!changed2);
+}
+
+// Helper: invert one element by dragging a single node far in +x.
+// Uses local node 1 of element 1; among the 3 nodes, partition-of-unity
+// guarantees at least one has a positive n_x, and node 1 does for this mesh.
+static Eigen::VectorXd make_x_flip(const test::VarFormDebugData &debug, const int dim)
+{
+	Eigen::VectorXd u = Eigen::VectorXd::Zero(debug.n_bases * dim);
+	const int dof = (*debug.bases)[1].bases[1].global()[0].index;
+	u(dof * dim) = 10.0;
+	return u;
+}
+
+TEST_CASE("jacobian-is-valid", "[jacobian]")
+{
+	for (const int dim : {2, 3})
+	{
+		auto state = get_state(dim);
+		const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+		const int ndof = debug.n_bases * dim;
+
+		// Zero displacement → all elements valid
+		{
+			const Eigen::VectorXd u = Eigen::VectorXd::Zero(ndof);
+			auto [valid, inv_id, tree] = is_valid(dim, *debug.bases, *debug.geometry_bases, u);
+			REQUIRE(valid);
+			REQUIRE(inv_id == -1);
+		}
+
+		// x-flip → det F = -1 everywhere → all elements invalid
+		{
+			const Eigen::VectorXd u_inv = make_x_flip(debug, dim);
+			auto [valid, inv_id, tree] = is_valid(dim, *debug.bases, *debug.geometry_bases, u_inv);
+			REQUIRE(!valid);
+			REQUIRE(inv_id >= 0);
+		}
+	}
+}
+
+TEST_CASE("jacobian-count-invalid", "[jacobian]")
+{
+	for (const int dim : {2, 3})
+	{
+		auto state = get_state(dim);
+		const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+		const int ndof = debug.n_bases * dim;
+
+		// Zero displacement → no invalid elements
+		const Eigen::VectorXd u_valid = Eigen::VectorXd::Zero(ndof);
+		REQUIRE(count_invalid(dim, *debug.bases, *debug.geometry_bases, u_valid).empty());
+
+		// x-flip → all elements invalid
+		const Eigen::VectorXd u_inv = make_x_flip(debug, dim);
+		REQUIRE(!count_invalid(dim, *debug.bases, *debug.geometry_bases, u_inv).empty());
+	}
+}
+
+TEST_CASE("jacobian-max-time-step", "[jacobian]")
+{
+	for (const int dim : {2, 3})
+	{
+		auto state = get_state(dim);
+		const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+		const int ndof = debug.n_bases * dim;
+		const Eigen::VectorXd u_zero = Eigen::VectorXd::Zero(ndof);
+		const Eigen::VectorXd u_inv = make_x_flip(debug, dim);
+
+		// Same start and end (valid → valid) → step = 1
+		{
+			auto [step, id, inv_s, tree] = max_time_step(dim, *debug.bases, *debug.geometry_bases, u_zero, u_zero);
+			REQUIRE(step == Catch::Approx(1.0));
+		}
+
+		// Valid → inverted → step ∈ (0, 1)
+		auto [step, id, inv_s, tree] = max_time_step(dim, *debug.bases, *debug.geometry_bases, u_zero, u_inv);
+		REQUIRE(step > 0.0);
+		REQUIRE(step < 1.0);
+
+		// Certified endpoint must be valid: u0 + step*(u_inv - u0) = step*u_inv
+		const Eigen::VectorXd u_cert = step * u_inv;
+		auto [cert_valid, cert_id, cert_tree] = is_valid(dim, *debug.bases, *debug.geometry_bases, u_cert);
+		REQUIRE(cert_valid);
+	}
+}
+
 #endif
 
 #include <polyfem/utils/Jacobian.hpp>
@@ -326,25 +440,3 @@ TEST_CASE("jacobian extract nodes over element ranges", "[jacobian][utils]")
 		for (int c = 0; c < first_cp.cols(); ++c)
 			REQUIRE(first_cp(r, c) == Catch::Approx(all_cp(r, c)).margin(1e-12));
 }
-
-#ifndef POLYFEM_WITH_BEZIER
-TEST_CASE("jacobian robust checks require bezier support", "[jacobian][utils]")
-{
-	const int dim = 2;
-	const auto basis = make_linear_simplex_basis(dim);
-	const std::vector<polyfem::basis::ElementBases> bases = {basis};
-	const Eigen::VectorXd u0 = Eigen::VectorXd::Zero((dim + 1) * dim);
-	Eigen::VectorXd u1 = u0;
-	u1(0) = 0.1;
-
-	Eigen::MatrixXd cp;
-	polyfem::autogen::p_nodes_2d(1, cp);
-	const Eigen::MatrixXd uv = cp;
-
-	REQUIRE_THROWS(polyfem::utils::robust_evaluate_jacobian(1, cp, uv));
-	REQUIRE_THROWS(polyfem::utils::count_invalid(dim, bases, bases, u0));
-	REQUIRE_THROWS(polyfem::utils::is_valid(dim, bases, bases, u0));
-	REQUIRE_THROWS(polyfem::utils::is_valid(dim, bases, bases, u0, u1));
-	REQUIRE_THROWS(polyfem::utils::max_time_step(dim, bases, bases, u0, u1));
-}
-#endif

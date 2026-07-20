@@ -18,7 +18,8 @@
             "MaterialSum",
             "FixedCorotational",
             "VolumePenalty",
-            "AMIPS"
+            "AMIPS",
+            "InversionBarrier"
         ],
         "doc": "Elastic material type"
     },
@@ -55,6 +56,42 @@
             "psi"
         ],
         "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "InversionBarrier",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi",
+            "JBarrierThreshold"
+        ],
+        "doc": "Inversion barrier term (zero for J >= JBarrierThreshold, diverges as J -> 0), meant to be combined with an elasticity model via MaterialSum. Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "InversionBarrier",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi",
+            "JBarrierThreshold"
+        ],
+        "doc": "Inversion barrier term (zero for J >= JBarrierThreshold, diverges as J -> 0), meant to be combined with an elasticity model via MaterialSum. Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/",
@@ -471,6 +508,12 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
+    },
+    {
+        "pointer": "/JBarrierThreshold",
+        "type": "float",
+        "doc": "InversionBarrier activation threshold: zero for J >= JBarrierThreshold, diverges as J -> 0",
+        "default": 0.5
     },
     {
         "pointer": "/mu",

@@ -17,17 +17,25 @@ namespace polyfem::assembler
 
 		auto models = params["models"];
 
-		for (const auto &model : models)
+		// add_multimaterial may be invoked once per mesh element (see Assembler::set_materials),
+		// so the child assemblers must be created once and then reused across calls, not appended every time.
+		if (assemblers_.empty())
 		{
-			const std::string model_name = model["type"];
+			for (const auto &model : models)
+			{
+				const std::string model_name = model["type"];
 
-			const auto assembler = AssemblerUtils::make_assembler(model_name);
-			// cast assembler to elasticity assembler
-			assemblers_.emplace_back(std::dynamic_pointer_cast<NLAssembler>(assembler));
-			assert(assemblers_.back() != nullptr);
-			assemblers_.back()->set_size(size());
-			assemblers_.back()->add_multimaterial(index, model, units, root_path);
+				const auto assembler = AssemblerUtils::make_assembler(model_name);
+				// cast assembler to elasticity assembler
+				assemblers_.emplace_back(std::dynamic_pointer_cast<NLAssembler>(assembler));
+				assert(assemblers_.back() != nullptr);
+				assemblers_.back()->set_size(size());
+			}
 		}
+
+		assert(assemblers_.size() == models.size());
+		for (size_t i = 0; i < assemblers_.size(); ++i)
+			assemblers_[i]->add_multimaterial(index, models[i], units, root_path);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

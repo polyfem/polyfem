@@ -619,7 +619,7 @@ namespace polyfem::legacy
 		}
 		// TODO: same for pressure!
 
-#ifdef POLYFEM_WITH_BEZIER
+#ifdef POLYFEM_WITH_MISO
 		if (!mesh->is_simplicial())
 #else
 		if constexpr (true)
