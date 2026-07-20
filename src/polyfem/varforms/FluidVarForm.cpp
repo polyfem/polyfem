@@ -780,8 +780,8 @@ namespace polyfem::varform
 			export_solution_gradient ? &velocity_gradients : nullptr);
 		if (sampled_velocity && options.export_field("velocity"))
 			fields.push_back({"velocity", velocity_values, io::OutputField::Association::Point});
-		if (sampled_velocity && options.export_field("solution"))
-			fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
+		// if (sampled_velocity && options.export_field("solution"))
+		// 	fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
 		if (sampled_velocity && export_solution_gradient)
 			fields.push_back({"solution_gradient", velocity_gradients, io::OutputField::Association::Point});
 

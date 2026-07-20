@@ -19,6 +19,183 @@ namespace polyfem::solver
 		}
 	} // namespace
 
+	NavierStokesFSIAveragePressureForm::NavierStokesFSIAveragePressureForm(
+		const int total_size,
+		const int n_velocity_bases,
+		const int n_pressure_bases,
+		const int n_mesh_displacement_bases,
+		const int dim,
+		const std::vector<basis::ElementBases> &pressure_bases,
+		const std::vector<basis::ElementBases> &mesh_displacement_bases,
+		const std::vector<basis::ElementBases> &geom_bases,
+		const assembler::AssemblyValsCache &pressure_cache,
+		const assembler::AssemblyValsCache &mesh_displacement_cache,
+		const bool is_volume)
+		: total_size_(total_size),
+		  dim_(dim),
+		  n_pressure_bases_(n_pressure_bases),
+		  n_mesh_displacement_bases_(n_mesh_displacement_bases),
+		  pressure_offset_(n_velocity_bases * dim),
+		  mesh_displacement_offset_(pressure_offset_ + n_pressure_bases),
+		  multiplier_offset_(mesh_displacement_offset_ + n_mesh_displacement_bases * dim),
+		  pressure_bases_(pressure_bases),
+		  mesh_displacement_bases_(mesh_displacement_bases),
+		  geom_bases_(geom_bases),
+		  pressure_cache_(pressure_cache),
+		  mesh_displacement_cache_(mesh_displacement_cache),
+		  is_volume_(is_volume)
+	{
+		assert(dim_ == 2 || dim_ == 3);
+		assert(n_pressure_bases_ > 0);
+		assert(n_mesh_displacement_bases_ > 0);
+		assert(total_size_ == multiplier_offset_ + 1);
+		assert(pressure_bases_.size() == mesh_displacement_bases_.size());
+		assert(pressure_bases_.size() == geom_bases_.size());
+	}
+
+	double NavierStokesFSIAveragePressureForm::value_unweighted(const Eigen::VectorXd &) const
+	{
+		log_and_throw_error("NavierStokesFSIAveragePressureForm is a residual form and has no value()");
+	}
+
+	void NavierStokesFSIAveragePressureForm::compute_constraint(
+		const Eigen::VectorXd &x,
+		Eigen::VectorXd &weights,
+		Eigen::MatrixXd &weight_derivative) const
+	{
+		assert(x.size() == total_size_);
+		const int mesh_ndof = n_mesh_displacement_bases_ * dim_;
+		weights = Eigen::VectorXd::Zero(n_pressure_bases_);
+		weight_derivative = Eigen::MatrixXd::Zero(n_pressure_bases_, mesh_ndof);
+		Eigen::VectorXd volume_derivative = Eigen::VectorXd::Zero(mesh_ndof);
+		double volume = 0;
+
+		for (int e = 0; e < int(geom_bases_.size()); ++e)
+		{
+			assembler::ElementAssemblyValues pressure_vals, displacement_vals;
+			pressure_cache_.compute(e, is_volume_, pressure_bases_[e], geom_bases_[e], pressure_vals);
+			mesh_displacement_cache_.compute(e, is_volume_, mesh_displacement_bases_[e], geom_bases_[e], displacement_vals);
+
+			const quadrature::Quadrature quadrature =
+				pressure_vals.quadrature.weights.size() >= displacement_vals.quadrature.weights.size()
+					? pressure_vals.quadrature
+					: displacement_vals.quadrature;
+			if (!same_quadrature(pressure_vals.quadrature, quadrature))
+			{
+				pressure_vals.compute(e, is_volume_, quadrature.points, pressure_bases_[e], geom_bases_[e]);
+				pressure_vals.quadrature = quadrature;
+			}
+			if (!same_quadrature(displacement_vals.quadrature, quadrature))
+			{
+				displacement_vals.compute(e, is_volume_, quadrature.points, mesh_displacement_bases_[e], geom_bases_[e]);
+				displacement_vals.quadrature = quadrature;
+			}
+
+			Eigen::VectorXd local_displacement = Eigen::VectorXd::Zero(
+				int(displacement_vals.basis_values.size()) * dim_);
+			for (int a = 0; a < int(displacement_vals.basis_values.size()); ++a)
+				for (int c = 0; c < dim_; ++c)
+					for (const auto &global : displacement_vals.basis_values[a].global)
+						local_displacement(a * dim_ + c) +=
+							global.val * x(mesh_displacement_offset_ + global.index * dim_ + c);
+
+			for (int q = 0; q < quadrature.weights.size(); ++q)
+			{
+				Eigen::MatrixXd F = Eigen::MatrixXd::Identity(dim_, dim_);
+				for (int a = 0; a < int(displacement_vals.basis_values.size()); ++a)
+				{
+					const Eigen::RowVectorXd grad =
+						displacement_vals.basis_values[a].grad.row(q) * displacement_vals.jac_it[q];
+					for (int c = 0; c < dim_; ++c)
+						F.row(c) += local_displacement(a * dim_ + c) * grad;
+				}
+				const double J = F.determinant();
+				assert(J > 0);
+				const Eigen::MatrixXd F_inv = F.inverse();
+				const double reference_weight = pressure_vals.det(q) * quadrature.weights(q);
+				volume += reference_weight * J;
+
+				for (int a = 0; a < int(displacement_vals.basis_values.size()); ++a)
+				{
+					const Eigen::RowVectorXd spatial_grad =
+						displacement_vals.basis_values[a].grad.row(q) * displacement_vals.jac_it[q] * F_inv;
+					for (int c = 0; c < dim_; ++c)
+					{
+						const double local_dJ = J * spatial_grad(c);
+						for (const auto &displacement_global : displacement_vals.basis_values[a].global)
+						{
+							const int displacement_dof = displacement_global.index * dim_ + c;
+							const double dJ = displacement_global.val * local_dJ;
+							volume_derivative(displacement_dof) += reference_weight * dJ;
+							for (int i = 0; i < int(pressure_vals.basis_values.size()); ++i)
+								for (const auto &pressure_global : pressure_vals.basis_values[i].global)
+									weight_derivative(pressure_global.index, displacement_dof) +=
+										pressure_global.val * pressure_vals.basis_values[i].val(q)
+										* reference_weight * dJ;
+						}
+					}
+				}
+
+				for (int i = 0; i < int(pressure_vals.basis_values.size()); ++i)
+					for (const auto &pressure_global : pressure_vals.basis_values[i].global)
+						weights(pressure_global.index) += pressure_global.val
+														  * pressure_vals.basis_values[i].val(q) * reference_weight * J;
+			}
+		}
+
+		assert(volume > 0);
+		weight_derivative =
+			(weight_derivative * volume - weights * volume_derivative.transpose()) / (volume * volume);
+		weights /= volume;
+	}
+
+	void NavierStokesFSIAveragePressureForm::first_derivative_unweighted(
+		const Eigen::VectorXd &x, Eigen::VectorXd &residual) const
+	{
+		Eigen::VectorXd weights;
+		Eigen::MatrixXd weight_derivative;
+		compute_constraint(x, weights, weight_derivative);
+		const Eigen::VectorXd pressure = x.segment(pressure_offset_, n_pressure_bases_);
+		const double multiplier = x(multiplier_offset_);
+		residual = Eigen::VectorXd::Zero(total_size_);
+		residual.segment(pressure_offset_, n_pressure_bases_) = multiplier * weights;
+		residual(multiplier_offset_) = weights.dot(pressure);
+	}
+
+	void NavierStokesFSIAveragePressureForm::second_derivative_unweighted(
+		const Eigen::VectorXd &x, StiffnessMatrix &jacobian) const
+	{
+		Eigen::VectorXd weights;
+		Eigen::MatrixXd weight_derivative;
+		compute_constraint(x, weights, weight_derivative);
+		const Eigen::VectorXd pressure = x.segment(pressure_offset_, n_pressure_bases_);
+		const double multiplier = x(multiplier_offset_);
+		std::vector<Eigen::Triplet<double>> entries;
+		entries.reserve(2 * n_pressure_bases_
+						+ n_pressure_bases_ * n_mesh_displacement_bases_ * dim_
+						+ n_mesh_displacement_bases_ * dim_);
+		for (int i = 0; i < n_pressure_bases_; ++i)
+		{
+			entries.emplace_back(pressure_offset_ + i, multiplier_offset_, weights(i));
+			entries.emplace_back(multiplier_offset_, pressure_offset_ + i, weights(i));
+			for (int j = 0; j < n_mesh_displacement_bases_ * dim_; ++j)
+			{
+				const double value = weight_derivative(i, j);
+				if (value != 0)
+					entries.emplace_back(pressure_offset_ + i, mesh_displacement_offset_ + j, multiplier * value);
+			}
+		}
+		for (int j = 0; j < n_mesh_displacement_bases_ * dim_; ++j)
+		{
+			const double value = pressure.dot(weight_derivative.col(j));
+			if (value != 0)
+				entries.emplace_back(multiplier_offset_, mesh_displacement_offset_ + j, value);
+		}
+		jacobian.resize(total_size_, total_size_);
+		jacobian.setFromTriplets(entries.begin(), entries.end());
+		jacobian.makeCompressed();
+	}
+
 	NavierStokesFSIForm::NavierStokesFSIForm(
 		const int total_size,
 		const int n_velocity_bases,

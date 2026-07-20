@@ -1667,6 +1667,17 @@
         "spec_file": "material-parameters.json"
     },
     {
+        "pointer": "/materials/*/mesh_material/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of elastic models used by an ALE mesh MaterialSum"
+    },
+    {
+        "pointer": "/materials/*/mesh_material/models/*",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json"
+    },
+    {
         "pointer": "/boundary_conditions",
         "default": null,
         "type": "object",

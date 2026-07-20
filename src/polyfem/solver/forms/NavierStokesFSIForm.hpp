@@ -12,6 +12,53 @@
 
 namespace polyfem::solver
 {
+	/// Mean-zero pressure constraint on the current ALE domain. The form acts on
+	/// the complete [velocity, pressure, mesh displacement, multiplier] vector,
+	/// but deliberately contributes no mesh-displacement residual.
+	class NavierStokesFSIAveragePressureForm : public Form
+	{
+	public:
+		NavierStokesFSIAveragePressureForm(
+			int total_size,
+			int n_velocity_bases,
+			int n_pressure_bases,
+			int n_mesh_displacement_bases,
+			int dim,
+			const std::vector<basis::ElementBases> &pressure_bases,
+			const std::vector<basis::ElementBases> &mesh_displacement_bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const assembler::AssemblyValsCache &pressure_cache,
+			const assembler::AssemblyValsCache &mesh_displacement_cache,
+			bool is_volume);
+
+		std::string name() const override { return "navier-stokes-fsi-average-pressure"; }
+
+	protected:
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &residual) const override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &jacobian) const override;
+
+	private:
+		void compute_constraint(
+			const Eigen::VectorXd &x,
+			Eigen::VectorXd &weights,
+			Eigen::MatrixXd &weight_derivative) const;
+
+		const int total_size_;
+		const int dim_;
+		const int n_pressure_bases_;
+		const int n_mesh_displacement_bases_;
+		const int pressure_offset_;
+		const int mesh_displacement_offset_;
+		const int multiplier_offset_;
+		const std::vector<basis::ElementBases> &pressure_bases_;
+		const std::vector<basis::ElementBases> &mesh_displacement_bases_;
+		const std::vector<basis::ElementBases> &geom_bases_;
+		const assembler::AssemblyValsCache &pressure_cache_;
+		const assembler::AssemblyValsCache &mesh_displacement_cache_;
+		const bool is_volume_;
+	};
+
 	/// Global residual form for ALE Navier--Stokes on velocity, pressure, and
 	/// mesh-displacement spaces. This form owns all element gather/scatter;
 	/// MultiSpacesNLAssembler implementations remain strictly local.

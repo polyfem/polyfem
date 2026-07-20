@@ -5,6 +5,7 @@
 namespace polyfem::solver
 {
 	class ElasticForm;
+	class NavierStokesFSIAveragePressureForm;
 	class NavierStokesFSIForm;
 } // namespace polyfem::solver
 
@@ -12,6 +13,8 @@ namespace polyfem::varform
 {
 	class NavierStokesFSIVarForm : public FluidVarForm
 	{
+		friend class polyfem::test::VarFormTestAccess;
+
 	public:
 		std::string name() const override { return "NavierStokesFSI"; }
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
@@ -70,6 +73,6 @@ namespace polyfem::varform
 		std::shared_ptr<solver::ElasticForm> mesh_elastic_form_;
 		std::shared_ptr<solver::BodyForm> fluid_neumann_form_;
 		std::shared_ptr<solver::BodyForm> mesh_body_form_;
-		std::shared_ptr<solver::AveragePressureForm> average_pressure_form_;
+		std::shared_ptr<solver::NavierStokesFSIAveragePressureForm> average_pressure_form_;
 	};
 } // namespace polyfem::varform

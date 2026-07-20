@@ -436,7 +436,7 @@ namespace polyfem::varform
 
 		auxiliary_form_ = std::make_shared<solver::StackedForm>();
 		const auto velocity_block = auxiliary_form_->add_block(primary_ndof());
-		const auto pressure_block = auxiliary_form_->add_block(pressure_space_.n_bases);
+		auxiliary_form_->add_block(pressure_space_.n_bases);
 		const auto mesh_block = auxiliary_form_->add_block(mesh_displacement_ndof());
 
 		const solver::ElementInversionCheck check = args["solver"]["advanced"]["check_inversion"];
@@ -465,12 +465,20 @@ namespace polyfem::varform
 
 		if (use_avg_pressure)
 		{
-			const auto average_block = auxiliary_form_->add_block(1);
-			average_pressure_form_ = std::make_shared<solver::AveragePressureForm>(pressure_space_.n_bases);
-			auxiliary_form_->add(pressure_block, average_block, average_pressure_form_);
+			auxiliary_form_->add_block(1);
+			average_pressure_form_ = std::make_shared<solver::NavierStokesFSIAveragePressureForm>(
+				total_ndof(), space_.n_bases, pressure_space_.n_bases,
+				mesh_displacement_space_.n_bases, dim,
+				pressure_space_.basis_list(), mesh_displacement_space_.basis_list(),
+				space_.geometry_basis_list(), pressure_ass_vals_cache_,
+				mesh_displacement_ass_vals_cache_, mesh_->is_volume());
 		}
+		else
+			average_pressure_form_ = nullptr;
 
 		fsi_forms_ = {ale_form_, auxiliary_form_};
+		if (average_pressure_form_)
+			fsi_forms_.push_back(average_pressure_form_);
 		for (const auto &form : fsi_forms_)
 			form->set_output_dir(output_path);
 		fsi_al_forms_.clear();
