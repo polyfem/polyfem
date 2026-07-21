@@ -161,6 +161,32 @@ TEST_CASE("split defaults to geometry zero", "[geometry][split]")
 	CHECK(pieces[0].mesh->n_elements() == 2);
 }
 
+TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	Eigen::Matrix<double, 4, 2> vertices;
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::Matrix<int, 2, 3> cells;
+	cells << 0, 1, 2, 0, 2, 3;
+
+	auto mesh = Mesh::create(vertices, cells);
+	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
+		return e == 0 ? 7 : 12;
+	});
+	apply_geometry_selection(*mesh, "same_as_volume", "");
+	CHECK(mesh->get_geometry_ids() == std::vector<int>{7, 12});
+
+	auto pieces = mesh->split();
+	REQUIRE(pieces.size() == 2);
+	CHECK(pieces[0].id == 7);
+	CHECK(pieces[1].id == 12);
+
+	auto default_mesh = Mesh::create(vertices, cells);
+	apply_geometry_selection(*default_mesh, "same_as_volume", "");
+	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
+}
+
 TEST_CASE("mesh interface is empty for separated meshes", "[geometry][split]")
 {
 	using namespace polyfem::mesh;
