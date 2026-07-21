@@ -25,9 +25,9 @@
 #include <igl/Timer.h>
 #include <polysolve/linear/FEMSolver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
+#include <paraviewo/VTMWriter.hpp>
 #include <spdlog/fmt/fmt.h>
 
-#include <filesystem>
 #include <optional>
 #include <set>
 
@@ -68,14 +68,6 @@ namespace polyfem::varform
 				result.push_back(std::move(filtered));
 			}
 			return result;
-		}
-
-		std::string prefixed_filename(const std::string &path, const std::string &prefix)
-		{
-			if (path.empty())
-				return path;
-			const std::filesystem::path fs_path(path);
-			return (fs_path.parent_path() / (prefix + fs_path.filename().string())).string();
 		}
 
 		json residual_solver_params(const json &input)
@@ -303,8 +295,6 @@ namespace polyfem::varform
 
 		result["output"]["advanced"]["timestep_prefix"] =
 			"solid_" + result["output"]["advanced"]["timestep_prefix"].get<std::string>();
-		result["output"]["paraview"]["file_name"] = prefixed_filename(
-			result["output"]["paraview"]["file_name"].get<std::string>(), "solid_");
 		return result;
 	}
 
@@ -788,11 +778,28 @@ namespace polyfem::varform
 	void NavierStokesFSIVarForm::save_fsi_timestep(
 		const double time, const int step, const Eigen::MatrixXd &solution) const
 	{
-		save_timestep(time, step, t0, dt, solution);
-		if (has_solid_)
-			solid_varform_->save_timestep_for_embedding(
-				time, step, t0, dt,
-				solution.middleRows(solid_displacement_offset(), solid_displacement_ndof()));
+		if (!has_solid_)
+		{
+			save_timestep(time, step, t0, dt, solution);
+			return;
+		}
+
+		paraviewo::VTMWriter vtm(time);
+		const bool fluid_saved = save_timestep_to_vtm(time, step, dt, solution, vtm, "Fluid");
+		const bool solid_saved = solid_varform_->save_timestep_for_embedding(
+			time, step, dt,
+			solution.middleRows(solid_displacement_offset(), solid_displacement_ndof()),
+			vtm, "Solid");
+		if (!fluid_saved && !solid_saved)
+			return;
+
+		const int global_t = output_file_index(step);
+		const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+		vtm.save(resolve_output_path(fmt::format(step_name + "{:d}.vtm", global_t)));
+		output_geometry_.save_pvd(
+			resolve_output_path(args["output"]["paraview"]["file_name"]),
+			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
+			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 	}
 
 	void NavierStokesFSIVarForm::save_mesh_integrator_state(const int step) const

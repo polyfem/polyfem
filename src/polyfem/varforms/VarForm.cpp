@@ -32,6 +32,7 @@
 #include <limits>
 
 #include <spdlog/fmt/fmt.h>
+#include <paraviewo/VTMWriter.hpp>
 
 namespace polyfem::varform
 {
@@ -901,27 +902,41 @@ namespace polyfem::varform
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
 	{
+		paraviewo::VTMWriter vtm(time);
+		if (!save_timestep_to_vtm(time, t, dt, solution, vtm, ""))
+			return;
+
+		const int global_t = output_file_index(t);
+		const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+		vtm.save(resolve_output_path(fmt::format(step_name + "{:d}.vtm", global_t)));
+
+		output_geometry_.save_pvd(
+			resolve_output_path(args["output"]["paraview"]["file_name"]),
+			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
+			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+	}
+
+	bool VarForm::save_timestep_to_vtm(
+		const double time, const int t, const double dt,
+		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
+	{
 		const io::OutputSpace space = output_space();
 		if (!space.mesh || !args["output"]["advanced"]["save_time_sequence"])
-			return;
+			return false;
 		const int global_t = output_file_index(t);
 		if (global_t % args["output"]["paraview"]["skip_frame"].get<int>())
-			return;
+			return false;
 
 		ensure_output_sampler();
-
 		logger().trace("Saving VTU...");
 		const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 		const auto opts = export_options(space);
 		output_geometry_.save_vtu(
 			resolve_output_path(fmt::format(step_name + "{:d}.vtu", global_t)),
 			space, output_field_function(solution, opts), time, dt,
-			opts);
-
-		output_geometry_.save_pvd(
-			resolve_output_path(args["output"]["paraview"]["file_name"]),
-			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
-			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+			opts, vtm, block_prefix);
+		return true;
 	}
 
 	void VarForm::save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const

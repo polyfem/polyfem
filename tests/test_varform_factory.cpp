@@ -468,7 +468,9 @@ TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stoke
 	CHECK(Eigen::VectorXd(solid_jacobian * direction).isApprox(finite_difference, 2e-5));
 
 	CHECK(std::filesystem::is_regular_file(output_directory / "fsi.pvd"));
-	CHECK(std::filesystem::is_regular_file(output_directory / "solid_fsi.pvd"));
+	CHECK_FALSE(std::filesystem::exists(output_directory / "solid_fsi.pvd"));
+	CHECK(std::filesystem::is_regular_file(output_directory / "step_0.vtm"));
+	CHECK_FALSE(std::filesystem::exists(output_directory / "solid_step_0.vtm"));
 	const auto read_text = [](const std::filesystem::path &path) {
 		std::ifstream input(path);
 		return std::string(
@@ -476,10 +478,17 @@ TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stoke
 			std::istreambuf_iterator<char>());
 	};
 	const std::string fluid_pvd = read_text(output_directory / "fsi.pvd");
-	const std::string solid_pvd = read_text(output_directory / "solid_fsi.pvd");
 	CHECK(fluid_pvd.find("step_0.vtm") != std::string::npos);
 	CHECK(fluid_pvd.find("solid_step_") == std::string::npos);
-	CHECK(solid_pvd.find("solid_step_0.vtm") != std::string::npos);
+	const std::string combined_vtm = read_text(output_directory / "step_0.vtm");
+	CHECK(combined_vtm.find("step_0.vtu") != std::string::npos);
+	CHECK(combined_vtm.find("step_0_surf.vtu") != std::string::npos);
+	CHECK(combined_vtm.find("solid_step_0.vtu") != std::string::npos);
+	CHECK(combined_vtm.find("solid_step_0_surf.vtu") != std::string::npos);
+	CHECK(combined_vtm.find("Fluid Volume") != std::string::npos);
+	CHECK(combined_vtm.find("Fluid Surface") != std::string::npos);
+	CHECK(combined_vtm.find("Solid Volume") != std::string::npos);
+	CHECK(combined_vtm.find("Solid Surface") != std::string::npos);
 	const std::string state_path = (output_directory / "state-1.h5").string();
 	for (const std::string &name : {"solid_u", "solid_v", "solid_a"})
 	{

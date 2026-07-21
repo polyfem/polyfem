@@ -1194,6 +1194,30 @@ namespace polyfem::io
 			return;
 		}
 
+		const std::filesystem::path fs_path(path);
+		const std::string path_stem = fs_path.stem().string();
+		const std::string base_path = (fs_path.parent_path() / path_stem).string();
+		paraviewo::VTMWriter vtm(t);
+		save_vtu(path, space, output_fields, t, dt, opts, vtm, "");
+		vtm.save(base_path + ".vtm");
+	}
+
+	void OutGeometryData::save_vtu(
+		const std::string &path,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
+		const double t,
+		const double dt,
+		const ExportOptions &opts,
+		paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
+	{
+		if (!space.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+
 		const bool save_contact =
 			space.collision_mesh
 			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces
@@ -1231,18 +1255,19 @@ namespace polyfem::io
 			save_points(base_path + "_points" + opts.file_extension(), space, output_fields, opts);
 		}
 
-		paraviewo::VTMWriter vtm(t);
+		const auto block_name = [&block_prefix](const std::string &name) {
+			return block_prefix.empty() ? name : block_prefix + " " + name;
+		};
 		if (opts.volume)
-			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
+			vtm.add_dataset(block_name("Volume"), "data", path_stem + opts.file_extension());
 		if (opts.surface)
-			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
+			vtm.add_dataset(block_name("Surface"), "data", path_stem + "_surf" + opts.file_extension());
 		if (save_contact)
-			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
+			vtm.add_dataset(block_name("Contact"), "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
-			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
+			vtm.add_dataset(block_name("Wireframe"), "data", path_stem + "_wire" + opts.file_extension());
 		if (opts.points)
-			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
-		vtm.save(base_path + ".vtm");
+			vtm.add_dataset(block_name("Points"), "data", path_stem + "_points" + opts.file_extension());
 	}
 
 	void OutGeometryData::save_volume(

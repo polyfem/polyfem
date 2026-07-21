@@ -784,11 +784,12 @@ namespace polyfem::varform
 		solve_data.update_dt();
 	}
 
-	void NonlinearElasticVarForm::save_timestep_for_embedding(
-		const double time, const int step, const double t0, const double dt,
-		const Eigen::MatrixXd &solution) const
+	bool NonlinearElasticVarForm::save_timestep_for_embedding(
+		const double time, const int step, const double dt,
+		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
 	{
-		save_timestep(time, step, t0, dt, solution);
+		return save_timestep_to_vtm(time, step, dt, solution, vtm, block_prefix);
 	}
 
 	int NonlinearElasticVarForm::embedding_ndof() const
