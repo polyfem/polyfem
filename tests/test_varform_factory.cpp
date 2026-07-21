@@ -85,6 +85,29 @@ TEST_CASE("state can opt into migrated varforms", "[varform][state]")
 	}
 }
 
+TEST_CASE("transient linear elasticity initializes Newmark inertia after history", "[varform][time_integrator][regression]")
+{
+	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/apriori.json");
+	args["time"] = {
+		{"t0", 0.0},
+		{"tend", 0.01},
+		{"time_steps", 1},
+		{"integrator", {{"type", "ImplicitNewmark"}, {"gamma", 0.5}, {"beta", 0.25}}},
+	};
+
+	State state;
+	state.init(args, true);
+	state.set_max_threads(1);
+	state.load_mesh();
+
+	REQUIRE(state.variational_formulation != nullptr);
+	CHECK(state.variational_formulation->name() == "LinearElastic");
+
+	Eigen::MatrixXd solution;
+	CHECK_NOTHROW(state.solve(solution));
+	CHECK(solution.size() > 0);
+}
+
 TEST_CASE("periodic boundary conditions remain on legacy state path", "[varform][state]")
 {
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json");

@@ -41,12 +41,13 @@ TEST_CASE("time integrator", "[time_integrator]")
 	}
 	SECTION("BDF")
 	{
-		time_integrator = std::make_shared<ImplicitNewmark>();
+		time_integrator = std::make_shared<BDF>();
 		params = R"({
 	        "steps": 2
 	    })"_json;
 	}
 
+	time_integrator->set_parameters(params);
 	time_integrator->init(x_prev, v_prev, a_prev, dt);
 
 	CHECK(time_integrator->dt() == dt);
