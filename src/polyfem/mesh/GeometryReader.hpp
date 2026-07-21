@@ -40,6 +40,12 @@ namespace polyfem::mesh
 		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 		const bool non_conforming = false);
 
+	/// Apply a top-level geometry selection to an already merged FEM mesh.
+	void apply_geometry_selection(
+		Mesh &mesh,
+		const json &geometry_selection,
+		const std::string &root_path);
+
 	///
 	/// @brief      read a obstacle mesh from a geometry JSON
 	///

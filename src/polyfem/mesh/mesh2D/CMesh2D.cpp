@@ -14,6 +14,8 @@
 
 #include <cassert>
 #include <array>
+#include <unordered_map>
+#include <type_traits>
 
 namespace polyfem
 {
@@ -22,6 +24,79 @@ namespace polyfem
 
 	namespace mesh
 	{
+		void CMesh2D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_faces());
+
+			std::unordered_map<std::pair<int, int>, int, utils::HashPair> old_edge_ids;
+			std::unordered_map<std::pair<int, int>, EdgeNodes, utils::HashPair> old_edge_nodes;
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+				if (has_boundary_ids())
+					old_edge_ids[key] = boundary_ids_[e];
+				if (e < edge_nodes_.size())
+					old_edge_nodes[key] = edge_nodes_[e];
+			}
+
+			auto filter_nodes = [&keep](auto &nodes) {
+				if (nodes.size() != keep.size())
+					return;
+				std::decay_t<decltype(nodes)> filtered;
+				for (int i = 0; i < keep.size(); ++i)
+					if (keep[i])
+						filtered.push_back(nodes[i]);
+				nodes = std::move(filtered);
+			};
+			filter_nodes(face_nodes_);
+			filter_nodes(cell_nodes_);
+			filter_element_data(keep);
+
+			GEO::vector<GEO::index_t> to_delete(mesh_.facets.nb(), 0);
+			for (int f = 0; f < keep.size(); ++f)
+				to_delete[f] = keep[f] ? 0 : 1;
+			mesh_.facets.delete_elements(to_delete);
+
+			c2e_.reset();
+			boundary_vertices_.reset();
+			boundary_edges_.reset();
+			Navigation::prepare_mesh(mesh_);
+			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
+			if (!old_edge_ids.empty())
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+					const auto it = old_edge_ids.find(key);
+					boundary_ids_[e] = it == old_edge_ids.end() ? get_default_boundary_id(e) : it->second;
+				}
+			}
+			else
+				boundary_ids_.clear();
+
+			edge_nodes_.clear();
+			if (!old_edge_nodes.empty())
+			{
+				edge_nodes_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+					const auto it = old_edge_nodes.find(key);
+					if (it != old_edge_nodes.end())
+						edge_nodes_[e] = it->second;
+				}
+			}
+
+			in_ordered_edges_.resize(n_edges(), 2);
+			for (int e = 0; e < n_edges(); ++e)
+				in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
+			compute_elements_tag();
+		}
+
 		void CMesh2D::refine(const int n_refinement, const double t)
 		{
 			// return;
@@ -653,6 +728,7 @@ namespace polyfem
 			copy_mesh->node_ids_ = this->node_ids_;
 			copy_mesh->boundary_ids_ = this->boundary_ids_;
 			copy_mesh->body_ids_ = this->body_ids_;
+			copy_mesh->geometry_ids_ = this->geometry_ids_;
 			copy_mesh->orders_ = this->orders_;
 			copy_mesh->is_rational_ = this->is_rational_;
 			copy_mesh->edge_nodes_ = this->edge_nodes_;

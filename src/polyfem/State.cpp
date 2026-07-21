@@ -423,6 +423,9 @@ namespace polyfem
 		if (mesh == nullptr)
 			log_and_throw_error("unable to load the mesh!");
 
+		if (is_param_valid(args, "geometry_selection"))
+			mesh::apply_geometry_selection(*mesh, args["geometry_selection"], args["root_path"]);
+
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 

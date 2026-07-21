@@ -22,6 +22,33 @@ namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
 
+	void apply_geometry_selection(
+		Mesh &mesh,
+		const json &geometry_selection,
+		const std::string &root_path)
+	{
+		Selection::BBox bbox;
+		mesh.bounding_box(bbox[0], bbox[1]);
+		const auto selections = Selection::build_selections(geometry_selection, bbox, root_path);
+
+		Eigen::MatrixXd barycenters;
+		mesh.compute_element_barycenters(barycenters);
+		std::vector<int> geometry_ids(mesh.n_elements(), 0);
+		for (int e = 0; e < mesh.n_elements(); ++e)
+		{
+			const auto vertices = mesh.element_vertices(e);
+			for (const auto &selection : selections)
+			{
+				if (selection->inside(e, vertices, barycenters.row(e)))
+				{
+					geometry_ids[e] = selection->id(e, vertices, barycenters.row(e));
+					break;
+				}
+			}
+		}
+		mesh.set_geometry_ids(geometry_ids);
+	}
+
 	std::unique_ptr<Mesh> read_fem_mesh(
 		const Units &units,
 		const json &j_mesh,

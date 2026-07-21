@@ -8,6 +8,7 @@
         ],
         "optional": [
             "units",
+            "geometry_selection",
             "preset_problem",
             "common",
             "root_path",
@@ -161,6 +162,18 @@
         "type": "list",
         "min": 1,
         "doc": "List of geometry objects."
+    },
+    {
+        "pointer": "/geometry_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of top-dimensional elements into separate geometry IDs after all geometry objects are merged."
+    },
+    {
+        "pointer": "/geometry_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "Geometry partition operations applied to the merged FEM mesh."
     },
     {
         "pointer": "/geometry/*",
