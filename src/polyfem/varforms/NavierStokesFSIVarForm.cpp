@@ -5,6 +5,9 @@
 #include <polyfem/assembler/NavierStokesFSI.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -17,11 +20,16 @@
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 
 #include <igl/Timer.h>
 #include <polysolve/linear/FEMSolver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 #include <spdlog/fmt/fmt.h>
+
+#include <filesystem>
+#include <optional>
+#include <set>
 
 namespace polyfem::varform
 {
@@ -40,6 +48,36 @@ namespace polyfem::varform
 			return result;
 		}
 
+		json filter_fe_space_entries(const json &entries, const int fe_space_id)
+		{
+			if (!entries.is_array())
+				return entries;
+
+			json result = json::array();
+			for (const json &entry : entries)
+			{
+				if (!entry.is_object())
+				{
+					result.push_back(entry);
+					continue;
+				}
+				if (entry.contains("fe_space") && entry["fe_space"].get<int>() != fe_space_id)
+					continue;
+				json filtered = entry;
+				filtered.erase("fe_space");
+				result.push_back(std::move(filtered));
+			}
+			return result;
+		}
+
+		std::string prefixed_filename(const std::string &path, const std::string &prefix)
+		{
+			if (path.empty())
+				return path;
+			const std::filesystem::path fs_path(path);
+			return (fs_path.parent_path() / (prefix + fs_path.filename().string())).string();
+		}
+
 		json residual_solver_params(const json &input)
 		{
 			json params = input;
@@ -56,12 +94,14 @@ namespace polyfem::varform
 			const StiffnessMatrix &velocity_mass,
 			const int pressure_size,
 			const StiffnessMatrix &mesh_mass,
+			const StiffnessMatrix &solid_mass,
 			const bool add_average)
 		{
 			const int mesh_offset = velocity_mass.rows() + pressure_size;
-			const int total = mesh_offset + mesh_mass.rows() + (add_average ? 1 : 0);
+			const int solid_offset = mesh_offset + mesh_mass.rows();
+			const int total = solid_offset + solid_mass.rows() + (add_average ? 1 : 0);
 			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(velocity_mass.nonZeros() + pressure_size + mesh_mass.nonZeros() + (add_average ? 1 : 0));
+			entries.reserve(velocity_mass.nonZeros() + pressure_size + mesh_mass.nonZeros() + solid_mass.nonZeros() + (add_average ? 1 : 0));
 			for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					entries.emplace_back(it.row(), it.col(), it.value());
@@ -70,6 +110,9 @@ namespace polyfem::varform
 			for (int k = 0; k < mesh_mass.outerSize(); ++k)
 				for (StiffnessMatrix::InnerIterator it(mesh_mass, k); it; ++it)
 					entries.emplace_back(mesh_offset + it.row(), mesh_offset + it.col(), it.value());
+			for (int k = 0; k < solid_mass.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(solid_mass, k); it; ++it)
+					entries.emplace_back(solid_offset + it.row(), solid_offset + it.col(), it.value());
 			if (add_average)
 				entries.emplace_back(total - 1, total - 1, 1);
 			StiffnessMatrix result(total, total);
@@ -83,7 +126,16 @@ namespace polyfem::varform
 	{
 		FluidVarForm::reset();
 		mesh_displacement_space_id_ = -1;
+		displacement_space_id_ = -1;
+		fluid_geometry_id_ = -1;
+		solid_geometry_id_ = -1;
+		has_solid_ = false;
 		mesh_elastic_formulation_ = "NeoHookean";
+		solid_elastic_formulation_ = "NeoHookean";
+		solid_args_ = json();
+		solid_varform_ = nullptr;
+		interface_2d_.clear();
+		interface_3d_.clear();
 		mesh_displacement_space_.reset();
 		mesh_displacement_boundary_.reset();
 		mesh_displacement_problem_ = nullptr;
@@ -130,6 +182,30 @@ namespace polyfem::varform
 		if (!assembler::AssemblerUtils::is_elastic_material(mesh_elastic_formulation_))
 			log_and_throw_error("NavierStokesFSI mesh_material must be an elastic material, got {}.", mesh_elastic_formulation_);
 
+		const std::array<std::string, 4> solid_fields{
+			"fluid_geometry_id", "solid_geometry_id", "displacement_space_id", "solid_material"};
+		int present_solid_fields = 0;
+		for (const std::string &field : solid_fields)
+			present_solid_fields += material.contains(field);
+		if (present_solid_fields != 0 && present_solid_fields != int(solid_fields.size()))
+			log_and_throw_error("Two-mesh NavierStokesFSI requires fluid_geometry_id, solid_geometry_id, displacement_space_id, and solid_material together.");
+		has_solid_ = present_solid_fields == int(solid_fields.size());
+		if (has_solid_)
+		{
+			fluid_geometry_id_ = material.at("fluid_geometry_id").get<int>();
+			solid_geometry_id_ = material.at("solid_geometry_id").get<int>();
+			displacement_space_id_ = material.at("displacement_space_id").get<int>();
+			solid_elastic_formulation_ = material.at("solid_material").at("type").get<std::string>();
+			if (!assembler::AssemblerUtils::is_elastic_material(solid_elastic_formulation_))
+				log_and_throw_error("NavierStokesFSI solid_material must be an elastic material, got {}.", solid_elastic_formulation_);
+			const std::set<int> ids{
+				velocity_space_id_, pressure_space_id_, mesh_displacement_space_id_, displacement_space_id_};
+			if (ids.size() != 4)
+				log_and_throw_error("Two-mesh NavierStokesFSI requires four distinct FE-space IDs.");
+			if (fluid_geometry_id_ == solid_geometry_id_)
+				log_and_throw_error("Two-mesh NavierStokesFSI requires distinct fluid and solid geometry IDs.");
+		}
+
 		if (materials.is_array())
 			for (const json &entry : materials)
 			{
@@ -137,6 +213,11 @@ namespace polyfem::varform
 					log_and_throw_error("All NavierStokesFSI materials must use the same mesh-displacement FE space.");
 				if (entry.at("mesh_material").at("type").get<std::string>() != mesh_elastic_formulation_)
 					log_and_throw_error("All NavierStokesFSI regions must use the same mesh elastic formulation.");
+				for (const std::string &field : solid_fields)
+					if (entry.contains(field) != has_solid_)
+						log_and_throw_error("All NavierStokesFSI materials must consistently enable the two-mesh solid fields.");
+				if (has_solid_ && (entry.at("fluid_geometry_id") != fluid_geometry_id_ || entry.at("solid_geometry_id") != solid_geometry_id_ || entry.at("displacement_space_id") != displacement_space_id_ || entry.at("solid_material").at("type") != solid_elastic_formulation_))
+					log_and_throw_error("All NavierStokesFSI materials must use the same geometry IDs, solid FE space, and solid formulation.");
 			}
 
 		if (args.at("space").at("discr_order").is_array())
@@ -166,6 +247,13 @@ namespace polyfem::varform
 		mesh_displacement_problem_->set_parameters(args["initial_conditions"], root_path);
 		mesh_displacement_problem_->set_parameters(args["output"], root_path);
 		mesh_displacement_problem_->set_units(*mesh_elastic_assembler_, units);
+
+		if (has_solid_)
+		{
+			solid_args_ = solid_varform_args();
+			solid_varform_ = std::make_shared<NonlinearElasticTransientVarForm>();
+			solid_varform_->init(solid_elastic_formulation_, units, solid_args_, out_path);
+		}
 	}
 
 	json NavierStokesFSIVarForm::mesh_material_args() const
@@ -178,6 +266,46 @@ namespace polyfem::varform
 			return result;
 		}
 		return mesh_material(args["materials"]);
+	}
+
+	json NavierStokesFSIVarForm::solid_varform_args() const
+	{
+		json result = args;
+		const json material = first_material(args.at("materials"));
+		result["materials"] = material.at("solid_material");
+		result.erase("preset_problem");
+
+		if (result["space"]["discr_order"].is_array())
+			result["space"]["discr_order"] = filter_fe_space_entries(
+				result["space"]["discr_order"], displacement_space_id_);
+
+		for (const std::string &key : {
+				 "rhs", "dirichlet_boundary", "neumann_boundary",
+				 "nodal_neumann_boundary", "normal_aligned_neumann_boundary"})
+		{
+			if (result["boundary_conditions"].contains(key))
+				result["boundary_conditions"][key] = filter_fe_space_entries(
+					result["boundary_conditions"][key], displacement_space_id_);
+		}
+		result["boundary_conditions"]["pressure_boundary"] = json::array();
+		result["boundary_conditions"]["pressure_cavity"] = json::array();
+
+		for (const std::string &key : {"solution", "velocity", "acceleration"})
+			if (result["initial_conditions"].contains(key))
+				result["initial_conditions"][key] = filter_fe_space_entries(
+					result["initial_conditions"][key], displacement_space_id_);
+
+		result["time"]["integrator"] = time_integrator_args(displacement_space_id_);
+		result["contact"]["enabled"] = false;
+		result["constraints"]["hard"] = json::array();
+		result["constraints"]["soft"] = json::array();
+		result["space"]["remesh"]["enabled"] = false;
+
+		result["output"]["advanced"]["timestep_prefix"] =
+			"solid_" + result["output"]["advanced"]["timestep_prefix"].get<std::string>();
+		result["output"]["paraview"]["file_name"] = prefixed_filename(
+			result["output"]["paraview"]["file_name"].get<std::string>(), "solid_");
+		return result;
 	}
 
 	json NavierStokesFSIVarForm::time_integrator_args(const int fe_space_id) const
@@ -197,22 +325,64 @@ namespace polyfem::varform
 
 	void NavierStokesFSIVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
-		FluidVarForm::load_mesh(mesh, args);
-		std::vector<int> body_ids(mesh.n_elements());
-		for (int e = 0; e < mesh.n_elements(); ++e)
-			body_ids[e] = mesh.get_body_id(e);
+		if (has_solid_)
+		{
+			auto pieces = mesh.split();
+			if (pieces.size() != 2)
+				log_and_throw_error("Two-mesh NavierStokesFSI expected exactly two geometry partitions, got {}.", pieces.size());
+
+			std::unique_ptr<mesh::Mesh> fluid_mesh, solid_mesh;
+			for (auto &piece : pieces)
+			{
+				if (piece.id == fluid_geometry_id_)
+					fluid_mesh = std::move(piece.mesh);
+				else if (piece.id == solid_geometry_id_)
+					solid_mesh = std::move(piece.mesh);
+				else
+					log_and_throw_error("Unexpected geometry ID {} in two-mesh NavierStokesFSI.", piece.id);
+			}
+			if (!fluid_mesh || !solid_mesh)
+				log_and_throw_error(
+					"Unable to find configured fluid/solid geometry IDs {}/{}.",
+					fluid_geometry_id_, solid_geometry_id_);
+
+			if (fluid_mesh->dimension() == 2)
+			{
+				interface_2d_ = mesh::compute_mesh_interface(
+					dynamic_cast<const mesh::Mesh2D &>(*fluid_mesh),
+					dynamic_cast<const mesh::Mesh2D &>(*solid_mesh));
+				if (interface_2d_.empty())
+					log_and_throw_error("Configured 2D fluid and solid geometries do not share an interface.");
+			}
+			else
+			{
+				interface_3d_ = mesh::compute_mesh_interface(
+					dynamic_cast<const mesh::Mesh3D &>(*fluid_mesh),
+					dynamic_cast<const mesh::Mesh3D &>(*solid_mesh));
+				if (interface_3d_.empty())
+					log_and_throw_error("Configured 3D fluid and solid geometries do not share an interface.");
+			}
+
+			mesh_ = std::move(fluid_mesh);
+			solid_varform_->set_mesh(std::move(solid_mesh));
+		}
+
+		FluidVarForm::load_mesh(*mesh_, args);
+		std::vector<int> body_ids(mesh_->n_elements());
+		for (int e = 0; e < mesh_->n_elements(); ++e)
+			body_ids[e] = mesh_->get_body_id(e);
 		for (const auto &assembler : ale_assemblers_)
 		{
-			assembler->set_size(mesh.dimension());
+			assembler->set_size(mesh_->dimension());
 			assembler->set_materials(body_ids, this->args["materials"], units, root_path);
 		}
 		const json mesh_materials = mesh_material_args();
-		mesh_elastic_assembler_->set_size(mesh.dimension());
+		mesh_elastic_assembler_->set_size(mesh_->dimension());
 		mesh_elastic_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
-		mesh_mass_assembler_->set_size(mesh.dimension());
+		mesh_mass_assembler_->set_size(mesh_->dimension());
 		mesh_mass_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
-		mesh_pure_mass_assembler_->set_size(mesh.dimension());
-		mesh_displacement_problem_->init(mesh);
+		mesh_pure_mass_assembler_->set_size(mesh_->dimension());
+		mesh_displacement_problem_->init(*mesh_);
 	}
 
 	void NavierStokesFSIVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -247,6 +417,11 @@ namespace polyfem::varform
 		}
 		build_rhs_assembler();
 		logger().info("n mesh displacement bases: {}", mesh_displacement_space_.n_bases);
+		if (has_solid_)
+		{
+			solid_varform_->prepare_for_embedding();
+			logger().info("n solid displacement dofs: {}", solid_varform_->embedding_ndof());
+		}
 	}
 
 	void NavierStokesFSIVarForm::build_mesh_displacement_boundary(mesh::Mesh &mesh)
@@ -323,16 +498,22 @@ namespace polyfem::varform
 		return mesh_ ? mesh_displacement_space_.n_bases * mesh_->dimension() : 0;
 	}
 
+	int NavierStokesFSIVarForm::solid_displacement_ndof() const
+	{
+		return has_solid_ && solid_varform_ ? solid_varform_->embedding_ndof() : 0;
+	}
+
 	int NavierStokesFSIVarForm::total_ndof() const
 	{
-		return primary_ndof() + pressure_space_.n_bases + mesh_displacement_ndof() + (use_avg_pressure ? 1 : 0);
+		return primary_ndof() + pressure_space_.n_bases + mesh_displacement_ndof()
+			   + solid_displacement_ndof() + (use_avg_pressure ? 1 : 0);
 	}
 
 	void NavierStokesFSIVarForm::prepare_fsi_initial_solution(Eigen::MatrixXd &sol) const
 	{
 		if (sol.size() == 0)
 		{
-			Eigen::MatrixXd velocity, mesh_displacement;
+			Eigen::MatrixXd velocity, mesh_displacement, solid_displacement;
 			const std::string state_path = resolve_input_path(args["input"]["data"]["state"]);
 			const bool loaded_velocity = read_initial_x_from_file(
 				state_path, "u", args["input"]["data"]["reorder"],
@@ -344,10 +525,15 @@ namespace polyfem::varform
 				rhs_assembler_->initial_solution(velocity);
 			if (!loaded_mesh_displacement)
 				mesh_rhs_assembler_->initial_solution(mesh_displacement);
+			if (has_solid_)
+				solid_varform_->initial_solution_for_embedding(solid_displacement, "solid_");
 			sol.setZero(total_ndof(), 1);
 			sol.topRows(primary_ndof()) = velocity.topRows(primary_ndof()).leftCols(1);
 			sol.middleRows(mesh_displacement_offset(), mesh_displacement_ndof()) =
 				mesh_displacement.topRows(mesh_displacement_ndof()).leftCols(1);
+			if (has_solid_)
+				sol.middleRows(solid_displacement_offset(), solid_displacement_ndof()) =
+					solid_displacement.topRows(solid_displacement_ndof()).leftCols(1);
 		}
 		else
 		{
@@ -357,7 +543,7 @@ namespace polyfem::varform
 			{
 				const Eigen::MatrixXd input = sol;
 				sol.setZero(total_ndof(), 1);
-				const int rows = std::min<int>(input.rows(), primary_ndof() + pressure_space_.n_bases);
+				const int rows = std::min<int>(input.rows(), total_ndof());
 				if (rows > 0)
 					sol.topRows(rows) = input.topRows(rows);
 			}
@@ -369,6 +555,12 @@ namespace polyfem::varform
 		const int dim = mesh_->dimension();
 		const Eigen::VectorXd velocity = sol.topRows(primary_ndof());
 		const Eigen::VectorXd mesh_displacement = sol.middleRows(mesh_displacement_offset(), mesh_displacement_ndof());
+		Eigen::MatrixXd solid_displacement;
+		if (has_solid_)
+		{
+			solid_displacement = sol.middleRows(solid_displacement_offset(), solid_displacement_ndof());
+			solid_varform_->init_forms_for_embedding(solid_displacement, t, "solid_");
+		}
 
 		auto velocity_bdf = time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator(
 			time_integrator_args(velocity_space_id_), time_integrator::ImplicitTimeIntegrator::DynamicOrder::First);
@@ -438,6 +630,13 @@ namespace polyfem::varform
 		const auto velocity_block = auxiliary_form_->add_block(primary_ndof());
 		auxiliary_form_->add_block(pressure_space_.n_bases);
 		const auto mesh_block = auxiliary_form_->add_block(mesh_displacement_ndof());
+		std::optional<solver::StackedForm::Block> solid_block;
+		if (has_solid_)
+		{
+			solid_block = auxiliary_form_->add_block(solid_displacement_ndof());
+			for (const auto &form : solid_varform_->embedding_forms())
+				auxiliary_form_->add(*solid_block, form);
+		}
 
 		const solver::ElementInversionCheck check = args["solver"]["advanced"]["check_inversion"];
 		mesh_elastic_form_ = std::make_shared<solver::ElasticForm>(
@@ -468,7 +667,7 @@ namespace polyfem::varform
 			auxiliary_form_->add_block(1);
 			average_pressure_form_ = std::make_shared<solver::NavierStokesFSIAveragePressureForm>(
 				total_ndof(), space_.n_bases, pressure_space_.n_bases,
-				mesh_displacement_space_.n_bases, dim,
+				mesh_displacement_space_.n_bases, average_pressure_offset(), dim,
 				pressure_space_.basis_list(), mesh_displacement_space_.basis_list(),
 				space_.geometry_basis_list(), pressure_ass_vals_cache_,
 				mesh_displacement_ass_vals_cache_, mesh_->is_volume());
@@ -482,12 +681,16 @@ namespace polyfem::varform
 		for (const auto &form : fsi_forms_)
 			form->set_output_dir(output_path);
 		fsi_al_forms_.clear();
-		if (!boundary_.boundary_nodes.empty() || !mesh_displacement_boundary_.boundary_nodes.empty())
+		if (!boundary_.boundary_nodes.empty() || !mesh_displacement_boundary_.boundary_nodes.empty()
+			|| (has_solid_ && !solid_varform_->embedding_al_forms().empty()))
 		{
 			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
 			const auto velocity_al = stacked_al->add_block(primary_ndof());
 			stacked_al->add_block(pressure_space_.n_bases);
 			const auto mesh_al = stacked_al->add_block(mesh_displacement_ndof());
+			std::optional<solver::StackedAugmentedLagrangianForm::Block> solid_al;
+			if (has_solid_)
+				solid_al = stacked_al->add_block(solid_displacement_ndof());
 			if (use_avg_pressure)
 				stacked_al->add_block(1);
 			if (!boundary_.boundary_nodes.empty())
@@ -499,6 +702,9 @@ namespace polyfem::varform
 											 mesh_displacement_ndof(), mesh_displacement_boundary_.boundary_nodes,
 											 mesh_displacement_boundary_.local_boundary, mesh_displacement_boundary_.local_neumann_boundary,
 											 mesh_samples, mesh_pure_mass_, *mesh_rhs_assembler_, 0, true, t));
+			if (has_solid_)
+				for (const auto &form : solid_varform_->embedding_al_forms())
+					stacked_al->add(*solid_al, form);
 			fsi_al_forms_.push_back(stacked_al);
 		}
 
@@ -506,7 +712,10 @@ namespace polyfem::varform
 			total_ndof(), nullptr, t, fsi_forms_, fsi_al_forms_,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			units.characteristic_length(), 1,
-			residual_mass(pure_mass_, pressure_space_.n_bases, mesh_pure_mass_, use_avg_pressure),
+			residual_mass(
+				pure_mass_, pressure_space_.n_bases, mesh_pure_mass_,
+				has_solid_ ? solid_varform_->embedding_norm_matrix() : StiffnessMatrix(),
+				use_avg_pressure),
 			dim, true);
 		fsi_problem_->init(sol);
 		fsi_problem_->update_quantities(t, sol);
@@ -551,7 +760,7 @@ namespace polyfem::varform
 		timer.start();
 		prepare_fsi_initial_solution(sol);
 		build_forms(sol, t0 + dt);
-		save_timestep(t0, 0, t0, dt, sol);
+		save_fsi_timestep(t0, 0, sol);
 		for (int step = 1; step <= time_steps; ++step)
 		{
 			const double time = t0 + step * dt;
@@ -560,15 +769,30 @@ namespace polyfem::varform
 			time_integrator->update_quantities(sol.topRows(primary_ndof()));
 			mesh_displacement_time_integrator_->update_quantities(
 				sol.middleRows(mesh_displacement_offset(), mesh_displacement_ndof()));
+			if (has_solid_)
+				solid_varform_->advance_for_embedding(
+					sol.middleRows(solid_displacement_offset(), solid_displacement_ndof()));
 			update_transient_form_weights();
 			fsi_problem_->update_quantities(t0 + (step + 1) * dt, sol);
-			save_timestep(time, step, t0, dt, sol);
+			save_fsi_timestep(time, step, sol);
 			save_step_state(t0, dt, step, time_integrator.get());
 			save_mesh_integrator_state(step);
+			if (has_solid_)
+				save_solid_integrator_state(step);
 			notify_time_step(step, time_steps, t0, dt);
 		}
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
+	}
+
+	void NavierStokesFSIVarForm::save_fsi_timestep(
+		const double time, const int step, const Eigen::MatrixXd &solution) const
+	{
+		save_timestep(time, step, t0, dt, solution);
+		if (has_solid_)
+			solid_varform_->save_timestep_for_embedding(
+				time, step, t0, dt,
+				solution.middleRows(solid_displacement_offset(), solid_displacement_ndof()));
 	}
 
 	void NavierStokesFSIVarForm::save_mesh_integrator_state(const int step) const
@@ -588,6 +812,26 @@ namespace polyfem::varform
 		save_history("mesh_u", mesh_displacement_time_integrator_->x_prevs());
 		save_history("mesh_v", mesh_displacement_time_integrator_->v_prevs());
 		save_history("mesh_a", mesh_displacement_time_integrator_->a_prevs());
+	}
+
+	void NavierStokesFSIVarForm::save_solid_integrator_state(const int step) const
+	{
+		assert(has_solid_ && solid_varform_->embedding_time_integrator());
+		const std::string state_path = resolve_output_path(
+			fmt::format(args["output"]["data"]["state"].get<std::string>(), output_file_index(step)));
+		if (state_path.empty())
+			return;
+
+		const auto save_history = [&](const std::string &name, const std::deque<Eigen::VectorXd> &history) {
+			Eigen::MatrixXd values(history.front().size(), history.size());
+			for (int i = 0; i < int(history.size()); ++i)
+				values.col(i) = history[i];
+			io::write_matrix(state_path, name, values, /*replace=*/false);
+		};
+		const auto &integrator = solid_varform_->embedding_time_integrator();
+		save_history("solid_u", integrator->x_prevs());
+		save_history("solid_v", integrator->v_prevs());
+		save_history("solid_a", integrator->a_prevs());
 	}
 
 	std::vector<io::OutputField> NavierStokesFSIVarForm::output_fields(

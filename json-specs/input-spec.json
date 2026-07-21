@@ -8,7 +8,6 @@
         ],
         "optional": [
             "units",
-            "geometry_selection",
             "preset_problem",
             "common",
             "root_path",
@@ -164,26 +163,6 @@
         "doc": "List of geometry objects."
     },
     {
-        "pointer": "/geometry_selection",
-        "type": "include",
-        "spec_file": "selection.json",
-        "doc": "Selection of top-dimensional elements into separate geometry IDs after all geometry objects are merged."
-    },
-    {
-        "pointer": "/geometry_selection",
-        "type": "list",
-        "default": "skip",
-        "doc": "Geometry partition operations applied to the merged FEM mesh."
-    },
-    {
-        "pointer": "/geometry_selection",
-        "type": "string",
-        "options": [
-            "same_as_volume"
-        ],
-        "doc": "Copy the final merged mesh's volume/body IDs into its geometry IDs."
-    },
-    {
         "pointer": "/geometry/*",
         "type": "object",
         "required": [
@@ -194,6 +173,7 @@
             "extract",
             "unit",
             "transformation",
+            "geometry_selection",
             "volume_selection",
             "surface_selection",
             "curve_selection",
@@ -218,6 +198,7 @@
             "extract",
             "unit",
             "transformation",
+            "geometry_selection",
             "volume_selection",
             "surface_selection",
             "curve_selection",
@@ -389,6 +370,31 @@
         "pointer": "/geometry/*/transformation/scale/*",
         "default": 0,
         "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of top-dimensional elements into separate geometry IDs."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "Geometry partition operations applied to this FEM mesh."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "object",
+        "required": [
+            "same_as_volume"
+        ],
+        "doc": "Copy this mesh's final volume/body IDs into its geometry IDs."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection/same_as_volume",
+        "type": "bool",
+        "doc": "If true, copy this mesh's final volume/body IDs into its geometry IDs."
     },
     {
         "pointer": "/geometry/*/volume_selection",
@@ -1695,6 +1701,17 @@
     },
     {
         "pointer": "/materials/*/mesh_material/models/*",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json"
+    },
+    {
+        "pointer": "/materials/*/solid_material/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of elastic models used by an embedded solid MaterialSum"
+    },
+    {
+        "pointer": "/materials/*/solid_material/models/*",
         "type": "include",
         "spec_file": "elastic-material-parameters.json"
     },

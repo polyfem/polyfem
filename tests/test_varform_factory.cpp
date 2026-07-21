@@ -1,7 +1,9 @@
 #include <polyfem/State.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/NavierStokesFSIForm.hpp>
 
 #include "VarFormTestAccess.hpp"
@@ -12,6 +14,7 @@
 #include <cmath>
 #include <fstream>
 #include <filesystem>
+#include <iterator>
 #include <set>
 #include <string>
 #include <utility>
@@ -325,6 +328,167 @@ TEST_CASE("ALE Navier-Stokes FSI moving arc", "[varform][state][navier_stokes][f
 		}
 	}
 	CHECK(std::abs(current_volume / reference_volume - 1) < 0.02);
+}
+
+TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes][fsi]")
+{
+	const std::filesystem::path output_directory =
+		std::filesystem::temp_directory_path() / "polyfem-two-mesh-fsi";
+	std::filesystem::remove_all(output_directory);
+	json args = load_scene(
+		std::string(POLYFEM_DATA_DIR) + "/standard/navier_stokes_fsi_simple_square.json");
+	args["time"] = {
+		{"t0", 0},
+		{"tend", 0.01},
+		{"time_steps", 1},
+		{"integrator", args["time"]["integrator"]}};
+	args["/solver/linear/solver"_json_pointer] = "Eigen::SparseLU";
+	args["/output/directory"_json_pointer] = output_directory.string();
+	args["/output/advanced/save_time_sequence"_json_pointer] = true;
+	args["/output/paraview/file_name"_json_pointer] = "fsi.pvd";
+	args["/output/paraview/surface"_json_pointer] = true;
+	args["/output/data/state"_json_pointer] =
+		(output_directory / "state-{:d}.h5").string();
+
+	State state;
+	state.init(args, true);
+	state.load_mesh();
+	Eigen::MatrixXd solution;
+	state.solve(solution);
+
+	REQUIRE(state.variational_formulation != nullptr);
+	CHECK(solution.allFinite());
+	const test::NavierStokesFSIDebugData debug =
+		test::VarFormTestAccess::navier_stokes_fsi_data(*state.variational_formulation);
+	REQUIRE(debug.problem != nullptr);
+	REQUIRE(debug.solid_varform != nullptr);
+	REQUIRE(debug.fluid_mesh != nullptr);
+	REQUIRE(debug.solid_mesh != nullptr);
+	CHECK(debug.fluid_mesh->has_geometry_ids());
+	CHECK(debug.solid_mesh->has_geometry_ids());
+	CHECK(debug.interface_size > 0);
+	CHECK(debug.solid_displacement_offset
+		  == debug.velocity_ndof + debug.pressure_ndof + debug.mesh_displacement_ndof);
+	CHECK(debug.problem->full_size()
+		  == debug.solid_displacement_offset + debug.solid_displacement_ndof
+			 + (debug.average_pressure_form ? 1 : 0));
+
+	const int mesh_offset = debug.velocity_ndof + debug.pressure_ndof;
+	CHECK(solution.topRows(debug.velocity_ndof).norm() > 1e-8);
+	CHECK(solution.middleRows(mesh_offset, debug.mesh_displacement_ndof).norm() < 1e-10);
+	CHECK(solution.middleRows(
+					  debug.solid_displacement_offset, debug.solid_displacement_ndof)
+			  .norm()
+		  > 1e-8);
+
+	debug.problem->use_full_size();
+	StiffnessMatrix jacobian;
+	debug.problem->hessian(solution.col(0), jacobian);
+	for (int col = 0; col < jacobian.outerSize(); ++col)
+		for (StiffnessMatrix::InnerIterator entry(jacobian, col); entry; ++entry)
+		{
+			const bool row_is_solid =
+				entry.row() >= debug.solid_displacement_offset
+				&& entry.row() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
+			const bool col_is_solid =
+				entry.col() >= debug.solid_displacement_offset
+				&& entry.col() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
+			if (row_is_solid != col_is_solid)
+				CHECK(std::abs(entry.value()) < 1e-12);
+		}
+
+	const int multiplier_offset =
+		debug.solid_displacement_offset + debug.solid_displacement_ndof;
+	solver::NavierStokesFSIAveragePressureForm embedded_gauge(
+		multiplier_offset + 1,
+		debug.velocity_ndof / debug.fluid_mesh->dimension(), debug.pressure_ndof,
+		debug.mesh_displacement_ndof / debug.fluid_mesh->dimension(),
+		multiplier_offset, debug.fluid_mesh->dimension(),
+		*debug.pressure_bases, *debug.mesh_displacement_bases, *debug.geometry_bases,
+		*debug.pressure_cache, *debug.mesh_displacement_cache, debug.is_volume);
+	Eigen::VectorXd gauge_x = Eigen::VectorXd::Zero(multiplier_offset + 1);
+	gauge_x.segment(debug.velocity_ndof, debug.pressure_ndof) =
+		Eigen::VectorXd::LinSpaced(debug.pressure_ndof, -0.2, 0.3);
+	gauge_x(multiplier_offset) = 0.4;
+	StiffnessMatrix gauge_jacobian;
+	embedded_gauge.second_derivative(gauge_x, gauge_jacobian);
+	bool gauge_touches_solid = false;
+	for (int col = 0; col < gauge_jacobian.outerSize(); ++col)
+		for (StiffnessMatrix::InnerIterator entry(gauge_jacobian, col); entry; ++entry)
+		{
+			const bool row_is_solid =
+				entry.row() >= debug.solid_displacement_offset && entry.row() < multiplier_offset;
+			const bool col_is_solid =
+				entry.col() >= debug.solid_displacement_offset && entry.col() < multiplier_offset;
+			gauge_touches_solid |= row_is_solid || col_is_solid;
+		}
+	CHECK_FALSE(gauge_touches_solid);
+
+	const Eigen::VectorXd solid = solution.middleRows(
+		debug.solid_displacement_offset, debug.solid_displacement_ndof);
+	Eigen::Vector2d mean_solid_displacement = Eigen::Vector2d::Zero();
+	for (int node = 0; node < solid.size() / 2; ++node)
+		mean_solid_displacement += solid.segment<2>(2 * node);
+	mean_solid_displacement /= solid.size() / 2;
+	double max_solid_deviation = 0;
+	for (int node = 0; node < solid.size() / 2; ++node)
+		max_solid_deviation = std::max(
+			max_solid_deviation,
+			(solid.segment<2>(2 * node) - mean_solid_displacement).norm());
+	CHECK(mean_solid_displacement.y() < -1e-8);
+	CHECK(std::abs(mean_solid_displacement.x()) < 1e-9);
+	CHECK(max_solid_deviation < 1e-8);
+
+	Eigen::VectorXd direction = Eigen::VectorXd::LinSpaced(
+		debug.solid_displacement_ndof, -0.5, 0.7);
+	direction.normalize();
+	Eigen::VectorXd residual = Eigen::VectorXd::Zero(debug.solid_displacement_ndof);
+	StiffnessMatrix solid_jacobian(debug.solid_displacement_ndof, debug.solid_displacement_ndof);
+	for (const auto &form : debug.solid_varform->embedding_forms())
+	{
+		Eigen::VectorXd form_residual;
+		StiffnessMatrix form_jacobian;
+		form->first_derivative(solid, form_residual);
+		form->second_derivative(solid, form_jacobian);
+		residual += form_residual;
+		solid_jacobian += form_jacobian;
+	}
+	const double eps = 1e-7;
+	Eigen::VectorXd plus_residual = Eigen::VectorXd::Zero(debug.solid_displacement_ndof);
+	Eigen::VectorXd minus_residual = Eigen::VectorXd::Zero(debug.solid_displacement_ndof);
+	for (const auto &form : debug.solid_varform->embedding_forms())
+	{
+		Eigen::VectorXd form_residual;
+		form->first_derivative(solid + eps * direction, form_residual);
+		plus_residual += form_residual;
+		form->first_derivative(solid - eps * direction, form_residual);
+		minus_residual += form_residual;
+	}
+	const Eigen::VectorXd finite_difference = (plus_residual - minus_residual) / (2 * eps);
+	CHECK(Eigen::VectorXd(solid_jacobian * direction).isApprox(finite_difference, 2e-5));
+
+	CHECK(std::filesystem::is_regular_file(output_directory / "fsi.pvd"));
+	CHECK(std::filesystem::is_regular_file(output_directory / "solid_fsi.pvd"));
+	const auto read_text = [](const std::filesystem::path &path) {
+		std::ifstream input(path);
+		return std::string(
+			std::istreambuf_iterator<char>(input),
+			std::istreambuf_iterator<char>());
+	};
+	const std::string fluid_pvd = read_text(output_directory / "fsi.pvd");
+	const std::string solid_pvd = read_text(output_directory / "solid_fsi.pvd");
+	CHECK(fluid_pvd.find("step_0.vtm") != std::string::npos);
+	CHECK(fluid_pvd.find("solid_step_") == std::string::npos);
+	CHECK(solid_pvd.find("solid_step_0.vtm") != std::string::npos);
+	const std::string state_path = (output_directory / "state-1.h5").string();
+	for (const std::string &name : {"solid_u", "solid_v", "solid_a"})
+	{
+		Eigen::MatrixXd history;
+		CHECK(io::read_matrix(state_path, name, history));
+		CHECK(history.rows() == debug.solid_displacement_ndof);
+		CHECK(history.allFinite());
+	}
+	std::filesystem::remove_all(output_directory);
 }
 
 TEST_CASE("periodic boundary conditions remain on legacy state path", "[varform][state]")

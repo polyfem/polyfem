@@ -12,6 +12,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <set>
 
 namespace
 {
@@ -98,6 +99,28 @@ TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][
 	}
 }
 
+TEST_CASE("geometry reader applies geometry selection from the mesh object", "[geometry][split]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const std::filesystem::path mesh_path =
+		std::filesystem::path(POLYFEM_DATA_DIR) / "standard/simple_fsi_square.msh";
+	json args = fem_mesh_json(mesh_path);
+	args["geometry_selection"] = {{"same_as_volume", true}};
+	const auto mesh = read_fem_mesh(Units(), args, "");
+	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh->has_geometry_ids());
+
+	std::set<int> geometry_ids;
+	for (int e = 0; e < mesh->n_elements(); ++e)
+	{
+		CHECK(mesh->get_geometry_id(e) == mesh->get_body_id(e));
+		geometry_ids.insert(mesh->get_geometry_id(e));
+	}
+	CHECK(geometry_ids == std::set<int>{1, 2});
+}
+
 TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 {
 	using namespace polyfem;
@@ -174,7 +197,7 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
 		return e == 0 ? 7 : 12;
 	});
-	apply_geometry_selection(*mesh, "same_as_volume", "");
+	apply_geometry_selection(*mesh, {{"same_as_volume", true}}, "");
 	CHECK(mesh->get_geometry_ids() == std::vector<int>{7, 12});
 
 	auto pieces = mesh->split();
@@ -183,7 +206,7 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	CHECK(pieces[1].id == 12);
 
 	auto default_mesh = Mesh::create(vertices, cells);
-	apply_geometry_selection(*default_mesh, "same_as_volume", "");
+	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, "");
 	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
 }
 

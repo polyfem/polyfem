@@ -27,11 +27,10 @@ namespace polyfem::mesh
 		const json &geometry_selection,
 		const std::string &root_path)
 	{
-		if (geometry_selection.is_string())
+		if (geometry_selection.is_object() && geometry_selection.contains("same_as_volume"))
 		{
-			const std::string mode = geometry_selection.get<std::string>();
-			if (mode != "same_as_volume")
-				log_and_throw_error("Invalid geometry_selection mode \"{}\"!", mode);
+			if (!geometry_selection["same_as_volume"].get<bool>())
+				return;
 
 			std::vector<int> geometry_ids(mesh.n_elements());
 			for (int e = 0; e < mesh.n_elements(); ++e)
@@ -289,6 +288,11 @@ namespace polyfem::mesh
 				return 0;
 			});
 		}
+
+		// --------------------------------------------------------------------
+
+		if (is_param_valid(j_mesh, "geometry_selection"))
+			apply_geometry_selection(*mesh, j_mesh["geometry_selection"], root_path);
 
 		// --------------------------------------------------------------------
 

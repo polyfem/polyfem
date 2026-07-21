@@ -24,6 +24,7 @@ namespace polyfem::solver
 		const int n_velocity_bases,
 		const int n_pressure_bases,
 		const int n_mesh_displacement_bases,
+		const int multiplier_offset,
 		const int dim,
 		const std::vector<basis::ElementBases> &pressure_bases,
 		const std::vector<basis::ElementBases> &mesh_displacement_bases,
@@ -37,7 +38,7 @@ namespace polyfem::solver
 		  n_mesh_displacement_bases_(n_mesh_displacement_bases),
 		  pressure_offset_(n_velocity_bases * dim),
 		  mesh_displacement_offset_(pressure_offset_ + n_pressure_bases),
-		  multiplier_offset_(mesh_displacement_offset_ + n_mesh_displacement_bases * dim),
+		  multiplier_offset_(multiplier_offset),
 		  pressure_bases_(pressure_bases),
 		  mesh_displacement_bases_(mesh_displacement_bases),
 		  geom_bases_(geom_bases),
@@ -48,6 +49,7 @@ namespace polyfem::solver
 		assert(dim_ == 2 || dim_ == 3);
 		assert(n_pressure_bases_ > 0);
 		assert(n_mesh_displacement_bases_ > 0);
+		assert(multiplier_offset_ >= mesh_displacement_offset_ + n_mesh_displacement_bases * dim);
 		assert(total_size_ == multiplier_offset_ + 1);
 		assert(pressure_bases_.size() == mesh_displacement_bases_.size());
 		assert(pressure_bases_.size() == geom_bases_.size());

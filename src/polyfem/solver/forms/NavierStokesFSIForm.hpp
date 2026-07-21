@@ -13,8 +13,9 @@
 namespace polyfem::solver
 {
 	/// Mean-zero pressure constraint on the current ALE domain. The form acts on
-	/// the complete [velocity, pressure, mesh displacement, multiplier] vector,
-	/// but deliberately contributes no mesh-displacement residual.
+	/// the complete [velocity, pressure, mesh displacement, optional intervening
+	/// blocks, multiplier] vector, but deliberately contributes no
+	/// mesh-displacement residual.
 	class NavierStokesFSIAveragePressureForm : public Form
 	{
 	public:
@@ -23,6 +24,7 @@ namespace polyfem::solver
 			int n_velocity_bases,
 			int n_pressure_bases,
 			int n_mesh_displacement_bases,
+			int multiplier_offset,
 			int dim,
 			const std::vector<basis::ElementBases> &pressure_bases,
 			const std::vector<basis::ElementBases> &mesh_displacement_bases,

@@ -332,12 +332,12 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
+	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "v",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "v",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), velocity);
 
@@ -345,12 +345,12 @@ namespace polyfem::varform
 			rhs_assembler_->initial_velocity(velocity);
 	}
 
-	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "a",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "a",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), acceleration);
 
@@ -358,12 +358,12 @@ namespace polyfem::varform
 			rhs_assembler_->initial_acceleration(acceleration);
 	}
 
-	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution) const
+	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "u",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "u",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), solution);
 

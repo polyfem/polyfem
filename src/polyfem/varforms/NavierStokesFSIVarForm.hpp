@@ -1,5 +1,6 @@
 #pragma once
 
+#include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/varforms/FluidVarForm.hpp>
 
 namespace polyfem::solver
@@ -11,6 +12,8 @@ namespace polyfem::solver
 
 namespace polyfem::varform
 {
+	class NonlinearElasticTransientVarForm;
+
 	class NavierStokesFSIVarForm : public FluidVarForm
 	{
 		friend class polyfem::test::VarFormTestAccess;
@@ -34,11 +37,14 @@ namespace polyfem::varform
 
 	private:
 		int mesh_displacement_ndof() const;
+		int solid_displacement_ndof() const;
 		int total_ndof() const;
 		int pressure_offset() const { return primary_ndof(); }
 		int mesh_displacement_offset() const { return primary_ndof() + pressure_space_.n_bases; }
-		int average_pressure_offset() const { return mesh_displacement_offset() + mesh_displacement_ndof(); }
+		int solid_displacement_offset() const { return mesh_displacement_offset() + mesh_displacement_ndof(); }
+		int average_pressure_offset() const { return solid_displacement_offset() + solid_displacement_ndof(); }
 		json mesh_material_args() const;
+		json solid_varform_args() const;
 		json time_integrator_args(int fe_space_id) const;
 		void build_mesh_displacement_boundary(mesh::Mesh &mesh);
 		void prepare_fsi_initial_solution(Eigen::MatrixXd &sol) const;
@@ -46,9 +52,20 @@ namespace polyfem::varform
 		void solve_nonlinear_step(int step, Eigen::MatrixXd &sol);
 		void update_transient_form_weights();
 		void save_mesh_integrator_state(int step) const;
+		void save_solid_integrator_state(int step) const;
+		void save_fsi_timestep(double time, int step, const Eigen::MatrixXd &solution) const;
 
 		int mesh_displacement_space_id_ = -1;
+		int displacement_space_id_ = -1;
+		int fluid_geometry_id_ = -1;
+		int solid_geometry_id_ = -1;
+		bool has_solid_ = false;
 		std::string mesh_elastic_formulation_ = "NeoHookean";
+		std::string solid_elastic_formulation_ = "NeoHookean";
+		json solid_args_;
+		std::shared_ptr<NonlinearElasticTransientVarForm> solid_varform_;
+		std::vector<std::pair<mesh::Navigation::Index, mesh::Navigation::Index>> interface_2d_;
+		std::vector<std::pair<mesh::Navigation3D::Index, mesh::Navigation3D::Index>> interface_3d_;
 		FESpace mesh_displacement_space_;
 		VarFormBoundaryState mesh_displacement_boundary_;
 		std::shared_ptr<assembler::Problem> mesh_displacement_problem_;
