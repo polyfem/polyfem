@@ -42,7 +42,7 @@ namespace polyfem::solver
 		return ParameterType::FrictionCoefficient;
 	}
 
-	bool FrictionVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool FrictionVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (const auto &varform : varforms_)
 		{

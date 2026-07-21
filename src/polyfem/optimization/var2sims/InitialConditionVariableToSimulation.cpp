@@ -91,7 +91,7 @@ namespace polyfem::solver
 		return ParameterType::InitialCondition;
 	}
 
-	bool InitialConditionVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool InitialConditionVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (const auto &varform : varforms_)
 		{

@@ -1,6 +1,6 @@
 #include "SplineParametrizations.hpp"
 #include <polyfem/utils/BSplineParametrization.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>
@@ -142,7 +142,7 @@ namespace polyfem::solver
 			return grad;
 	}
 
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const varform::VarForm &varform, const bool allow_rotations)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const varform::DifferentiableVarForm &varform, const bool allow_rotations)
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), allow_rotations_(allow_rotations)
 	{
 		Eigen::MatrixXd V;

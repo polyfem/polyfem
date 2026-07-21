@@ -744,7 +744,7 @@ namespace polyfem::varform
 		assert(temperature_space_.geometry && "Thermal boundary quadrature requires an initialized geometry mapping");
 		assert(temperature_space_.geometry->disc_orders.size() > 0 && "Thermal boundary quadrature requires initialized geometry orders");
 		const QuadratureOrders temperature_boundary_samples =
-			n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), temperature_space_.geometry->disc_orders.maxCoeff());
+			VarForm::n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), temperature_space_.geometry->disc_orders.maxCoeff());
 		temperature_body_form_ = std::make_shared<solver::BodyForm>(
 			temperature_ndof(), 0,
 			temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,

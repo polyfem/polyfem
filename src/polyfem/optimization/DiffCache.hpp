@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <polyfem/utils/Types.hpp>
 
@@ -36,7 +36,7 @@ namespace polyfem
 		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
 		void cache_transient(
 			int step,
-			varform::VarForm &varform,
+			varform::DifferentiableVarForm &varform,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd *disp_grad,
 			const Eigen::MatrixXd *pressure);

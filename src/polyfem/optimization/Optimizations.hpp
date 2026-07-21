@@ -29,8 +29,8 @@ namespace polyfem::solver
 
 		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim);
 
-		static void solve_pde(varform::VarForm &varform);
+		static void solve_pde(varform::DifferentiableVarForm &varform);
 
-		static int compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::VarForm>> &varforms);
+		static int compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms);
 	};
 } // namespace polyfem::solver

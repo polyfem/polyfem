@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -89,7 +89,7 @@ namespace polyfem::solver
 		};
 
 		void compute_collision_mesh_quantities(
-			const varform::VarForm &varform,
+			const varform::DifferentiableVarForm &varform,
 			const std::set<int> &boundary_ids,
 			const ipc::CollisionMesh &collision_mesh,
 			Eigen::MatrixXd &node_positions,
@@ -600,7 +600,7 @@ namespace polyfem::solver
 	// 	return sum;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform) const
 	// {
 	// 	assert(varform_.solve_data.time_integrator != nullptr);
 	// 	assert(varform_.solve_data.contact_form != nullptr);
@@ -660,7 +660,7 @@ namespace polyfem::solver
 	// 	return gradu;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform) const
 	// {
 	// 	assert(varform_.solve_data.time_integrator != nullptr);
 	// 	assert(varform_.solve_data.contact_form != nullptr);
@@ -802,7 +802,7 @@ namespace polyfem::solver
 
 	ProxyContactForceForm::ProxyContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const varform::VarForm> varform,
+		std::shared_ptr<const varform::DifferentiableVarForm> varform,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const double dhat,
 		const bool quadratic_potential,
@@ -1000,7 +1000,7 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
+	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		assert(varform_->solve_data()->time_integrator != nullptr);
 		assert(varform_->solve_data()->contact_form != nullptr);

@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -16,7 +16,7 @@ namespace polyfem::solver
 {
 	BoundarySmoothingForm::BoundarySmoothingForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const varform::VarForm> varform,
+		std::shared_ptr<const varform::DifferentiableVarForm> varform,
 		const bool scale_invariant,
 		const int power,
 		const std::vector<int> &surface_selections,

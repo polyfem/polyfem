@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletNodesVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
@@ -79,7 +79,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletNodesVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool DirichletNodesVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (auto &varform : varforms_)
 		{

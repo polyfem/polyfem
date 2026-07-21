@@ -1,6 +1,6 @@
 #include <polyfem/optimization/var2sims/ActiveSelectionUtils.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <Eigen/Core>
 
@@ -18,7 +18,7 @@ namespace polyfem::solver
 {
 
 	bool is_active_geom_nodes_valid(const Eigen::VectorXi &active_geom_nodes,
-									const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+									const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 									std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -60,7 +60,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dims_valid(const Eigen::VectorXi &active_dimensions,
-							  const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+							  const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 							  std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -102,7 +102,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dofs_valid(const Eigen::VectorXi &active_dofs,
-							  const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+							  const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 							  std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -113,7 +113,7 @@ namespace polyfem::solver
 		{
 			if (varform->primary_space().ndof() != ndof)
 			{
-				reason = "varform::VarForm ndof mismatch between varforms";
+				reason = "varform::DifferentiableVarForm ndof mismatch between varforms";
 				return false;
 			}
 		}
@@ -144,7 +144,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_time_slices_valid(const Eigen::VectorXi &active_time_slices,
-									 const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+									 const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 									 std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -186,7 +186,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dirichlet_boundary_ids_valid(const Eigen::VectorXi &active_boundary_ids,
-												const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+												const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 												std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -245,7 +245,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_dirichlet_node_valid(const Eigen::VectorXi &active_dirichlet_nodes,
-										const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+										const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 										std::string &reason)
 	{
 		assert(!varforms.empty());
@@ -311,7 +311,7 @@ namespace polyfem::solver
 	}
 
 	bool is_active_pressure_boundary_ids_valid(const Eigen::VectorXi &active_boundary_ids,
-											   const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+											   const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 											   std::string &reason)
 	{
 		assert(!varforms.empty());

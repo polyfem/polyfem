@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -64,7 +64,7 @@ namespace polyfem::solver
 		return ParameterType::PeriodicShape;
 	}
 
-	bool PeriodicShapeVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool PeriodicShapeVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (auto &varform : varforms_)
 		{

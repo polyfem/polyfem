@@ -1,6 +1,6 @@
 #include <polyfem/optimization/NodeSelectionUtils.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -41,7 +41,7 @@ namespace polyfem
 	} // namespace
 
 	Eigen::VectorXi select_interior_nodes(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &volume_selection)
 	{
 		const auto *mesh = &varform.get_mesh();
@@ -71,7 +71,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &surface_selection)
 	{
 		const auto *mesh = &varform.get_mesh();
@@ -102,7 +102,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes_excluding_surfaces(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &exclude_surface_selections)
 	{
 		const auto *mesh = &varform.get_mesh();

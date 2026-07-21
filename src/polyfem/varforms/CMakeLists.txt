@@ -4,6 +4,8 @@ set(SOURCES
     VarFormFactory.cpp
     VarFormUtils.hpp
     FESpace.hpp
+    DifferentiableVarForm.hpp
+    DifferentiableVarForm.cpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp
     LinearElasticVarForm.hpp

@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletBoundaryVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
@@ -96,7 +96,7 @@ namespace polyfem::solver
 		return ParameterType::DirichletBC;
 	}
 
-	bool DirichletBoundaryVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool DirichletBoundaryVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (auto &varform : varforms_)
 		{
@@ -259,7 +259,7 @@ namespace polyfem::solver
 
 		for (int si = 0; si < varforms_.size(); ++si)
 		{
-			const varform::VarForm &varform = *varforms_[si];
+			const varform::DifferentiableVarForm &varform = *varforms_[si];
 
 			// Map boundary node (FE space dof) to offset in boundary_nodes vector.
 			std::unordered_map<int, int> boundary_node_offset;

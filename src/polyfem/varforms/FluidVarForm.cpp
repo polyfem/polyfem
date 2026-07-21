@@ -847,7 +847,8 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples =
+			n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
 			boundary_.local_neumann_boundary, rhs_);
@@ -881,7 +882,8 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness, expanded_mass;
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass_, expanded_mass);
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples =
+			n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -1002,7 +1004,8 @@ namespace polyfem::varform
 		stacked_form_->add(velocity_block, navier_stokes_form_);
 
 		velocity_rhs_ = rhs_.topRows(primary_ndof());
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples =
+			n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 		body_form_ = std::make_shared<solver::BodyForm>(
 			primary_ndof(), /*n_pressure_bases=*/0,
 			boundary_.boundary_nodes, boundary_.local_boundary,

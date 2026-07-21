@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 namespace polyfem::mesh
 {
@@ -20,7 +20,7 @@ namespace polyfem::time_integrator
 
 namespace polyfem::varform
 {
-	class ElasticVarForm : public VarForm
+	class ElasticVarForm : public DifferentiableVarForm
 	{
 		friend class polyfem::test::VarFormTestAccess;
 

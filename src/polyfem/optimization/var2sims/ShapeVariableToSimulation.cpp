@@ -62,7 +62,7 @@ namespace polyfem::solver
 		return ParameterType::Shape;
 	}
 
-	bool ShapeVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool ShapeVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (auto &varform : varforms_)
 		{

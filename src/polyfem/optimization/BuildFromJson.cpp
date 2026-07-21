@@ -1,6 +1,6 @@
 #include <polyfem/optimization/BuildFromJson.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
@@ -91,7 +91,7 @@ namespace polyfem::from_json
 			return mat.reshaped();
 		}
 
-		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const varform::VarForm &varform)
+		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const varform::DifferentiableVarForm &varform)
 		{
 			if (j.is_array())
 			{
@@ -139,33 +139,48 @@ namespace polyfem::from_json
 		return state.variational_formulation;
 	}
 
-	std::vector<std::shared_ptr<varform::VarForm>> build_varforms(
+	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
+		const json &args,
+		const size_t max_threads)
+	{
+		auto varform = build_varform(args, max_threads);
+		auto differentiable_varform = std::dynamic_pointer_cast<varform::DifferentiableVarForm>(varform);
+		if (!differentiable_varform)
+		{
+			log_and_throw_adjoint_error(
+				"Variational formulation {} does not support differentiable/adjoint optimization.",
+				varform->name());
+		}
+		return differentiable_varform;
+	}
+
+	std::vector<std::shared_ptr<varform::DifferentiableVarForm>> build_varforms(
 		const std::string &root_path,
 		const json &args,
 		const size_t max_threads,
 		const json &output_log)
 	{
-		std::vector<std::shared_ptr<varform::VarForm>> varforms(args.size());
+		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms(args.size());
 		for (int i = 0; i < args.size(); ++i)
 		{
 			json cur_args;
 			std::string abs_path = utils::resolve_path(args[i]["path"], root_path, false);
 			if (!load_json(abs_path, cur_args))
 			{
-				log_and_throw_adjoint_error("Can't find json for varform::VarForm {}", i);
+				log_and_throw_adjoint_error("Can't find json for varform::DifferentiableVarForm {}", i);
 			}
 
 			if (!output_log.empty())
 				cur_args["output"]["log"].merge_patch(output_log);
 
-			varforms[i] = build_varform(cur_args, max_threads);
+			varforms[i] = build_differentiable_varform(cur_args, max_threads);
 		}
 		return varforms;
 	}
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
 		const json &args,
-		const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
@@ -260,14 +275,14 @@ namespace polyfem::from_json
 
 	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
-		const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
 		using namespace polyfem::solver;
 
 		// Collect relevant varforms from the state-index JSON field.
-		std::vector<std::shared_ptr<varform::VarForm>> relevant_varforms;
+		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> relevant_varforms;
 		std::vector<std::shared_ptr<DiffCache>> rel_diff_caches;
 		if (args["state"].is_array())
 		{
@@ -385,7 +400,7 @@ namespace polyfem::from_json
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
-		const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
@@ -401,7 +416,7 @@ namespace polyfem::from_json
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
-		const std::vector<std::shared_ptr<varform::VarForm>> &varforms,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches)
 	{
 		using namespace polyfem::solver;

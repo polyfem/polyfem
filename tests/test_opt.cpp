@@ -112,7 +112,7 @@ namespace
 					varform_args["output"]["log"].merge_patch(opt.args["output"]["log"]);
 
 				patch(varform_args);
-				opt.varforms[i] = from_json::build_varform(varform_args, max_threads);
+				opt.varforms[i] = from_json::build_differentiable_varform(varform_args, max_threads);
 			}
 
 			opt.diff_caches.resize(opt.varforms.size());

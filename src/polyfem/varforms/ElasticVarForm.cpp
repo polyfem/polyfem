@@ -422,7 +422,7 @@ namespace polyfem::varform
 
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const
 	{
-		return VarForm::n_boundary_samples();
+		return DifferentiableVarForm::n_boundary_samples();
 	}
 
 	std::vector<int> ElasticVarForm::elastic_primitive_to_node() const

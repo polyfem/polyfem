@@ -1,6 +1,6 @@
 #include "AdjointTools.hpp"
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
 
@@ -67,7 +67,7 @@ namespace polyfem::solver
 	namespace
 	{
 
-		int get_bdf_order(const polyfem::varform::VarForm &varform)
+		int get_bdf_order(const polyfem::varform::DifferentiableVarForm &varform)
 		{
 			if (varform.get_args()["time"]["integrator"].is_string())
 				return 1;
@@ -205,7 +205,7 @@ namespace polyfem::solver
 	} // namespace
 
 	double AdjointTools::integrate_objective(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids, // either body id or surface id
@@ -340,7 +340,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::compute_shape_derivative_functional_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &solution,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids, // either body id or surface id
@@ -574,7 +574,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_static_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -634,7 +634,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_homogenization_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -689,7 +689,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_periodic_shape_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,
@@ -730,7 +730,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -839,7 +839,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_material_static_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -850,7 +850,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -887,7 +887,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_friction_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -950,7 +950,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_damping_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -987,7 +987,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_initial_condition_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -1007,7 +1007,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_dirichlet_static_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -1029,7 +1029,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_dirichlet_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -1052,7 +1052,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_pressure_static_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &boundary_ids,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -1076,7 +1076,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_pressure_transient_adjoint_term(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const std::vector<int> &boundary_ids,
 		const Eigen::MatrixXd &adjoint_nu,
@@ -1119,7 +1119,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_du_step(
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids,
@@ -1360,7 +1360,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd AdjointTools::map_primitive_to_node_order(const varform::VarForm &varform, const Eigen::VectorXd &primitives)
+	Eigen::VectorXd AdjointTools::map_primitive_to_node_order(const varform::DifferentiableVarForm &varform, const Eigen::VectorXd &primitives)
 	{
 		int dim = varform.get_mesh().dimension();
 		assert(primitives.size() == (varform.primary_space().geometry->n_bases * dim));
@@ -1371,7 +1371,7 @@ namespace polyfem::solver
 		return nodes;
 	}
 
-	Eigen::VectorXd AdjointTools::map_node_to_primitive_order(const varform::VarForm &varform, const Eigen::VectorXd &nodes)
+	Eigen::VectorXd AdjointTools::map_node_to_primitive_order(const varform::DifferentiableVarForm &varform, const Eigen::VectorXd &nodes)
 	{
 		int dim = varform.get_mesh().dimension();
 		assert(nodes.size() == (varform.primary_space().geometry->n_bases * dim));

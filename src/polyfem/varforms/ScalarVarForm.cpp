@@ -741,7 +741,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples = DifferentiableVarForm::n_boundary_samples();
 
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
@@ -793,7 +793,7 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness;
 		build_stiffness_mat(stiffness);
 
-		const QuadratureOrders n_b_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders n_b_samples = DifferentiableVarForm::n_boundary_samples();
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;

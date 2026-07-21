@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -62,7 +62,7 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void compute_force_jacobian(varform::VarForm &varform, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
+		void compute_force_jacobian(varform::DifferentiableVarForm &varform, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 		{
 			const solver::SolveData *solve_data = varform.solve_data();
 			assert(solve_data && "Optimization varforms must expose solve data");
@@ -111,7 +111,7 @@ namespace polyfem
 			}
 		}
 
-		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const varform::VarForm &varform)
+		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const varform::DifferentiableVarForm &varform)
 		{
 			auto &gbases = varform.primary_space().geometry_basis_list();
 			auto &bases = varform.primary_space().basis_list();
@@ -286,7 +286,7 @@ namespace polyfem
 
 	void DiffCache::cache_transient(
 		int step,
-		varform::VarForm &varform,
+		varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd *disp_grad,
 		const Eigen::MatrixXd *pressure)

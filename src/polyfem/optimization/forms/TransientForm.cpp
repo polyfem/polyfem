@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/TransientForm.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
@@ -71,7 +71,7 @@ namespace polyfem::solver
 
 		return value;
 	}
-	Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
+	Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(varform.primary_space().ndof(), time_steps_ + 1);
@@ -163,7 +163,7 @@ namespace polyfem::solver
 
 		return eval(vals);
 	}
-	Eigen::MatrixXd ProxyTransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
+	Eigen::MatrixXd ProxyTransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd vals(steps_.size());
 		Eigen::MatrixXd terms;

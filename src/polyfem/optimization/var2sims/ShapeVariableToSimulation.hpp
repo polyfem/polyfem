@@ -15,7 +15,7 @@ namespace polyfem::solver
 	class ShapeVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using VarFormPtrs = std::vector<std::shared_ptr<varform::VarForm>>;
+		using VarFormPtrs = std::vector<std::shared_ptr<varform::DifferentiableVarForm>>;
 		using DiffCachePtrs = std::vector<std::shared_ptr<DiffCache>>;
 
 		/// @brief Construct ShapeVariableToSimulation.
@@ -33,7 +33,7 @@ namespace polyfem::solver
 
 		std::string name() const override;
 		ParameterType parameter_type() const override;
-		bool affects_varform(const varform::VarForm &target) const override;
+		bool affects_varform(const varform::DifferentiableVarForm &target) const override;
 		void update(const Eigen::VectorXd &x) override;
 		void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const override;
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;

@@ -1,6 +1,6 @@
 #include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/VarFormDiff.hpp>
@@ -134,7 +134,7 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(varform::VarForm &varform)
+	void AdjointOptUtils::solve_pde(varform::DifferentiableVarForm &varform)
 	{
 		Eigen::MatrixXd solution;
 		varform.solve(solution, nullptr, {}, false);
@@ -203,7 +203,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::VarForm>> &varforms)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms)
 	{
 		if (args["number"].is_number())
 		{

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <memory>
 
@@ -11,7 +11,7 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class ScalarVarForm : public VarForm
+	class ScalarVarForm : public DifferentiableVarForm
 	{
 		friend class polyfem::test::VarFormTestAccess;
 

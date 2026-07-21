@@ -7,6 +7,7 @@
 
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 
 #include <Eigen/Core>
 
@@ -80,7 +81,7 @@ namespace polyfem
 		//---------------------------------------------------
 
 		/// Variational formulations used by the optimization.
-		std::vector<std::shared_ptr<varform::VarForm>> varforms;
+		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables
@@ -99,7 +100,7 @@ namespace polyfem
 			return "";
 		}
 
-		/// @brief Check and throw if any forward simulation varform::VarForm is not supported.
+		/// @brief Check and throw if any forward simulation varform::DifferentiableVarForm is not supported.
 		void check_unsupported() const;
 
 		/// initializing the logger meant for internal usage

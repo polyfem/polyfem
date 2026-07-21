@@ -496,7 +496,8 @@ namespace polyfem::varform
 		{
 			Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
 			auto tmp_rhs_assembler = build_rhs_assembler(pressure_space_.n_bases, pressure_space_.basis_list(), pressure_ass_vals_cache_, auxiliary_space_id_);
-			const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+			const QuadratureOrders boundary_samples =
+				n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 			tmp_rhs_assembler->set_bc(
 				std::vector<mesh::LocalBoundary>(), std::vector<int>(), boundary_samples, boundary_.local_neumann_boundary, tmp);
 			rhs_.bottomRows(pressure_space_.n_bases) = tmp;
@@ -634,7 +635,8 @@ namespace polyfem::varform
 	{
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples =
+			n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
 			(primary_assembler_->name() != "Bilaplacian") ? boundary_.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs_);
@@ -666,7 +668,8 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness, expanded_mass;
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass_, expanded_mass);
-		const QuadratureOrders boundary_samples = VarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples =
+			n_boundary_samples(space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 
 		for (int t = 1; t <= time_steps; ++t)
 		{

@@ -161,11 +161,11 @@ namespace polyfem
 	{
 		for (int i = 0; i < varforms.size(); ++i)
 		{
-			const varform::VarForm &varform = *varforms[i];
+			const varform::DifferentiableVarForm &varform = *varforms[i];
 			if (!varform.solve_data())
 			{
 				log_and_throw_adjoint_error(
-					"varform::VarForm {} ({}) does not expose solve data required by optimization.",
+					"varform::DifferentiableVarForm {} ({}) does not expose solve data required by optimization.",
 					i, varform.name());
 			}
 
@@ -173,7 +173,7 @@ namespace polyfem
 			if (varform.get_problem().is_time_dependent() && varform.is_problem_linear())
 			{
 				log_and_throw_adjoint_error(
-					"varform::VarForm {}: transient linear problem is not supported in optimization.", i);
+					"varform::DifferentiableVarForm {}: transient linear problem is not supported in optimization.", i);
 			}
 
 			if (varform.is_contact_enabled())
@@ -183,14 +183,14 @@ namespace polyfem
 					&& !varform.get_args()["contact"]["use_convergent_formulation"].get<bool>())
 				{
 					log_and_throw_adjoint_error(
-						"varform::VarForm {}: non-convergent contact formulation is not supported in optimization.", i);
+						"varform::DifferentiableVarForm {}: non-convergent contact formulation is not supported in optimization.", i);
 				}
 
 				// No non-const barrier stiffness support.
 				if (varform.get_args()["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
 					log_and_throw_adjoint_error(
-						"varform::VarForm {}: only constant barrier stiffness is supported in optimization.", i);
+						"varform::DifferentiableVarForm {}: only constant barrier stiffness is supported in optimization.", i);
 				}
 			}
 
@@ -201,7 +201,7 @@ namespace polyfem
 				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
 				{
 					log_and_throw_adjoint_error(
-						"varform::VarForm {}: only constant rhs over space is supported in optimization.", i);
+						"varform::DifferentiableVarForm {}: only constant rhs over space is supported in optimization.", i);
 				}
 			}
 
@@ -213,7 +213,7 @@ namespace polyfem
 					if (basis.order() > 1)
 					{
 						log_and_throw_adjoint_error(
-							"varform::VarForm {}: high-order geometry basis is not supported in optimization.", i);
+							"varform::DifferentiableVarForm {}: high-order geometry basis is not supported in optimization.", i);
 					}
 				}
 			}

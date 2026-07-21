@@ -58,7 +58,7 @@ namespace polyfem::solver
 
 	} // namespace
 
-	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::VarForm> varform, const double dhat, const double dmin)
+	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const double dhat, const double dmin)
 		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
 	{
 		varform::NonlinearElasticVarForm::build_collision_mesh(
@@ -156,7 +156,7 @@ namespace polyfem::solver
 	}
 
 	LayerThicknessForm::LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
-										   std::shared_ptr<const varform::VarForm> varform,
+										   std::shared_ptr<const varform::DifferentiableVarForm> varform,
 										   const std::vector<int> &boundary_ids,
 										   const double dhat,
 										   const bool use_log_barrier,
@@ -293,7 +293,7 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::VarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
 		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
 	{
 		if (varform_->primary_space().n_bases != varform_->primary_space().geometry->n_bases)
@@ -389,7 +389,7 @@ namespace polyfem::solver
 
 	SmoothContactForceForm::SmoothContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const varform::VarForm> varform,
+		std::shared_ptr<const varform::DifferentiableVarForm> varform,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const json &args)
 		: StaticForm(variable_to_simulations),
@@ -458,7 +458,7 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::VarForm &varform, const DiffCache &diff_cache) const
+	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		assert(varform_->solve_data()->contact_form != nullptr);
 

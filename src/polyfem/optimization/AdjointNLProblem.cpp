@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
@@ -30,7 +30,7 @@ namespace polyfem::solver
 	namespace
 	{
 
-		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<varform::VarForm> &current_varform, const Eigen::VectorXd &x)
+		Eigen::VectorXd get_updated_mesh_nodes(const VariableToSimulationGroup &variables_to_simulation, const std::shared_ptr<varform::DifferentiableVarForm> &current_varform, const Eigen::VectorXd &x)
 		{
 			Eigen::MatrixXd V;
 			current_varform->get_vertices(V);
@@ -119,7 +119,7 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<varform::VarForm>> &all_varforms,
+									   const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args)
 		: FullNLProblem({form}),
@@ -177,7 +177,7 @@ namespace polyfem::solver
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<varform::VarForm>> &all_varforms,
+									   const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_varforms, all_diff_caches, args)
 	{

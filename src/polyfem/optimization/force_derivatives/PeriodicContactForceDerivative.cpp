@@ -2,7 +2,7 @@
 
 #include <Eigen/Core>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -13,7 +13,7 @@ namespace polyfem::solver
 {
 	void PeriodicContactForceDerivative::force_shape_derivative(
 		const PeriodicContactForm &form,
-		const varform::VarForm &varform,
+		const varform::DifferentiableVarForm &varform,
 		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,

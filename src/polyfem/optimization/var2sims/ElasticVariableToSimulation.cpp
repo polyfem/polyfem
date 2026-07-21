@@ -44,7 +44,7 @@ namespace polyfem::solver
 		return ParameterType::LameParameter;
 	}
 
-	bool ElasticVariableToSimulation::affects_varform(const varform::VarForm &target) const
+	bool ElasticVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
 		for (const auto &varform : varforms_)
 		{
