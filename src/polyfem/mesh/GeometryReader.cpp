@@ -27,6 +27,19 @@ namespace polyfem::mesh
 		const json &geometry_selection,
 		const std::string &root_path)
 	{
+		if (geometry_selection.is_string())
+		{
+			const std::string mode = geometry_selection.get<std::string>();
+			if (mode != "same_as_volume")
+				log_and_throw_error("Invalid geometry_selection mode \"{}\"!", mode);
+
+			std::vector<int> geometry_ids(mesh.n_elements());
+			for (int e = 0; e < mesh.n_elements(); ++e)
+				geometry_ids[e] = mesh.get_body_id(e);
+			mesh.set_geometry_ids(geometry_ids);
+			return;
+		}
+
 		Selection::BBox bbox;
 		mesh.bounding_box(bbox[0], bbox[1]);
 		const auto selections = Selection::build_selections(geometry_selection, bbox, root_path);

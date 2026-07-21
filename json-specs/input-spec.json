@@ -176,6 +176,14 @@
         "doc": "Geometry partition operations applied to the merged FEM mesh."
     },
     {
+        "pointer": "/geometry_selection",
+        "type": "string",
+        "options": [
+            "same_as_volume"
+        ],
+        "doc": "Copy the final merged mesh's volume/body IDs into its geometry IDs."
+    },
+    {
         "pointer": "/geometry/*",
         "type": "object",
         "required": [
