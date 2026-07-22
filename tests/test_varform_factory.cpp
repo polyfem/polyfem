@@ -460,7 +460,9 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	for (int node = 0; node < solid.size() / 2; ++node)
 		mean_solid_displacement += solid.segment<2>(2 * node);
 	mean_solid_displacement /= solid.size() / 2;
-	CHECK(mean_solid_displacement.y() < -1e-8);
+	// The current validation scene has no solid body force: the inflow pushes
+	// the solid downstream through the coupled interface.
+	CHECK(mean_solid_displacement.x() > 1e-8);
 
 	Eigen::VectorXd direction = Eigen::VectorXd::LinSpaced(
 		debug.solid_displacement_ndof, -0.5, 0.7);
