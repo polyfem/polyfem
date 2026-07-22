@@ -6,6 +6,7 @@
 namespace polyfem::solver
 {
 	class ElasticForm;
+	class FSIInterfaceForm;
 	class NavierStokesFSIAveragePressureForm;
 	class NavierStokesFSIForm;
 } // namespace polyfem::solver
@@ -38,15 +39,20 @@ namespace polyfem::varform
 	private:
 		int mesh_displacement_ndof() const;
 		int solid_displacement_ndof() const;
+		int fluid_interface_multiplier_ndof() const;
+		int mesh_interface_multiplier_ndof() const;
 		int total_ndof() const;
 		int pressure_offset() const { return primary_ndof(); }
 		int mesh_displacement_offset() const { return primary_ndof() + pressure_space_.n_bases; }
 		int solid_displacement_offset() const { return mesh_displacement_offset() + mesh_displacement_ndof(); }
-		int average_pressure_offset() const { return solid_displacement_offset() + solid_displacement_ndof(); }
+		int fluid_interface_multiplier_offset() const { return solid_displacement_offset() + solid_displacement_ndof(); }
+		int mesh_interface_multiplier_offset() const { return fluid_interface_multiplier_offset() + fluid_interface_multiplier_ndof(); }
+		int average_pressure_offset() const { return mesh_interface_multiplier_offset() + mesh_interface_multiplier_ndof(); }
 		json mesh_material_args() const;
 		json solid_varform_args() const;
 		json time_integrator_args(int fe_space_id) const;
 		void build_mesh_displacement_boundary(mesh::Mesh &mesh);
+		void build_interface_operators();
 		void prepare_fsi_initial_solution(Eigen::MatrixXd &sol) const;
 		void build_forms(Eigen::MatrixXd &sol, double t);
 		void solve_nonlinear_step(int step, Eigen::MatrixXd &sol);
@@ -79,6 +85,10 @@ namespace polyfem::varform
 		Eigen::MatrixXd mesh_rhs_;
 		Eigen::MatrixXd fluid_zero_rhs_;
 		StiffnessMatrix mesh_pure_mass_;
+		StiffnessMatrix interface_velocity_trace_;
+		StiffnessMatrix interface_solid_velocity_trace_;
+		StiffnessMatrix interface_mesh_trace_;
+		StiffnessMatrix interface_solid_mesh_trace_;
 
 		std::vector<std::shared_ptr<assembler::MultiSpacesNLAssembler>> ale_assemblers_;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> mesh_displacement_time_integrator_;
@@ -86,6 +96,7 @@ namespace polyfem::varform
 		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> fsi_al_forms_;
 		std::shared_ptr<solver::NLProblem> fsi_problem_;
 		std::shared_ptr<solver::NavierStokesFSIForm> ale_form_;
+		std::shared_ptr<solver::FSIInterfaceForm> interface_form_;
 		std::shared_ptr<solver::StackedForm> auxiliary_form_;
 		std::shared_ptr<solver::ElasticForm> mesh_elastic_form_;
 		std::shared_ptr<solver::BodyForm> fluid_neumann_form_;

@@ -330,7 +330,7 @@ TEST_CASE("ALE Navier-Stokes FSI moving arc", "[varform][state][navier_stokes][f
 	CHECK(std::abs(current_volume / reference_volume - 1) < 0.02);
 }
 
-TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes][fsi]")
+TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes][fsi]")
 {
 	const std::filesystem::path output_directory =
 		std::filesystem::temp_directory_path() / "polyfem-two-mesh-fsi";
@@ -364,6 +364,8 @@ TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stoke
 	REQUIRE(debug.solid_varform != nullptr);
 	REQUIRE(debug.fluid_mesh != nullptr);
 	REQUIRE(debug.solid_mesh != nullptr);
+	REQUIRE(debug.interface_form != nullptr);
+	REQUIRE(debug.average_pressure_form != nullptr);
 	CHECK(debug.fluid_mesh->has_geometry_ids());
 	CHECK(debug.solid_mesh->has_geometry_ids());
 	CHECK(debug.interface_size > 0);
@@ -371,34 +373,64 @@ TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stoke
 		  == debug.velocity_ndof + debug.pressure_ndof + debug.mesh_displacement_ndof);
 	CHECK(debug.problem->full_size()
 		  == debug.solid_displacement_offset + debug.solid_displacement_ndof
+			 + debug.fluid_multiplier_ndof + debug.mesh_multiplier_ndof
 			 + (debug.average_pressure_form ? 1 : 0));
+	CHECK(debug.fluid_multiplier_offset
+		  == debug.solid_displacement_offset + debug.solid_displacement_ndof);
+	CHECK(debug.mesh_multiplier_offset
+		  == debug.fluid_multiplier_offset + debug.fluid_multiplier_ndof);
+	CHECK(debug.average_pressure_offset
+		  == debug.mesh_multiplier_offset + debug.mesh_multiplier_ndof);
+	Eigen::VectorXd pressure_gauge_residual;
+	debug.average_pressure_form->first_derivative(solution.col(0), pressure_gauge_residual);
+	CHECK(std::abs(pressure_gauge_residual(debug.average_pressure_offset)
+			  / debug.average_pressure_form->weight())
+		  < 1e-6);
 
 	const int mesh_offset = debug.velocity_ndof + debug.pressure_ndof;
 	CHECK(solution.topRows(debug.velocity_ndof).norm() > 1e-8);
-	CHECK(solution.middleRows(mesh_offset, debug.mesh_displacement_ndof).norm() < 1e-10);
+	CHECK(solution.middleRows(mesh_offset, debug.mesh_displacement_ndof).norm() > 1e-10);
 	CHECK(solution.middleRows(
 					  debug.solid_displacement_offset, debug.solid_displacement_ndof)
 			  .norm()
 		  > 1e-8);
 
-	debug.problem->use_full_size();
-	StiffnessMatrix jacobian;
-	debug.problem->hessian(solution.col(0), jacobian);
-	for (int col = 0; col < jacobian.outerSize(); ++col)
-		for (StiffnessMatrix::InnerIterator entry(jacobian, col); entry; ++entry)
-		{
-			const bool row_is_solid =
-				entry.row() >= debug.solid_displacement_offset
-				&& entry.row() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
-			const bool col_is_solid =
-				entry.col() >= debug.solid_displacement_offset
-				&& entry.col() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
-			if (row_is_solid != col_is_solid)
-				CHECK(std::abs(entry.value()) < 1e-12);
-		}
+	const Eigen::VectorXd solid = solution.middleRows(
+		debug.solid_displacement_offset, debug.solid_displacement_ndof);
+	CHECK(debug.interface_form->physical_constraint(
+			  solution.topRows(debug.velocity_ndof),
+			  debug.solid_varform->embedding_time_integrator()->v_prev())
+			  .norm()
+		  < 1e-5);
+	CHECK(debug.interface_form->mesh_constraint(
+			  solution.middleRows(mesh_offset, debug.mesh_displacement_ndof), solid)
+			  .norm()
+		  < 1e-5);
 
-	const int multiplier_offset =
-		debug.solid_displacement_offset + debug.solid_displacement_ndof;
+	StiffnessMatrix interface_jacobian;
+	debug.interface_form->second_derivative(solution.col(0), interface_jacobian);
+	CHECK(Eigen::MatrixXd(interface_jacobian.block(
+			  debug.solid_displacement_offset, debug.mesh_multiplier_offset,
+			  debug.solid_displacement_ndof, debug.mesh_multiplier_ndof))
+			  .isZero(0));
+	CHECK(Eigen::MatrixXd(interface_jacobian.block(
+			  mesh_offset, debug.mesh_multiplier_offset,
+			  debug.mesh_displacement_ndof, debug.mesh_multiplier_ndof))
+			  .norm()
+		  > 0);
+	Eigen::VectorXd interface_direction = Eigen::VectorXd::LinSpaced(
+		solution.rows(), -0.7, 0.9);
+	interface_direction.normalize();
+	const double interface_eps = 1e-7;
+	Eigen::VectorXd interface_plus, interface_minus;
+	debug.interface_form->first_derivative(
+		solution.col(0) + interface_eps * interface_direction, interface_plus);
+	debug.interface_form->first_derivative(
+		solution.col(0) - interface_eps * interface_direction, interface_minus);
+	CHECK(Eigen::VectorXd(interface_jacobian * interface_direction)
+			  .isApprox((interface_plus - interface_minus) / (2 * interface_eps), 1e-8));
+
+	const int multiplier_offset = debug.average_pressure_offset;
 	solver::NavierStokesFSIAveragePressureForm embedded_gauge(
 		multiplier_offset + 1,
 		debug.velocity_ndof / debug.fluid_mesh->dimension(), debug.pressure_ndof,
@@ -416,28 +448,19 @@ TEST_CASE("uncoupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stoke
 	for (int col = 0; col < gauge_jacobian.outerSize(); ++col)
 		for (StiffnessMatrix::InnerIterator entry(gauge_jacobian, col); entry; ++entry)
 		{
-			const bool row_is_solid =
-				entry.row() >= debug.solid_displacement_offset && entry.row() < multiplier_offset;
-			const bool col_is_solid =
-				entry.col() >= debug.solid_displacement_offset && entry.col() < multiplier_offset;
+			const bool row_is_solid = entry.row() >= debug.solid_displacement_offset
+				&& entry.row() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
+			const bool col_is_solid = entry.col() >= debug.solid_displacement_offset
+				&& entry.col() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
 			gauge_touches_solid |= row_is_solid || col_is_solid;
 		}
 	CHECK_FALSE(gauge_touches_solid);
 
-	const Eigen::VectorXd solid = solution.middleRows(
-		debug.solid_displacement_offset, debug.solid_displacement_ndof);
 	Eigen::Vector2d mean_solid_displacement = Eigen::Vector2d::Zero();
 	for (int node = 0; node < solid.size() / 2; ++node)
 		mean_solid_displacement += solid.segment<2>(2 * node);
 	mean_solid_displacement /= solid.size() / 2;
-	double max_solid_deviation = 0;
-	for (int node = 0; node < solid.size() / 2; ++node)
-		max_solid_deviation = std::max(
-			max_solid_deviation,
-			(solid.segment<2>(2 * node) - mean_solid_displacement).norm());
 	CHECK(mean_solid_displacement.y() < -1e-8);
-	CHECK(std::abs(mean_solid_displacement.x()) < 1e-9);
-	CHECK(max_solid_deviation < 1e-8);
 
 	Eigen::VectorXd direction = Eigen::VectorXd::LinSpaced(
 		debug.solid_displacement_ndof, -0.5, 0.7);

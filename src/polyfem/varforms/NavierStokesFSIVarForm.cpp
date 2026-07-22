@@ -12,6 +12,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FSIInterfaceForm.hpp>
 #include <polyfem/solver/forms/NavierStokesForm.hpp>
 #include <polyfem/solver/forms/NavierStokesFSIForm.hpp>
 #include <polyfem/solver/forms/StackedForm.hpp>
@@ -20,6 +21,7 @@
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 
 #include <igl/Timer.h>
@@ -29,6 +31,7 @@
 #include <spdlog/fmt/fmt.h>
 
 #include <optional>
+#include <map>
 #include <set>
 
 namespace polyfem::varform
@@ -87,13 +90,19 @@ namespace polyfem::varform
 			const int pressure_size,
 			const StiffnessMatrix &mesh_mass,
 			const StiffnessMatrix &solid_mass,
+			const StiffnessMatrix &fluid_interface_mass,
+			const StiffnessMatrix &mesh_interface_mass,
 			const bool add_average)
 		{
 			const int mesh_offset = velocity_mass.rows() + pressure_size;
 			const int solid_offset = mesh_offset + mesh_mass.rows();
-			const int total = solid_offset + solid_mass.rows() + (add_average ? 1 : 0);
+			const int fluid_interface_offset = solid_offset + solid_mass.rows();
+			const int mesh_interface_offset = fluid_interface_offset + fluid_interface_mass.rows();
+			const int total = mesh_interface_offset + mesh_interface_mass.rows() + (add_average ? 1 : 0);
 			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(velocity_mass.nonZeros() + pressure_size + mesh_mass.nonZeros() + solid_mass.nonZeros() + (add_average ? 1 : 0));
+			entries.reserve(velocity_mass.nonZeros() + pressure_size + mesh_mass.nonZeros()
+				+ solid_mass.nonZeros() + fluid_interface_mass.nonZeros()
+				+ mesh_interface_mass.nonZeros() + (add_average ? 1 : 0));
 			for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					entries.emplace_back(it.row(), it.col(), it.value());
@@ -105,11 +114,149 @@ namespace polyfem::varform
 			for (int k = 0; k < solid_mass.outerSize(); ++k)
 				for (StiffnessMatrix::InnerIterator it(solid_mass, k); it; ++it)
 					entries.emplace_back(solid_offset + it.row(), solid_offset + it.col(), it.value());
+			for (int k = 0; k < fluid_interface_mass.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(fluid_interface_mass, k); it; ++it)
+					entries.emplace_back(fluid_interface_offset + it.row(), fluid_interface_offset + it.col(), it.value());
+			for (int k = 0; k < mesh_interface_mass.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(mesh_interface_mass, k); it; ++it)
+					entries.emplace_back(mesh_interface_offset + it.row(), mesh_interface_offset + it.col(), it.value());
 			if (add_average)
 				entries.emplace_back(total - 1, total - 1, 1);
 			StiffnessMatrix result(total, total);
 			result.setFromTriplets(entries.begin(), entries.end());
 			result.makeCompressed();
+			return result;
+		}
+
+		bool same_point(const RowVectorNd &a, const RowVectorNd &b)
+		{
+			return a.size() == b.size() && (a - b).norm() <= 1e-10;
+		}
+
+		int local_edge(const mesh::Mesh2D &mesh, const mesh::Navigation::Index &index)
+		{
+			for (int le = 0; le < mesh.n_face_vertices(index.face); ++le)
+				if (mesh.get_index_from_face(index.face, le).edge == index.edge)
+					return le;
+			log_and_throw_error("Unable to locate interface edge {} in element {}.", index.edge, index.face);
+		}
+
+		std::map<int, Eigen::VectorXd> global_basis_values(
+			const basis::ElementBases &bases, const Eigen::MatrixXd &points)
+		{
+			std::vector<assembler::AssemblyValues> values;
+			bases.evaluate_bases(points, values);
+			std::map<int, Eigen::VectorXd> result;
+			for (int i = 0; i < int(values.size()); ++i)
+				for (const auto &global : bases.bases[i].global())
+				{
+					auto it = result.try_emplace(
+						global.index, Eigen::VectorXd::Zero(points.rows())).first;
+					it->second += global.val * values[i].val.col(0);
+				}
+			return result;
+		}
+
+		struct ScalarTraceOperators
+		{
+			StiffnessMatrix source;
+			StiffnessMatrix solid;
+		};
+
+		ScalarTraceOperators assemble_2d_trace_operators(
+			const mesh::Mesh2D &fluid_mesh,
+			const mesh::Mesh2D &solid_mesh,
+			const std::vector<std::pair<mesh::Navigation::Index, mesh::Navigation::Index>> &interface,
+			const std::vector<basis::ElementBases> &source_bases,
+			const int source_n_bases,
+			const std::vector<basis::ElementBases> &solid_bases,
+			const int solid_n_bases,
+			const int quadrature_order)
+		{
+			std::map<int, int> multiplier_index;
+			std::vector<Eigen::Triplet<double>> source_entries, solid_entries;
+			for (const auto &[fluid_index, solid_index] : interface)
+			{
+				const int fluid_edge = local_edge(fluid_mesh, fluid_index);
+				const int solid_edge = local_edge(solid_mesh, solid_index);
+				const int fluid_vertices = fluid_mesh.n_face_vertices(fluid_index.face);
+				const int solid_vertices = solid_mesh.n_face_vertices(solid_index.face);
+				if ((fluid_vertices != 3 && fluid_vertices != 4)
+					|| (solid_vertices != 3 && solid_vertices != 4))
+					log_and_throw_error("FSI interface coupling currently supports triangular and quadrilateral 2D elements.");
+
+				const RowVectorNd fluid_from = fluid_mesh.point(fluid_mesh.face_vertex(fluid_index.face, fluid_edge));
+				const RowVectorNd fluid_to = fluid_mesh.point(fluid_mesh.face_vertex(fluid_index.face, (fluid_edge + 1) % fluid_vertices));
+				const RowVectorNd solid_from = solid_mesh.point(solid_mesh.face_vertex(solid_index.face, solid_edge));
+				const RowVectorNd solid_to = solid_mesh.point(solid_mesh.face_vertex(solid_index.face, (solid_edge + 1) % solid_vertices));
+				const bool same_orientation = same_point(fluid_from, solid_from) && same_point(fluid_to, solid_to);
+				const bool opposite_orientation = same_point(fluid_from, solid_to) && same_point(fluid_to, solid_from);
+				if (!same_orientation && !opposite_orientation)
+					log_and_throw_error(
+						"FSI interface edge pair ({}, {}) is only partially overlapping; conforming facets are required.",
+						fluid_index.edge, solid_index.edge);
+
+				Eigen::MatrixXd uv, fluid_points;
+				Eigen::VectorXd weights;
+				if (fluid_vertices == 3)
+					utils::BoundarySampler::quadrature_for_tri_edge(
+						fluid_edge, quadrature_order, fluid_index.edge, fluid_mesh, uv, fluid_points, weights);
+				else
+					utils::BoundarySampler::quadrature_for_quad_edge(
+						fluid_edge, quadrature_order, fluid_index.edge, fluid_mesh, uv, fluid_points, weights);
+
+				const Eigen::Matrix2d solid_endpoints = solid_vertices == 3
+					? utils::BoundarySampler::tri_local_node_coordinates_from_edge(solid_edge)
+					: utils::BoundarySampler::quad_local_node_coordinates_from_edge(solid_edge);
+				Eigen::MatrixXd solid_points(fluid_points.rows(), 2);
+				for (int q = 0; q < solid_points.rows(); ++q)
+				{
+					const double t = uv(q, 1);
+					if (same_orientation)
+						solid_points.row(q) = (1 - t) * solid_endpoints.row(0) + t * solid_endpoints.row(1);
+					else
+						solid_points.row(q) = (1 - t) * solid_endpoints.row(1) + t * solid_endpoints.row(0);
+				}
+
+				const auto source_values = global_basis_values(source_bases.at(fluid_index.face), fluid_points);
+				const auto solid_values = global_basis_values(solid_bases.at(solid_index.face), solid_points);
+				for (const auto &[source_id, multiplier_values] : source_values)
+				{
+					if (multiplier_values.cwiseAbs().maxCoeff() < 1e-12)
+						continue;
+					const int row = multiplier_index.try_emplace(source_id, multiplier_index.size()).first->second;
+					for (const auto &[trial_id, trial_values] : source_values)
+					{
+						const double value = (weights.array() * multiplier_values.array() * trial_values.array()).sum();
+						if (std::abs(value) > 1e-14)
+							source_entries.emplace_back(row, trial_id, value);
+					}
+					for (const auto &[trial_id, trial_values] : solid_values)
+					{
+						const double value = (weights.array() * multiplier_values.array() * trial_values.array()).sum();
+						if (std::abs(value) > 1e-14)
+							solid_entries.emplace_back(row, trial_id, value);
+					}
+				}
+			}
+			ScalarTraceOperators result;
+			result.source.resize(multiplier_index.size(), source_n_bases);
+			result.source.setFromTriplets(source_entries.begin(), source_entries.end());
+			result.solid.resize(multiplier_index.size(), solid_n_bases);
+			result.solid.setFromTriplets(solid_entries.begin(), solid_entries.end());
+			return result;
+		}
+
+		StiffnessMatrix vector_trace(const StiffnessMatrix &scalar, const int dim)
+		{
+			std::vector<Eigen::Triplet<double>> entries;
+			entries.reserve(scalar.nonZeros() * dim);
+			for (int k = 0; k < scalar.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(scalar, k); it; ++it)
+					for (int d = 0; d < dim; ++d)
+						entries.emplace_back(it.row() * dim + d, it.col() * dim + d, it.value());
+			StiffnessMatrix result(scalar.rows() * dim, scalar.cols() * dim);
+			result.setFromTriplets(entries.begin(), entries.end());
 			return result;
 		}
 	} // namespace
@@ -141,12 +288,17 @@ namespace polyfem::varform
 		mesh_rhs_.resize(0, 0);
 		fluid_zero_rhs_.resize(0, 0);
 		mesh_pure_mass_.resize(0, 0);
+		interface_velocity_trace_.resize(0, 0);
+		interface_solid_velocity_trace_.resize(0, 0);
+		interface_mesh_trace_.resize(0, 0);
+		interface_solid_mesh_trace_.resize(0, 0);
 		ale_assemblers_.clear();
 		mesh_displacement_time_integrator_ = nullptr;
 		fsi_forms_.clear();
 		fsi_al_forms_.clear();
 		fsi_problem_ = nullptr;
 		ale_form_ = nullptr;
+		interface_form_ = nullptr;
 		auxiliary_form_ = nullptr;
 		mesh_elastic_form_ = nullptr;
 		fluid_neumann_form_ = nullptr;
@@ -378,6 +530,12 @@ namespace polyfem::varform
 	void NavierStokesFSIVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		FluidVarForm::build_basis(mesh, iso_parametric, args);
+		// The interface traction multiplier can exchange a constant normal
+		// traction with the fluid pressure. Keep an explicit physical-domain
+		// pressure reference in the coupled problem even when an outer boundary
+		// is marked Neumann.
+		if (has_solid_)
+			use_avg_pressure = true;
 		Eigen::VectorXi orders;
 		assign_discr_orders(args["space"]["discr_order"], mesh_displacement_space_id_, mesh, orders);
 		build_fe_space(
@@ -410,8 +568,57 @@ namespace polyfem::varform
 		if (has_solid_)
 		{
 			solid_varform_->prepare_for_embedding();
+			build_interface_operators();
 			logger().info("n solid displacement dofs: {}", solid_varform_->embedding_ndof());
+			logger().info(
+				"n FSI interface multiplier dofs: physical={}, mesh={}",
+				fluid_interface_multiplier_ndof(), mesh_interface_multiplier_ndof());
 		}
+	}
+
+	void NavierStokesFSIVarForm::build_interface_operators()
+	{
+		assert(has_solid_ && solid_varform_ && mesh_);
+		if (mesh_->dimension() != 2)
+			log_and_throw_error("Two-mesh FSI interface coupling currently supports 2D meshes.");
+		const io::OutputSpace solid_output = solid_varform_->output_space();
+		assert(solid_output.mesh);
+		const auto &fluid_mesh = dynamic_cast<const mesh::Mesh2D &>(*mesh_);
+		const auto &solid_mesh = dynamic_cast<const mesh::Mesh2D &>(*solid_output.mesh);
+		const FESpace &solid_space = solid_varform_->embedding_space();
+		const int order = 2 * std::max({
+			space_.disc_orders.maxCoeff(),
+			mesh_displacement_space_.disc_orders.maxCoeff(),
+			solid_space.disc_orders.maxCoeff()}) + 2;
+
+		const ScalarTraceOperators physical = assemble_2d_trace_operators(
+			fluid_mesh, solid_mesh, interface_2d_,
+			space_.basis_list(), space_.n_bases,
+			solid_space.basis_list(), solid_space.n_bases, order);
+		const ScalarTraceOperators computational = assemble_2d_trace_operators(
+			fluid_mesh, solid_mesh, interface_2d_,
+			mesh_displacement_space_.basis_list(), mesh_displacement_space_.n_bases,
+			solid_space.basis_list(), solid_space.n_bases, order);
+		interface_velocity_trace_ = vector_trace(physical.source, mesh_->dimension());
+		interface_solid_velocity_trace_ = vector_trace(physical.solid, mesh_->dimension());
+		interface_mesh_trace_ = vector_trace(computational.source, mesh_->dimension());
+		interface_solid_mesh_trace_ = vector_trace(computational.solid, mesh_->dimension());
+		if (interface_velocity_trace_.rows() == 0 || interface_mesh_trace_.rows() == 0)
+			log_and_throw_error("The fluid-solid interface has no active FE trace degrees of freedom.");
+
+		const auto has_interface_dirichlet = [](const StiffnessMatrix &trace, const std::vector<int> &boundary_nodes) {
+			std::set<int> interface_dofs;
+			for (int k = 0; k < trace.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(trace, k); it; ++it)
+					interface_dofs.insert(it.col());
+			return std::any_of(boundary_nodes.begin(), boundary_nodes.end(), [&](const int dof) {
+				return interface_dofs.count(dof) > 0;
+			});
+		};
+		if (has_interface_dirichlet(interface_velocity_trace_, boundary_.boundary_nodes))
+			log_and_throw_error("Fluid velocity Dirichlet data must not be prescribed on the coupled FSI interface.");
+		if (has_interface_dirichlet(interface_mesh_trace_, mesh_displacement_boundary_.boundary_nodes))
+			log_and_throw_error("Mesh-displacement Dirichlet data must not be prescribed on the coupled FSI interface.");
 	}
 
 	void NavierStokesFSIVarForm::build_mesh_displacement_boundary(mesh::Mesh &mesh)
@@ -493,10 +700,21 @@ namespace polyfem::varform
 		return has_solid_ && solid_varform_ ? solid_varform_->embedding_ndof() : 0;
 	}
 
+	int NavierStokesFSIVarForm::fluid_interface_multiplier_ndof() const
+	{
+		return has_solid_ ? interface_velocity_trace_.rows() : 0;
+	}
+
+	int NavierStokesFSIVarForm::mesh_interface_multiplier_ndof() const
+	{
+		return has_solid_ ? interface_mesh_trace_.rows() : 0;
+	}
+
 	int NavierStokesFSIVarForm::total_ndof() const
 	{
 		return primary_ndof() + pressure_space_.n_bases + mesh_displacement_ndof()
-			   + solid_displacement_ndof() + (use_avg_pressure ? 1 : 0);
+			   + solid_displacement_ndof() + fluid_interface_multiplier_ndof()
+			   + mesh_interface_multiplier_ndof() + (use_avg_pressure ? 1 : 0);
 	}
 
 	void NavierStokesFSIVarForm::prepare_fsi_initial_solution(Eigen::MatrixXd &sol) const
@@ -626,6 +844,8 @@ namespace polyfem::varform
 			solid_block = auxiliary_form_->add_block(solid_displacement_ndof());
 			for (const auto &form : solid_varform_->embedding_forms())
 				auxiliary_form_->add(*solid_block, form);
+			auxiliary_form_->add_block(fluid_interface_multiplier_ndof());
+			auxiliary_form_->add_block(mesh_interface_multiplier_ndof());
 		}
 
 		const solver::ElementInversionCheck check = args["solver"]["advanced"]["check_inversion"];
@@ -665,7 +885,21 @@ namespace polyfem::varform
 		else
 			average_pressure_form_ = nullptr;
 
+		if (has_solid_)
+		{
+			interface_form_ = std::make_shared<solver::FSIInterfaceForm>(
+				total_ndof(), 0, mesh_displacement_offset(), solid_displacement_offset(),
+				fluid_interface_multiplier_offset(), mesh_interface_multiplier_offset(),
+				interface_velocity_trace_, interface_solid_velocity_trace_,
+				interface_mesh_trace_, interface_solid_mesh_trace_,
+				*time_integrator, *solid_varform_->embedding_time_integrator());
+		}
+		else
+			interface_form_ = nullptr;
+
 		fsi_forms_ = {ale_form_, auxiliary_form_};
+		if (interface_form_)
+			fsi_forms_.push_back(interface_form_);
 		if (average_pressure_form_)
 			fsi_forms_.push_back(average_pressure_form_);
 		for (const auto &form : fsi_forms_)
@@ -680,7 +914,11 @@ namespace polyfem::varform
 			const auto mesh_al = stacked_al->add_block(mesh_displacement_ndof());
 			std::optional<solver::StackedAugmentedLagrangianForm::Block> solid_al;
 			if (has_solid_)
+			{
 				solid_al = stacked_al->add_block(solid_displacement_ndof());
+				stacked_al->add_block(fluid_interface_multiplier_ndof());
+				stacked_al->add_block(mesh_interface_multiplier_ndof());
+			}
 			if (use_avg_pressure)
 				stacked_al->add_block(1);
 			if (!boundary_.boundary_nodes.empty())
@@ -705,6 +943,8 @@ namespace polyfem::varform
 			residual_mass(
 				pure_mass_, pressure_space_.n_bases, mesh_pure_mass_,
 				has_solid_ ? solid_varform_->embedding_norm_matrix() : StiffnessMatrix(),
+				has_solid_ ? interface_form_->fluid_multiplier_mass() : StiffnessMatrix(),
+				has_solid_ ? interface_form_->mesh_multiplier_mass() : StiffnessMatrix(),
 				use_avg_pressure),
 			dim, true);
 		fsi_problem_->init(sol);

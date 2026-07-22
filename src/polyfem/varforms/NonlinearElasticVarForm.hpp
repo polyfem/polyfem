@@ -44,6 +44,7 @@ namespace polyfem::varform
 		const std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> &embedding_al_forms() const { return solve_data.al_form; }
 		const StiffnessMatrix &embedding_norm_matrix() const { return pure_mass_; }
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &embedding_time_integrator() const { return solve_data.time_integrator; }
+		const FESpace &embedding_space() const { return space_; }
 
 	protected:
 		void reset() override;

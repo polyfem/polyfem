@@ -12,6 +12,8 @@ set(SOURCES
 	NavierStokesForm.cpp
 	NavierStokesFSIForm.hpp
 	NavierStokesFSIForm.cpp
+	FSIInterfaceForm.hpp
+	FSIInterfaceForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp

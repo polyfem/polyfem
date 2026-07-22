@@ -7,6 +7,7 @@
 #include <polyfem/varforms/NavierStokesFSIVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
+#include <polyfem/solver/forms/FSIInterfaceForm.hpp>
 
 #include <stdexcept>
 
@@ -27,6 +28,7 @@ namespace polyfem::test
 	struct NavierStokesFSIDebugData
 	{
 		std::shared_ptr<solver::NavierStokesFSIForm> ale_form;
+		std::shared_ptr<solver::FSIInterfaceForm> interface_form;
 		std::shared_ptr<solver::NavierStokesFSIAveragePressureForm> average_pressure_form;
 		const std::vector<basis::ElementBases> *pressure_bases = nullptr;
 		const std::vector<basis::ElementBases> *mesh_displacement_bases = nullptr;
@@ -42,6 +44,11 @@ namespace polyfem::test
 		int mesh_displacement_ndof = 0;
 		int solid_displacement_ndof = 0;
 		int solid_displacement_offset = 0;
+		int fluid_multiplier_ndof = 0;
+		int mesh_multiplier_ndof = 0;
+		int fluid_multiplier_offset = 0;
+		int mesh_multiplier_offset = 0;
+		int average_pressure_offset = 0;
 		int interface_size = 0;
 		bool is_volume = false;
 	};
@@ -151,6 +158,7 @@ namespace polyfem::test
 													 : io::OutputSpace{};
 			return {
 				fsi->ale_form_,
+				fsi->interface_form_,
 				fsi->average_pressure_form_,
 				&fsi->pressure_space_.basis_list(),
 				&fsi->mesh_displacement_space_.basis_list(),
@@ -166,6 +174,11 @@ namespace polyfem::test
 				fsi->mesh_displacement_ndof(),
 				fsi->solid_displacement_ndof(),
 				fsi->solid_displacement_offset(),
+				fsi->fluid_interface_multiplier_ndof(),
+				fsi->mesh_interface_multiplier_ndof(),
+				fsi->fluid_interface_multiplier_offset(),
+				fsi->mesh_interface_multiplier_offset(),
+				fsi->average_pressure_offset(),
 				int(fsi->interface_2d_.size() + fsi->interface_3d_.size()),
 				fsi->mesh_ != nullptr && fsi->mesh_->is_volume()};
 		}
