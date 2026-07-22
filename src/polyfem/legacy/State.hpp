@@ -408,20 +408,6 @@ namespace polyfem::legacy
 												 Eigen::MatrixXd &pressure,
 												 UserPostStepCallback user_post_step = {});
 
-		/// solves transient navier stokes with FEM
-		/// @param[in] time_steps number of time steps
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_navier_stokes(const int time_steps,
-										   const double t0,
-										   const double dt,
-										   Eigen::MatrixXd &sol,
-										   Eigen::MatrixXd &pressure,
-										   UserPostStepCallback user_post_step = {});
-
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
@@ -486,12 +472,6 @@ namespace polyfem::legacy
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
 		void solve_linear(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
-		/// solves a navier stokes
-		/// @param[in] step current step
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_navier_stokes(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves nonlinear problems
 		/// @param[in] step current step
 		/// @param[out] sol solution

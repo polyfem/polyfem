@@ -5,7 +5,7 @@ set(SOURCES
 	StateOutput.cpp
 	StateSolve.cpp
 	StateSolveLinear.cpp
-	StateSolveNavierStokes.cpp
+	StateSolveOperatorSplitting.cpp
 	StateSolveNonlinear.cpp
 )
 

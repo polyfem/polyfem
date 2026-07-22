@@ -17,6 +17,7 @@
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/InversionBarrier.hpp>
 #include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/ActiveFiber.hpp>
@@ -98,6 +99,8 @@ namespace polyfem
 				return std::make_shared<IncompressibleOgdenElasticity>();
 			else if (formulation == "VolumePenalty")
 				return std::make_shared<VolumePenalty>();
+			else if (formulation == "InversionBarrier")
+				return std::make_shared<InversionBarrier>();
 
 			else if (formulation == "HGOFiber")
 				return std::make_shared<HGOFiber>();

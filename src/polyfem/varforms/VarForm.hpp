@@ -169,8 +169,6 @@ namespace polyfem
 		protected:
 			virtual void build_rhs_assembler() = 0;
 
-			std::shared_ptr<time_integrator::BDF> make_bdf_time_integrator() const;
-
 			void save_step_state(
 				const double t0,
 				const double dt,

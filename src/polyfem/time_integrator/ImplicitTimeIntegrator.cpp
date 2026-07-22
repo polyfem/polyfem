@@ -63,11 +63,6 @@ namespace polyfem
 			write_matrix(state_path, "a", tmp, /*replace=*/false);
 		}
 
-		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)
-		{
-			return construct_time_integrator(params, DynamicOrder::Second);
-		}
-
 		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(
 			const json &params,
 			const DynamicOrder dynamic_order)
@@ -96,6 +91,29 @@ namespace polyfem
 			if (params.is_object())
 				integrator->set_parameters(params);
 
+			return integrator;
+		}
+
+		std::shared_ptr<BDF> ImplicitTimeIntegrator::construct_bdf_integrator(
+			const json &params,
+			const DynamicOrder dynamic_order)
+		{
+			const std::string type = params.is_object() ? params["type"] : params;
+			if (type != "implict_euler" && type != "ImplicitEuler"
+				&& !utils::StringUtils::startswith(type, "BDF"))
+			{
+				log_and_throw_error(
+					"BDF-specific transient formulations require ImplicitEuler or BDF, got {}.",
+					type);
+			}
+
+			auto integrator = std::make_shared<BDF>(
+				utils::StringUtils::startswith(type, "BDF") && type != "BDF"
+					? std::stoi(type.substr(3))
+					: 1,
+				dynamic_order);
+			if (params.is_object() && params.contains("steps"))
+				integrator->set_parameters(params);
 			return integrator;
 		}
 

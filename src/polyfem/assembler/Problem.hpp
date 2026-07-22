@@ -31,6 +31,12 @@ namespace polyfem
 			virtual bool is_scalar() const = 0;
 
 			virtual void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;
+			virtual void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const
+			{
+				(void)mesh;
+				(void)element_id;
+				rhs(assembler, pts, t, val, fe_space_id);
+			}
 			virtual bool is_rhs_zero(const int fe_space_id = -1) const = 0;
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;

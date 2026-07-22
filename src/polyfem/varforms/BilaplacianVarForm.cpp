@@ -653,7 +653,8 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd value, pressure;
 		split_solution(sol, value, pressure);
-		auto bdf = make_bdf_time_integrator();
+		auto bdf = time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator(
+			args["time"]["integrator"]);
 		bdf->init(
 			value,
 			Eigen::MatrixXd::Zero(value.rows(), value.cols()),

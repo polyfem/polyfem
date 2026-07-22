@@ -150,3 +150,28 @@ TEST_CASE("first order BDF", "[time_integrator]")
 	CHECK((time_integrator.x_prev() - x).norm() < 1e-12);
 	CHECK(time_integrator.a_prev().norm() < 1e-12);
 }
+
+TEST_CASE("time integrator factories", "[time_integrator]")
+{
+	const Eigen::VectorXd x_prev = Eigen::VectorXd::Zero(1);
+	const Eigen::VectorXd v_prev = Eigen::VectorXd::Zero(1);
+	const Eigen::VectorXd a_prev = Eigen::VectorXd::Zero(1);
+	const double dt = 0.1;
+
+	const auto default_integrator =
+		ImplicitTimeIntegrator::construct_time_integrator("ImplicitEuler");
+	CHECK(std::dynamic_pointer_cast<ImplicitEuler>(default_integrator) != nullptr);
+
+	const auto first_order_bdf = ImplicitTimeIntegrator::construct_bdf_integrator(
+		R"({"type": "ImplicitEuler"})"_json,
+		ImplicitTimeIntegrator::DynamicOrder::First);
+	first_order_bdf->init(x_prev, v_prev, a_prev, dt);
+	CHECK(first_order_bdf->steps() == 1);
+	CHECK(first_order_bdf->acceleration_scaling() == dt);
+
+	const auto configured_bdf = ImplicitTimeIntegrator::construct_bdf_integrator(
+		R"({"type": "BDF", "steps": 2})"_json);
+	Eigen::MatrixXd x_prevs = Eigen::MatrixXd::Zero(1, 2);
+	configured_bdf->init(x_prevs, x_prevs, x_prevs, dt);
+	CHECK(configured_bdf->steps() == 2);
+}

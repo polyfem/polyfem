@@ -18,7 +18,6 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/refinement/APriori.hpp>
-#include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -883,24 +882,6 @@ namespace polyfem::varform
 		if (problem->is_scalar())
 			return 1;
 		return mesh_ ? mesh_->dimension() : 0;
-	}
-
-	std::shared_ptr<time_integrator::BDF> VarForm::make_bdf_time_integrator() const
-	{
-		const json &config = args["time"]["integrator"];
-		const std::string type = config.is_object() ? config.at("type").get<std::string>() : config.get<std::string>();
-
-		if (type == "ImplicitEuler" || type == "implict_euler")
-			return std::make_shared<time_integrator::BDF>();
-
-		if (!utils::StringUtils::startswith(type, "BDF"))
-			log_and_throw_error("First-order transient formulations require ImplicitEuler or BDF, got {}.", type);
-
-		auto integrator = std::make_shared<time_integrator::BDF>(
-			type == "BDF" ? 1 : std::stoi(type.substr(3)));
-		if (config.is_object() && config.contains("steps"))
-			integrator->set_parameters(config);
-		return integrator;
 	}
 
 	void VarForm::save_step_state(

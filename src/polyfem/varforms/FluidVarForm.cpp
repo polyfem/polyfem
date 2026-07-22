@@ -12,8 +12,14 @@
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/refinement/APriori.hpp>
-#include <polyfem/solver/NavierStokesSolver.hpp>
-#include <polyfem/solver/TransientNavierStokesSolver.hpp>
+#include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/NavierStokesForm.hpp>
+#include <polyfem/solver/forms/StackedForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/StackedAugmentedLagrangianForm.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -21,6 +27,7 @@
 #include <polyfem/varforms/VarFormUtils.hpp>
 
 #include <polysolve/linear/FEMSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 
 namespace polyfem::varform
 {
@@ -860,7 +867,8 @@ namespace polyfem::varform
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(sol, velocity, pressure);
 
-		auto bdf = make_bdf_time_integrator();
+		auto bdf = time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator(
+			args["time"]["integrator"]);
 		bdf->init(
 			velocity,
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
@@ -934,113 +942,189 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NavierStokesVarForm::solve_static(Eigen::MatrixXd &sol)
+	namespace
 	{
-		assert(rhs_assembler_ != nullptr);
-		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
-		rhs_assembler_->set_bc(
-			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples, boundary_.local_neumann_boundary, rhs_);
-
-		auto velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
-		set_materials(*velocity_stokes_assembler, mesh_->dimension());
-
-		Eigen::VectorXd x;
-		solver::NavierStokesSolver ns_solver(args["solver"]);
-		ns_solver.minimize(
-			space_.n_bases, pressure_space_.n_bases,
-			space_.basis_list(), pressure_space_.basis_list(),
-			space_.geometry_basis_list(),
-			*velocity_stokes_assembler,
-			*dynamic_cast<assembler::NavierStokesVelocity *>(primary_assembler_.get()),
-			*mixed_assembler_,
-			*pressure_assembler_,
-			ass_vals_cache_,
-			pressure_ass_vals_cache_,
-			boundary_.boundary_nodes,
-			use_avg_pressure,
-			mesh_->dimension(),
-			mesh_->is_volume(),
-			rhs_,
-			x);
-		sol = x;
-		ns_solver.get_info(stats.solver_info);
-	}
-
-	void NavierStokesVarForm::solve_transient(Eigen::MatrixXd &sol)
-	{
-
-		Eigen::MatrixXd velocity, pressure;
-		split_solution(sol, velocity, pressure);
-
-		auto bdf = make_bdf_time_integrator();
-		bdf->init(
-			velocity,
-			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
-			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
-			dt);
-		time_integrator = bdf;
-
-		save_timestep(t0, 0, t0, dt, sol);
-
-		Eigen::MatrixXd current_rhs = rhs_;
-		StiffnessMatrix velocity_mass;
-		mass_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, 0, velocity_mass, true);
-
-		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-		auto velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
-		set_materials(*velocity_stokes_assembler, mesh_->dimension());
-
-		mixed_assembler_->assemble(mesh_->is_volume(), pressure_space_.n_bases, space_.n_bases, pressure_space_.basis_list(), space_.basis_list(), space_.geometry_basis_list(), pressure_ass_vals_cache_, ass_vals_cache_, 0, mixed_stiffness);
-		pressure_assembler_->assemble(mesh_->is_volume(), pressure_space_.n_bases, pressure_space_.basis_list(), space_.geometry_basis_list(), pressure_ass_vals_cache_, 0, pressure_stiffness);
-
-		solver::TransientNavierStokesSolver ns_solver(args["solver"]);
-		for (int t = 1; t <= time_steps; ++t)
+		json residual_solver_params(const json &input)
 		{
-			const double time = t0 + t * dt;
-			velocity_stokes_assembler->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), ass_vals_cache_, time, velocity_stiffness);
+			json params = input;
+			params["solver"] = "Newton";
+			params["line_search"]["method"] = "ResidualBacktracking";
 
-			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, dt, time);
-
-			const Eigen::VectorXd prev_sol = bdf->weighted_sum_x_prevs();
-			const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-			const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
-			rhs_assembler_->compute_energy_grad(
-				boundary_.local_boundary, boundary_.boundary_nodes, mass_assembler_->density(), boundary_samples, boundary_.local_neumann_boundary, rhs_, time, current_rhs);
-			rhs_assembler_->set_bc(
-				boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples, boundary_.local_neumann_boundary, current_rhs, velocity, time);
-
-			if (current_rhs.rows() != stacked_ndof())
-			{
-				const int old_rows = current_rhs.rows();
-				current_rhs.conservativeResize(stacked_ndof(), current_rhs.cols());
-				if (stacked_ndof() > old_rows)
-					current_rhs.bottomRows(stacked_ndof() - old_rows).setZero();
-			}
-			current_rhs.bottomRows(pressure_block_size()).setZero();
-
-			Eigen::VectorXd tmp_sol;
-			ns_solver.minimize(
-				space_.n_bases, pressure_space_.n_bases,
-				time,
-				space_.basis_list(), space_.geometry_basis_list(),
-				*dynamic_cast<assembler::NavierStokesVelocity *>(primary_assembler_.get()),
-				ass_vals_cache_,
-				boundary_.boundary_nodes,
-				use_avg_pressure,
-				mesh_->dimension(),
-				mesh_->is_volume(),
-				std::sqrt(bdf->acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
-				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
-			sol = tmp_sol;
-			split_solution(sol, velocity, pressure);
-			bdf->update_quantities(velocity.col(0));
-			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, time_integrator.get());
-			notify_time_step(t, time_steps, t0, dt);
+			if (!params.contains("Newton") || params["Newton"].is_null())
+				params["Newton"] = json::object();
+			params["Newton"]["force_psd_projection"] = false;
+			params["Newton"]["use_psd_projection"] = true;
+			return params;
 		}
 
-		ns_solver.get_info(stats.solver_info);
+		StiffnessMatrix append_identity_mass(const StiffnessMatrix &velocity_mass, const int extra_size)
+		{
+			std::vector<Eigen::Triplet<double>> entries;
+			entries.reserve(velocity_mass.nonZeros() + extra_size);
+			for (int k = 0; k < velocity_mass.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
+					entries.emplace_back(it.row(), it.col(), it.value());
+			for (int i = 0; i < extra_size; ++i)
+				entries.emplace_back(velocity_mass.rows() + i, velocity_mass.cols() + i, 1.0);
+
+			StiffnessMatrix result(
+				velocity_mass.rows() + extra_size,
+				velocity_mass.cols() + extra_size);
+			result.setFromTriplets(entries.begin(), entries.end());
+			result.makeCompressed();
+			return result;
+		}
+	} // namespace
+
+	void NavierStokesVarForm::build_forms(Eigen::MatrixXd &sol, const double t)
+	{
+		assert(sol.rows() == stacked_ndof());
+		assert(sol.cols() == 1);
+
+		auto stokes_assembler = std::make_shared<assembler::StokesVelocity>();
+		set_materials(*stokes_assembler, mesh_->dimension());
+		auto *navier_stokes_assembler = dynamic_cast<assembler::NavierStokesVelocity *>(primary_assembler_.get());
+		assert(navier_stokes_assembler);
+
+		stacked_form_ = std::make_shared<solver::StackedForm>();
+		const auto velocity_block = stacked_form_->add_block(primary_ndof());
+		const auto pressure_block = stacked_form_->add_block(pressure_space_.n_bases);
+
+		navier_stokes_form_ = std::make_shared<solver::NavierStokesForm>(
+			space_.n_bases, space_.basis_list(), space_.geometry_basis_list(),
+			stokes_assembler, *navier_stokes_assembler, ass_vals_cache_, t, mesh_->is_volume());
+		stacked_form_->add(velocity_block, navier_stokes_form_);
+
+		velocity_rhs_ = rhs_.topRows(primary_ndof());
+		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		body_form_ = std::make_shared<solver::BodyForm>(
+			primary_ndof(), /*n_pressure_bases=*/0,
+			boundary_.boundary_nodes, boundary_.local_boundary,
+			boundary_.local_neumann_boundary, boundary_samples,
+			velocity_rhs_, *rhs_assembler_, mass_assembler_->density(),
+			/*is_formulation_mixed=*/false, problem->is_time_dependent());
+		body_form_->update_quantities(t, sol.topRows(primary_ndof()));
+		stacked_form_->add(velocity_block, body_form_);
+
+		mixed_form_ = std::make_shared<solver::MixedLinearForm>(
+			space_.n_bases, pressure_space_.n_bases,
+			space_.basis_list(), pressure_space_.basis_list(), space_.geometry_basis_list(),
+			*mixed_assembler_, ass_vals_cache_, pressure_ass_vals_cache_, t, mesh_->is_volume());
+		stacked_form_->add(velocity_block, pressure_block, mixed_form_);
+
+		if (use_avg_pressure)
+		{
+			const auto average_block = stacked_form_->add_block(1);
+			average_pressure_form_ = std::make_shared<solver::AveragePressureForm>(pressure_space_.n_bases);
+			stacked_form_->add(pressure_block, average_block, average_pressure_form_);
+		}
+		else
+			average_pressure_form_ = nullptr;
+
+		inertia_form_ = nullptr;
+		if (problem->is_time_dependent())
+		{
+			assert(time_integrator);
+			inertia_form_ = std::make_shared<solver::InertiaForm>(mass_, *time_integrator);
+			if (!boundary_.boundary_nodes.empty())
+			{
+				inertia_form_->set_x_tilde_updater(
+					[this, boundary_samples](
+						const double time,
+						const Eigen::VectorXd &,
+						Eigen::VectorXd &target) {
+						Eigen::MatrixXd projected_target = target;
+						const std::vector<mesh::LocalBoundary> empty_neumann_boundary;
+						rhs_assembler_->set_bc(
+							boundary_.local_boundary, boundary_.boundary_nodes,
+							boundary_samples, empty_neumann_boundary,
+							projected_target, Eigen::MatrixXd(), time);
+						assert(projected_target.cols() == 1);
+						target = projected_target.col(0);
+					});
+			}
+			stacked_form_->add(velocity_block, inertia_form_);
+			update_transient_form_weights();
+		}
+
+		forms_ = {stacked_form_};
+		for (const auto &form : forms_)
+			form->set_output_dir(output_path);
+
+		al_forms_.clear();
+		if (!boundary_.boundary_nodes.empty())
+		{
+			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
+			const auto velocity_al_block = stacked_al->add_block(primary_ndof());
+			stacked_al->add_block(pressure_space_.n_bases);
+			if (use_avg_pressure)
+				stacked_al->add_block(1);
+			stacked_al->add(
+				velocity_al_block,
+				std::make_shared<solver::BCLagrangianForm>(
+					primary_ndof(), boundary_.boundary_nodes,
+					boundary_.local_boundary, boundary_.local_neumann_boundary,
+					boundary_samples, pure_mass_, *rhs_assembler_,
+					/*obstacle_ndof=*/0, problem->is_time_dependent(), t));
+			al_forms_.push_back(stacked_al);
+		}
+
+		const StiffnessMatrix residual_mass = append_identity_mass(pure_mass_, pressure_block_size());
+		nl_problem_ = std::make_shared<solver::NLProblem>(
+			stacked_ndof(), nullptr, t, forms_, al_forms_,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			units.characteristic_length(), /*characteristic_force=*/1,
+			residual_mass, mesh_->dimension(), /*is_residual=*/true);
+		nl_problem_->init(sol);
+		nl_problem_->update_quantities(t, sol);
+		stats.solver_info = json::array();
+	}
+
+	void NavierStokesVarForm::update_transient_form_weights()
+	{
+		assert(time_integrator);
+		const double scaling = time_integrator->acceleration_scaling();
+		navier_stokes_form_->set_weight(scaling);
+		body_form_->set_weight(scaling);
+		mixed_form_->set_row_weights(scaling, scaling);
+		if (average_pressure_form_)
+			average_pressure_form_->set_weight(scaling);
+	}
+
+	void NavierStokesVarForm::solve_nonlinear_step(const int step, Eigen::MatrixXd &sol)
+	{
+		assert(nl_problem_);
+		const json nonlinear_params = residual_solver_params(args["solver"]["nonlinear"]);
+		const json al_nonlinear_params = residual_solver_params(args["solver"]["augmented_lagrangian"]["nonlinear"]);
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
+			polysolve::nonlinear::Solver::create(
+				nonlinear_params, args["solver"]["linear"], units.characteristic_length(), logger());
+
+		solver::ALSolver al_solver(
+			al_forms_, args["solver"]["augmented_lagrangian"]["initial_weight"],
+			args["solver"]["augmented_lagrangian"]["scaling"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
+			args["solver"]["augmented_lagrangian"]["eta"],
+			[](const Eigen::VectorXd &) {});
+
+		al_solver.post_subsolve = [&](const double al_weight) {
+			stats.solver_info.push_back(
+				{{"type", al_weight > 0 ? "al" : "rc"},
+				 {"t", step},
+				 {"info", nl_solver->info()}});
+			if (al_weight > 0)
+				stats.solver_info.back()["weight"] = al_weight;
+			save_subsolve(stats.solver_info.size(), step, sol);
+		};
+
+		if (!al_forms_.empty())
+			al_solver.solve_al(
+				*nl_problem_, sol, al_nonlinear_params,
+				args["solver"]["linear"], units.characteristic_length(), nl_solver);
+		al_solver.solve_reduced(
+			*nl_problem_, sol, nonlinear_params,
+			args["solver"]["linear"], units.characteristic_length(), nl_solver);
 	}
 
 	void NavierStokesVarForm::solve_problem(Eigen::MatrixXd &sol)
@@ -1051,12 +1135,42 @@ namespace polyfem::varform
 		logger().info("Solving {}", primary_assembler_->name());
 
 		prepare_initial_solution(sol);
-		if (problem->is_time_dependent())
-			solve_transient(sol);
-		else
+		if (!problem->is_time_dependent())
 		{
 			time_integrator = nullptr;
-			solve_static(sol);
+			build_forms(sol, 1.0);
+			solve_nonlinear_step(0, sol);
+		}
+		else
+		{
+			Eigen::MatrixXd velocity, pressure;
+			split_solution(sol, velocity, pressure);
+			auto bdf = time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator(
+				args["time"]["integrator"],
+				time_integrator::ImplicitTimeIntegrator::DynamicOrder::First);
+			bdf->init(
+				velocity,
+				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
+				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()), dt);
+			time_integrator = bdf;
+
+			build_forms(sol, t0 + dt);
+			save_timestep(t0, 0, t0, dt, sol);
+			for (int step = 1; step <= time_steps; ++step)
+			{
+				const double time = t0 + step * dt;
+				logger().info("{}/{} steps, dt={}s t={}s", step, time_steps, dt, time);
+				solve_nonlinear_step(step, sol);
+
+				split_solution(sol, velocity, pressure);
+				time_integrator->update_quantities(velocity.col(0));
+				update_transient_form_weights();
+				nl_problem_->update_quantities(t0 + (step + 1) * dt, sol);
+
+				save_timestep(time, step, t0, dt, sol);
+				save_step_state(t0, dt, step, time_integrator.get());
+				notify_time_step(step, time_steps, t0, dt);
+			}
 		}
 
 		timer.stop();

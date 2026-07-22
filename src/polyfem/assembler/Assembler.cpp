@@ -1216,7 +1216,7 @@ namespace polyfem::assembler
 
 	void ElasticityAssembler::set_use_robust_jacobian()
 	{
-#ifdef POLYFEM_WITH_BEZIER
+#ifdef POLYFEM_WITH_MISO
 		use_robust_jacobian = true;
 #else
 		logger().error("Enable Bezier library to use the robust Jacobian check!");

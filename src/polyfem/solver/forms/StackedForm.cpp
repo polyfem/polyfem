@@ -130,6 +130,13 @@ namespace polyfem::solver
 			term.form->solution_changed(gather(new_x, term));
 	}
 
+	void StackedForm::set_project_to_psd(const bool val)
+	{
+		Form::set_project_to_psd(val);
+		for (const Term &term : terms_)
+			term.form->set_project_to_psd(val);
+	}
+
 	void StackedForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
 		assert(x.size() == size_);

@@ -12,6 +12,8 @@
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +34,53 @@ namespace
 		using GenericTensorProblem::GenericTensorProblem;
 		using GenericTensorProblem::has_boundary;
 	};
+
+	class GenericScalarProblemAccess : public GenericScalarProblem
+	{
+	public:
+		using GenericScalarProblem::GenericScalarProblem;
+		using GenericScalarProblem::has_boundary;
+	};
+
+	std::unique_ptr<Mesh> tagged_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(3, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1;
+
+		Eigen::MatrixXi cells(1, 3);
+		cells << 0, 1, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+
+		std::vector<int> boundary_ids(mesh->n_boundary_elements());
+		for (int i = 0; i < mesh->n_boundary_elements(); ++i)
+			boundary_ids[i] = i + 1;
+		mesh->set_boundary_ids(boundary_ids);
+		mesh->compute_node_ids([](const size_t node_id, const RowVectorNd &, const bool) {
+			return int(node_id) + 1;
+		});
+
+		return mesh;
+	}
+
+	std::unique_ptr<Mesh> two_body_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1,
+			1, 1;
+
+		Eigen::MatrixXi cells(2, 3);
+		cells << 0, 1, 2,
+			1, 3, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+		mesh->set_body_ids({5, 8});
+		return mesh;
+	}
 } // namespace
 
 json get_params()
@@ -47,7 +96,7 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	GenericTensorProblemAccess problem("GenericTensor");
 	json params;
 	params["rhs"] = json::array({
-		{{"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
+		{{"id", -1}, {"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
 		{{"fe_space", 1}, {"value", 300}},
 	});
 	params["dirichlet_boundary"] = json::array({
@@ -77,6 +126,412 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
 	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, 1));
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
+}
+
+TEST_CASE("generic tensor problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + t", "2*y"})}},
+		{{"id", 8}, {"fe_space", 1}, {"value", json::array({7, 8})}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 1, 2,
+		3, 4;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.5, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(1.5, 4)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(3.5, 8)));
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 8)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(7, 8)));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
+}
+
+TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finite element space", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", json::array({100, 200})}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", json::array({"x + 3", "y + 5"})}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", json::array({7, 11})}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(4, 5)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 11)));
+}
+
+TEST_CASE("generic tensor problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_tensor_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12 13\n"
+			 << "2 14 15\n";
+	}
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(14, 15)));
+
+	std::filesystem::remove(nodal_neumann_path);
+}
+
+TEST_CASE("generic tensor problem evaluates reference boundary initial and update paths", "[problem]")
+{
+	auto mesh = tagged_triangle_mesh();
+	mesh->set_body_ids({5});
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["is_time_dependent"] = true;
+	params["reference"]["solution"] = json::array({"x + t", "y + 2*t"});
+	params["reference"]["gradient"] = json::array({"1", "0", "0", "1"});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", json::array({1, 2})},
+		 {"value", json::array({"x + t", "y + 2*t"})},
+		 {"dimension", json::array({true, false})},
+		 {"interpolation", json::array({json{{"type", "none"}}, json{{"type", "none"}}})}},
+	});
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"value", json::array({"x + 10", "y + 20"})}, {"interpolation", json::array()}},
+	});
+	params["normal_aligned_neumann_boundary"] = json::array({
+		{{"id", 3}, {"value", 4}},
+	});
+	params["pressure_boundary"] = json::array({
+		{{"id", 2}, {"value", "x + t"}},
+	});
+	params["pressure_cavity"] = json::array({
+		{{"id", 9}, {"value", "t + 4"}},
+	});
+	params["solution"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 1", "y + 2"})}},
+	});
+	params["velocity"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 3", "y + 4"})}},
+	});
+	params["acceleration"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 5", "y + 6"})}},
+	});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.is_time_dependent());
+	CHECK_FALSE(problem.is_constant_in_time());
+	CHECK(problem.has_exact_sol());
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 3, -1));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, -1));
+	CHECK_FALSE(problem.all_dimensions_dirichlet(-1));
+	CHECK(problem.is_dimension_dirichet(1, 0, -1));
+	CHECK_FALSE(problem.is_dimension_dirichet(1, 1, -1));
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0.25, 0.5,
+		0.75, 0.125;
+	Eigen::MatrixXd values;
+	problem.exact(pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2.25, 4.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(2.75, 4.125)));
+
+	problem.exact_grad(pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 4);
+	CHECK(values.row(0).isApprox(Eigen::RowVector4d(1, 0, 0, 1)));
+
+	Eigen::MatrixXi boundary_ids(3, 1);
+	boundary_ids << 0, 1, 2;
+	problem.dirichlet_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2.25, 4.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(2.75, 4.125)));
+
+	Eigen::MatrixXd normals(3, 2);
+	normals << 1, 0,
+		0, 1,
+		0.6, 0.8;
+	problem.neumann_bc(*mesh, boundary_ids, Eigen::MatrixXd(), pts.colwise().homogeneous(), normals, 1.0, values);
+	REQUIRE(values.rows() == 3);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(10.25, 20.5)));
+	CHECK(values.row(1).isZero(1e-12));
+	CHECK(values.row(2).isApprox(Eigen::RowVector2d(2.4, 3.2)));
+
+	problem.pressure_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, normals.topRows(2), 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0, 0) == 0.0);
+	CHECK(values(1, 0) == 2.75);
+	CHECK(problem.pressure_cavity_bc(9, 3.0) == 7.0);
+
+	Eigen::MatrixXi element_ids(2, 1);
+	element_ids << 0, 0;
+	problem.initial_solution(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(1.25, 2.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(1.75, 2.125)));
+	problem.initial_velocity(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(3.25, 4.5)));
+	problem.initial_acceleration(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(5.25, 6.5)));
+
+	problem.update_pressure_boundary(2, 0, 8.5);
+	problem.pressure_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, normals.topRows(2), 2.0, values);
+	CHECK(values(1, 0) == 8.5);
+
+	Eigen::Vector2d updated_dirichlet;
+	updated_dirichlet << 9.0, 10.0;
+	problem.update_dirichlet_boundary(1, 0, updated_dirichlet);
+	problem.dirichlet_bc(*mesh, boundary_ids.topRows(1), Eigen::MatrixXd(), pts.topRows(1), 2.0, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(9.0, 10.0)));
+	REQUIRE_THROWS(problem.update_pressure_boundary(99, 0, 1.0));
+	REQUIRE_THROWS(problem.update_dirichlet_boundary(99, 0, updated_dirichlet));
+
+	problem.clear();
+	CHECK_FALSE(problem.has_exact_sol());
+	CHECK_FALSE(problem.is_time_dependent());
+	CHECK(problem.might_have_no_dirichlet());
+	Laplacian assembler;
+	problem.rhs(assembler, pts, 0, values);
+	CHECK(values.isZero(1e-12));
+}
+
+TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_dirichlet_path = std::filesystem::temp_directory_path() / "polyfem_tensor_nodal_dirichlet.txt";
+	{
+		std::ofstream file(nodal_dirichlet_path);
+		REQUIRE(file.is_open());
+		file << "1 12 13\n"
+			 << "2 14 15\n";
+	}
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["root_path"] = "";
+	params["dirichlet_boundary"] = json::array({nodal_dirichlet_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_dirichlet(0));
+	CHECK(problem.is_nodal_dirichlet_boundary(1, mesh->get_node_id(1), 0));
+	CHECK(problem.is_nodal_dimension_dirichlet(1, mesh->get_node_id(1), 0, 0));
+
+	Eigen::MatrixXd values;
+	problem.dirichlet_nodal_value(*mesh, 1, mesh->point(1), 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	Eigen::VectorXi node_map(3);
+	node_map << 0, 2, 1;
+	problem.update_nodes(node_map);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	Eigen::VectorXi node_ids(1);
+	node_ids << 1;
+	Eigen::MatrixXd updated(1, 2);
+	updated << 21, 22;
+	problem.update_dirichlet_nodes(node_map, node_ids, updated);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
+
+	// Second update_nodes call is intentionally a no-op after the first remapping.
+	Eigen::VectorXi second_map(3);
+	second_map << 2, 1, 0;
+	problem.update_nodes(second_map);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
+
+	std::filesystem::remove(nodal_dirichlet_path);
+}
+
+TEST_CASE("generic scalar problem selects finite element space nodal data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", -1}, {"fe_space", 0}, {"value", "x + y + 1"}},
+		{{"fe_space", 1}, {"value", 4}},
+	});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", "x"}, {"interpolation", json::array()}},
+		{{"id", 2}, {"fe_space", 1}, {"value", 8}, {"interpolation", json::array()}},
+	});
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", 42}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", "x + 2"}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", 9}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 0,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, pts, 0, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1);
+	CHECK(values(1) == 6);
+
+	problem.rhs(assembler, pts, 0, values, 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 3);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 9);
+}
+
+TEST_CASE("generic scalar problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", "x + y + t"}},
+		{{"id", 8}, {"fe_space", 1}, {"value", 4}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 1,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.25, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1.25);
+	CHECK(values(1) == 5.25);
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
+}
+
+TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_scalar_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12\n"
+			 << "2 14\n";
+	}
+
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 12);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 14);
+
+	std::filesystem::remove(nodal_neumann_path);
 }
 
 TEST_CASE("franke 2d", "[problem]")

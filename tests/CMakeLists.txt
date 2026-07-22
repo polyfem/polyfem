@@ -15,6 +15,7 @@ set(test_sources
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_navier_stokes_forms.cpp
   test_output.cpp
   test_problem.cpp
   test_quadrature.cpp
@@ -93,4 +94,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS)
+catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS EXTRA_ARGS --rng-seed 1)

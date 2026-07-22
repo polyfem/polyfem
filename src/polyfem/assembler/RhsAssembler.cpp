@@ -81,7 +81,7 @@ namespace polyfem
 					const Quadrature &quadrature = vals.quadrature;
 
 					// compute rhs values in physical space
-					problem_.rhs(assembler_, vals.val, t, rhs_fun, fe_space_id_);
+					problem_.rhs(assembler_, mesh_, vals.element_id, vals.val, t, rhs_fun, fe_space_id_);
 
 					for (int d = 0; d < size_; ++d)
 					{
@@ -612,7 +612,30 @@ namespace polyfem
 				}
 			}
 
-			// TODO add nodal neumann
+			if (!neumann_nodes_.empty())
+			{
+				assert(neumann_nodes_.size() == neumann_nodes_position_.size());
+
+				Eigen::MatrixXd tmp_val;
+				Eigen::MatrixXd empty_normal;
+				for (int n = 0; n < neumann_nodes_.size(); ++n)
+				{
+					const int n_id = neumann_nodes_[n];
+					const RowVectorNd &pt = neumann_nodes_position_[n];
+
+					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, tmp_val, fe_space_id_);
+					assert(tmp_val.size() == size_);
+
+					for (int d = 0; d < size_; ++d)
+					{
+						const int g_index = n_id * size_ + d;
+						const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) == bounday_nodes.end();
+
+						if (is_neumann)
+							rhs(g_index) += tmp_val(d);
+					}
+				}
+			}
 		}
 
 		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary,
@@ -696,7 +719,7 @@ namespace polyfem
 						const Quadrature &quadrature = vals.quadrature;
 						const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-						problem_.rhs(assembler_, vals.val, t, forces, fe_space_id_);
+						problem_.rhs(assembler_, mesh_, vals.element_id, vals.val, t, forces, fe_space_id_);
 						assert(forces.rows() == da.size());
 						assert(forces.cols() == size_);
 
@@ -816,6 +839,25 @@ namespace polyfem
 						for (int d = 0; d < size_; ++d)
 							res -= forces(p, d) * local_displacement(d) * weights(p);
 					}
+				}
+			}
+
+			if (!neumann_nodes_.empty())
+			{
+				assert(neumann_nodes_.size() == neumann_nodes_position_.size());
+
+				Eigen::MatrixXd nodal_force;
+				Eigen::MatrixXd empty_normal;
+				for (int n = 0; n < neumann_nodes_.size(); ++n)
+				{
+					const int n_id = neumann_nodes_[n];
+					const RowVectorNd &pt = neumann_nodes_position_[n];
+
+					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, nodal_force, fe_space_id_);
+					assert(nodal_force.size() == size_);
+
+					for (int d = 0; d < size_; ++d)
+						res -= nodal_force(d) * displacement(n_id * size_ + d);
 				}
 			}
 

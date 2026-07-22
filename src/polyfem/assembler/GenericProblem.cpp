@@ -23,6 +23,28 @@ namespace polyfem
 				return entry.value("fe_space", -1);
 			}
 
+			bool is_body_value_entry(const json &entry)
+			{
+				if (!entry.is_object() || !entry.contains("id") || !entry.contains("value"))
+					return false;
+
+				const json &id = entry["id"];
+				if (id.is_array())
+				{
+					for (const json &value : id)
+						if (value.is_number_integer() && value.get<int>() != -1)
+							return true;
+					return false;
+				}
+
+				return id.is_number_integer() && id.get<int>() != -1;
+			}
+
+			bool has_body_value_entries(const json &value)
+			{
+				return is_body_value_entry(value) || (value.is_array() && !value.empty() && is_body_value_entry(value.front()));
+			}
+
 			template <typename Map>
 			const typename Map::mapped_type *find_for_fe_space(const Map &values, const int fe_space_id)
 			{
@@ -220,15 +242,72 @@ namespace polyfem
 			}
 		}
 
+		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				rhs(assembler, pts, t, val, fe_space_id);
+				return;
+			}
+
+			int value_size = pts.cols();
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					value_size = entry.size;
+					break;
+				}
+			}
+
+			val.resize(pts.rows(), value_size);
+			val.setZero();
+
+			const int body_id = mesh.get_body_id(element_id);
+			const TensorInitialValue *body_rhs = nullptr;
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (entry.body_id == body_id && matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					body_rhs = &entry;
+					break;
+				}
+			}
+
+			if (body_rhs == nullptr)
+				return;
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				for (int j = 0; j < val.cols(); ++j)
+				{
+					const double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
+					val(i, j) = body_rhs->value[j](x, y, z, t);
+				}
+			}
+		}
+
 		bool GenericTensorProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
 			const auto *rhs_size = find_for_fe_space(rhs_size_, fe_space_id);
-			if (rhs == nullptr || rhs_size == nullptr)
-				return true;
-			for (int i = 0; i < *rhs_size; ++i)
-				if (!(*rhs)[i].is_zero())
-					return false;
+			if (rhs != nullptr && rhs_size != nullptr)
+			{
+				for (int i = 0; i < *rhs_size; ++i)
+					if (!(*rhs)[i].is_zero())
+						return false;
+			}
+
+			for (const TensorInitialValue &entry : body_rhs_)
+			{
+				if (!matches_fe_space(entry.fe_space_id, fe_space_id))
+					continue;
+				for (int i = 0; i < entry.size; ++i)
+					if (!entry.value[i].is_zero())
+						return false;
+			}
+
 			return true;
 		}
 
@@ -463,8 +542,32 @@ namespace polyfem
 
 		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			// TODO implement me;
-			log_and_throw_error("Nodal neumann not implemented");
+			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
+			const int tag = mesh.get_node_id(node_id);
+
+			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
+			{
+				val = Eigen::MatrixXd::Zero(1, it->second.size);
+				for (int d = 0; d < val.cols(); ++d)
+					val(d) = it->second.eval(pt, d, t);
+				return;
+			}
+
+			for (const auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int i = 0; i < n_neumann.rows(); ++i)
+				{
+					if (n_neumann(i, 0) == node_id)
+					{
+						val.resize(1, n_neumann.cols() - 1);
+						for (int d = 0; d < val.cols(); ++d)
+							val(d) = n_neumann(i, d + 1);
+						return;
+					}
+				}
+			}
+
+			assert(false);
 		}
 
 		bool GenericTensorProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
@@ -487,9 +590,18 @@ namespace polyfem
 
 		bool GenericTensorProblem::is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
-				if (neumann_boundary_ids_[i] == tag && matches_fe_space(forces_[i].fe_space_id, fe_space_id))
-					return true;
+			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end())
+				return matches_fe_space(it->second.fe_space_id, fe_space_id);
+
+			for (const auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int i = 0; i < n_neumann.rows(); ++i)
+				{
+					if (n_neumann(i, 0) == n_id)
+						return true;
+				}
+			}
+
 			return false;
 		}
 
@@ -500,6 +612,15 @@ namespace polyfem
 
 		bool GenericTensorProblem::has_nodal_neumann(const int fe_space_id)
 		{
+			if (!nodal_neumann_mat_.empty())
+				return true;
+
+			for (const auto &[id, force] : nodal_neumann_)
+			{
+				(void)id;
+				if (matches_fe_space(force.fe_space_id, fe_space_id))
+					return true;
+			}
 			return false;
 		}
 
@@ -528,7 +649,7 @@ namespace polyfem
 		{
 			if (updated_dirichlet_node_ordering_)
 			{
-				if (nodal_dirichlet_mat_.size() > 0)
+				if (!nodal_dirichlet_mat_.empty() || !nodal_neumann_mat_.empty())
 					logger().debug("Skipping updating in nodes to nodes in problem, already done once...");
 				return;
 			}
@@ -538,6 +659,14 @@ namespace polyfem
 				{
 					const int node_id = in_node_to_node[n_dirichlet(n, 0)];
 					n_dirichlet(n, 0) = node_id;
+				}
+			}
+			for (auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int n = 0; n < n_neumann.rows(); ++n)
+				{
+					const int node_id = in_node_to_node[n_neumann(n, 0)];
+					n_neumann(n, 0) = node_id;
 				}
 			}
 			updated_dirichlet_node_ordering_ = true;
@@ -554,7 +683,24 @@ namespace polyfem
 			{
 				const json &rr = params["rhs"];
 				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
-				if (has_fe_spaces)
+				const bool has_body_ids = has_body_value_entries(rr);
+				if (has_body_ids)
+				{
+					const std::vector<json> entries = flatten_ids(rr);
+					body_rhs_.resize(entries.size());
+					for (size_t k = 0; k < entries.size(); ++k)
+					{
+						body_rhs_[k].body_id = entries[k]["id"];
+						body_rhs_[k].fe_space_id = fe_space_id(entries[k]);
+						const auto &value = entries[k]["value"];
+						body_rhs_[k].size = value.is_array() ? int(value.size()) : 1;
+						if (body_rhs_[k].size > 3)
+							log_and_throw_error("RHS for body {} and FE space {} has {} components; at most 3 are supported.", body_rhs_[k].body_id, body_rhs_[k].fe_space_id, body_rhs_[k].size);
+						for (int d = 0; d < body_rhs_[k].size; ++d)
+							body_rhs_[k].value[d].init(value.is_array() ? value[d] : value, root_path);
+					}
+				}
+				else if (has_fe_spaces)
 				{
 					for (const json &entry : rr)
 					{
@@ -730,6 +876,50 @@ namespace polyfem
 					{
 						forces_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"]));
 					}
+				}
+			}
+
+			if (is_param_valid(params, "nodal_neumann_boundary"))
+			{
+				std::vector<json> j_boundary = flatten_ids(params["nodal_neumann_boundary"]);
+
+				for (size_t i = 0; i < j_boundary.size(); ++i)
+				{
+					if (j_boundary[i].is_string())
+					{
+						const std::string path = resolve_path(j_boundary[i], params["root_path"]);
+						if (!std::filesystem::is_regular_file(path))
+							log_and_throw_error("unable to open {} file", path);
+
+						Eigen::MatrixXd tmp;
+						io::read_matrix(path, tmp);
+						nodal_neumann_mat_.emplace_back(tmp);
+
+						continue;
+					}
+
+					const int id = j_boundary[i]["id"];
+					TensorBCValue nodal_neumann;
+					nodal_neumann.fe_space_id = fe_space_id(j_boundary[i]);
+
+					auto ff = j_boundary[i]["value"];
+					nodal_neumann.size = ff.is_array() ? int(ff.size()) : 1;
+					if (nodal_neumann.size > 3)
+						log_and_throw_error("Nodal Neumann condition for FE space {} has {} components; at most 3 are supported.", nodal_neumann.fe_space_id, nodal_neumann.size);
+					for (int k = 0; k < nodal_neumann.size; ++k)
+						nodal_neumann.value[k].init(ff.is_array() ? ff[k] : ff, root_path);
+
+					if (j_boundary[i]["interpolation"].is_array())
+					{
+						for (int ii = 0; ii < j_boundary[i]["interpolation"].size(); ++ii)
+							nodal_neumann.interpolation.push_back(Interpolation::build(j_boundary[i]["interpolation"][ii]));
+					}
+					else
+					{
+						nodal_neumann.interpolation.push_back(Interpolation::build(j_boundary[i]["interpolation"]));
+					}
+
+					nodal_neumann_[id] = nodal_neumann;
 				}
 			}
 
@@ -1001,6 +1191,7 @@ namespace polyfem
 			nodal_dirichlet_.clear();
 			nodal_neumann_.clear();
 			nodal_dirichlet_mat_.clear();
+			nodal_neumann_mat_.clear();
 
 			initial_position_.clear();
 			initial_velocity_.clear();
@@ -1008,6 +1199,7 @@ namespace polyfem
 
 			rhs_.clear();
 			rhs_size_.clear();
+			body_rhs_.clear();
 			for (int i = 0; i < exact_.size(); ++i)
 				exact_[i].clear();
 			for (int i = 0; i < exact_grad_.size(); ++i)
@@ -1030,6 +1222,12 @@ namespace polyfem
 
 			for (auto &v : dirichlet_)
 				v.set_unit_type("");
+
+			for (auto &v : nodal_dirichlet_)
+				v.second.set_unit_type("");
+
+			for (auto &v : nodal_neumann_)
+				v.second.set_unit_type("");
 
 			for (auto &v : initial_solution_)
 				v.value.set_unit_type("");
@@ -1059,10 +1257,50 @@ namespace polyfem
 			}
 		}
 
+		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				rhs(assembler, pts, t, val, fe_space_id);
+				return;
+			}
+
+			val.resize(pts.rows(), 1);
+			val.setZero();
+
+			const int body_id = mesh.get_body_id(element_id);
+			const ScalarInitialValue *body_rhs = nullptr;
+			for (const ScalarInitialValue &entry : body_rhs_)
+			{
+				if (entry.body_id == body_id && matches_fe_space(entry.fe_space_id, fe_space_id))
+				{
+					body_rhs = &entry;
+					break;
+				}
+			}
+
+			if (body_rhs == nullptr)
+				return;
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				const double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
+				val(i) = body_rhs->value(x, y, z, t);
+			}
+		}
+
 		bool GenericScalarProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
-			return rhs == nullptr || rhs->is_zero();
+			if (rhs != nullptr && !rhs->is_zero())
+				return false;
+
+			for (const ScalarInitialValue &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id) && !entry.value.is_zero())
+					return false;
+
+			return true;
 		}
 
 		bool GenericScalarProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
@@ -1292,8 +1530,28 @@ namespace polyfem
 
 		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
-			// TODO implement me;
-			log_and_throw_error("Nodal neumann not implemented");
+			val = Eigen::MatrixXd::Zero(1, 1);
+			const int tag = mesh.get_node_id(node_id);
+
+			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
+			{
+				val(0) = it->second.eval(pt, t);
+				return;
+			}
+
+			for (const auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int i = 0; i < n_neumann.rows(); ++i)
+				{
+					if (n_neumann(i, 0) == node_id)
+					{
+						val(0) = n_neumann(i, 1);
+						return;
+					}
+				}
+			}
+
+			assert(false);
 		}
 
 		bool GenericScalarProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id)
@@ -1316,9 +1574,18 @@ namespace polyfem
 
 		bool GenericScalarProblem::is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id)
 		{
-			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
-				if (neumann_boundary_ids_[i] == tag && matches_fe_space(neumann_[i].fe_space_id, fe_space_id))
-					return true;
+			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end())
+				return matches_fe_space(it->second.fe_space_id, fe_space_id);
+
+			for (const auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int i = 0; i < n_neumann.rows(); ++i)
+				{
+					if (n_neumann(i, 0) == n_id)
+						return true;
+				}
+			}
+
 			return false;
 		}
 
@@ -1329,7 +1596,16 @@ namespace polyfem
 
 		bool GenericScalarProblem::has_nodal_neumann(const int fe_space_id)
 		{
-			return false; // nodal_neumann_.size() > 0;
+			if (!nodal_neumann_mat_.empty())
+				return true;
+
+			for (const auto &[id, neumann] : nodal_neumann_)
+			{
+				(void)id;
+				if (matches_fe_space(neumann.fe_space_id, fe_space_id))
+					return true;
+			}
+			return false;
 		}
 
 		void GenericScalarProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
@@ -1342,6 +1618,14 @@ namespace polyfem
 				{
 					const int node_id = in_node_to_node[n_dirichlet(n, 0)];
 					n_dirichlet(n, 0) = node_id;
+				}
+			}
+			for (auto &n_neumann : nodal_neumann_mat_)
+			{
+				for (int n = 0; n < n_neumann.rows(); ++n)
+				{
+					const int node_id = in_node_to_node[n_neumann(n, 0)];
+					n_neumann(n, 0) = node_id;
 				}
 			}
 			updated_dirichlet_node_ordering_ = true;
@@ -1358,7 +1642,19 @@ namespace polyfem
 			{
 				const json &rr = params["rhs"];
 				const bool has_fe_spaces = rr.is_array() && !rr.empty() && rr.front().is_object() && rr.front().contains("fe_space") && rr.front().contains("value");
-				if (has_fe_spaces)
+				const bool has_body_ids = has_body_value_entries(rr);
+				if (has_body_ids)
+				{
+					const std::vector<json> entries = flatten_ids(rr);
+					body_rhs_.resize(entries.size());
+					for (size_t k = 0; k < entries.size(); ++k)
+					{
+						body_rhs_[k].body_id = entries[k]["id"];
+						body_rhs_[k].fe_space_id = fe_space_id(entries[k]);
+						body_rhs_[k].value.init(entries[k]["value"], root_path);
+					}
+				}
+				else if (has_fe_spaces)
 				{
 					for (const json &entry : rr)
 						rhs_[fe_space_id(entry)].init(entry["value"], root_path);
@@ -1481,6 +1777,46 @@ namespace polyfem
 				}
 			}
 
+			if (is_param_valid(params, "nodal_neumann_boundary"))
+			{
+				std::vector<json> j_boundary = flatten_ids(params["nodal_neumann_boundary"]);
+
+				for (size_t i = 0; i < j_boundary.size(); ++i)
+				{
+					if (j_boundary[i].is_string())
+					{
+						const std::string path = resolve_path(j_boundary[i], params["root_path"]);
+						if (!std::filesystem::is_regular_file(path))
+							log_and_throw_error(fmt::format("unable to open {} file", path));
+
+						Eigen::MatrixXd tmp;
+						io::read_matrix(path, tmp);
+						nodal_neumann_mat_.emplace_back(tmp);
+
+						continue;
+					}
+
+					const int id = j_boundary[i]["id"];
+					ScalarBCValue nodal_neumann;
+					nodal_neumann.fe_space_id = fe_space_id(j_boundary[i]);
+					nodal_neumann.value.init(j_boundary[i]["value"], root_path);
+
+					if (j_boundary[i]["interpolation"].is_array())
+					{
+						if (j_boundary[i]["interpolation"].size() == 0)
+							nodal_neumann.interpolation = std::make_shared<NoInterpolation>();
+						else if (j_boundary[i]["interpolation"].size() == 1)
+							nodal_neumann.interpolation = Interpolation::build(j_boundary[i]["interpolation"][0]);
+						else
+							log_and_throw_error("Only one nodal Neumann interpolation supported");
+					}
+					else
+						nodal_neumann.interpolation = Interpolation::build(j_boundary[i]["interpolation"]);
+
+					nodal_neumann_[id] = nodal_neumann;
+				}
+			}
+
 			if (is_param_valid(params, "solution"))
 			{
 				auto rr = params["solution"];
@@ -1504,8 +1840,10 @@ namespace polyfem
 			nodal_dirichlet_.clear();
 			nodal_neumann_.clear();
 			nodal_dirichlet_mat_.clear();
+			nodal_neumann_mat_.clear();
 
 			rhs_.clear();
+			body_rhs_.clear();
 			exact_.clear();
 			for (int i = 0; i < exact_grad_.size(); ++i)
 				exact_grad_[i].clear();

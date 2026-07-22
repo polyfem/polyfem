@@ -61,6 +61,7 @@ namespace polyfem
 			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_rhs_zero(const int fe_space_id = -1) const override;
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
@@ -120,12 +121,14 @@ namespace polyfem
 
 			std::map<int, std::array<utils::ExpressionValue, 3>> rhs_;
 			std::map<int, int> rhs_size_;
+			std::vector<TensorInitialValue> body_rhs_;
 			std::array<utils::ExpressionValue, 3> exact_;
 			std::array<utils::ExpressionValue, 9> exact_grad_;
 
 			std::map<int, TensorBCValue> nodal_dirichlet_;
 			std::map<int, TensorBCValue> nodal_neumann_;
 			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+			std::vector<Eigen::MatrixXd> nodal_neumann_mat_;
 
 			bool is_all_;
 
@@ -140,6 +143,7 @@ namespace polyfem
 			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_rhs_zero(const int fe_space_id = -1) const override;
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
@@ -176,8 +180,10 @@ namespace polyfem
 			std::map<int, ScalarBCValue> nodal_dirichlet_;
 			std::map<int, ScalarBCValue> nodal_neumann_;
 			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+			std::vector<Eigen::MatrixXd> nodal_neumann_mat_;
 
 			std::map<int, utils::ExpressionValue> rhs_;
+			std::vector<ScalarInitialValue> body_rhs_;
 			utils::ExpressionValue exact_;
 			std::array<utils::ExpressionValue, 3> exact_grad_;
 			bool is_all_;

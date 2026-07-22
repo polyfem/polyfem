@@ -1578,13 +1578,19 @@
             "Discrete",
             "Conservative"
         ],
-        "doc": "The method for checking if any element is flipped."
+        "doc": "The method for checking if any element is flipped. \"Discrete\" skips the check; \"Conservative\" uses continuous CCD (max_time_step) to guarantee no inversion along the step."
     },
     {
         "pointer": "/solver/advanced/jacobian_threshold",
         "type": "float",
         "default": 0,
         "doc": "."
+    },
+    {
+        "pointer": "/solver/advanced/conservative_max_iter",
+        "type": "int",
+        "default": 100000,
+        "doc": "Maximum number of subdivision iterations for the conservative (robust) Jacobian inversion check."
     },
     {
         "pointer": "/solver/advanced",
@@ -1597,6 +1603,7 @@
             "lagged_regularization_iterations",
             "check_inversion",
             "jacobian_threshold",
+            "conservative_max_iter",
             "characteristic_length",
             "characteristic_force_density"
         ],
@@ -1667,6 +1674,7 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
+            "nodal_neumann_boundary",
             "normal_aligned_neumann_boundary",
             "pressure_boundary",
             "pressure_cavity",
@@ -1779,14 +1787,24 @@
         "pointer": "/boundary_conditions/rhs/*",
         "type": "object",
         "required": [
-            "fe_space",
             "value"
         ],
-        "doc": "Right-hand side associated with a finite element space."
+        "optional": [
+            "id",
+            "fe_space"
+        ],
+        "doc": "Right-hand side associated with a body ID and/or finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/id",
+        "type": "int",
+        "default": -1,
+        "doc": "Body ID for the right-hand side."
     },
     {
         "pointer": "/boundary_conditions/rhs/*/fe_space",
         "type": "int",
+        "default": -1,
         "doc": "Finite element space ID for the right-hand side."
     },
     {
@@ -1897,6 +1915,37 @@
         "type": "int",
         "default": -1,
         "doc": "Finite element space ID for the Neumann boundary condition. If not specified, default to the all finite element spaces."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Nodal Neumann boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "fe_space",
+            "interpolation"
+        ],
+        "doc": "Nodal Neumann boundary condition."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "string",
+        "doc": "Nodal Neumann boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the nodal Neumann boundary condition. If not specified, default to all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",

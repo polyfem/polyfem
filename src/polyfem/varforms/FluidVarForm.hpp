@@ -10,6 +10,19 @@ namespace polysolve::linear
 	class Solver;
 }
 
+namespace polyfem::solver
+{
+	class AugmentedLagrangianForm;
+	class AveragePressureForm;
+	class BodyForm;
+	class InertiaForm;
+	class Form;
+	class MixedLinearForm;
+	class NavierStokesForm;
+	class NLProblem;
+	class StackedForm;
+} // namespace polyfem::solver
+
 namespace polyfem::varform
 {
 	class FluidVarForm : public VarForm
@@ -102,7 +115,19 @@ namespace polyfem::varform
 
 	private:
 		void solve_problem(Eigen::MatrixXd &sol) override;
-		void solve_static(Eigen::MatrixXd &sol);
-		void solve_transient(Eigen::MatrixXd &sol);
+		void build_forms(Eigen::MatrixXd &sol, double t);
+		void solve_nonlinear_step(int step, Eigen::MatrixXd &sol);
+		void update_transient_form_weights();
+
+		Eigen::MatrixXd velocity_rhs_;
+		std::vector<std::shared_ptr<solver::Form>> forms_;
+		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_forms_;
+		std::shared_ptr<solver::NLProblem> nl_problem_;
+		std::shared_ptr<solver::StackedForm> stacked_form_;
+		std::shared_ptr<solver::NavierStokesForm> navier_stokes_form_;
+		std::shared_ptr<solver::MixedLinearForm> mixed_form_;
+		std::shared_ptr<solver::AveragePressureForm> average_pressure_form_;
+		std::shared_ptr<solver::BodyForm> body_form_;
+		std::shared_ptr<solver::InertiaForm> inertia_form_;
 	};
 } // namespace polyfem::varform
