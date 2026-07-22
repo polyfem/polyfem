@@ -1679,9 +1679,51 @@
             "pressure_boundary",
             "pressure_cavity",
             "obstacle_displacements",
+            "periodic",
             "periodic_boundary"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic",
+        "type": "list",
+        "default": [],
+        "doc": "Pairs of boundary IDs whose corresponding degrees of freedom are constrained to be equal."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "boundary_ids"
+        ],
+        "optional": [
+            "fe_space",
+            "tolerance"
+        ],
+        "doc": "A pair of periodic boundaries."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids",
+        "type": "list",
+        "doc": "Exactly two boundary IDs to couple."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids/*",
+        "type": "int",
+        "doc": "Boundary ID."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID. -1 applies to every applicable space."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*/tolerance",
+        "type": "float",
+        "default": 1e-5,
+        "doc": "Relative tolerance used to match translated boundary nodes."
     },
     {
         "pointer": "/boundary_conditions/periodic_boundary",

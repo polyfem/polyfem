@@ -314,7 +314,10 @@ namespace polyfem::legacy
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
-			args["solver"]["rayleigh_damping"]);
+			args["solver"]["rayleigh_damping"],
+			// Boundary-ID periodic constraints
+			mesh.get(), &total_local_boundary,
+			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
 
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);

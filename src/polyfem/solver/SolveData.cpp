@@ -4,6 +4,7 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/PeriodicLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -127,7 +128,13 @@ namespace polyfem::solver
 		const int friction_iterations,
 
 		// Rayleigh damping form
-		const json &rayleigh_damping)
+		const json &rayleigh_damping,
+
+		// Boundary-ID periodic constraints
+		const mesh::Mesh *periodic_mesh,
+		const std::vector<mesh::LocalBoundary> *periodic_local_boundary,
+		const json &periodic_conditions,
+		const int fe_space_id)
 	{
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
@@ -215,6 +222,29 @@ namespace polyfem::solver
 		if (periodic_bc != nullptr)
 		{
 			al_form.push_back(std::make_shared<PeriodicLagrangianForm>(ndof, periodic_bc));
+		}
+
+		if (!periodic_conditions.empty())
+		{
+			if (periodic_mesh == nullptr || periodic_local_boundary == nullptr)
+				log_and_throw_error("Periodic boundary constraints require mesh boundary data");
+
+			for (const json &condition : periodic_conditions)
+			{
+				const int condition_fe_space = condition.value("fe_space", -1);
+				if (condition_fe_space >= 0 && fe_space_id >= 0 && condition_fe_space != fe_space_id)
+					continue;
+
+				if (!condition.contains("boundary_ids") || !condition["boundary_ids"].is_array() || condition["boundary_ids"].size() != 2)
+					log_and_throw_error("A periodic boundary condition must contain exactly two boundary_ids");
+
+				const std::array<int, 2> boundary_ids = {
+					condition["boundary_ids"][0].get<int>(),
+					condition["boundary_ids"][1].get<int>()};
+				al_form.push_back(std::make_shared<PeriodicBoundaryLagrangianForm>(
+					ndof, dim, *periodic_mesh, bases, *periodic_local_boundary,
+					boundary_ids, condition.value("tolerance", 1e-5)));
+			}
 		}
 
 		for (const auto &path : hard_constraint_files)

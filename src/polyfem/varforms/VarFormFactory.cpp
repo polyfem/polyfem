@@ -107,7 +107,8 @@ namespace polyfem::varform
 								  || has_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
 		const bool has_constraints =
 			has_entries(args, "/constraints/hard"_json_pointer)
-			|| has_entries(args, "/constraints/soft"_json_pointer);
+			|| has_entries(args, "/constraints/soft"_json_pointer)
+			|| has_entries(args, "/boundary_conditions/periodic"_json_pointer);
 
 		if (formulation == "ThermoElasticity")
 			return (!has_pressure && !has_constraints) ? std::make_shared<ThermoElasticVarForm>() : nullptr;

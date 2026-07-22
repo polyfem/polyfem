@@ -6,6 +6,8 @@ set(SOURCES
 	AugmentedLagrangianForm.hpp
 	MatrixLagrangianForm.hpp
 	MatrixLagrangianForm.cpp
+	PeriodicBoundaryLagrangianForm.hpp
+	PeriodicBoundaryLagrangianForm.cpp
 	MacroStrainLagrangianForm.cpp
 	MacroStrainLagrangianForm.hpp
 	StackedAugmentedLagrangianForm.cpp

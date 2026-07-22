@@ -65,6 +65,14 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	CHECK(varform::VarFormFactory::create("Stokes", periodic_args) == nullptr);
 	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", periodic_args));
 	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_args) == nullptr);
+
+	json boundary_pair_args = args;
+	boundary_pair_args["/boundary_conditions/periodic"_json_pointer] = {{{"boundary_ids", {1, 2}}}};
+	CHECK(varform::VarFormFactory::supports("NeoHookean", boundary_pair_args));
+	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args) != nullptr);
+	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args);
+	REQUIRE(linear_with_periodic != nullptr);
+	CHECK(linear_with_periodic->name() == "NonlinearElasticTransient");
 }
 
 TEST_CASE("state can opt into migrated varforms", "[varform][state]")

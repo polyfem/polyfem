@@ -154,7 +154,13 @@ namespace polyfem::solver
 			const int friction_iterations,
 
 			// Rayleigh damping form
-			const json &rayleigh_damping);
+			const json &rayleigh_damping,
+
+			// Boundary-ID periodic constraints
+			const mesh::Mesh *periodic_mesh = nullptr,
+			const std::vector<mesh::LocalBoundary> *periodic_local_boundary = nullptr,
+			const json &periodic_conditions = json::array(),
+			const int fe_space_id = -1);
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution
