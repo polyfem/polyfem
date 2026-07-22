@@ -101,8 +101,8 @@ namespace polyfem::varform
 			const int total = mesh_interface_offset + mesh_interface_mass.rows() + (add_average ? 1 : 0);
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(velocity_mass.nonZeros() + pressure_size + mesh_mass.nonZeros()
-				+ solid_mass.nonZeros() + fluid_interface_mass.nonZeros()
-				+ mesh_interface_mass.nonZeros() + (add_average ? 1 : 0));
+							+ solid_mass.nonZeros() + fluid_interface_mass.nonZeros()
+							+ mesh_interface_mass.nonZeros() + (add_average ? 1 : 0));
 			for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					entries.emplace_back(it.row(), it.col(), it.value());
@@ -151,7 +151,8 @@ namespace polyfem::varform
 				for (const auto &global : bases.bases[i].global())
 				{
 					auto it = result.try_emplace(
-						global.index, Eigen::VectorXd::Zero(points.rows())).first;
+										global.index, Eigen::VectorXd::Zero(points.rows()))
+								  .first;
 					it->second += global.val * values[i].val.col(0);
 				}
 			return result;
@@ -206,8 +207,8 @@ namespace polyfem::varform
 						fluid_edge, quadrature_order, fluid_index.edge, fluid_mesh, uv, fluid_points, weights);
 
 				const Eigen::Matrix2d solid_endpoints = solid_vertices == 3
-					? utils::BoundarySampler::tri_local_node_coordinates_from_edge(solid_edge)
-					: utils::BoundarySampler::quad_local_node_coordinates_from_edge(solid_edge);
+															? utils::BoundarySampler::tri_local_node_coordinates_from_edge(solid_edge)
+															: utils::BoundarySampler::quad_local_node_coordinates_from_edge(solid_edge);
 				Eigen::MatrixXd solid_points(fluid_points.rows(), 2);
 				for (int q = 0; q < solid_points.rows(); ++q)
 				{
@@ -586,10 +587,7 @@ namespace polyfem::varform
 		const auto &fluid_mesh = dynamic_cast<const mesh::Mesh2D &>(*mesh_);
 		const auto &solid_mesh = dynamic_cast<const mesh::Mesh2D &>(*solid_output.mesh);
 		const FESpace &solid_space = solid_varform_->embedding_space();
-		const int order = 2 * std::max({
-			space_.disc_orders.maxCoeff(),
-			mesh_displacement_space_.disc_orders.maxCoeff(),
-			solid_space.disc_orders.maxCoeff()}) + 2;
+		const int order = 2 * std::max({space_.disc_orders.maxCoeff(), mesh_displacement_space_.disc_orders.maxCoeff(), solid_space.disc_orders.maxCoeff()}) + 2;
 
 		const ScalarTraceOperators physical = assemble_2d_trace_operators(
 			fluid_mesh, solid_mesh, interface_2d_,

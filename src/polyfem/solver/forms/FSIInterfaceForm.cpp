@@ -131,12 +131,12 @@ namespace polyfem::solver
 			2 * fluid_velocity_trace_.nonZeros() + 2 * fluid_solid_trace_.nonZeros()
 			+ 2 * mesh_trace_.nonZeros() + mesh_solid_trace_.nonZeros());
 		append_block(fluid_velocity_trace_.transpose(), velocity_offset_, fluid_multiplier_offset_,
-			fluid_integrator_.acceleration_scaling(), entries);
+					 fluid_integrator_.acceleration_scaling(), entries);
 		append_block(fluid_solid_trace_.transpose(), solid_displacement_offset_, fluid_multiplier_offset_,
-			-solid_integrator_.acceleration_scaling(), entries);
+					 -solid_integrator_.acceleration_scaling(), entries);
 		append_block(fluid_velocity_trace_, fluid_multiplier_offset_, velocity_offset_, 1, entries);
 		append_block(fluid_solid_trace_, fluid_multiplier_offset_, solid_displacement_offset_,
-			-solid_integrator_.dv_dx(), entries);
+					 -solid_integrator_.dv_dx(), entries);
 		append_block(mesh_trace_.transpose(), mesh_displacement_offset_, mesh_multiplier_offset_, 1, entries);
 		append_block(mesh_trace_, mesh_multiplier_offset_, mesh_displacement_offset_, 1, entries);
 		append_block(mesh_solid_trace_, mesh_multiplier_offset_, solid_displacement_offset_, -1, entries);

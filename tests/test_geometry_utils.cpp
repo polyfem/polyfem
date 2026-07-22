@@ -139,9 +139,8 @@ TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, const bool) { return 20 + int(v); });
 	mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, const bool boundary) { return boundary ? 7 : -1; });
 
-	const json selection = json::array({
-		{{"id", 4}, {"box", {{-1.0, -1.0}, {0.49, 2.0}}}, {"boundary_only", false}},
-		{{"id", 9}, {"box", {{0.49, -1.0}, {2.0, 2.0}}}, {"boundary_only", false}}});
+	const json selection = json::array({{{"id", 4}, {"box", {{-1.0, -1.0}, {0.49, 2.0}}}, {"boundary_only", false}},
+										{{"id", 9}, {"box", {{0.49, -1.0}, {2.0, 2.0}}}, {"boundary_only", false}}});
 	apply_geometry_selection(*mesh, selection, "");
 	REQUIRE(mesh->get_geometry_ids() == std::vector<int>{9, 4});
 
@@ -221,9 +220,9 @@ TEST_CASE("mesh interface is empty for separated meshes", "[geometry][split]")
 	vertices.rowwise() += Eigen::RowVector2d(3, 0);
 	auto second = Mesh::create(vertices, cell);
 	CHECK(compute_mesh_interface(
-			dynamic_cast<const Mesh2D &>(*first),
-			dynamic_cast<const Mesh2D &>(*second))
-			.empty());
+			  dynamic_cast<const Mesh2D &>(*first),
+			  dynamic_cast<const Mesh2D &>(*second))
+			  .empty());
 }
 
 TEST_CASE("geometry split finds a 3D interface", "[geometry][split]")

@@ -804,10 +804,9 @@ namespace
 		const Eigen::Vector3d second_normal = face_normal(second);
 		const double first_area_scale = first_normal.norm();
 		const double second_area_scale = second_normal.norm();
-		const double coordinate_scale = std::max({
-			1.0,
-			first.vertices.front().norm(),
-			second.vertices.front().norm()});
+		const double coordinate_scale = std::max({1.0,
+												  first.vertices.front().norm(),
+												  second.vertices.front().norm()});
 		const double tolerance = 1e-12 * coordinate_scale;
 		if (first_area_scale <= tolerance * tolerance || second_area_scale <= tolerance * tolerance)
 			return false;
@@ -836,7 +835,7 @@ namespace
 		};
 		return contains(first_polygon, second_polygon) || contains(second_polygon, first_polygon);
 	}
-}
+} // namespace
 
 std::vector<std::pair<polyfem::mesh::Navigation::Index, polyfem::mesh::Navigation::Index>>
 polyfem::mesh::compute_mesh_interface(const Mesh2D &first, const Mesh2D &second)
@@ -852,10 +851,9 @@ polyfem::mesh::compute_mesh_interface(const Mesh2D &first, const Mesh2D &second)
 				if (mesh.is_boundary_edge(index.edge))
 				{
 					const auto opposite = mesh.switch_vertex(index);
-					edges.push_back({
-						index,
-						mesh.point(index.vertex).head<2>(),
-						mesh.point(opposite.vertex).head<2>()});
+					edges.push_back({index,
+									 mesh.point(index.vertex).head<2>(),
+									 mesh.point(opposite.vertex).head<2>()});
 				}
 				index = mesh.next_around_face(index);
 			}

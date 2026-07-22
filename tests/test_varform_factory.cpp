@@ -373,8 +373,8 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 		  == debug.velocity_ndof + debug.pressure_ndof + debug.mesh_displacement_ndof);
 	CHECK(debug.problem->full_size()
 		  == debug.solid_displacement_offset + debug.solid_displacement_ndof
-			 + debug.fluid_multiplier_ndof + debug.mesh_multiplier_ndof
-			 + (debug.average_pressure_form ? 1 : 0));
+				 + debug.fluid_multiplier_ndof + debug.mesh_multiplier_ndof
+				 + (debug.average_pressure_form ? 1 : 0));
 	CHECK(debug.fluid_multiplier_offset
 		  == debug.solid_displacement_offset + debug.solid_displacement_ndof);
 	CHECK(debug.mesh_multiplier_offset
@@ -384,7 +384,7 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	Eigen::VectorXd pressure_gauge_residual;
 	debug.average_pressure_form->first_derivative(solution.col(0), pressure_gauge_residual);
 	CHECK(std::abs(pressure_gauge_residual(debug.average_pressure_offset)
-			  / debug.average_pressure_form->weight())
+				   / debug.average_pressure_form->weight())
 		  < 1e-6);
 
 	const int mesh_offset = debug.velocity_ndof + debug.pressure_ndof;
@@ -398,24 +398,24 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	const Eigen::VectorXd solid = solution.middleRows(
 		debug.solid_displacement_offset, debug.solid_displacement_ndof);
 	CHECK(debug.interface_form->physical_constraint(
-			  solution.topRows(debug.velocity_ndof),
-			  debug.solid_varform->embedding_time_integrator()->v_prev())
+								  solution.topRows(debug.velocity_ndof),
+								  debug.solid_varform->embedding_time_integrator()->v_prev())
 			  .norm()
 		  < 1e-5);
 	CHECK(debug.interface_form->mesh_constraint(
-			  solution.middleRows(mesh_offset, debug.mesh_displacement_ndof), solid)
+								  solution.middleRows(mesh_offset, debug.mesh_displacement_ndof), solid)
 			  .norm()
 		  < 1e-5);
 
 	StiffnessMatrix interface_jacobian;
 	debug.interface_form->second_derivative(solution.col(0), interface_jacobian);
 	CHECK(Eigen::MatrixXd(interface_jacobian.block(
-			  debug.solid_displacement_offset, debug.mesh_multiplier_offset,
-			  debug.solid_displacement_ndof, debug.mesh_multiplier_ndof))
+							  debug.solid_displacement_offset, debug.mesh_multiplier_offset,
+							  debug.solid_displacement_ndof, debug.mesh_multiplier_ndof))
 			  .isZero(0));
 	CHECK(Eigen::MatrixXd(interface_jacobian.block(
-			  mesh_offset, debug.mesh_multiplier_offset,
-			  debug.mesh_displacement_ndof, debug.mesh_multiplier_ndof))
+							  mesh_offset, debug.mesh_multiplier_offset,
+							  debug.mesh_displacement_ndof, debug.mesh_multiplier_ndof))
 			  .norm()
 		  > 0);
 	Eigen::VectorXd interface_direction = Eigen::VectorXd::LinSpaced(
@@ -449,9 +449,9 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 		for (StiffnessMatrix::InnerIterator entry(gauge_jacobian, col); entry; ++entry)
 		{
 			const bool row_is_solid = entry.row() >= debug.solid_displacement_offset
-				&& entry.row() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
+									  && entry.row() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
 			const bool col_is_solid = entry.col() >= debug.solid_displacement_offset
-				&& entry.col() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
+									  && entry.col() < debug.solid_displacement_offset + debug.solid_displacement_ndof;
 			gauge_touches_solid |= row_is_solid || col_is_solid;
 		}
 	CHECK_FALSE(gauge_touches_solid);
