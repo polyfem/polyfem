@@ -167,7 +167,7 @@ namespace polyfem::varform
 		ScalarTraceOperators assemble_2d_trace_operators(
 			const mesh::Mesh2D &fluid_mesh,
 			const mesh::Mesh2D &solid_mesh,
-			const std::vector<std::pair<mesh::Navigation::Index, mesh::Navigation::Index>> &interface,
+			const std::vector<std::pair<mesh::Navigation::Index, mesh::Navigation::Index>> &interface_pairs,
 			const std::vector<basis::ElementBases> &source_bases,
 			const int source_n_bases,
 			const std::vector<basis::ElementBases> &solid_bases,
@@ -176,7 +176,7 @@ namespace polyfem::varform
 		{
 			std::map<int, int> multiplier_index;
 			std::vector<Eigen::Triplet<double>> source_entries, solid_entries;
-			for (const auto &[fluid_index, solid_index] : interface)
+			for (const auto &[fluid_index, solid_index] : interface_pairs)
 			{
 				const int fluid_edge = local_edge(fluid_mesh, fluid_index);
 				const int solid_edge = local_edge(solid_mesh, solid_index);
@@ -424,7 +424,7 @@ namespace polyfem::varform
 			result["space"]["discr_order"] = filter_fe_space_entries(
 				result["space"]["discr_order"], displacement_space_id_);
 
-		for (const std::string &key : {
+		for (const char *key : {
 				 "rhs", "dirichlet_boundary", "neumann_boundary",
 				 "nodal_neumann_boundary", "normal_aligned_neumann_boundary"})
 		{
@@ -435,7 +435,7 @@ namespace polyfem::varform
 		result["boundary_conditions"]["pressure_boundary"] = json::array();
 		result["boundary_conditions"]["pressure_cavity"] = json::array();
 
-		for (const std::string &key : {"solution", "velocity", "acceleration"})
+		for (const char *key : {"solution", "velocity", "acceleration"})
 			if (result["initial_conditions"].contains(key))
 				result["initial_conditions"][key] = filter_fe_space_entries(
 					result["initial_conditions"][key], displacement_space_id_);

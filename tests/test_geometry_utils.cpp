@@ -163,10 +163,10 @@ TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 
 	const auto &first = dynamic_cast<const Mesh2D &>(*pieces[0].mesh);
 	const auto &second = dynamic_cast<const Mesh2D &>(*pieces[1].mesh);
-	const auto interface = compute_mesh_interface(first, second);
-	REQUIRE(interface.size() == 1);
-	CHECK(interface[0].first.face == 0);
-	CHECK(interface[0].second.face == 0);
+	const auto interface_pairs = compute_mesh_interface(first, second);
+	REQUIRE(interface_pairs.size() == 1);
+	CHECK(interface_pairs[0].first.face == 0);
+	CHECK(interface_pairs[0].second.face == 0);
 }
 
 TEST_CASE("split defaults to geometry zero", "[geometry][split]")
@@ -243,10 +243,10 @@ TEST_CASE("geometry split finds a 3D interface", "[geometry][split]")
 	REQUIRE(pieces.size() == 2);
 	const auto &first = dynamic_cast<const Mesh3D &>(*pieces[0].mesh);
 	const auto &second = dynamic_cast<const Mesh3D &>(*pieces[1].mesh);
-	const auto interface = compute_mesh_interface(first, second);
-	REQUIRE(interface.size() == 1);
-	CHECK(interface[0].first.element == 0);
-	CHECK(interface[0].second.element == 0);
+	const auto interface_pairs = compute_mesh_interface(first, second);
+	REQUIRE(interface_pairs.size() == 1);
+	CHECK(interface_pairs[0].first.element == 0);
+	CHECK(interface_pairs[0].second.element == 0);
 }
 
 TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][split][ncmesh]")
@@ -265,10 +265,10 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		REQUIRE(pieces.size() == 2);
 		CHECK(pieces[0].mesh->n_elements() == 1);
 		CHECK(pieces[1].mesh->n_elements() == 1);
-		const auto interface = compute_mesh_interface(
+		const auto interface_pairs = compute_mesh_interface(
 			dynamic_cast<const Mesh2D &>(*pieces[0].mesh),
 			dynamic_cast<const Mesh2D &>(*pieces[1].mesh));
-		CHECK(interface.size() == 1);
+		CHECK(interface_pairs.size() == 1);
 	}
 
 	SECTION("3D")
@@ -283,10 +283,10 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		REQUIRE(pieces.size() == 2);
 		CHECK(pieces[0].mesh->n_elements() == 1);
 		CHECK(pieces[1].mesh->n_elements() == 1);
-		const auto interface = compute_mesh_interface(
+		const auto interface_pairs = compute_mesh_interface(
 			dynamic_cast<const Mesh3D &>(*pieces[0].mesh),
 			dynamic_cast<const Mesh3D &>(*pieces[1].mesh));
-		CHECK(interface.size() == 1);
+		CHECK(interface_pairs.size() == 1);
 	}
 }
 
@@ -316,10 +316,10 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
-		const auto interface = compute_mesh_interface(
+		const auto interface_pairs = compute_mesh_interface(
 			dynamic_cast<const Mesh2D &>(*pieces[0].mesh),
 			dynamic_cast<const Mesh2D &>(*pieces[1].mesh));
-		CHECK(interface.size() == 2);
+		CHECK(interface_pairs.size() == 2);
 	}
 
 	SECTION("3D leader face to follower faces")
@@ -344,10 +344,10 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
-		const auto interface = compute_mesh_interface(
+		const auto interface_pairs = compute_mesh_interface(
 			dynamic_cast<const Mesh3D &>(*pieces[0].mesh),
 			dynamic_cast<const Mesh3D &>(*pieces[1].mesh));
-		CHECK(interface.size() == 4);
+		CHECK(interface_pairs.size() == 4);
 	}
 }
 
