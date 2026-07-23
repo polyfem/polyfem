@@ -327,8 +327,7 @@ namespace polyfem::varform
 		if (!assembler::AssemblerUtils::is_elastic_material(mesh_elastic_formulation_))
 			log_and_throw_error("NavierStokesFSI mesh_material must be an elastic material, got {}.", mesh_elastic_formulation_);
 
-		const std::array<std::string, 4> solid_fields{
-			"fluid_geometry_id", "solid_geometry_id", "displacement_space_id", "solid_material"};
+		const std::array<std::string, 4> solid_fields{{"fluid_geometry_id", "solid_geometry_id", "displacement_space_id", "solid_material"}};
 		int present_solid_fields = 0;
 		for (const std::string &field : solid_fields)
 			present_solid_fields += material.contains(field);

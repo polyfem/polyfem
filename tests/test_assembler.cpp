@@ -914,12 +914,12 @@ TEST_CASE("ALE Navier-Stokes local Jacobian blocks", "[assembler][navier_stokes]
 		values.col(1) = points.col(0).array() - 0.5 * points.col(1).array();
 	};
 
-	std::array<Eigen::VectorXd, 3> x = {
-		fixture.x.col(0),
-		Eigen::VectorXd::LinSpaced(n_bases, 0.01, 0.03),
-		Eigen::VectorXd::LinSpaced(n_bases * dim, -0.02, 0.025)};
-	std::array<Eigen::VectorXd, 3> x_prev = {
-		fixture.x_prev.col(0), Eigen::VectorXd::Zero(n_bases), Eigen::VectorXd::Zero(n_bases * dim)};
+	std::array<Eigen::VectorXd, 3> x = {{fixture.x.col(0),
+										 Eigen::VectorXd::LinSpaced(n_bases, 0.01, 0.03),
+										 Eigen::VectorXd::LinSpaced(n_bases * dim, -0.02, 0.025)}};
+	std::array<Eigen::VectorXd, 3> x_prev = {{fixture.x_prev.col(0),
+											  Eigen::VectorXd::Zero(n_bases),
+											  Eigen::VectorXd::Zero(n_bases * dim)}};
 	Eigen::VectorXd velocity_tilde = 0.8 * x[0];
 	Eigen::VectorXd mesh_velocity = 0.4 * x[2];
 
@@ -989,14 +989,12 @@ TEST_CASE("ALE identity mapping reproduces Navier-Stokes", "[assembler][navier_s
 	ale_mixed.set_size(dim);
 	ale_velocity.add_multimaterial(0, {{"viscosity", 0.7}, {"rho", 1.0}}, Units(), "");
 
-	std::array<Eigen::VectorXd, 3> x = {
-		fixture.x.col(0),
-		Eigen::VectorXd::LinSpaced(n_bases, -0.03, 0.02),
-		Eigen::VectorXd::Zero(velocity_size)};
-	std::array<Eigen::VectorXd, 3> previous = {
-		Eigen::VectorXd::Zero(velocity_size),
-		Eigen::VectorXd::Zero(n_bases),
-		Eigen::VectorXd::Zero(velocity_size)};
+	std::array<Eigen::VectorXd, 3> x = {{fixture.x.col(0),
+										 Eigen::VectorXd::LinSpaced(n_bases, -0.03, 0.02),
+										 Eigen::VectorXd::Zero(velocity_size)}};
+	std::array<Eigen::VectorXd, 3> previous = {{Eigen::VectorXd::Zero(velocity_size),
+												Eigen::VectorXd::Zero(n_bases),
+												Eigen::VectorXd::Zero(velocity_size)}};
 	NavierStokesFSIAssemblerData::Values values = {
 		std::cref(fixture.vals), std::cref(fixture.vals), std::cref(fixture.vals)};
 	NavierStokesFSIAssemblerData::Coefficients coefficients = {
