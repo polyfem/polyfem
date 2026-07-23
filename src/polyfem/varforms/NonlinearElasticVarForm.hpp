@@ -35,6 +35,7 @@ namespace polyfem::varform
 		void initial_solution_for_embedding(Eigen::MatrixXd &solution, const std::string &state_prefix = "") const;
 		void init_forms_for_embedding(Eigen::MatrixXd &solution, double t, const std::string &state_prefix = "");
 		void advance_for_embedding(const Eigen::VectorXd &solution);
+		void update_barrier_stiffness_for_embedding(const Eigen::VectorXd &solution);
 		bool save_timestep_for_embedding(
 			double time, int step, double dt, const Eigen::MatrixXd &solution,
 			paraviewo::VTMWriter &vtm, const std::string &block_prefix) const;

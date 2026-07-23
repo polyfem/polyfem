@@ -162,6 +162,13 @@ namespace polyfem::varform
 		{
 			StiffnessMatrix source;
 			StiffnessMatrix solid;
+			std::vector<int> multiplier_source_ids;
+		};
+
+		struct VectorTraceOperators
+		{
+			StiffnessMatrix source;
+			StiffnessMatrix solid;
 		};
 
 		ScalarTraceOperators assemble_2d_trace_operators(
@@ -174,6 +181,7 @@ namespace polyfem::varform
 			const int solid_n_bases,
 			const int quadrature_order)
 		{
+			ScalarTraceOperators result;
 			std::map<int, int> multiplier_index;
 			std::vector<Eigen::Triplet<double>> source_entries, solid_entries;
 			for (const auto &[fluid_index, solid_index] : interface_pairs)
@@ -225,7 +233,10 @@ namespace polyfem::varform
 				{
 					if (multiplier_values.cwiseAbs().maxCoeff() < 1e-12)
 						continue;
-					const int row = multiplier_index.try_emplace(source_id, multiplier_index.size()).first->second;
+					const auto [it, inserted] = multiplier_index.try_emplace(source_id, multiplier_index.size());
+					const int row = it->second;
+					if (inserted)
+						result.multiplier_source_ids.push_back(source_id);
 					for (const auto &[trial_id, trial_values] : source_values)
 					{
 						const double value = (weights.array() * multiplier_values.array() * trial_values.array()).sum();
@@ -240,7 +251,6 @@ namespace polyfem::varform
 					}
 				}
 			}
-			ScalarTraceOperators result;
 			result.source.resize(multiplier_index.size(), source_n_bases);
 			result.source.setFromTriplets(source_entries.begin(), source_entries.end());
 			result.solid.resize(multiplier_index.size(), solid_n_bases);
@@ -248,16 +258,45 @@ namespace polyfem::varform
 			return result;
 		}
 
-		StiffnessMatrix vector_trace(const StiffnessMatrix &scalar, const int dim)
+		VectorTraceOperators vector_trace(
+			const ScalarTraceOperators &scalar,
+			const int dim,
+			const std::vector<int> &source_dirichlet_dofs)
 		{
-			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(scalar.nonZeros() * dim);
-			for (int k = 0; k < scalar.outerSize(); ++k)
-				for (StiffnessMatrix::InnerIterator it(scalar, k); it; ++it)
-					for (int d = 0; d < dim; ++d)
-						entries.emplace_back(it.row() * dim + d, it.col() * dim + d, it.value());
-			StiffnessMatrix result(scalar.rows() * dim, scalar.cols() * dim);
-			result.setFromTriplets(entries.begin(), entries.end());
+			assert(scalar.source.rows() == scalar.solid.rows());
+			assert(scalar.source.rows() == int(scalar.multiplier_source_ids.size()));
+
+			std::vector<bool> is_dirichlet(scalar.source.cols() * dim, false);
+			for (const int dof : source_dirichlet_dofs)
+				if (dof >= 0 && dof < int(is_dirichlet.size()))
+					is_dirichlet[dof] = true;
+
+			std::vector<int> vector_rows(scalar.source.rows() * dim, -1);
+			int n_rows = 0;
+			for (int row = 0; row < scalar.source.rows(); ++row)
+				for (int d = 0; d < dim; ++d)
+					if (!is_dirichlet[scalar.multiplier_source_ids[row] * dim + d])
+						vector_rows[row * dim + d] = n_rows++;
+
+			const auto expand = [&](const StiffnessMatrix &matrix) {
+				std::vector<Eigen::Triplet<double>> entries;
+				entries.reserve(matrix.nonZeros() * dim);
+				for (int k = 0; k < matrix.outerSize(); ++k)
+					for (StiffnessMatrix::InnerIterator it(matrix, k); it; ++it)
+						for (int d = 0; d < dim; ++d)
+						{
+							const int row = vector_rows[it.row() * dim + d];
+							if (row >= 0)
+								entries.emplace_back(row, it.col() * dim + d, it.value());
+						}
+				StiffnessMatrix result(n_rows, matrix.cols() * dim);
+				result.setFromTriplets(entries.begin(), entries.end());
+				return result;
+			};
+
+			VectorTraceOperators result;
+			result.source = expand(scalar.source);
+			result.solid = expand(scalar.solid);
 			return result;
 		}
 	} // namespace
@@ -440,7 +479,6 @@ namespace polyfem::varform
 					result["initial_conditions"][key], displacement_space_id_);
 
 		result["time"]["integrator"] = time_integrator_args(displacement_space_id_);
-		result["contact"]["enabled"] = false;
 		result["constraints"]["hard"] = json::array();
 		result["constraints"]["soft"] = json::array();
 		result["space"]["remesh"]["enabled"] = false;
@@ -596,26 +634,16 @@ namespace polyfem::varform
 			fluid_mesh, solid_mesh, interface_2d_,
 			mesh_displacement_space_.basis_list(), mesh_displacement_space_.n_bases,
 			solid_space.basis_list(), solid_space.n_bases, order);
-		interface_velocity_trace_ = vector_trace(physical.source, mesh_->dimension());
-		interface_solid_velocity_trace_ = vector_trace(physical.solid, mesh_->dimension());
-		interface_mesh_trace_ = vector_trace(computational.source, mesh_->dimension());
-		interface_solid_mesh_trace_ = vector_trace(computational.solid, mesh_->dimension());
+		const VectorTraceOperators physical_vector =
+			vector_trace(physical, mesh_->dimension(), boundary_.boundary_nodes);
+		const VectorTraceOperators computational_vector =
+			vector_trace(computational, mesh_->dimension(), mesh_displacement_boundary_.boundary_nodes);
+		interface_velocity_trace_ = physical_vector.source;
+		interface_solid_velocity_trace_ = physical_vector.solid;
+		interface_mesh_trace_ = computational_vector.source;
+		interface_solid_mesh_trace_ = computational_vector.solid;
 		if (interface_velocity_trace_.rows() == 0 || interface_mesh_trace_.rows() == 0)
 			log_and_throw_error("The fluid-solid interface has no active FE trace degrees of freedom.");
-
-		const auto has_interface_dirichlet = [](const StiffnessMatrix &trace, const std::vector<int> &boundary_nodes) {
-			std::set<int> interface_dofs;
-			for (int k = 0; k < trace.outerSize(); ++k)
-				for (StiffnessMatrix::InnerIterator it(trace, k); it; ++it)
-					interface_dofs.insert(it.col());
-			return std::any_of(boundary_nodes.begin(), boundary_nodes.end(), [&](const int dof) {
-				return interface_dofs.count(dof) > 0;
-			});
-		};
-		if (has_interface_dirichlet(interface_velocity_trace_, boundary_.boundary_nodes))
-			log_and_throw_error("Fluid velocity Dirichlet data must not be prescribed on the coupled FSI interface.");
-		if (has_interface_dirichlet(interface_mesh_trace_, mesh_displacement_boundary_.boundary_nodes))
-			log_and_throw_error("Mesh-displacement Dirichlet data must not be prescribed on the coupled FSI interface.");
 	}
 
 	void NavierStokesFSIVarForm::build_mesh_displacement_boundary(mesh::Mesh &mesh)
@@ -969,7 +997,12 @@ namespace polyfem::varform
 			fsi_al_forms_, args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
-			args["solver"]["augmented_lagrangian"]["eta"], [](const Eigen::VectorXd &) {});
+			args["solver"]["augmented_lagrangian"]["eta"],
+			[this](const Eigen::VectorXd &x) {
+				if (has_solid_)
+					solid_varform_->update_barrier_stiffness_for_embedding(
+						x.segment(solid_displacement_offset(), solid_displacement_ndof()));
+			});
 		al_solver.post_subsolve = [&](const double weight) {
 			stats.solver_info.push_back({{"type", weight > 0 ? "al" : "rc"}, {"t", step}, {"info", nonlinear_solver->info()}});
 			if (weight > 0)

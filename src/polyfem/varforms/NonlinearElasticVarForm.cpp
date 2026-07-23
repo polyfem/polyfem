@@ -784,6 +784,12 @@ namespace polyfem::varform
 		solve_data.update_dt();
 	}
 
+	void NonlinearElasticVarForm::update_barrier_stiffness_for_embedding(
+		const Eigen::VectorXd &solution)
+	{
+		solve_data.update_barrier_stiffness(solution);
+	}
+
 	bool NonlinearElasticVarForm::save_timestep_for_embedding(
 		const double time, const int step, const double dt,
 		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
