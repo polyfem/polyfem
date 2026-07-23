@@ -197,8 +197,10 @@ namespace polyfem::mesh
 			std::vector<std::vector<int>> elements;
 			std::vector<std::vector<double>> weights;
 			std::vector<int> body_ids;
+			std::vector<std::vector<int>> boundary_elements;
+			std::vector<int> boundary_ids;
 
-			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
+			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids))
 			{
 				logger().error("Failed to load MSH mesh: {}", path);
 				return nullptr;
@@ -225,6 +227,34 @@ namespace polyfem::mesh
 			}
 
 			mesh->set_body_ids(body_ids);
+
+			if (!boundary_ids.empty())
+			{
+				std::unordered_map<std::vector<int>, int, HashVector> boundary_element_to_id;
+				for (int i = 0; i < boundary_elements.size(); ++i)
+				{
+					std::sort(boundary_elements[i].begin(), boundary_elements[i].end());
+					const auto [it, inserted] = boundary_element_to_id.emplace(boundary_elements[i], boundary_ids[i]);
+					if (!inserted && it->second != boundary_ids[i])
+						logger().warn("Gmsh side has multiple physical tags; using tag {}.", it->second);
+				}
+
+				int matched_boundaries = 0;
+				mesh->compute_boundary_ids([&](const size_t primitive_id, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
+					std::vector<int> sorted_vertices = vertices;
+					std::sort(sorted_vertices.begin(), sorted_vertices.end());
+					const auto it = boundary_element_to_id.find(sorted_vertices);
+					if (it == boundary_element_to_id.end())
+						return mesh->get_default_boundary_id(primitive_id);
+					++matched_boundaries;
+					return it->second;
+				});
+
+				if (matched_boundaries != boundary_element_to_id.size())
+					logger().warn(
+						"Unable to match {} of {} tagged Gmsh sides to mesh primitives.",
+						boundary_element_to_id.size() - matched_boundaries, boundary_element_to_id.size());
+			}
 
 			return mesh;
 		}

@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
@@ -32,6 +33,19 @@ namespace
 			{"transformation", identity_transform()}};
 	}
 
+	json fem_mesh_json(const std::filesystem::path &mesh_path)
+	{
+		return json{
+			{"mesh", mesh_path.string()},
+			{"unit", ""},
+			{"extract", "volume"},
+			{"n_refs", 0},
+			{"advanced", {{"normalize_mesh", false}, {"refinement_location", 0.5}, {"min_component", -1}, {"force_linear_geometry", false}}},
+			{"transformation", identity_transform()},
+			{"curve_selection", nullptr},
+			{"volume_selection", {{"id_offset", 0}}}};
+	}
+
 	std::filesystem::path write_geometry_reader_obj(const std::string &name, const std::string &contents)
 	{
 		const std::filesystem::path path = std::filesystem::temp_directory_path() / ("polyfem_geometry_reader_" + name);
@@ -50,6 +64,34 @@ namespace
 				CHECK(actual(r, c) == Catch::Approx(expected(r, c)).margin(margin));
 	}
 } // namespace
+
+TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][gmsh]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const Units units;
+	const std::filesystem::path mesh_path = std::filesystem::path(POLYFEM_DATA_DIR) / "gmsh_physical_sides_2d_v22.msh";
+
+	SECTION("explicit surface selections override imported tags")
+	{
+		json args = fem_mesh_json(mesh_path);
+		args["surface_selection"] = 77;
+		const auto mesh = read_fem_mesh(units, args, "");
+		REQUIRE(mesh != nullptr);
+		for (int e = 0; e < mesh->n_edges(); ++e)
+			CHECK(mesh->get_boundary_id(e) == (mesh->is_boundary_edge(e) ? 77 : -1));
+	}
+
+	SECTION("refinement requires an explicit replacement selection")
+	{
+		json args = fem_mesh_json(mesh_path);
+		args["n_refs"] = 1;
+		REQUIRE_THROWS_WITH(
+			read_fem_mesh(units, args, ""),
+			Catch::Matchers::ContainsSubstring("stored surface selections"));
+	}
+}
 
 TEST_CASE("Triangle area", "[geometry]")
 {
