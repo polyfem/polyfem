@@ -154,13 +154,35 @@ $(document).ready(function(){initNavTree('_msh_reader_8hpp_source.html',''); ini
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;elements,</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;weights,</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            std::vector&lt;int&gt; &amp;body_ids,</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            std::vector&lt;std::string&gt; &amp;node_data_name,</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;node_data);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    };</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;boundary_elements,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            std::vector&lt;int&gt; &amp;boundary_ids);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">load</a>(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keyword">const</span> std::string &amp;path,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            Eigen::MatrixXd &amp;vertices,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            Eigen::MatrixXi &amp;cells,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;elements,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;weights,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            std::vector&lt;int&gt; &amp;body_ids,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            std::vector&lt;std::string&gt; &amp;node_data_name,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;node_data);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">load</a>(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">const</span> std::string &amp;path,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            Eigen::MatrixXd &amp;vertices,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            Eigen::MatrixXi &amp;cells,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;elements,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;weights,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            std::vector&lt;int&gt; &amp;body_ids,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;boundary_elements,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            std::vector&lt;int&gt; &amp;boundary_ids,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            std::vector&lt;std::string&gt; &amp;node_data_name,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;node_data);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    };</div>
 </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>} <span class="comment">// namespace polyfem::io</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>} <span class="comment">// namespace polyfem::io</span></div>
 <div class="ttc" id="aclasspolyfem_1_1io_1_1_msh_reader_html"><div class="ttname"><a href="classpolyfem_1_1io_1_1_msh_reader.html">polyfem::io::MshReader</a></div><div class="ttdef"><b>Definition</b> <a href="_msh_reader_8hpp_source.html#l00009">MshReader.hpp:10</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1io_1_1_msh_reader_html_a5658ce8a7801dca50f265efe95ec6e64"><div class="ttname"><a href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">polyfem::io::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition</b> <a href="_msh_reader_8cpp_source.html#l00029">MshReader.cpp:29</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1io_1_1_msh_reader_html_a5658ce8a7801dca50f265efe95ec6e64"><div class="ttname"><a href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">polyfem::io::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition</b> <a href="_msh_reader_8cpp_source.html#l00043">MshReader.cpp:43</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1io_html"><div class="ttname"><a href="namespacepolyfem_1_1io.html">polyfem::io</a></div><div class="ttdef"><b>Definition</b> <a href="_evaluator_8cpp_source.html#l00026">Evaluator.cpp:27</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
