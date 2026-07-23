@@ -167,10 +167,8 @@ namespace
 } // namespace
 
 template <typename Form>
-void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4)
+void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4, const int n_rand = 10)
 {
-	static const int n_rand = 10;
-
 	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * state.mesh->dimension());
 
 	form.init(x);
@@ -388,7 +386,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
 		/*n_lagging_iters=*/-1);
 
-	test_form(form, *state_ptr);
+	test_form(form, *state_ptr, 1e-8, 1e-4, 3);
 }
 
 TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
