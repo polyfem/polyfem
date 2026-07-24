@@ -25,7 +25,7 @@ namespace
 		int n_bases = 0;
 	};
 
-	SquareSpace make_square_space()
+	SquareSpace make_square_space(const int left_boundary_id = 1)
 	{
 		Eigen::MatrixXd vertices(4, 2);
 		vertices << 0, 0,
@@ -37,11 +37,11 @@ namespace
 
 		SquareSpace space;
 		space.mesh = mesh::Mesh::create(vertices, cells);
-		space.mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &point, const bool is_boundary) {
+		space.mesh->compute_boundary_ids([left_boundary_id](const size_t, const std::vector<int> &, const RowVectorNd &point, const bool is_boundary) {
 			if (!is_boundary)
 				return 0;
 			if (std::abs(point.x()) < 1e-12)
-				return 1;
+				return left_boundary_id;
 			if (std::abs(point.x() - 1) < 1e-12)
 				return 2;
 			if (std::abs(point.y()) < 1e-12)
@@ -95,6 +95,38 @@ namespace
 			basis::Local2Global(first.index, first.node, 0.5),
 			basis::Local2Global(second.index, second.node, 0.5)};
 	}
+
+	void move_global_node(
+		std::vector<basis::ElementBases> &bases,
+		const RowVectorNd &from,
+		const RowVectorNd &to)
+	{
+		int global_index = -1;
+		for (const basis::ElementBases &element : bases)
+		{
+			for (const basis::Basis &basis : element.bases)
+			{
+				for (const basis::Local2Global &global : basis.global())
+				{
+					if ((global.node - from).norm() < 1e-12)
+						global_index = global.index;
+				}
+			}
+		}
+		REQUIRE(global_index >= 0);
+
+		for (basis::ElementBases &element : bases)
+		{
+			for (basis::Basis &basis : element.bases)
+			{
+				for (basis::Local2Global &global : basis.global())
+				{
+					if (global.index == global_index)
+						global.node = to;
+				}
+			}
+		}
+	}
 } // namespace
 
 TEST_CASE("periodic boundary form builds equality constraints", "[periodic][constraints]")
@@ -124,6 +156,32 @@ TEST_CASE("periodic boundary form builds equality constraints", "[periodic][cons
 	}
 	CHECK(positive.isOnes());
 	CHECK((-negative).isOnes());
+}
+
+TEST_CASE("periodic boundary form accepts boundary ID zero", "[periodic][constraints]")
+{
+	const SquareSpace space = make_square_space(0);
+	const solver::PeriodicBoundaryLagrangianForm form(
+		space.n_bases, 1, *space.mesh, space.bases,
+		space.local_boundary, {{0, 2}}, 1e-5);
+
+	CHECK(form.constraint_matrix().rows() == 3);
+	CHECK(form.constraint_value().isZero());
+}
+
+TEST_CASE("periodic boundary matching skips already paired DoFs", "[periodic][constraints]")
+{
+	SquareSpace space = make_square_space();
+	move_global_node(space.bases, point(0, 0), point(0, 0.25));
+	move_global_node(space.bases, point(0, 0.5), point(0, 0.35));
+	move_global_node(space.bases, point(1, 0.5), point(1, 0.6));
+
+	const solver::PeriodicBoundaryLagrangianForm form(
+		space.n_bases, 1, *space.mesh, space.bases,
+		space.local_boundary, {{1, 2}}, 1);
+
+	CHECK(form.constraint_matrix().rows() == 3);
+	CHECK(form.constraint_value().isZero());
 }
 
 TEST_CASE("periodic boundary form rejects a missing pair", "[periodic][constraints]")

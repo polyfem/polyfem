@@ -113,8 +113,8 @@ namespace polyfem::solver
 		const std::array<int, 2> &boundary_ids,
 		const double relative_tolerance)
 	{
-		if (boundary_ids[0] <= 0 || boundary_ids[1] <= 0 || boundary_ids[0] == boundary_ids[1])
-			log_and_throw_error("Periodic boundary IDs must be distinct positive integers");
+		if (boundary_ids[0] < 0 || boundary_ids[1] < 0 || boundary_ids[0] == boundary_ids[1])
+			log_and_throw_error("Periodic boundary IDs must be distinct non-negative integers");
 		if (relative_tolerance <= 0)
 			log_and_throw_error("Periodic boundary tolerance must be positive");
 
@@ -137,6 +137,11 @@ namespace polyfem::solver
 			second_centroid += node.point;
 		first_centroid /= double(first.size());
 		second_centroid /= double(second.size());
+
+		// The paired boundaries are assumed to be translated copies. Use their
+		// trace-DoF centroids to estimate the translation, then match the
+		// translated DoF positions below. The tolerance is used only to find the
+		// correspondence; the assembled periodic constraints are exact equalities.
 		const RowVectorNd translation = second_centroid - first_centroid;
 
 		RowVectorNd bbox_min, bbox_max;
@@ -152,6 +157,9 @@ namespace polyfem::solver
 			double matched_distance = std::numeric_limits<double>::infinity();
 			for (int second_index = 0; second_index < int(second.size()); ++second_index)
 			{
+				if (used_second.count(second_index) > 0)
+					continue;
+
 				const double distance = (first[first_index].point + translation - second[second_index].point).norm();
 				if (distance < matched_distance)
 				{

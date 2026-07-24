@@ -232,6 +232,8 @@ namespace polyfem::solver
 			for (const json &condition : periodic_conditions)
 			{
 				const int condition_fe_space = condition.value("fe_space", -1);
+				// -1 means all/unspecified FE spaces. If both IDs are explicit,
+				// instantiate the condition only for the matching space.
 				if (condition_fe_space >= 0 && fe_space_id >= 0 && condition_fe_space != fe_space_id)
 					continue;
 
