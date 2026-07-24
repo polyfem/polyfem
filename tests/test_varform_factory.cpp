@@ -70,6 +70,21 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	}
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args) != nullptr);
+
+	json contact_fsi_args = args;
+	contact_fsi_args["contact"]["enabled"] = true;
+	contact_fsi_args["materials"] = {
+		{"type", "NavierStokesFSI"},
+		{"fluid_geometry_id", 1},
+		{"solid_geometry_id", 2},
+		{"displacement_space_id", 3},
+		{"solid_material", {{"type", "NeoHookean"}}}};
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) != nullptr);
+	CHECK(varform::uses_varform_state(contact_fsi_args));
+
+	contact_fsi_args["materials"].erase("solid_material");
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) == nullptr);
+
 	json static_args = args;
 	static_args["time"] = nullptr;
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", static_args));
