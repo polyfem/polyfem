@@ -45,6 +45,7 @@ namespace polyfem::solver
 		void line_search_end() override;
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		void solution_changed(const Eigen::VectorXd &new_x) override;
+		void set_project_to_psd(bool val) override;
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 		void init_lagging(const Eigen::VectorXd &x) override;
 		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;

@@ -45,13 +45,19 @@ jobs:
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
+      - name: Compute CPU cache key
+        run: |
+          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
+          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
+          echo "CPU flags hash: $CPU_HASH"
+
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
         run: |
@@ -66,8 +72,7 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
             -DPOLYFEM_WITH_TESTS=OFF \
-            -DPOLYFEM_WITH_PYTHON=OFF \
-            -DPOLYFEM_WITH_BEZIER=OFF
+            -DPOLYFEM_WITH_PYTHON=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
@@ -132,8 +137,7 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
             -DPOLYFEM_WITH_TESTS=OFF \
-            -DPOLYFEM_WITH_PYTHON=OFF \
-            -DPOLYFEM_WITH_BEZIER=OFF
+            -DPOLYFEM_WITH_PYTHON=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
@@ -203,7 +207,6 @@ jobs:
             -DCMAKE_CXX_EXTENSIONS=OFF ^
             -DCMAKE_CXX_FLAGS="/std:c++17 /DWIN32 /D_WINDOWS /EHsc" ^
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
-            -DPOLYFEM_WITH_BEZIER=OFF ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_WITH_APP=ON ^
             -DPOLYFEM_WITH_TESTS=OFF ^

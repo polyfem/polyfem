@@ -66,6 +66,10 @@ namespace polyfem::mesh
 		mesh->bounding_box(bbox[0], bbox[1]);
 
 		// --------------------------------------------------------------------
+		std::vector<std::shared_ptr<Selection>> surface_selections =
+			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
+
+		// --------------------------------------------------------------------
 
 		const int n_refs = j_mesh["n_refs"];
 		const double refinement_location = j_mesh["advanced"]["refinement_location"];
@@ -79,6 +83,9 @@ namespace polyfem::mesh
 		// }
 		if (n_refs > 0)
 		{
+			if (mesh->has_boundary_ids() && surface_selections.empty())
+				log_and_throw_error("Unable to refine a mesh with stored surface selections; provide an explicit surface_selection to recompute them after refinement.");
+
 			// Check if the stored volume selection is uniform.
 			assert(mesh->n_elements() > 0);
 			const int uniform_value = mesh->get_body_id(0);
@@ -175,9 +182,6 @@ namespace polyfem::mesh
 			log_and_throw_error("Geometry curve selections are not implemented!");
 
 		// --------------------------------------------------------------------
-
-		std::vector<std::shared_ptr<Selection>> surface_selections =
-			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
 
 		if (!surface_selections.empty())
 		{

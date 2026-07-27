@@ -34,12 +34,18 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Compute CPU cache key
+        run: |
+          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
+          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
+          echo "CPU flags hash: $CPU_HASH"
+
       - name: Cache Docker layers
         uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache
-          key: docker-${{ runner.os }}-${{ github.sha }}
-          restore-keys: docker-${{ runner.os }}-
+          key: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-${{ github.sha }}
+          restore-keys: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-
 
       - name: Build and Push Standard Docker Image
         uses: docker/build-push-action@v7

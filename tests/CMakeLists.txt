@@ -15,6 +15,7 @@ set(test_sources
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_navier_stokes_forms.cpp
   test_output.cpp
   test_problem.cpp
   test_quadrature.cpp

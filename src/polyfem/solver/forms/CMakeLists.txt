@@ -8,6 +8,8 @@ set(SOURCES
 	ElasticForm.cpp
 	MixedAssemblerForm.hpp
 	MixedAssemblerForm.cpp
+	NavierStokesForm.hpp
+	NavierStokesForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp

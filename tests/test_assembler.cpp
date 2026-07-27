@@ -7,6 +7,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/InversionBarrier.hpp>
 #include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
@@ -845,6 +846,47 @@ POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 5)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 3)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 6)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 10)
+
+TEST_CASE("Navier-Stokes Newton and Picard operators", "[assembler][navier_stokes]")
+{
+	constexpr int dim = 2;
+	constexpr int n_bases = 3;
+	NavierStokesVelocity assembler;
+	assembler.set_size(dim);
+
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+	const auto convection_residual = [&](const Eigen::VectorXd &x) {
+		const Eigen::MatrixXd x_matrix = x;
+		const NonLinearAssemblerData data(
+			fixture.vals, 0.2, 0.01, x_matrix, fixture.x_prev, fixture.da);
+		assembler.set_picard(true);
+		return (assembler.assemble_hessian(data) * x).eval();
+	};
+
+	const Eigen::VectorXd x = fixture.x;
+	const NonLinearAssemblerData data(
+		fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+	assembler.set_picard(false);
+	const Eigen::MatrixXd newton = assembler.assemble_hessian(data);
+	assembler.set_picard(true);
+	const Eigen::MatrixXd picard = assembler.assemble_hessian(data);
+
+	Eigen::MatrixXd finite_difference(newton.rows(), newton.cols());
+	const double eps = 1e-7;
+	for (int j = 0; j < x.size(); ++j)
+	{
+		Eigen::VectorXd plus = x;
+		Eigen::VectorXd minus = x;
+		plus(j) += eps;
+		minus(j) -= eps;
+		finite_difference.col(j) =
+			(convection_residual(plus) - convection_residual(minus)) / (2 * eps);
+	}
+
+	require_approx_matrix(newton, finite_difference, 1e-8);
+	REQUIRE((newton - picard).norm() > 1e-10);
+	require_approx_vector(picard * x, convection_residual(x), 1e-12);
+}
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 5)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 4)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 10)

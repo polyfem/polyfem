@@ -613,6 +613,13 @@ namespace polyfem::solver
 
 	double NLProblem::value(const TVector &x)
 	{
+		if (is_residual())
+		{
+			TVector residual;
+			gradient(x, residual);
+			return residual.squaredNorm();
+		}
+
 		// TODO: removed fearure const bool only_elastic
 		double res = FullNLProblem::value(reduced_to_full(x));
 

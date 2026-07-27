@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +19,30 @@ using namespace polyfem::mesh;
 
 namespace
 {
+	int edge_id(const Mesh &mesh, const int v0, const int v1)
+	{
+		for (int e = 0; e < mesh.n_edges(); ++e)
+			if ((mesh.edge_vertex(e, 0) == v0 && mesh.edge_vertex(e, 1) == v1)
+				|| (mesh.edge_vertex(e, 0) == v1 && mesh.edge_vertex(e, 1) == v0))
+				return e;
+		return -1;
+	}
+
+	int face_id(const Mesh &mesh, std::vector<int> vertices)
+	{
+		std::sort(vertices.begin(), vertices.end());
+		for (int f = 0; f < mesh.n_faces(); ++f)
+		{
+			std::vector<int> face_vertices(mesh.n_face_vertices(f));
+			for (int lv = 0; lv < face_vertices.size(); ++lv)
+				face_vertices[lv] = mesh.face_vertex(f, lv);
+			std::sort(face_vertices.begin(), face_vertices.end());
+			if (face_vertices == vertices)
+				return f;
+		}
+		return -1;
+	}
+
 	std::unique_ptr<Mesh> create_test_triangle_mesh()
 	{
 		Eigen::MatrixXd vertices(3, 2);
@@ -57,6 +82,60 @@ namespace
 		return 0.5 * area;
 	}
 } // namespace
+
+TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gmsh]")
+{
+	SECTION("MSH 2.2 lines, including a higher-order line and an internal edge")
+	{
+		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_2d_v22.msh");
+		REQUIRE(mesh != nullptr);
+		REQUIRE(mesh->has_boundary_ids());
+		REQUIRE(mesh->has_body_ids());
+		CHECK(mesh->get_body_id(0) == 21);
+		CHECK(mesh->get_body_id(1) == 22);
+
+		const int bottom_edge = edge_id(*mesh, 0, 1);
+		const int right_edge = edge_id(*mesh, 1, 2);
+		const int top_edge = edge_id(*mesh, 2, 3);
+		const int interface_edge = edge_id(*mesh, 0, 2);
+		REQUIRE(bottom_edge >= 0);
+		REQUIRE(right_edge >= 0);
+		REQUIRE(top_edge >= 0);
+		REQUIRE(interface_edge >= 0);
+		CHECK(mesh->get_boundary_id(bottom_edge) == 11);
+		CHECK(mesh->get_boundary_id(right_edge) == 12);
+		CHECK(mesh->get_boundary_id(top_edge) == 13);
+		CHECK(mesh->get_boundary_id(interface_edge) == 14);
+		const int untagged_edge = edge_id(*mesh, 0, 3);
+		REQUIRE(untagged_edge >= 0);
+		CHECK(mesh->get_boundary_id(untagged_edge) == std::numeric_limits<int>::max());
+	}
+
+	SECTION("MSH 4.1 surfaces, including an internal face")
+	{
+		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_3d_v41.msh");
+		REQUIRE(mesh != nullptr);
+		REQUIRE(mesh->has_boundary_ids());
+		REQUIRE(mesh->has_body_ids());
+		CHECK(mesh->get_body_id(0) == 41);
+		CHECK(mesh->get_body_id(1) == 42);
+
+		const int side_a = face_id(*mesh, {0, 1, 3});
+		const int side_b = face_id(*mesh, {1, 2, 3});
+		REQUIRE(side_a >= 0);
+		REQUIRE(side_b >= 0);
+		CHECK(mesh->get_boundary_id(side_a) == 31);
+		CHECK(mesh->get_boundary_id(side_b) == 32);
+		const int interface_face = face_id(*mesh, {0, 1, 2});
+		REQUIRE(interface_face >= 0);
+		CHECK_FALSE(mesh->is_boundary_face(interface_face));
+		CHECK(mesh->get_boundary_id(interface_face) == 33);
+
+		const int untagged_face = face_id(*mesh, {0, 2, 3});
+		REQUIRE(untagged_face >= 0);
+		CHECK(mesh->get_boundary_id(untagged_face) == std::numeric_limits<int>::max());
+	}
+}
 
 TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")
 {
