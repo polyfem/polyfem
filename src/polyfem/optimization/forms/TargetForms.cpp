@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/TargetForms.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>

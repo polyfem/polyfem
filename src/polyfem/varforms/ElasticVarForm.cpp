@@ -38,18 +38,6 @@
 
 namespace polyfem::varform
 {
-	void ElasticVarForm::invalidate_after_geometry_update()
-	{
-		rhs_assembler_ = nullptr;
-		VarForm::invalidate_after_geometry_update();
-	}
-
-	void ElasticVarForm::invalidate_after_parameter_update()
-	{
-		rhs_assembler_ = nullptr;
-		VarForm::invalidate_after_parameter_update();
-	}
-
 	void ElasticVarForm::reset()
 	{
 		VarForm::reset();
@@ -422,7 +410,8 @@ namespace polyfem::varform
 
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const
 	{
-		return DifferentiableVarForm::n_boundary_samples();
+		return n_boundary_samples(
+			space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 	}
 
 	std::vector<int> ElasticVarForm::elastic_primitive_to_node() const

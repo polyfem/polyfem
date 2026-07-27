@@ -14,24 +14,6 @@
 
 namespace polyfem::varform
 {
-	void LinearElasticVarForm::invalidate_after_geometry_update()
-	{
-		solve_data_.elastic_form = nullptr;
-		solve_data_.body_form = nullptr;
-		solve_data_.inertia_form = nullptr;
-		solve_data_.time_integrator = nullptr;
-		ElasticVarForm::invalidate_after_geometry_update();
-	}
-
-	void LinearElasticVarForm::invalidate_after_parameter_update()
-	{
-		solve_data_.elastic_form = nullptr;
-		solve_data_.body_form = nullptr;
-		solve_data_.inertia_form = nullptr;
-		solve_data_.time_integrator = nullptr;
-		ElasticVarForm::invalidate_after_parameter_update();
-	}
-
 	namespace
 	{
 		bool write_matrix_market(const json &args, const StiffnessMatrix &stiffness)
@@ -255,8 +237,7 @@ namespace polyfem::varform
 	void LinearElasticVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool)
+		const ForwardStepCallback &post_step)
 	{
 		assert(
 			(problem->is_time_dependent() || !initial_condition_override

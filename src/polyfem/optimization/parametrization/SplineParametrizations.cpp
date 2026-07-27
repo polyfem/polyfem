@@ -1,6 +1,6 @@
 #include "SplineParametrizations.hpp"
 #include <polyfem/utils/BSplineParametrization.hpp>
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>

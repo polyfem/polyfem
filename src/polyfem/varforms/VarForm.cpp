@@ -1,7 +1,6 @@
 #include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/assembler/GenericProblem.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -274,85 +273,6 @@ namespace polyfem::varform
 		problem = nullptr;
 		time_callback = nullptr;
 		mesh_ = nullptr;
-	}
-
-	const mesh::Mesh &VarForm::get_mesh() const
-	{
-		assert(mesh_ && "The mesh must be loaded before it is accessed");
-		return *mesh_;
-	}
-
-	void VarForm::get_vertices(Eigen::MatrixXd &vertices) const
-	{
-		vertices.resize(get_mesh().n_vertices(), get_mesh().dimension());
-		for (int v = 0; v < get_mesh().n_vertices(); ++v)
-			vertices.row(v) = get_mesh().point(v);
-	}
-
-	std::unordered_map<int, std::array<bool, 3>> VarForm::boundary_conditions_ids(const std::string &bc_type) const
-	{
-		assert(args["boundary_conditions"].contains(bc_type) && "Requested boundary-condition type must exist");
-		const std::vector<json> json_bcs = utils::json_as_array(args["boundary_conditions"][bc_type]);
-		std::unordered_map<int, std::array<bool, 3>> bcs;
-		for (const json &bc : json_bcs)
-		{
-			assert(bc["dimension"].size() >= get_mesh().dimension() && "Boundary-condition dimensions must cover the mesh dimension");
-			std::array<bool, 3> dimension{{true, true, true}};
-			for (int d = 0; d < bc["dimension"].size(); ++d)
-				dimension[d] = bc["dimension"][d];
-			assert(bc.contains("id") && bc["id"].is_number_integer() && "Boundary conditions must have an integer id");
-			bcs[bc["id"].get<int>()] = dimension;
-		}
-		return bcs;
-	}
-
-	bool VarForm::is_homogenization() const
-	{
-		return !args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].empty();
-	}
-
-	bool VarForm::is_adhesion_enabled() const
-	{
-		return args["contact"]["adhesion"]["adhesion_enabled"];
-	}
-
-	bool VarForm::is_pressure_enabled() const
-	{
-		return !args["boundary_conditions"]["pressure_boundary"].empty()
-			   || !args["boundary_conditions"]["pressure_cavity"].empty();
-	}
-
-	bool VarForm::has_constraints() const
-	{
-		return !args["constraints"]["hard"].empty()
-			   || !args["constraints"]["soft"].empty();
-	}
-
-	void VarForm::invalidate_after_geometry_update()
-	{
-		prepared_ = false;
-		output_sampler_initialized_ = false;
-	}
-
-	void VarForm::invalidate_after_parameter_update()
-	{
-		// Correctness-first invalidation. This can be split into narrower RHS,
-		// material, and contact invalidation once every optimization path is on
-		// VarForm.
-		prepared_ = false;
-	}
-
-	void VarForm::set_vertex_positions(const Eigen::MatrixXd &vertices)
-	{
-		assert(mesh_ && "Vertex positions can only be updated after loading a mesh");
-		if (vertices.rows() != mesh_->n_vertices() || vertices.cols() != mesh_->dimension())
-			log_and_throw_error(
-				"Invalid vertex matrix shape ({}, {}), expected ({}, {}).",
-				vertices.rows(), vertices.cols(), mesh_->n_vertices(), mesh_->dimension());
-
-		for (int i = 0; i < vertices.rows(); ++i)
-			mesh_->set_point(i, vertices.row(i));
-		invalidate_after_geometry_update();
 	}
 
 	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
@@ -720,11 +640,10 @@ namespace polyfem::varform
 	void VarForm::solve(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		prepare();
-		solve_problem(sol, initial_condition_override, post_step, is_differentiable);
+		solve_problem(sol, initial_condition_override, post_step);
 	}
 
 	void VarForm::build_node_mapping(
@@ -1005,14 +924,6 @@ namespace polyfem::varform
 			resolve_output_path(args["output"]["paraview"]["file_name"]),
 			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
-	}
-
-	void VarForm::save_vtu(const std::string &path, const Eigen::MatrixXd &solution, const double time, const double dt) const
-	{
-		const io::OutputSpace space = output_space();
-		ensure_output_sampler();
-		const auto opts = export_options(space);
-		output_geometry_.save_vtu(path, space, output_field_function(solution, opts), time, dt, opts);
 	}
 
 	void VarForm::save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const

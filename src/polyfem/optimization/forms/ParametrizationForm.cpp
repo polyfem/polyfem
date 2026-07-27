@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <Eigen/Core>
 

@@ -25,22 +25,6 @@
 
 namespace polyfem::varform
 {
-	void ScalarVarForm::invalidate_after_geometry_update()
-	{
-		time_integrator = nullptr;
-		rhs_assembler_ = nullptr;
-		solve_data_ = solver::SolveData();
-		VarForm::invalidate_after_geometry_update();
-	}
-
-	void ScalarVarForm::invalidate_after_parameter_update()
-	{
-		time_integrator = nullptr;
-		rhs_assembler_ = nullptr;
-		solve_data_ = solver::SolveData();
-		VarForm::invalidate_after_parameter_update();
-	}
-
 	namespace
 	{
 		void write_matrix_market(const json &args, const StiffnessMatrix &stiffness)
@@ -741,7 +725,8 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		const QuadratureOrders boundary_samples = DifferentiableVarForm::n_boundary_samples();
+		const QuadratureOrders boundary_samples = n_boundary_samples(
+			space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
@@ -793,7 +778,8 @@ namespace polyfem::varform
 		StiffnessMatrix stiffness;
 		build_stiffness_mat(stiffness);
 
-		const QuadratureOrders n_b_samples = DifferentiableVarForm::n_boundary_samples();
+		const QuadratureOrders n_b_samples = n_boundary_samples(
+			space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -827,8 +813,7 @@ namespace polyfem::varform
 	void ScalarVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool)
+		const ForwardStepCallback &post_step)
 	{
 		assert(
 			(!initial_condition_override

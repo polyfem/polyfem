@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>

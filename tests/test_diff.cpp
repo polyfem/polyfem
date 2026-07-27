@@ -62,7 +62,11 @@ namespace
 		return true;
 	}
 
-	void sample_field(const varform::VarForm &varform, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	void sample_field(
+		const varform::DifferentiableVarForm &varform,
+		std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field,
+		Eigen::MatrixXd &discrete_field,
+		const int order = 1)
 	{
 		Eigen::MatrixXd tmp;
 		tmp.setZero(1, varform.get_mesh().dimension());

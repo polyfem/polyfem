@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/AMIPSForm.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>

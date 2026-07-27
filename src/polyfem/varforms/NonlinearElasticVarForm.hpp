@@ -21,13 +21,6 @@ namespace polyfem::varform
 		{
 			return args["contact"]["enabled"];
 		}
-		solver::SolveData *solve_data() override { return &solve_data_; }
-		const solver::SolveData *solve_data() const override { return &solve_data_; }
-		const ipc::CollisionMesh &collision_mesh() const override { return collision_mesh_; }
-		const mesh::Obstacle &get_obstacle() const override { return obstacle; }
-		const assembler::ViscousDamping *damping_assembler() const override { return damping_assembler_.get(); }
-		const assembler::ViscousDampingPrev *damping_prev_assembler() const override { return damping_prev_assembler_.get(); }
-
 		io::OutputSpace output_space() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -47,15 +40,13 @@ namespace polyfem::varform
 			ipc::CollisionMesh &collision_mesh);
 
 	protected:
-		void invalidate_after_geometry_update() override;
-		void invalidate_after_parameter_update() override;
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void build_rhs_assembler() override;
-		void init_solve(Eigen::MatrixXd &sol, const double t, const InitialConditionOverride *initial_condition_override, bool is_differentiable);
-		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t, bool is_differentiable);
-		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool is_differentiable, const bool init_lagging = true);
+		void init_solve(Eigen::MatrixXd &sol, const double t, const InitialConditionOverride *initial_condition_override);
+		virtual void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
+		virtual void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
 
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
 		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
@@ -83,8 +74,7 @@ namespace polyfem::varform
 		void solve_problem(
 			Eigen::MatrixXd &sol,
 			const InitialConditionOverride *initial_condition_override,
-			const ForwardStepCallback &post_step,
-			bool is_differentiable) override;
+			const ForwardStepCallback &post_step) override;
 	};
 
 	class NonlinearElasticStaticVarForm : public NonlinearElasticVarForm
@@ -96,7 +86,6 @@ namespace polyfem::varform
 		void solve_problem(
 			Eigen::MatrixXd &sol,
 			const InitialConditionOverride *initial_condition_override,
-			const ForwardStepCallback &post_step,
-			bool is_differentiable) override;
+			const ForwardStepCallback &post_step) override;
 	};
 } // namespace polyfem::varform

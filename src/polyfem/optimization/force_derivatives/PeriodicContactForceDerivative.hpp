@@ -2,7 +2,7 @@
 
 #include <Eigen/Core>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>

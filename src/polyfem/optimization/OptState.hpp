@@ -7,7 +7,7 @@
 
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <Eigen/Core>
 

@@ -1,6 +1,6 @@
 #include "AdjointTools.hpp"
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
 

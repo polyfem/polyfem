@@ -14,6 +14,7 @@
 
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarFormFactory.hpp>
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem.hpp>
@@ -240,7 +241,10 @@ namespace polyfem
 		}
 	}
 
-	void State::init(const json &p_args_in, const bool strict_validation)
+	void State::init(
+		const json &p_args_in,
+		const bool strict_validation,
+		const bool is_adjoint_optimization)
 	{
 		json args_in = p_args_in;
 		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);
@@ -352,7 +356,9 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args);
+		variational_formulation = is_adjoint_optimization
+			? varform::DifferentiableVarFormFactory::create(formulation, args)
+			: varform::VarFormFactory::create(formulation, args);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
@@ -456,7 +462,7 @@ namespace polyfem
 		assert(variational_formulation != nullptr);
 
 		variational_formulation->set_time_callback(time_callback);
-		variational_formulation->solve(sol, nullptr, {}, false);
+		variational_formulation->solve(sol);
 	}
 
 	void State::load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)

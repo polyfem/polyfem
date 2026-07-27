@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
 

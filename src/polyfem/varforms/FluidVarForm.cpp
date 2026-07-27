@@ -924,12 +924,10 @@ namespace polyfem::varform
 	void StokesVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		assert(!initial_condition_override && "Stokes does not support initial-condition overrides");
 		assert(!post_step && "Stokes does not support post-step callbacks");
-		assert(!is_differentiable && "Stokes does not support differentiated solves");
 
 		stats.spectrum.setZero();
 		igl::Timer timer;
@@ -1138,12 +1136,10 @@ namespace polyfem::varform
 	void NavierStokesVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		assert(!initial_condition_override && "Navier-Stokes does not support initial-condition overrides");
 		assert(!post_step && "Navier-Stokes does not support post-step callbacks");
-		assert(!is_differentiable && "Navier-Stokes does not support differentiated solves");
 
 		stats.spectrum.setZero();
 		igl::Timer timer;

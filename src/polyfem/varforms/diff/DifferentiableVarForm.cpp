@@ -1,7 +1,8 @@
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::varform
@@ -29,6 +30,57 @@ namespace polyfem::varform
 	void DifferentiableVarForm::initial_acceleration(Eigen::MatrixXd &, const InitialConditionOverride *) const
 	{
 		log_and_throw_error("Variational formulation {} does not expose an initial acceleration.", name());
+	}
+
+	void DifferentiableVarForm::get_vertices(Eigen::MatrixXd &vertices) const
+	{
+		vertices.resize(get_mesh().n_vertices(), get_mesh().dimension());
+		for (int v = 0; v < get_mesh().n_vertices(); ++v)
+			vertices.row(v) = get_mesh().point(v);
+	}
+
+	std::unordered_map<int, std::array<bool, 3>> DifferentiableVarForm::boundary_conditions_ids(const std::string &bc_type) const
+	{
+		assert(get_args()["boundary_conditions"].contains(bc_type) && "Requested boundary-condition type must exist");
+		const std::vector<json> json_bcs = utils::json_as_array(get_args()["boundary_conditions"][bc_type]);
+		std::unordered_map<int, std::array<bool, 3>> bcs;
+		for (const json &bc : json_bcs)
+		{
+			assert(bc["dimension"].size() >= get_mesh().dimension() && "Boundary-condition dimensions must cover the mesh dimension");
+			std::array<bool, 3> dimension{{true, true, true}};
+			for (int d = 0; d < bc["dimension"].size(); ++d)
+				dimension[d] = bc["dimension"][d];
+			assert(bc.contains("id") && bc["id"].is_number_integer() && "Boundary conditions must have an integer id");
+			bcs[bc["id"].get<int>()] = dimension;
+		}
+		return bcs;
+	}
+
+	bool DifferentiableVarForm::is_homogenization() const
+	{
+		return !get_args()["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].empty();
+	}
+
+	bool DifferentiableVarForm::is_adhesion_enabled() const
+	{
+		return get_args()["contact"]["adhesion"]["adhesion_enabled"];
+	}
+
+	bool DifferentiableVarForm::is_pressure_enabled() const
+	{
+		return !get_args()["boundary_conditions"]["pressure_boundary"].empty()
+			   || !get_args()["boundary_conditions"]["pressure_cavity"].empty();
+	}
+
+	bool DifferentiableVarForm::has_constraints() const
+	{
+		return !get_args()["constraints"]["hard"].empty()
+			   || !get_args()["constraints"]["soft"].empty();
+	}
+
+	bool DifferentiableVarForm::is_problem_linear() const
+	{
+		return primary_assembler().is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints();
 	}
 
 	void DifferentiableVarForm::build_stiffness_matrix(StiffnessMatrix &stiffness) const
@@ -87,12 +139,19 @@ namespace polyfem::varform
 		assert(space.disc_orders.size() > 0 && "Boundary quadrature requires initialized FE orders");
 		assert(space.geometry && "Boundary quadrature requires an initialized geometry mapping");
 		assert(space.geometry->disc_orders.size() > 0 && "Boundary quadrature requires initialized geometry orders");
-		return VarForm::n_boundary_samples(space.disc_orders.maxCoeff(), space.geometry->disc_orders.maxCoeff());
+		return boundary_samples(space.disc_orders.maxCoeff(), space.geometry->disc_orders.maxCoeff());
 	}
 
-	bool DifferentiableVarForm::is_problem_linear() const
+	void DifferentiableVarForm::set_vertex_positions(const Eigen::MatrixXd &vertices)
 	{
-		return primary_assembler().is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints();
+		mesh::Mesh &mesh = mutable_mesh();
+		if (vertices.rows() != mesh.n_vertices() || vertices.cols() != mesh.dimension())
+			log_and_throw_error(
+				"Invalid vertex matrix shape ({}, {}), expected ({}, {}).",
+				vertices.rows(), vertices.cols(), mesh.n_vertices(), mesh.dimension());
+		for (int i = 0; i < vertices.rows(); ++i)
+			mesh.set_point(i, vertices.row(i));
+		invalidate_after_geometry_update();
 	}
 
 	void DifferentiableVarForm::set_lame_parameters(const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu)
@@ -105,7 +164,7 @@ namespace polyfem::varform
 
 	void DifferentiableVarForm::set_friction_coefficient(const double coefficient)
 	{
-		args["contact"]["friction_coefficient"] = coefficient;
+		get_args()["contact"]["friction_coefficient"] = coefficient;
 		invalidate_after_parameter_update();
 	}
 
@@ -115,19 +174,19 @@ namespace polyfem::varform
 			material["psi"] = psi;
 			material["phi"] = phi;
 		};
-		if (args["materials"].is_array())
+		if (get_args()["materials"].is_array())
 		{
-			for (auto &material : args["materials"])
+			for (auto &material : get_args()["materials"])
 				update_material(material);
 		}
 		else
-			update_material(args["materials"]);
+			update_material(get_args()["materials"]);
 		invalidate_after_parameter_update();
 	}
 
 	void DifferentiableVarForm::set_dirichlet_boundary(const int boundary_id, const int time_step, const Eigen::VectorXd &value)
 	{
-		auto tensor_problem = std::dynamic_pointer_cast<assembler::GenericTensorProblem>(problem);
+		auto *tensor_problem = dynamic_cast<assembler::GenericTensorProblem *>(&get_problem());
 		if (!tensor_problem)
 			log_and_throw_error("Dirichlet boundary updates require a generic tensor problem.");
 		tensor_problem->update_dirichlet_boundary(boundary_id, time_step, value);
@@ -136,7 +195,7 @@ namespace polyfem::varform
 
 	void DifferentiableVarForm::set_dirichlet_nodes(const Eigen::VectorXi &input_nodes, const Eigen::MatrixXd &values)
 	{
-		auto tensor_problem = std::dynamic_pointer_cast<assembler::GenericTensorProblem>(problem);
+		auto *tensor_problem = dynamic_cast<assembler::GenericTensorProblem *>(&get_problem());
 		if (!tensor_problem)
 			log_and_throw_error("Nodal Dirichlet updates require a generic tensor problem.");
 		tensor_problem->update_dirichlet_nodes(primary_space().space_in_node_to_node, input_nodes, values);
@@ -145,7 +204,7 @@ namespace polyfem::varform
 
 	void DifferentiableVarForm::set_pressure_boundary(const int boundary_id, const int time_step, const double value)
 	{
-		auto tensor_problem = std::dynamic_pointer_cast<assembler::GenericTensorProblem>(problem);
+		auto *tensor_problem = dynamic_cast<assembler::GenericTensorProblem *>(&get_problem());
 		if (!tensor_problem)
 			log_and_throw_error("Pressure updates require a generic tensor problem.");
 		tensor_problem->update_pressure_boundary(boundary_id, time_step, value);

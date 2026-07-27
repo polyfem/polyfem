@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/DirichletBoundaryVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>

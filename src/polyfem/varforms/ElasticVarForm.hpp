@@ -1,6 +1,8 @@
 #pragma once
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/VarForm.hpp>
+
+#include <polyfem/assembler/Mass.hpp>
 
 namespace polyfem::mesh
 {
@@ -20,31 +22,12 @@ namespace polyfem::time_integrator
 
 namespace polyfem::varform
 {
-	class ElasticVarForm : public DifferentiableVarForm
+	class ElasticVarForm : public VarForm
 	{
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-
-		const FESpace &primary_space() const override { return space_; }
-		const VarFormBoundaryState &boundary_state() const override { return boundary_; }
-		const assembler::Assembler &primary_assembler() const override
-		{
-			assert(primary_assembler_ && "The primary assembler must be initialized before it is accessed");
-			return *primary_assembler_;
-		}
-		const assembler::Mass &mass_assembler() const override
-		{
-			assert(mass_assembler_ && "The mass assembler must be initialized before it is accessed");
-			return *mass_assembler_;
-		}
-		const assembler::AssemblyValsCache &assembly_cache() const override { return ass_vals_cache_; }
-		const assembler::AssemblyValsCache &mass_assembly_cache() const override { return mass_ass_vals_cache_; }
-		const StiffnessMatrix &mass_matrix() const override { return mass_; }
-		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const override;
-		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const override;
-		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const override;
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 		void export_data(const Eigen::MatrixXd &solution) const override;
@@ -52,8 +35,6 @@ namespace polyfem::varform
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
 	protected:
-		void invalidate_after_geometry_update() override;
-		void invalidate_after_parameter_update() override;
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
@@ -62,6 +43,9 @@ namespace polyfem::varform
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 		void build_rhs_assembler() override;
 
+		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
+		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const;
 		void initial_elastic_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
 		QuadratureOrders elastic_boundary_samples() const;
 		std::vector<int> elastic_primitive_to_node() const;

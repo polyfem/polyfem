@@ -1,6 +1,6 @@
 #include <polyfem/optimization/NodeSelectionUtils.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Logger.hpp>
 

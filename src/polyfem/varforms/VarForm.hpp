@@ -1,16 +1,12 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
-#include <polyfem/solver/SolveData.hpp>
-
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
@@ -18,15 +14,12 @@
 #include <polyfem/varforms/FESpace.hpp>
 
 #include <Eigen/Dense>
-#include <ipc/collision_mesh.hpp>
 
 #include <functional>
-#include <array>
 #include <cassert>
 #include <iosfwd>
 #include <memory>
 #include <map>
-#include <unordered_map>
 #include <vector>
 #include <string>
 
@@ -52,7 +45,7 @@ namespace polyfem
 			Eigen::MatrixXd acceleration;
 		};
 
-		// So adjoint optimization can cache intermediate state during simulation.
+		// Called after each completed forward-simulation step.
 		using ForwardStepCallback = std::function<void(int step, const Eigen::MatrixXd &solution)>;
 
 		class VarForm
@@ -90,49 +83,12 @@ namespace polyfem
 			/// @param sol matrix to store the solution
 			/// @param initial_condition_override Optional initial condition.
 			/// @param post_step Post simulation step callback.
-			/// @param is_differentiable True if varform is the forward solve of adjoint optimization.
 			void solve(
 				Eigen::MatrixXd &sol,
-				const InitialConditionOverride *initial_condition_override,
-				const ForwardStepCallback &post_step,
-				bool is_differentiable);
+				const InitialConditionOverride *initial_condition_override = nullptr,
+				const ForwardStepCallback &post_step = {});
 
-			/// Prepare all discretization and assembly data without running a solve.
-			void prepare();
 			void set_time_callback(const std::function<void(int, int, double, double)> &callback) { time_callback = callback; }
-
-			// -----------------------------------------------
-			// Getter/Setter for adjoint
-			// -----------------------------------------------
-
-			json &get_args() { return args; }
-			const json &get_args() const { return args; }
-			const mesh::Mesh &get_mesh() const;
-			assembler::Problem &get_problem()
-			{
-				assert(problem && "The problem must be initialized before it is accessed");
-				return *problem;
-			}
-			const assembler::Problem &get_problem() const
-			{
-				assert(problem && "The problem must be initialized before it is accessed");
-				return *problem;
-			}
-			const std::string &get_root_path() const { return root_path; }
-			std::string input_path(const std::string &path, const bool only_if_exists = false) const { return resolve_input_path(path, only_if_exists); }
-			std::string output_file_path(const std::string &path) const { return resolve_output_path(path); }
-
-			const Units &get_units() const { return units; }
-			void get_vertices(Eigen::MatrixXd &vertices) const;
-			std::unordered_map<int, std::array<bool, 3>> boundary_conditions_ids(const std::string &bc_type) const;
-			bool is_homogenization() const;
-			bool is_adhesion_enabled() const;
-			bool is_pressure_enabled() const;
-			bool has_constraints() const;
-
-			virtual void set_vertex_positions(const Eigen::MatrixXd &vertices);
-
-			// -----------------------------------------------
 
 			/// @brief Get the problem dimension of the variational formulation, for output purposes
 			/// @return Problem dimension
@@ -168,12 +124,11 @@ namespace polyfem
 			/// @brief 	Save the solution to a JSON file, for output purposes
 			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
-			void save_vtu(const std::string &path, const Eigen::MatrixXd &solution, double time, double dt) const;
 			virtual void export_data(const Eigen::MatrixXd &solution) const = 0;
 
 		protected:
-			virtual void invalidate_after_geometry_update();
-			virtual void invalidate_after_parameter_update();
+			/// Prepare all discretization and assembly data without running a solve.
+			void prepare();
 
 			std::string resolve_output_path(const std::string &path) const;
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
@@ -190,8 +145,7 @@ namespace polyfem
 			virtual void solve_problem(
 				Eigen::MatrixXd &sol,
 				const InitialConditionOverride *initial_condition_override,
-				const ForwardStepCallback &post_step,
-				bool is_differentiable) = 0;
+				const ForwardStepCallback &post_step) = 0;
 			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
 
 			void build_fe_space(

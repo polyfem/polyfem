@@ -25,24 +25,19 @@ namespace polyfem::varform
 
 	public:
 		std::string name() const override { return "LinearElastic"; }
-		solver::SolveData *solve_data() override { return &solve_data_; }
-		const solver::SolveData *solve_data() const override { return &solve_data_; }
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
 
-	private:
-		void invalidate_after_geometry_update() override;
-		void invalidate_after_parameter_update() override;
+	protected:
 		void reset() override;
 
 		void solve_problem(
 			Eigen::MatrixXd &sol,
 			const InitialConditionOverride *initial_condition_override,
-			const ForwardStepCallback &post_step,
-			bool is_differentiable) override;
+			const ForwardStepCallback &post_step) override;
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t, const InitialConditionOverride *initial_condition_override);
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 		void solve_linear_system(

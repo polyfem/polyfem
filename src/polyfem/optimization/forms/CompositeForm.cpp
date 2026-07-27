@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/CompositeForm.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
 #include <Eigen/Core>

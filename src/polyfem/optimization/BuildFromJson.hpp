@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
@@ -16,12 +16,6 @@
 
 namespace polyfem::from_json
 {
-	// Build a single varform::VarForm from an in-memory JSON configuration.
-	// This mirrors the initialization done by build_varforms(), but does not load JSON from disk.
-	std::shared_ptr<varform::VarForm> build_varform(
-		const json &args,
-		const size_t max_threads);
-
 	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
 		const json &args,
 		const size_t max_threads);

@@ -685,7 +685,7 @@ namespace polyfem::varform
 		temperature = solution.bottomRows(temperature_ndof());
 	}
 
-	void ThermoElasticVarForm::build_forms(Eigen::MatrixXd &solution, const double t, const bool is_differentiable)
+	void ThermoElasticVarForm::build_forms(Eigen::MatrixXd &solution, const double t)
 	{
 		assert(solution.cols() == 1);
 		assert(solution.rows() == total_ndof());
@@ -718,7 +718,7 @@ namespace polyfem::varform
 			solve_data_.time_integrator = nullptr;
 		}
 
-		init_forms(args, mesh_->dimension(), displacement, t, is_differentiable);
+		init_forms(args, mesh_->dimension(), displacement, t);
 		for (const auto &form : forms)
 		{
 			assert(form);
@@ -922,8 +922,7 @@ namespace polyfem::varform
 	void ThermoElasticVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		assert(!initial_condition_override && "Thermoelasticity does not support initial-condition overrides");
 		assert(!post_step && "Thermoelasticity does not support post-step callbacks");
@@ -954,7 +953,7 @@ namespace polyfem::varform
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
 
-		build_forms(sol, problem->is_time_dependent() ? t0 + dt : 1.0, is_differentiable);
+		build_forms(sol, problem->is_time_dependent() ? t0 + dt : 1.0);
 
 		double characteristic_length = 0;
 		if (args["solver"]["advanced"]["characteristic_length"] > 0)

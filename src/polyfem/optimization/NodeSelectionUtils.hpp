@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 namespace polyfem
 {

@@ -41,26 +41,6 @@
 
 namespace polyfem::varform
 {
-	void NonlinearElasticVarForm::invalidate_after_geometry_update()
-	{
-		forms.clear();
-		solve_data_ = solver::SolveData();
-		elasticity_pressure_assembler = nullptr;
-		damping_assembler_ = nullptr;
-		damping_prev_assembler_ = nullptr;
-		ElasticVarForm::invalidate_after_geometry_update();
-	}
-
-	void NonlinearElasticVarForm::invalidate_after_parameter_update()
-	{
-		forms.clear();
-		solve_data_ = solver::SolveData();
-		elasticity_pressure_assembler = nullptr;
-		damping_assembler_ = nullptr;
-		damping_prev_assembler_ = nullptr;
-		ElasticVarForm::invalidate_after_parameter_update();
-	}
-
 	using namespace solver;
 	using namespace time_integrator;
 
@@ -468,8 +448,7 @@ namespace polyfem::varform
 	void NonlinearElasticStaticVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		assert((!initial_condition_override || (initial_condition_override->velocity.size() == 0 && initial_condition_override->acceleration.size() == 0))
 			   && "Static elasticity does not accept initial velocity or acceleration overrides");
@@ -499,9 +478,9 @@ namespace polyfem::varform
 			else if (sol.cols() != 1)
 				log_and_throw_error("Static elasticity requires exactly one initial solution column.");
 		}
-		init_solve(sol, 1.0, initial_condition_override, is_differentiable);
+		init_solve(sol, 1.0, initial_condition_override);
 
-		solve_tensor_nonlinear(0, sol, is_differentiable, true);
+		solve_tensor_nonlinear(0, sol, true);
 		if (post_step)
 			post_step(0, sol);
 
@@ -517,8 +496,7 @@ namespace polyfem::varform
 	void NonlinearElasticTransientVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		const bool save_stats = args["output"]["stats"];
 		stats.spectrum.setZero();
@@ -544,7 +522,7 @@ namespace polyfem::varform
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
-		init_solve(sol, t0 + dt, initial_condition_override, is_differentiable);
+		init_solve(sol, t0 + dt, initial_condition_override);
 		if (post_step)
 			post_step(0, sol);
 
@@ -579,7 +557,7 @@ namespace polyfem::varform
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				solve_tensor_nonlinear(t, sol, is_differentiable, true);
+				solve_tensor_nonlinear(t, sol, true);
 			}
 			if (post_step)
 				post_step(t, sol);
@@ -614,7 +592,7 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t, const bool is_differentiable)
+	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t)
 	{
 		damping_assembler_ = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler_, mesh_->dimension());
@@ -659,7 +637,7 @@ namespace polyfem::varform
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			is_differentiable,
+			false,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
@@ -696,8 +674,7 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::init_solve(
 		Eigen::MatrixXd &sol,
 		const double t,
-		const InitialConditionOverride *initial_condition_override,
-		const bool is_differentiable)
+		const InitialConditionOverride *initial_condition_override)
 	{
 		assert(sol.cols() == 1);
 		assert(!problem->is_scalar()); // tensor
@@ -766,7 +743,7 @@ namespace polyfem::varform
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
-		init_forms(args, mesh_->dimension(), sol, t, is_differentiable);
+		init_forms(args, mesh_->dimension(), sol, t);
 
 		double characteristic_length = 0;
 		if (args["solver"]["advanced"]["characteristic_length"] > 0)
@@ -809,7 +786,6 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::solve_tensor_nonlinear(
 		const int step,
 		Eigen::MatrixXd &sol,
-		const bool is_differentiable,
 		const bool init_lagging)
 	{
 		assert(solve_data_.nl_problem != nullptr && "Nonlinear forms must initialize the nonlinear problem before solving");
@@ -867,7 +843,7 @@ namespace polyfem::varform
 
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		bool lagging_converged = is_differentiable || !nl_problem.uses_lagging();
+		bool lagging_converged = !nl_problem.uses_lagging();
 		for (int lag_i = 1; !lagging_converged; lag_i++)
 		{
 			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);

@@ -710,12 +710,10 @@ namespace polyfem::varform
 	void BilaplacianVarForm::solve_problem(
 		Eigen::MatrixXd &sol,
 		const InitialConditionOverride *initial_condition_override,
-		const ForwardStepCallback &post_step,
-		const bool is_differentiable)
+		const ForwardStepCallback &post_step)
 	{
 		assert(!initial_condition_override && "Bilaplacian does not support initial-condition overrides");
 		assert(!post_step && "Bilaplacian does not support post-step callbacks");
-		assert(!is_differentiable && "Bilaplacian does not support differentiated solves");
 
 		stats.spectrum.setZero();
 		igl::Timer timer;

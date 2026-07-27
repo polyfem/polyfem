@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/utils/Logger.hpp>

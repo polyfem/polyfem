@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>

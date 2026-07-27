@@ -1,6 +1,6 @@
 #include <polyfem/optimization/BuildFromJson.hpp>
 
-#include <polyfem/varforms/DifferentiableVarForm.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
@@ -125,7 +125,7 @@ namespace polyfem::from_json
 
 	} // namespace
 
-	std::shared_ptr<varform::VarForm> build_varform(
+	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
 		const json &args,
 		const size_t max_threads)
 	{
@@ -133,24 +133,17 @@ namespace polyfem::from_json
 		in_args["solver"]["max_threads"] = max_threads;
 
 		State state;
-		state.init(in_args, true);
+		state.init(in_args, true, true);
 		state.load_mesh();
-		state.variational_formulation->prepare();
-		return state.variational_formulation;
-	}
-
-	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
-		const json &args,
-		const size_t max_threads)
-	{
-		auto varform = build_varform(args, max_threads);
-		auto differentiable_varform = std::dynamic_pointer_cast<varform::DifferentiableVarForm>(varform);
+		auto differentiable_varform =
+			std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation);
 		if (!differentiable_varform)
 		{
 			log_and_throw_adjoint_error(
 				"Variational formulation {} does not support differentiable/adjoint optimization.",
-				varform->name());
+				state.variational_formulation->name());
 		}
+		differentiable_varform->prepare();
 		return differentiable_varform;
 	}
 
