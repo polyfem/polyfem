@@ -240,9 +240,8 @@ namespace polyfem::solver
 				if (!condition.contains("boundary_ids") || !condition["boundary_ids"].is_array() || condition["boundary_ids"].size() != 2)
 					log_and_throw_error("A periodic boundary condition must contain exactly two boundary_ids");
 
-				const std::array<int, 2> boundary_ids = {
-					condition["boundary_ids"][0].get<int>(),
-					condition["boundary_ids"][1].get<int>()};
+				const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+														  condition["boundary_ids"][1].get<int>()}};
 				al_form.push_back(std::make_shared<PeriodicBoundaryLagrangianForm>(
 					ndof, dim, *periodic_mesh, bases, *periodic_local_boundary,
 					boundary_ids, condition.value("tolerance", 1e-5)));
