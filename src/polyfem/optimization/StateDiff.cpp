@@ -239,21 +239,9 @@ namespace polyfem
 				b(s.boundary_nodes, Eigen::all).setZero();
 
 				StiffnessMatrix A = diff_cache.gradu_h(0);
-				const int full_size = A.rows();
-				const int problem_dim = s.problem->is_scalar() ? 1 : s.mesh->dimension();
-				int precond_num = problem_dim * s.n_bases;
-
 				b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
 
-				std::vector<int> boundary_nodes_tmp;
-				if (s.has_periodic_bc())
-				{
-					boundary_nodes_tmp = s.periodic_bc->full_to_periodic(s.boundary_nodes);
-					precond_num = s.periodic_bc->full_to_periodic(A);
-					b = s.periodic_bc->full_to_periodic(b, true);
-				}
-				else
-					boundary_nodes_tmp = s.boundary_nodes;
+				const std::vector<int> &boundary_nodes_tmp = s.boundary_nodes;
 
 				adjoint.setZero(s.ndof(), adjoint_rhs.cols());
 				for (int i = 0; i < b.cols(); i++)
@@ -262,10 +250,7 @@ namespace polyfem
 					tmp = b.col(i);
 					dirichlet_solve_prefactorized(*s.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, x);
 
-					if (s.has_periodic_bc())
-						adjoint.col(i) = s.periodic_bc->periodic_to_full(full_size, x);
-					else
-						adjoint.col(i) = x;
+					adjoint.col(i) = x;
 				}
 			}
 			else

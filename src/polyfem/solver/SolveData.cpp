@@ -5,7 +5,6 @@
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/PeriodicLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
@@ -26,7 +25,6 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <h5pp/h5pp.h>
 
@@ -80,6 +78,7 @@ namespace polyfem::solver
 		const size_t obstacle_ndof,
 		const std::vector<std::string> &hard_constraint_files,
 		const std::vector<json> &soft_constraint_files,
+		const json &zero_mean,
 
 		// Contact form
 		const bool contact_enabled,
@@ -120,7 +119,6 @@ namespace polyfem::solver
 		// Periodic contact
 		const bool periodic_contact,
 		const Eigen::VectorXi &tiled_to_single,
-		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 
 		// Friction form
 		const double friction_coefficient,
@@ -219,11 +217,6 @@ namespace polyfem::solver
 			// forms.push_back(al_form.back());
 		}
 
-		if (periodic_bc != nullptr)
-		{
-			al_form.push_back(std::make_shared<PeriodicLagrangianForm>(ndof, periodic_bc));
-		}
-
 		if (!periodic_conditions.empty())
 		{
 			if (periodic_mesh == nullptr || periodic_local_boundary == nullptr)
@@ -246,6 +239,55 @@ namespace polyfem::solver
 					ndof, dim, *periodic_mesh, bases, *periodic_local_boundary,
 					boundary_ids, condition.value("tolerance", 1e-5)));
 			}
+		}
+
+		bool add_zero_mean = false;
+		if (zero_mean.is_boolean())
+		{
+			add_zero_mean = zero_mean.get<bool>();
+		}
+		else if (zero_mean.is_array())
+		{
+			const int current_fe_space = fe_space_id < 0 ? 0 : fe_space_id;
+			add_zero_mean = std::find(zero_mean.begin(), zero_mean.end(), current_fe_space) != zero_mean.end();
+		}
+		else
+		{
+			log_and_throw_error("constraints.zero_mean must be a boolean or a list of FE-space IDs");
+		}
+
+		if (add_zero_mean)
+		{
+			StiffnessMatrix zero_mean_mass = mass;
+			if (zero_mean_mass.rows() != ndof || zero_mean_mass.cols() != ndof)
+			{
+				assembler::Mass mass_assembler;
+				mass_assembler.set_size(dim);
+				mass_assembler.assemble(
+					dim == 3, n_bases, bases, geom_bases,
+					mass_ass_vals_cache, 0, zero_mean_mass, true);
+			}
+			if (zero_mean_mass.rows() != ndof || zero_mean_mass.cols() != ndof)
+				log_and_throw_error("Unable to assemble zero-mean constraints for {} DoFs", ndof);
+
+			const Eigen::VectorXd weights = zero_mean_mass * Eigen::VectorXd::Ones(ndof);
+			std::vector<Eigen::Triplet<double>> entries;
+			for (int d = 0; d < dim; ++d)
+			{
+				double weight_sum = 0;
+				for (int dof = d; dof < ndof; dof += dim)
+					weight_sum += std::abs(weights(dof));
+				if (weight_sum <= 0)
+					log_and_throw_error("Unable to assemble a zero-mean constraint for component {}", d);
+				for (int dof = d; dof < ndof; dof += dim)
+					if (weights(dof) != 0)
+						entries.emplace_back(d, dof, weights(dof) / weight_sum);
+			}
+
+			StiffnessMatrix A(dim, ndof);
+			A.setFromTriplets(entries.begin(), entries.end());
+			Eigen::MatrixXd b = Eigen::MatrixXd::Zero(dim, 1);
+			al_form.push_back(std::make_shared<MatrixLagrangianForm>(A, b));
 		}
 
 		for (const auto &path : hard_constraint_files)

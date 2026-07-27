@@ -192,6 +192,17 @@ TEST_CASE("periodic boundary form rejects a missing pair", "[periodic][constrain
 		space.local_boundary, {{1, 99}}, 1e-5));
 }
 
+TEST_CASE("periodic boundary form rejects invalid pair settings", "[periodic][constraints]")
+{
+	const SquareSpace space = make_square_space();
+	REQUIRE_THROWS(solver::PeriodicBoundaryLagrangianForm(
+		space.n_bases, 1, *space.mesh, space.bases,
+		space.local_boundary, {{1, 1}}, 1e-5));
+	REQUIRE_THROWS(solver::PeriodicBoundaryLagrangianForm(
+		space.n_bases, 1, *space.mesh, space.bases,
+		space.local_boundary, {{1, 2}}, 0));
+}
+
 TEST_CASE("periodic boundary form keeps weighted trace mappings", "[periodic][constraints]")
 {
 	SquareSpace space = make_square_space();
@@ -239,7 +250,7 @@ TEST_CASE("periodic and Dirichlet forms share the existing QR reduction", "[peri
 	StiffnessMatrix mass(space.n_bases, space.n_bases);
 	mass.setIdentity();
 	solver::NLProblem problem(
-		space.n_bases, nullptr, 0, {}, constraints, linear_solver,
+		space.n_bases, 0, {}, constraints, linear_solver,
 		1, 1, mass, 1);
 
 	const Eigen::VectorXd full = problem.reduced_to_full(Eigen::VectorXd::Zero(problem.reduced_size()));
@@ -263,7 +274,7 @@ TEST_CASE("two periodic directions leave redundant corner constraints to QR", "[
 	StiffnessMatrix mass(space.n_bases, space.n_bases);
 	mass.setIdentity();
 	solver::NLProblem problem(
-		space.n_bases, nullptr, 0, {}, constraints, linear_solver,
+		space.n_bases, 0, {}, constraints, linear_solver,
 		1, 1, mass, 1);
 
 	CHECK(problem.reduced_size() == space.n_bases - 5);

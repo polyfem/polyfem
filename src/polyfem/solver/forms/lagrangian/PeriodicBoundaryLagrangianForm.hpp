@@ -12,7 +12,24 @@ namespace polyfem::solver
 	class PeriodicBoundaryLagrangianForm : public MatrixLagrangianForm
 	{
 	public:
+		struct Mapping
+		{
+			StiffnessMatrix A;
+			Eigen::MatrixXd b;
+			RowVectorNd translation;
+			std::vector<int> boundary_dofs;
+		};
+
 		PeriodicBoundaryLagrangianForm(
+			int ndof,
+			int value_dim,
+			const mesh::Mesh &mesh,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<mesh::LocalBoundary> &local_boundary,
+			const std::array<int, 2> &boundary_ids,
+			double relative_tolerance);
+
+		static Mapping build_mapping(
 			int ndof,
 			int value_dim,
 			const mesh::Mesh &mesh,
@@ -24,21 +41,6 @@ namespace polyfem::solver
 		std::string name() const override { return "periodic-boundary-lagrangian"; }
 
 	private:
-		struct ConstraintData
-		{
-			StiffnessMatrix A;
-			Eigen::MatrixXd b;
-		};
-
-		explicit PeriodicBoundaryLagrangianForm(ConstraintData data);
-
-		static ConstraintData build_constraints(
-			int ndof,
-			int value_dim,
-			const mesh::Mesh &mesh,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const std::array<int, 2> &boundary_ids,
-			double relative_tolerance);
+		explicit PeriodicBoundaryLagrangianForm(Mapping mapping);
 	};
 } // namespace polyfem::solver

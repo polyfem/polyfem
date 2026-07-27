@@ -230,9 +230,6 @@ namespace polyfem::varform
 		logger().info("Building collision mesh...");
 		build_collision_mesh(mesh, args);
 		preprocess_contact_parameters();
-		// FIXME!! handle periodic collision mesh
-		//  if (periodic_bc && args["contact"]["periodic"])
-		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
 
 		for (int i = n_fe_bases; i < space_.n_bases; ++i)
@@ -605,7 +602,7 @@ namespace polyfem::varform
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
@@ -635,7 +632,7 @@ namespace polyfem::varform
 			// Homogenization
 			assembler::MacroStrainValue(),
 			// Periodic contact
-			false, Eigen::VectorXi(), nullptr,
+			false, Eigen::VectorXi(),
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -745,7 +742,7 @@ namespace polyfem::varform
 
 		const int ndof = space_.n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
-			ndof, nullptr, t, forms, solve_data.al_form,
+			ndof, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
 		solve_data.nl_problem->init(sol);

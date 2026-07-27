@@ -94,17 +94,17 @@ namespace polyfem::solver
 		const std::vector<mesh::LocalBoundary> &local_boundary,
 		const std::array<int, 2> &boundary_ids,
 		const double relative_tolerance)
-		: PeriodicBoundaryLagrangianForm(build_constraints(
+		: PeriodicBoundaryLagrangianForm(build_mapping(
 			  ndof, value_dim, mesh, bases, local_boundary, boundary_ids, relative_tolerance))
 	{
 	}
 
-	PeriodicBoundaryLagrangianForm::PeriodicBoundaryLagrangianForm(ConstraintData data)
-		: MatrixLagrangianForm(data.A, data.b)
+	PeriodicBoundaryLagrangianForm::PeriodicBoundaryLagrangianForm(Mapping mapping)
+		: MatrixLagrangianForm(mapping.A, mapping.b)
 	{
 	}
 
-	PeriodicBoundaryLagrangianForm::ConstraintData PeriodicBoundaryLagrangianForm::build_constraints(
+	PeriodicBoundaryLagrangianForm::Mapping PeriodicBoundaryLagrangianForm::build_mapping(
 		const int ndof,
 		const int value_dim,
 		const mesh::Mesh &mesh,
@@ -202,7 +202,16 @@ namespace polyfem::solver
 			}
 		}
 
-		ConstraintData data;
+		Mapping data;
+		data.translation = translation;
+		std::set<int> boundary_dofs;
+		for (const BoundaryNode &node : first)
+			for (const auto &[index, weight] : node.weights)
+				boundary_dofs.insert(index);
+		for (const BoundaryNode &node : second)
+			for (const auto &[index, weight] : node.weights)
+				boundary_dofs.insert(index);
+		data.boundary_dofs.assign(boundary_dofs.begin(), boundary_dofs.end());
 		data.A.resize(int(pairs.size()) * value_dim, ndof);
 		data.A.setFromTriplets(entries.begin(), entries.end());
 		data.A.makeCompressed();

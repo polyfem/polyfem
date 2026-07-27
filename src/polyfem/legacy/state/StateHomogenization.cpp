@@ -62,7 +62,7 @@ namespace polyfem::legacy
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
@@ -92,7 +92,7 @@ namespace polyfem::legacy
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact
-			args["contact"]["periodic"], periodic_collision_mesh_to_basis, periodic_bc,
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -285,15 +285,6 @@ namespace polyfem::legacy
 		}
 
 		sol = homo_problem->reduced_to_extended(reduced_sol);
-		if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
-		{
-			Eigen::VectorXd integral = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), sol, dim, dim);
-			double area = polyfem::io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), dim, 1)(0);
-			for (int d = 0; d < dim; d++)
-				sol(Eigen::seqN(d, n_bases, dim), 0).array() -= integral(d) / area;
-
-			reduced_sol = homo_problem->extended_to_reduced(sol);
-		}
 
 		if (user_post_step)
 		{
