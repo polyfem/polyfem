@@ -736,7 +736,7 @@ namespace polyfem::varform
 			zero_mean.is_boolean()
 				? zero_mean.get<bool>()
 				: (zero_mean.is_array()
-					   && std::find(zero_mean.begin(), zero_mean.end(), 0) != zero_mean.end());
+				   && std::find(zero_mean.begin(), zero_mean.end(), 0) != zero_mean.end());
 		const bool has_global_constraints = !periodic_conditions.empty() || add_zero_mean;
 
 		if (!has_global_constraints)
@@ -773,9 +773,8 @@ namespace polyfem::varform
 			if (fe_space >= 0 && fe_space != 0)
 				continue;
 
-			const std::array<int, 2> boundary_ids = {{
-				condition["boundary_ids"][0].get<int>(),
-				condition["boundary_ids"][1].get<int>()}};
+			const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+													  condition["boundary_ids"][1].get<int>()}};
 			constraint_forms.push_back(std::make_shared<solver::PeriodicBoundaryLagrangianForm>(
 				A.rows(), /*value_dim=*/1, *mesh_, space_.basis_list(),
 				boundary_.total_local_boundary, boundary_ids,

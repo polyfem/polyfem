@@ -790,9 +790,8 @@ namespace polyfem::legacy
 			for (int i = 0; i < int(conditions.size()); ++i)
 			{
 				const json &condition = conditions[i];
-				const std::array<int, 2> boundary_ids = {{
-					condition["boundary_ids"][0].get<int>(),
-					condition["boundary_ids"][1].get<int>()}};
+				const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+														  condition["boundary_ids"][1].get<int>()}};
 				const auto mapping = solver::PeriodicBoundaryLagrangianForm::build_mapping(
 					n_bases * problem_dim, problem_dim, *mesh, bases, total_local_boundary,
 					boundary_ids, condition.value("tolerance", 1e-5));
