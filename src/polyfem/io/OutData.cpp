@@ -278,6 +278,80 @@ namespace polyfem::io
 			return edge_dofs;
 		}
 
+		// Structured triangulation for faces whose points form a complete
+		// regular lattice (all faces away from mixed-order interfaces).  The
+		// row-wise patterns keep vertex valence balanced -- the lexicographic
+		// sweep below concentrates fan triangles on lex-extreme corners, which
+		// at order 3+ can push one-ring sizes past the smooth-contact
+		// N_VERT_NEIGHBORS_3D cap.  Returns false if the points are not a
+		// complete lattice (caller falls back to the sweep).
+		bool triangulate_lattice(const std::vector<std::array<long, 2>> &pts, const int nfv, std::vector<std::array<int, 3>> &tris)
+		{
+			constexpr long S = PROXY_PARAM_SCALE;
+			const int n = int(pts.size());
+			std::map<std::array<long, 2>, int> id;
+			for (int i = 0; i < n; ++i)
+				if (!id.emplace(pts[i], i).second)
+					return false;
+			tris.clear();
+
+			if (nfv == 3)
+			{
+				// n == (k+1)(k+2)/2 for a complete triangular lattice of order k
+				const int k = int(std::lround((std::sqrt(8.0 * n + 1.0) - 3.0) / 2.0));
+				if ((k + 1) * (k + 2) / 2 != n || k < 1 || S % k != 0)
+					return false;
+				const long h = S / k;
+				const auto at = [&](int i, int j) -> int {
+					const auto it = id.find({{i * h, j * h}});
+					return it == id.end() ? -1 : it->second;
+				};
+				for (int j = 0; j <= k; ++j)
+					for (int i = 0; i <= k - j; ++i)
+						if (at(i, j) < 0)
+							return false;
+				for (int j = 0; j < k; ++j)
+				{
+					for (int i = 0; i < k - j; ++i)
+					{
+						tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+						if (i + j < k - 1)
+							tris.push_back({{at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)}});
+					}
+				}
+				return true;
+			}
+
+			// quad: complete (k1+1) x (k2+1) tensor grid, possibly anisotropic
+			std::set<long> us, vs;
+			for (const auto &p : pts)
+			{
+				us.insert(p[0]);
+				vs.insert(p[1]);
+			}
+			const int k1 = int(us.size()) - 1, k2 = int(vs.size()) - 1;
+			if (k1 < 1 || k2 < 1 || (k1 + 1) * (k2 + 1) != n || S % k1 != 0 || S % k2 != 0)
+				return false;
+			const long h1 = S / k1, h2 = S / k2;
+			const auto at = [&](int i, int j) -> int {
+				const auto it = id.find({{i * h1, j * h2}});
+				return it == id.end() ? -1 : it->second;
+			};
+			for (int j = 0; j <= k2; ++j)
+				for (int i = 0; i <= k1; ++i)
+					if (at(i, j) < 0)
+						return false;
+			for (int j = 0; j < k2; ++j)
+			{
+				for (int i = 0; i < k1; ++i)
+				{
+					tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+					tris.push_back({{at(i + 1, j + 1), at(i, j + 1), at(i + 1, j)}});
+				}
+			}
+			return true;
+		}
+
 		// Triangulate a 2D point set in convex position (boundary points lie on
 		// the convex hull, possibly collinear; interior points allowed) into
 		// strictly positive-area CCW triangles via an incremental lexicographic
@@ -796,7 +870,8 @@ namespace polyfem::io
 						}
 
 						std::vector<std::array<int, 3>> local_tris;
-						triangulate_convex_pointset(pts, local_tris);
+						if (!triangulate_lattice(pts, nfv, local_tris))
+							triangulate_convex_pointset(pts, local_tris);
 						for (const auto &t : local_tris)
 							tris.emplace_back(dof[t[0]], dof[t[1]], dof[t[2]]);
 					}
