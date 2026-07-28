@@ -14,7 +14,8 @@ namespace polyfem::solver
 									   const assembler::RhsAssembler &rhs_assembler,
 									   const size_t obstacle_ndof,
 									   const bool is_time_dependent,
-									   const double t)
+									   const double t,
+									   const std::string &lumping)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
@@ -23,6 +24,7 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  n_dofs_(ndof)
 	{
+		lumping_ = lumping;
 		init_masked_lumped_mass(mass, obstacle_ndof);
 		update_target(t); // initialize b_
 	}
@@ -65,13 +67,12 @@ namespace polyfem::solver
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
 
-		masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
-		{
+		const auto is_ill_conditioned = [](const StiffnessMatrix &lumped) {
 			double min_diag = std::numeric_limits<double>::max();
 			double max_diag = 0;
-			for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
+			for (int k = 0; k < lumped.outerSize(); ++k)
 			{
-				for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
+				for (StiffnessMatrix::InnerIterator it(lumped, k); it; ++it)
 				{
 					if (it.col() == it.row())
 					{
@@ -80,10 +81,43 @@ namespace polyfem::solver
 					}
 				}
 			}
-			if (max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16)
+			return max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16;
+		};
+
+		if (mass.size() == 0)
+			masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
+		else if (lumping_ == "hrz")
+			masked_lumped_mass_ = polyfem::utils::lump_matrix_hrz(mass);
+		else
+		{
+			masked_lumped_mass_ = polyfem::utils::lump_matrix(mass);
+			if (is_ill_conditioned(masked_lumped_mass_))
 			{
-				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
-				masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
+				// row-sum lumping is invalid for bases of order >= 2 (rows of the
+				// consistent mass can sum to zero or negative values)
+				logger().warn("Row-sum lumped mass ill-conditioned (expected for order >= 2); using HRZ-style diagonal-scaling lumping for the BC penalty metric.");
+				masked_lumped_mass_ = polyfem::utils::lump_matrix_hrz(mass);
+			}
+		}
+		// last resort: only reject NONPOSITIVE metrics (a large diagonal spread
+		// is physical grading, not damage), and keep mass units by scaling the
+		// identity with the average nodal mass
+		if (mass.size() != 0)
+		{
+			double min_diag = std::numeric_limits<double>::max();
+			double diag_sum = 0;
+			for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
+				for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
+					if (it.col() == it.row())
+					{
+						min_diag = std::min(min_diag, it.value());
+						diag_sum += it.value();
+					}
+			if (min_diag <= 0)
+			{
+				const double avg_mass = diag_sum > 0 ? diag_sum / n_dofs_ : 1.0;
+				logger().warn("Lumped mass matrix has nonpositive entries; using identity scaled by the average nodal mass ({}).", avg_mass);
+				masked_lumped_mass_ = avg_mass * polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
 			}
 		}
 

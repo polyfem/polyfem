@@ -32,7 +32,8 @@ namespace polyfem::solver
 						 const assembler::RhsAssembler &rhs_assembler,
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
-						 const double t);
+						 const double t,
+						 const std::string &lumping = "row_sum");
 
 		std::string name() const override
 		{
@@ -98,7 +99,9 @@ namespace polyfem::solver
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
-		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
+		StiffnessMatrix masked_lumped_mass_;
+		/// lumping mode for the mass metric: "row_sum" (with HRZ fallback) or "hrz"
+		std::string lumping_ = "row_sum";      ///< mass matrix masked by the AL dofs
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param mass Mass matrix

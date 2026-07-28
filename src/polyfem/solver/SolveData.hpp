@@ -154,7 +154,10 @@ namespace polyfem::solver
 			const int friction_iterations,
 
 			// Rayleigh damping form
-			const json &rayleigh_damping);
+			const json &rayleigh_damping,
+
+			// BC augmented-Lagrangian mass-metric lumping ("row_sum" or "hrz")
+			const std::string &al_lumping = "row_sum");
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution

@@ -127,7 +127,8 @@ namespace polyfem::solver
 		const int friction_iterations,
 
 		// Rayleigh damping form
-		const json &rayleigh_damping)
+		const json &rayleigh_damping,
+		const std::string &al_lumping)
 	{
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
@@ -208,7 +209,8 @@ namespace polyfem::solver
 			if (!boundary_nodes.empty())
 				al_form.push_back(std::make_shared<BCLagrangianForm>(
 					ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
+					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t,
+					al_lumping));
 			// forms.push_back(al_form.back());
 		}
 
