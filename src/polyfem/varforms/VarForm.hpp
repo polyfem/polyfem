@@ -179,6 +179,10 @@ namespace polyfem
 			void ensure_output_sampler() const;
 			void save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
+			bool save_timestep_to_vtm(
+				const double time, const int t, const double dt,
+				const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
+				const std::string &block_prefix) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;
 			void notify_time_step(const int t, const int time_steps, const double t0, const double dt) const;

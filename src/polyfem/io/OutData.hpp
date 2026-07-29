@@ -17,6 +17,11 @@
 
 #include <Eigen/Dense>
 
+namespace paraviewo
+{
+	class VTMWriter;
+}
+
 namespace polyfem::io
 {
 	/// Utilies related to export of geometry
@@ -124,6 +129,18 @@ namespace polyfem::io
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts) const;
+
+		/// Save the VTU datasets and append them to an existing VTM container.
+		/// The caller owns and saves the VTM, allowing multiple output spaces to
+		/// share one timestep container.
+		void save_vtu(const std::string &path,
+					  const OutputSpace &space,
+					  const OutputFieldFunction &output_fields,
+					  const double t,
+					  const double dt,
+					  const ExportOptions &opts,
+					  paraviewo::VTMWriter &vtm,
+					  const std::string &block_prefix) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename

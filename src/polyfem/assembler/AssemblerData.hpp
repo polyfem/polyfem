@@ -2,8 +2,55 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
+#include <functional>
+#include <vector>
+
 namespace polyfem::assembler
 {
+	/// Local data shared by assemblers involving an arbitrary number of FE spaces.
+	/// The data is a non-owning view; element traversal and global gather/scatter are
+	/// deliberately handled by the form using the assembler.
+	class MultiSpacesNLAssemblerData
+	{
+	public:
+		using Values = std::vector<std::reference_wrapper<const ElementAssemblyValues>>;
+		using Coefficients = std::vector<std::reference_wrapper<const Eigen::VectorXd>>;
+
+		MultiSpacesNLAssemblerData(
+			Values vals,
+			Coefficients x,
+			Coefficients x_prev,
+			const double t,
+			const double dt,
+			const QuadratureVector &da)
+			: vals_(std::move(vals)),
+			  x_(std::move(x)),
+			  x_prev_(std::move(x_prev)),
+			  t(t),
+			  dt(dt),
+			  da(da)
+		{
+			assert(vals_.size() == x_.size());
+			assert(x_prev_.empty() || vals_.size() == x_prev_.size());
+		}
+
+		virtual ~MultiSpacesNLAssemblerData() = default;
+
+		int n_spaces() const { return int(vals_.size()); }
+		const ElementAssemblyValues &vals(const int space) const { return vals_.at(space).get(); }
+		const Eigen::VectorXd &x(const int space) const { return x_.at(space).get(); }
+		const Eigen::VectorXd &x_prev(const int space) const { return x_prev_.at(space).get(); }
+
+		const double t;
+		const double dt;
+		const QuadratureVector &da;
+
+	private:
+		Values vals_;
+		Coefficients x_;
+		Coefficients x_prev_;
+	};
+
 	class NonLinearAssemblerData
 	{
 	public:

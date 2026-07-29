@@ -6,6 +6,7 @@
 #include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
+#include <polyfem/varforms/NavierStokesFSIVarForm.hpp>
 #include <polyfem/varforms/OperatorSplittingVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
 #include <polyfem/varforms/ThermoElasticVarForm.hpp>
@@ -17,6 +18,30 @@ namespace polyfem::varform
 		bool has_entries(const json &args, const json::json_pointer &path)
 		{
 			return args.contains(path) && !args.at(path).empty();
+		}
+
+		bool has_two_mesh_fsi_material(const json &args)
+		{
+			if (!args.contains("materials") || args["materials"].is_null())
+				return false;
+
+			const auto has_solid_fields = [](const json &material) {
+				return material.contains("fluid_geometry_id")
+					   && material.contains("solid_geometry_id")
+					   && material.contains("displacement_space_id")
+					   && material.contains("solid_material");
+			};
+
+			const json &materials = args["materials"];
+			if (!materials.is_array())
+				return has_solid_fields(materials);
+			if (materials.empty())
+				return false;
+
+			for (const json &material : materials)
+				if (!has_solid_fields(material))
+					return false;
+			return true;
 		}
 	} // namespace
 
@@ -76,6 +101,8 @@ namespace polyfem::varform
 
 		if (formulation == "ThermoElasticity")
 			return true;
+		if (formulation == "NavierStokesFSI")
+			return args.contains("time") && !args["time"].is_null();
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		if (!assembler)
@@ -124,6 +151,10 @@ namespace polyfem::varform
 			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
 		if (formulation == "NavierStokes")
 			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>() : nullptr;
+		if (formulation == "NavierStokesFSI")
+			return ((!has_contact || has_two_mesh_fsi_material(args)) && !has_constraints)
+					   ? std::make_shared<NavierStokesFSIVarForm>()
+					   : nullptr;
 		if (formulation == "OperatorSplitting")
 			return (!has_contact && !has_constraints) ? std::make_shared<OperatorSplittingVarForm>() : nullptr;
 		if (formulation == "IncompressibleLinearElasticity")
