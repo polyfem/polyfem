@@ -33,6 +33,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	HGOFiber.cpp
 	HGOFiber.hpp
+	HGODispersion.cpp
+	HGODispersion.hpp
 	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
