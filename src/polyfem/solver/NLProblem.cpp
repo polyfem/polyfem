@@ -315,7 +315,11 @@ namespace polyfem::solver
 
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
+#ifdef POLYSOLVE_WITH_SPQR
 		SuiteSparseMatrix At = A.transpose();
+#else
+		StiffnessMatrix At = A.transpose();
+#endif
 		At.makeCompressed();
 
 		logger().debug("Constraint size: {} x {}", A.rows(), A.cols());
