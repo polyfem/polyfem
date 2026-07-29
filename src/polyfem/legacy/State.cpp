@@ -8,6 +8,7 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
@@ -480,9 +481,6 @@ namespace polyfem::legacy
 		if (args["space"]["use_p_ref"])
 			return false;
 
-		if (has_periodic_bc())
-			return false;
-
 		if (mesh->orders().size() <= 0)
 		{
 			if (args["space"]["discr_order"] == 1)
@@ -782,29 +780,34 @@ namespace polyfem::legacy
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
 
-		// handle periodic bc
+		// Build the explicit periodic pair mapping once for consumers such as
+		// periodic contact. The constraint forms use the same centroid matcher.
 		if (has_periodic_bc())
 		{
-			// collect periodic directions
-			json directions = args["boundary_conditions"]["periodic_boundary"]["correspondence"];
-			Eigen::MatrixXd tile_offset = Eigen::MatrixXd::Identity(dim, dim);
-
-			if (directions.size() > 0)
+			const json &conditions = args["boundary_conditions"]["periodic"];
+			periodic_dof_mask.setZero(n_bases);
+			periodic_tile_offsets.resize(dim, conditions.size());
+			for (int i = 0; i < int(conditions.size()); ++i)
 			{
-				Eigen::VectorXd tmp;
-				for (int d = 0; d < dim; d++)
-				{
-					tmp = directions[d];
-					if (tmp.size() != dim)
-						log_and_throw_error("Invalid size of periodic directions!");
-					tile_offset.col(d) = tmp;
-				}
+				const json &condition = conditions[i];
+				const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+														  condition["boundary_ids"][1].get<int>()}};
+				const auto mapping = solver::PeriodicBoundaryLagrangianForm::build_mapping(
+					n_bases * problem_dim, problem_dim, *mesh, bases, total_local_boundary,
+					boundary_ids, condition.value("tolerance", 1e-5));
+				periodic_tile_offsets.col(i) = mapping.translation.transpose();
+				for (const int dof : mapping.boundary_dofs)
+					periodic_dof_mask(dof) = 1;
 			}
-
-			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
-
-			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"], root_path());
 		}
+		else
+		{
+			periodic_dof_mask.resize(0);
+			periodic_tile_offsets.resize(0, 0);
+		}
+
+		if (args["constraints"].contains("macro_displacement_gradient"))
+			macro_strain_constraint.init(dim, args["constraints"]["macro_displacement_gradient"], root_path());
 
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
@@ -825,7 +828,7 @@ namespace polyfem::legacy
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh();
-		if (periodic_bc && args["contact"]["periodic"])
+		if (has_periodic_bc() && args["contact"]["periodic"])
 			build_periodic_collision_mesh();
 		logger().info("Done!");
 
@@ -916,36 +919,6 @@ namespace polyfem::legacy
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
-		// for elastic pure periodic problem, find an internal node and force zero dirichlet
-		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.size() == 0 && has_periodic_bc())
-		{
-			// find an internal node to force zero dirichlet
-			std::vector<bool> isboundary(n_bases, false);
-			for (const auto &lb : total_local_boundary)
-			{
-				const int e = lb.element_id();
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *mesh);
-
-					for (int n : nodes)
-						isboundary[bases[e].bases[n].global()[0].index] = true;
-				}
-			}
-			int i = 0;
-			for (; i < n_bases; i++)
-				if (!isboundary[i]) // (!periodic_bc->is_periodic_dof(i))
-					break;
-			if (i >= n_bases)
-				log_and_throw_error("Failed to find a non-periodic node!");
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-			for (int d = 0; d < actual_dim; d++)
-			{
-				boundary_nodes.push_back(i * actual_dim + d);
-			}
-			logger().info("Fix solution at node {} to remove singularity due to periodic BC", i);
-		}
-
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
 		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
@@ -1018,15 +991,16 @@ namespace polyfem::legacy
 
 		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.empty())
 		{
-			if (has_periodic_bc())
-				logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
-			else
+			const bool has_global_constraints =
+				!args["constraints"]["hard"].empty()
+				|| (args["constraints"]["zero_mean"].is_boolean() && args["constraints"]["zero_mean"].get<bool>())
+				|| (args["constraints"]["zero_mean"].is_array() && !args["constraints"]["zero_mean"].empty())
+				|| has_periodic_bc();
+			if (!has_global_constraints)
 			{
-				if (args["constraints"]["hard"].empty())
-					log_and_throw_error("Static problem need to have some Dirichlet nodes!");
-				else
-					logger().warn("Relying on hard constraints to avoid infinite solutions");
+				log_and_throw_error("Static problem need to have some Dirichlet nodes or linear constraints!");
 			}
+			logger().warn("Static problem has no Dirichlet nodes; relying on linear constraints for uniqueness");
 		}
 	}
 
@@ -1221,7 +1195,7 @@ namespace polyfem::legacy
 			std::vector<int> ind;
 			for (int i = 0; i < E.rows(); i++)
 			{
-				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
+				if (!periodic_dof_mask(E(i, 0)) || !periodic_dof_mask(E(i, 1)))
 					ind.push_back(i);
 			}
 
@@ -1233,7 +1207,10 @@ namespace polyfem::legacy
 		Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
 		Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
 
-		Eigen::MatrixXd tile_offset = periodic_bc->get_affine_matrix();
+		if (periodic_tile_offsets.rows() != dim || periodic_tile_offsets.cols() != dim
+			|| Eigen::FullPivLU<Eigen::MatrixXd>(periodic_tile_offsets).rank() != dim)
+			log_and_throw_error("Periodic contact requires {} linearly independent periodic boundary pairs", dim);
+		const Eigen::MatrixXd &tile_offset = periodic_tile_offsets;
 
 		for (int i = 0, idx = 0; i < n_tiles; i++)
 		{
@@ -1259,7 +1236,7 @@ namespace polyfem::legacy
 			std::vector<int> tmp;
 			for (int i = 0; i < V.rows(); i++)
 			{
-				if (periodic_bc->is_periodic_dof(i))
+				if (periodic_dof_mask(i))
 					tmp.push_back(i);
 			}
 
@@ -1281,7 +1258,10 @@ namespace polyfem::legacy
 		std::vector<int> SVJ;
 		SVI.setConstant(Vtmp.rows(), -1);
 		int id = 0;
-		const double eps = (bbox.col(1) - bbox.col(0)).maxCoeff() * args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>();
+		double relative_tolerance = 1e-5;
+		for (const json &condition : args["boundary_conditions"]["periodic"])
+			relative_tolerance = std::max(relative_tolerance, condition.value("tolerance", 1e-5));
+		const double eps = (bbox.col(1) - bbox.col(0)).maxCoeff() * relative_tolerance;
 		for (int i = 0; i < Vtmp.rows(); i++)
 		{
 			if (SVI[i] < 0)

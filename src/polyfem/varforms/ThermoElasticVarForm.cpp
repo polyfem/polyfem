@@ -967,7 +967,7 @@ namespace polyfem::varform
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
-			total_ndof(), nullptr, problem->is_time_dependent() ? t0 + dt : 1.0,
+			total_ndof(), problem->is_time_dependent() ? t0 + dt : 1.0,
 			forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density,

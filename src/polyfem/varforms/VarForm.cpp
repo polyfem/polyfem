@@ -81,9 +81,6 @@ namespace polyfem::varform
 			if (args["space"]["use_p_ref"])
 				return false;
 
-			if (args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>())
-				return false;
-
 			if (mesh.orders().size() <= 0)
 			{
 				if (args["space"]["discr_order"] == 1)
