@@ -6,8 +6,9 @@ var searchData=
   ['hashvector_3',['HashVector',['../structpolyfem_1_1utils_1_1_hash_vector.html',1,'polyfem::utils']]],
   ['helmholtz_4',['Helmholtz',['../classpolyfem_1_1assembler_1_1_helmholtz.html',1,'polyfem::assembler']]],
   ['hexquadrature_5',['HexQuadrature',['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html',1,'polyfem::quadrature']]],
-  ['hgofiber_6',['HGOFiber',['../classpolyfem_1_1assembler_1_1_h_g_o_fiber.html',1,'polyfem::assembler']]],
-  ['homocompositeform_7',['HomoCompositeForm',['../classpolyfem_1_1solver_1_1_homo_composite_form.html',1,'polyfem::solver']]],
-  ['hookelinearelasticity_8',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler']]],
-  ['hrzmass_9',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]]
+  ['hgodispersion_6',['HGODispersion',['../classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html',1,'polyfem::assembler']]],
+  ['hgofiber_7',['HGOFiber',['../classpolyfem_1_1assembler_1_1_h_g_o_fiber.html',1,'polyfem::assembler']]],
+  ['homocompositeform_8',['HomoCompositeForm',['../classpolyfem_1_1solver_1_1_homo_composite_form.html',1,'polyfem::solver']]],
+  ['hookelinearelasticity_9',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler']]],
+  ['hrzmass_10',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]]
 ];

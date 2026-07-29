@@ -28,6 +28,8 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "GenericProblem.hpp", "_generic_problem_8hpp.html", "_generic_problem_8hpp" ],
     [ "Helmholtz.cpp", "_helmholtz_8cpp.html", null ],
     [ "Helmholtz.hpp", "_helmholtz_8hpp.html", "_helmholtz_8hpp" ],
+    [ "HGODispersion.cpp", "_h_g_o_dispersion_8cpp.html", null ],
+    [ "HGODispersion.hpp", "_h_g_o_dispersion_8hpp.html", "_h_g_o_dispersion_8hpp" ],
     [ "HGOFiber.cpp", "_h_g_o_fiber_8cpp.html", null ],
     [ "HGOFiber.hpp", "_h_g_o_fiber_8hpp.html", "_h_g_o_fiber_8hpp" ],
     [ "HookeLinearElasticity.cpp", "_hooke_linear_elasticity_8cpp.html", null ],

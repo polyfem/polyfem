@@ -27,6 +27,7 @@ var namespacepolyfem_1_1assembler =
     [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
     [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
     [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
+    [ "HGODispersion", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion" ],
     [ "HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", "classpolyfem_1_1assembler_1_1_h_g_o_fiber" ],
     [ "HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity" ],
     [ "HRZMass", "classpolyfem_1_1assembler_1_1_h_r_z_mass.html", "classpolyfem_1_1assembler_1_1_h_r_z_mass" ],

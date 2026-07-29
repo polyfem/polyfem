@@ -18,6 +18,7 @@ var hierarchy =
           [ "polyfem::assembler::GenericElastic< FiberModel >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::GenericFiber< FiberModel >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", null ]
           ] ],
+          [ "polyfem::assembler::GenericElastic< HGODispersion >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
           [ "polyfem::assembler::GenericElastic< HGOFiber >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
           [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", null ]
@@ -44,6 +45,9 @@ var hierarchy =
           [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::GenericFiber< ActiveFiber >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
               [ "polyfem::assembler::ActiveFiber", "classpolyfem_1_1assembler_1_1_active_fiber.html", null ]
+            ] ],
+            [ "polyfem::assembler::GenericFiber< HGODispersion >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
+              [ "polyfem::assembler::HGODispersion", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html", null ]
             ] ],
             [ "polyfem::assembler::GenericFiber< HGOFiber >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
               [ "polyfem::assembler::HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", null ]
