@@ -93,11 +93,7 @@ namespace polyfem::varform
 		if (args.value("/contact/periodic"_json_pointer, false))
 			return false;
 
-		if (args.value("/boundary_conditions/periodic_boundary/enabled"_json_pointer, false))
-			return false;
-
-		if (args.contains("/boundary_conditions/periodic_boundary/linear_displacement_offset"_json_pointer)
-			&& args.at("/boundary_conditions/periodic_boundary/linear_displacement_offset"_json_pointer).size() > 0)
+		if (args.contains("/constraints/macro_displacement_gradient"_json_pointer))
 			return false;
 
 		if (formulation == "OperatorSplitting")
@@ -132,9 +128,19 @@ namespace polyfem::varform
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
 								  || has_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
-		const bool has_constraints =
+		const bool has_file_constraints =
 			has_entries(args, "/constraints/hard"_json_pointer)
 			|| has_entries(args, "/constraints/soft"_json_pointer);
+		const bool has_periodic_constraints =
+			has_entries(args, "/boundary_conditions/periodic"_json_pointer);
+		const json zero_mean = args.contains("/constraints/zero_mean"_json_pointer)
+								   ? args.at("/constraints/zero_mean"_json_pointer)
+								   : json(false);
+		const bool has_zero_mean_constraints =
+			(zero_mean.is_boolean() && zero_mean.get<bool>())
+			|| (zero_mean.is_array() && !zero_mean.empty());
+		const bool has_constraints =
+			has_file_constraints || has_periodic_constraints || has_zero_mean_constraints;
 
 		if (formulation == "ThermoElasticity")
 			return (!has_pressure && !has_constraints) ? std::make_shared<ThermoElasticVarForm>() : nullptr;
@@ -157,7 +163,7 @@ namespace polyfem::varform
 			return (!has_contact && !has_constraints) ? std::make_shared<BilaplacianVarForm>() : nullptr;
 
 		if (!assembler->is_tensor())
-			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
+			return (!has_contact && !has_pressure && !has_file_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
 
 		if (assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
 			return std::make_shared<LinearElasticVarForm>();

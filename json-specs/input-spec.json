@@ -1728,90 +1728,55 @@
             "pressure_boundary",
             "pressure_cavity",
             "obstacle_displacements",
-            "periodic_boundary"
+            "periodic"
         ],
         "doc": "The settings for boundary conditions."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary",
+        "pointer": "/boundary_conditions/periodic",
+        "type": "list",
+        "default": [],
+        "doc": "Pairs of boundary IDs whose corresponding degrees of freedom are constrained to be equal."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*",
         "type": "object",
         "default": null,
-        "optional": [
-            "enabled",
-            "tolerance",
-            "correspondence",
-            "linear_displacement_offset",
-            "fixed_macro_strain",
-            "force_zero_mean"
+        "required": [
+            "boundary_ids"
         ],
-        "doc": "Options for periodic boundary conditions."
+        "optional": [
+            "fe_space",
+            "tolerance"
+        ],
+        "doc": "A pair of periodic boundaries."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/force_zero_mean",
-        "type": "bool",
-        "default": false,
-        "doc": "The periodic solution is not unique, set to true to find the solution with zero mean."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/enabled",
-        "type": "bool",
-        "default": false,
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/tolerance",
-        "type": "float",
-        "default": 1e-5,
-        "doc": "Relative tolerance of deciding periodic correspondence"
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence",
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids",
         "type": "list",
-        "default": [],
-        "doc": "Periodic directions for periodic boundary conditions. If not specified, default to axis-aligned directions."
+        "min": 2,
+        "max": 2,
+        "doc": "Exactly two boundary IDs to couple."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*",
-        "type": "list",
-        "default": [],
-        "doc": "One periodic direction."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*/*",
-        "type": "float",
-        "doc": "One entry of a periodic direction."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain/*",
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids/*",
         "type": "int",
-        "doc": ""
+        "min": 0,
+        "doc": "Boundary ID."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset",
-        "type": "list",
-        "default": [],
-        "doc": ""
+        "pointer": "/boundary_conditions/periodic/*/fe_space",
+        "type": "int",
+        "min": -1,
+        "default": -1,
+        "doc": "Finite element space ID. -1 applies to every applicable space."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*",
-        "type": "list",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "pointer": "/boundary_conditions/periodic/*/tolerance",
         "type": "float",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
-        "type": "string",
-        "doc": ""
+        "min": 1e-16,
+        "default": 1e-5,
+        "doc": "Relative tolerance used to match translated boundary nodes."
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -2305,9 +2270,72 @@
         "type": "object",
         "optional": [
             "soft",
-            "hard"
+            "hard",
+            "zero_mean",
+            "macro_displacement_gradient"
         ],
-        "doc": "soft and hard constraints"
+        "doc": "Linear and macro-kinematic constraints."
+    },
+    {
+        "pointer": "/constraints/zero_mean",
+        "default": false,
+        "type": "bool",
+        "doc": "Constrain every applicable FE space to have zero integral."
+    },
+    {
+        "pointer": "/constraints/zero_mean",
+        "type": "list",
+        "doc": "FE-space IDs whose fields are constrained to have zero integral."
+    },
+    {
+        "pointer": "/constraints/zero_mean/*",
+        "type": "int",
+        "min": 0,
+        "doc": "Finite element space ID."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient",
+        "type": "object",
+        "default": "skip",
+        "required": [
+            "value"
+        ],
+        "optional": [
+            "fixed_components"
+        ],
+        "doc": "Macro displacement-gradient variables and prescribed components."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value",
+        "type": "list",
+        "doc": "Macro displacement-gradient matrix."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*",
+        "type": "list",
+        "doc": "One row of the macro displacement-gradient matrix."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*/*",
+        "type": "float",
+        "doc": "A macro displacement-gradient entry."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*/*",
+        "type": "string",
+        "doc": "A time-dependent macro displacement-gradient expression."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/fixed_components",
+        "type": "list",
+        "default": [],
+        "doc": "Flattened macro displacement-gradient components held at their prescribed values."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/fixed_components/*",
+        "type": "int",
+        "min": 0,
+        "doc": "Flattened macro displacement-gradient component."
     },
     {
         "pointer": "/constraints/hard",

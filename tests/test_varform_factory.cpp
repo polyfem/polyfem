@@ -90,12 +90,22 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", static_args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", static_args) == nullptr);
 
-	json periodic_args = args;
-	periodic_args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
-	CHECK_FALSE(varform::VarFormFactory::supports("Stokes", periodic_args));
-	CHECK(varform::VarFormFactory::create("Stokes", periodic_args) == nullptr);
-	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", periodic_args));
-	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_args) == nullptr);
+	json boundary_pair_args = args;
+	boundary_pair_args["/boundary_conditions/periodic"_json_pointer] = {{{"boundary_ids", {1, 2}}}};
+	CHECK(varform::VarFormFactory::supports("NeoHookean", boundary_pair_args));
+	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args) != nullptr);
+	const auto scalar_with_periodic = varform::VarFormFactory::create("Laplacian", boundary_pair_args);
+	REQUIRE(scalar_with_periodic != nullptr);
+	CHECK(scalar_with_periodic->name() == "Scalar");
+	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args);
+	REQUIRE(linear_with_periodic != nullptr);
+	CHECK(linear_with_periodic->name() == "NonlinearElasticTransient");
+
+	json zero_mean_args = args;
+	zero_mean_args["/constraints/zero_mean"_json_pointer] = true;
+	const auto scalar_with_zero_mean = varform::VarFormFactory::create("Laplacian", zero_mean_args);
+	REQUIRE(scalar_with_zero_mean != nullptr);
+	CHECK(scalar_with_zero_mean->name() == "Scalar");
 }
 
 TEST_CASE("state can opt into migrated varforms", "[varform][state]")
@@ -540,10 +550,12 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	std::filesystem::remove_all(output_directory);
 }
 
-TEST_CASE("periodic boundary conditions remain on legacy state path", "[varform][state]")
+TEST_CASE("macro displacement gradient remains on legacy state path", "[varform][state]")
 {
-	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json");
-	args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
+	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/neohookean.json");
+	args["/constraints/macro_displacement_gradient"_json_pointer] = {
+		{"value", {{0, 0}, {0, 0}}},
+		{"fixed_components", {0}}};
 
 	CHECK_FALSE(varform::uses_varform_state(args));
 
@@ -551,10 +563,7 @@ TEST_CASE("periodic boundary conditions remain on legacy state path", "[varform]
 	state.init(args, false);
 
 	REQUIRE(state.assembler != nullptr);
-	CHECK(state.assembler->name() == "Stokes");
-	REQUIRE(state.pressure_assembler != nullptr);
-	CHECK(state.pressure_assembler->name() == "StokesPressure");
-	CHECK(state.mixed_assembler != nullptr);
+	CHECK(state.assembler->name() == "NeoHookean");
 }
 
 TEST_CASE("optimization keeps varforms on the legacy state path", "[varform][state]")

@@ -1072,7 +1072,7 @@ namespace polyfem::varform
 
 		const StiffnessMatrix residual_mass = append_identity_mass(pure_mass_, pressure_block_size());
 		nl_problem_ = std::make_shared<solver::NLProblem>(
-			stacked_ndof(), nullptr, t, forms_, al_forms_,
+			stacked_ndof(), t, forms_, al_forms_,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			units.characteristic_length(), /*characteristic_force=*/1,
 			residual_mass, mesh_->dimension(), /*is_residual=*/true);

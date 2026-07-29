@@ -962,7 +962,7 @@ namespace polyfem::varform
 		}
 
 		fsi_problem_ = std::make_shared<solver::NLProblem>(
-			total_ndof(), nullptr, t, fsi_forms_, fsi_al_forms_,
+			total_ndof(), t, fsi_forms_, fsi_al_forms_,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			units.characteristic_length(), 1,
 			residual_mass(

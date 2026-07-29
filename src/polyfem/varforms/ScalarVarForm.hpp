@@ -69,6 +69,14 @@ namespace polyfem::varform
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol);
+		void solve_linear_system_with_constraints(
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
+			StiffnessMatrix &A,
+			Eigen::VectorXd &b,
+			const bool compute_spectrum,
+			const QuadratureOrders &boundary_samples,
+			const double time,
+			Eigen::MatrixXd &sol);
 		void solve_static(Eigen::MatrixXd &sol);
 		void solve_transient(Eigen::MatrixXd &sol);
 

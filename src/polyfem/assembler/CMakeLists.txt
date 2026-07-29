@@ -79,8 +79,6 @@ set(SOURCES
 	IsochoricNeoHookean.hpp
 	PressureAssembler.cpp
 	PressureAssembler.hpp
-	PeriodicBoundary.cpp
-	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
 	VolumePenalty.hpp
