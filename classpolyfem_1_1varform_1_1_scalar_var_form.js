@@ -16,6 +16,7 @@ var classpolyfem_1_1varform_1_1_scalar_var_form =
     [ "reset", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a675dc1c1099a1499286f739518c1d2f1", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a0b197f68194c3373dda953cb87d45dc8", null ],
     [ "solve_linear_system", "classpolyfem_1_1varform_1_1_scalar_var_form.html#aa48b2ab00bdd8cd5da3a2e8d5cb5077c", null ],
+    [ "solve_linear_system_with_constraints", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a4ed9f2d9ae3b269cf02fa6c608c43147", null ],
     [ "solve_problem", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a7a1eae4f7c62f34177ac8f72128c4f9b", null ],
     [ "solve_static", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a7a3c059512bdba90cf36505eb133f8ae", null ],
     [ "solve_transient", "classpolyfem_1_1varform_1_1_scalar_var_form.html#a872cf50621bd2d89feb240d2a26ada98", null ],

@@ -7,8 +7,8 @@ var dir_a4ee3e9e9f25deb5d1fe73a50fe1ae49 =
     [ "MacroStrainLagrangianForm.hpp", "_macro_strain_lagrangian_form_8hpp.html", "_macro_strain_lagrangian_form_8hpp" ],
     [ "MatrixLagrangianForm.cpp", "_matrix_lagrangian_form_8cpp.html", null ],
     [ "MatrixLagrangianForm.hpp", "_matrix_lagrangian_form_8hpp.html", "_matrix_lagrangian_form_8hpp" ],
-    [ "PeriodicLagrangianForm.cpp", "_periodic_lagrangian_form_8cpp.html", null ],
-    [ "PeriodicLagrangianForm.hpp", "_periodic_lagrangian_form_8hpp.html", "_periodic_lagrangian_form_8hpp" ],
+    [ "PeriodicBoundaryLagrangianForm.cpp", "_periodic_boundary_lagrangian_form_8cpp.html", "_periodic_boundary_lagrangian_form_8cpp" ],
+    [ "PeriodicBoundaryLagrangianForm.hpp", "_periodic_boundary_lagrangian_form_8hpp.html", "_periodic_boundary_lagrangian_form_8hpp" ],
     [ "StackedAugmentedLagrangianForm.cpp", "_stacked_augmented_lagrangian_form_8cpp.html", null ],
     [ "StackedAugmentedLagrangianForm.hpp", "_stacked_augmented_lagrangian_form_8hpp.html", "_stacked_augmented_lagrangian_form_8hpp" ]
 ];

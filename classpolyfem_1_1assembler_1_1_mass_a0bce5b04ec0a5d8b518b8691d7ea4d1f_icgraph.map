@@ -1,21 +1,43 @@
 <map id="polyfem::assembler::Mass::density" name="polyfem::assembler::Mass::density">
-<area shape="rect" id="Node000001" title="class that stores and compute density per point" alt="" coords="737,141,889,181"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass.html#ad3dfa0714411c7b024bbd63f6517efd3" title="computes and returns local stiffness matrix (1x1) for bases i,j (where i,j is passed in through data)..." alt="" coords="526,69,678,109"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="740,139,661,112,662,107,742,134"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_inertia_force_derivative.html#aa50450cc6f276a8bcd0beb9476165463" title=" " alt="" coords="515,134,689,189"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="724,164,690,164,690,159,724,159"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_mass.html#a849fa6094cc01499a27470e2f11ebab7" title=" " alt="" coords="526,213,678,253"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="742,188,662,216,661,211,740,183"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="247,5,441,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="512,70,425,48,426,43,513,65"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="221,69,467,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="512,92,467,92,467,87,512,87"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a088e3d5facf5f0bea26aa9f5444dd0be" title=" " alt="" coords="253,133,435,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="513,114,426,136,425,131,512,109"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ace9f88097549d2f3f8f841fcff8f00e0" title=" " alt="" coords="5,47,173,102"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="249,132,221,124,163,105,165,100,222,119,250,127"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a9fbef8e4d3db02b46bfb752161c5ac68" title=" " alt="" coords="5,126,173,181"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="239,156,174,156,174,151,239,151"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ad4cc2fad5130fc413d4349928ae88831" title=" " alt="" coords="5,205,173,259"/>
-<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="266,180,174,209,173,204,265,175"/>
+<area shape="rect" id="Node000001" title="class that stores and compute density per point" alt="" coords="1747,217,1899,257"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass.html#ad3dfa0714411c7b024bbd63f6517efd3" title="computes and returns local stiffness matrix (1x1) for bases i,j (where i,j is passed in through data)..." alt="" coords="1535,145,1687,185"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1750,215,1670,188,1672,183,1751,210"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_inertia_force_derivative.html#aa50450cc6f276a8bcd0beb9476165463" title=" " alt="" coords="1524,210,1699,265"/>
+<area shape="poly" id="edge20_Node000001_Node000019" title=" " alt="" coords="1733,240,1699,240,1699,235,1733,235"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1assembler_1_1_mass.html#a849fa6094cc01499a27470e2f11ebab7" title=" " alt="" coords="1535,289,1687,329"/>
+<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="1751,264,1672,292,1670,287,1750,259"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_solve_data.html#ab3703f1ec188f5c1072a3c7e5535b9eb" title="Initialize the forms and return a vector of pointers to them." alt="" coords="1254,49,1453,89"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1560,141,1475,104,1438,92,1440,87,1477,99,1562,137"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="1256,113,1451,153"/>
+<area shape="poly" id="edge14_Node000002_Node000013" title=" " alt="" coords="1522,157,1451,148,1451,143,1522,152"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="1231,177,1476,217"/>
+<area shape="poly" id="edge15_Node000002_Node000014" title=" " alt="" coords="1522,179,1476,185,1476,179,1521,174"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a088e3d5facf5f0bea26aa9f5444dd0be" title=" " alt="" coords="1262,241,1445,281"/>
+<area shape="poly" id="edge16_Node000002_Node000015" title=" " alt="" coords="1542,193,1525,201,1502,217,1477,232,1445,244,1443,239,1475,227,1499,212,1523,196,1540,188"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1legacy_1_1_state.html#a881b21e70f80ac4a7eb7cf77008ad097" title=" " alt="" coords="975,5,1181,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1240,54,1181,44,1182,39,1241,49"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1legacy_1_1_state.html#ae353ff9a3d87c2cde74ab3558bc139da" title="initialize the nonlinear solver" alt="" coords="973,69,1183,109"/>
+<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="1240,80,1183,84,1183,79,1240,75"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1legacy_1_1_state.html#a45f026afc7e4940ccdc14ee077478861" title=" " alt="" coords="747,5,925,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="962,28,925,28,925,23,962,23"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1legacy_1_1_state.html#ae8174512fdfb4de037d593ef99b26c0f" title="solves the problems" alt="" coords="531,63,699,103"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="746,51,693,65,692,60,744,46"/>
+<area shape="rect" id="Node000007" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="319,31,467,71"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="517,71,467,64,468,59,518,66"/>
+<area shape="rect" id="Node000010" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a0aab07822700745f38ea85dd84f76511" title=" " alt="" coords="304,95,483,135"/>
+<area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="518,99,483,104,483,99,517,94"/>
+<area shape="rect" id="Node000008" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="108,38,256,63"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="305,53,256,53,256,48,305,48"/>
+<area shape="rect" id="Node000009" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,38,60,63"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="94,53,60,53,60,48,94,48"/>
+<area shape="poly" id="edge11_Node000011_Node000006" title=" " alt="" coords="960,90,699,87,699,81,960,85"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1legacy_1_1_state.html#a0e3aedcf0fff3afc2b8f8842a433ef80" title="solves transient tensor nonlinear problem" alt="" coords="747,121,925,175"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="982,115,926,129,925,124,981,110"/>
+<area shape="poly" id="edge13_Node000012_Node000006" title=" " alt="" coords="733,120,682,105,684,100,734,115"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ace9f88097549d2f3f8f841fcff8f00e0" title=" " alt="" coords="994,155,1162,210"/>
+<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="1260,240,1230,232,1161,211,1163,206,1231,227,1262,235"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a9fbef8e4d3db02b46bfb752161c5ac68" title=" " alt="" coords="994,234,1162,289"/>
+<area shape="poly" id="edge18_Node000015_Node000017" title=" " alt="" coords="1249,264,1162,264,1162,259,1249,259"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ad4cc2fad5130fc413d4349928ae88831" title=" " alt="" coords="994,313,1162,367"/>
+<area shape="poly" id="edge19_Node000015_Node000018" title=" " alt="" coords="1270,288,1163,319,1162,313,1269,283"/>
 </map>

@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 863;
+var viewWidth = 835;
 var viewHeight = 126;
 var sectionId = 'dynsection-2';
 </script>
@@ -83,19 +83,19 @@ var sectionId = 'dynsection-2';
 </a>
 </g>
 </g>
-<!-- Node10 -->
-<g id="Node000010" class="node">
-<title>Node10</title>
-<g id="a_Node000010"><a xlink:href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" target="_top" xlink:title="Flatten rowwises.">
+<!-- Node9 -->
+<g id="Node000009" class="node">
+<title>Node9</title>
+<g id="a_Node000009"><a xlink:href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" target="_top" xlink:title="Flatten rowwises.">
 <polygon fill="white" stroke="#666666" points="340,-45.5 218,-45.5 218,-26.5 340,-26.5 340,-45.5"/>
 <text text-anchor="middle" x="279" y="-33.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::flatten</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node10 -->
-<g id="edge10_Node000001_Node000010" class="edge">
-<title>Node1&#45;&gt;Node10</title>
-<g id="a_edge10_Node000001_Node000010"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node9 -->
+<g id="edge9_Node000001_Node000009" class="edge">
+<title>Node1&#45;&gt;Node9</title>
+<g id="a_edge9_Node000001_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M180.12,-46.99C189.41,-45.95 198.77,-44.9 207.81,-43.88"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="208.32,-47.35 217.87,-42.75 207.54,-40.39 208.32,-47.35"/>
 </a>
@@ -129,20 +129,20 @@ var sectionId = 'dynsection-2';
 </a>
 </g>
 </g>
-<!-- Node6 -->
-<g id="Node000006" class="node">
-<title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a18d6b6f9125a6cf8451f97e48649dab6" target="_top" xlink:title="Resolve input path relative to root_path() if the path is not absolute.">
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a18d6b6f9125a6cf8451f97e48649dab6" target="_top" xlink:title="Resolve input path relative to root_path() if the path is not absolute.">
 <polygon fill="white" stroke="#666666" points="504,-70 378,-70 378,-40 504,-40 504,-70"/>
 <text text-anchor="start" x="386" y="-58" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
 <text text-anchor="middle" x="441" y="-47" font-family="Helvetica,sans-Serif" font-size="10.00">::resolve_input_path</text>
 </a>
 </g>
 </g>
-<!-- Node2&#45;&gt;Node6 -->
-<g id="edge6_Node000002_Node000006" class="edge">
-<title>Node2&#45;&gt;Node6</title>
-<g id="a_edge6_Node000002_Node000006"><a xlink:title=" ">
+<!-- Node2&#45;&gt;Node5 -->
+<g id="edge5_Node000002_Node000005" class="edge">
+<title>Node2&#45;&gt;Node5</title>
+<g id="a_edge5_Node000002_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M342.32,-69.65C350.71,-68.39 359.37,-67.09 367.91,-65.81"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="368.48,-69.27 377.85,-64.32 367.44,-62.34 368.48,-69.27"/>
 </a>
@@ -167,78 +167,59 @@ var sectionId = 'dynsection-2';
 </a>
 </g>
 </g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abe9d15d78fe8863dab5c3bf3e850a5ad" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="855,-118 729,-118 729,-88 855,-88 855,-118"/>
-<text text-anchor="start" x="737" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="792" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">::has_periodic_bc</text>
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="693,-67.5 540,-67.5 540,-48.5 693,-48.5 693,-67.5"/>
+<text text-anchor="middle" x="616.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::resolve_path</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node5 -->
-<g id="edge5_Node000004_Node000005" class="edge">
-<title>Node4&#45;&gt;Node5</title>
-<g id="a_edge5_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M679.65,-103C692.31,-103 705.73,-103 718.71,-103"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="719,-106.5 729,-103 719,-99.5 719,-106.5"/>
+<!-- Node5&#45;&gt;Node6 -->
+<g id="edge6_Node000005_Node000006" class="edge">
+<title>Node5&#45;&gt;Node6</title>
+<g id="a_edge6_Node000005_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M504.15,-56.07C512.46,-56.22 521.11,-56.37 529.74,-56.52"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="529.79,-60.02 539.85,-56.69 529.91,-53.02 529.79,-60.02"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="693,-67.5 540,-67.5 540,-48.5 693,-48.5 693,-67.5"/>
-<text text-anchor="middle" x="616.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::resolve_path</text>
-</a>
-</g>
-</g>
-<!-- Node6&#45;&gt;Node7 -->
-<g id="edge7_Node000006_Node000007" class="edge">
-<title>Node6&#45;&gt;Node7</title>
-<g id="a_edge7_Node000006_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M504.15,-56.07C512.46,-56.22 521.11,-56.37 529.74,-56.52"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="529.79,-60.02 539.85,-56.69 529.91,-53.02 529.79,-60.02"/>
-</a>
-</g>
-</g>
-<!-- Node8 -->
-<g id="Node000008" class="node">
-<title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a652fc513f7ac9e20969f9b574c4453ff" target="_top" xlink:title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#a652fc513f7ac9e20969f9b574c4453ff" target="_top" xlink:title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">
 <polygon fill="white" stroke="#666666" points="679.5,-30 553.5,-30 553.5,0 679.5,0 679.5,-30"/>
 <text text-anchor="start" x="561.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
 <text text-anchor="middle" x="616.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::root_path</text>
 </a>
 </g>
 </g>
-<!-- Node6&#45;&gt;Node8 -->
-<g id="edge8_Node000006_Node000008" class="edge">
-<title>Node6&#45;&gt;Node8</title>
-<g id="a_edge8_Node000006_Node000008"><a xlink:title=" ">
+<!-- Node5&#45;&gt;Node7 -->
+<g id="edge7_Node000005_Node000007" class="edge">
+<title>Node5&#45;&gt;Node7</title>
+<g id="a_edge7_Node000005_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M504.15,-40.67C516.93,-37.72 530.49,-34.6 543.59,-31.58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="544.54,-34.95 553.5,-29.3 542.96,-28.13 544.54,-34.95"/>
 </a>
 </g>
 </g>
-<!-- Node9 -->
-<g id="Node000009" class="node">
-<title>Node9</title>
-<g id="a_Node000009"><a xlink:href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" target="_top" xlink:title="Determine if a key exists and is non&#45;null in a json object.">
-<polygon fill="white" stroke="#666666" points="841,-30 743,-30 743,0 841,0 841,-30"/>
-<text text-anchor="start" x="751" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::is</text>
-<text text-anchor="middle" x="792" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_param_valid</text>
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" target="_top" xlink:title="Determine if a key exists and is non&#45;null in a json object.">
+<polygon fill="white" stroke="#666666" points="827,-30 729,-30 729,0 827,0 827,-30"/>
+<text text-anchor="start" x="737" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::is</text>
+<text text-anchor="middle" x="778" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_param_valid</text>
 </a>
 </g>
 </g>
-<!-- Node8&#45;&gt;Node9 -->
-<g id="edge9_Node000008_Node000009" class="edge">
-<title>Node8&#45;&gt;Node9</title>
-<g id="a_edge9_Node000008_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M679.65,-15C696.88,-15 715.52,-15 732.54,-15"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="732.89,-18.5 742.89,-15 732.89,-11.5 732.89,-18.5"/>
+<!-- Node7&#45;&gt;Node8 -->
+<g id="edge8_Node000007_Node000008" class="edge">
+<title>Node7&#45;&gt;Node8</title>
+<g id="a_edge8_Node000007_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M679.62,-15C692.33,-15 705.67,-15 718.26,-15"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="718.63,-18.5 728.63,-15 718.63,-11.5 718.63,-18.5"/>
 </a>
 </g>
 </g>

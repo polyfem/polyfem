@@ -196,8 +196,9 @@ var hierarchy =
       [ "polyfem::solver::AugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html", [
         [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
         [ "polyfem::solver::MacroStrainLagrangianForm", "classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html", null ],
-        [ "polyfem::solver::MatrixLagrangianForm", "classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html", null ],
-        [ "polyfem::solver::PeriodicLagrangianForm", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html", null ],
+        [ "polyfem::solver::MatrixLagrangianForm", "classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html", [
+          [ "polyfem::solver::PeriodicBoundaryLagrangianForm", "classpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form.html", null ]
+        ] ],
         [ "polyfem::solver::StackedAugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html", null ]
       ] ],
       [ "polyfem::solver::AveragePressureForm", "classpolyfem_1_1solver_1_1_average_pressure_form.html", null ],
@@ -280,6 +281,7 @@ var hierarchy =
     [ "polyfem::mesh::LocalMesh< M >", "classpolyfem_1_1mesh_1_1_local_mesh.html", null ],
     [ "polyfem::mesh::LocalRelaxationData< M >", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html", null ],
     [ "polyfem::assembler::MacroStrainValue", "classpolyfem_1_1assembler_1_1_macro_strain_value.html", null ],
+    [ "polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping", "structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html", null ],
     [ "polyfem::assembler::MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", null ],
     [ "polyfem::renderer::Material", "structpolyfem_1_1renderer_1_1_material.html", null ],
     [ "polyfem::utils::MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html", [
@@ -351,7 +353,6 @@ var hierarchy =
       [ "polyfem::solver::Scaling", "classpolyfem_1_1solver_1_1_scaling.html", null ],
       [ "polyfem::solver::SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", null ]
     ] ],
-    [ "polyfem::utils::PeriodicBoundary", "classpolyfem_1_1utils_1_1_periodic_boundary.html", null ],
     [ "polyfem::solver::PeriodicContactForceDerivative", "classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html", null ],
     [ "polyfem::mesh::Obstacle::Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", null ],
     [ "polyfem::basis::PolygonalBasis2d", "classpolyfem_1_1basis_1_1_polygonal_basis2d.html", null ],

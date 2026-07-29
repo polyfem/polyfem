@@ -135,32 +135,13 @@
 </a>
 </g>
 </g>
-<!-- Node9 -->
-<g id="Node000009" class="node">
-<title>Node9</title>
-<g id="a_Node000009"><a xlink:href="classpolyfem_1_1solver_1_1_a_l_solver.html#a57d514630e46109bf49c28ce145e36d0" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="335,-78 193,-78 193,-48 335,-48 335,-78"/>
-<text text-anchor="start" x="201" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ALSolver</text>
-<text text-anchor="middle" x="264" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::solve_al</text>
-</a>
-</g>
-</g>
-<!-- Node6&#45;&gt;Node9 -->
-<g id="edge10_Node000006_Node000009" class="edge">
-<title>Node6&#45;&gt;Node9</title>
-<g id="a_edge10_Node000006_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M365.75,-77.62C355.55,-76.14 345.23,-74.65 335.28,-73.2"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="365.48,-81.12 375.88,-79.1 366.49,-74.2 365.48,-81.12"/>
-</a>
-</g>
-</g>
 <!-- Node10 -->
 <g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_Node000010"><a xlink:href="classpolyfem_1_1solver_1_1_a_l_solver.html#a1e475616a2d415eb880f1c1834c42242" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="335,-30 193,-30 193,0 335,0 335,-30"/>
-<text text-anchor="start" x="201" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ALSolver</text>
-<text text-anchor="middle" x="264" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::solve_reduced</text>
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1solver_1_1_a_l_solver.html#a57d514630e46109bf49c28ce145e36d0" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="335,-78 193,-78 193,-48 335,-48 335,-78"/>
+<text text-anchor="start" x="201" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ALSolver</text>
+<text text-anchor="middle" x="264" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::solve_al</text>
 </a>
 </g>
 </g>
@@ -168,6 +149,25 @@
 <g id="edge11_Node000006_Node000010" class="edge">
 <title>Node6&#45;&gt;Node10</title>
 <g id="a_edge11_Node000006_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M365.75,-77.62C355.55,-76.14 345.23,-74.65 335.28,-73.2"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="365.48,-81.12 375.88,-79.1 366.49,-74.2 365.48,-81.12"/>
+</a>
+</g>
+</g>
+<!-- Node11 -->
+<g id="Node000011" class="node">
+<title>Node11</title>
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_a_l_solver.html#a1e475616a2d415eb880f1c1834c42242" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="335,-30 193,-30 193,0 335,0 335,-30"/>
+<text text-anchor="start" x="201" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ALSolver</text>
+<text text-anchor="middle" x="264" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::solve_reduced</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node11 -->
+<g id="edge12_Node000006_Node000011" class="edge">
+<title>Node6&#45;&gt;Node11</title>
+<g id="a_edge12_Node000006_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M411.57,-70.47C390.58,-60.44 364.17,-48.38 340,-39 331.97,-35.88 323.35,-32.85 314.92,-30.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="410.27,-73.73 420.8,-74.92 413.31,-67.43 410.27,-73.73"/>
 </a>
@@ -189,6 +189,26 @@
 <g id="a_edge7_Node000007_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.85,-110.27C169.26,-110.22 160.57,-110.25 152.1,-110.36"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="177.85,-113.77 187.88,-110.36 177.91,-106.77 177.85,-113.77"/>
+</a>
+</g>
+</g>
+<!-- Node9 -->
+<g id="Node000009" class="node">
+<title>Node9</title>
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a4ed9f2d9ae3b269cf02fa6c608c43147" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="147.5,-83.5 4.5,-83.5 4.5,-42.5 147.5,-42.5 147.5,-83.5"/>
+<text text-anchor="start" x="12.5" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
+<text text-anchor="start" x="12.5" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::solve_linear</text>
+<text text-anchor="middle" x="76" y="-49.5" font-family="Helvetica,sans-Serif" font-size="10.00">_system_with_constraints</text>
+</a>
+</g>
+</g>
+<!-- Node7&#45;&gt;Node9 -->
+<g id="edge10_Node000007_Node000009" class="edge">
+<title>Node7&#45;&gt;Node9</title>
+<g id="a_edge10_Node000007_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M182.49,-93.63C170.89,-90.26 159.04,-86.82 147.65,-83.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="181.57,-97 192.15,-96.43 183.52,-90.28 181.57,-97"/>
 </a>
 </g>
 </g>
