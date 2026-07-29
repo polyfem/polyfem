@@ -11,6 +11,8 @@ var dir_eca5340f55683f095c35e15a71ea7f95 =
     [ "IncompressibleElasticVarForm.hpp", "_incompressible_elastic_var_form_8hpp.html", "_incompressible_elastic_var_form_8hpp" ],
     [ "LinearElasticVarForm.cpp", "_linear_elastic_var_form_8cpp.html", null ],
     [ "LinearElasticVarForm.hpp", "_linear_elastic_var_form_8hpp.html", "_linear_elastic_var_form_8hpp" ],
+    [ "NavierStokesFSIVarForm.cpp", "_navier_stokes_f_s_i_var_form_8cpp.html", "_navier_stokes_f_s_i_var_form_8cpp" ],
+    [ "NavierStokesFSIVarForm.hpp", "_navier_stokes_f_s_i_var_form_8hpp.html", "_navier_stokes_f_s_i_var_form_8hpp" ],
     [ "NonlinearElasticVarForm.cpp", "_nonlinear_elastic_var_form_8cpp.html", null ],
     [ "NonlinearElasticVarForm.hpp", "_nonlinear_elastic_var_form_8hpp.html", "_nonlinear_elastic_var_form_8hpp" ],
     [ "OperatorSplittingVarForm.cpp", "_operator_splitting_var_form_8cpp.html", null ],

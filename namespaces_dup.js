@@ -82,6 +82,7 @@ var namespaces_dup =
     [ "ipc", "namespaceipc.html", null ],
     [ "JIXIE", "namespace_j_i_x_i_e.html", "namespace_j_i_x_i_e" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],
+    [ "paraviewo", "namespaceparaviewo.html", null ],
     [ "polyfem", "namespacepolyfem.html", "namespacepolyfem" ],
     [ "polysolve", "namespacepolysolve.html", "namespacepolysolve" ],
     [ "pretty_print", "namespacepretty__print.html", [

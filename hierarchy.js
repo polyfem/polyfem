@@ -84,6 +84,12 @@ var hierarchy =
       [ "polyfem::assembler::MixedNLAssembler", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html", [
         [ "polyfem::assembler::ThermoElasticity", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html", null ]
       ] ],
+      [ "polyfem::assembler::MultiSpacesNLAssembler", "classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html", [
+        [ "polyfem::assembler::NavierStokesFSIInertia", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html", null ],
+        [ "polyfem::assembler::NavierStokesFSIMixed", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_mixed.html", null ],
+        [ "polyfem::assembler::NavierStokesFSIPressure", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_pressure.html", null ],
+        [ "polyfem::assembler::NavierStokesFSIVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html", null ]
+      ] ],
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
         [ "polyfem::assembler::ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", null ],
         [ "polyfem::assembler::Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", null ],
@@ -213,6 +219,7 @@ var hierarchy =
         ] ],
         [ "polyfem::solver::SmoothContactForm", "classpolyfem_1_1solver_1_1_smooth_contact_form.html", null ]
       ] ],
+      [ "polyfem::solver::FSIInterfaceForm", "classpolyfem_1_1solver_1_1_f_s_i_interface_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
@@ -220,6 +227,8 @@ var hierarchy =
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
       [ "polyfem::solver::MixedAssemblerForm", "classpolyfem_1_1solver_1_1_mixed_assembler_form.html", null ],
       [ "polyfem::solver::MixedLinearForm", "classpolyfem_1_1solver_1_1_mixed_linear_form.html", null ],
+      [ "polyfem::solver::NavierStokesFSIAveragePressureForm", "classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_average_pressure_form.html", null ],
+      [ "polyfem::solver::NavierStokesFSIForm", "classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html", null ],
       [ "polyfem::solver::NavierStokesForm", "classpolyfem_1_1solver_1_1_navier_stokes_form.html", null ],
       [ "polyfem::solver::NormalAdhesionForm", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html", null ],
       [ "polyfem::solver::PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", null ],
@@ -305,6 +314,7 @@ var hierarchy =
     [ "polyfem::mesh::Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", null ],
     [ "polyfem::mesh::MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", null ],
+    [ "polyfem::mesh::MeshWithID", "structpolyfem_1_1mesh_1_1_mesh_with_i_d.html", null ],
     [ "polyfem::assembler::MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", [
       [ "polyfem::assembler::BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", null ],
       [ "polyfem::assembler::IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", null ],
@@ -314,6 +324,9 @@ var hierarchy =
     [ "polyfem::assembler::MixedNonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
+    [ "polyfem::assembler::MultiSpacesNLAssemblerData", "classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html", [
+      [ "polyfem::assembler::NavierStokesFSIAssemblerData", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_assembler_data.html", null ]
+    ] ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html", null ],
     [ "polyfem::mesh::NCMesh3D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html", null ],
@@ -523,6 +536,7 @@ var hierarchy =
         ] ]
       ] ],
       [ "polyfem::varform::FluidVarForm", "classpolyfem_1_1varform_1_1_fluid_var_form.html", [
+        [ "polyfem::varform::NavierStokesFSIVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html", null ],
         [ "polyfem::varform::NavierStokesVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html", null ],
         [ "polyfem::varform::StokesVarForm", "classpolyfem_1_1varform_1_1_stokes_var_form.html", null ]
       ] ],

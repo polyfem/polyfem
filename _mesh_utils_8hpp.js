@@ -1,6 +1,8 @@
 var _mesh_utils_8hpp =
 [
     [ "compute_element_tags", "_mesh_utils_8hpp.html#afe2f4a1a50f2841a6eb95650ff7b1f0e", null ],
+    [ "compute_mesh_interface", "_mesh_utils_8hpp.html#a0e7e71d32e5d43e53d5bcfe1e392ae4d", null ],
+    [ "compute_mesh_interface", "_mesh_utils_8hpp.html#a8b19c253597a5f517d6093f292ecf512", null ],
     [ "count_faces", "_mesh_utils_8hpp.html#ae919a9ea2b6d1a8776134338a06238a0", null ],
     [ "extract_parent_edges", "_mesh_utils_8hpp.html#a4923ee604ddc3a313a19ef3344f0a719", null ],
     [ "extract_polyhedra", "_mesh_utils_8hpp.html#ad5d500b681dc6c18ea395e2a4424dff8", null ],

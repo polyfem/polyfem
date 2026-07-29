@@ -191,14 +191,14 @@ $(document).ready(function(){initNavTree('_pyramid_quadrature_8cpp_source.html',
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="comment">// Compute via eigenvalue method (Golub-Welsch).</span></div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            {</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <span class="comment">// Tridiagonal symmetric Jacobi matrix for Gauss-Legendre.</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                Eigen::MatrixXd J = Eigen::MatrixXd::Zero(n, n);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                Eigen::MatrixXd <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a229fe836529a54bc8a7d390148d7a488">J</a> = Eigen::MatrixXd::Zero(n, n);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; n; ++i)</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                {</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                    <span class="keyword">const</span> <span class="keywordtype">double</span> b = i / std::sqrt(4.0 * i * i - 1.0);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    J(i - 1, i) = b;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    J(i, i - 1) = b;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a229fe836529a54bc8a7d390148d7a488">J</a>(i - 1, i) = b;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a229fe836529a54bc8a7d390148d7a488">J</a>(i, i - 1) = b;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                }</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                Eigen::SelfAdjointEigenSolver&lt;Eigen::MatrixXd&gt; es(J);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                Eigen::SelfAdjointEigenSolver&lt;Eigen::MatrixXd&gt; es(<a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a229fe836529a54bc8a7d390148d7a488">J</a>);</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                t = es.eigenvalues();                                       <span class="comment">// nodes on [-1,1]</span></div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                w = 2.0 * es.eigenvectors().row(0).cwiseAbs2().transpose(); <span class="comment">// weights</span></div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
@@ -238,6 +238,7 @@ $(document).ready(function(){initNavTree('_pyramid_quadrature_8cpp_source.html',
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    } <span class="comment">// namespace quadrature</span></div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_mass_matrix_assembler_8cpp_html_a6e6c474c9eedb0961390091003af5685"><div class="ttname"><a href="_mass_matrix_assembler_8cpp.html#a6e6c474c9eedb0961390091003af5685">quadrature</a></div><div class="ttdeci">Quadrature quadrature</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00030">MassMatrixAssembler.cpp:30</a></div></div>
+<div class="ttc" id="a_navier_stokes_f_s_i_8cpp_html_a229fe836529a54bc8a7d390148d7a488"><div class="ttname"><a href="_navier_stokes_f_s_i_8cpp.html#a229fe836529a54bc8a7d390148d7a488">J</a></div><div class="ttdeci">double J</div><div class="ttdef"><b>Definition</b> <a href="_navier_stokes_f_s_i_8cpp_source.html#l00060">NavierStokesFSI.cpp:60</a></div></div>
 <div class="ttc" id="a_periodic_boundary_lagrangian_form_8cpp_html_af9379539142d8e4d6928bc99fe861014"><div class="ttname"><a href="_periodic_boundary_lagrangian_form_8cpp.html#af9379539142d8e4d6928bc99fe861014">weights</a></div><div class="ttdeci">std::vector&lt; std::pair&lt; int, double &gt; &gt; weights</div><div class="ttdef"><b>Definition</b> <a href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">PeriodicBoundaryLagrangianForm.cpp:19</a></div></div>
 <div class="ttc" id="a_pyramid_quadrature_8hpp_html"><div class="ttname"><a href="_pyramid_quadrature_8hpp.html">PyramidQuadrature.hpp</a></div></div>
 <div class="ttc" id="aauto__pyramid_8ipp_html"><div class="ttname"><a href="auto__pyramid_8ipp.html">auto_pyramid.ipp</a></div></div>

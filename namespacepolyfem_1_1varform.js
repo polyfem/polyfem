@@ -12,6 +12,7 @@ var namespacepolyfem_1_1varform =
     [ "GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", "classpolyfem_1_1varform_1_1_geometry_mapping" ],
     [ "IncompressibleElasticVarForm", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form" ],
     [ "LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", "classpolyfem_1_1varform_1_1_linear_elastic_var_form" ],
+    [ "NavierStokesFSIVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form" ],
     [ "NavierStokesVarForm", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html", "classpolyfem_1_1varform_1_1_navier_stokes_var_form" ],
     [ "NonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form.html", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form" ],
     [ "NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form" ],

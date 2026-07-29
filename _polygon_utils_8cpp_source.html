@@ -287,13 +287,13 @@ $(document).ready(function(){initNavTree('_polygon_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    }</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    {</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        Eigen::MatrixXi F(1, OV.rows());</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        Eigen::MatrixXi <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a31c266b33431325f459ca8ad899bbecb">F</a>(1, OV.rows());</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; OV.rows(); ++i)</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        {</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            F(0, i) = i;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a31c266b33431325f459ca8ad899bbecb">F</a>(0, i) = i;</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        }</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        Eigen::MatrixXd BC;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        igl::barycenter(OV, F, BC);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        igl::barycenter(OV, <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a31c266b33431325f459ca8ad899bbecb">F</a>, BC);</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordtype">int</span> n = std::min(3, (<span class="keywordtype">int</span>)BC.cols());</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        bary.setZero();</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        bary.head(n) = BC.row(0).head(n);</div>
@@ -437,6 +437,7 @@ $(document).ready(function(){initNavTree('_polygon_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
 </div>
 <div class="ttc" id="a_clipper_utils_8hpp_html"><div class="ttname"><a href="_clipper_utils_8hpp.html">ClipperUtils.hpp</a></div></div>
+<div class="ttc" id="a_navier_stokes_f_s_i_8cpp_html_a31c266b33431325f459ca8ad899bbecb"><div class="ttname"><a href="_navier_stokes_f_s_i_8cpp.html#a31c266b33431325f459ca8ad899bbecb">F</a></div><div class="ttdeci">Eigen::MatrixXd F</div><div class="ttdef"><b>Definition</b> <a href="_navier_stokes_f_s_i_8cpp_source.html#l00058">NavierStokesFSI.cpp:58</a></div></div>
 <div class="ttc" id="a_polygon_utils_8hpp_html"><div class="ttname"><a href="_polygon_utils_8hpp.html">PolygonUtils.hpp</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>

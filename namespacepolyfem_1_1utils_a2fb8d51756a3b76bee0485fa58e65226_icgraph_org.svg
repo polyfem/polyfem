@@ -94,32 +94,13 @@
 </a>
 </g>
 </g>
-<!-- Node10 -->
-<g id="Node000010" class="node">
-<title>Node10</title>
-<g id="a_Node000010"><a xlink:href="classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="626,-186 427,-186 427,-156 626,-156 626,-186"/>
-<text text-anchor="start" x="435" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
-<text text-anchor="middle" x="526.5" y="-163" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::assemble_mass_mat</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node10 -->
-<g id="edge9_Node000001_Node000010" class="edge">
-<title>Node1&#45;&gt;Node10</title>
-<g id="a_edge9_Node000001_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M651.94,-186.64C643.57,-185.58 634.87,-184.49 626.14,-183.39"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="651.61,-190.12 661.97,-187.9 652.48,-183.18 651.61,-190.12"/>
-</a>
-</g>
-</g>
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="610,-138 443,-138 443,-108 610,-108 610,-138"/>
-<text text-anchor="start" x="451" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
-<text text-anchor="middle" x="526.5" y="-115" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::assemble_mass_mat</text>
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="626,-186 427,-186 427,-156 626,-156 626,-186"/>
+<text text-anchor="start" x="435" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
+<text text-anchor="middle" x="526.5" y="-163" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::assemble_mass_mat</text>
 </a>
 </g>
 </g>
@@ -127,19 +108,18 @@
 <g id="edge10_Node000001_Node000011" class="edge">
 <title>Node1&#45;&gt;Node11</title>
 <g id="a_edge10_Node000001_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M684.32,-174.76C667.25,-165.3 646.01,-154.51 626,-147 617.1,-143.66 607.57,-140.66 598.08,-138.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="682.91,-177.98 693.34,-179.84 686.35,-171.89 682.91,-177.98"/>
+<path fill="none" stroke="#63b8ff" d="M651.94,-186.64C643.57,-185.58 634.87,-184.49 626.14,-183.39"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="651.61,-190.12 661.97,-187.9 652.48,-183.18 651.61,-190.12"/>
 </a>
 </g>
 </g>
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="599.5,-89.5 453.5,-89.5 453.5,-48.5 599.5,-48.5 599.5,-89.5"/>
-<text text-anchor="start" x="461.5" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
-<text text-anchor="start" x="461.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::assemble</text>
-<text text-anchor="middle" x="526.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">_mass_mat</text>
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="610,-138 443,-138 443,-108 610,-108 610,-138"/>
+<text text-anchor="start" x="451" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
+<text text-anchor="middle" x="526.5" y="-115" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::assemble_mass_mat</text>
 </a>
 </g>
 </g>
@@ -147,18 +127,19 @@
 <g id="edge11_Node000001_Node000012" class="edge">
 <title>Node1&#45;&gt;Node12</title>
 <g id="a_edge11_Node000001_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M701.64,-171.61C684.8,-149.85 657.01,-118 626,-99 617.85,-94 608.8,-89.78 599.59,-86.24"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="698.93,-173.82 707.75,-179.69 704.51,-169.6 698.93,-173.82"/>
+<path fill="none" stroke="#63b8ff" d="M684.32,-174.76C667.25,-165.3 646.01,-154.51 626,-147 617.1,-143.66 607.57,-140.66 598.08,-138.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="682.91,-177.98 693.34,-179.84 686.35,-171.89 682.91,-177.98"/>
 </a>
 </g>
 </g>
 <!-- Node13 -->
 <g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" target="_top" xlink:title="Initialize the masked lumped mass matrix.">
-<polygon fill="white" stroke="#666666" points="616.5,-30 436.5,-30 436.5,0 616.5,0 616.5,-30"/>
-<text text-anchor="start" x="444.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCLagrangian</text>
-<text text-anchor="middle" x="526.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::init_masked_lumped_mass</text>
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="599.5,-89.5 453.5,-89.5 453.5,-48.5 599.5,-48.5 599.5,-89.5"/>
+<text text-anchor="start" x="461.5" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
+<text text-anchor="start" x="461.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::assemble</text>
+<text text-anchor="middle" x="526.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">_mass_mat</text>
 </a>
 </g>
 </g>
@@ -166,6 +147,25 @@
 <g id="edge12_Node000001_Node000013" class="edge">
 <title>Node1&#45;&gt;Node13</title>
 <g id="a_edge12_Node000001_Node000013"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M701.64,-171.61C684.8,-149.85 657.01,-118 626,-99 617.85,-94 608.8,-89.78 599.59,-86.24"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="698.93,-173.82 707.75,-179.69 704.51,-169.6 698.93,-173.82"/>
+</a>
+</g>
+</g>
+<!-- Node14 -->
+<g id="Node000014" class="node">
+<title>Node14</title>
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" target="_top" xlink:title="Initialize the masked lumped mass matrix.">
+<polygon fill="white" stroke="#666666" points="616.5,-30 436.5,-30 436.5,0 616.5,0 616.5,-30"/>
+<text text-anchor="start" x="444.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCLagrangian</text>
+<text text-anchor="middle" x="526.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::init_masked_lumped_mass</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node14 -->
+<g id="edge13_Node000001_Node000014" class="edge">
+<title>Node1&#45;&gt;Node14</title>
+<g id="a_edge13_Node000001_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M710.63,-169.98C698.33,-135.11 671.18,-72.45 626,-39 621.33,-35.54 616.23,-32.58 610.88,-30.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="707.44,-171.49 713.97,-179.84 714.07,-169.25 707.44,-171.49"/>
 </a>
@@ -245,20 +245,40 @@
 </a>
 </g>
 </g>
-<!-- Node14 -->
-<g id="Node000014" class="node">
-<title>Node14</title>
-<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ac0e6c05d0715af9acf4fb42f8dfc1f44" target="_top" xlink:title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary.">
+<!-- Node10 -->
+<g id="Node000010" class="node">
+<title>Node10</title>
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a5ddff49852956d7654fb835ad932e177" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="386,-239.5 229,-239.5 229,-198.5 386,-198.5 386,-239.5"/>
+<text text-anchor="start" x="237" y="-227.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Navier</text>
+<text text-anchor="start" x="237" y="-216.5" font-family="Helvetica,sans-Serif" font-size="10.00">StokesFSIVarForm::assemble</text>
+<text text-anchor="middle" x="307.5" y="-205.5" font-family="Helvetica,sans-Serif" font-size="10.00">_mass_mat</text>
+</a>
+</g>
+</g>
+<!-- Node9&#45;&gt;Node10 -->
+<g id="edge9_Node000009_Node000010" class="edge">
+<title>Node9&#45;&gt;Node10</title>
+<g id="a_edge9_Node000009_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M440.68,-219C422.75,-219 403.92,-219 386.27,-219"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="440.82,-222.5 450.82,-219 440.82,-215.5 440.82,-222.5"/>
+</a>
+</g>
+</g>
+<!-- Node15 -->
+<g id="Node000015" class="node">
+<title>Node15</title>
+<g id="a_Node000015"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ac0e6c05d0715af9acf4fb42f8dfc1f44" target="_top" xlink:title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary.">
 <polygon fill="white" stroke="#666666" points="391,-30 224,-30 224,0 391,0 391,-30"/>
 <text text-anchor="start" x="232" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCLagrangian</text>
 <text text-anchor="middle" x="307.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::BCLagrangianForm</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node14 -->
-<g id="edge13_Node000013_Node000014" class="edge">
-<title>Node13&#45;&gt;Node14</title>
-<g id="a_edge13_Node000013_Node000014"><a xlink:title=" ">
+<!-- Node14&#45;&gt;Node15 -->
+<g id="edge14_Node000014_Node000015" class="edge">
+<title>Node14&#45;&gt;Node15</title>
+<g id="a_edge14_Node000014_Node000015"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M426.06,-15C414.36,-15 402.52,-15 391.08,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="426.3,-18.5 436.3,-15 426.3,-11.5 426.3,-18.5"/>
 </a>

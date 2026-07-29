@@ -140,32 +140,13 @@ var sectionId = 'dynsection-0';
 </a>
 </g>
 </g>
-<!-- Node11 -->
-<g id="Node000011" class="node">
-<title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ada498ec60df6988972f0715bb854fe7c" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
-<polygon fill="white" stroke="#666666" points="598.5,-126 447.5,-126 447.5,-96 598.5,-96 598.5,-126"/>
-<text text-anchor="start" x="455.5" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
-<text text-anchor="middle" x="523" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::init</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node11 -->
-<g id="edge10_Node000001_Node000011" class="edge">
-<title>Node1&#45;&gt;Node11</title>
-<g id="a_edge10_Node000001_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M644.69,-141.49C624.58,-136.41 602.82,-130.91 583.38,-126"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="643.85,-144.89 654.4,-143.94 645.57,-138.1 643.85,-144.89"/>
-</a>
-</g>
-</g>
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#adc1bcce8a60065a6b9a0f5367bb71dd2" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
-<polygon fill="white" stroke="#666666" points="592,-78 454,-78 454,-48 592,-48 592,-78"/>
-<text text-anchor="start" x="462" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
-<text text-anchor="middle" x="523" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::init</text>
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ada498ec60df6988972f0715bb854fe7c" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
+<polygon fill="white" stroke="#666666" points="598.5,-126 447.5,-126 447.5,-96 598.5,-96 598.5,-126"/>
+<text text-anchor="start" x="455.5" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
+<text text-anchor="middle" x="523" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::init</text>
 </a>
 </g>
 </g>
@@ -173,18 +154,18 @@ var sectionId = 'dynsection-0';
 <g id="edge11_Node000001_Node000012" class="edge">
 <title>Node1&#45;&gt;Node12</title>
 <g id="a_edge11_Node000001_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M686.72,-137.93C665.22,-122.14 633.96,-100.94 604,-87 596.9,-83.7 589.24,-80.72 581.56,-78.08"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="684.63,-140.74 694.74,-143.91 688.81,-135.13 684.63,-140.74"/>
+<path fill="none" stroke="#63b8ff" d="M644.69,-141.49C624.58,-136.41 602.82,-130.91 583.38,-126"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="643.85,-144.89 654.4,-143.94 645.57,-138.1 643.85,-144.89"/>
 </a>
 </g>
 </g>
 <!-- Node13 -->
 <g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#afdcd95c97ef0f31bd49f6108b42376f9" target="_top" xlink:title="Constructor.">
-<polygon fill="white" stroke="#666666" points="586,-30 460,-30 460,0 586,0 586,-30"/>
-<text text-anchor="start" x="468" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="523" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::State</text>
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#adc1bcce8a60065a6b9a0f5367bb71dd2" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
+<polygon fill="white" stroke="#666666" points="592,-78 454,-78 454,-48 592,-48 592,-78"/>
+<text text-anchor="start" x="462" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
+<text text-anchor="middle" x="523" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::init</text>
 </a>
 </g>
 </g>
@@ -192,6 +173,25 @@ var sectionId = 'dynsection-0';
 <g id="edge12_Node000001_Node000013" class="edge">
 <title>Node1&#45;&gt;Node13</title>
 <g id="a_edge12_Node000001_Node000013"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M686.72,-137.93C665.22,-122.14 633.96,-100.94 604,-87 596.9,-83.7 589.24,-80.72 581.56,-78.08"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="684.63,-140.74 694.74,-143.91 688.81,-135.13 684.63,-140.74"/>
+</a>
+</g>
+</g>
+<!-- Node14 -->
+<g id="Node000014" class="node">
+<title>Node14</title>
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#afdcd95c97ef0f31bd49f6108b42376f9" target="_top" xlink:title="Constructor.">
+<polygon fill="white" stroke="#666666" points="586,-30 460,-30 460,0 586,0 586,-30"/>
+<text text-anchor="start" x="468" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="523" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::State</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node14 -->
+<g id="edge13_Node000001_Node000014" class="edge">
+<title>Node1&#45;&gt;Node14</title>
+<g id="a_edge13_Node000001_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M698.2,-135.16C679.03,-108.03 644.23,-64.23 604,-39 598.47,-35.53 592.42,-32.54 586.19,-29.97"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="695.52,-137.43 704.09,-143.67 701.28,-133.45 695.52,-137.43"/>
 </a>
@@ -256,9 +256,9 @@ var sectionId = 'dynsection-0';
 <g id="Node000008" class="node">
 <title>Node8</title>
 <g id="a_Node000008"><a xlink:href="classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#afdcccc063d8631a1a8d5a5b4215404dc" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
-<polygon fill="white" stroke="#666666" points="406,-246 224,-246 224,-216 406,-216 406,-246"/>
-<text text-anchor="start" x="232" y="-234" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
-<text text-anchor="middle" x="315" y="-223" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::init</text>
+<polygon fill="white" stroke="#666666" points="406,-270 224,-270 224,-240 406,-240 406,-270"/>
+<text text-anchor="start" x="232" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
+<text text-anchor="middle" x="315" y="-247" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::init</text>
 </a>
 </g>
 </g>
@@ -266,8 +266,8 @@ var sectionId = 'dynsection-0';
 <g id="edge7_Node000007_Node000008" class="edge">
 <title>Node7&#45;&gt;Node8</title>
 <g id="a_edge7_Node000007_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M442.88,-216.22C430.88,-217.62 418.42,-219.07 406.2,-220.49"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="443.3,-219.69 452.83,-215.06 442.49,-212.74 443.3,-219.69"/>
+<path fill="none" stroke="#63b8ff" d="M447.44,-224.37C425.48,-229.49 401.65,-235.04 380.39,-240"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="448.44,-227.73 457.39,-222.06 446.85,-220.92 448.44,-227.73"/>
 </a>
 </g>
 </g>
@@ -275,9 +275,9 @@ var sectionId = 'dynsection-0';
 <g id="Node000009" class="node">
 <title>Node9</title>
 <g id="a_Node000009"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a823aa5ecbcfcac0fcbcd622167d3d6db" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
-<polygon fill="white" stroke="#666666" points="392.5,-198 237.5,-198 237.5,-168 392.5,-168 392.5,-198"/>
-<text text-anchor="start" x="245.5" y="-186" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
-<text text-anchor="middle" x="315" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::init</text>
+<polygon fill="white" stroke="#666666" points="392.5,-222 237.5,-222 237.5,-192 392.5,-192 392.5,-222"/>
+<text text-anchor="start" x="245.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
+<text text-anchor="middle" x="315" y="-199" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::init</text>
 </a>
 </g>
 </g>
@@ -285,8 +285,27 @@ var sectionId = 'dynsection-0';
 <g id="edge8_Node000007_Node000009" class="edge">
 <title>Node7&#45;&gt;Node9</title>
 <g id="a_edge8_Node000007_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M442.75,-197.77C426.34,-195.86 409.09,-193.85 392.78,-191.95"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="442.49,-201.26 452.83,-198.94 443.3,-194.31 442.49,-201.26"/>
+<path fill="none" stroke="#63b8ff" d="M442.75,-207C426.34,-207 409.09,-207 392.78,-207"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="442.83,-210.5 452.83,-207 442.83,-203.5 442.83,-210.5"/>
+</a>
+</g>
+</g>
+<!-- Node11 -->
+<g id="Node000011" class="node">
+<title>Node11</title>
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#aef196a22b2379f8d87deb0b9cd11f4db" target="_top" xlink:title="Initialize the variational formulation with the given parameters.">
+<polygon fill="white" stroke="#666666" points="385,-174 245,-174 245,-144 385,-144 385,-174"/>
+<text text-anchor="start" x="253" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Navier</text>
+<text text-anchor="middle" x="315" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">StokesFSIVarForm::init</text>
+</a>
+</g>
+</g>
+<!-- Node10&#45;&gt;Node11 -->
+<g id="edge10_Node000010_Node000011" class="edge">
+<title>Node10&#45;&gt;Node11</title>
+<g id="a_edge10_Node000010_Node000011"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M438.48,-159C420.78,-159 402.28,-159 385.18,-159"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.79,-162.5 448.79,-159 438.79,-155.5 438.79,-162.5"/>
 </a>
 </g>
 </g>

@@ -36,6 +36,7 @@ var classpolyfem_1_1varform_1_1_var_form =
     [ "save_step_state", "classpolyfem_1_1varform_1_1_var_form.html#ae6869363e7ac85f84fa129c14b97a3c1", null ],
     [ "save_subsolve", "classpolyfem_1_1varform_1_1_var_form.html#a788be52ab82d4d9ac4de029d5130b17b", null ],
     [ "save_timestep", "classpolyfem_1_1varform_1_1_var_form.html#abba5b9870e96ce5186322429099a4fc7", null ],
+    [ "save_timestep_to_vtm", "classpolyfem_1_1varform_1_1_var_form.html#aac911a0828f86567a9a023510c909ead", null ],
     [ "set_args", "classpolyfem_1_1varform_1_1_var_form.html#a43c020a05f45d9f09b3db244467007b2", null ],
     [ "set_materials", "classpolyfem_1_1varform_1_1_var_form.html#af04e33ce0b02483c6bc601b2713bd3a1", null ],
     [ "set_mesh", "classpolyfem_1_1varform_1_1_var_form.html#aafbe2e8d4a6af2fd3162b3befa55498c", null ],

@@ -1,5 +1,6 @@
 var _mesh_8hpp =
 [
+    [ "polyfem::mesh::MeshWithID", "structpolyfem_1_1mesh_1_1_mesh_with_i_d.html", "structpolyfem_1_1mesh_1_1_mesh_with_i_d" ],
     [ "polyfem::mesh::Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
     [ "polyfem::mesh::Mesh::EdgeNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes" ],
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes" ],

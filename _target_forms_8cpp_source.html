@@ -464,10 +464,10 @@ $(document).ready(function(){initNavTree('_target_forms_8cpp_source.html',''); i
 </div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
 <div class="foldopen" id="foldopen00325" data-start="{" data-end="}">
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_s_d_f_target_form.html#a176d15af96e70baeea61ce880eed74aa">  325</a></span>    <span class="keywordtype">void</span> SDFTargetForm::compute_distance(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_periodic_boundary_lagrangian_form_8cpp.html#aac0a268c6ffc2a950fbc3f53f4071162">point</a>, <span class="keywordtype">double</span> &amp;distance)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_s_d_f_target_form.html#a176d15af96e70baeea61ce880eed74aa">  325</a></span>    <span class="keywordtype">void</span> SDFTargetForm::compute_distance(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a1e265b5574ec72a1b1631f16da1938c1">point</a>, <span class="keywordtype">double</span> &amp;distance)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        distance = DBL_MAX;</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        Eigen::MatrixXd p = <a class="code hl_variable" href="_periodic_boundary_lagrangian_form_8cpp.html#aac0a268c6ffc2a950fbc3f53f4071162">point</a>.transpose();</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        Eigen::MatrixXd p = <a class="code hl_variable" href="_navier_stokes_f_s_i_8cpp.html#a1e265b5574ec72a1b1631f16da1938c1">point</a>.transpose();</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keywordflow">if</span> (dim == 2)</div>
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; t_or_uv_sampling.size() - 1; ++i)</div>
@@ -903,8 +903,8 @@ $(document).ready(function(){initNavTree('_target_forms_8cpp_source.html',''); i
 <div class="ttc" id="a_mass_8hpp_html"><div class="ttname"><a href="_mass_8hpp.html">Mass.hpp</a></div></div>
 <div class="ttc" id="a_matrix_i_o_8hpp_html"><div class="ttname"><a href="_matrix_i_o_8hpp.html">MatrixIO.hpp</a></div></div>
 <div class="ttc" id="a_maybe_parallel_for_8hpp_html"><div class="ttname"><a href="_maybe_parallel_for_8hpp.html">MaybeParallelFor.hpp</a></div></div>
+<div class="ttc" id="a_navier_stokes_f_s_i_8cpp_html_a1e265b5574ec72a1b1631f16da1938c1"><div class="ttname"><a href="_navier_stokes_f_s_i_8cpp.html#a1e265b5574ec72a1b1631f16da1938c1">point</a></div><div class="ttdeci">Eigen::RowVectorXd point</div><div class="ttdef"><b>Definition</b> <a href="_navier_stokes_f_s_i_8cpp_source.html#l00061">NavierStokesFSI.cpp:61</a></div></div>
 <div class="ttc" id="a_o_b_j_writer_8hpp_html"><div class="ttname"><a href="_o_b_j_writer_8hpp.html">OBJWriter.hpp</a></div></div>
-<div class="ttc" id="a_periodic_boundary_lagrangian_form_8cpp_html_aac0a268c6ffc2a950fbc3f53f4071162"><div class="ttname"><a href="_periodic_boundary_lagrangian_form_8cpp.html#aac0a268c6ffc2a950fbc3f53f4071162">point</a></div><div class="ttdeci">RowVectorNd point</div><div class="ttdef"><b>Definition</b> <a href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00018">PeriodicBoundaryLagrangianForm.cpp:18</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_target_forms_8hpp_html"><div class="ttname"><a href="_target_forms_8hpp.html">TargetForms.hpp</a></div></div>
 <div class="ttc" id="a_types_8hpp_html"><div class="ttname"><a href="_types_8hpp.html">Types.hpp</a></div></div>

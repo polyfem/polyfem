@@ -13,6 +13,7 @@ var classpolyfem_1_1io_1_1_out_geometry_data =
     [ "save_surface", "classpolyfem_1_1io_1_1_out_geometry_data.html#ae03b30d5c996ab5b3fd5266de3bcad92", null ],
     [ "save_volume", "classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da", null ],
     [ "save_vtu", "classpolyfem_1_1io_1_1_out_geometry_data.html#abfa73a2fcd7abdcd993993d529feddc6", null ],
+    [ "save_vtu", "classpolyfem_1_1io_1_1_out_geometry_data.html#abe2c6289fe2c9cc61ff0a6f1ee7f4d03", null ],
     [ "save_wire", "classpolyfem_1_1io_1_1_out_geometry_data.html#a73d8e9ef4fc8260849bfa536051d418b", null ],
     [ "grid_points", "classpolyfem_1_1io_1_1_out_geometry_data.html#a21f6f6b8b2aee01fc23ee4b7d3aa09e2", null ],
     [ "grid_points_bc", "classpolyfem_1_1io_1_1_out_geometry_data.html#a1180446e5cc8941d379a7f663023576d", null ],

@@ -1,5 +1,6 @@
 var _assembler_data_8hpp =
 [
+    [ "polyfem::assembler::MultiSpacesNLAssemblerData", "classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html", "classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data" ],
     [ "polyfem::assembler::NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],
     [ "polyfem::assembler::LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_linear_assembler_data" ],
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", "classpolyfem_1_1assembler_1_1_mixed_assembler_data" ],
