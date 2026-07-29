@@ -19,7 +19,7 @@ namespace polyfem::solver
 								 const double char_force,
 								 StiffnessMatrix lumped_mass,
 								 const int dimension)
-		: NLProblem(full_size, state.periodic_bc, t, forms, penalty_forms, solver, char_length, char_force, lumped_mass, dimension),
+		: NLProblem(full_size, t, forms, penalty_forms, solver, char_length, char_force, lumped_mass, dimension),
 		  state_(state),
 		  only_symmetric(solve_symmetric_macro_strain),
 		  macro_strain_constraint_(macro_strain_constraint)
