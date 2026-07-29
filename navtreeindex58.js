@@ -1,5 +1,9 @@
 var NAVTREEINDEX58 =
 {
+"namespacepyramid__bases.html#ac76c5071c49c8ff00f63487ae3fa22ce":[7,0,13,6],
+"namespacepyramid__bases.html#ae00b5f33d7e27e0c7855f23904415af6":[7,0,13,7],
+"namespacepyramid__bases.html#ae5f55a7f22d3d35e7e1daf2f64455777":[7,0,13,40],
+"namespacepyramid__bases.html#ae9a653695271bae3b899457a2a6731e4":[7,0,13,37],
 "namespacepyramid__bases.html#aec9ac5f7f90aba75a239bd52e1b9cab5":[7,0,13,19],
 "namespacepyramid__bases.html#af2cf6b43d0fd9d7d117e29dbfd7c78b0":[7,0,13,5],
 "namespacepyramid__bases.html#af8da195a687f2699503800e60e79f9f2":[7,0,13,43],
@@ -245,9 +249,5 @@ var NAVTREEINDEX58 =
 "pyramid__bases_8py.html#af8da195a687f2699503800e60e79f9f2":[9,0,1,0,1,54,43],
 "pyramid__bases_8py_source.html":[9,0,1,0,1,54],
 "pyramid__duffy_8py.html":[9,0,1,0,1,1,1],
-"pyramid__duffy_8py.html#a30d74f385bc124a6e8b3db261dd91ad8":[9,0,1,0,1,1,1,5],
-"pyramid__duffy_8py.html#a371075fded27584cc9dff2b2db61afa2":[9,0,1,0,1,1,1,1],
-"pyramid__duffy_8py.html#aaac50af3bb8b44a514fbc401ccb5ed63":[9,0,1,0,1,1,1,0],
-"pyramid__duffy_8py.html#ad397d1cd57c1c76eb912d4d91d2f4b3d":[9,0,1,0,1,1,1,2],
-"pyramid__duffy_8py.html#af04ceae80da8288c18639ea288229375":[9,0,1,0,1,1,1,3]
+"pyramid__duffy_8py.html#a30d74f385bc124a6e8b3db261dd91ad8":[9,0,1,0,1,1,1,5]
 };

@@ -11,5 +11,7 @@ var classpolyfem_1_1assembler_1_1_fiber_direction =
     [ "stiffness_rotation_voigt", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a0f41bbb014522549636cb2b314fa47b0", null ],
     [ "dir_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189", null ],
     [ "has_rotation_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55", null ],
-    [ "size_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59", null ]
+    [ "per_el_fibers_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#ac78a7cfa8ec369f071a6c98c1969e1d1", null ],
+    [ "size_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59", null ],
+    [ "use_per_element_file_", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a3d14f81f382cbecd7f106cf7c2857c37", null ]
 ];

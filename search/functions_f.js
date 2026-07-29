@@ -2,7 +2,7 @@ var searchData=
 [
   ['objreader_0',['OBJReader',['../classpolyfem_1_1io_1_1_o_b_j_reader.html#a355379bd80f9d347147f2c6ff97efcd6',1,'polyfem::io::OBJReader']]],
   ['objwriter_1',['OBJWriter',['../classpolyfem_1_1io_1_1_o_b_j_writer.html#a9a7d5152259217228b39f418d9a6db05',1,'polyfem::io::OBJWriter']]],
-  ['obstacle_2',['obstacle',['../classpolyfem_1_1mesh_1_1_obstacle.html#a608e002241d405ed009eea7e5772a8fc',1,'polyfem::mesh::Obstacle::Obstacle()'],['../classpolyfem_1_1mesh_1_1_remesher.html#a394f445d85b5ee389166c0cc44e29406',1,'polyfem::mesh::Remesher::obstacle() const']]],
+  ['obstacle_2',['obstacle',['../classpolyfem_1_1mesh_1_1_remesher.html#a394f445d85b5ee389166c0cc44e29406',1,'polyfem::mesh::Remesher::obstacle()'],['../classpolyfem_1_1mesh_1_1_obstacle.html#a608e002241d405ed009eea7e5772a8fc',1,'polyfem::mesh::Obstacle::Obstacle()']]],
   ['obstacle_5fdisplacements_3',['obstacle_displacements',['../classpolyfem_1_1mesh_1_1_remesher.html#a0576130989818e4aecfd5bb8ddabd042',1,'polyfem::mesh::Remesher']]],
   ['obstacle_5fquantities_4',['obstacle_quantities',['../classpolyfem_1_1mesh_1_1_remesher.html#a6f1c4d898515a9c0a10706564357d25b',1,'polyfem::mesh::Remesher']]],
   ['offset_5',['offset',['../classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form_1_1_block.html#ac0b2452f324f3c144ca0d86875ef29dc',1,'polyfem::solver::StackedAugmentedLagrangianForm::Block::offset()'],['../classpolyfem_1_1solver_1_1_stacked_form_1_1_block.html#a6803f5a5a17b10ab178acad77de4c200',1,'polyfem::solver::StackedForm::Block::offset()']]],

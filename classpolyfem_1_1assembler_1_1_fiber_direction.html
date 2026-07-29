@@ -158,6 +158,10 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a199f614e42818c11fa2b75fd353d2d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a456b4d071056ca373393ea8476ccaf55" id="r_a456b4d071056ca373393ea8476ccaf55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a></td></tr>
 <tr class="separator:a456b4d071056ca373393ea8476ccaf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac78a7cfa8ec369f071a6c98c1969e1d1" id="r_ac78a7cfa8ec369f071a6c98c1969e1d1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::Vector3d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#ac78a7cfa8ec369f071a6c98c1969e1d1">per_el_fibers_</a></td></tr>
+<tr class="separator:ac78a7cfa8ec369f071a6c98c1969e1d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d14f81f382cbecd7f106cf7c2857c37" id="r_a3d14f81f382cbecd7f106cf7c2857c37"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a3d14f81f382cbecd7f106cf7c2857c37">use_per_element_file_</a> = false</td></tr>
+<tr class="separator:a3d14f81f382cbecd7f106cf7c2857c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -178,7 +182,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00520">520</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00571">571</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 </div>
 </div>
@@ -246,15 +250,15 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00593">593</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00658">658</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00200">dir_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00202">has_rotation_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00201">size_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00200">dir_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00202">has_rotation_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00208">per_el_fibers_</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00201">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00209">use_per_element_file_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00051">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_fiber_direction_aafe84e9fbfe4972de5882c43b5d9c275_cgraph.svg" width="564" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_fiber_direction_aafe84e9fbfe4972de5882c43b5d9c275_cgraph.svg" width="590" height="152"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -412,9 +416,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00537">537</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00588">588</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00200">dir_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00200">dir_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00208">per_el_fibers_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00201">size_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00209">use_per_element_file_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_fiber_direction_aab88013eaf535a9e97b54f3a66e50c3d_cgraph.svg" width="606" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -434,7 +443,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00524">524</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00575">575</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00200">dir_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00201">size_</a>.</p>
 
@@ -495,7 +504,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00188">188</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00557">stiffness_rotation_voigt()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00622">stiffness_rotation_voigt()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -566,7 +575,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00557">557</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00622">622</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
@@ -602,7 +611,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00200">200</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00593">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00537">operator()()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00524">resize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00658">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00588">operator()()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00575">resize()</a>.</p>
 
 </div>
 </div>
@@ -628,7 +637,33 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00202">202</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00593">add_multimaterial()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00197">has_rotation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00658">add_multimaterial()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00197">has_rotation()</a>.</p>
+
+</div>
+</div>
+<a id="ac78a7cfa8ec369f071a6c98c1969e1d1" name="ac78a7cfa8ec369f071a6c98c1969e1d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac78a7cfa8ec369f071a6c98c1969e1d1">&#9670;&#160;</a></span>per_el_fibers_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;Eigen::Vector3d&gt; polyfem::assembler::FiberDirection::per_el_fibers_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00208">208</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00658">add_multimaterial()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00588">operator()()</a>.</p>
 
 </div>
 </div>
@@ -654,7 +689,33 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00201">201</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00593">add_multimaterial()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00524">resize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00658">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00588">operator()()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00575">resize()</a>.</p>
+
+</div>
+</div>
+<a id="a3d14f81f382cbecd7f106cf7c2857c37" name="a3d14f81f382cbecd7f106cf7c2857c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d14f81f382cbecd7f106cf7c2857c37">&#9670;&#160;</a></span>use_per_element_file_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::FiberDirection::use_per_element_file_ = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00209">209</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00658">add_multimaterial()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00588">operator()()</a>.</p>
 
 </div>
 </div>

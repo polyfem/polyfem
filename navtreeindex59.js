@@ -1,5 +1,9 @@
 var NAVTREEINDEX59 =
 {
+"pyramid__duffy_8py.html#a371075fded27584cc9dff2b2db61afa2":[9,0,1,0,1,1,1,1],
+"pyramid__duffy_8py.html#aaac50af3bb8b44a514fbc401ccb5ed63":[9,0,1,0,1,1,1,0],
+"pyramid__duffy_8py.html#ad397d1cd57c1c76eb912d4d91d2f4b3d":[9,0,1,0,1,1,1,2],
+"pyramid__duffy_8py.html#af04ceae80da8288c18639ea288229375":[9,0,1,0,1,1,1,3],
 "pyramid__duffy_8py.html#af397071faf0c689e6eac824eebc6aa86":[9,0,1,0,1,1,1,4],
 "pyramid__duffy_8py_source.html":[9,0,1,0,1,1,1],
 "q__bases_8py.html":[9,0,1,0,1,55],
@@ -245,9 +249,5 @@ var NAVTREEINDEX59 =
 "structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a13d58ffaf770926a887ffb352335498e":[7,0,9,0,73,3],
 "structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a1b86b4af37baef49af535612570fa0ac":[8,0,4,0,73,1],
 "structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a1b86b4af37baef49af535612570fa0ac":[7,0,9,0,73,1],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a2130902a9e2dcabf98a0fd111c96755e":[8,0,4,0,73,2],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a2130902a9e2dcabf98a0fd111c96755e":[7,0,9,0,73,2],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a3dd91325cd2f689e3aa2bae1677deeb1":[8,0,4,0,73,0],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a3dd91325cd2f689e3aa2bae1677deeb1":[7,0,9,0,73,0],
-"structpolyfem_1_1basis_1_1_interface_data.html":[8,0,4,1,3]
+"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a2130902a9e2dcabf98a0fd111c96755e":[8,0,4,0,73,2]
 };
