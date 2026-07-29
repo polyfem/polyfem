@@ -14,6 +14,7 @@
             "IncompressibleOgden",
             "ActiveFiber",
             "HGOFiber",
+            "HGODispersion",
             "IsochoricNeoHookean",
             "MaterialSum",
             "FixedCorotational",
@@ -374,6 +375,24 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "HGODispersion",
+        "required": [
+            "type",
+            "k1",
+            "k2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "kappa",
+            "k_chi",
+            "fiber_direction"
+        ],
+        "doc": "Modified GOH fiber model: dispersion (kappa) and smooth distension/compression switch (k_chi)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "ActiveFiber",
         "required": [
             "type",
@@ -593,6 +612,19 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Second Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/kappa",
+        "type": "include",
+        "spec_file": "value0.json",
+        "default": 0,
+        "doc": "Fiber dispersion kappa for HGODispersion (in [0, 1/d]); 0 = perfectly aligned"
+    },
+    {
+        "pointer": "/k_chi",
+        "type": "float",
+        "default": 100.0,
+        "doc": "Logistic switch smoothness k_X for HGODispersion"
     },
     {
         "pointer": "/alphas",

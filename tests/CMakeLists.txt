@@ -27,6 +27,7 @@ set(test_sources
   test_utils.cpp
   test_varform_factory.cpp
   verify_run.cpp
+  test_hgo_dispersion.cpp
 )
 
 if(POLYFEM_WITH_OPTIMIZATION)
