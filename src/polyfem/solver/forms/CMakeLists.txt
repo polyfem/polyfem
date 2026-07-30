@@ -10,6 +10,10 @@ set(SOURCES
 	MixedAssemblerForm.cpp
 	NavierStokesForm.hpp
 	NavierStokesForm.cpp
+	NavierStokesFSIForm.hpp
+	NavierStokesFSIForm.cpp
+	FSIInterfaceForm.hpp
+	FSIInterfaceForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp

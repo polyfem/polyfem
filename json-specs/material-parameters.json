@@ -5,6 +5,7 @@
         "options": [
             "Stokes",
             "NavierStokes",
+            "NavierStokesFSI",
             "OperatorSplitting",
             "Electrostatics",
             "IncompressibleLinearElasticity",
@@ -52,6 +53,46 @@
             "rho"
         ],
         "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "NavierStokesFSI",
+        "required": [
+            "type",
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id",
+            "mesh_displacement_space_id",
+            "mesh_material"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "ALE Navier-Stokes material with a nested elastic material for mesh displacement."
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "NavierStokesFSI",
+        "required": [
+            "type",
+            "viscosity",
+            "velocity_space_id",
+            "pressure_space_id",
+            "mesh_displacement_space_id",
+            "mesh_material",
+            "fluid_geometry_id",
+            "solid_geometry_id",
+            "displacement_space_id",
+            "solid_material"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Two-mesh ALE Navier-Stokes material with an independently assembled physical solid."
     },
     {
         "pointer": "/",
@@ -202,6 +243,36 @@
         "type": "int",
         "min": 0,
         "doc": "FE space ID for displacement"
+    },
+    {
+        "pointer": "/mesh_displacement_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for ALE mesh displacement"
+    },
+    {
+        "pointer": "/mesh_material",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json",
+        "doc": "Elastic material used to extend boundary motion into the fluid mesh"
+    },
+    {
+        "pointer": "/solid_material",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json",
+        "doc": "Elastic material used by the independently assembled physical solid"
+    },
+    {
+        "pointer": "/fluid_geometry_id",
+        "type": "int",
+        "min": 0,
+        "doc": "Geometry ID containing the fluid mesh"
+    },
+    {
+        "pointer": "/solid_geometry_id",
+        "type": "int",
+        "min": 0,
+        "doc": "Geometry ID containing the physical solid mesh"
     },
     {
         "pointer": "/temperature_space_id",

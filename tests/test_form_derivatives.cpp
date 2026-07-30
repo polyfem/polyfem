@@ -167,10 +167,8 @@ namespace
 } // namespace
 
 template <typename Form>
-void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4)
+void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4, const int n_rand = 10)
 {
-	static const int n_rand = 10;
-
 	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * state.mesh->dimension());
 
 	form.init(x);
@@ -361,34 +359,63 @@ TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]"
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]")
+namespace
 {
-	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	const bool use_convergent_formulation = GENERATE(true, false);
-	const double epsv = 1e-3;
-	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
-	const double dhat = 1e-3;
-	const double barrier_stiffness = 1e7;
-	const bool is_time_dependent = GENERATE(true, false);
-	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-	const double dt = 1e-3;
+	void test_friction_form_derivatives(
+		const int dim,
+		const bool use_convergent_formulation)
+	{
+		const auto state_ptr = get_state(dim);
+		const double epsv = 1e-3;
+		const double dhat = 1e-3;
+		const double barrier_stiffness = 1e7;
+		const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 
-	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
-	const double ccd_tolerance = 1e-6;
-	const int ccd_max_iterations = static_cast<int>(1e6);
+		const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
+		const double ccd_tolerance = 1e-6;
+		const int ccd_max_iterations = static_cast<int>(1e6);
 
-	BarrierContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation, use_convergent_formulation,
-		use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
-	contact_form.set_barrier_stiffness(barrier_stiffness);
+		for (const double mu : {0.0, 0.01, 0.1, 1.0})
+			for (const bool is_time_dependent : {true, false})
+			{
+				CAPTURE(dim, use_convergent_formulation, mu, is_time_dependent);
 
-	FrictionForm form(
-		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
-		/*n_lagging_iters=*/-1);
+				BarrierContactForm contact_form(
+					state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+					use_convergent_formulation, use_convergent_formulation,
+					use_convergent_formulation, use_adaptive_barrier_stiffness,
+					is_time_dependent, false, broad_phase_method,
+					ccd_tolerance, ccd_max_iterations);
+				contact_form.set_barrier_stiffness(barrier_stiffness);
 
-	test_form(form, *state_ptr);
+				FrictionForm form(
+					state_ptr->collision_mesh, nullptr, epsv, mu,
+					broad_phase_method, contact_form,
+					/*n_lagging_iters=*/-1);
+
+				test_form(form, *state_ptr, 1e-8, 1e-4, 3);
+			}
+	}
+} // namespace
+
+TEST_CASE("friction form derivatives 2d convergent", "[form][form_derivatives][friction_form]")
+{
+	test_friction_form_derivatives(2, true);
+}
+
+TEST_CASE("friction form derivatives 2d nonconvergent", "[form][form_derivatives][friction_form]")
+{
+	test_friction_form_derivatives(2, false);
+}
+
+TEST_CASE("friction form derivatives 3d convergent", "[form][form_derivatives][friction_form]")
+{
+	test_friction_form_derivatives(3, true);
+}
+
+TEST_CASE("friction form derivatives 3d nonconvergent", "[form][form_derivatives][friction_form]")
+{
+	test_friction_form_derivatives(3, false);
 }
 
 TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")

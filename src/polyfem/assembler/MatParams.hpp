@@ -200,6 +200,13 @@ namespace polyfem::assembler
 		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3>> dir_;
 		int size_;
 		bool has_rotation_;
+
+		// Per-element fiber file branch: global el_id -> unit a0.
+		// Populated only when "fiber_direction" uses the per_element_file object
+		// form; operator() then short-circuits to per_el_fibers_[el_id] and dir_
+		// is left empty. See FiberDirection::add_multimaterial in MatParams.cpp.
+		std::vector<Eigen::Vector3d> per_el_fibers_;
+		bool use_per_element_file_ = false;
 	};
 
 } // namespace polyfem::assembler

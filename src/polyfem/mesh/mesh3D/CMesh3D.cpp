@@ -9,6 +9,7 @@
 
 #include <geogram/mesh/mesh_io.h>
 #include <fstream>
+#include <unordered_map>
 
 using namespace polyfem::utils;
 
@@ -16,6 +17,130 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void CMesh3D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_cells());
+
+			auto face_key = [this](const int f) {
+				std::vector<int> key(n_face_vertices(f));
+				for (int lv = 0; lv < key.size(); ++lv)
+					key[lv] = face_vertex(f, lv);
+				std::sort(key.begin(), key.end());
+				return key;
+			};
+			auto edge_key = [this](const int e) {
+				return std::pair<int, int>(
+					std::min(edge_vertex(e, 0), edge_vertex(e, 1)),
+					std::max(edge_vertex(e, 0), edge_vertex(e, 1)));
+			};
+
+			std::unordered_map<std::vector<int>, int, utils::HashVector> old_boundary_ids;
+			std::unordered_map<std::vector<int>, FaceNodes, utils::HashVector> old_face_nodes;
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const auto key = face_key(f);
+				if (has_boundary_ids())
+					old_boundary_ids[key] = boundary_ids_[f];
+				if (f < face_nodes_.size())
+					old_face_nodes[key] = face_nodes_[f];
+			}
+
+			std::unordered_map<std::pair<int, int>, EdgeNodes, utils::HashPair> old_edge_nodes;
+			for (int e = 0; e < n_edges() && e < edge_nodes_.size(); ++e)
+				old_edge_nodes[edge_key(e)] = edge_nodes_[e];
+
+			if (cell_nodes_.size() == keep.size())
+			{
+				std::vector<CellNodes> filtered;
+				for (int c = 0; c < keep.size(); ++c)
+					if (keep[c])
+						filtered.push_back(cell_nodes_[c]);
+				cell_nodes_ = std::move(filtered);
+			}
+			filter_element_data(keep);
+
+			std::vector<bool> used_faces(mesh_.faces.size(), false);
+			for (int c = 0; c < keep.size(); ++c)
+				if (keep[c])
+					for (const int f : mesh_.elements[c].fs)
+						used_faces[f] = true;
+
+			std::vector<int> old_to_new_face(mesh_.faces.size(), -1);
+			std::vector<Face> faces;
+			faces.reserve(std::count(used_faces.begin(), used_faces.end(), true));
+			for (int f = 0; f < used_faces.size(); ++f)
+			{
+				if (!used_faces[f])
+					continue;
+				old_to_new_face[f] = faces.size();
+				faces.push_back(mesh_.faces[f]);
+				faces.back().id = faces.size() - 1;
+			}
+
+			std::vector<Element> elements;
+			elements.reserve(std::count(keep.begin(), keep.end(), true));
+			for (int c = 0; c < keep.size(); ++c)
+			{
+				if (!keep[c])
+					continue;
+				elements.push_back(mesh_.elements[c]);
+				auto &element = elements.back();
+				element.id = elements.size() - 1;
+				for (auto &f : element.fs)
+					f = old_to_new_face[f];
+			}
+			mesh_.faces = std::move(faces);
+			mesh_.elements = std::move(elements);
+
+			Navigation3D::prepare_mesh(mesh_);
+
+			if (!old_boundary_ids.empty())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const auto it = old_boundary_ids.find(face_key(f));
+					boundary_ids_[f] = it == old_boundary_ids.end() ? get_default_boundary_id(f) : it->second;
+				}
+			}
+			else
+				boundary_ids_.clear();
+
+			face_nodes_.clear();
+			if (!old_face_nodes.empty())
+			{
+				face_nodes_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const auto it = old_face_nodes.find(face_key(f));
+					if (it != old_face_nodes.end())
+						face_nodes_[f] = it->second;
+				}
+			}
+
+			edge_nodes_.clear();
+			if (!old_edge_nodes.empty())
+			{
+				edge_nodes_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const auto it = old_edge_nodes.find(edge_key(e));
+					if (it != old_edge_nodes.end())
+						edge_nodes_[e] = it->second;
+				}
+			}
+
+			in_ordered_edges_.resize(n_edges(), 2);
+			for (int e = 0; e < n_edges(); ++e)
+				in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
+			const int max_face_size = n_faces() == 0 ? 0 : std::max_element(mesh_.faces.begin(), mesh_.faces.end(), [](const Face &a, const Face &b) { return a.vs.size() < b.vs.size(); })->vs.size();
+			in_ordered_faces_.setConstant(n_faces(), max_face_size, -1);
+			for (int f = 0; f < n_faces(); ++f)
+				for (int lv = 0; lv < n_face_vertices(f); ++lv)
+					in_ordered_faces_(f, lv) = face_vertex(f, lv);
+			compute_elements_tag();
+		}
+
 		void CMesh3D::refine(const int n_refinement, const double t)
 		{
 			if (n_refinement <= 0)

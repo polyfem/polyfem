@@ -3,10 +3,16 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <filesystem>
 #include <fstream>
+#include <set>
 
 namespace
 {
@@ -90,6 +96,258 @@ TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][
 		REQUIRE_THROWS_WITH(
 			read_fem_mesh(units, args, ""),
 			Catch::Matchers::ContainsSubstring("stored surface selections"));
+	}
+}
+
+TEST_CASE("geometry reader applies geometry selection from the mesh object", "[geometry][split]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const std::filesystem::path mesh_path =
+		std::filesystem::path(POLYFEM_DATA_DIR) / "standard/simple_fsi_square.msh";
+	json args = fem_mesh_json(mesh_path);
+	args["geometry_selection"] = {{"same_as_volume", true}};
+	const auto mesh = read_fem_mesh(Units(), args, "");
+	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh->has_geometry_ids());
+
+	std::set<int> geometry_ids;
+	for (int e = 0; e < mesh->n_elements(); ++e)
+	{
+		CHECK(mesh->get_geometry_id(e) == mesh->get_body_id(e));
+		geometry_ids.insert(mesh->get_geometry_id(e));
+	}
+	CHECK(geometry_ids == std::set<int>{1, 2});
+}
+
+TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	Eigen::Matrix<double, 4, 2> vertices;
+	vertices << 0, 0,
+		1, 0,
+		1, 1,
+		0, 1;
+	Eigen::Matrix<int, 2, 3> cells;
+	cells << 0, 1, 2,
+		0, 2, 3;
+	auto mesh = Mesh::create(vertices, cells);
+	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) { return 10 + int(e); });
+	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, const bool) { return 20 + int(v); });
+	mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, const bool boundary) { return boundary ? 7 : -1; });
+
+	const json selection = json::array({{{"id", 4}, {"box", {{-1.0, -1.0}, {0.49, 2.0}}}, {"boundary_only", false}},
+										{{"id", 9}, {"box", {{0.49, -1.0}, {2.0, 2.0}}}, {"boundary_only", false}}});
+	apply_geometry_selection(*mesh, selection, "");
+	REQUIRE(mesh->get_geometry_ids() == std::vector<int>{9, 4});
+
+	auto pieces = mesh->split();
+	REQUIRE(pieces.size() == 2);
+	CHECK(pieces[0].id == 4);
+	CHECK(pieces[1].id == 9);
+	for (const auto &piece : pieces)
+	{
+		CHECK(piece.mesh->n_elements() == 1);
+		CHECK(piece.mesh->get_geometry_id(0) == piece.id);
+		CHECK(piece.mesh->n_vertices() == 4);
+		CHECK(piece.mesh->has_node_ids());
+		CHECK(piece.mesh->has_boundary_ids());
+		for (int edge = 0; edge < piece.mesh->n_edges(); ++edge)
+			CHECK_NOTHROW(piece.mesh->get_boundary_id(edge));
+	}
+	CHECK(pieces[0].mesh->get_body_id(0) == 11);
+	CHECK(pieces[1].mesh->get_body_id(0) == 10);
+
+	const auto &first = dynamic_cast<const Mesh2D &>(*pieces[0].mesh);
+	const auto &second = dynamic_cast<const Mesh2D &>(*pieces[1].mesh);
+	const auto interface_pairs = compute_mesh_interface(first, second);
+	REQUIRE(interface_pairs.size() == 1);
+	CHECK(interface_pairs[0].first.face == 0);
+	CHECK(interface_pairs[0].second.face == 0);
+}
+
+TEST_CASE("split defaults to geometry zero", "[geometry][split]")
+{
+	using namespace polyfem::mesh;
+	Eigen::Matrix<double, 4, 2> vertices;
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::Matrix<int, 2, 3> cells;
+	cells << 0, 1, 2, 0, 2, 3;
+	auto mesh = Mesh::create(vertices, cells);
+	auto pieces = mesh->split();
+	REQUIRE(pieces.size() == 1);
+	CHECK(pieces[0].id == 0);
+	CHECK(pieces[0].mesh->n_elements() == 2);
+}
+
+TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	Eigen::Matrix<double, 4, 2> vertices;
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::Matrix<int, 2, 3> cells;
+	cells << 0, 1, 2, 0, 2, 3;
+
+	auto mesh = Mesh::create(vertices, cells);
+	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
+		return e == 0 ? 7 : 12;
+	});
+	apply_geometry_selection(*mesh, {{"same_as_volume", true}}, "");
+	CHECK(mesh->get_geometry_ids() == std::vector<int>{7, 12});
+
+	auto pieces = mesh->split();
+	REQUIRE(pieces.size() == 2);
+	CHECK(pieces[0].id == 7);
+	CHECK(pieces[1].id == 12);
+
+	auto default_mesh = Mesh::create(vertices, cells);
+	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, "");
+	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
+}
+
+TEST_CASE("mesh interface is empty for separated meshes", "[geometry][split]")
+{
+	using namespace polyfem::mesh;
+	Eigen::Matrix<double, 3, 2> vertices;
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::Matrix<int, 1, 3> cell;
+	cell << 0, 1, 2;
+	auto first = Mesh::create(vertices, cell);
+	vertices.rowwise() += Eigen::RowVector2d(3, 0);
+	auto second = Mesh::create(vertices, cell);
+	CHECK(compute_mesh_interface(
+			  dynamic_cast<const Mesh2D &>(*first),
+			  dynamic_cast<const Mesh2D &>(*second))
+			  .empty());
+}
+
+TEST_CASE("geometry split finds a 3D interface", "[geometry][split]")
+{
+	using namespace polyfem::mesh;
+	Eigen::Matrix<double, 5, 3> vertices;
+	vertices << 0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
+		0, 0, -1;
+	Eigen::Matrix<int, 2, 4> cells;
+	cells << 0, 1, 2, 3,
+		0, 2, 1, 4;
+	auto mesh = Mesh::create(vertices, cells);
+	mesh->set_geometry_ids({2, 3});
+	auto pieces = mesh->split();
+	REQUIRE(pieces.size() == 2);
+	const auto &first = dynamic_cast<const Mesh3D &>(*pieces[0].mesh);
+	const auto &second = dynamic_cast<const Mesh3D &>(*pieces[1].mesh);
+	const auto interface_pairs = compute_mesh_interface(first, second);
+	REQUIRE(interface_pairs.size() == 1);
+	CHECK(interface_pairs[0].first.element == 0);
+	CHECK(interface_pairs[0].second.element == 0);
+}
+
+TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][split][ncmesh]")
+{
+	using namespace polyfem::mesh;
+
+	SECTION("2D")
+	{
+		Eigen::Matrix<double, 4, 2> vertices;
+		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+		Eigen::Matrix<int, 2, 3> cells;
+		cells << 0, 1, 2, 0, 2, 3;
+		auto mesh = Mesh::create(vertices, cells, true);
+		mesh->set_geometry_ids({1, 2});
+		auto pieces = mesh->split();
+		REQUIRE(pieces.size() == 2);
+		CHECK(pieces[0].mesh->n_elements() == 1);
+		CHECK(pieces[1].mesh->n_elements() == 1);
+		const auto interface_pairs = compute_mesh_interface(
+			dynamic_cast<const Mesh2D &>(*pieces[0].mesh),
+			dynamic_cast<const Mesh2D &>(*pieces[1].mesh));
+		CHECK(interface_pairs.size() == 1);
+	}
+
+	SECTION("3D")
+	{
+		Eigen::Matrix<double, 5, 3> vertices;
+		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
+		Eigen::Matrix<int, 2, 4> cells;
+		cells << 0, 1, 2, 3, 0, 2, 1, 4;
+		auto mesh = Mesh::create(vertices, cells, true);
+		mesh->set_geometry_ids({1, 2});
+		auto pieces = mesh->split();
+		REQUIRE(pieces.size() == 2);
+		CHECK(pieces[0].mesh->n_elements() == 1);
+		CHECK(pieces[1].mesh->n_elements() == 1);
+		const auto interface_pairs = compute_mesh_interface(
+			dynamic_cast<const Mesh3D &>(*pieces[0].mesh),
+			dynamic_cast<const Mesh3D &>(*pieces[1].mesh));
+		CHECK(interface_pairs.size() == 1);
+	}
+}
+
+TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][ncmesh]")
+{
+	using namespace polyfem::mesh;
+
+	SECTION("2D leader edge to follower edges")
+	{
+		Eigen::Matrix<double, 4, 2> vertices;
+		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+		Eigen::Matrix<int, 2, 3> cells;
+		cells << 0, 1, 2, 0, 2, 3;
+		auto mesh = Mesh::create(vertices, cells, true);
+		auto &ncmesh = dynamic_cast<NCMesh2D &>(*mesh);
+		ncmesh.refine_elements({0});
+		ncmesh.prepare_mesh();
+		std::vector<int> geometry_ids(mesh->n_elements());
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			geometry_ids[e] = 1;
+			for (const int vertex : mesh->element_vertices(e))
+				if (mesh->point(vertex).x() < mesh->point(vertex).y())
+					geometry_ids[e] = 2;
+		}
+		mesh->set_geometry_ids(geometry_ids);
+
+		auto pieces = mesh->split();
+		REQUIRE(pieces.size() == 2);
+		const auto interface_pairs = compute_mesh_interface(
+			dynamic_cast<const Mesh2D &>(*pieces[0].mesh),
+			dynamic_cast<const Mesh2D &>(*pieces[1].mesh));
+		CHECK(interface_pairs.size() == 2);
+	}
+
+	SECTION("3D leader face to follower faces")
+	{
+		Eigen::Matrix<double, 5, 3> vertices;
+		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
+		Eigen::Matrix<int, 2, 4> cells;
+		cells << 0, 1, 2, 3, 0, 2, 1, 4;
+		auto mesh = Mesh::create(vertices, cells, true);
+		auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
+		ncmesh.refine_elements({0});
+		ncmesh.prepare_mesh();
+		std::vector<int> geometry_ids(mesh->n_elements());
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			geometry_ids[e] = 1;
+			for (const int vertex : mesh->element_vertices(e))
+				if (mesh->point(vertex).z() < 0)
+					geometry_ids[e] = 2;
+		}
+		mesh->set_geometry_ids(geometry_ids);
+
+		auto pieces = mesh->split();
+		REQUIRE(pieces.size() == 2);
+		const auto interface_pairs = compute_mesh_interface(
+			dynamic_cast<const Mesh3D &>(*pieces[0].mesh),
+			dynamic_cast<const Mesh3D &>(*pieces[1].mesh));
+		CHECK(interface_pairs.size() == 4);
 	}
 }
 

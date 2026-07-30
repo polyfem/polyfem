@@ -97,7 +97,7 @@ TEST_CASE("residual problem value is squared residual norm", "[form][navier_stok
 		json({{"solver", "Eigen::SparseLU"}}), logger());
 
 	solver::NLProblem problem(
-		2, nullptr, 0, forms, constraints, linear_solver,
+		2, 0, forms, constraints, linear_solver,
 		1, 1, identity_matrix(2), 2, /*is_residual=*/true);
 	const Eigen::Vector2d x(4, 2);
 	CHECK(problem.value(x) == Catch::Approx((x - target).squaredNorm()));

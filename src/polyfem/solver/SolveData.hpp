@@ -24,11 +24,6 @@ namespace polyfem::time_integrator
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
 
-namespace polyfem::utils
-{
-	class PeriodicBoundary;
-}
-
 namespace polyfem::assembler
 {
 	class ViscousDamping;
@@ -106,6 +101,7 @@ namespace polyfem::solver
 			const size_t obstacle_ndof,
 			const std::vector<std::string> &hard_constraint_files,
 			const std::vector<json> &soft_constraint_files,
+			const json &zero_mean,
 
 			// Contact form
 			const bool contact_enabled,
@@ -146,7 +142,6 @@ namespace polyfem::solver
 			// Periodic contact
 			const bool periodic_contact,
 			const Eigen::VectorXi &tiled_to_single,
-			const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 
 			// Friction form
 			const double friction_coefficient,
@@ -157,7 +152,13 @@ namespace polyfem::solver
 			const json &rayleigh_damping,
 
 			// BC augmented-Lagrangian mass-metric lumping ("row_sum" or "hrz")
-			const std::string &al_lumping = "row_sum");
+			const std::string &al_lumping = "row_sum",
+
+			// Boundary-ID periodic constraints
+			const mesh::Mesh *periodic_mesh = nullptr,
+			const std::vector<mesh::LocalBoundary> *periodic_local_boundary = nullptr,
+			const json &periodic_conditions = json::array(),
+			const int fe_space_id = -1);
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution
