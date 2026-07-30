@@ -101,7 +101,7 @@ namespace polyfem::solver
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;
 		/// lumping mode for the mass metric: "row_sum" (with HRZ fallback) or "hrz"
-		std::string lumping_ = "row_sum";      ///< mass matrix masked by the AL dofs
+		std::string lumping_ = "row_sum"; ///< mass matrix masked by the AL dofs
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param mass Mass matrix
