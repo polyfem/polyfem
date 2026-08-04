@@ -1879,7 +1879,7 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
-        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension. If the file has a .json extension, it is instead read as an array of Dirichlet boundary condition objects and expanded inline."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
