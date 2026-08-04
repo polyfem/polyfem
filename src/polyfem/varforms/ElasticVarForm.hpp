@@ -44,9 +44,21 @@ namespace polyfem::varform
 		void build_rhs_assembler() override;
 
 		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
-		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const;
-		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const;
-		void initial_elastic_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
+		void initial_velocity(
+			Eigen::MatrixXd &velocity,
+			const InitialConditionOverride *override = nullptr,
+			const std::string &state_prefix = "") const;
+		void initial_velocity(Eigen::MatrixXd &velocity, const std::string &state_prefix) const;
+		void initial_acceleration(
+			Eigen::MatrixXd &acceleration,
+			const InitialConditionOverride *override = nullptr,
+			const std::string &state_prefix = "") const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration, const std::string &state_prefix) const;
+		void initial_elastic_solution(
+			Eigen::MatrixXd &solution,
+			const InitialConditionOverride *override = nullptr,
+			const std::string &state_prefix = "") const;
+		void initial_elastic_solution(Eigen::MatrixXd &solution, const std::string &state_prefix) const;
 		QuadratureOrders elastic_boundary_samples() const;
 		std::vector<int> elastic_primitive_to_node() const;
 		std::vector<int> elastic_node_to_primitive() const;

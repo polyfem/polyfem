@@ -41,14 +41,14 @@ namespace polyfem::solver
 	namespace
 	{
 #ifdef POLYSOLVE_WITH_SPQR
-		void fill_cholmod(Eigen::SparseMatrix<double, Eigen::ColMajor, long> &mat, cholmod_sparse &cmat)
-		{
-			long *p = mat.outerIndexPtr();
+		using SuiteSparseMatrix = Eigen::SparseMatrix<double, Eigen::ColMajor, SuiteSparse_long>;
 
+		void fill_cholmod(SuiteSparseMatrix &mat, cholmod_sparse &cmat)
+		{
 			cmat.nzmax = mat.nonZeros();
 			cmat.nrow = mat.rows();
 			cmat.ncol = mat.cols();
-			cmat.p = p;
+			cmat.p = mat.outerIndexPtr();
 			cmat.i = mat.innerIndexPtr();
 			cmat.x = mat.valuePtr();
 			cmat.z = 0;
@@ -111,7 +111,6 @@ namespace polyfem::solver
 
 	NLProblem::NLProblem(
 		const int full_size,
-		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
@@ -316,7 +315,11 @@ namespace polyfem::solver
 
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
-		Eigen::SparseMatrix<double, Eigen::ColMajor, long> At = A.transpose();
+#ifdef POLYSOLVE_WITH_SPQR
+		SuiteSparseMatrix At = A.transpose();
+#else
+		StiffnessMatrix At = A.transpose();
+#endif
 		At.makeCompressed();
 
 		logger().debug("Constraint size: {} x {}", A.rows(), A.cols());
@@ -357,13 +360,13 @@ namespace polyfem::solver
 		if (Qc->stype != 0 || Qc->sorted != 1 || Qc->packed != 1 || Rc->stype != 0 || Rc->sorted != 1 || Rc->packed != 1)
 			log_and_throw_error("Q and R must be unsymmetric sorted and packed");
 
-		const StiffnessMatrix Q = Eigen::Map<Eigen::SparseMatrix<double, Eigen::ColMajor, long>>(
+		const SuiteSparseMatrix Q = Eigen::Map<SuiteSparseMatrix>(
 			Qc->nrow, Qc->ncol, Qc->nzmax,
-			static_cast<long *>(Qc->p), static_cast<long *>(Qc->i), static_cast<double *>(Qc->x));
+			static_cast<SuiteSparse_long *>(Qc->p), static_cast<SuiteSparse_long *>(Qc->i), static_cast<double *>(Qc->x));
 
-		const StiffnessMatrix R = Eigen::Map<Eigen::SparseMatrix<double, Eigen::ColMajor, long>>(
+		const SuiteSparseMatrix R = Eigen::Map<SuiteSparseMatrix>(
 			Rc->nrow, Rc->ncol, Rc->nzmax,
-			static_cast<long *>(Rc->p), static_cast<long *>(Rc->i), static_cast<double *>(Rc->x));
+			static_cast<SuiteSparse_long *>(Rc->p), static_cast<SuiteSparse_long *>(Rc->i), static_cast<double *>(Rc->x));
 
 		cholmod_l_free_sparse(&Qc, &cc);
 		cholmod_l_free_sparse(&Rc, &cc);
@@ -498,7 +501,7 @@ namespace polyfem::solver
 		{
 
 #ifdef POLYSOLVE_WITH_SPQR
-			Eigen::SparseMatrix<double, Eigen::ColMajor, long> R1t = R1_.transpose();
+			SuiteSparseMatrix R1t = R1_.transpose();
 			cholmod_common cc;
 			cholmod_l_start(&cc); // start CHOLMOD
 			cholmod_sparse R1tc;

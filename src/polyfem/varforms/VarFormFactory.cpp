@@ -6,6 +6,7 @@
 #include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
+#include <polyfem/varforms/NavierStokesFSIVarForm.hpp>
 #include <polyfem/varforms/OperatorSplittingVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
 #include <polyfem/varforms/ThermoElasticVarForm.hpp>
@@ -17,6 +18,30 @@ namespace polyfem::varform
 		bool has_entries(const json &args, const json::json_pointer &path)
 		{
 			return args.contains(path) && !args.at(path).empty();
+		}
+
+		bool has_two_mesh_fsi_material(const json &args)
+		{
+			if (!args.contains("materials") || args["materials"].is_null())
+				return false;
+
+			const auto has_solid_fields = [](const json &material) {
+				return material.contains("fluid_geometry_id")
+					   && material.contains("solid_geometry_id")
+					   && material.contains("displacement_space_id")
+					   && material.contains("solid_material");
+			};
+
+			const json &materials = args["materials"];
+			if (!materials.is_array())
+				return has_solid_fields(materials);
+			if (materials.empty())
+				return false;
+
+			for (const json &material : materials)
+				if (!has_solid_fields(material))
+					return false;
+			return true;
 		}
 	} // namespace
 
@@ -68,11 +93,7 @@ namespace polyfem::varform
 		if (args.value("/contact/periodic"_json_pointer, false))
 			return false;
 
-		if (args.value("/boundary_conditions/periodic_boundary/enabled"_json_pointer, false))
-			return false;
-
-		if (args.contains("/boundary_conditions/periodic_boundary/linear_displacement_offset"_json_pointer)
-			&& args.at("/boundary_conditions/periodic_boundary/linear_displacement_offset"_json_pointer).size() > 0)
+		if (args.contains("/constraints/macro_displacement_gradient"_json_pointer))
 			return false;
 
 		if (formulation == "OperatorSplitting")
@@ -80,6 +101,8 @@ namespace polyfem::varform
 
 		if (formulation == "ThermoElasticity")
 			return true;
+		if (formulation == "NavierStokesFSI")
+			return args.contains("time") && !args["time"].is_null();
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		if (!assembler)
@@ -105,9 +128,19 @@ namespace polyfem::varform
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
 								  || has_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
-		const bool has_constraints =
+		const bool has_file_constraints =
 			has_entries(args, "/constraints/hard"_json_pointer)
 			|| has_entries(args, "/constraints/soft"_json_pointer);
+		const bool has_periodic_constraints =
+			has_entries(args, "/boundary_conditions/periodic"_json_pointer);
+		const json zero_mean = args.contains("/constraints/zero_mean"_json_pointer)
+								   ? args.at("/constraints/zero_mean"_json_pointer)
+								   : json(false);
+		const bool has_zero_mean_constraints =
+			(zero_mean.is_boolean() && zero_mean.get<bool>())
+			|| (zero_mean.is_array() && !zero_mean.empty());
+		const bool has_constraints =
+			has_file_constraints || has_periodic_constraints || has_zero_mean_constraints;
 
 		if (formulation == "ThermoElasticity")
 			return (!has_pressure && !has_constraints) ? std::make_shared<ThermoElasticVarForm>() : nullptr;
@@ -118,6 +151,10 @@ namespace polyfem::varform
 			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
 		if (formulation == "NavierStokes")
 			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>() : nullptr;
+		if (formulation == "NavierStokesFSI")
+			return ((!has_contact || has_two_mesh_fsi_material(args)) && !has_constraints)
+					   ? std::make_shared<NavierStokesFSIVarForm>()
+					   : nullptr;
 		if (formulation == "OperatorSplitting")
 			return (!has_contact && !has_constraints) ? std::make_shared<OperatorSplittingVarForm>() : nullptr;
 		if (formulation == "IncompressibleLinearElasticity")
@@ -126,7 +163,7 @@ namespace polyfem::varform
 			return (!has_contact && !has_constraints) ? std::make_shared<BilaplacianVarForm>() : nullptr;
 
 		if (!assembler->is_tensor())
-			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
+			return (!has_contact && !has_pressure && !has_file_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
 
 		if (assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
 			return std::make_shared<LinearElasticVarForm>();

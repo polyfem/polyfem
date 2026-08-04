@@ -2,7 +2,10 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp> // utils::resolve_path
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 namespace polyfem::assembler
 {
@@ -14,6 +17,54 @@ namespace polyfem::assembler
 				return (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
 
 			return (nu * E) / (1.0 - nu * nu);
+		}
+
+		// Reads a named VECTORS array under CELL_DATA from a legacy ASCII VTK
+		// file. Returns one Eigen::Vector3d per cell, in file order.
+		std::vector<Eigen::Vector3d> read_cell_vectors_legacy_vtk(
+			const std::string &path, const std::string &field_name)
+		{
+			std::ifstream in(path);
+			if (!in)
+				log_and_throw_error(fmt::format("Cannot open fiber file: {}", path));
+
+			std::vector<Eigen::Vector3d> out;
+			std::string line;
+			int n_cell_data = -1;
+			bool found = false;
+
+			while (std::getline(in, line))
+			{
+				std::istringstream ss(line);
+				std::string tok;
+				ss >> tok;
+				if (tok == "CELL_DATA")
+				{
+					ss >> n_cell_data;
+				}
+				else if (tok == "VECTORS")
+				{
+					std::string name;
+					ss >> name;
+					if (name != field_name)
+						continue;
+					if (n_cell_data < 0)
+						log_and_throw_error("VECTORS encountered before CELL_DATA in fiber VTK");
+					out.resize(n_cell_data);
+					for (int i = 0; i < n_cell_data; ++i)
+					{
+						if (!(in >> out[i].x() >> out[i].y() >> out[i].z()))
+							log_and_throw_error(fmt::format(
+								"Fiber VTK '{}' ended early: expected {} vectors", path, n_cell_data));
+					}
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				log_and_throw_error(fmt::format(
+					"VECTORS '{}' not found under CELL_DATA in {}", field_name, path));
+			return out;
 		}
 
 		double convert_to_mu(const double E, const double nu)
@@ -536,6 +587,20 @@ namespace polyfem::assembler
 
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> FiberDirection::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
 	{
+		// Per-element fiber file: bound by global el_id, returned as a size_ x 1
+		// column vector so downstream is_a_vector logic is unchanged.
+		if (use_per_element_file_)
+		{
+			if (el_id < 0 || el_id >= static_cast<int>(per_el_fibers_.size()))
+				log_and_throw_error(fmt::format(
+					"Fiber el_id {} out of range [0,{})", el_id, per_el_fibers_.size()));
+			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> res;
+			res.resize(size_, 1);
+			for (int i = 0; i < size_; ++i)
+				res(i, 0) = per_el_fibers_[el_id](i);
+			return res;
+		}
+
 		assert(dir_.size() == 1 || el_id < dir_.size());
 
 		const auto &tmp = dir_.size() == 1 ? dir_[0] : dir_[el_id];
@@ -592,6 +657,32 @@ namespace polyfem::assembler
 
 	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit, const std::string &root_path)
 	{
+		// Per-element fiber file:
+		//   { "type": "per_element_file", "path": "...vtk", "field": "FIB_DIR1" }
+		// Read once at setup, bound by global el_id, normalized at load.
+		// NOTE: a JSON object with keys {type, path, field} reports size() == 3, so
+		// this MUST precede the size-based checks below to avoid being misread as a
+		// 3-component vector.
+		if (dir.is_object() && dir.value("type", std::string()) == "per_element_file")
+		{
+			const std::string field = dir.value("field", std::string("FIB_DIR1"));
+			const std::string p = utils::resolve_path(dir.at("path").get<std::string>(), root_path);
+
+			per_el_fibers_ = read_cell_vectors_legacy_vtk(p, field);
+			for (auto &v : per_el_fibers_)
+			{
+				const double n = v.norm();
+				if (n < 1e-12)
+					log_and_throw_error("Zero-length fiber vector in per-element file");
+				v /= n;
+			}
+			use_per_element_file_ = true;
+			has_rotation_ = false; // a direction vector, not a rotation matrix
+			logger().info("FiberDirection: loaded {} per-element fibers ('{}') from {}",
+						  per_el_fibers_.size(), field, p);
+			return; // dir_ left empty; operator() short-circuits
+		}
+
 		for (int i = dir_.size(); i <= index; ++i)
 		{
 			dir_.emplace_back();

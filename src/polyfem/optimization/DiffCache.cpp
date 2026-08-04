@@ -308,8 +308,7 @@ namespace polyfem
 		}
 		else
 		{
-			int mesh_dim = varform.get_mesh().dimension();
-			disp_grad_final = Eigen::MatrixXd::Zero(mesh_dim, mesh_dim);
+			disp_grad_final = varform.displacement_gradient();
 		}
 
 		StiffnessMatrix gradu_h(sol.size(), sol.size());

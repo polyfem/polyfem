@@ -19,17 +19,41 @@ namespace polyfem::solver
 								 const double char_force,
 								 StiffnessMatrix lumped_mass,
 								 const int dimension)
-		: NLProblem(full_size, state.periodic_bc, t, forms, penalty_forms, solver, char_length, char_force, lumped_mass, dimension),
-		  state_(state),
+		: NLHomoProblem(
+			  full_size, macro_strain_constraint, state.n_bases, state.mesh_nodes,
+			  t, forms, penalty_forms, solve_symmetric_macro_strain, solver,
+			  char_length, char_force, std::move(lumped_mass), dimension)
+	{
+	}
+
+	NLHomoProblem::NLHomoProblem(
+		const int full_size,
+		const assembler::MacroStrainValue &macro_strain_constraint,
+		const int n_bases,
+		std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+		const double t,
+		const std::vector<std::shared_ptr<Form>> &forms,
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+		const bool solve_symmetric_macro_strain,
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const double char_length,
+		const double char_force,
+		StiffnessMatrix lumped_mass,
+		const int dimension)
+		: NLProblem(full_size, t, forms, penalty_forms, solver, char_length, char_force, lumped_mass, dimension),
+		  n_bases_(n_bases),
+		  dimension_(dimension),
+		  mesh_nodes_(std::move(mesh_nodes)),
 		  only_symmetric(solve_symmetric_macro_strain),
 		  macro_strain_constraint_(macro_strain_constraint)
 	{
+		assert(mesh_nodes_);
 		init_projection();
 	}
 
 	void NLHomoProblem::init_projection()
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		if (only_symmetric)
 		{
 			macro_mid_to_full_.setZero(dim * dim, (dim * (dim + 1)) / 2);
@@ -57,7 +81,7 @@ namespace polyfem::solver
 
 	Eigen::VectorXd NLHomoProblem::extended_to_reduced(const Eigen::VectorXd &extended) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
@@ -70,7 +94,7 @@ namespace polyfem::solver
 
 	Eigen::VectorXd NLHomoProblem::reduced_to_extended(const Eigen::VectorXd &reduced, bool homogeneous) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 		assert(reduced.size() == dof1 + dof2);
@@ -85,7 +109,7 @@ namespace polyfem::solver
 
 	Eigen::VectorXd NLHomoProblem::extended_to_reduced_grad(const Eigen::VectorXd &extended) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
@@ -136,7 +160,7 @@ namespace polyfem::solver
 	}
 	void NLHomoProblem::extended_hessian_to_reduced_hessian(const THessian &extended, THessian &reduced) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
@@ -205,7 +229,7 @@ namespace polyfem::solver
 	}
 	Eigen::MatrixXd NLHomoProblem::reduced_to_disp_grad(const TVector &reduced, bool homogeneous) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
@@ -231,7 +255,7 @@ namespace polyfem::solver
 
 	void NLHomoProblem::set_fixed_entry(const Eigen::VectorXi &fixed_entry)
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 
 		Eigen::VectorXd fixed_mask;
 		fixed_mask.setZero(dim * dim);
@@ -252,7 +276,7 @@ namespace polyfem::solver
 
 	void NLHomoProblem::full_hessian_to_reduced_hessian(THessian &hessian) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 		const int full_size = hessian.rows();
@@ -320,21 +344,21 @@ namespace polyfem::solver
 
 	NLHomoProblem::TVector NLHomoProblem::full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
 		TVector reduced;
 		reduced.setZero(dof1 + dof2);
 
-		reduced.head(dof1) = NLProblem::full_to_reduced(full - io::Evaluator::generate_linear_field(state_.n_bases, state_.mesh_nodes, disp_grad));
+		reduced.head(dof1) = NLProblem::full_to_reduced(full - io::Evaluator::generate_linear_field(n_bases_, mesh_nodes_, disp_grad));
 		reduced.tail(dof2) = macro_full_to_reduced(utils::flatten(disp_grad));
 
 		return reduced;
 	}
 	NLHomoProblem::TVector NLHomoProblem::full_to_reduced_grad(const TVector &full) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
@@ -359,12 +383,12 @@ namespace polyfem::solver
 	}
 	NLHomoProblem::TVector NLHomoProblem::reduced_to_full(const TVector &reduced) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		const int dof2 = macro_reduced_size();
 		const int dof1 = reduced_size();
 
 		Eigen::MatrixXd disp_grad = utils::unflatten(macro_reduced_to_full(reduced.tail(dof2)), dim);
-		return NLProblem::reduced_to_full(reduced.head(dof1)) + io::Evaluator::generate_linear_field(state_.n_bases, state_.mesh_nodes, disp_grad);
+		return NLProblem::reduced_to_full(reduced.head(dof1)) + io::Evaluator::generate_linear_field(n_bases_, mesh_nodes_, disp_grad);
 	}
 
 	int NLHomoProblem::macro_reduced_size() const
@@ -467,10 +491,10 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd NLHomoProblem::constraint_grad() const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = dimension_;
 		Eigen::MatrixXd jac; // (dim*dim) x (dim*n_bases)
 
-		Eigen::MatrixXd X = io::Evaluator::get_bases_position(state_.n_bases, state_.mesh_nodes);
+		Eigen::MatrixXd X = io::Evaluator::get_bases_position(n_bases_, mesh_nodes_);
 
 		jac.setZero(dim * dim, full_size_);
 		for (int i = 0; i < X.rows(); i++)

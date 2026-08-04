@@ -2,6 +2,7 @@
 
 #include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 #include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 
 namespace polyfem::varform
 {
@@ -43,6 +44,7 @@ namespace polyfem::varform
 		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const override;
 		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const override;
 		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const override;
+		Eigen::MatrixXd displacement_gradient() const override;
 
 	protected:
 		mesh::Mesh &mutable_mesh() override;
@@ -52,8 +54,17 @@ namespace polyfem::varform
 		void init_forms(const json &args, int dim, Eigen::MatrixXd &solution, double time) override;
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &solution, bool init_lagging = true) override;
 
+	protected:
+		void init_homogenization_solve(
+			Eigen::MatrixXd &solution,
+			double time,
+			const InitialConditionOverride *initial_condition_override);
+		void solve_homogenization_step(Eigen::MatrixXd &solution, const ForwardStepCallback &post_step);
+
 	private:
 		bool differentiable_mode_ = false;
+		assembler::MacroStrainValue macro_strain_constraint_;
+		Eigen::MatrixXd displacement_gradient_;
 	};
 
 	class DifferentiableNonlinearElasticStaticVarForm final : public DifferentiableNonlinearElasticVarForm

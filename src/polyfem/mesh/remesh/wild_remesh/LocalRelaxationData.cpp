@@ -275,6 +275,7 @@ namespace polyfem::mesh
 				/*obstacle_ndof=*/0,
 				/*hard_constraint_files=*/std::vector<std::string>(),
 				/*soft_constraint_files=*/std::vector<json>(),
+				/*zero_mean=*/false,
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
@@ -304,7 +305,7 @@ namespace polyfem::mesh
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact
-				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(), /*periodicbc=*/nullptr,
+				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
 				state.args["contact"]["epsv"],

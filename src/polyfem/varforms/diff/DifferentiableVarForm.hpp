@@ -60,10 +60,13 @@ namespace polyfem::varform
 		virtual void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override = nullptr) const;
 		virtual void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *override = nullptr) const;
 		virtual void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *override = nullptr) const;
+		virtual Eigen::MatrixXd displacement_gradient() const;
 
 		void get_vertices(Eigen::MatrixXd &vertices) const;
 		std::unordered_map<int, std::array<bool, 3>> boundary_conditions_ids(const std::string &bc_type) const;
 		bool is_homogenization() const;
+		bool has_periodic_boundary() const;
+		Eigen::MatrixXd periodic_tile_offsets() const;
 		bool is_adhesion_enabled() const;
 		bool is_pressure_enabled() const;
 		bool has_constraints() const;

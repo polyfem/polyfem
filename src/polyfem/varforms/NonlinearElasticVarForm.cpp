@@ -230,9 +230,6 @@ namespace polyfem::varform
 		logger().info("Building collision mesh...");
 		build_collision_mesh(mesh, args);
 		preprocess_contact_parameters();
-		// FIXME!! handle periodic collision mesh
-		//  if (periodic_bc && args["contact"]["periodic"])
-		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
 
 		for (int i = n_fe_bases; i < space_.n_bases; ++i)
@@ -626,7 +623,7 @@ namespace polyfem::varform
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
 			// Contact form
 			args["contact"]["enabled"], collision_mesh_, args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
@@ -656,13 +653,16 @@ namespace polyfem::varform
 			// Homogenization
 			assembler::MacroStrainValue(),
 			// Periodic contact
-			false, Eigen::VectorXi(), nullptr,
+			false, Eigen::VectorXi(),
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
-			args["solver"]["rayleigh_damping"]);
+			args["solver"]["rayleigh_damping"],
+			// Boundary-ID periodic constraints
+			mesh_.get(), &boundary_.total_local_boundary,
+			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
 
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
@@ -674,6 +674,48 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::init_solve(
 		Eigen::MatrixXd &sol,
 		const double t,
+		const InitialConditionOverride *initial_condition_override)
+	{
+		init_solve_data(sol, t, "", initial_condition_override);
+
+		double characteristic_length = 0;
+		if (args["solver"]["advanced"]["characteristic_length"] > 0)
+		{
+			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
+		}
+		else
+		{
+			RowVectorNd min, max;
+			mesh_->bounding_box(min, max);
+			characteristic_length = (max - min).norm();
+		}
+
+		double characteristic_force_density = 0;
+		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
+		{
+			logger().warn("No user-specified force density was provided, defaulting to 10000.");
+			characteristic_force_density = 10000;
+		}
+		else
+		{
+			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		}
+
+		const int ndof = space_.n_bases * mesh_->dimension();
+		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
+			ndof, t, forms, solve_data_.al_form,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
+		solve_data_.nl_problem->init(sol);
+		solve_data_.nl_problem->update_quantities(t, sol);
+
+		stats.solver_info = json::array();
+	}
+
+	void NonlinearElasticVarForm::init_solve_data(
+		Eigen::MatrixXd &sol,
+		const double t,
+		const std::string &state_prefix,
 		const InitialConditionOverride *initial_condition_override)
 	{
 		assert(sol.cols() == 1);
@@ -714,12 +756,12 @@ namespace polyfem::varform
 			solve_data_.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_elastic_solution(solution, initial_condition_override); // Reload this because we need all previous solutions
-			solution.col(0) = sol;                                          // Make sure the current solution is the same as `sol`
+			initial_elastic_solution(solution, initial_condition_override, state_prefix); // Reload this because we need all previous solutions
+			solution.col(0) = sol; // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
-			initial_velocity(velocity, initial_condition_override);
+			initial_velocity(velocity, initial_condition_override, state_prefix);
 			assert(velocity.rows() == sol.size());
-			initial_acceleration(acceleration, initial_condition_override);
+			initial_acceleration(acceleration, initial_condition_override, state_prefix);
 			assert(acceleration.rows() == sol.size());
 			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
 			{
@@ -745,42 +787,54 @@ namespace polyfem::varform
 
 		init_forms(args, mesh_->dimension(), sol, t);
 
-		double characteristic_length = 0;
-		if (args["solver"]["advanced"]["characteristic_length"] > 0)
-		{
-			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
-		}
-		else
-		{
-			RowVectorNd min, max;
-			mesh_->bounding_box(min, max);
-			characteristic_length = (max - min).norm();
-		}
-
-		double characteristic_force_density = 0;
-		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
-		{
-			logger().warn("No user-specified force density was provided, defaulting to 10000.");
-			characteristic_force_density = 10000;
-		}
-		else
-		{
-			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
-		}
-
 		if (pure_mass_.size() == 0)
 			pure_mass_assembler_->assemble(mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), pure_mass_ass_vals_cache_, 0, pure_mass_, true);
+	}
 
-		const int ndof = space_.n_bases * mesh_->dimension();
-		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
-			ndof, nullptr, t, forms, solve_data_.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
-			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
-		solve_data_.nl_problem->init(sol);
-		solve_data_.nl_problem->update_quantities(t, sol);
-		// --------------------------------------------------------------------
+	void NonlinearElasticVarForm::prepare_for_embedding()
+	{
+		prepare();
+	}
 
-		stats.solver_info = json::array();
+	void NonlinearElasticVarForm::initial_solution_for_embedding(
+		Eigen::MatrixXd &solution, const std::string &state_prefix) const
+	{
+		initial_elastic_solution(solution, state_prefix);
+		if (solution.cols() > 1)
+			solution.conservativeResize(Eigen::NoChange, 1);
+	}
+
+	void NonlinearElasticVarForm::init_forms_for_embedding(
+		Eigen::MatrixXd &solution, const double t, const std::string &state_prefix)
+	{
+		prepare();
+		init_solve_data(solution, t, state_prefix);
+	}
+
+	void NonlinearElasticVarForm::advance_for_embedding(const Eigen::VectorXd &solution)
+	{
+		assert(solve_data_.time_integrator);
+		solve_data_.time_integrator->update_quantities(solution);
+		solve_data_.update_dt();
+	}
+
+	void NonlinearElasticVarForm::update_barrier_stiffness_for_embedding(
+		const Eigen::VectorXd &solution)
+	{
+		solve_data_.update_barrier_stiffness(solution);
+	}
+
+	bool NonlinearElasticVarForm::save_timestep_for_embedding(
+		const double time, const int step, const double dt,
+		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
+	{
+		return save_timestep_to_vtm(time, step, dt, solution, vtm, block_prefix);
+	}
+
+	int NonlinearElasticVarForm::embedding_ndof() const
+	{
+		return mesh_ ? space_.n_bases * mesh_->dimension() : 0;
 	}
 
 	void NonlinearElasticVarForm::solve_tensor_nonlinear(

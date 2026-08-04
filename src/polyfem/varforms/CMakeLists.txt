@@ -26,6 +26,8 @@ set(SOURCES
     ThermoElasticVarForm.cpp
     FluidVarForm.hpp
     FluidVarForm.cpp
+	NavierStokesFSIVarForm.hpp
+	NavierStokesFSIVarForm.cpp
     OperatorSplittingVarForm.hpp
     OperatorSplittingVarForm.cpp
     IncompressibleElasticVarForm.hpp

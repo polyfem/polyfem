@@ -231,43 +231,6 @@ namespace polyfem
 			Eigen::MatrixXd b = adjoint_rhs;
 
 			Eigen::MatrixXd adjoint;
-#if 0 // Periodic/prefactorized legacy path is intentionally deferred.
-			if (varform.static_linear_solver_cache)
-			{
-				b(varform.boundary_state().boundary_nodes, Eigen::all).setZero();
-
-				StiffnessMatrix A = diff_cache.gradu_h(0);
-				const int full_size = A.rows();
-				const int problem_dim = varform.get_problem().is_scalar() ? 1 : varform.get_mesh().dimension();
-				int precond_num = problem_dim * varform.primary_space().n_bases;
-
-				b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
-
-				std::vector<int> boundary_nodes_tmp;
-				if (varform.has_periodic_bc())
-				{
-					boundary_nodes_tmp = varform.periodic_bc->full_to_periodic(varform.boundary_state().boundary_nodes);
-					precond_num = varform.periodic_bc->full_to_periodic(A);
-					b = varform.periodic_bc->full_to_periodic(b, true);
-				}
-				else
-					boundary_nodes_tmp = varform.boundary_state().boundary_nodes;
-
-				adjoint.setZero(varform.primary_space().ndof(), adjoint_rhs.cols());
-				for (int i = 0; i < b.cols(); i++)
-				{
-					Eigen::VectorXd x, tmp;
-					tmp = b.col(i);
-					dirichlet_solve_prefactorized(*varform.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, x);
-
-					if (varform.has_periodic_bc())
-						adjoint.col(i) = varform.periodic_bc->periodic_to_full(full_size, x);
-					else
-						adjoint.col(i) = x;
-				}
-			}
-			else
-#endif
 			{
 				auto solver = polysolve::linear::Solver::create(varform.get_args()["solver"]["adjoint_linear"], adjoint_logger());
 

@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -32,6 +33,11 @@ namespace polyfem::varform
 		log_and_throw_error("Variational formulation {} does not expose an initial acceleration.", name());
 	}
 
+	Eigen::MatrixXd DifferentiableVarForm::displacement_gradient() const
+	{
+		return Eigen::MatrixXd::Zero(get_mesh().dimension(), get_mesh().dimension());
+	}
+
 	void DifferentiableVarForm::get_vertices(Eigen::MatrixXd &vertices) const
 	{
 		vertices.resize(get_mesh().n_vertices(), get_mesh().dimension());
@@ -58,7 +64,40 @@ namespace polyfem::varform
 
 	bool DifferentiableVarForm::is_homogenization() const
 	{
-		return !get_args()["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].empty();
+		return get_args().contains("/constraints/macro_displacement_gradient"_json_pointer);
+	}
+
+	bool DifferentiableVarForm::has_periodic_boundary() const
+	{
+		return get_args().contains("/boundary_conditions/periodic"_json_pointer)
+			   && !get_args().at("/boundary_conditions/periodic"_json_pointer).empty();
+	}
+
+	Eigen::MatrixXd DifferentiableVarForm::periodic_tile_offsets() const
+	{
+		const int dim = get_mesh().dimension();
+		const json &conditions = get_args().at("/boundary_conditions/periodic"_json_pointer);
+		Eigen::MatrixXd offsets(dim, conditions.size());
+		for (int i = 0; i < int(conditions.size()); ++i)
+		{
+			const json &condition = conditions[i];
+			if (!condition.contains("boundary_ids")
+				|| !condition["boundary_ids"].is_array()
+				|| condition["boundary_ids"].size() != 2)
+			{
+				log_and_throw_adjoint_error(
+					"Periodic boundary condition {} must contain exactly two boundary_ids.", i);
+			}
+			const std::array<int, 2> boundary_ids = {{
+				condition["boundary_ids"][0].get<int>(),
+				condition["boundary_ids"][1].get<int>()}};
+			const auto mapping = solver::PeriodicBoundaryLagrangianForm::build_mapping(
+				primary_space().ndof(), primary_space().value_dim, get_mesh(),
+				primary_space().basis_list(), boundary_state().total_local_boundary,
+				boundary_ids, condition.value("tolerance", 1e-5));
+			offsets.col(i) = mapping.translation.transpose();
+		}
+		return offsets;
 	}
 
 	bool DifferentiableVarForm::is_adhesion_enabled() const

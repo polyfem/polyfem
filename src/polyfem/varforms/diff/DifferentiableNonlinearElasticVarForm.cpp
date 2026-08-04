@@ -4,7 +4,10 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/SolverCSVWriter.hpp>
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -135,6 +138,13 @@ namespace polyfem::varform
 		NonlinearElasticVarForm::initial_acceleration(acceleration, override);
 	}
 
+	Eigen::MatrixXd DifferentiableNonlinearElasticVarForm::displacement_gradient() const
+	{
+		if (displacement_gradient_.size() > 0)
+			return displacement_gradient_;
+		return DifferentiableVarForm::displacement_gradient();
+	}
+
 	mesh::Mesh &DifferentiableNonlinearElasticVarForm::mutable_mesh()
 	{
 		assert(mesh_ && "Vertex positions can only be updated after loading a mesh");
@@ -145,6 +155,8 @@ namespace polyfem::varform
 	{
 		forms.clear();
 		solve_data_ = solver::SolveData();
+		macro_strain_constraint_ = assembler::MacroStrainValue();
+		displacement_gradient_.resize(0, 0);
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler_ = nullptr;
 		damping_prev_assembler_ = nullptr;
@@ -157,6 +169,8 @@ namespace polyfem::varform
 	{
 		forms.clear();
 		solve_data_ = solver::SolveData();
+		macro_strain_constraint_ = assembler::MacroStrainValue();
+		displacement_gradient_.resize(0, 0);
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler_ = nullptr;
 		damping_prev_assembler_ = nullptr;
@@ -208,7 +222,7 @@ namespace polyfem::varform
 			damping_assembler_->is_valid() ? damping_assembler_ : nullptr,
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
-			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
 			args["contact"]["enabled"], collision_mesh_, args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
@@ -231,12 +245,14 @@ namespace polyfem::varform
 			args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
 			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
-			assembler::MacroStrainValue(),
-			false, Eigen::VectorXi(), nullptr,
+			macro_strain_constraint_,
+			false, Eigen::VectorXi(),
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
-			args["solver"]["rayleigh_damping"]);
+			args["solver"]["rayleigh_damping"],
+			mesh_.get(), &boundary_.total_local_boundary,
+			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
 
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
@@ -318,6 +334,151 @@ namespace polyfem::varform
 		}
 	}
 
+	void DifferentiableNonlinearElasticVarForm::init_homogenization_solve(
+		Eigen::MatrixXd &solution,
+		const double time,
+		const InitialConditionOverride *initial_condition_override)
+	{
+		assert(is_homogenization());
+		macro_strain_constraint_ = assembler::MacroStrainValue();
+		macro_strain_constraint_.init(
+			mesh_->dimension(), args["constraints"]["macro_displacement_gradient"], root_path);
+		init_solve_data(solution, time, "", initial_condition_override);
+
+		for (const auto &[name, form] : solve_data_.named_forms())
+		{
+			if (name == "augmented_lagrangian")
+			{
+				form->set_weight(0);
+				form->disable();
+			}
+		}
+
+		bool solve_symmetric_macro_strain = false;
+		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
+		const int dim = mesh_->dimension();
+		for (int i = 0; i < dim && !solve_symmetric_macro_strain; ++i)
+		{
+			for (int j = 0; j < i; ++j)
+			{
+				const bool ij_fixed = std::find(
+					fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), i + j * dim)
+					!= fixed_entries.data() + fixed_entries.size();
+				const bool ji_fixed = std::find(
+					fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), j + i * dim)
+					!= fixed_entries.data() + fixed_entries.size();
+				if (!ij_fixed && !ji_fixed)
+					solve_symmetric_macro_strain = true;
+			}
+		}
+
+		double characteristic_length = args["solver"]["advanced"]["characteristic_length"];
+		if (characteristic_length <= 0)
+		{
+			RowVectorNd min, max;
+			mesh_->bounding_box(min, max);
+			characteristic_length = (max - min).norm();
+		}
+		double characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		if (characteristic_force_density <= 0)
+			characteristic_force_density = 10000;
+
+		const int ndof = space_.n_bases * dim;
+		auto homo_problem = std::make_shared<solver::NLHomoProblem>(
+			ndof, macro_strain_constraint_, space_.n_bases, space_.mesh_nodes,
+			time, forms, solve_data_.al_form, solve_symmetric_macro_strain,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			characteristic_length, characteristic_force_density, pure_mass_, dim);
+		if (solve_data_.periodic_contact_form)
+			homo_problem->add_form(solve_data_.periodic_contact_form);
+		if (solve_data_.strain_al_lagr_form)
+			homo_problem->add_form(solve_data_.strain_al_lagr_form);
+
+		solve_data_.nl_problem = homo_problem;
+		const Eigen::VectorXd initial_reduced = Eigen::VectorXd::Zero(
+			homo_problem->reduced_size() + homo_problem->macro_reduced_size());
+		homo_problem->init(initial_reduced);
+		homo_problem->update_quantities(time, initial_reduced);
+		stats.solver_info = json::array();
+	}
+
+	void DifferentiableNonlinearElasticVarForm::solve_homogenization_step(
+		Eigen::MatrixXd &solution,
+		const ForwardStepCallback &post_step)
+	{
+		auto homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data_.nl_problem);
+		assert(homo_problem && solve_data_.strain_al_lagr_form);
+
+		const int dim = mesh_->dimension();
+		Eigen::VectorXd extended_solution = Eigen::VectorXd::Zero(homo_problem->full_size() + dim * dim);
+		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
+		homo_problem->set_fixed_entry({});
+
+		auto lagrangian_form = solve_data_.strain_al_lagr_form;
+		lagrangian_form->enable();
+		Eigen::VectorXd reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		const Eigen::VectorXd initial_solution = reduced_solution;
+		const Eigen::VectorXi fixed_indices = fixed_entries.array() + homo_problem->full_size();
+		const Eigen::VectorXd fixed_values =
+			utils::flatten(macro_strain_constraint_.eval(/*time=*/0))(fixed_entries);
+		const double initial_error = lagrangian_form->compute_error(extended_solution);
+		extended_solution(fixed_indices) = fixed_values;
+		Eigen::VectorXd constrained_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->line_search_begin(reduced_solution, constrained_solution);
+
+		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
+		const double eta_tolerance = args["solver"]["augmented_lagrangian"]["eta"];
+		const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
+		lagrangian_form->set_initial_weight(al_weight);
+		bool force_al_solve = true;
+
+		while (force_al_solve
+			   || !std::isfinite(homo_problem->value(constrained_solution))
+			   || !homo_problem->is_step_valid(reduced_solution, constrained_solution)
+			   || !homo_problem->is_step_collision_free(reduced_solution, constrained_solution))
+		{
+			force_al_solve = false;
+			homo_problem->line_search_end();
+			homo_problem->init(reduced_solution);
+			auto nonlinear_solver = polysolve::nonlinear::Solver::create(
+				args["solver"]["augmented_lagrangian"]["nonlinear"],
+				args["solver"]["linear"], units.characteristic_length(), logger());
+			homo_problem->normalize_forms();
+			nonlinear_solver->minimize(*homo_problem, reduced_solution);
+
+			extended_solution = homo_problem->reduced_to_extended(reduced_solution);
+			const double current_error = lagrangian_form->compute_error(extended_solution);
+			const double eta = initial_error > 0 ? 1 - std::sqrt(current_error / initial_error) : 1;
+			if (eta < eta_tolerance && al_weight < max_weight)
+				al_weight *= scaling;
+			else
+				lagrangian_form->update_lagrangian(extended_solution, al_weight);
+			if (eta <= 0)
+				reduced_solution = initial_solution;
+
+			extended_solution(fixed_indices) = fixed_values;
+			constrained_solution = homo_problem->extended_to_reduced(extended_solution);
+			homo_problem->line_search_begin(reduced_solution, constrained_solution);
+		}
+		homo_problem->line_search_end();
+		lagrangian_form->disable();
+
+		homo_problem->set_fixed_entry(fixed_entries);
+		reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->init(reduced_solution);
+		auto nonlinear_solver = polysolve::nonlinear::Solver::create(
+			args["solver"]["nonlinear"], args["solver"]["linear"],
+			units.characteristic_length(), logger());
+		homo_problem->normalize_forms();
+		nonlinear_solver->minimize(*homo_problem, reduced_solution);
+
+		displacement_gradient_ = homo_problem->reduced_to_disp_grad(reduced_solution);
+		solution = homo_problem->reduced_to_full(reduced_solution);
+		if (post_step)
+			post_step(0, solution);
+	}
+
 	// Same as NonlinearElasticStaticVarForm
 	void DifferentiableNonlinearElasticStaticVarForm::solve_problem(
 		Eigen::MatrixXd &solution,
@@ -348,6 +509,16 @@ namespace polyfem::varform
 				assert(solution.cols() == 1 && "Static initial solution override must have exactly one column");
 			else if (solution.cols() != 1)
 				log_and_throw_error("Static elasticity requires exactly one initial solution column.");
+		}
+
+		if (is_homogenization())
+		{
+			init_homogenization_solve(solution, /*time=*/0, initial_condition_override);
+			solve_homogenization_step(solution, post_step);
+			timer.stop();
+			timings.solving_time = timer.getElapsedTime();
+			logger().info(" took {}s", timings.solving_time);
+			return;
 		}
 
 		init_solve(solution, 1.0, initial_condition_override);

@@ -41,13 +41,21 @@ namespace polyfem::solver
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: transient simulations are not supported.");
 			}
+			if (!varform->has_periodic_boundary())
+			{
+				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: periodic boundary conditions are not enabled.");
+			}
+			const Eigen::MatrixXd tile_offsets = varform->periodic_tile_offsets();
+			if (tile_offsets.rows() != dim_ || tile_offsets.cols() != dim_
+				|| Eigen::FullPivLU<Eigen::MatrixXd>(tile_offsets).rank() != dim_)
+			{
+				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: partial periodicity is not supported.");
+			}
 			if (!varform->is_homogenization())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: only homogenization problems are supported.");
 			}
 		}
-
-		log_and_throw_adjoint_error("Periodic shape optimization is not supported by the VarForm simulation path yet.");
 
 		Eigen::MatrixXd V;
 		varforms_[0]->get_vertices(V);
