@@ -88,9 +88,8 @@ namespace polyfem::varform
 				log_and_throw_adjoint_error(
 					"Periodic boundary condition {} must contain exactly two boundary_ids.", i);
 			}
-			const std::array<int, 2> boundary_ids = {{
-				condition["boundary_ids"][0].get<int>(),
-				condition["boundary_ids"][1].get<int>()}};
+			const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+													  condition["boundary_ids"][1].get<int>()}};
 			const auto mapping = solver::PeriodicBoundaryLagrangianForm::build_mapping(
 				primary_space().ndof(), primary_space().value_dim, get_mesh(),
 				primary_space().basis_list(), boundary_state().total_local_boundary,

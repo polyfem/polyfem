@@ -362,11 +362,11 @@ namespace polyfem::varform
 			for (int j = 0; j < i; ++j)
 			{
 				const bool ij_fixed = std::find(
-					fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), i + j * dim)
-					!= fixed_entries.data() + fixed_entries.size();
+										  fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), i + j * dim)
+									  != fixed_entries.data() + fixed_entries.size();
 				const bool ji_fixed = std::find(
-					fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), j + i * dim)
-					!= fixed_entries.data() + fixed_entries.size();
+										  fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), j + i * dim)
+									  != fixed_entries.data() + fixed_entries.size();
 				if (!ij_fixed && !ji_fixed)
 					solve_symmetric_macro_strain = true;
 			}

@@ -357,8 +357,8 @@ namespace polyfem
 		}
 
 		variational_formulation = is_adjoint_optimization
-			? varform::DifferentiableVarFormFactory::create(formulation, args)
-			: varform::VarFormFactory::create(formulation, args);
+									  ? varform::DifferentiableVarFormFactory::create(formulation, args)
+									  : varform::VarFormFactory::create(formulation, args);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
