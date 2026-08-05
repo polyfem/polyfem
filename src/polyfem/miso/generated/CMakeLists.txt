@@ -1,18 +1,3 @@
-include(FetchContent)
-FetchContent_Declare(misolib
-    GIT_REPOSITORY https://gitlab.com/minimize-solve/misolib.git
-    GIT_TAG f6dcd1af85ec55d3933364b4afc7fc317a9cf0c4
-)
-FetchContent_MakeAvailable(misolib)
-
-if(NOT TARGET miso)
-    add_library(miso)
-    add_library(miso::miso ALIAS miso)
-    target_compile_features(miso PRIVATE cxx_std_23)
-    target_link_libraries(miso PRIVATE misolib::misolib)
-    target_include_directories(miso PUBLIC $<TARGET_PROPERTY:misolib::misolib,INTERFACE_INCLUDE_DIRECTORIES>)
-endif()
-
 add_subdirectory(P1TriCGV)
 add_subdirectory(P2TriVal)
 add_subdirectory(P2TriCGV)
