@@ -1222,7 +1222,8 @@
             "use_adaptive_dhat",
             "periodic",
             "adhesion",
-            "use_standard_distance_type"
+            "use_standard_distance_type",
+            "tangent_point_enabled"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1517,6 +1518,12 @@
         "min": 0,
         "type": "float",
         "doc": "Tangential adhesion smoothing parameter."
+    },
+    {
+        "pointer": "/contact/tangent_point_enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Set to true to use the tangent-point energy (Yu et al. 2021 \"Repulsive Surfaces\" / Sassen et al. 2024 \"Repulsive Shells\") as the contact formulation, in place of the default barrier-based contact form. Requires contact/enabled to be true, and is mutually exclusive with use_gcp_formulation/use_high_order_formulation (checked in that priority order). Unlike the other formulations, this does not implement continuous collision detection and does NOT guarantee an intersection-free result on its own. Friction is not supported with this formulation."
     },
     {
         "pointer": "/solver",

@@ -53,6 +53,7 @@ namespace polyfem::solver
 	class PressureForm;
 	class NormalAdhesionForm;
 	class TangentialAdhesionForm;
+	class TangentPointForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -146,6 +147,9 @@ namespace polyfem::solver
 			const double tangential_adhesion_coefficient,
 			const double epsa,
 			const int tangential_adhesion_iterations,
+
+			// Tangent Point Form
+			const bool tangent_point_enabled,
 
 			// Homogenization
 			const assembler::MacroStrainValue &macro_strain_constraint,
