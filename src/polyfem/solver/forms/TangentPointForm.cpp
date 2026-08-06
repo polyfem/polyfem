@@ -35,15 +35,15 @@ namespace polyfem::solver
 
 	void TangentPointForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		ipc::PSDProjectionMethod psd_projection_method;
-
-		if (project_to_psd_) {
-			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
-			psd_projection_method = ipc::PSDProjectionMethod::NONE;
-		}
-
-		hessian = tangent_point_potential_.hessian(collision_mesh_, compute_displaced_surface(x), psd_projection_method);
+		// TPE's kernel has no built-in PSD guarantee (unlike the log-barrier
+		// forms, whose Hessian is analytically well-behaved near the active
+		// region). Unlike HighOrderContactForm's alternating +1/-1 weighted
+		// sums, TPE's face pairs never carry opposing signs, so clamping each
+		// pair's own Hessian (done inside TangentPointPotential::hessian) is
+		// always sound — always request it rather than deferring to the
+		// generic project_to_psd_ flag, which no forward-solve code path ever
+		// sets to true.
+		hessian = tangent_point_potential_.hessian(collision_mesh_, compute_displaced_surface(x), ipc::PSDProjectionMethod::CLAMP);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
