@@ -59,7 +59,6 @@ namespace polyfem::solver
 
 	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const
 	{
-		if (m_useLumpedMass) H.addDiag((weight * M_lumped).eval());
-		else                 H.addWithSubSparsityFast(*M_full, weight);
+		H.addWithSubSparsityScalarCSC(MeshFEM::ScalarCSCView::from(mass_), weight);
 	}
 } // namespace polyfem::solver

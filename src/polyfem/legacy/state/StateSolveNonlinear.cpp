@@ -323,25 +323,6 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
-		auto system_assembler = std::make_shared<polyfem::assembler::FastSystemAssembler>(assembler->size(), n_bases);
-
-		for (const auto &form : forms) {
-			form->setSystemAssembler(system_assembler);
-		}
-
-		{
-			// Evaluate block-sparse mass matrix for the InertiaForm.
-			Hessian M_full;
-			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);
-			auto &H_bcsc_ptr = M_full.get_mutable<polysolve::BCSCHessianWithFixedVars>().H;
-			for (const auto &form : forms) {
-				if (form->name() == "inertia"){
-					dynamic_cast<InertiaForm *>(form.get())->setMass(std::move(H_bcsc_ptr), mass.diagonal());
-					dynamic_cast<InertiaForm *>(form.get())->useLumpedMass(args["solver"]["advanced"]["lump_mass_matrix"]);
-				}
-			}
-		}
-
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 

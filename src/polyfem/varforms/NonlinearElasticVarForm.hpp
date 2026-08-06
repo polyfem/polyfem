@@ -9,6 +9,12 @@
 #include <ipc/collision_mesh.hpp>
 
 #include <functional>
+#include <memory>
+
+namespace polysolve::nonlinear
+{
+	class Solver;
+}
 
 namespace polyfem::varform
 {
@@ -82,6 +88,10 @@ namespace polyfem::varform
 		solver::SolveData solve_data;
 		std::vector<std::shared_ptr<solver::Form>> forms;
 		bool contact_dhat_was_explicit_ = false;
+
+		// Enable caching of nonlinear solvers across timesteps (controlled by the settings `solver/options/advanced/reuse_*_solver`)
+		std::shared_ptr<polysolve::nonlinear::Solver> full_nl_solver_;    // nonlinear solver state for full-space AL solves
+		std::shared_ptr<polysolve::nonlinear::Solver> reduced_nl_solver_; // nonlinear solver state for reduced solves
 
 		int n_obstacle_vertices() const override { return obstacle.n_vertices(); }
 	};

@@ -152,8 +152,7 @@ namespace polyfem::solver
 
 		// BlockCSCHessian additions
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const {
-			// throw std::runtime_error("hessianSparsityPattern not implemented by" + name());
-			return std::unique_ptr<BCSCHessian>(); // Non-existant by default!
+			return std::unique_ptr<BCSCHessian>(); // Non-existent by default!
 		}
 		virtual bool sparsityPatternIsStatic() const { return false; }
 

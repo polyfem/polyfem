@@ -26,6 +26,7 @@ namespace polyfem::time_integrator
 
 namespace polyfem::assembler
 {
+	class FastSystemAssembler;
 	class ViscousDamping;
 	class MacroStrainValue;
 	class PressureAssembler;
@@ -166,7 +167,6 @@ namespace polyfem::solver
 
 		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 
-	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
