@@ -108,7 +108,7 @@ namespace polyfem::solver
 		mutable Eigen::VectorXi collision_set_indicator_;
 		std::vector<std::shared_ptr<ipc::NormalCollisions>> collision_sets_;
 
-		ipc::CollisionMesh collision_mesh_;
+		CollisionMesh collision_mesh_;
 		const double dhat_;
 		const double dmin_ = 0;
 		ipc::BroadPhaseMethod broad_phase_method_;

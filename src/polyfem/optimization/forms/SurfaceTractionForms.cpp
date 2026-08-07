@@ -91,7 +91,7 @@ namespace polyfem::solver
 		void compute_collision_mesh_quantities(
 			const legacy::State &state,
 			const std::set<int> &boundary_ids,
-			const ipc::CollisionMesh &collision_mesh,
+			const CollisionMesh &collision_mesh,
 			Eigen::MatrixXd &node_positions,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles,
@@ -220,7 +220,7 @@ namespace polyfem::solver
 			const ipc::BarrierPotential &barrier_potential)
 
 		{
-			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh(is_on_surface,
+			CollisionMesh collision_mesh = CollisionMesh(is_on_surface,
 																   std::vector<bool>(is_on_surface.size(), false),
 																   node_positions,
 																   boundary_edges,
@@ -570,7 +570,7 @@ namespace polyfem::solver
 
 	// 	double barrier_stiffness = state_.solve_data.contact_form->weight();
 
-	// 	const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+	// 	const CollisionMesh &collision_mesh = state_.collision_mesh;
 	// 	Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 	// 	Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
@@ -607,7 +607,7 @@ namespace polyfem::solver
 
 	// 	double barrier_stiffness = state_.solve_data.contact_form->weight();
 
-	// 	const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+	// 	const CollisionMesh &collision_mesh = state_.collision_mesh;
 	// 	Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 	// 	Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
@@ -667,7 +667,7 @@ namespace polyfem::solver
 
 	// 	double barrier_stiffness = state_.solve_data.contact_form->weight();
 
-	// 	const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+	// 	const CollisionMesh &collision_mesh = state_.collision_mesh;
 	// 	Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 	// 	StiffnessMatrix hessian_prev(collision_mesh.ndof(), collision_mesh.ndof());
@@ -729,7 +729,7 @@ namespace polyfem::solver
 
 	// 	double barrier_stiffness = state_.solve_data.contact_form->weight();
 
-	// 	const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+	// 	const CollisionMesh &collision_mesh = state_.collision_mesh;
 	// 	Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 	// 	Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
@@ -939,7 +939,7 @@ namespace polyfem::solver
 				boundary_triangles_alt.resize(0, 0);
 		}
 
-		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+		collision_mesh_ = CollisionMesh(is_on_surface,
 											 std::vector<bool>(is_on_surface.size(), false),
 											 node_positions_,
 											 boundary_edges_alt,

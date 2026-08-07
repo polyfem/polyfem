@@ -164,7 +164,7 @@ namespace polyfem::mesh
 			Eigen::MatrixXd V_rest = rest_positions();
 			utils::append_rows(V_rest, obstacle().v());
 
-			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+			CollisionMesh collision_mesh = CollisionMesh::build_from_full_mesh(
 				V_rest, boundary_edges(), boundary_faces());
 
 #ifndef NDEBUG

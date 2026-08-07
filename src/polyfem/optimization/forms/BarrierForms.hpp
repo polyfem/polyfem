@@ -46,7 +46,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd X_init;
 
-		ipc::CollisionMesh collision_mesh_;
+		CollisionMesh collision_mesh_;
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
 		const double dmin_;
@@ -104,7 +104,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd X_init;
 
-		ipc::CollisionMesh collision_mesh_;
+		CollisionMesh collision_mesh_;
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
@@ -136,7 +136,7 @@ namespace polyfem::solver
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 
-		ipc::CollisionMesh collision_mesh_;
+		CollisionMesh collision_mesh_;
 		ipc::SmoothCollisions collisions_;
 		const ipc::SmoothContactParameters params_;
 		const double dmin_ = 0;

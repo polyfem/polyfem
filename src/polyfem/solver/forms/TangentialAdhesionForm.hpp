@@ -7,7 +7,7 @@
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/collisions/tangential/tangential_collisions.hpp>
 #include <ipc/potentials/tangential_adhesion_potential.hpp>
 #include <ipc/broad_phase/create_broad_phase.hpp>
@@ -30,7 +30,7 @@ namespace polyfem::solver
 		/// @param normal_adhesion_form Pointer to normal adhesion form; necessary to have the potential, maybe clean me
 		/// @param n_lagging_iters Number of lagging iterations
 		TangentialAdhesionForm(
-			const ipc::CollisionMesh &collision_mesh,
+			const CollisionMesh &collision_mesh,
 			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 			const double epsa,
 			const double mu,
@@ -90,7 +90,7 @@ namespace polyfem::solver
 
 	private:
 		/// Reference to the collision mesh
-		const ipc::CollisionMesh &collision_mesh_;
+		const CollisionMesh &collision_mesh_;
 
 		/// Pointer to the time integrator
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator_;

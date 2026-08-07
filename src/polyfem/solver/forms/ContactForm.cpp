@@ -17,7 +17,7 @@
 
 namespace polyfem::solver
 {
-	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
+	ContactForm::ContactForm(const CollisionMesh &collision_mesh,
 							 const double dhat,
 							 const double avg_mass,
 							 const bool use_adaptive_barrier_stiffness,
@@ -152,4 +152,94 @@ namespace polyfem::solver
 
 		return is_valid;
 	}
+
+	// Get the block variables *for the full problem* participating in the contact constraint.
+	ContactForm::TrivialContactStencil ContactForm::trivialContactStencil(const std::array<int, 4> &vertex_ids) const {
+		// Convert to block variables of the global system.
+		TrivialContactStencil result(4);
+		size_t back = 0;
+		for (int vi : vertex_ids) {
+			if (vi < 0) continue;
+			int bvar = collision_mesh_.to_full_vertex_id(vi);
+			result[back++] = bvar;
+		}
+		result.resize(back);
+		return result;
+	}
+
+	// Get the block variables *for the full problem* participating in the contact constraint; nontrivial case.
+	ContactForm::NontrivialContactStencil ContactForm::nontrivialContactStencil(const std::array<int, 4> &vertex_ids) const {
+		NontrivialContactStencil result(MAX_CONTACT_STENCIL_SIZE);
+
+		size_t back = 0;
+		for (int vi : vertex_ids)
+		{
+			if (vi < 0)
+				continue;
+
+			collision_mesh_.visit_displacement_map_row(vi, [&](int bvar, double /* weight */) {
+				if (back >= result.size())
+					log_and_throw_error("Contact stencil exceeds maximum size of {}. Consider increasing MAX_CONTACT_STENCIL_SIZE.", MAX_CONTACT_STENCIL_SIZE);
+				result[back] = bvar;
+				++back;
+			});
+		}
+
+		result.conservativeResize(back);
+		return result;
+	}
+
+	// In the case of a nontrivial contact stencil involving weighted one-to-many
+	// local-to-global mappings (e.g., when using a proxy mesh), apply a change
+	// of variables so that the block rows/cols of H_e correspond directly to
+	// the full non-deduplicated stencil and absorb all associated weights.
+	// (This is analogous to `expand_hessian_to_raw_stencil` in Assembler.cpp.)
+	void ContactForm::expandContactHessianToNontrivialStencil(
+		const std::array<int, 4> &vertex_ids,
+		Eigen::MatrixXd &H_e) const
+	{
+		const int dim = int(collision_mesh_.dim());
+
+		std::array<int, 5> offsets;
+		int ncv = 0; // number of collision mesh vertices participating in constraint (reduced stencil size)
+		int raw_stencil_size = 0;
+
+		NontrivialContactStencilWeights weights(MAX_CONTACT_STENCIL_SIZE);
+
+		for (int vi : vertex_ids)
+		{
+			if (vi < 0) continue;
+
+			offsets[ncv] = raw_stencil_size;
+			collision_mesh_.visit_displacement_map_row(vi, [&](int /* bvar */, double weight) {
+				if (raw_stencil_size >= weights.size()) log_and_throw_error("Contact stencil exceeds maximum size of {}. Consider increasing MAX_CONTACT_STENCIL_SIZE.", MAX_CONTACT_STENCIL_SIZE);
+				weights[raw_stencil_size] = weight;
+				++raw_stencil_size;
+			});
+			++ncv;
+		}
+		offsets[ncv] = raw_stencil_size;
+
+		assert(H_e.rows() == ncv * dim);
+		assert(H_e.cols() == ncv * dim);
+
+		Eigen::MatrixXd reduced_H_e = std::move(H_e);
+		H_e.resize(raw_stencil_size * dim, raw_stencil_size * dim);
+
+		for (int j = 0; j < ncv; ++j)
+		{
+			for (int i = 0; i <= j; ++i)
+			{
+				const auto block = reduced_H_e.block(i * dim, j * dim, dim, dim);
+
+				for (int ii = offsets[i]; ii < offsets[i + 1]; ++ii)
+				{
+					const int jj_begin = (i == j) ? ii : offsets[j];
+					for (int jj = jj_begin; jj < offsets[j + 1]; ++jj)
+						H_e.block(ii * dim, jj * dim, dim, dim) = weights[ii] * weights[jj] * block;
+				}
+			}
+		}
+	}
+
 } // namespace polyfem::solver

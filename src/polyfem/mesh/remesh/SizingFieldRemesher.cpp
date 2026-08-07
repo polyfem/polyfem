@@ -1,6 +1,6 @@
 #include "SizingFieldRemesher.hpp"
 
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/candidates/candidates.hpp>
 #include <ipc/broad_phase/hash_grid.hpp>
 
@@ -104,7 +104,7 @@ namespace polyfem::mesh
 	typename SizingFieldRemesher<WMTKMesh>::SparseSizingField
 	SizingFieldRemesher<WMTKMesh>::compute_contact_sizing_field_from_candidates(
 		const Candidates &candidates,
-		const ipc::CollisionMesh &collision_mesh,
+		const CollisionMesh &collision_mesh,
 		const Eigen::MatrixXd &V,
 		const double dhat) const
 	{
@@ -146,7 +146,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd V_rest = this->rest_positions();
 		utils::append_rows(V_rest, this->obstacle().v());
 
-		ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+		CollisionMesh collision_mesh = CollisionMesh::build_from_full_mesh(
 			V_rest, this->boundary_edges(), this->boundary_faces());
 
 		Eigen::MatrixXd V = this->positions();

@@ -17,10 +17,8 @@ namespace polyfem::solver
 	{
 		friend class BarrierContactForceDerivative;
 
-		using StencilMembers = MeshFEM::ElementBlockVarsWithSizeRange<1, 4>;
-
 	public:
-		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
+		BarrierContactForm(const CollisionMesh &collision_mesh,
 						   const double dhat,
 						   const double avg_mass,
 						   const bool use_area_weighting,
@@ -76,9 +74,6 @@ namespace polyfem::solver
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
-
-		int blockVarForCollisionMeshVertex(int vertex_id) const;
-		StencilMembers constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const;
 
 		virtual bool usesFastSystemAssembler() const override { return true; }
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;

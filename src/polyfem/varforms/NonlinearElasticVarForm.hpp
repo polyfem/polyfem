@@ -6,7 +6,7 @@
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/SolveData.hpp>
 
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 
 #include <functional>
 #include <memory>
@@ -76,9 +76,9 @@ namespace polyfem::varform
 			const json &args,
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
-			ipc::CollisionMesh &collision_mesh);
+			CollisionMesh &collision_mesh);
 
-		ipc::CollisionMesh collision_mesh;
+		CollisionMesh collision_mesh;
 		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;

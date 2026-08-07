@@ -11,7 +11,7 @@
 
 namespace polyfem::solver
 {
-	PeriodicContactForm::PeriodicContactForm(const ipc::CollisionMesh &periodic_collision_mesh,
+	PeriodicContactForm::PeriodicContactForm(const CollisionMesh &periodic_collision_mesh,
 											 const Eigen::VectorXi &tiled_to_single,
 											 const double dhat,
 											 const double avg_mass,

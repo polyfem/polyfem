@@ -37,7 +37,7 @@
 
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/utils/logger.hpp>
 
 #include <memory>
@@ -649,10 +649,10 @@ namespace polyfem::legacy
 		//---------------------------------------------------
 
 		/// @brief IPC collision mesh
-		ipc::CollisionMesh collision_mesh;
+		CollisionMesh collision_mesh;
 
 		/// @brief IPC collision mesh under periodic BC
-		ipc::CollisionMesh periodic_collision_mesh;
+		CollisionMesh periodic_collision_mesh;
 		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
 		Eigen::VectorXi periodic_collision_mesh_to_basis;
 
@@ -667,7 +667,7 @@ namespace polyfem::legacy
 			const json &args,
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
-			ipc::CollisionMesh &collision_mesh);
+			CollisionMesh &collision_mesh);
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();

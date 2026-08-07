@@ -83,7 +83,7 @@ namespace polyfem::solver
 
 		// Contact form
 		const bool contact_enabled,
-		const ipc::CollisionMesh &collision_mesh,
+		const CollisionMesh &collision_mesh,
 		const double dhat,
 		const double avg_mass,
 		const bool use_area_weighting,

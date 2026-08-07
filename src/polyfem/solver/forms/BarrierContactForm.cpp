@@ -14,7 +14,7 @@
 
 namespace polyfem::solver
 {
-	BarrierContactForm::BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
+	BarrierContactForm::BarrierContactForm(const CollisionMesh &collision_mesh,
 										   const double dhat,
 										   const double avg_mass,
 										   const bool use_area_weighting,
@@ -186,29 +186,15 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	
-	// Get the block variables *for the full problem* participating in the constraint.
-	BarrierContactForm::StencilMembers BarrierContactForm::constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const {
-		const auto &c = collision_set_[ci];
-		const size_t nv = c.num_vertices();
-		std::array<int, 4> vertex_ids = c.vertex_ids(collision_mesh_.edges(), collision_mesh_.faces());
-		// // Convert to block variables of the global system.
-		StencilMembers result(nv);
-		size_t back = 0;
-		for (int vi : vertex_ids) {
-			if (vi < 0) continue;
-			int bvar = blockVarForCollisionMeshVertex(vi);
-			result[back++] = bvar;
-		}
-		result.resize(back);
-		return result;
-	}
-
 	std::unique_ptr<BCSCHessian> BarrierContactForm::hessianSparsityPattern() const
 	{
-		auto blockVarForCollisionMeshVertex = [&](int vertex_id) { return collision_mesh_.to_full_vertex_id(vertex_id); };
-		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); };
-		return buildSparsityPattern(collision_set_.size(), contactStencil);
+		const auto &cm = collision_mesh_;
+		auto    trivial_stencil_getter = [this, &cm](size_t ci) { return    trivialContactStencil(collision_set_[ci].vertex_ids(cm.edges(), cm.faces())); };
+		auto nontrivial_stencil_getter = [this, &cm](size_t ci) { return nontrivialContactStencil(collision_set_[ci].vertex_ids(cm.edges(), cm.faces())); };
+
+		const bool trivial = !collision_mesh_.has_nontrivial_displacement_map();
+		if (trivial) return buildSparsityPattern(collision_set_.size(),    trivial_stencil_getter);
+		else		 return buildSparsityPattern(collision_set_.size(), nontrivial_stencil_getter);
 	}
 
 	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const
@@ -221,12 +207,24 @@ namespace polyfem::solver
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
-		auto blockVarForCollisionMeshVertex = [&](int vertex_id) { return collision_mesh_.to_full_vertex_id(vertex_id); };
-		auto contactStencil = [this, &blockVarForCollisionMeshVertex](size_t ci, StencilMembers &stencil) { stencil = constraintStencil(ci, blockVarForCollisionMeshVertex); };
-
+		const auto &cm = collision_mesh_;
 		auto X = compute_displaced_surface(x);
-		auto H_eval_e = [&](int ci, Eigen::MatrixXd &H_e) { H_e = weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method); };
-		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, contactStencil);
+		auto H_eval_e = [&](int ci, Eigen::MatrixXd &H_e) { H_e = weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, cm.edges(), cm.faces()), psd_projection_method); };
+		auto nontrivial_H_eval_e = [&](int ci, Eigen::MatrixXd &H_e) {
+			const auto vertex_ids = collision_set_[ci].vertex_ids(cm.edges(), cm.faces());
+			H_e = weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, cm.edges(), cm.faces()), psd_projection_method);
+			expandContactHessianToNontrivialStencil(vertex_ids, H_e);
+		};
+		auto    trivial_stencil_getter = [this, &cm](size_t ci,    TrivialContactStencil &stencil) { stencil = trivialContactStencil(collision_set_[ci].vertex_ids(cm.edges(), cm.faces())); };
+		auto nontrivial_stencil_getter = [this, &cm](size_t ci, NontrivialContactStencil &stencil) { stencil = nontrivialContactStencil(collision_set_[ci].vertex_ids(cm.edges(), cm.faces())); };
+
+		const bool trivial = !collision_mesh_.has_nontrivial_displacement_map();
+		if (trivial) {
+			accumulateHessianContribs(H, collision_set_.size(), H_eval_e, trivial_stencil_getter);
+			return;
+		}
+
+		accumulateHessianContribs(H, collision_set_.size(), nontrivial_H_eval_e, nontrivial_stencil_getter);
 	}
 
 	void BarrierContactForm::post_step(const polysolve::nonlinear::PostStepData &data)

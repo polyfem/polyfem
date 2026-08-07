@@ -259,7 +259,7 @@ namespace polyfem::solver
 				boundary_triangles_alt.resize(0, 0);
 		}
 
-		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+		collision_mesh_ = CollisionMesh(is_on_surface,
 											 std::vector<bool>(is_on_surface.size(), false),
 											 node_positions,
 											 boundary_edges_alt,

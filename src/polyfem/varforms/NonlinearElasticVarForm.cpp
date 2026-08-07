@@ -56,7 +56,7 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::reset()
 	{
 		ElasticVarForm::reset();
-		collision_mesh = ipc::CollisionMesh();
+		collision_mesh = CollisionMesh();
 		obstacle.clear();
 		solve_data = solver::SolveData();
 		forms.clear();
@@ -314,7 +314,7 @@ namespace polyfem::varform
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
-		ipc::CollisionMesh &collision_mesh)
+		CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
@@ -404,7 +404,7 @@ namespace polyfem::varform
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
+		std::vector<bool> is_on_surface = CollisionMesh::construct_is_on_surface(
 			collision_vertices.rows(), collision_edges);
 		for (const int vid : collision_codim_vids)
 		{
@@ -418,7 +418,7 @@ namespace polyfem::varform
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh = ipc::CollisionMesh(
+		collision_mesh = CollisionMesh(
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
