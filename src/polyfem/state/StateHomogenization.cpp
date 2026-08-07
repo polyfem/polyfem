@@ -69,6 +69,7 @@ namespace polyfem
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
+			args["contact"]["use_tpegcp_formulation"],
 			args["contact"]["alpha_t"],
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],

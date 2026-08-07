@@ -131,6 +131,7 @@ namespace polyfem::solver
 
 		// Smooth Contact Form
 		const bool use_gcp_formulation,
+		const bool use_tpegcp_formulation,
 		const double alpha_t,
 		const double alpha_n,
 		const bool use_adaptive_dhat,
@@ -421,6 +422,18 @@ namespace polyfem::solver
 						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase,
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
+				}
+				else if (use_tpegcp_formulation)
+				{
+					// Same SmoothContactForm as use_gcp_formulation, but with
+					// the TPEGCP kernel (ported from a comparison branch)
+					// swapped in for GCP's own orientation/localization
+					// terms; see ipc::SmoothContactParameters::use_tpe_kernel.
+					contact_form = std::make_shared<SmoothContactForm>(
+						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
+						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase,
+						ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale,
+						/*use_tpe_kernel=*/true);
 				}
 				else if (use_high_order_formulation)
 				{

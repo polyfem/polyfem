@@ -23,7 +23,8 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
-					const double dhat_epsilon_scale);
+					const double dhat_epsilon_scale,
+					const bool use_tpe_kernel = false);
 
 		virtual std::string name() const override { return "smooth-contact"; }
 

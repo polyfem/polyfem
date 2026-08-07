@@ -25,9 +25,11 @@ namespace polyfem::solver
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
 											   const int ccd_max_iterations,
-											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
+											   const double dhat_epsilon_scale,
+											   const bool use_tpe_kernel) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
 	{
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
+		params.use_tpe_kernel = use_tpe_kernel;
 		if (use_adaptive_dhat)
 		{
 			collision_set_.compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_.get());
@@ -91,7 +93,14 @@ namespace polyfem::solver
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);
+		// TPEGCP's kernel has no analytic PSD guarantee (same situation as
+		// TangentPointForm's standalone TPE kernel -- see the note there), so
+		// unlike GCP's own terms, always request CLAMP for it rather than
+		// deferring to project_to_psd_, which no forward-solve code path
+		// ever sets to true.
+		const auto psd_method = params.use_tpe_kernel ? ipc::PSDProjectionMethod::CLAMP
+														: (project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);
+		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), psd_method);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
