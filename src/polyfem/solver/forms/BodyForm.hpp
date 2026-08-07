@@ -52,6 +52,7 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 		// Body form is assumed to be linear, so Hessian is zero...
+		virtual bool usesFastSystemAssembler() const override { return true; }
 		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override { /* NOP */ }
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override { return nullptr; }
 		virtual bool sparsityPatternIsStatic() const override { return true; }

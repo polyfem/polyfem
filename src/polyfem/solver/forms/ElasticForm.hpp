@@ -69,6 +69,7 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		virtual bool usesFastSystemAssembler() const override { return true; }
 		void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const override;
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
 		

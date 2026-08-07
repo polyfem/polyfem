@@ -80,6 +80,7 @@ namespace polyfem::solver
 		int blockVarForCollisionMeshVertex(int vertex_id) const;
 		StencilMembers constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const;
 
+		virtual bool usesFastSystemAssembler() const override { return true; }
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
 		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
 		virtual bool sparsityPatternIsStatic() const override { return false; }

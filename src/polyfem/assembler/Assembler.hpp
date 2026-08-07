@@ -564,15 +564,14 @@ namespace polyfem::assembler
 		void operator()(int e, std::vector<int> &stencil) const {
 			const int n_loc_bases = int(m_b[e].bases.size());
 			stencil.clear();
-			stencil.reserve(n_loc_bases);
+			stencil.reserve(n_loc_bases); // global_i.size() is typically 1
 			for (int i = 0; i < n_loc_bases; ++i) {
 				const auto &global_i = m_b[e].bases[i].global();
-				for (size_t ii = 0; ii < global_i.size(); ++ii) // global_i.size() is typically 1
+				for (size_t ii = 0; ii < global_i.size(); ++ii)
 					stencil.push_back(global_i[ii].index);
 			}
 		}
 
-		// This version is currently still used by `sparsityPattern`...
 		std::vector<int> operator()(int e) const {
 			std::vector<int> stencil;
 			(*this)(e, stencil);
@@ -581,6 +580,11 @@ namespace polyfem::assembler
 	private:
 		const std::vector<basis::ElementBases> &m_b;
 	};
+
+	void expand_hessian_to_raw_stencil(
+		const ElementAssemblyValues &vals,
+		const int dim,
+		Eigen::MatrixXd &H_e);
 
 	struct ElementHessianEvaluator {
 		// Note: this must match the types used by NonLinearAssemblerData
@@ -610,6 +614,7 @@ namespace polyfem::assembler
 
 			if (m_project_to_psd) H_e = ipc::project_to_psd(H_e); // TODO: avoid memory allocations?
 			H_e *= m_weight;
+			expand_hessian_to_raw_stencil(local.vals, m_assembler.size(), H_e);
 		}
 
 		private:

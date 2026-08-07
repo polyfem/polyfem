@@ -142,10 +142,27 @@ namespace polyfem::solver
 		bool changed = updateHessianSparsityPattern();
 		if (changed) ++m_sparsityPatternID;
 
-		H = m_hessianSparsity->clone(); // Accumulate into a fresh (value-free) copy of the sparsity pattern.
+		if (m_hessianSparsity != nullptr)
+			H = m_hessianSparsity->clone(); // Accumulate into a fresh (value-free) copy of the sparsity pattern.
+		StiffnessMatrix unacceleratedHessianContribs(x.size(), x.size());
 		for (auto &f : forms_) {
 			if (!f->enabled()) continue;
-			f->accumulateHessian(f->weight() / f->scale(), x, *H);
+			if (f->usesFastSystemAssembler()) {
+				f->accumulateHessian(f->weight() / f->scale(), x, *H);
+				continue;
+			}
+
+			std::cout << "Evaluating unaccelerated Hessian for form: " << f->name() << std::endl;
+			THessian tmp;
+			f->second_derivative(x, tmp);
+			unacceleratedHessianContribs += tmp;
+		}
+
+		if ((unacceleratedHessianContribs.nonZeros() > 0) || (!H)) {
+			if (H) unacceleratedHessianContribs += hessian.as<StiffnessMatrix>();
+			hessian.emplace<StiffnessMatrix>(std::move(unacceleratedHessianContribs));
+			std::cout << "Warning: FullNLProblem::hessian: Some forms do not support fast system assembly; falling back to unaccelerated path." << std::endl;
+			++m_sparsityPatternID; // Sparsity pattern likely changed (all bets are off)...
 		}
 #endif
 	}
@@ -169,7 +186,7 @@ namespace polyfem::solver
 			if (f->sparsityPatternIsStatic()) {
 				// Only rebuild the "static" part when the terms might have been invalidated.
 				if (force) {
-					std::cout << "Building static term sparsity pattern" << std::endl;
+					// std::cout << "Building static term sparsity pattern" << std::endl;
 					auto Hsp = f->hessianSparsityPattern();
 					if (!m_hessianSparsityStaticPart) m_hessianSparsityStaticPart = std::move(Hsp);
 					else m_hessianSparsityStaticPart->mergeSparsityPattern(Hsp.get());
@@ -177,6 +194,7 @@ namespace polyfem::solver
 			}
 			else {
 				auto Hsp = f->hessianSparsityPattern();
+				if (!Hsp) continue; // Skip empty patterns, indicated by a null pointer.
 				if (!dynamicSparsity) dynamicSparsity = std::move(Hsp);
 				else dynamicSparsity->mergeSparsityPattern(Hsp.get());
 				// TODO: use `MeshFEM::SystemAssembler::detectChangedEntries` to
@@ -190,8 +208,9 @@ namespace polyfem::solver
 		}
 
 		if (changed && (!m_hessianSparsityStaticPart || m_hessianSparsityStaticPart->nnz() == 0)) {
-			std::cout << "Warning: Hessian sparsity pattern has no static part; bypassing SLRU cache" << std::endl;
+			std::cout << "Warning: Hessian sparsity pattern has no static part; bypassing LRU cache" << std::endl;
 			m_hessianSparsity = std::move(dynamicSparsity);
+			if (!m_hessianSparsity) std::cout << "Warning: Hessian sparsity pattern is empty" << std::endl;
 			return true;
 		}
 
@@ -206,8 +225,10 @@ namespace polyfem::solver
 			}
 			if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
 			else {
+				assert(dynamicSparsity != nullptr);
 				if (!m_sparsityLRU){
 					m_sparsityLRU = std::make_unique<MeshFEM::SparsityLRU>(*m_hessianSparsityStaticPart);
+					m_sparsityLRU->verbose = false;
 					m_hessianSparsity = m_hessianSparsityStaticPart->clone();
 				}
 

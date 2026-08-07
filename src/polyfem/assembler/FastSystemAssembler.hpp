@@ -44,15 +44,17 @@ namespace polyfem::assembler
 		}
 
 	private:
-		using AssemblerVariant = std::variant<MeshFEM::SystemAssembler<2>, MeshFEM::SystemAssembler<3>>;
+		using AssemblerVariant = std::variant<MeshFEM::SystemAssembler<1>, MeshFEM::SystemAssembler<2>, MeshFEM::SystemAssembler<3>>;
 
 		static AssemblerVariant make_assembler(const int dim, const int n_basis)
 		{
+			if (dim == 1)
+				return AssemblerVariant(std::in_place_type<MeshFEM::SystemAssembler<1>>, n_basis);
 			if (dim == 2)
 				return AssemblerVariant(std::in_place_type<MeshFEM::SystemAssembler<2>>, n_basis);
 			if (dim == 3)
 				return AssemblerVariant(std::in_place_type<MeshFEM::SystemAssembler<3>>, n_basis);
-			throw std::runtime_error("Unsupported dimension for SystemAssembler.");
+			throw std::runtime_error("Unsupported dimension for SystemAssembler: " + std::to_string(dim));
 		}
 
 		AssemblerVariant assembler_;

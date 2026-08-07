@@ -154,7 +154,7 @@ namespace polyfem::legacy
 				solve_data.update_dt();
 				solve_data.update_barrier_stiffness(sol);
 			}
-			save_solution(sol, t);
+			// save_solution(sol, t);
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			if (time_callback)

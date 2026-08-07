@@ -320,12 +320,14 @@ namespace polyfem::solver
 		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
 		size_t numElements = bases_.size();
-		accumulateHessianContribs(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), ElementBasisStencil(bases_));
+		ElementBasisStencil stencil(bases_);
+		accumulateHessianContribs(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), stencil);
 	}
 
 	std::unique_ptr<BCSCHessian> ElasticForm::hessianSparsityPattern() const
 	{
-		return buildSparsityPattern(bases_.size(), ElementBasisStencil(bases_));
+		ElementBasisStencil stencil(bases_);
+		return buildSparsityPattern(bases_.size(), stencil);
 	}
 
 	void ElasticForm::finish()

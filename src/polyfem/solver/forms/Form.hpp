@@ -49,8 +49,7 @@ namespace polyfem::solver
 			gradv *= weight() / scale_;
 		}
 
-		/// @brief Compute the second derivative of the value wrt x multiplied with the weigth
-		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
+		/// @brief Compute the second derivative of the value wrt x multiplied with the weight
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -149,6 +148,10 @@ namespace polyfem::solver
 
 		/// @brief gets the scale for the form
 		virtual double scale() { return scale_; }
+
+		/// @brief Determine if the form implements the following FastSystemAssembler-related methods
+		/// or if the `second_derivative` methods must instead be used.
+		virtual bool usesFastSystemAssembler() const { return false; }
 
 		// BlockCSCHessian additions
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const {
