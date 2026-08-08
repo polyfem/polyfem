@@ -668,6 +668,9 @@ namespace polyfem::solver
 			penalty_problem_->hessian(x, tmp);
 			H_eigen += tmp.as<StiffnessMatrix>();
 		}
+
+		if (hessian.is_native_type<StiffnessMatrix>())
+			++m_sparsityPatternID; // Sparsity pattern likely changed (all bets are off)...
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -791,6 +794,7 @@ namespace polyfem::solver
 			// hessian = fill_eigen(q2thq2);
 			H_eigen = Q2t_ * H_eigen * Q2_;
 			// remove numerical zeros
+			// JP: note that this is most likely a bad idea and can lead to spurious sparsity pattern changes.
 			H_eigen.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
 				return std::abs(value) > 1e-10;
 			});
