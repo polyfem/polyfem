@@ -12,7 +12,8 @@ namespace polyfem::assembler
 	{
 	public:
 		FastSystemAssembler(const int dim, const int n_basis)
-			: assembler_(make_assembler(dim, n_basis))
+			: assembler_(make_assembler(dim, n_basis)),
+			  dim_(dim)
 		{
 		}
 
@@ -43,6 +44,8 @@ namespace polyfem::assembler
 				assembler_);
 		}
 
+		int getDim() const { return dim_; }
+
 	private:
 		using AssemblerVariant = std::variant<MeshFEM::SystemAssembler<1>, MeshFEM::SystemAssembler<2>, MeshFEM::SystemAssembler<3>>;
 
@@ -58,5 +61,6 @@ namespace polyfem::assembler
 		}
 
 		AssemblerVariant assembler_;
+		int dim_;
 	};
 } // namespace polyfem::assembler

@@ -70,12 +70,9 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 		virtual bool usesFastSystemAssembler() const override { return true; }
-		void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const override;
-		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
-		
 		virtual bool sparsityPatternIsStatic() const override { return true; }
-
-
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
+		void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const override;
 
 	public:
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed

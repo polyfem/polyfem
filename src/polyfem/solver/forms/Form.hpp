@@ -152,12 +152,12 @@ namespace polyfem::solver
 		/// @brief Determine if the form implements the following FastSystemAssembler-related methods
 		/// or if the `second_derivative` methods must instead be used.
 		virtual bool usesFastSystemAssembler() const { return false; }
+		virtual bool sparsityPatternIsStatic() const { return false; }
 
 		// BlockCSCHessian additions
 		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const {
 			return std::unique_ptr<BCSCHessian>(); // Non-existent by default!
 		}
-		virtual bool sparsityPatternIsStatic() const { return false; }
 
 		// Accumulate into an existing Hessian with known sparsity pattern.
 		// This is currently only supported for the `BCSCHessian` storage variant.

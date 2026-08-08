@@ -152,16 +152,19 @@ namespace polyfem::solver
 				continue;
 			}
 
-			std::cout << "Evaluating unaccelerated Hessian for form: " << f->name() << std::endl;
+			// std::cout << "Evaluating unaccelerated Hessian for form: " << f->name() << std::endl;
 			THessian tmp;
 			f->second_derivative(x, tmp);
 			unacceleratedHessianContribs += tmp;
 		}
 
 		if ((unacceleratedHessianContribs.nonZeros() > 0) || (!H)) {
-			if (H) unacceleratedHessianContribs += hessian.as<StiffnessMatrix>();
+			if (H && !H->isSparsityOnly()) unacceleratedHessianContribs += hessian.as<StiffnessMatrix>();
 			hessian.emplace<StiffnessMatrix>(std::move(unacceleratedHessianContribs));
-			std::cout << "Warning: FullNLProblem::hessian: Some forms do not support fast system assembly; falling back to unaccelerated path." << std::endl;
+			if (!m_alreadyWarnedAboutUnacceleratedPath) {
+				logger().warn("Some forms do not support fast system assembly; Falling back to unaccelerated path.");
+				m_alreadyWarnedAboutUnacceleratedPath = true;
+			}
 			++m_sparsityPatternID; // Sparsity pattern likely changed (all bets are off)...
 		}
 #endif

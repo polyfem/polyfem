@@ -3,6 +3,8 @@
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slice.h>
 
+#include <stdexcept>
+
 namespace polyfem::solver
 {
 	BCLagrangianForm::BCLagrangianForm(const int ndof,
@@ -250,6 +252,33 @@ namespace polyfem::solver
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = A_weight() * A_.transpose() * masked_lumped_mass_ * A_;
+	}
+
+	std::unique_ptr<BCSCHessian> BCLagrangianForm::hessianSparsityPattern() const
+	{
+		auto result = cached_AtMA().clone();
+		result->Ax.clear();
+		return result;
+	}
+
+	void BCLagrangianForm::accumulateHessian(const double weight, const Eigen::VectorXd &/* x */, BCSCHessian &H) const
+	{
+		H.addWithSubSparsityFast(cached_AtMA(), weight * A_weight());
+	}
+
+	const BCSCHessian &BCLagrangianForm::cached_AtMA() const
+	{
+		if (!cached_AtMA_)
+		{
+			if (!m_assembler)
+				throw std::runtime_error("BCLagrangianForm has no FastSystemAssembler.");
+
+			cached_AtMA_ = MeshFEM::BlockCSCHessianFromScalar(
+				(A_.transpose() * masked_lumped_mass_ * A_).eval(),
+				/* blockSize = */ m_assembler->getDim());
+		}
+
+		return *cached_AtMA_;
 	}
 
 	void BCLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)

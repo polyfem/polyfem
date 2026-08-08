@@ -58,11 +58,11 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<Form>> forms_;
 		const bool is_residual_;
 
-		// Need to confirm if we actually need it.
 		bool m_fullSparsityRebuildNeeded = true; // Whether all cached sparsity information has been invalidated (e.g., if the list of forms has changed)
 
 		std::unique_ptr<BCSCHessian> m_hessianSparsity, m_hessianSparsityStaticPart;
 		std::unique_ptr<MeshFEM::SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
 		size_t m_sparsityPatternID = -1;
+		bool m_alreadyWarnedAboutUnacceleratedPath = false;
 	};
 } // namespace polyfem::solver

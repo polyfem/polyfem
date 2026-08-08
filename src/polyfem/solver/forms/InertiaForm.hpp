@@ -53,8 +53,8 @@ namespace polyfem::solver
 		// should always be contained within the combined pattern of the rest of
 		// the forms (e.g., ElasticForm).
 		virtual bool usesFastSystemAssembler() const override { return true; }
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
 		virtual bool sparsityPatternIsStatic() const override { return true; }
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
     
 	private:
 		Eigen::VectorXd x_tilde() const;
