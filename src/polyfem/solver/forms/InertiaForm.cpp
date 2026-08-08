@@ -1,4 +1,5 @@
 #include "InertiaForm.hpp"
+#include "polyfem/utils/Types.hpp"
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -53,5 +54,11 @@ namespace polyfem::solver
 	void InertiaForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = mass_;
+	}
+
+
+	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const
+	{
+		H.addWithSubSparsityScalarCSC(MeshFEM::ScalarCSCView::from(mass_), weight);
 	}
 } // namespace polyfem::solver

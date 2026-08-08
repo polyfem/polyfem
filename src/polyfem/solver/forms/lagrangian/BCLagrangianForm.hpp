@@ -79,7 +79,13 @@ namespace polyfem::solver
 		virtual bool can_project() const override;
 		virtual void project_gradient(Eigen::VectorXd &grad) const override;
 		virtual void project_diag(Eigen::VectorXd &diag) const override;
-		virtual void project_hessian(StiffnessMatrix &hessian) const override;
+		virtual void project_hessian(Hessian &hessian) const override;
+		void project_hessian(StiffnessMatrix &hessian) const;
+
+		virtual bool usesFastSystemAssembler() const override { return true; }
+		virtual bool sparsityPatternIsStatic() const override { return true; }
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;
@@ -100,6 +106,8 @@ namespace polyfem::solver
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
 
+		mutable std::unique_ptr<BCSCHessian> cached_AtMA_; ///< Cached A_^T * masked_lumped_mass_ * A_ for the Hessian (assumes immutability; should be invalidated if changes are needed)
+
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param mass Mass matrix
 		/// @param obstacle_ndof Obstacle's number of DOF
@@ -110,5 +118,7 @@ namespace polyfem::solver
 		/// @brief Update target x to the Dirichlet boundary values at time t
 		/// @param t Current time
 		void update_target(const double t);
+
+		const BCSCHessian &cached_AtMA() const;
 	};
 } // namespace polyfem::solver

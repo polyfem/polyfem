@@ -165,7 +165,7 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		ipc::CollisionMesh collision_mesh;
+		CollisionMesh collision_mesh;
 		{
 			Eigen::MatrixXi boundary_edges, boundary_faces;
 			if (dim() == 2)
@@ -186,7 +186,7 @@ namespace polyfem::mesh
 			utils::append_rows(rest_positions, obstacle().v());
 			assert(rest_positions.size() == to_projection_quantities.rows());
 
-			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+			collision_mesh = CollisionMesh::build_from_full_mesh(
 				rest_positions, boundary_edges, boundary_faces);
 		}
 

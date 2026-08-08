@@ -10,7 +10,7 @@
 #include <ipc/candidates/candidates.hpp>
 #include <ipc/ccd/tight_inclusion_ccd.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/potentials/normal_adhesion_potential.hpp>
 
 #include <memory>
@@ -33,7 +33,7 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
+		NormalAdhesionForm(const CollisionMesh &collision_mesh,
 						   const double dhat_p,
 						   const double dhat_a,
 						   const double Y,
@@ -114,7 +114,7 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		/// @brief Collision mesh
-		const ipc::CollisionMesh &collision_mesh_;
+		const CollisionMesh &collision_mesh_;
 
 		/// @brief Maximum adhesion strength distance
 		const double dhat_p_;

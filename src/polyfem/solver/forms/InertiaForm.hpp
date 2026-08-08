@@ -2,6 +2,7 @@
 
 #include "Form.hpp"
 
+#include <memory>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
@@ -48,11 +49,19 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		// Note: no explicit sparsity pattern is needed here since this pattern
+		// should always be contained within the combined pattern of the rest of
+		// the forms (e.g., ElasticForm).
+		virtual bool usesFastSystemAssembler() const override { return true; }
+		virtual bool sparsityPatternIsStatic() const override { return true; }
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
+    
 	private:
 		Eigen::VectorXd x_tilde() const;
 
 		// TODO mass might be time dependent
-		const StiffnessMatrix &mass_;                                    ///< Mass matrix
+		const StiffnessMatrix &mass_; 
+
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
 		XTildeUpdater x_tilde_updater_;
 		Eigen::VectorXd x_tilde_;

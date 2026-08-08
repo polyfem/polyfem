@@ -1285,11 +1285,11 @@ namespace polyfem::legacy
 		for (int d = 0; d < Etmp.cols(); d++)
 			Enew.col(d) = SVI(Etmp.col(d));
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
+		std::vector<bool> is_on_surface = CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
 
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::SparseMatrix<double> displacement_map;
-		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
+		periodic_collision_mesh = CollisionMesh(is_on_surface,
 													 std::vector<bool>(Vnew.rows(), false),
 													 Vnew,
 													 Enew,
@@ -1325,7 +1325,7 @@ namespace polyfem::legacy
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
-		ipc::CollisionMesh &collision_mesh)
+		CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
@@ -1415,7 +1415,7 @@ namespace polyfem::legacy
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
+		std::vector<bool> is_on_surface = CollisionMesh::construct_is_on_surface(
 			collision_vertices.rows(), collision_edges);
 		for (const int vid : collision_codim_vids)
 		{
@@ -1429,7 +1429,7 @@ namespace polyfem::legacy
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh = ipc::CollisionMesh(
+		collision_mesh = CollisionMesh(
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 

@@ -81,6 +81,12 @@ namespace polyfem::solver
 		grad = A_proj_.transpose() * grad;
 	}
 
+	void StackedAugmentedLagrangianForm::project_hessian(Hessian &hessian) const
+	{
+		hessian.switch_to_native_type<StiffnessMatrix>();
+		project_hessian(hessian.get_mutable<StiffnessMatrix>());
+	}
+
 	void StackedAugmentedLagrangianForm::project_hessian(StiffnessMatrix &hessian) const
 	{
 		assert(can_project());

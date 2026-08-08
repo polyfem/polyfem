@@ -46,7 +46,8 @@ namespace polyfem::solver
 
 		bool can_project() const override { return has_projection(); }
 		void project_gradient(Eigen::VectorXd &grad) const override;
-		void project_hessian(StiffnessMatrix &hessian) const override;
+		void project_hessian(Hessian &hessian) const override;
+		void project_hessian(StiffnessMatrix &hessian) const;
 		void project_diag(Eigen::VectorXd &diag) const override;
 
 	protected:

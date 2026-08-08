@@ -81,8 +81,8 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// NOTE: This assumes the boundary is fixed.
-		ipc::CollisionMesh collision_mesh;
-		// ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+		CollisionMesh collision_mesh;
+		// CollisionMesh collision_mesh = CollisionMesh::build_from_full_mesh(
 		// 	local_mesh.rest_positions(), local_mesh.boundary_edges(), local_mesh.boundary_faces());
 		// // Ignore all collisions between fixed elements.
 		// std::vector<bool> is_vertex_fixed(local_mesh.num_vertices(), false);

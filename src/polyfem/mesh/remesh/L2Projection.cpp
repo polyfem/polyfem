@@ -79,7 +79,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXi &elements,
 		const int dim,
 		// Contact form
-		const ipc::CollisionMesh &collision_mesh,
+		const CollisionMesh &collision_mesh,
 		const double dhat,
 		const double barrier_stiffness,
 		const bool use_area_weighting,

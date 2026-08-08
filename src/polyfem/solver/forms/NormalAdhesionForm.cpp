@@ -14,7 +14,7 @@
 
 namespace polyfem::solver
 {
-	NormalAdhesionForm::NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
+	NormalAdhesionForm::NormalAdhesionForm(const CollisionMesh &collision_mesh,
 										   const double dhat_p,
 										   const double dhat_a,
 										   const double Y,

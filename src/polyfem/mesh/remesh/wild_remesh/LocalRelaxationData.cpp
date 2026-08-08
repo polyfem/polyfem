@@ -200,7 +200,7 @@ namespace polyfem::mesh
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> create collision mesh");
 
-			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+			collision_mesh = CollisionMesh::build_from_full_mesh(
 				local_mesh.rest_positions(), local_mesh.boundary_edges(),
 				local_mesh.boundary_faces());
 

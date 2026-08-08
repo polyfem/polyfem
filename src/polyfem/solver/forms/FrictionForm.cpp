@@ -19,7 +19,7 @@
 namespace polyfem::solver
 {
 	FrictionForm::FrictionForm(
-		const ipc::CollisionMesh &collision_mesh,
+		const CollisionMesh &collision_mesh,
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsv,
 		const double mu,

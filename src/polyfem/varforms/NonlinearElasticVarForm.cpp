@@ -56,13 +56,15 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::reset()
 	{
 		ElasticVarForm::reset();
-		collision_mesh = ipc::CollisionMesh();
+		collision_mesh = CollisionMesh();
 		obstacle.clear();
 		solve_data = solver::SolveData();
 		forms.clear();
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler = nullptr;
 		damping_prev_assembler = nullptr;
+		full_nl_solver_.reset();
+		reduced_nl_solver_.reset();
 		contact_dhat_was_explicit_ = false;
 	}
 
@@ -312,7 +314,7 @@ namespace polyfem::varform
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
-		ipc::CollisionMesh &collision_mesh)
+		CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
@@ -402,7 +404,7 @@ namespace polyfem::varform
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
+		std::vector<bool> is_on_surface = CollisionMesh::construct_is_on_surface(
 			collision_vertices.rows(), collision_edges);
 		for (const int vid : collision_codim_vids)
 		{
@@ -416,7 +418,7 @@ namespace polyfem::varform
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh = ipc::CollisionMesh(
+		collision_mesh = CollisionMesh(
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
@@ -822,8 +824,8 @@ namespace polyfem::varform
 
 		save_subsolve(0, step, sol);
 
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
-			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
+		if (!args["solver"]["advanced"].value("reuse_full_solver",    false))    full_nl_solver_.reset();
+		if (!args["solver"]["advanced"].value("reuse_reduced_solver", false)) reduced_nl_solver_.reset();
 
 		ALSolver al_solver(
 			solve_data.al_form,
@@ -836,10 +838,11 @@ namespace polyfem::varform
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
+			const auto &info_solver = al_weight == 0 ? reduced_nl_solver_ : full_nl_solver_;
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", step},
-				 {"info", nl_solver->info()}});
+				 {"info", info_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(stats.solver_info.size(), step, sol);
@@ -847,10 +850,10 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd prev_sol = sol;
 		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), &full_nl_solver_);
 
 		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), &reduced_nl_solver_);
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -902,7 +905,8 @@ namespace polyfem::varform
 			nl_problem.init(sol);
 			solve_data.update_barrier_stiffness(sol);
 			nl_problem.normalize_forms();
-			nl_solver->minimize(nl_problem, tmp_sol);
+			assert(reduced_nl_solver_ != nullptr);
+			reduced_nl_solver_->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 			prev_sol = sol;
 			sol = nl_problem.reduced_to_full(tmp_sol);
@@ -911,7 +915,7 @@ namespace polyfem::varform
 				{{"type", "rc"},
 				 {"t", step},
 				 {"lag_i", lag_i},
-				 {"info", nl_solver->info()}});
+				 {"info", reduced_nl_solver_->info()}});
 			save_subsolve(stats.solver_info.size(), step, sol);
 		}
 	}

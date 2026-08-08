@@ -62,13 +62,18 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
+		void replace_rows_by_identity(StiffnessMatrix &reduced_mat, const Hessian &mat, const std::vector<int> &rows) {
+			replace_rows_by_identity(reduced_mat, mat.as<StiffnessMatrix>(), rows);
+		}
+
+		// TODO: avoid conversions by updating to use `Hessian` instead of `StiffnessMatrix`.
 		void compute_force_jacobian(legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 		{
 			auto &s = state;
 
 			if (s.problem->is_time_dependent())
 			{
-				StiffnessMatrix tmp_hess;
+				Hessian tmp_hess;
 				s.solve_data.nl_problem->set_project_to_psd(false);
 				s.solve_data.nl_problem->FullNLProblem::solution_changed(sol);
 				s.solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
@@ -93,11 +98,13 @@ namespace polyfem
 						std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(s.solve_data.nl_problem);
 						reduced = homo_problem->full_to_reduced(sol, disp_grad);
 						s.solve_data.nl_problem->solution_changed(reduced);
-						s.solve_data.nl_problem->hessian(reduced, hessian);
+						Hessian tmp_hess;
+						s.solve_data.nl_problem->hessian(reduced, tmp_hess);
+						hessian = tmp_hess.as<StiffnessMatrix>();
 					}
 					else
 					{
-						StiffnessMatrix tmp_hess;
+						Hessian tmp_hess;
 						s.solve_data.nl_problem->FullNLProblem::solution_changed(sol);
 						s.solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
 						hessian.setZero();

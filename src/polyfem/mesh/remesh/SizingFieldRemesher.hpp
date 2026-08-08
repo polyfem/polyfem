@@ -61,7 +61,7 @@ namespace polyfem::mesh
 		template <typename Candidates>
 		SparseSizingField compute_contact_sizing_field_from_candidates(
 			const Candidates &candidates,
-			const ipc::CollisionMesh &collision_mesh,
+			const CollisionMesh &collision_mesh,
 			const Eigen::MatrixXd &V,
 			const double dhat) const;
 	};

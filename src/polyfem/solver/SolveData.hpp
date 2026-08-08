@@ -8,7 +8,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 
 #include <Eigen/Core>
@@ -26,6 +26,7 @@ namespace polyfem::time_integrator
 
 namespace polyfem::assembler
 {
+	class FastSystemAssembler;
 	class ViscousDamping;
 	class MacroStrainValue;
 	class PressureAssembler;
@@ -105,7 +106,7 @@ namespace polyfem::solver
 
 			// Contact form
 			const bool contact_enabled,
-			const ipc::CollisionMesh &collision_mesh,
+			const CollisionMesh &collision_mesh,
 			const double dhat,
 			const double avg_mass,
 			const bool use_area_weighting,
@@ -166,7 +167,6 @@ namespace polyfem::solver
 
 		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 
-	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;

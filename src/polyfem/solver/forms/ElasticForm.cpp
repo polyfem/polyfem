@@ -224,7 +224,7 @@ namespace polyfem::solver
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
-		  assembler_(assembler),
+		  assembler_(dynamic_cast<const polyfem::assembler::NLAssembler &>(assembler)),
 		  ass_vals_cache_(ass_vals_cache),
 		  t_(t),
 		  jacobian_threshold_(jacobian_threshold),
@@ -315,6 +315,21 @@ namespace polyfem::solver
 		}
 	}
 
+	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const
+	{
+		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
+
+		size_t numElements = bases_.size();
+		ElementBasisStencil stencil(bases_);
+		accumulateHessianContribs(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), stencil);
+	}
+
+	std::unique_ptr<BCSCHessian> ElasticForm::hessianSparsityPattern() const
+	{
+		ElementBasisStencil stencil(bases_);
+		return buildSparsityPattern(bases_.size(), stencil);
+	}
+
 	void ElasticForm::finish()
 	{
 		for (auto &t : quadrature_hierarchy_)
@@ -364,7 +379,6 @@ namespace polyfem::solver
 		{
 			pending_refinement_.reset();
 		}
-
 		return step;
 	}
 

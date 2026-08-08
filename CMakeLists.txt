@@ -208,6 +208,12 @@ endif()
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
+if(TARGET MeshFEMSparse)
+    target_link_libraries(polyfem PUBLIC MeshFEMSparse)
+else()
+    message(FATAL_ERROR "PolyFEM requires MeshFEMSparse, but polysolve did not provide the MeshFEMSparse target.")
+endif()
+
 # libigl
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
@@ -299,8 +305,6 @@ target_link_libraries(polyfem PUBLIC units::units)
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
-
-
 
 ################################################################################
 # JSON specifications

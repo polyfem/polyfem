@@ -3,6 +3,8 @@
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slice.h>
 
+#include <stdexcept>
+
 namespace polyfem::solver
 {
 	BCLagrangianForm::BCLagrangianForm(const int ndof,
@@ -162,6 +164,26 @@ namespace polyfem::solver
 		diag.conservativeResize(not_constraints_.size());
 	}
 
+	void BCLagrangianForm::project_hessian(Hessian &hessian) const
+	{
+		try {
+			// Fast path: just apply the fixed variable list to the Hessian.
+			// Note that `boundary_nodes_`, despite the name, actually holds
+			// the list we want: it indicates all *variables* that should be
+			// fixed in the optimization (including obstacle coordinates!).
+			// Its contents have already been validated as unique and in-bounds
+			// at construction time (`init_masked_lumped_mass`).
+			auto &H_bcsc = hessian.get_mutable<polysolve::BCSCHessianWithFixedVars>();
+			H_bcsc.setFixedVars(boundary_nodes_);
+			return;
+		}
+		catch (...) {
+		}
+
+		hessian.switch_to_native_type<StiffnessMatrix>(); // In case the Hessian was in a different type...
+		project_hessian(hessian.get_mutable<StiffnessMatrix>());
+	}
+
 	void BCLagrangianForm::project_hessian(StiffnessMatrix &hessian) const
 	{
 		// Drop rows and columns whose indices are constrained DOFs in a single
@@ -230,6 +252,33 @@ namespace polyfem::solver
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = A_weight() * A_.transpose() * masked_lumped_mass_ * A_;
+	}
+
+	std::unique_ptr<BCSCHessian> BCLagrangianForm::hessianSparsityPattern() const
+	{
+		auto result = cached_AtMA().clone();
+		result->Ax.clear();
+		return result;
+	}
+
+	void BCLagrangianForm::accumulateHessian(const double weight, const Eigen::VectorXd &/* x */, BCSCHessian &H) const
+	{
+		H.addWithSubSparsityFast(cached_AtMA(), weight * A_weight());
+	}
+
+	const BCSCHessian &BCLagrangianForm::cached_AtMA() const
+	{
+		if (!cached_AtMA_)
+		{
+			if (!m_assembler)
+				throw std::runtime_error("BCLagrangianForm has no FastSystemAssembler.");
+
+			cached_AtMA_ = MeshFEM::BlockCSCHessianFromScalar(
+				(A_.transpose() * masked_lumped_mass_ * A_).eval(),
+				/* blockSize = */ m_assembler->getDim());
+		}
+
+		return *cached_AtMA_;
 	}
 
 	void BCLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)

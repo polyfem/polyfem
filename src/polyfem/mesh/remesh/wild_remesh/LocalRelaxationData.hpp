@@ -86,6 +86,6 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd rhs;
 
-		ipc::CollisionMesh collision_mesh;
+		CollisionMesh collision_mesh;
 	};
 } // namespace polyfem::mesh

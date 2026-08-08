@@ -20,6 +20,7 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/solver/forms/QuadraticPenaltyForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/assembler/FastSystemAssembler.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/Mass.hpp>
@@ -82,7 +83,7 @@ namespace polyfem::solver
 
 		// Contact form
 		const bool contact_enabled,
-		const ipc::CollisionMesh &collision_mesh,
+		const CollisionMesh &collision_mesh,
 		const double dhat,
 		const double avg_mass,
 		const bool use_area_weighting,
@@ -527,6 +528,13 @@ namespace polyfem::solver
 		}
 
 		update_dt();
+
+		// Inject a `FastSystemAssembler` into all forms.
+		{
+			auto system_assembler = std::make_shared<polyfem::assembler::FastSystemAssembler>(dim, n_bases);
+			for (const auto &form : forms)   form->setSystemAssembler(system_assembler);
+			for (const auto &form : al_form) form->setSystemAssembler(system_assembler);
+		}
 
 		return forms;
 	}

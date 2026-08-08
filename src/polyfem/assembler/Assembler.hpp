@@ -9,8 +9,13 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
+
+#include <polyfem/assembler/FastSystemAssembler.hpp>
 
 #include <functional>
+#include <tbb/enumerable_thread_specific.h>
+#include <utility>
 
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
@@ -77,6 +82,16 @@ namespace polyfem::assembler
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
 
+		virtual void assemble(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			Hessian &H,
+			const bool is_mass = true) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
+
 		// assemble energy
 		virtual double assemble_energy(
 			const bool is_volume,
@@ -125,6 +140,21 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
+
+		virtual void assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const bool project_to_psd,
+			const double weight,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			utils::MatrixCache &mat_cache,
+			Hessian &H) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
@@ -202,6 +232,8 @@ namespace polyfem::assembler
 		virtual bool is_tensor() const { return false; }
 
 	protected:
+		mutable std::unique_ptr<FastSystemAssembler> m_assembler;
+
 		int size_ = -1;
 	};
 
@@ -340,6 +372,27 @@ namespace polyfem::assembler
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const override;
 
+		void assemble(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			Hessian &stiffness,
+			const bool is_mass = true) const override;
+
+
+		void assembleImpl(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			StiffnessMatrix &stiffness,
+			const bool is_mass) const;
+
 		virtual bool is_linear() const override { return true; }
 
 		/// local assembly function that defines the bilinear form (LHS)
@@ -402,6 +455,24 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
+
+		// Integrating MeshFEM's hessian assembly into PolyFEM's NLAssembler interface
+		void assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const bool project_to_psd,
+			const double weight,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			utils::MatrixCache &mat_cache,
+			Hessian &H) const override;
+
+		
 
 		virtual bool is_linear() const override { return false; }
 
@@ -487,5 +558,84 @@ namespace polyfem::assembler
 	class ElasticityNLAssembler : virtual public ElasticityAssembler, virtual public NLAssembler
 	{
 	};
+
+	struct ElementBasisStencil {
+		ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
+		void operator()(int e, std::vector<int> &stencil) const {
+			const int n_loc_bases = int(m_b[e].bases.size());
+			stencil.clear();
+			stencil.reserve(n_loc_bases); // global_i.size() is typically 1
+			for (int i = 0; i < n_loc_bases; ++i) {
+				const auto &global_i = m_b[e].bases[i].global();
+				for (size_t ii = 0; ii < global_i.size(); ++ii)
+					stencil.push_back(global_i[ii].index);
+			}
+		}
+
+		std::vector<int> operator()(int e) const {
+			std::vector<int> stencil;
+			(*this)(e, stencil);
+			return stencil;
+		}
+	private:
+		const std::vector<basis::ElementBases> &m_b;
+	};
+
+	void expand_hessian_to_raw_stencil(
+		const ElementAssemblyValues &vals,
+		const int dim,
+		Eigen::MatrixXd &H_e);
+
+	struct ElementHessianEvaluator {
+		// Note: this must match the types used by NonLinearAssemblerData
+		// or we pay the extreme overhead of a copy of the entire global
+		// variable vector **for every element**.
+		// TODO: switch these back to references once NonLinearAssemblerData and
+		// its callers agree on vector-shaped solution storage.
+		using GlobalVariableStorage = Eigen::MatrixXd;
+
+		// Note: there is an intentional but wasteful copy of `x` and `x_prev` here!! See note above.
+		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, GlobalVariableStorage x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, GlobalVariableStorage x_prev)
+			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(std::move(x)), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_x_prev(std::move(x_prev)) {}
+
+		void operator()(size_t e, Eigen::MatrixXd &H_e) const {
+			LocalData &local = m_localData.local();
+			m_cache.compute(e, m_is_volume, m_bases[e], m_gbases[e], local.vals);
+
+			const quadrature::Quadrature &quadrature = local.vals.quadrature;
+
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+			local.qVec = local.vals.det.array() * quadrature.weights.array();
+			const int n_loc_bases = int(local.vals.basis_values.size());
+
+			H_e = m_assembler.assemble_hessian(NonLinearAssemblerData(local.vals, m_t, m_dt, m_x, m_x_prev, local.qVec));
+			assert(H_e.rows() == n_loc_bases * m_assembler.size());
+			assert(H_e.cols() == n_loc_bases * m_assembler.size());
+
+			if (m_project_to_psd) H_e = ipc::project_to_psd(H_e); // TODO: avoid memory allocations?
+			H_e *= m_weight;
+			expand_hessian_to_raw_stencil(local.vals, m_assembler.size(), H_e);
+		}
+
+		private:
+			struct LocalData {
+				ElementAssemblyValues vals;
+				QuadratureVector qVec;
+			};
+
+			const NLAssembler &m_assembler;
+			const bool m_is_volume;
+			const bool m_project_to_psd;
+			const double m_weight;
+			const GlobalVariableStorage m_x;
+			const std::vector<basis::ElementBases> &m_bases;
+			const std::vector<basis::ElementBases> &m_gbases;
+			const AssemblyValsCache &m_cache;
+			const double m_t;
+			const double m_dt;
+			const GlobalVariableStorage m_x_prev;
+			mutable tbb::enumerable_thread_specific<LocalData> m_localData;
+	};
+
 
 } // namespace polyfem::assembler

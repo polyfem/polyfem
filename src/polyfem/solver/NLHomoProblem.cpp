@@ -211,12 +211,15 @@ namespace polyfem::solver
 
 		return utils::unflatten(macro_reduced_to_full(reduced.tail(dof2), homogeneous), dim);
 	}
-	void NLHomoProblem::hessian(const TVector &x, THessian &hessian)
+	void NLHomoProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
+		// TODO: implement the following operations natively without the Eigen fallback...
+		hessian.switch_to_native_type<StiffnessMatrix>();
+		StiffnessMatrix &H_eigen = hessian.get_mutable<StiffnessMatrix>();
 
-		full_hessian_to_reduced_hessian(hessian);
-
+		full_hessian_to_reduced_hessian(H_eigen);
+		
 		for (auto &form : homo_forms)
 			if (form->enabled())
 			{
@@ -225,7 +228,7 @@ namespace polyfem::solver
 
 				THessian hess;
 				extended_hessian_to_reduced_hessian(hess_extended, hess);
-				hessian += hess;
+				H_eigen += hess;
 			}
 	}
 

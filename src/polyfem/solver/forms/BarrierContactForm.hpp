@@ -7,6 +7,9 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
+#include <MeshFEMSparse/SystemAssembler.hh>
+#include <MeshFEMSparse/VarStructure.hh>
+
 
 namespace polyfem::solver
 {
@@ -15,7 +18,7 @@ namespace polyfem::solver
 		friend class BarrierContactForceDerivative;
 
 	public:
-		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
+		BarrierContactForm(const CollisionMesh &collision_mesh,
 						   const double dhat,
 						   const double avg_mass,
 						   const bool use_area_weighting,
@@ -72,6 +75,11 @@ namespace polyfem::solver
 		/// @param hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		virtual bool usesFastSystemAssembler() const override { return true; }
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &H) const override;
+		virtual bool sparsityPatternIsStatic() const override { return false; }
+		
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 		/// @brief Cached constraint set for the current solution

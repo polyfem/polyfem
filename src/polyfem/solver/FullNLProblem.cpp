@@ -1,5 +1,6 @@
 #include "FullNLProblem.hpp"
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 namespace polyfem::solver
 {
@@ -122,17 +123,148 @@ namespace polyfem::solver
 		}
 	}
 
-	void FullNLProblem::hessian(const TVector &x, THessian &hessian)
+	void FullNLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
-		hessian.resize(x.size(), x.size());
-		for (auto &f : forms_)
-		{
+#if 0 // Original Eigen-based implementation
+		auto &H = hessian.emplace<StiffnessMatrix>();
+
+		H.resize(x.size(), x.size());
+		for (auto &f : forms_) {
 			if (!f->enabled())
 				continue;
 			THessian tmp;
 			f->second_derivative(x, tmp);
-			hessian += tmp;
+			H += tmp;
 		}
+#else
+		auto &H = hessian.emplace<polysolve::BCSCHessianWithFixedVars>().H;
+
+		bool changed = updateHessianSparsityPattern();
+		if (changed) ++m_sparsityPatternID;
+
+		if (m_hessianSparsity != nullptr)
+			H = m_hessianSparsity->clone(); // Accumulate into a fresh (value-free) copy of the sparsity pattern.
+		StiffnessMatrix unacceleratedHessianContribs(x.size(), x.size());
+		for (auto &f : forms_) {
+			if (!f->enabled()) continue;
+			if (f->usesFastSystemAssembler()) {
+				f->accumulateHessian(f->weight() / f->scale(), x, *H);
+				continue;
+			}
+
+			// std::cout << "Evaluating unaccelerated Hessian for form: " << f->name() << std::endl;
+			THessian tmp;
+			f->second_derivative(x, tmp);
+			unacceleratedHessianContribs += tmp;
+		}
+
+		if ((unacceleratedHessianContribs.nonZeros() > 0) || (!H)) {
+			if (H && !H->isSparsityOnly()) unacceleratedHessianContribs += hessian.as<StiffnessMatrix>();
+			hessian.emplace<StiffnessMatrix>(std::move(unacceleratedHessianContribs));
+			if (!m_alreadyWarnedAboutUnacceleratedPath) {
+				logger().warn("Some forms do not support fast system assembly; Falling back to unaccelerated path.");
+				m_alreadyWarnedAboutUnacceleratedPath = true;
+			}
+			++m_sparsityPatternID; // Sparsity pattern likely changed (all bets are off)...
+		}
+#endif
+	}
+
+	bool FullNLProblem::updateHessianSparsityPattern()
+	{
+		std::unique_ptr<BCSCHessian> dynamicSparsity;
+		const bool force = m_fullSparsityRebuildNeeded;
+		if (force) {
+			m_hessianSparsity.reset();
+			m_hessianSparsityStaticPart.reset();
+		}
+
+		bool changed = force;
+		bool staticOnly = true;
+
+		for (size_t i = 0; i < forms_.size(); ++i) {
+			if (!forms_[i]->enabled()) continue;
+			const auto &f = forms_[i];
+
+			if (f->sparsityPatternIsStatic()) {
+				// Only rebuild the "static" part when the terms might have been invalidated.
+				if (force) {
+					// std::cout << "Building static term sparsity pattern" << std::endl;
+					auto Hsp = f->hessianSparsityPattern();
+					if (!m_hessianSparsityStaticPart) m_hessianSparsityStaticPart = std::move(Hsp);
+					else m_hessianSparsityStaticPart->mergeSparsityPattern(Hsp.get());
+				}
+			}
+			else {
+				auto Hsp = f->hessianSparsityPattern();
+				if (!Hsp) continue; // Skip empty patterns, indicated by a null pointer.
+				if (!dynamicSparsity) dynamicSparsity = std::move(Hsp);
+				else dynamicSparsity->mergeSparsityPattern(Hsp.get());
+				// TODO: use `MeshFEM::SystemAssembler::detectChangedEntries` to
+				// avoid unnecessary rebuilds of the dynamic sparsity pattern
+				// and calls to `m_sparsityLRU::update`. This requires caching a
+				// copy of each dynamic term's pattern, which is generally
+				// quite small.
+				changed = true;
+				staticOnly = false;
+			}
+		}
+
+		if (changed && (!m_hessianSparsityStaticPart || m_hessianSparsityStaticPart->nnz() == 0)) {
+			std::cout << "Warning: Hessian sparsity pattern has no static part; bypassing LRU cache" << std::endl;
+			m_hessianSparsity = std::move(dynamicSparsity);
+			if (!m_hessianSparsity) std::cout << "Warning: Hessian sparsity pattern is empty" << std::endl;
+			return true;
+		}
+
+		if (changed) {
+			if (force && (m_hessianSparsityStaticPart->numDiagonalBlocks() < m_hessianSparsityStaticPart->m)) {
+				// Work around paranoia of the Sparsity LRU object, which checks if all
+				// diagonal blocks are present (technically not needed for the specific
+				// matrix format used here).
+				auto copy = m_hessianSparsityStaticPart->emptyClone();
+				copy->setIdentity();
+				m_hessianSparsityStaticPart->mergeSparsityPattern(*copy);
+			}
+			if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
+			else {
+				assert(dynamicSparsity != nullptr);
+				if (!m_sparsityLRU){
+					m_sparsityLRU = std::make_unique<MeshFEM::SparsityLRU>(*m_hessianSparsityStaticPart);
+					m_sparsityLRU->verbose = false;
+					m_hessianSparsity = m_hessianSparsityStaticPart->clone();
+				}
+
+				changed = m_sparsityLRU->update(*dynamicSparsity);
+				changed |= force; // Ensure the static part rebuild takes effect.
+				if (changed) {
+					if (!m_hessianSparsity) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+					m_hessianSparsity->Ap = (*m_sparsityLRU)->Ap;
+					m_hessianSparsity->Ai = (*m_sparsityLRU)->Ai;
+					m_hessianSparsity->nz = (*m_sparsityLRU)->nz;
+				}
+			}
+
+			m_hessianSparsity->finalize();
+		}
+		else if (m_sparsityLRU) {
+			// Still notify the cache of the sparsity pattern update in case
+			// it triggers a re-factorization due to entry expiration.
+			if (m_sparsityLRU->increaseAgeOfOldEntries()) {
+				if (!m_hessianSparsity) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+				m_hessianSparsity->Ap = (*m_sparsityLRU)->Ap;
+				m_hessianSparsity->Ai = (*m_sparsityLRU)->Ai;
+				m_hessianSparsity->nz = (*m_sparsityLRU)->nz;
+
+				m_hessianSparsity->finalize();
+
+				changed = true;
+			}
+		}
+
+		m_fullSparsityRebuildNeeded = false;
+
+		return changed;
 	}
 
 	void FullNLProblem::solution_changed(const TVector &x)

@@ -15,7 +15,7 @@ namespace polyfem::solver
 		friend class SmoothContactForceDerivative;
 
 	public:
-		SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
+		SmoothContactForm(const CollisionMesh &collision_mesh,
 						  const double dhat,
 						  const double avg_mass,
 						  const double alpha_t,

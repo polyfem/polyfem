@@ -11,7 +11,7 @@
 
 namespace polyfem::solver
 {
-	SmoothContactForm::SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
+	SmoothContactForm::SmoothContactForm(const CollisionMesh &collision_mesh,
 										 const double dhat,
 										 const double avg_mass,
 										 const double alpha_t,

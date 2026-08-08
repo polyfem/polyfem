@@ -2,7 +2,6 @@
 
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -18,8 +17,6 @@
 
 #include <igl/cat.h>
 #include <igl/Timer.h>
-
-#include <set>
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
@@ -653,7 +650,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void NLProblem::hessian(const TVector &x, THessian &hessian)
+	void NLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
@@ -663,10 +660,17 @@ namespace polyfem::solver
 		}
 		else if (penalty_problem_)
 		{
-			THessian tmp;
+			// TODO: implement this this case natively without Eigen fallback?
+			hessian.switch_to_native_type<StiffnessMatrix>();
+			StiffnessMatrix &H_eigen = hessian.get_mutable<StiffnessMatrix>();
+
+			Hessian tmp;
 			penalty_problem_->hessian(x, tmp);
-			hessian += tmp;
+			H_eigen += tmp.as<StiffnessMatrix>();
 		}
+
+		if (hessian.is_native_type<StiffnessMatrix>())
+			++m_sparsityPatternID; // Sparsity pattern likely changed (all bets are off)...
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -773,19 +777,25 @@ namespace polyfem::solver
 		return full;
 	}
 
-	void NLProblem::full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const
+	void NLProblem::full_hessian_to_reduced_hessian(Hessian &hessian) const
 	{
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
 			penalty_forms_.front()->project_hessian(hessian);
 		else
 		{
+			// The general multiplication-based projection is currently
+			// supported only for the Eigen Hessian type...
+			hessian.switch_to_native_type<StiffnessMatrix>();
+			auto &H_eigen = hessian.get_mutable<StiffnessMatrix>();
+
 			// arma::sp_mat q2a = fill_arma(Q2_);
 			// arma::sp_mat ha = fill_arma(hessian);
 			// arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
 			// hessian = fill_eigen(q2thq2);
-			hessian = Q2t_ * hessian * Q2_;
+			H_eigen = Q2t_ * H_eigen * Q2_;
 			// remove numerical zeros
-			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+			// JP: note that this is most likely a bad idea and can lead to spurious sparsity pattern changes.
+			H_eigen.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
 				return std::abs(value) > 1e-10;
 			});
 		}

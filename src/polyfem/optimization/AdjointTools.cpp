@@ -711,9 +711,11 @@ namespace polyfem::solver
 
 		dJ_shape_homogenization_adjoint_term(state, diff_cache, sol, adjoint, one_form);
 
-		StiffnessMatrix hessian;
+		// Needs to be tested
 		homo_problem->set_project_to_psd(false);
-		homo_problem->FullNLProblem::hessian(sol, hessian);
+		Hessian hess;
+		homo_problem->FullNLProblem::hessian(sol, hess);
+		const StiffnessMatrix &hessian = hess.as<StiffnessMatrix>(); // TODO: avoid conversion
 		Eigen::VectorXd partial_term = full_adjoint.transpose() * hessian;
 		partial_term = diff_cache.basis_nodes_to_gbasis_nodes() * utils::flatten(utils::unflatten(partial_term, dim) * diff_cache.disp_grad());
 		one_form -= utils::flatten(utils::unflatten(partial_term, dim)(state.primitive_to_node(), Eigen::all));

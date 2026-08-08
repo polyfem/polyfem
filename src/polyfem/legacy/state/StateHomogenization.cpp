@@ -269,8 +269,11 @@ namespace polyfem::legacy
 				std::unique_ptr<polysolve::linear::Solver> solver =
 					polysolve::linear::Solver::create(linear_args, logger());
 
-				StiffnessMatrix A;
-				homo_problem->hessian(reduced_sol, A);
+				Hessian hessian;
+				homo_problem->hessian(reduced_sol, hessian);
+				// TODO: update `dirichlet_solve` to operate natively on `Hessian`.
+				hessian.switch_to_native_type<StiffnessMatrix>();
+				StiffnessMatrix &A = hessian.get_mutable<StiffnessMatrix>();
 				Eigen::VectorXd x, b = Eigen::VectorXd::Zero(A.rows());
 				try
 				{

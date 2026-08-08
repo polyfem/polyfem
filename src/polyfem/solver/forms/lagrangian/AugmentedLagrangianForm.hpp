@@ -31,8 +31,8 @@ namespace polyfem::solver
 
 		virtual bool can_project() const { return false; }
 		virtual void project_gradient(Eigen::VectorXd &grad) const { assert(false); }
-		virtual void project_hessian(StiffnessMatrix &hessian) const { assert(false); }
 		virtual void project_diag(Eigen::VectorXd &diag) const { assert(false); }
+		virtual void project_hessian(Hessian &hessian) const { assert(false); }
 
 		/// @brief sets the scale for the form
 		/// @param scale

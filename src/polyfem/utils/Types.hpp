@@ -5,6 +5,8 @@
 
 #include <ipc/utils/eigen_ext.hpp>
 
+#include <polysolve/Types.hpp>
+
 namespace polyfem
 {
 	// Stack-allocated vectors of size either 2 or 3
@@ -23,4 +25,7 @@ namespace polyfem
 #else
 	typedef Eigen::SparseMatrix<double, Eigen::ColMajor> StiffnessMatrix;
 #endif
+
+	using Hessian = polysolve::Hessian;
+	using BCSCHessian = MeshFEM::BlockCSCHessianBase;
 } // namespace polyfem

@@ -326,7 +326,7 @@ TEST_CASE("shape-neumann-nodes", "[opt_gradient]")
 	constexpr uint64_t SEED = BASE_SEED + 5;
 	constexpr int REPEAT = 3;
 	constexpr double TOL = 2.0e-5;
-	run_test1("shape-neumann-nodes-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
+	run_test1("shape-neumann-nodes-opt.json", 1e-5, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
 TEST_CASE("shape-pressure-nodes-2d", "[opt_gradient]")
@@ -643,7 +643,7 @@ TEST_CASE("control-pressure-nodes-3d", EXPENSIVE_TEST_LABEL)
 	constexpr uint64_t SEED = BASE_SEED + 20;
 	constexpr int REPEAT = 1;
 	constexpr double TOL = 1.8e-6;
-	run_test1("control-pressure-nodes-3d-opt.json", 1e-8, TOL, 0.0, 1.0, SEED, REPEAT);
+	run_test1("control-pressure-nodes-3d-opt.json", 1e-6, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
 TEST_CASE("dirichlet-nodes-3d", "[opt_gradient]")

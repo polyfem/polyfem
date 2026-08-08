@@ -1505,7 +1505,7 @@ namespace polyfem::io
 		if (!space.collision_mesh)
 			return;
 
-		const ipc::CollisionMesh &collision_mesh = *space.collision_mesh;
+		const CollisionMesh &collision_mesh = *space.collision_mesh;
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
 		if (opts.use_hdf5)

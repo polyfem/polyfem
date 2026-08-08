@@ -184,7 +184,7 @@ namespace polyfem::solver
 		stopping_conditions_ = stopping_conditions;
 	}
 
-	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, polysolve::Hessian &hessian)
 	{
 		log_and_throw_adjoint_error("Hessian not supported!");
 	}

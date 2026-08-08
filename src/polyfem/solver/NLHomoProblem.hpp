@@ -39,7 +39,7 @@ namespace polyfem::solver
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
-		void hessian(const TVector &x, THessian &hessian) override;
+		void hessian(const TVector &x, polysolve::Hessian &hessian) override;
 
 		void full_hessian_to_reduced_hessian(THessian &hessian) const;
 

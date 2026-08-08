@@ -2306,7 +2306,7 @@ namespace polyfem::legacy::io
 		const bool is_contact_enabled) const
 	{
 		const mesh::Mesh &mesh = *state.mesh;
-		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
+		const CollisionMesh &collision_mesh = state.collision_mesh;
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 		const double epsv = state.args["contact"]["epsv"];

@@ -69,6 +69,11 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		virtual bool usesFastSystemAssembler() const override { return true; }
+		virtual bool sparsityPatternIsStatic() const override { return true; }
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const override;
+		void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const override;
+
 	public:
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
 		/// @param x0 Current solution
@@ -107,7 +112,7 @@ namespace polyfem::solver
 		std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 
-		const assembler::Assembler &assembler_; ///< Reference to the assembler
+		const assembler::NLAssembler &assembler_; ///< Reference to the assembler
 		assembler::AssemblyValsCache &ass_vals_cache_;
 		double t_;
 		const double jacobian_threshold_;

@@ -2,6 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 
@@ -16,11 +17,6 @@ namespace polyfem::mesh
 {
 	class Obstacle;
 } // namespace polyfem::mesh
-
-namespace ipc
-{
-	class CollisionMesh;
-} // namespace ipc
 
 namespace polyfem::io
 {
@@ -81,7 +77,7 @@ namespace polyfem::io
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> *polys_3d = nullptr;
 		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
 		const mesh::Obstacle *obstacle = nullptr;
-		const ipc::CollisionMesh *collision_mesh = nullptr;
+		const CollisionMesh *collision_mesh = nullptr;
 		const std::vector<int> *dirichlet_nodes = nullptr;
 		const std::vector<RowVectorNd> *dirichlet_nodes_position = nullptr;
 	};

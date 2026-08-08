@@ -1,7 +1,11 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
+#include <polysolve/Hessian.hpp>
 #include <polysolve/nonlinear/PostStepData.hpp>
+
+#include <polyfem/assembler/FastSystemAssembler.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 
 #include <filesystem>
 
@@ -17,7 +21,7 @@ namespace polyfem::solver
 		/// @brief Initialize the form
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
-
+		
 		virtual void finish() {}
 
 		/// @brief Compute the value of the form multiplied with the weigth
@@ -45,8 +49,7 @@ namespace polyfem::solver
 			gradv *= weight() / scale_;
 		}
 
-		/// @brief Compute the second derivative of the value wrt x multiplied with the weigth
-		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
+		/// @brief Compute the second derivative of the value wrt x multiplied with the weight
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -141,7 +144,41 @@ namespace polyfem::solver
 
 		/// @brief sets the scale for the form
 		/// @param scale
-		void virtual set_scale(const double scale) { scale_ = scale; }
+		virtual void set_scale(const double scale) { scale_ = scale; }
+
+		/// @brief gets the scale for the form
+		virtual double scale() { return scale_; }
+
+		/// @brief Determine if the form implements the following FastSystemAssembler-related methods
+		/// or if the `second_derivative` methods must instead be used.
+		virtual bool usesFastSystemAssembler() const { return false; }
+		virtual bool sparsityPatternIsStatic() const { return false; }
+
+		// BlockCSCHessian additions
+		virtual std::unique_ptr<BCSCHessian> hessianSparsityPattern() const {
+			return std::unique_ptr<BCSCHessian>(); // Non-existent by default!
+		}
+
+		// Accumulate into an existing Hessian with known sparsity pattern.
+		// This is currently only supported for the `BCSCHessian` storage variant.
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, BCSCHessian &hessian) const { }
+
+		void setSystemAssembler(std::shared_ptr<polyfem::assembler::FastSystemAssembler> a) { m_assembler = std::move(a); }
+
+		template<class StencilCallable>
+		std::unique_ptr<BCSCHessian> buildSparsityPattern(size_t num_stencils, StencilCallable &&stencil) const {
+			if (!m_assembler) throw std::runtime_error("Form has no assembler.");
+			return m_assembler->sparsityPattern(num_stencils, std::forward<StencilCallable>(stencil));
+		}
+
+		template<class EvalCallable, class StencilCallable>
+		void accumulateHessianContribs(BCSCHessian &H, size_t num_stencils, EvalCallable &&eval, StencilCallable &&stencil) const {
+			if (!m_assembler) throw std::runtime_error("Form has no assembler.");
+			m_assembler->assembleHessian(
+				H, num_stencils,
+				std::forward<EvalCallable>(eval),
+				std::forward<StencilCallable>(stencil));
+		}
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
@@ -182,6 +219,7 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const = 0;
 
+		mutable std::shared_ptr<polyfem::assembler::FastSystemAssembler> m_assembler;
 	private:
 		double scale_ = 1; ///< scale of the form
 	};

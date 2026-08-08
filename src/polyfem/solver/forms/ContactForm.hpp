@@ -6,9 +6,12 @@
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
+
+#include <array>
+#include <MeshFEMSparse/VarStructure.hh>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -44,7 +47,7 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		ContactForm(const ipc::CollisionMesh &collision_mesh,
+		ContactForm(const CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
 					const bool use_adaptive_barrier_stiffness,
@@ -116,6 +119,7 @@ namespace polyfem::solver
 
 		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
 
+	
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
@@ -124,7 +128,7 @@ namespace polyfem::solver
 		virtual double barrier_support_size() const { return dhat_; }
 
 		/// @brief Collision mesh
-		const ipc::CollisionMesh &collision_mesh_;
+		const CollisionMesh &collision_mesh_;
 
 		/// @brief Barrier activation distance
 		const double dhat_;
@@ -161,5 +165,24 @@ namespace polyfem::solver
 		bool use_cached_candidates_ = false;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
+
+		// Support for stencil-based assembly using FastSystemAssembler.
+		// This is complicated by the possibility of nontrivial displacement
+		// maps (e.g., when using proxy meshes), which can cause the effective
+		// global stencil to be larger than the collision mesh stencil size of 4.
+		// To avoid dynamic memory allocation, we impose a reasonable upper
+		// bound on the stencil size and verify it at runtime.
+		using TrivialContactStencil = MeshFEM::ElementBlockVarsWithSizeRange<1, 4>;
+		static constexpr size_t MAX_CONTACT_STENCIL_SIZE = 64;
+		using NontrivialContactStencil        = Eigen::Matrix<size_t, Eigen::Dynamic, 1, Eigen::ColMajor, MAX_CONTACT_STENCIL_SIZE, 1>;
+		using NontrivialContactStencilWeights = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor, MAX_CONTACT_STENCIL_SIZE, 1>;
+
+		// Convert the collision mesh `vertex_ids` for a constraint to the block
+		// variables of the full system.
+		TrivialContactStencil trivialContactStencil(const std::array<int, 4> &vertex_ids) const;
+		NontrivialContactStencil nontrivialContactStencil(const std::array<int, 4> &vertex_ids) const;
+		void expandContactHessianToNontrivialStencil(
+			const std::array<int, 4> &vertex_ids,
+			Eigen::MatrixXd &H_e) const;
 	};
 } // namespace polyfem::solver

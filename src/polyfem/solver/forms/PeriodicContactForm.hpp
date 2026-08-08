@@ -20,7 +20,7 @@ namespace polyfem::solver
 		/// @brief Construct a new Contact Form object
 		/// @param periodic_collision_mesh 3x3 tiling of a periodic mesh
 		/// @param tiled_to_single Index mapping from the tiled mesh to the original periodic mesh
-		PeriodicContactForm(const ipc::CollisionMesh &periodic_collision_mesh,
+		PeriodicContactForm(const CollisionMesh &periodic_collision_mesh,
 							const Eigen::VectorXi &tiled_to_single,
 							const double dhat,
 							const double avg_mass,

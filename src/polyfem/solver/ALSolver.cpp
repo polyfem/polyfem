@@ -26,7 +26,21 @@ namespace polyfem::solver
 							const double characteristic_length,
 							std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
+		solve_al(nl_problem, sol, nl_solver_params, linear_solver, characteristic_length, &nl_solverin);
+	}
+
+	void ALSolver::solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+							const json &nl_solver_params,
+							const json &linear_solver,
+							const double characteristic_length,
+							std::shared_ptr<polysolve::nonlinear::Solver> *nl_solver_cache)
+	{
 		assert(sol.size() == nl_problem.full_size());
+
+		std::shared_ptr<polysolve::nonlinear::Solver> local_nl_solver;
+		if (nl_solver_cache == nullptr)
+			nl_solver_cache = &local_nl_solver;
+		auto &nl_solver = *nl_solver_cache;
 
 		const Eigen::VectorXd initial_sol = sol;
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
@@ -69,9 +83,8 @@ namespace polyfem::solver
 			try
 			{
 				const auto scale = nl_problem.normalize_forms();
-				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
-															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
-														: nl_solverin;
+				if (nl_solver == nullptr)
+					nl_solver = polysolve::nonlinear::Solver::create(nl_solver_params, linear_solver, characteristic_length * scale, logger());
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -123,6 +136,20 @@ namespace polyfem::solver
 								 const double characteristic_length,
 								 std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
+		solve_reduced(nl_problem, sol, nl_solver_params, linear_solver, characteristic_length, &nl_solverin);
+	}
+
+	void ALSolver::solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+								 const json &nl_solver_params,
+								 const json &linear_solver,
+								 const double characteristic_length,
+								 std::shared_ptr<polysolve::nonlinear::Solver> *nl_solver_cache)
+	{
+		std::shared_ptr<polysolve::nonlinear::Solver> local_nl_solver;
+		if (nl_solver_cache == nullptr)
+			nl_solver_cache = &local_nl_solver;
+		auto &nl_solver = *nl_solver_cache;
+
 		assert(sol.size() == nl_problem.full_size());
 
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
@@ -144,9 +171,10 @@ namespace polyfem::solver
 		try
 		{
 			const auto scale = nl_problem.normalize_forms();
-			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
-														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
-													: nl_solverin;
+			if (nl_solver == nullptr)
+				nl_solver = polysolve::nonlinear::Solver::create(nl_solver_params, linear_solver, characteristic_length * scale, logger());
+			// minimize() resets nonlinear state on entry, including the active
+			// descent strategy, while preserving the cached linear solver state.
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}

@@ -37,7 +37,7 @@
 
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include <ipc/collision_mesh.hpp>
+#include <polyfem/mesh/CollisionMesh.hpp>
 #include <ipc/utils/logger.hpp>
 
 #include <memory>
@@ -649,10 +649,10 @@ namespace polyfem::legacy
 		//---------------------------------------------------
 
 		/// @brief IPC collision mesh
-		ipc::CollisionMesh collision_mesh;
+		CollisionMesh collision_mesh;
 
 		/// @brief IPC collision mesh under periodic BC
-		ipc::CollisionMesh periodic_collision_mesh;
+		CollisionMesh periodic_collision_mesh;
 		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
 		Eigen::VectorXi periodic_collision_mesh_to_basis;
 
@@ -667,7 +667,7 @@ namespace polyfem::legacy
 			const json &args,
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
-			ipc::CollisionMesh &collision_mesh);
+			CollisionMesh &collision_mesh);
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
@@ -742,6 +742,11 @@ namespace polyfem::legacy
 		/// @param[in] pressure pressure
 		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
+		/// saves the raw solution vector for visualization/debugging
+		/// @param[in] sol solution
+		/// @param[in] t time index
+		void save_solution(const Eigen::MatrixXd &sol, const int t);
+
 		/// saves a subsolve when save_solve_sequence_debug is true
 		/// @param[in] i sub solve index
 		/// @param[in] t time index
@@ -786,6 +791,8 @@ namespace polyfem::legacy
 		//---------------------------------------------------
 	public:
 		bool optimization_enabled = false;
+		std::shared_ptr<polysolve::nonlinear::Solver> full_nl_solver;    // nonlinear solver state for full-space AL solves
+		std::shared_ptr<polysolve::nonlinear::Solver> reduced_nl_solver; // nonlinear solver state for reduced solves
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
