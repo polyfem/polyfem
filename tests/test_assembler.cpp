@@ -8,6 +8,8 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
+#include <polyfem/assembler/NavierStokesFSI.hpp>
+#include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/InversionBarrier.hpp>
 #include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
@@ -886,6 +888,161 @@ TEST_CASE("Navier-Stokes Newton and Picard operators", "[assembler][navier_stoke
 	require_approx_matrix(newton, finite_difference, 1e-8);
 	REQUIRE((newton - picard).norm() > 1e-10);
 	require_approx_vector(picard * x, convection_residual(x), 1e-12);
+}
+
+TEST_CASE("ALE Navier-Stokes local Jacobian blocks", "[assembler][navier_stokes][ale]")
+{
+	constexpr int dim = 2;
+	constexpr int n_bases = 3;
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+
+	NavierStokesFSIVelocity velocity;
+	NavierStokesFSIMixed mixed;
+	NavierStokesFSIInertia inertia;
+	for (MultiSpacesNLAssembler *assembler : std::vector<MultiSpacesNLAssembler *>{&velocity, &mixed, &inertia})
+	{
+		assembler->set_size(dim);
+		assembler->add_multimaterial(
+			0,
+			{{"viscosity", "0.7 + 0.2*x - 0.1*y"}, {"rho", "1.3 - 0.1*x + 0.05*y"}},
+			Units(), "");
+	}
+	const NavierStokesFSIAssemblerData::BodyForceEvaluator body_force = [](
+																			const int, const Eigen::MatrixXd &points, const double time, Eigen::MatrixXd &values) {
+		values.resize(points.rows(), points.cols());
+		values.col(0) = points.col(0).array().square() + time;
+		values.col(1) = points.col(0).array() - 0.5 * points.col(1).array();
+	};
+
+	std::array<Eigen::VectorXd, 3> x = {{fixture.x.col(0),
+										 Eigen::VectorXd::LinSpaced(n_bases, 0.01, 0.03),
+										 Eigen::VectorXd::LinSpaced(n_bases * dim, -0.02, 0.025)}};
+	std::array<Eigen::VectorXd, 3> x_prev = {{fixture.x_prev.col(0),
+											  Eigen::VectorXd::Zero(n_bases),
+											  Eigen::VectorXd::Zero(n_bases * dim)}};
+	Eigen::VectorXd velocity_tilde = 0.8 * x[0];
+	Eigen::VectorXd mesh_velocity = 0.4 * x[2];
+
+	const auto make_data = [&](const bool picard) {
+		NavierStokesFSIAssemblerData::Values vals = {
+			std::cref(fixture.vals), std::cref(fixture.vals), std::cref(fixture.vals)};
+		NavierStokesFSIAssemblerData::Coefficients current = {
+			std::cref(x[0]), std::cref(x[1]), std::cref(x[2])};
+		NavierStokesFSIAssemblerData::Coefficients previous = {
+			std::cref(x_prev[0]), std::cref(x_prev[1]), std::cref(x_prev[2])};
+		return NavierStokesFSIAssemblerData(
+			std::move(vals), std::move(current), std::move(previous),
+			0.2, 0.1, fixture.da, velocity_tilde, mesh_velocity,
+			0.4, 0.1, true, picard, body_force);
+	};
+	const auto residual = [&]() {
+		const auto data = make_data(false);
+		return (velocity.assemble_gradient(data) + mixed.assemble_gradient(data) + inertia.assemble_gradient(data)).eval();
+	};
+
+	const auto data = make_data(false);
+	for (const int row : {0, 1})
+		for (const int col : {0, 1, 2})
+		{
+			CAPTURE(row, col);
+			Eigen::MatrixXd jacobian = velocity.assemble_hessian(data, row, col)
+									   + mixed.assemble_hessian(data, row, col)
+									   + inertia.assemble_hessian(data, row, col);
+			const int row_offset = row == 0 ? 0 : n_bases * dim;
+			const int row_size = row == 0 ? n_bases * dim : n_bases;
+			Eigen::MatrixXd finite_difference(row_size, x[col].size());
+			for (int j = 0; j < x[col].size(); ++j)
+			{
+				const double h = 1e-7;
+				x[col](j) += h;
+				if (col == 2)
+					mesh_velocity(j) += 0.4 * h;
+				const Eigen::VectorXd plus = residual();
+				x[col](j) -= 2 * h;
+				if (col == 2)
+					mesh_velocity(j) -= 0.8 * h;
+				const Eigen::VectorXd minus = residual();
+				x[col](j) += h;
+				if (col == 2)
+					mesh_velocity(j) += 0.4 * h;
+				finite_difference.col(j) = (plus.segment(row_offset, row_size) - minus.segment(row_offset, row_size)) / (2 * h);
+			}
+			require_approx_matrix(jacobian, finite_difference, col == 2 ? 2e-7 : 1e-8);
+		}
+
+	const auto picard_data = make_data(true);
+	const Eigen::MatrixXd full = velocity.assemble_hessian(data, 0, 0);
+	const Eigen::MatrixXd picard = velocity.assemble_hessian(picard_data, 0, 0);
+	REQUIRE((full - picard).norm() > 1e-10);
+}
+
+TEST_CASE("ALE identity mapping reproduces Navier-Stokes", "[assembler][navier_stokes][ale]")
+{
+	constexpr int dim = 2;
+	constexpr int n_bases = 3;
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+	const int velocity_size = n_bases * dim;
+
+	NavierStokesFSIVelocity ale_velocity;
+	NavierStokesFSIMixed ale_mixed;
+	ale_velocity.set_size(dim);
+	ale_mixed.set_size(dim);
+	ale_velocity.add_multimaterial(0, {{"viscosity", 0.7}, {"rho", 1.0}}, Units(), "");
+
+	std::array<Eigen::VectorXd, 3> x = {{fixture.x.col(0),
+										 Eigen::VectorXd::LinSpaced(n_bases, -0.03, 0.02),
+										 Eigen::VectorXd::Zero(velocity_size)}};
+	std::array<Eigen::VectorXd, 3> previous = {{Eigen::VectorXd::Zero(velocity_size),
+												Eigen::VectorXd::Zero(n_bases),
+												Eigen::VectorXd::Zero(velocity_size)}};
+	NavierStokesFSIAssemblerData::Values values = {
+		std::cref(fixture.vals), std::cref(fixture.vals), std::cref(fixture.vals)};
+	NavierStokesFSIAssemblerData::Coefficients coefficients = {
+		std::cref(x[0]), std::cref(x[1]), std::cref(x[2])};
+	NavierStokesFSIAssemblerData::Coefficients previous_coefficients = {
+		std::cref(previous[0]), std::cref(previous[1]), std::cref(previous[2])};
+	const NavierStokesFSIAssemblerData data(
+		std::move(values), std::move(coefficients), std::move(previous_coefficients),
+		0.2, 0.1, fixture.da, previous[0], previous[2], 0, 1, false, false);
+
+	StokesVelocity stokes;
+	NavierStokesVelocity navier_stokes;
+	StokesMixed stokes_mixed;
+	stokes.set_size(dim);
+	navier_stokes.set_size(dim);
+	stokes_mixed.set_size(dim);
+	stokes.add_multimaterial(0, {{"viscosity", 0.7}}, Units(), "");
+
+	Eigen::MatrixXd stiffness = Eigen::MatrixXd::Zero(velocity_size, velocity_size);
+	for (int i = 0; i < n_bases; ++i)
+		for (int j = 0; j < n_bases; ++j)
+		{
+			const LinearAssemblerData linear_data(fixture.vals, 0.2, i, j, fixture.da);
+			const auto local = stokes.assemble(linear_data);
+			stiffness.block(i * dim, j * dim, dim, dim) =
+				Eigen::Map<const Eigen::MatrixXd>(local.data(), dim, dim);
+		}
+	const NonLinearAssemblerData nonlinear_data(
+		fixture.vals, 0.2, 0.1, fixture.x, fixture.x_prev, fixture.da);
+	navier_stokes.set_picard(true);
+	const Eigen::VectorXd expected_velocity =
+		(stiffness + navier_stokes.assemble_hessian(nonlinear_data)) * x[0];
+	const Eigen::VectorXd actual_velocity =
+		ale_velocity.assemble_gradient(data).head(velocity_size);
+	require_approx_vector(actual_velocity, expected_velocity, 1e-12);
+
+	Eigen::MatrixXd coupling = Eigen::MatrixXd::Zero(velocity_size, n_bases);
+	for (int i = 0; i < n_bases; ++i)
+		for (int j = 0; j < n_bases; ++j)
+		{
+			const MixedAssemblerData mixed_data(fixture.vals, fixture.vals, 0.2, i, j, fixture.da);
+			coupling.block(j * dim, i, dim, 1) = stokes_mixed.assemble(mixed_data);
+		}
+	Eigen::VectorXd expected_mixed(velocity_size + n_bases);
+	expected_mixed << coupling * x[1], coupling.transpose() * x[0];
+	const Eigen::VectorXd actual_mixed =
+		ale_mixed.assemble_gradient(data).head(velocity_size + n_bases);
+	require_approx_vector(actual_mixed, expected_mixed, 1e-12);
 }
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(2, 5)
 POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(3, 4)

@@ -160,54 +160,60 @@ namespace
 				}
 			}
 		}
+
+		struct AutoQuadratureData
+		{
+			std::string mesh;
+			int n_refs;
+			int order;
+			bool spline;
+			bool serendipity;
+		};
+
+		void test_auto_quadrature(const std::vector<AutoQuadratureData> &tests)
+		{
+			for (const auto &d : tests)
+			{
+				spdlog::set_level(spdlog::level::info);
+				spdlog::info("Running {} Order={}, spline={} serendipity={}", d.mesh, d.order, d.spline, d.serendipity);
+				test_quadrature(d.mesh, d.n_refs, d.order, d.spline, d.serendipity);
+			}
+		}
 	} // namespace
 
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("auto_quadrature", "[quadrature]")
+TEST_CASE("auto_quadrature simplex", "[quadrature][auto_quadrature]")
 {
-	struct data
-	{
-		std::string mesh;
-		int n_refs;
-		int order;
-		bool spline;
-		bool serendipity;
-	};
-
-	std::vector<data> tests = {
-		// P
+	test_auto_quadrature({
 		{"tri.obj", 2, 1, false, false},
 		{"tri.obj", 1, 2, false, false},
 		{"tri.obj", 1, 3, false, false},
-
 		{"tet.msh", 0, 1, false, false},
 		{"tet.msh", 0, 2, false, false},
+	});
+}
 
-		// Q
+TEST_CASE("auto_quadrature tensor product", "[quadrature][auto_quadrature]")
+{
+	test_auto_quadrature({
 		{"quad.obj", 3, 1, false, false},
 		{"quad.obj", 2, 2, false, false},
-
 		{"hex.HYBRID", 0, 1, false, false},
 		{"hex.HYBRID", 0, 2, false, false},
+	});
+}
 
-		// Spline
+TEST_CASE("auto_quadrature spline and serendipity", "[quadrature][auto_quadrature]")
+{
+	test_auto_quadrature({
 		{"quad.obj", 2, 2, true, false},
 		{"hex.HYBRID", 0, 2, true, false},
-
-		// serendipity
 		{"quad.obj", 2, 2, false, true},
 		{"hex.HYBRID", 0, 2, false, true},
-	};
-
-	for (const auto &d : tests)
-	{
-		spdlog::set_level(spdlog::level::info);
-		spdlog::info("Running {} Order={}, spline={} serendipity={}", d.mesh, d.order, d.spline, d.serendipity);
-		test_quadrature(d.mesh, d.n_refs, d.order, d.spline, d.serendipity);
-	}
+	});
 }
 
 TEST_CASE("weights", "[quadrature]")

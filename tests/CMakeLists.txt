@@ -17,6 +17,7 @@ set(test_sources
   test_normal.cpp
   test_navier_stokes_forms.cpp
   test_output.cpp
+  test_periodic_boundary.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp
@@ -26,6 +27,7 @@ set(test_sources
   test_utils.cpp
   test_varform_factory.cpp
   verify_run.cpp
+  test_hgo_dispersion.cpp
 )
 
 if(POLYFEM_WITH_OPTIMIZATION)
