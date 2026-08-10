@@ -5,9 +5,22 @@
 
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 namespace polyfem::solver
 {
+	/// @brief Lumping mode for the mass metric of the BC penalty
+	enum class BCLumpingMode
+	{
+		ROW_SUM, ///< @brief Row-sum lumping (falls back to HRZ if ill-conditioned)
+		HRZ      ///< @brief Hinton-Rock-Zienkiewicz diagonal-scaling lumping
+	};
+
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		BCLumpingMode,
+		{{BCLumpingMode::ROW_SUM, "row_sum"},
+		 {BCLumpingMode::HRZ, "hrz"}});
+
 	/// @brief Form of the augmented lagrangian for bc constraints
 	class BCLagrangianForm : public AugmentedLagrangianForm
 	{
@@ -33,7 +46,7 @@ namespace polyfem::solver
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
 						 const double t,
-						 const std::string &lumping = "row_sum");
+						 const BCLumpingMode lumping = BCLumpingMode::ROW_SUM);
 
 		std::string name() const override
 		{
@@ -99,9 +112,9 @@ namespace polyfem::solver
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
-		StiffnessMatrix masked_lumped_mass_;
-		/// lumping mode for the mass metric: "row_sum" (with HRZ fallback) or "hrz"
-		std::string lumping_ = "row_sum";      ///< mass matrix masked by the AL dofs
+		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
+
+		BCLumpingMode lumping_ = BCLumpingMode::ROW_SUM; ///< lumping mode for the mass metric
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param mass Mass matrix

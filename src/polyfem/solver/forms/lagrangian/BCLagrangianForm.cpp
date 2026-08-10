@@ -15,7 +15,7 @@ namespace polyfem::solver
 									   const size_t obstacle_ndof,
 									   const bool is_time_dependent,
 									   const double t,
-									   const std::string &lumping)
+									   const BCLumpingMode lumping)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
@@ -86,7 +86,7 @@ namespace polyfem::solver
 
 		if (mass.size() == 0)
 			masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
-		else if (lumping_ == "hrz")
+		else if (lumping_ == BCLumpingMode::HRZ)
 			masked_lumped_mass_ = polyfem::utils::lump_matrix_hrz(mass);
 		else
 		{

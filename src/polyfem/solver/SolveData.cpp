@@ -128,7 +128,7 @@ namespace polyfem::solver
 
 		// Rayleigh damping form
 		const json &rayleigh_damping,
-		const std::string &al_lumping)
+		const BCLumpingMode al_lumping)
 	{
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
