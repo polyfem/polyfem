@@ -438,6 +438,11 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675aa5632b7299aaf30b0ac76f9d590df649b">Conservative</a>
  }</td></tr>
 <tr class="separator:a24302b3bee666e7148a3ad8754b5675a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30284109a63f5ae8362093e1ccab27a9" id="r_a30284109a63f5ae8362093e1ccab27a9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">BCLumpingMode</a> { <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">ROW_SUM</a>
+, <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">HRZ</a>
+ }</td></tr>
+<tr class="memdesc:a30284109a63f5ae8362093e1ccab27a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lumping mode for the mass metric of the BC penalty.  <a href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">More...</a><br /></td></tr>
+<tr class="separator:a30284109a63f5ae8362093e1ccab27a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -464,6 +469,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a626a8ca4f91ee497c0475f00ef51cf11" id="r_a626a8ca4f91ee497c0475f00ef51cf11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11">is_active_pressure_boundary_ids_valid</a> (const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
 <tr class="memdesc:a626a8ca4f91ee497c0475f00ef51cf11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active pressure boundary ids selection given states.  <br /></td></tr>
 <tr class="separator:a626a8ca4f91ee497c0475f00ef51cf11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4461f8bf1e7aebc14d56ce057b06b138" id="r_a4461f8bf1e7aebc14d56ce057b06b138"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138">NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">BCLumpingMode</a>, {{<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">BCLumpingMode::ROW_SUM</a>, &quot;row_sum&quot;}, {<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">BCLumpingMode::HRZ</a>, &quot;hrz&quot;}})</td></tr>
+<tr class="separator:a4461f8bf1e7aebc14d56ce057b06b138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a4165a3aa1ac3d4ff7e4ed89921620ef9" name="a4165a3aa1ac3d4ff7e4ed89921620ef9"></a>
@@ -483,6 +490,38 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a30284109a63f5ae8362093e1ccab27a9" name="a30284109a63f5ae8362093e1ccab27a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30284109a63f5ae8362093e1ccab27a9">&#9670;&#160;</a></span>BCLumpingMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">polyfem::solver::BCLumpingMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lumping mode for the mass metric of the BC penalty. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9" name="a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9"></a>ROW_SUM&#160;</td><td class="fielddoc"><p>Row-sum lumping (falls back to HRZ if ill-conditioned) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2" name="a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2"></a>HRZ&#160;</td><td class="fielddoc"><p>Hinton-Rock-Zienkiewicz diagonal-scaling lumping. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00013">13</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a24302b3bee666e7148a3ad8754b5675a" name="a24302b3bee666e7148a3ad8754b5675a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24302b3bee666e7148a3ad8754b5675a">&#9670;&#160;</a></span>ElementInversionCheck</h2>
 
@@ -996,6 +1035,36 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a2d721d40ae40b39ada893ab7e85a2434_icgraph.svg" width="534" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a4461f8bf1e7aebc14d56ce057b06b138" name="a4461f8bf1e7aebc14d56ce057b06b138"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4461f8bf1e7aebc14d56ce057b06b138">&#9670;&#160;</a></span>NLOHMANN_JSON_SERIALIZE_ENUM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::NLOHMANN_JSON_SERIALIZE_ENUM </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">BCLumpingMode</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">{{<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">BCLumpingMode::ROW_SUM</a>, &quot;row_sum&quot;}, {<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">BCLumpingMode::HRZ</a>, &quot;hrz&quot;}}&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">HRZ</a>, and <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">ROW_SUM</a>.</p>
 
 </div>
 </div>

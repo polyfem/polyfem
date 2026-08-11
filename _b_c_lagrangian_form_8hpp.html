@@ -121,7 +121,9 @@ $(document).ready(function(){initNavTree('_b_c_lagrangian_form_8hpp.html',''); i
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">BCLagrangianForm.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -129,6 +131,7 @@ $(document).ready(function(){initNavTree('_b_c_lagrangian_form_8hpp.html',''); i
 <code>#include &lt;<a class="el" href="_rhs_assembler_8hpp_source.html">polyfem/assembler/RhsAssembler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_obstacle_8hpp_source.html">polyfem/mesh/Obstacle.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_local_boundary_8hpp_source.html">polyfem/mesh/LocalBoundary.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for BCLagrangianForm.hpp:</div>
 <div class="dyncontent">
@@ -137,7 +140,7 @@ Include dependency graph for BCLagrangianForm.hpp:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_b_c_lagrangian_form_8hpp__dep__incl.svg" width="100%" height="426"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_b_c_lagrangian_form_8hpp__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_b_c_lagrangian_form_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -154,6 +157,19 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver" id="r_namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a30284109a63f5ae8362093e1ccab27a9" id="r_a30284109a63f5ae8362093e1ccab27a9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">polyfem::solver::BCLumpingMode</a> { <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">polyfem::solver::ROW_SUM</a>
+, <a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">polyfem::solver::HRZ</a>
+ }</td></tr>
+<tr class="memdesc:a30284109a63f5ae8362093e1ccab27a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lumping mode for the mass metric of the BC penalty.  <a href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">More...</a><br /></td></tr>
+<tr class="separator:a30284109a63f5ae8362093e1ccab27a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4461f8bf1e7aebc14d56ce057b06b138" id="r_a4461f8bf1e7aebc14d56ce057b06b138"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138">polyfem::solver::NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">BCLumpingMode</a>, {{<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">BCLumpingMode::ROW_SUM</a>, &quot;row_sum&quot;}, {<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">BCLumpingMode::HRZ</a>, &quot;hrz&quot;}})</td></tr>
+<tr class="separator:a4461f8bf1e7aebc14d56ce057b06b138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -126,7 +126,7 @@ var searchData=
   ['log_5fand_5fthrow_5ferror_123',['log_and_throw_error',['../namespacepolyfem.html#ae4cde5432ad6f53159237d00d3c14623',1,'polyfem::log_and_throw_error(const std::string &amp;msg, const Args &amp;...args)'],['../namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391',1,'polyfem::log_and_throw_error(const std::string &amp;msg)']]],
   ['log_5fmsg_124',['log_msg',['../classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492',1,'polyfem::utils::Timer']]],
   ['log_5ftimings_125',['log_timings',['../classpolyfem_1_1mesh_1_1_remesher.html#ab2e2159cc06aafb25bdb9f6b56b59f26',1,'polyfem::mesh::Remesher']]],
-  ['logcompositeform_126',['logcompositeform',['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver::LogCompositeForm'],['../classpolyfem_1_1solver_1_1_log_composite_form.html#a66cef3c2e05500a2f16d16ed3219e8e4',1,'polyfem::solver::LogCompositeForm::LogCompositeForm()']]],
+  ['logcompositeform_126',['logcompositeform',['../classpolyfem_1_1solver_1_1_log_composite_form.html#a66cef3c2e05500a2f16d16ed3219e8e4',1,'polyfem::solver::LogCompositeForm::LogCompositeForm()'],['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver::LogCompositeForm']]],
   ['logger_127',['logger',['../namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd',1,'polyfem']]],
   ['logger_2ecpp_128',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
   ['logger_2ehpp_129',['Logger.hpp',['../_logger_8hpp.html',1,'']]],
@@ -135,5 +135,7 @@ var searchData=
   ['lshape_132',['lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem::Lshape'],['../classpolyfem_1_1problem_1_1_lshape.html#a0f86a494e6151941d9730057bb954e53',1,'polyfem::problem::Lshape::Lshape()']]],
   ['lsq_5fbc_133',['lsq_bc',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d',1,'polyfem::assembler::RhsAssembler']]],
   ['lump_5fmatrix_134',['lump_matrix',['../namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226',1,'polyfem::utils']]],
-  ['lumped_5fmass_5f_135',['lumped_mass_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a83928203343e4d5b1b2967cb8dcfe71d',1,'polyfem::solver::NLProblem']]]
+  ['lump_5fmatrix_5fhrz_135',['lump_matrix_hrz',['../namespacepolyfem_1_1utils.html#a55304aecc1f9d506bd4ed8601b9ac057',1,'polyfem::utils']]],
+  ['lumped_5fmass_5f_136',['lumped_mass_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a83928203343e4d5b1b2967cb8dcfe71d',1,'polyfem::solver::NLProblem']]],
+  ['lumping_5f_137',['lumping_',['../classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ac567030228dc37e7c7e5e38e50c78f5b',1,'polyfem::solver::BCLagrangianForm']]]
 ];

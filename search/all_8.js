@@ -86,7 +86,8 @@ var searchData=
   ['hppg_83',['hppg',['../namespaceq__bases.html#ae375fafba92f640c058c6b1f424e9084',1,'q_bases']]],
   ['hppn_84',['hppn',['../namespaceq__bases.html#af7a2f043e527c0d5b852b0465e5df870',1,'q_bases']]],
   ['hppv_85',['hppv',['../namespaceq__bases.html#a28c749f70f3c33f911394bb3ba288b8b',1,'q_bases']]],
-  ['hrzmass_86',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]],
-  ['hv_87',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['hyb_88',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
+  ['hrz_86',['HRZ',['../namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2',1,'polyfem::solver']]],
+  ['hrzmass_87',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]],
+  ['hv_88',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hyb_89',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
 ];

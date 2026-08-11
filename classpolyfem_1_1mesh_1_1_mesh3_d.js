@@ -14,6 +14,7 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
     [ "edge_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ac6f80ad9f34ad188861b713b5c58ef56", null ],
     [ "elements_boxes", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a6d9ebb1f2f9560a64e0cd9e04f54b7d3", null ],
     [ "face_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#abd1026aa9547a16677b65b9820183c9e", null ],
+    [ "face_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#adb3c31a9744d18e2b8671354b8dd00c8", null ],
     [ "get_edge_elements_neighs", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a28637adc0a06c3787149499711181af1", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh3_d.html#aa70b10e762acc84988ca2ec9ef198063", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a868ac4073e390a9a07cc3f19c6611834", null ],

@@ -5,5 +5,6 @@ var searchData=
   ['regular_5fboundary_5fcube_2',['REGULAR_BOUNDARY_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a15d5722ae72faa6e963405389543bafa',1,'polyfem::mesh']]],
   ['regular_5finterior_5fcube_3',['REGULAR_INTERIOR_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a06a31270a48e44a5e035df59c8731fcf',1,'polyfem::mesh']]],
   ['repeat_4',['REPEAT',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5be68175be14dfaa080165456c2e9555',1,'polyfem::utils::PiecewiseInterpolation']]],
-  ['repeat_5foffset_5',['REPEAT_OFFSET',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c',1,'polyfem::utils::PiecewiseInterpolation']]]
+  ['repeat_5foffset_5',['REPEAT_OFFSET',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c',1,'polyfem::utils::PiecewiseInterpolation']]],
+  ['row_5fsum_6',['ROW_SUM',['../namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9',1,'polyfem::solver']]]
 ];

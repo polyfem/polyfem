@@ -73,6 +73,7 @@ var namespacepolyfem_1_1utils =
     [ "json_as_array", "namespacepolyfem_1_1utils.html#a96bdecaf2191cf4146f7bb0d850c47f3", null ],
     [ "json_value", "namespacepolyfem_1_1utils.html#af1c193892eb3ee9786a63bb8a2998541", null ],
     [ "lump_matrix", "namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
+    [ "lump_matrix_hrz", "namespacepolyfem_1_1utils.html#a55304aecc1f9d506bd4ed8601b9ac057", null ],
     [ "map_index_matrix", "namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52", null ],
     [ "matrix_inner_product", "namespacepolyfem_1_1utils.html#a06847c9066a2de494416af5c9ee660b8", null ],
     [ "max_time_step", "namespacepolyfem_1_1utils.html#a3972b1923a6c4182457faac9348807c1", null ],

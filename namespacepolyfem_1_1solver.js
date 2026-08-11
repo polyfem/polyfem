@@ -142,6 +142,10 @@ var namespacepolyfem_1_1solver =
     [ "VolumeForm", "classpolyfem_1_1solver_1_1_volume_form.html", "classpolyfem_1_1solver_1_1_volume_form" ],
     [ "WeightedVolumeForm", "classpolyfem_1_1solver_1_1_weighted_volume_form.html", "classpolyfem_1_1solver_1_1_weighted_volume_form" ],
     [ "Diff", "namespacepolyfem_1_1solver.html#a4165a3aa1ac3d4ff7e4ed89921620ef9", null ],
+    [ "BCLumpingMode", "namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9", [
+      [ "ROW_SUM", "namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9", null ],
+      [ "HRZ", "namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2", null ]
+    ] ],
     [ "ElementInversionCheck", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675a", [
       [ "Discrete", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675aa4984667940802dedc139aa7a430a6553", null ],
       [ "Conservative", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675aa5632b7299aaf30b0ac76f9d590df649b", null ]
@@ -169,5 +173,6 @@ var namespacepolyfem_1_1solver =
     [ "is_active_dofs_valid", "namespacepolyfem_1_1solver.html#aa12ab80ab8b4ce2fe248119533d1aa86", null ],
     [ "is_active_geom_nodes_valid", "namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419", null ],
     [ "is_active_pressure_boundary_ids_valid", "namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11", null ],
-    [ "is_active_time_slices_valid", "namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434", null ]
+    [ "is_active_time_slices_valid", "namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434", null ],
+    [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138", null ]
 ];
