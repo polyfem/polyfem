@@ -14,7 +14,6 @@
 
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
-#include <polyfem/varforms/diff/DifferentiableVarFormFactory.hpp>
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem.hpp>
@@ -356,9 +355,7 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = is_adjoint_optimization
-									  ? varform::DifferentiableVarFormFactory::create(formulation, args)
-									  : varform::VarFormFactory::create(formulation, args);
+		variational_formulation = varform::VarFormFactory::create(formulation, args, is_adjoint_optimization);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 

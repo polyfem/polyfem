@@ -12,8 +12,6 @@ set(SOURCES
     diff/DifferentiableLinearElasticVarForm.cpp
     diff/DifferentiableNonlinearElasticVarForm.hpp
     diff/DifferentiableNonlinearElasticVarForm.cpp
-    diff/DifferentiableVarFormFactory.hpp
-    diff/DifferentiableVarFormFactory.cpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp
     LinearElasticVarForm.hpp
