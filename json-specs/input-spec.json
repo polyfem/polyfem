@@ -1265,7 +1265,9 @@
         "pointer": "/contact/collision_mesh",
         "type": "object",
         "optional": [
-            "enabled"
+            "enabled",
+            "tessellation_type",
+            "sampling_order"
         ],
         "doc": "Construct a collision mesh."
     },
@@ -1289,10 +1291,18 @@
         "type": "string",
         "options": [
             "regular",
-            "irregular"
+            "irregular",
+            "max_order"
         ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/sampling_order",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Lattice order for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
     },
     {
         "pointer": "/contact/collision_mesh/enabled",
@@ -1404,6 +1414,7 @@
             "eta",
             "error",
             "inexact",
+            "lumping",
             "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
@@ -1488,6 +1499,16 @@
         "type": "include",
         "spec_file": "nonlinear-solver-spec.json",
         "doc": "Settings for nonlinear solver in augmented lagrangian."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/lumping",
+        "type": "string",
+        "options": [
+            "row_sum",
+            "hrz"
+        ],
+        "default": "row_sum",
+        "doc": "Lumping used for the mass metric weighting the AL penalty. row_sum is the classic lumping (falls back to hrz automatically when invalid, i.e. for bases of order >= 2); hrz forces HRZ-style diagonal-scaling lumping, which is positive at any order."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",

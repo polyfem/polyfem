@@ -7,6 +7,7 @@
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 
 #include <ipc/collision_mesh.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -151,6 +152,9 @@ namespace polyfem::solver
 
 			// Rayleigh damping form
 			const json &rayleigh_damping,
+
+			// BC augmented-Lagrangian mass-metric lumping
+			const BCLumpingMode al_lumping = BCLumpingMode::ROW_SUM,
 
 			// Boundary-ID periodic constraints
 			const mesh::Mesh *periodic_mesh = nullptr,

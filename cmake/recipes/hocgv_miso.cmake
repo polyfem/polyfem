@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'miso' via hocgv-miso")
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/hocgv-miso#c210d383b917a5b4ba2a862888f7c7725c28dd7f")
+CPMAddPackage("gh:fsichetti/hocgv-miso#aaab372d086608ab717ecb9ba0e7bc0fe00c7a10")

@@ -309,6 +309,11 @@ TEST_CASE("standard", tagsrun)
 	run_data("standard", POLYFEM_DATA_DIR);
 }
 
+TEST_CASE("hybrid", tagsrun)
+{
+	run_data("hybrid", POLYFEM_DATA_DIR);
+}
+
 TEST_CASE("time_int", tagsrun)
 {
 	run_data("time_int", POLYFEM_DATA_DIR);

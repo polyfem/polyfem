@@ -100,6 +100,8 @@ namespace polyfem::legacy
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
 			args["solver"]["rayleigh_damping"],
+			// BC AL lumping
+			args["solver"]["augmented_lagrangian"]["lumping"],
 			// Boundary-ID periodic constraints
 			mesh.get(), &total_local_boundary,
 			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
