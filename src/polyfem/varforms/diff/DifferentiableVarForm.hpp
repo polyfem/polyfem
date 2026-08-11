@@ -90,6 +90,6 @@ namespace polyfem::varform
 		virtual mesh::Mesh &mutable_mesh() = 0;
 		virtual void invalidate_after_geometry_update() = 0;
 		virtual void invalidate_after_parameter_update() = 0;
-		virtual QuadratureOrders boundary_samples(int discr_order, int geometry_discr_order) const = 0;
+		virtual QuadratureOrders boundary_samples(int discr_order, int discr_orderq, int geometry_discr_order) const = 0;
 	};
 } // namespace polyfem::varform

@@ -177,7 +177,8 @@ namespace polyfem::varform
 		assert(space.disc_orders.size() > 0 && "Boundary quadrature requires initialized FE orders");
 		assert(space.geometry && "Boundary quadrature requires an initialized geometry mapping");
 		assert(space.geometry->disc_orders.size() > 0 && "Boundary quadrature requires initialized geometry orders");
-		return boundary_samples(space.disc_orders.maxCoeff(), space.geometry->disc_orders.maxCoeff());
+		const int geometry_discr_order = get_mesh().orders().size() <= 0 ? 1 : get_mesh().orders().maxCoeff();
+		return boundary_samples(space.disc_orders.maxCoeff(), space.disc_ordersq.maxCoeff(), geometry_discr_order);
 	}
 
 	void DifferentiableVarForm::set_vertex_positions(const Eigen::MatrixXd &vertices)

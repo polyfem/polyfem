@@ -5,6 +5,9 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+// the non-legacy OutData carries the hybrid (prism/pyramid) collision-proxy
+// construction; the collision mesh is built through it in both architectures
+#include <polyfem/io/OutData.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -1349,6 +1352,14 @@ namespace polyfem::legacy
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
+			else if (collision_mesh_args.contains("tessellation_type")
+					 && collision_mesh_args["tessellation_type"] == "max_order")
+			{
+				polyfem::io::OutGeometryData::extract_boundary_mesh_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
+					utils::json_value<int>(collision_mesh_args, "sampling_order", 0));
+			}
 			else if (collision_mesh_args.contains("max_edge_length"))
 			{
 				logger().debug(
@@ -1372,14 +1383,14 @@ namespace polyfem::legacy
 			}
 			else
 			{
-				io::OutGeometryData::extract_boundary_mesh(
+				polyfem::io::OutGeometryData::extract_boundary_mesh(
 					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
 					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
 			}
 		}
 		else
 		{
-			io::OutGeometryData::extract_boundary_mesh(
+			polyfem::io::OutGeometryData::extract_boundary_mesh(
 				mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
 				collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
 		}

@@ -50,7 +50,7 @@ namespace polyfem::varform
 		mesh::Mesh &mutable_mesh() override;
 		void invalidate_after_geometry_update() override;
 		void invalidate_after_parameter_update() override;
-		QuadratureOrders boundary_samples(int discr_order, int geometry_discr_order) const override;
+		QuadratureOrders boundary_samples(int discr_order, int discr_orderq, int geometry_discr_order) const override;
 		void init_forms(const json &args, int dim, Eigen::MatrixXd &solution, double time) override;
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &solution, bool init_lagging = true) override;
 

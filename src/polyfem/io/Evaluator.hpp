@@ -75,6 +75,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &gbasis,
 			const std::vector<basis::ElementBases> &basis,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const utils::RefElementSampler &sampler,

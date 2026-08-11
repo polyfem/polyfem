@@ -153,8 +153,8 @@ namespace polyfem::varform
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
 
-		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], fe_space_id, mesh, space_disc_orders);
+		Eigen::VectorXi space_disc_orders, space_disc_ordersq;
+		assign_discr_orders(args["space"], fe_space_id, mesh, space_disc_orders, space_disc_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -174,6 +174,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			space_disc_orders,
+			space_disc_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -434,8 +435,8 @@ namespace polyfem::varform
 
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const
 	{
-		return n_boundary_samples(
-			space_.disc_orders.maxCoeff(), space_.geometry->disc_orders.maxCoeff());
+		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
+		return n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 	}
 
 	std::vector<int> ElasticVarForm::elastic_primitive_to_node() const

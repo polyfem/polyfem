@@ -141,8 +141,9 @@ namespace polyfem::varform
 
 	QuadratureOrders DifferentiableLinearElasticVarForm::boundary_samples(
 		const int discr_order,
+		const int discr_orderq,
 		const int geometry_discr_order) const
 	{
-		return LinearElasticVarForm::n_boundary_samples(discr_order, geometry_discr_order);
+		return LinearElasticVarForm::n_boundary_samples(discr_order, discr_orderq, geometry_discr_order);
 	}
 } // namespace polyfem::varform

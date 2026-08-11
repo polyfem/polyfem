@@ -180,9 +180,10 @@ namespace polyfem::varform
 
 	QuadratureOrders DifferentiableNonlinearElasticVarForm::boundary_samples(
 		const int discr_order,
+		const int discr_orderq,
 		const int geometry_discr_order) const
 	{
-		return NonlinearElasticVarForm::n_boundary_samples(discr_order, geometry_discr_order);
+		return NonlinearElasticVarForm::n_boundary_samples(discr_order, discr_orderq, geometry_discr_order);
 	}
 
 	// The differentiable path matches NonlinearElasticVarForm::init_forms except
@@ -251,6 +252,7 @@ namespace polyfem::varform
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
 			args["solver"]["rayleigh_damping"],
+			args["solver"]["augmented_lagrangian"]["lumping"],
 			mesh_.get(), &boundary_.total_local_boundary,
 			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
 

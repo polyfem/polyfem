@@ -42,6 +42,6 @@ namespace polyfem::varform
 		mesh::Mesh &mutable_mesh() override;
 		void invalidate_after_geometry_update() override;
 		void invalidate_after_parameter_update() override;
-		QuadratureOrders boundary_samples(int discr_order, int geometry_discr_order) const override;
+		QuadratureOrders boundary_samples(int discr_order, int discr_orderq, int geometry_discr_order) const override;
 	};
 } // namespace polyfem::varform

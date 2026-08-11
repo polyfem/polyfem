@@ -328,8 +328,8 @@ namespace polyfem::varform
 		assert(primary_assembler_);
 		assert(temperature_assembler_);
 
-		Eigen::VectorXi displacement_orders;
-		assign_discr_orders(args["space"]["discr_order"], displacement_space_id_, mesh, displacement_orders);
+		Eigen::VectorXi displacement_orders, displacement_ordersq;
+		assign_discr_orders(args["space"], displacement_space_id_, mesh, displacement_orders, displacement_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -349,6 +349,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			displacement_orders,
+			displacement_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -468,13 +469,14 @@ namespace polyfem::varform
 
 	void ThermoElasticVarForm::build_temperature_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
-		Eigen::VectorXi temperature_orders;
-		assign_discr_orders(args["space"]["discr_order"], temperature_space_id_, mesh, temperature_orders);
+		Eigen::VectorXi temperature_orders, temperature_ordersq;
+		assign_discr_orders(args["space"], temperature_space_id_, mesh, temperature_orders, temperature_ordersq);
 
 		build_fe_space(
 			mesh,
 			iso_parametric,
 			temperature_orders,
+			temperature_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*temperature_assembler_,
@@ -743,8 +745,9 @@ namespace polyfem::varform
 		assert(temperature_space_.disc_orders.size() > 0 && "Thermal boundary quadrature requires initialized FE orders");
 		assert(temperature_space_.geometry && "Thermal boundary quadrature requires an initialized geometry mapping");
 		assert(temperature_space_.geometry->disc_orders.size() > 0 && "Thermal boundary quadrature requires initialized geometry orders");
+		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 		const QuadratureOrders temperature_boundary_samples =
-			VarForm::n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), temperature_space_.geometry->disc_orders.maxCoeff());
+			n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), temperature_space_.disc_ordersq.maxCoeff(), gdiscr_order);
 		temperature_body_form_ = std::make_shared<solver::BodyForm>(
 			temperature_ndof(), 0,
 			temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,
