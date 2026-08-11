@@ -20,6 +20,8 @@
 #include <polyfem/io/SolverCSVWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SemiImplicitBarrierContactForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
@@ -610,6 +612,7 @@ namespace polyfem::varform
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
+			args["solver"]["contact"]["semi_implicit"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -825,15 +828,74 @@ namespace polyfem::varform
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 
+		// Optionally scale the initial AL weight to the system elastic
+		// Hessian so the penalty dominates the problem curvature.
+		double initial_al_weight;
+		if (args["solver"]["augmented_lagrangian"]["initial_weight"].is_string())
+		{
+			assert(args["solver"]["augmented_lagrangian"]["initial_weight"] == "hessian_scaled");
+			const double multiplier = args["solver"]["augmented_lagrangian"]["initial_weight_multiplier"];
+			initial_al_weight = solve_data.hessian_scaled_al_weight(sol, multiplier);
+		}
+		else
+			initial_al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+
+		const solver::InexactALOptions inexact_opts = solver::InexactALOptions::from_json(
+			args["solver"]["augmented_lagrangian"]);
+		if (inexact_opts.strategy == solver::ALStrategy::AdaptiveInexact)
+			solve_data.normalize_al_penalty_metric();
+
+		// Stall detection: restart the nonlinear solve with retuned barrier
+		// stiffness when the line search collapses (semi-implicit mode only).
+		solver::StallRestartOptions stall_opts;
+		std::function<void(const Eigen::VectorXd &)> on_stall = nullptr;
+		std::function<bool(const Eigen::VectorXd &, int)> contact_restart_requested = nullptr;
+		auto semi_implicit_barrier = std::dynamic_pointer_cast<solver::SemiImplicitBarrierContactForm>(solve_data.contact_form);
+		if (semi_implicit_barrier != nullptr)
+		{
+			const json &restart_opts = args["solver"]["contact"]["semi_implicit"]["restart"];
+			stall_opts.enabled = restart_opts["enabled"];
+			stall_opts.alpha_threshold = restart_opts["alpha_threshold"];
+			stall_opts.patience = restart_opts["patience"];
+			stall_opts.min_iterations = restart_opts["min_iterations"];
+			stall_opts.soft_iteration_limit = restart_opts["soft_iteration_limit"];
+			stall_opts.max_restarts = restart_opts["max_restarts"];
+
+			const double stall_trim_factor = restart_opts["stall_trim_factor"];
+			on_stall = [semi_implicit_barrier, stall_trim_factor](const Eigen::VectorXd &x) {
+				semi_implicit_barrier->retune_on_stall(x, stall_trim_factor);
+			};
+			contact_restart_requested = [semi_implicit_barrier](const Eigen::VectorXd &x, const int iteration) {
+				return semi_implicit_barrier->restart_requested(x, iteration);
+			};
+		}
+
 		ALSolver al_solver(
 			solve_data.al_form,
-			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			initial_al_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
 			[&](const Eigen::VectorXd &x) {
-				this->solve_data.update_barrier_stiffness(sol);
-			});
+				this->solve_data.update_barrier_stiffness(x);
+			},
+			stall_opts, on_stall, inexact_opts, contact_restart_requested);
+
+		if (semi_implicit_barrier != nullptr)
+		{
+			// Active-constraint treatment of pairs pinned at the numerical
+			// floor: project their closing components out of every Newton
+			// direction (sliding/separation stay free). reduced_to_full /
+			// full_to_reduced are affine, so mapping directions as
+			// differences is exact in both full- and reduced-size modes.
+			al_solver.direction_filter =
+				[&nl_problem, semi_implicit_barrier](const Eigen::VectorXd &x, Eigen::VectorXd &dir) {
+					const Eigen::VectorXd x_full = nl_problem.reduced_to_full(x);
+					Eigen::VectorXd dir_full = nl_problem.reduced_to_full(x + dir) - x_full;
+					if (semi_implicit_barrier->project_floor_pairs(x_full, dir_full) > 0)
+						dir = nl_problem.full_to_reduced(x_full + dir_full) - x;
+				};
+		}
 
 		al_solver.post_subsolve = [&](const double al_weight) {
 			stats.solver_info.push_back(
@@ -842,6 +904,9 @@ namespace polyfem::varform
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			stats.solver_info.back()["controller"] = al_solver.consume_subsolve_diagnostics();
+			if (semi_implicit_barrier != nullptr)
+				stats.solver_info.back()["contact"] = semi_implicit_barrier->diagnostics(sol);
 			save_subsolve(stats.solver_info.size(), step, sol);
 		};
 

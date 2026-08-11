@@ -31,6 +31,14 @@ namespace ipc
 
 namespace polyfem::solver
 {
+	/// @brief How the barrier stiffness is chosen and updated
+	enum class BarrierStiffnessMode
+	{
+		Fixed,        ///< User-provided fixed stiffness
+		Adaptive,     ///< Classic IPC adaptive stiffness [Li et al. 2020]
+		SemiImplicit, ///< Per-contact elasticity-inclusive stiffness [Ando 2024]
+	};
+
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{

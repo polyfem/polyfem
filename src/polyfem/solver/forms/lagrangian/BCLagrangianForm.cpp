@@ -103,20 +103,7 @@ namespace polyfem::solver
 		igl::slice(masked_lumped_mass_, constraints_, 2, masked_lumped_mass_);
 		assert(boundary_nodes_.size() == masked_lumped_mass_.rows() && boundary_nodes_.size() == masked_lumped_mass_.cols());
 
-		masked_lumped_mass_sqrt_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
-		std::vector<Eigen::Triplet<double>> tmp_triplets;
-		tmp_triplets.reserve(masked_lumped_mass_.nonZeros());
-		for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
-			{
-				assert(it.col() == k);
-				tmp_triplets.emplace_back(it.row(), it.col(), sqrt(it.value()));
-			}
-		}
-
-		masked_lumped_mass_sqrt_.setFromTriplets(tmp_triplets.begin(), tmp_triplets.end());
-		masked_lumped_mass_sqrt_.makeCompressed();
+		update_masked_lumped_mass_sqrt();
 
 		std::vector<bool> is_contraints(n_dofs_, false);
 		for (int i = 0; i < boundary_nodes_.size(); ++i)
@@ -142,6 +129,34 @@ namespace polyfem::solver
 
 		lagr_mults_.resize(boundary_nodes_.size());
 		lagr_mults_.setZero();
+	}
+
+	void BCLagrangianForm::update_masked_lumped_mass_sqrt()
+	{
+		masked_lumped_mass_sqrt_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
+		std::vector<Eigen::Triplet<double>> tmp_triplets;
+		tmp_triplets.reserve(masked_lumped_mass_.nonZeros());
+		for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
+			{
+				assert(it.col() == k);
+				tmp_triplets.emplace_back(it.row(), it.col(), sqrt(it.value()));
+			}
+		}
+
+		masked_lumped_mass_sqrt_.setFromTriplets(tmp_triplets.begin(), tmp_triplets.end());
+		masked_lumped_mass_sqrt_.makeCompressed();
+	}
+
+	void BCLagrangianForm::normalize_penalty_metric()
+	{
+		const double mean_diag = masked_lumped_mass_.diagonal().mean();
+		if (mean_diag > 0 && std::isfinite(mean_diag))
+		{
+			masked_lumped_mass_ /= mean_diag;
+			update_masked_lumped_mass_sqrt();
+		}
 	}
 
 	bool BCLagrangianForm::can_project() const { return true; }

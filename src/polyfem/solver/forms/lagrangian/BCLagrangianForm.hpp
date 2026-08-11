@@ -75,6 +75,7 @@ namespace polyfem::solver
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
 		double compute_error(const Eigen::VectorXd &x) const override;
+		void normalize_penalty_metric() override;
 
 		virtual bool can_project() const override;
 		virtual void project_gradient(Eigen::VectorXd &grad) const override;
@@ -106,6 +107,7 @@ namespace polyfem::solver
 		void init_masked_lumped_mass(
 			const StiffnessMatrix &mass,
 			const size_t obstacle_ndof);
+		void update_masked_lumped_mass_sqrt();
 
 		/// @brief Update target x to the Dirichlet boundary values at time t
 		/// @param t Current time

@@ -17,6 +17,10 @@ namespace polyfem::solver
 
 		virtual double compute_error(const Eigen::VectorXd &x) const = 0;
 
+		/// Normalize the penalty metric without changing its relative weights.
+		/// The legacy strategy deliberately leaves this as a no-op.
+		virtual void normalize_penalty_metric() {}
+
 		inline void set_initial_weight(const double k_al) { k_al_ = k_al; }
 
 		inline double lagrangian_weight() const { return k_al_; }

@@ -1396,13 +1396,92 @@
         "default": null,
         "type": "object",
         "optional": [
+            "strategy",
             "initial_weight",
+            "initial_weight_multiplier",
             "scaling",
             "max_weight",
             "eta",
+            "error",
+            "inexact",
             "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/strategy",
+        "default": "legacy",
+        "type": "string",
+        "options": [
+            "legacy",
+            "adaptive_inexact"
+        ],
+        "doc": "AL controller. adaptive_inexact bounds each AL Newton subsolve and updates multipliers/penalty only between frozen subsolves."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "inner_max_iterations",
+            "min_iterations",
+            "energy_window",
+            "min_relative_energy_decrease",
+            "constraint_reduction_target",
+            "max_outer_iterations",
+            "max_consecutive_failures"
+        ],
+        "doc": "Options for the adaptive_inexact AL controller."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/inner_max_iterations",
+        "default": 20,
+        "min": 1,
+        "type": "int",
+        "doc": "Maximum Newton iterations in one AL subsolve."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/min_iterations",
+        "default": 5,
+        "min": 0,
+        "type": "int",
+        "doc": "Minimum iterations before an energy plateau may stop a subsolve."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/energy_window",
+        "default": 5,
+        "min": 2,
+        "type": "int",
+        "doc": "Number of recent iterations used to detect an energy plateau."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/min_relative_energy_decrease",
+        "default": 1e-6,
+        "min": 0,
+        "type": "float",
+        "doc": "Minimum relative energy decrease over the plateau window."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/constraint_reduction_target",
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
+        "type": "float",
+        "doc": "Required ratio of new to previous constraint norm before retaining the penalty weight."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/max_outer_iterations",
+        "default": 50,
+        "min": 1,
+        "type": "int",
+        "doc": "Maximum AL subsolves before reporting failure."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/inexact/max_consecutive_failures",
+        "default": 3,
+        "min": 0,
+        "type": "int",
+        "doc": "Maximum consecutive invalid or failed subsolves before reporting failure."
     },
     {
         "pointer": "/solver/augmented_lagrangian/nonlinear",
@@ -1416,6 +1495,21 @@
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/initial_weight",
+        "options": [
+            "hessian_scaled"
+        ],
+        "type": "string",
+        "doc": "Scale the initial AL weight to initial_weight_multiplier * max|H| where H is the system elastic Hessian at the solve start."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/initial_weight_multiplier",
+        "default": 10.0,
+        "min": 0,
+        "type": "float",
+        "doc": "Multiplier for the hessian_scaled initial AL weight."
     },
     {
         "pointer": "/solver/augmented_lagrangian/error",
@@ -1454,7 +1548,8 @@
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "initial_barrier_stiffness"
+            "initial_barrier_stiffness",
+            "semi_implicit"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1463,6 +1558,156 @@
         "default": 1,
         "type": "float",
         "doc": "Initial barrier stiffness if adaptive barrier is used."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "refresh_interval",
+            "trim_lower",
+            "trim_upper",
+            "trim_factor",
+            "trim_min",
+            "trim_max",
+            "kappa_min",
+            "kappa_spread",
+            "conditioning_cap",
+            "controller_interval",
+            "gap_floor",
+            "constraint_floor",
+            "restart"
+        ],
+        "doc": "Options for the semi-implicit per-contact barrier stiffness (barrier_stiffness = \"semi_implicit\")."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/refresh_interval",
+        "default": 0,
+        "type": "int",
+        "doc": "Newton iterations between refreshes of the per-contact stiffness snapshot. 0 (default) refreshes only at solve starts and stall restarts, keeping the objective frozen within a solve."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/trim_lower",
+        "default": 0.5,
+        "type": "float",
+        "doc": "Increase the global trim when the average active squared gap drops below this fraction of dhat^2. The default actively centers the gap high in the dhat band (interior-point-style), stiffening the barrier as the load grows and long before any contact nears the singular region; lowering it makes the controller a collapse-only safety net."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/trim_upper",
+        "default": 0.9,
+        "type": "float",
+        "doc": "Decrease the global trim when the average active squared gap exceeds this fraction of dhat^2."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/trim_factor",
+        "default": 2.0,
+        "type": "float",
+        "doc": "Multiplicative factor applied to the global trim by the gap-band controller."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/trim_min",
+        "default": 2.3283064365386963e-10,
+        "type": "float",
+        "doc": "Lower clamp for the global trim factor (2^-32). The gradient-balance calibration sets the trim directly at subsolve starts, so the bounds only guard against degenerate balances."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/trim_max",
+        "default": 4294967296.0,
+        "type": "float",
+        "doc": "Upper clamp for the global trim factor (2^32)."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/kappa_min",
+        "default": 0,
+        "type": "float",
+        "doc": "Floor for the per-contact stiffness (system units)."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/kappa_spread",
+        "default": 1e4,
+        "type": "float",
+        "doc": "Cap each per-contact stiffness at kappa_spread times the median of its refresh batch (guards against exploded Hessians of crushed elements)."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/gap_floor",
+        "default": 0,
+        "type": "float",
+        "doc": "EXPERIMENTAL. Fraction of dhat below which the barrier force saturates (C1 linear continuation of the clamped-log barrier). Removes the Newton-direction poisoning of a pair at the floating-point floor, but without constraint projection the pair then collapses freely until CCD becomes the deadlock; disabled (0) by default."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/constraint_floor",
+        "default": 1e-4,
+        "type": "float",
+        "doc": "Pairs with gap below this fraction of dhat are treated as active constraints: their closing component is projected out of every Newton direction (sliding and separation stay free). No normal-force law can hold a kinematically driven pair at the numerical floor -- singular barriers poison the search direction, saturated ones let it collapse; the projection lets the rest of the mesh proceed. 0 disables."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/conditioning_cap",
+        "default": 1e3,
+        "type": "float",
+        "doc": "When a refresh finds the contact unloaded (no gradient-balance signal), cap the effective barrier stiffness at conditioning_cap times the max absolute entry of the system Hessian. Bounds the Newton system's dynamic range until the load provides a force-balance calibration."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/controller_interval",
+        "default": 30,
+        "type": "int",
+        "doc": "Newton-iteration cadence of the in-solve downward trim step when the average gap stays pinned above the band (barrier dominating the elasticity). 0 disables the in-solve downward step."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "alpha_threshold",
+            "patience",
+            "min_iterations",
+            "soft_iteration_limit",
+            "max_restarts",
+            "stall_trim_factor"
+        ],
+        "doc": "Stall detection and restart options for the semi-implicit barrier stiffness mode."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Detect line-search stalls and restart the nonlinear solve with retuned barrier stiffness."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/alpha_threshold",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Line-search step sizes below this value count towards a stall. An eager threshold restarts (with a stiffness retune) before the solver digs into a wedged state; restarts are cheap relative to grinding."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/patience",
+        "default": 5,
+        "type": "int",
+        "doc": "Number of consecutive small-alpha iterations before declaring a stall."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/min_iterations",
+        "default": 5,
+        "type": "int",
+        "doc": "Do not judge stalls before this many Newton iterations."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/soft_iteration_limit",
+        "default": 100,
+        "type": "int",
+        "doc": "Restart with retuned stiffness after this many iterations (-1 to disable). Keep below the nonlinear solver's max_iterations so retuning happens before the hard limit throws."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/max_restarts",
+        "default": 20,
+        "type": "int",
+        "doc": "Maximum number of stall restarts per nonlinear solve. Each restart retunes the barrier stiffness and re-freezes the per-contact snapshot; hard loading ramps can legitimately need 15+ retunes within one solve."
+    },
+    {
+        "pointer": "/solver/contact/semi_implicit/restart/stall_trim_factor",
+        "default": 2.0,
+        "type": "float",
+        "doc": "Factor applied to the global trim when a stall restart is triggered."
     },
     {
         "pointer": "/solver/contact/CCD",
@@ -1529,10 +1774,11 @@
         "pointer": "/solver/contact/barrier_stiffness",
         "default": "adaptive",
         "options": [
-            "adaptive"
+            "adaptive",
+            "semi_implicit"
         ],
         "type": "string",
-        "doc": "How coefficient of clamped log-barrier function for contact is updated"
+        "doc": "How coefficient of clamped log-barrier function for contact is updated. \"adaptive\" is the classic IPC heuristic; \"semi_implicit\" uses per-contact elasticity-inclusive stiffness [Ando 2024] with a gap-band trim controller."
     },
     {
         "pointer": "/solver/contact/barrier_stiffness",

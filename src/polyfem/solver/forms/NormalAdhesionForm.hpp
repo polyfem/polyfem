@@ -147,6 +147,7 @@ namespace polyfem::solver
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution
 		ipc::NormalCollisions collision_set_;
+		Eigen::MatrixXd cached_displaced_surface_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
 

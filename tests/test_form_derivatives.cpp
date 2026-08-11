@@ -5,8 +5,10 @@
 #include <polyfem/assembler/FixedCorotational.hpp>
 
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SemiImplicitBarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -25,6 +27,7 @@
 #include <polyfem/legacy/State.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
 #include <iostream>
@@ -297,6 +300,88 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 	form.set_barrier_stiffness(barrier_stiffness);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("semi-implicit barrier contact form derivatives", "[form][form_derivatives][contact_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	const int ndof = state_ptr->n_bases * dim;
+
+	const double dhat = 1e-3;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+
+	// Unit lumped masses exercise the m/d^2 term of the per-contact stiffness
+	const Eigen::VectorXd lumped_masses =
+		Eigen::VectorXd::Ones(state_ptr->collision_mesh.full_num_vertices());
+
+	SemiImplicitBarrierContactForm form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		/*use_area_weighting=*/false, /*use_improved_max_operator=*/false,
+		is_time_dependent, /*enable_shape_derivatives=*/false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations, json::object(), lumped_masses);
+
+	// Synthetic SPD system Hessian (position-independent)
+	form.set_system_hessian_provider(
+		[ndof](const Eigen::VectorXd &, StiffnessMatrix &hessian) {
+			hessian.resize(ndof, ndof);
+			hessian.setIdentity();
+			hessian *= 1e4;
+		});
+
+	// Freeze the per-contact stiffness snapshot at x = 0; the FD probe then
+	// validates the derivatives of the frozen-kappa objective, which is the
+	// invariant the solver relies on within a Newton solve.
+	form.init(Eigen::VectorXd::Zero(ndof));
+	form.update_barrier_stiffness(Eigen::VectorXd::Zero(ndof), Eigen::MatrixXd());
+	form.set_barrier_stiffness(2.0); // arbitrary global trim
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("semi-implicit friction form derivatives", "[form][form_derivatives][friction_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	const int ndof = state_ptr->n_bases * dim;
+
+	const double epsv = 1e-3;
+	const double mu = 0.1;
+	const double dhat = 1e-3;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+
+	const Eigen::VectorXd lumped_masses =
+		Eigen::VectorXd::Ones(state_ptr->collision_mesh.full_num_vertices());
+
+	SemiImplicitBarrierContactForm contact_form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		/*use_area_weighting=*/false, /*use_improved_max_operator=*/false,
+		is_time_dependent, /*enable_shape_derivatives=*/false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations, json::object(), lumped_masses);
+
+	contact_form.set_system_hessian_provider(
+		[ndof](const Eigen::VectorXd &, StiffnessMatrix &hessian) {
+			hessian.resize(ndof, ndof);
+			hessian.setIdentity();
+			hessian *= 1e4;
+		});
+	contact_form.init(Eigen::VectorXd::Zero(ndof));
+	contact_form.update_barrier_stiffness(Eigen::VectorXd::Zero(ndof), Eigen::MatrixXd());
+	contact_form.set_barrier_stiffness(2.0);
+
+	// Exercises FrictionForm::update_lagging's per-collision stiffness
+	// assignment (lagged normal forces see trim * kappa_i).
+	FrictionForm form(
+		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		/*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
 }
@@ -740,4 +825,104 @@ TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elast
 		state_ptr->mesh->is_volume());
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
 	test_form(form, *state_ptr, 1e-7, 1e-4);
+}
+
+TEST_CASE("adaptive inexact AL defaults and metric normalization", "[al][adaptive_inexact]")
+{
+	const json legacy_params = json::object();
+	const solver::InexactALOptions legacy = solver::InexactALOptions::from_json(legacy_params);
+	CHECK(legacy.strategy == solver::ALStrategy::Legacy);
+
+	const json adaptive_params = {{"strategy", "adaptive_inexact"}};
+	const solver::InexactALOptions adaptive = solver::InexactALOptions::from_json(adaptive_params);
+	CHECK(adaptive.strategy == solver::ALStrategy::AdaptiveInexact);
+	CHECK(adaptive.inner_max_iterations == 20);
+	CHECK(adaptive.min_iterations == 5);
+	CHECK(adaptive.energy_window == 5);
+	CHECK(adaptive.min_relative_energy_decrease == Catch::Approx(1e-6));
+	CHECK(adaptive.constraint_reduction_target == Catch::Approx(0.5));
+	CHECK(adaptive.max_outer_iterations == 50);
+	CHECK(adaptive.max_consecutive_failures == 3);
+	CHECK_THROWS(solver::InexactALOptions::from_json({
+		{"strategy", "adaptive_inexact"},
+		{"inexact", {{"inner_max_iterations", 4}, {"min_iterations", 5}}}}));
+	CHECK_THROWS(solver::InexactALOptions::from_json({
+		{"strategy", "adaptive_inexact"},
+		{"inexact", {{"energy_window", 1}}}}));
+
+	StiffnessMatrix mass(2, 2);
+	mass.insert(0, 0) = 2.0;
+	mass.insert(1, 1) = 8.0;
+	mass.makeCompressed();
+	const std::vector<int> boundary_nodes = {0, 1};
+	const Eigen::VectorXd target = Eigen::VectorXd::Zero(2);
+	BCLagrangianForm form(2, boundary_nodes, mass, 0, target);
+	form.set_initial_weight(10.0);
+	const Eigen::VectorXd x = Eigen::VectorXd::Ones(2);
+	const double legacy_value = form.value(x);
+	CHECK(legacy_value == Catch::Approx(50.0));
+
+	form.normalize_penalty_metric();
+	CHECK(form.value(x) == Catch::Approx(legacy_value / 5.0));
+}
+
+TEST_CASE("PolySolve callback diagnostics and direction filter", "[adaptive_inexact][polysolve]")
+{
+	class QuadraticProblem final : public polysolve::nonlinear::Problem
+	{
+	public:
+		double value(const TVector &x) override
+		{
+			return 0.5 * (x - target_).squaredNorm();
+		}
+
+		void gradient(const TVector &x, TVector &grad) override
+		{
+			grad = x - target_;
+		}
+
+		void hessian(const TVector &, THessian &hessian) override
+		{
+			hessian.resize(2, 2);
+			hessian.setIdentity();
+		}
+
+	private:
+		const TVector target_ = (TVector(2) << -2.0, 3.0).finished();
+	};
+
+	json nonlinear = {
+		{"solver", "Newton"},
+		{"line_search", {{"method", "Backtracking"}}},
+		{"max_iterations", 10},
+		{"grad_norm_tol", 1e-12},
+		{"rel_grad_norm_tol", 0.0}};
+	json linear = {{"solver", "Eigen::SimplicialLDLT"}};
+	auto nonlinear_solver = polysolve::nonlinear::Solver::create(
+		nonlinear, linear, 1.0, polyfem::logger());
+
+	int filter_calls = 0;
+	nonlinear_solver->set_direction_filter(
+		[&](const Eigen::VectorXd &, Eigen::VectorXd &direction) {
+			++filter_calls;
+			direction[0] = 0; // x[0] is the constrained manifold coordinate.
+		});
+	int callback_calls = 0;
+	nonlinear_solver->set_iteration_callback(
+		[&](const polysolve::nonlinear::Criteria &criteria) {
+			++callback_calls;
+			CHECK(std::isfinite(criteria.energy));
+			CHECK(std::isfinite(criteria.alpha));
+			CHECK(std::isfinite(criteria.step));
+			return true; // one accepted, filtered Newton step is sufficient
+		});
+
+	QuadraticProblem problem;
+	Eigen::VectorXd x(2);
+	x << 1.0, -1.0;
+	CHECK_NOTHROW(nonlinear_solver->minimize(problem, x));
+	CHECK(filter_calls > 0);
+	CHECK(callback_calls > 0);
+	CHECK(x[0] == Catch::Approx(1.0));
+	CHECK(x[1] == Catch::Approx(3.0));
 }
