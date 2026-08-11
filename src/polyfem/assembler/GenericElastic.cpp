@@ -10,6 +10,7 @@
 
 #include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/ActiveFiber.hpp>
+#include <polyfem/assembler/HGODispersion.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -628,5 +629,6 @@ namespace polyfem::assembler
 
 	template class GenericElastic<HGOFiber>;
 	template class GenericElastic<ActiveFiber>;
+	template class GenericElastic<HGODispersion>;
 
 } // namespace polyfem::assembler

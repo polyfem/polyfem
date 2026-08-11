@@ -28,7 +28,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/legacy/io/OutData.hpp>
 
 #include <polysolve/linear/Solver.hpp>
@@ -306,10 +305,9 @@ namespace polyfem::legacy
 			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+			const int discr_order = std::max({disc_orders.maxCoeff(), disc_ordersq.maxCoeff(), gdiscr_order});
 
 			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
-			// todo prism
 			return {{n_b_samples, n_b_samples}};
 		}
 
@@ -482,11 +480,12 @@ namespace polyfem::legacy
 		/// @return nonlinear solver (eg newton or LBFGS)
 		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
-		/// periodic BC and periodic mesh utils
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
+		/// Explicit periodic boundary-pair data used by periodic contact.
+		Eigen::VectorXi periodic_dof_mask;
+		Eigen::MatrixXd periodic_tile_offsets;
 		bool has_periodic_bc() const
 		{
-			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
+			return !args["boundary_conditions"]["periodic"].empty();
 		}
 
 		/// @brief Solve the linear problem with the given solver and system.
@@ -799,7 +798,7 @@ namespace polyfem::legacy
 		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
 		bool is_homogenization() const
 		{
-			return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0;
+			return macro_strain_constraint.is_active();
 		}
 	};
 

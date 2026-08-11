@@ -354,8 +354,8 @@ namespace polyfem::varform
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
 
-		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], velocity_space_id_, mesh, space_disc_orders);
+		Eigen::VectorXi space_disc_orders, space_disc_ordersq;
+		assign_discr_orders(args["space"], velocity_space_id_, mesh, space_disc_orders, space_disc_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -375,6 +375,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			space_disc_orders,
+			space_disc_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -428,14 +429,15 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		Eigen::VectorXi pressure_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], pressure_space_id_, mesh, pressure_disc_orders);
+		Eigen::VectorXi pressure_disc_orders, pressure_disc_ordersq;
+		assign_discr_orders(args["space"], pressure_space_id_, mesh, pressure_disc_orders, pressure_disc_ordersq);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(
 			mesh,
 			/*iso_parametric=*/true,
 			pressure_disc_orders,
+			pressure_disc_ordersq,
 			pressure_basis_type,
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -780,8 +782,8 @@ namespace polyfem::varform
 			export_solution_gradient ? &velocity_gradients : nullptr);
 		if (sampled_velocity && options.export_field("velocity"))
 			fields.push_back({"velocity", velocity_values, io::OutputField::Association::Point});
-		if (sampled_velocity && options.export_field("solution"))
-			fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
+		// if (sampled_velocity && options.export_field("solution"))
+		// 	fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
 		if (sampled_velocity && export_solution_gradient)
 			fields.push_back({"solution_gradient", velocity_gradients, io::OutputField::Association::Point});
 
@@ -848,7 +850,7 @@ namespace polyfem::varform
 		logger().info("{}...", solver->name());
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
 			boundary_.local_neumann_boundary, rhs_);
@@ -883,7 +885,7 @@ namespace polyfem::varform
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass_, expanded_mass);
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -997,7 +999,7 @@ namespace polyfem::varform
 
 		velocity_rhs_ = rhs_.topRows(primary_ndof());
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 		body_form_ = std::make_shared<solver::BodyForm>(
 			primary_ndof(), /*n_pressure_bases=*/0,
 			boundary_.boundary_nodes, boundary_.local_boundary,
@@ -1072,7 +1074,7 @@ namespace polyfem::varform
 
 		const StiffnessMatrix residual_mass = append_identity_mass(pure_mass_, pressure_block_size());
 		nl_problem_ = std::make_shared<solver::NLProblem>(
-			stacked_ndof(), nullptr, t, forms_, al_forms_,
+			stacked_ndof(), t, forms_, al_forms_,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			units.characteristic_length(), /*characteristic_force=*/1,
 			residual_mass, mesh_->dimension(), /*is_residual=*/true);

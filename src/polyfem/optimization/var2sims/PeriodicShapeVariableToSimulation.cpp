@@ -41,11 +41,12 @@ namespace polyfem::solver
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: transient simulations are not supported.");
 			}
-			if (!s->has_periodic_bc() || s->periodic_bc == nullptr)
+			if (!s->has_periodic_bc())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: periodic boundary conditions are not enabled.");
 			}
-			if (!s->periodic_bc->all_direction_periodic())
+			if (s->periodic_tile_offsets.rows() != dim_ || s->periodic_tile_offsets.cols() != dim_
+				|| Eigen::FullPivLU<Eigen::MatrixXd>(s->periodic_tile_offsets).rank() != dim_)
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: partial periodicity is not supported.");
 			}

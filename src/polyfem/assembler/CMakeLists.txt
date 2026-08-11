@@ -33,6 +33,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	HGOFiber.cpp
 	HGOFiber.hpp
+	HGODispersion.cpp
+	HGODispersion.hpp
 	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
@@ -50,6 +52,8 @@ set(SOURCES
 	MultiModel.hpp
 	NavierStokes.cpp
 	NavierStokes.hpp
+	NavierStokesFSI.cpp
+	NavierStokesFSI.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
 	NeoHookeanElasticityAutodiff.cpp
@@ -77,8 +81,6 @@ set(SOURCES
 	IsochoricNeoHookean.hpp
 	PressureAssembler.cpp
 	PressureAssembler.hpp
-	PeriodicBoundary.cpp
-	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
 	VolumePenalty.hpp

@@ -28,12 +28,32 @@ namespace polyfem::varform
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
 
+		/// Prepare the standard nonlinear-elastic assembly state for use as a
+		/// block in a larger nonlinear problem. This does not construct or solve
+		/// the child NLProblem.
+		void prepare_for_embedding();
+		void initial_solution_for_embedding(Eigen::MatrixXd &solution, const std::string &state_prefix = "") const;
+		void init_forms_for_embedding(Eigen::MatrixXd &solution, double t, const std::string &state_prefix = "");
+		void advance_for_embedding(const Eigen::VectorXd &solution);
+		void update_barrier_stiffness_for_embedding(const Eigen::VectorXd &solution);
+		bool save_timestep_for_embedding(
+			double time, int step, double dt, const Eigen::MatrixXd &solution,
+			paraviewo::VTMWriter &vtm, const std::string &block_prefix) const;
+
+		int embedding_ndof() const;
+		const std::vector<std::shared_ptr<solver::Form>> &embedding_forms() const { return forms; }
+		const std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> &embedding_al_forms() const { return solve_data.al_form; }
+		const StiffnessMatrix &embedding_norm_matrix() const { return pure_mass_; }
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &embedding_time_integrator() const { return solve_data.time_integrator; }
+		const FESpace &embedding_space() const { return space_; }
+
 	protected:
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void build_rhs_assembler() override;
 		void init_solve(Eigen::MatrixXd &sol, const double t);
+		void init_solve_data(Eigen::MatrixXd &sol, double t, const std::string &state_prefix);
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
 

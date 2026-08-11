@@ -14,6 +14,7 @@
             "IncompressibleOgden",
             "ActiveFiber",
             "HGOFiber",
+            "HGODispersion",
             "IsochoricNeoHookean",
             "MaterialSum",
             "FixedCorotational",
@@ -374,6 +375,24 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "HGODispersion",
+        "required": [
+            "type",
+            "k1",
+            "k2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "kappa",
+            "k_chi",
+            "fiber_direction"
+        ],
+        "doc": "Modified GOH fiber model: dispersion (kappa) and smooth distension/compression switch (k_chi)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "ActiveFiber",
         "required": [
             "type",
@@ -483,6 +502,37 @@
         "default": 0
     },
     {
+        "pointer": "/fiber_direction",
+        "type": "object",
+        "required": [
+            "type",
+            "path"
+        ],
+        "optional": [
+            "field"
+        ],
+        "doc": "Per-element fiber direction read from a file, bound by global element id"
+    },
+    {
+        "pointer": "/fiber_direction/type",
+        "type": "string",
+        "options": [
+            "per_element_file"
+        ],
+        "doc": "Fiber direction source"
+    },
+    {
+        "pointer": "/fiber_direction/path",
+        "type": "string",
+        "doc": "Path to a legacy ASCII VTK file, resolved relative to the input JSON"
+    },
+    {
+        "pointer": "/fiber_direction/field",
+        "type": "string",
+        "default": "FIB_DIR1",
+        "doc": "Name of the CELL_DATA VECTORS array holding the per-element fibers"
+    },
+    {
         "pointer": "/rho",
         "type": "include",
         "spec_file": "value1.json",
@@ -562,6 +612,19 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Second Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/kappa",
+        "type": "include",
+        "spec_file": "value0.json",
+        "default": 0,
+        "doc": "Fiber dispersion kappa for HGODispersion (in [0, 1/d]); 0 = perfectly aligned"
+    },
+    {
+        "pointer": "/k_chi",
+        "type": "float",
+        "default": 100.0,
+        "doc": "Logistic switch smoothness k_X for HGODispersion"
     },
     {
         "pointer": "/alphas",

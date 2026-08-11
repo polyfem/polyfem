@@ -17,6 +17,11 @@
 
 #include <Eigen/Dense>
 
+namespace paraviewo
+{
+	class VTMWriter;
+}
+
 namespace polyfem::io
 {
 	/// Utilies related to export of geometry
@@ -84,6 +89,25 @@ namespace polyfem::io
 			Eigen::MatrixXi &boundary_triangles,
 			std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
+		/// @brief extracts a collision proxy sampling every boundary face on a
+		/// uniform lattice of the globally maximal element order (finer than the
+		/// default DOF-resolution proxy on hybrid meshes; requires a conforming
+		/// volume mesh, falls back to extract_boundary_mesh otherwise).
+		/// Selected via contact/collision_mesh/tessellation_type = "max_order".
+		/// Parameters as in extract_boundary_mesh, plus:
+		/// @param[in] sampling_order explicit lattice order (0 = automatic:
+		/// the globally maximal element order); larger samples finer
+		static void extract_boundary_mesh_sampled(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			Eigen::MatrixXd &node_positions,
+			Eigen::MatrixXi &boundary_edges,
+			Eigen::MatrixXi &boundary_triangles,
+			std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+			const int sampling_order = 0);
+
 		/// @brief unitalize the ref element sampler
 		/// @param[in] mesh mesh
 		/// @param[in] vismesh_rel_area relative sampling size
@@ -124,6 +148,18 @@ namespace polyfem::io
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts) const;
+
+		/// Save the VTU datasets and append them to an existing VTM container.
+		/// The caller owns and saves the VTM, allowing multiple output spaces to
+		/// share one timestep container.
+		void save_vtu(const std::string &path,
+					  const OutputSpace &space,
+					  const OutputFieldFunction &output_fields,
+					  const double t,
+					  const double dt,
+					  const ExportOptions &opts,
+					  paraviewo::VTMWriter &vtm,
+					  const std::string &block_prefix) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename

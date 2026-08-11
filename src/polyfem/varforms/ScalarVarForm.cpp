@@ -9,6 +9,11 @@
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/refinement/APriori.hpp>
 
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
+
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -112,8 +117,8 @@ namespace polyfem::varform
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
 
-		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
+		Eigen::VectorXi space_disc_orders, space_disc_ordersq;
+		assign_discr_orders(args["space"], mesh, space_disc_orders, space_disc_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -133,6 +138,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			space_disc_orders,
+			space_disc_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -716,13 +722,126 @@ namespace polyfem::varform
 			logger().debug("Solver error: {}", error);
 	}
 
+	void ScalarVarForm::solve_linear_system_with_constraints(
+		const std::unique_ptr<polysolve::linear::Solver> &solver,
+		StiffnessMatrix &A,
+		Eigen::VectorXd &b,
+		const bool compute_spectrum,
+		const QuadratureOrders &boundary_samples,
+		const double time,
+		Eigen::MatrixXd &sol)
+	{
+		const json &periodic_conditions = args["boundary_conditions"]["periodic"];
+		const json &zero_mean = args["constraints"]["zero_mean"];
+		const bool add_zero_mean =
+			zero_mean.is_boolean()
+				? zero_mean.get<bool>()
+				: (zero_mean.is_array()
+				   && std::find(zero_mean.begin(), zero_mean.end(), 0) != zero_mean.end());
+		const bool has_global_constraints = !periodic_conditions.empty() || add_zero_mean;
+
+		if (!has_global_constraints)
+		{
+			solve_linear_system(solver, A, b, compute_spectrum, sol);
+			return;
+		}
+
+		if (!zero_mean.is_boolean() && !zero_mean.is_array())
+			log_and_throw_error("constraints.zero_mean must be a boolean or a list of FE-space IDs");
+
+		StiffnessMatrix constraint_mass = mass_;
+		if (constraint_mass.rows() != A.rows() || constraint_mass.cols() != A.cols())
+		{
+			mass_assembler_->assemble(
+				mesh_->is_volume(), space_.n_bases, space_.basis_list(), space_.geometry_basis_list(),
+				mass_ass_vals_cache_, 0, constraint_mass, true);
+		}
+		if (constraint_mass.rows() != A.rows() || constraint_mass.cols() != A.cols())
+			log_and_throw_error("Unable to assemble scalar constraint mass matrix for {} DoFs", A.rows());
+
+		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> constraint_forms;
+		if (!boundary_.boundary_nodes.empty())
+		{
+			constraint_forms.push_back(std::make_shared<solver::BCLagrangianForm>(
+				A.rows(), boundary_.boundary_nodes, boundary_.local_boundary,
+				boundary_.local_neumann_boundary, boundary_samples, constraint_mass,
+				*rhs_assembler_, /*obstacle_ndof=*/0, problem->is_time_dependent(), time));
+		}
+
+		for (const json &condition : periodic_conditions)
+		{
+			const int fe_space = condition.value("fe_space", -1);
+			if (fe_space >= 0 && fe_space != 0)
+				continue;
+
+			const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+													  condition["boundary_ids"][1].get<int>()}};
+			constraint_forms.push_back(std::make_shared<solver::PeriodicBoundaryLagrangianForm>(
+				A.rows(), /*value_dim=*/1, *mesh_, space_.basis_list(),
+				boundary_.total_local_boundary, boundary_ids,
+				condition.value("tolerance", 1e-5)));
+		}
+
+		if (add_zero_mean)
+		{
+			const Eigen::VectorXd weights = constraint_mass * Eigen::VectorXd::Ones(A.rows());
+			const double weight_sum = weights.cwiseAbs().sum();
+			if (weight_sum <= 0)
+				log_and_throw_error("Unable to assemble a scalar zero-mean constraint");
+
+			std::vector<Eigen::Triplet<double>> entries;
+			entries.reserve(weights.size());
+			for (int dof = 0; dof < weights.size(); ++dof)
+				if (weights(dof) != 0)
+					entries.emplace_back(0, dof, weights(dof) / weight_sum);
+
+			StiffnessMatrix C(1, A.rows());
+			C.setFromTriplets(entries.begin(), entries.end());
+			constraint_forms.push_back(std::make_shared<solver::MatrixLagrangianForm>(
+				C, Eigen::MatrixXd::Zero(1, 1)));
+		}
+
+		if (constraint_forms.empty())
+		{
+			solve_linear_system(solver, A, b, compute_spectrum, sol);
+			return;
+		}
+
+		auto constraint_solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+		std::shared_ptr<polysolve::linear::Solver> shared_constraint_solver(std::move(constraint_solver));
+		solver::NLProblem constrained_problem(
+			A.rows(), time, {}, constraint_forms, shared_constraint_solver,
+			/*char_length=*/1, /*char_force=*/1, constraint_mass, /*dimension=*/1);
+
+		const StiffnessMatrix full_A = A;
+		const Eigen::VectorXd affine_offset =
+			constrained_problem.reduced_to_full(Eigen::VectorXd::Zero(constrained_problem.reduced_size()));
+		b = constrained_problem.full_to_reduced_grad(b - full_A * affine_offset);
+		constrained_problem.full_hessian_to_reduced_hessian(A);
+
+		Eigen::VectorXd reduced_solution;
+		stats.spectrum = dirichlet_solve(
+			*solver, A, b, {}, reduced_solution, A.rows(),
+			args["output"]["data"]["stiffness_mat"],
+			compute_spectrum,
+			/*is_problem_mixed=*/false, /*use_avg_pressure=*/false);
+		sol = constrained_problem.reduced_to_full(reduced_solution);
+		solver->get_info(stats.solver_info);
+
+		const double error = (A * reduced_solution - b).norm();
+		if (error > 1e-4)
+			logger().error("Solver error: {}", error);
+		else
+			logger().debug("Solver error: {}", error);
+	}
+
 	void ScalarVarForm::solve_static(Eigen::MatrixXd &sol)
 	{
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 
 		rhs_assembler_->set_bc(
 			boundary_.local_boundary, boundary_.boundary_nodes, boundary_samples,
@@ -732,7 +851,9 @@ namespace polyfem::varform
 		build_stiffness_mat(A);
 
 		Eigen::VectorXd b = rhs_;
-		solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"], sol);
+		solve_linear_system_with_constraints(
+			solver, A, b, args["output"]["advanced"]["spectrum"],
+			boundary_samples, /*time=*/1, sol);
 	}
 
 	void ScalarVarForm::solve_transient(Eigen::MatrixXd &sol)
@@ -756,7 +877,7 @@ namespace polyfem::varform
 		build_stiffness_mat(stiffness);
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders n_b_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gdiscr_order);
+		const QuadratureOrders n_b_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -774,7 +895,10 @@ namespace polyfem::varform
 				b[i] = 0;
 			b += current_rhs;
 
-			solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"].get<bool>() && t == time_steps, sol);
+			solve_linear_system_with_constraints(
+				solver, A, b,
+				args["output"]["advanced"]["spectrum"].get<bool>() && t == time_steps,
+				n_b_samples, time, sol);
 
 			bdf->update_quantities(sol);
 			save_timestep(time, t, t0, dt, sol);

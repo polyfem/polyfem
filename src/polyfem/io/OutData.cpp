@@ -1,5 +1,8 @@
 #include "OutData.hpp"
 
+#include <array>
+#include <map>
+
 #include "Evaluator.hpp"
 #include "MatrixIO.hpp"
 
@@ -44,6 +47,8 @@
 #include <ipc/ipc.hpp>
 
 #include <algorithm>
+#include <cmath>
+
 #include <filesystem>
 
 namespace polyfem::io
@@ -90,7 +95,614 @@ namespace polyfem::io
 					writer.add_field(field.name, field.values);
 			}
 		}
+
+		void avoid_pyramid_apex(Eigen::MatrixXd &points)
+		{
+			assert(points.cols() == 3);
+			constexpr double eps = 1e-8;
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				if (std::abs(points(i, 2) - 1.0) < eps)
+					points(i, 2) = 1.0 - eps;
+			}
+		}
+
+		void pyramid_nodes_for_output(const int order, Eigen::MatrixXd &points)
+		{
+			autogen::pyramid_nodes_3d(order, points);
+			avoid_pyramid_apex(points);
+		}
+
+		// ------------------------------------------------------------------
+		// helpers for the hybrid (prism/pyramid) collision-proxy paths
+		// ------------------------------------------------------------------
+
+		// face/edge parameters are fractions k/n with n <= 8, so coordinates
+		// in units of 1/PROXY_PARAM_SCALE are exact integers (lcm of 1..8)
+		constexpr long PROXY_PARAM_SCALE = 840;
+
+		int prism_q_order(const basis::ElementBases &b)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			const int n_tri = (p + 1) * (p + 2) / 2;
+			const int q = (n_tri > 0 && b.bases.size() % n_tri == 0) ? int(b.bases.size()) / n_tri - 1 : p;
+			return std::max(1, q);
+		}
+
+		// reference-node layout of an element (vertices first); false if unsupported
+		bool element_ref_nodes(const mesh::Mesh &mesh, const int el, const basis::ElementBases &b, Eigen::MatrixXd &ref_nodes)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			if (mesh.is_simplex(el))
+				autogen::p_nodes_3d(p, ref_nodes);
+			else if (mesh.is_cube(el))
+				autogen::q_nodes_3d(p, ref_nodes);
+			else if (mesh.is_prism(el))
+				autogen::prism_nodes_3d(p, prism_q_order(b), ref_nodes);
+			else if (mesh.is_pyramid(el))
+				autogen::pyramid_nodes_3d(p, ref_nodes);
+			else
+				return false;
+			return ref_nodes.rows() == long(b.bases.size());
+		}
+
+		int element_n_vertices(const mesh::Mesh &mesh, const int el)
+		{
+			if (mesh.is_simplex(el))
+				return 4;
+			if (mesh.is_pyramid(el))
+				return 5;
+			if (mesh.is_prism(el))
+				return 6;
+			assert(mesh.is_cube(el));
+			return 8;
+		}
+
+		// local vertex pairs forming the element's edges, derived from the
+		// reference vertex coordinates (no vertex-ordering assumptions)
+		std::vector<std::pair<int, int>> element_ref_edges(const mesh::Mesh &mesh, const int el, const Eigen::MatrixXd &ref_nodes)
+		{
+			const int nv = element_n_vertices(mesh, el);
+			const auto n_coord_diffs = [&](int a, int b) {
+				int d = 0;
+				for (int c = 0; c < 3; ++c)
+					if (std::abs(ref_nodes(a, c) - ref_nodes(b, c)) > 1e-12)
+						++d;
+				return d;
+			};
+			int apex = -1;
+			if (mesh.is_pyramid(el))
+				for (int a = 0; a < nv; ++a)
+					if (std::abs(ref_nodes(a, 2) - 1.0) < 1e-12)
+						apex = a;
+
+			std::vector<std::pair<int, int>> edges;
+			for (int a = 0; a < nv; ++a)
+			{
+				for (int b = a + 1; b < nv; ++b)
+				{
+					bool is_edge;
+					if (mesh.is_simplex(el)) // every vertex pair
+						is_edge = true;
+					else if (mesh.is_prism(el)) // triangle x [0,1]
+						is_edge = std::abs(ref_nodes(a, 2) - ref_nodes(b, 2)) < 1e-12
+								  || (std::abs(ref_nodes(a, 0) - ref_nodes(b, 0)) < 1e-12
+									  && std::abs(ref_nodes(a, 1) - ref_nodes(b, 1)) < 1e-12);
+					else if (mesh.is_pyramid(el)) // base square + base-to-apex
+						is_edge = (a == apex || b == apex) || n_coord_diffs(a, b) == 1;
+					else // hex
+						is_edge = n_coord_diffs(a, b) == 1;
+					if (is_edge)
+						edges.emplace_back(a, b);
+				}
+			}
+			return edges;
+		}
+
+		// For every mesh edge, keyed by its endpoint DOFs (smaller first): the
+		// owned edge-interior DOFs located on it as (parameter from the
+		// smaller-DOF endpoint in units of 1/PROXY_PARAM_SCALE, dof, node
+		// position), sorted by parameter.  Built from ALL elements: an edge on
+		// the domain boundary can get its DOFs from an interior element (e.g. a
+		// prism wedged between two promoted tets).  Stitched nodes
+		// (glob.size() != 1, no DOF of their own) are not registered.
+		using EdgeDofs = std::vector<std::tuple<long, int, Eigen::Vector3d>>;
+		std::map<std::pair<int, int>, EdgeDofs> build_edge_dofs(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases)
+		{
+			std::map<std::pair<int, int>, EdgeDofs> edge_dofs;
+			Eigen::MatrixXd ref_nodes;
+			for (int el = 0; el < int(bases.size()); ++el)
+			{
+				const basis::ElementBases &b = bases[el];
+				if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+					continue;
+
+				const int nv = element_n_vertices(mesh, el);
+				std::vector<int> vd(nv, -1);
+				bool ok = true;
+				for (int i = 0; i < nv; ++i)
+				{
+					const auto &glob = b.bases[i].global();
+					assert(glob.size() == 1); // vertices always own their DOF
+					if (glob.size() != 1)
+					{
+						ok = false;
+						break;
+					}
+					vd[i] = glob.front().index;
+				}
+				if (!ok)
+					continue;
+
+				const auto edges = element_ref_edges(mesh, el, ref_nodes);
+				for (int j = nv; j < int(b.bases.size()); ++j)
+				{
+					const auto &glob = b.bases[j].global();
+					if (glob.size() != 1)
+						continue;
+					const Eigen::RowVector3d r = ref_nodes.row(j);
+					for (const auto &e : edges)
+					{
+						const Eigen::RowVector3d pa = ref_nodes.row(e.first);
+						const Eigen::RowVector3d d = ref_nodes.row(e.second) - pa;
+						const double t = (r - pa).dot(d) / d.squaredNorm();
+						if (t < 1e-9 || t > 1 - 1e-9 || ((r - pa) - t * d).norm() > 1e-9)
+							continue; // not on this edge
+						long tl = std::lround(t * PROXY_PARAM_SCALE);
+						assert(std::abs(t * PROXY_PARAM_SCALE - tl) < 1e-6);
+						int va = vd[e.first], vb = vd[e.second];
+						if (va > vb)
+						{
+							std::swap(va, vb);
+							tl = PROXY_PARAM_SCALE - tl;
+						}
+						EdgeDofs &ed = edge_dofs[{va, vb}];
+						const int dof = glob.front().index;
+						bool present = false;
+						for (const auto &existing : ed)
+							if (std::get<1>(existing) == dof)
+							{
+								assert(std::get<0>(existing) == tl);
+								present = true;
+								break;
+							}
+						if (!present)
+							ed.emplace_back(tl, dof, glob.front().node.transpose());
+						break;
+					}
+				}
+			}
+			for (auto &kv : edge_dofs)
+				std::sort(kv.second.begin(), kv.second.end(),
+						  [](const EdgeDofs::value_type &x, const EdgeDofs::value_type &y) { return std::get<0>(x) < std::get<0>(y); });
+			return edge_dofs;
+		}
+
+		// Structured triangulation for faces whose points form a complete
+		// regular lattice (all faces away from mixed-order interfaces).  The
+		// row-wise patterns keep vertex valence balanced -- the lexicographic
+		// sweep below concentrates fan triangles on lex-extreme corners, which
+		// at order 3+ can push one-ring sizes past the smooth-contact
+		// N_VERT_NEIGHBORS_3D cap.  Returns false if the points are not a
+		// complete lattice (caller falls back to the sweep).
+		bool triangulate_lattice(const std::vector<std::array<long, 2>> &pts, const int nfv, std::vector<std::array<int, 3>> &tris)
+		{
+			constexpr long S = PROXY_PARAM_SCALE;
+			const int n = int(pts.size());
+			std::map<std::array<long, 2>, int> id;
+			for (int i = 0; i < n; ++i)
+				if (!id.emplace(pts[i], i).second)
+					return false;
+			tris.clear();
+
+			if (nfv == 3)
+			{
+				// n == (k+1)(k+2)/2 for a complete triangular lattice of order k
+				const int k = int(std::lround((std::sqrt(8.0 * n + 1.0) - 3.0) / 2.0));
+				if ((k + 1) * (k + 2) / 2 != n || k < 1 || S % k != 0)
+					return false;
+				const long h = S / k;
+				const auto at = [&](int i, int j) -> int {
+					const auto it = id.find({{i * h, j * h}});
+					return it == id.end() ? -1 : it->second;
+				};
+				for (int j = 0; j <= k; ++j)
+					for (int i = 0; i <= k - j; ++i)
+						if (at(i, j) < 0)
+							return false;
+				for (int j = 0; j < k; ++j)
+				{
+					for (int i = 0; i < k - j; ++i)
+					{
+						tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+						if (i + j < k - 1)
+							tris.push_back({{at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)}});
+					}
+				}
+				return true;
+			}
+
+			// quad: complete (k1+1) x (k2+1) tensor grid, possibly anisotropic
+			std::set<long> us, vs;
+			for (const auto &p : pts)
+			{
+				us.insert(p[0]);
+				vs.insert(p[1]);
+			}
+			const int k1 = int(us.size()) - 1, k2 = int(vs.size()) - 1;
+			if (k1 < 1 || k2 < 1 || (k1 + 1) * (k2 + 1) != n || S % k1 != 0 || S % k2 != 0)
+				return false;
+			const long h1 = S / k1, h2 = S / k2;
+			const auto at = [&](int i, int j) -> int {
+				const auto it = id.find({{i * h1, j * h2}});
+				return it == id.end() ? -1 : it->second;
+			};
+			for (int j = 0; j <= k2; ++j)
+				for (int i = 0; i <= k1; ++i)
+					if (at(i, j) < 0)
+						return false;
+			for (int j = 0; j < k2; ++j)
+			{
+				for (int i = 0; i < k1; ++i)
+				{
+					tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+					tris.push_back({{at(i + 1, j + 1), at(i, j + 1), at(i + 1, j)}});
+				}
+			}
+			return true;
+		}
+
+		// Triangulate a 2D point set in convex position (boundary points lie on
+		// the convex hull, possibly collinear; interior points allowed) into
+		// strictly positive-area CCW triangles via an incremental lexicographic
+		// sweep.  Collinear boundary chains are preserved -- no triangle edge
+		// ever spans a boundary point -- which is what keeps neighboring faces
+		// of the proxy conforming.  Coordinates must be exact integers.
+		void triangulate_convex_pointset(const std::vector<std::array<long, 2>> &pts, std::vector<std::array<int, 3>> &tris)
+		{
+			const int n = int(pts.size());
+			tris.clear();
+			std::vector<int> order(n);
+			for (int i = 0; i < n; ++i)
+				order[i] = i;
+			std::sort(order.begin(), order.end(), [&](int a, int b) { return pts[a] < pts[b]; });
+			const auto orient = [&](int a, int b, int c) -> long long {
+				return (long long)(pts[b][0] - pts[a][0]) * (pts[c][1] - pts[a][1])
+					   - (long long)(pts[b][1] - pts[a][1]) * (pts[c][0] - pts[a][0]);
+			};
+
+			// initial (possibly collinear) chain
+			std::vector<int> hull;
+			int k = 0;
+			for (; k < n; ++k)
+			{
+				if (hull.size() >= 2 && orient(hull[0], hull[1], order[k]) != 0)
+					break;
+				hull.push_back(order[k]);
+			}
+			if (k == n)
+				return; // all points collinear: nothing to emit
+
+			// attach the first off-line point: fan over the chain, make hull CCW
+			{
+				const int p = order[k];
+				const bool left = orient(hull[0], hull[1], p) > 0;
+				for (int i = 0; i + 1 < int(hull.size()); ++i)
+				{
+					if (left)
+						tris.push_back({{hull[i], hull[i + 1], p}});
+					else
+						tris.push_back({{hull[i + 1], hull[i], p}});
+				}
+				if (!left)
+					std::reverse(hull.begin(), hull.end());
+				hull.push_back(p);
+				++k;
+			}
+
+			for (; k < n; ++k)
+			{
+				const int p = order[k];
+				const int m = int(hull.size());
+				// visible hull edges: p strictly right of a->b on the CCW cycle
+				std::vector<bool> vis(m);
+				for (int i = 0; i < m; ++i)
+					vis[i] = orient(hull[i], hull[(i + 1) % m], p) < 0;
+				int s = 0;
+				while (s < m && !(vis[s] && !vis[(s + m - 1) % m]))
+					++s;
+				assert(s < m); // p is outside the hull (lexicographic order)
+				int e = s;
+				while (vis[e % m])
+				{
+					// orient(a, b, p) < 0  =>  (a, p, b) is CCW
+					tris.push_back({{hull[e % m], p, hull[(e + 1) % m]}});
+					++e;
+				}
+				// replace the strictly-visible part of the hull with p
+				std::vector<int> new_hull;
+				new_hull.push_back(p);
+				for (int i = e % m; i != s; i = (i + 1) % m)
+					new_hull.push_back(hull[i]);
+				new_hull.push_back(hull[s]);
+				hull.swap(new_hull);
+			}
+		}
+
 	} // namespace
+
+	void OutGeometryData::extract_boundary_mesh_sampled(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &node_positions,
+		Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+		const int sampling_order)
+	{
+		using namespace polyfem::mesh;
+
+		// Sample every boundary face on a uniform lattice of the globally
+		// maximal order M through the element bases: the proxy is conforming
+		// and watertight regardless of order mismatches across interfaces
+		// (every shared edge is split into M chords on both sides), stitched
+		// interface nodes are handled intrinsically by the basis evaluation,
+		// and the displacement map carries each proxy vertex's (possibly
+		// weighted) dependence on the real DOFs.
+		if (!mesh.is_volume() || mesh.has_poly()
+			|| !dynamic_cast<const Mesh3D &>(mesh).is_conforming())
+		{
+			logger().warn("max_order collision-proxy sampling requires a conforming volume mesh without polytopes; falling back to the standard boundary extraction");
+			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+								  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			return;
+		}
+
+		displacement_map_entries.clear();
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+
+		int M = 1;
+		if (sampling_order > 0)
+			M = sampling_order; // explicit lattice order (finer OR coarser than the elements)
+		else
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				const basis::ElementBases &b = bases[lb.element_id()];
+				if (b.bases.empty())
+					continue;
+				int o = b.bases.front().order();
+				if (mesh.is_prism(lb.element_id()))
+					o = std::max(o, prism_q_order(b));
+				M = std::max(M, o);
+			}
+
+		// samples shared between neighboring faces merge combinatorially, by
+		// the mesh primitive they lie on -- {0, vertex_id} for face corners,
+		// {1, vmin, vmax, step-from-vmin} for edge samples (every face uses
+		// the same global lattice order M, so steps coincide exactly), and
+		// {2, face_id, i, r} for face-interior samples (a boundary face
+		// belongs to exactly one element) -- no floating-point tolerance
+		std::map<std::array<int, 4>, int> vertex_id;
+		std::vector<Eigen::Vector3d> vertices;
+		std::vector<std::tuple<int, int, int>> proxy_tris;
+
+		for (const LocalBoundary &lb : total_local_boundary)
+		{
+			const int el = lb.element_id();
+			const basis::ElementBases &b = bases[el];
+			Eigen::MatrixXd ref_nodes;
+			if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+				continue;
+
+			// the rational pyramid bases are 0/0 at the apex (z=1), which is a
+			// corner of every triangular pyramid face; apex samples are instead
+			// evaluated below via the nodal limit (apex basis 1, all others 0)
+			int apex_node = -1;
+			if (mesh.is_pyramid(el))
+				for (int i = 0; i < ref_nodes.rows(); ++i)
+					if (std::abs(ref_nodes(i, 2) - 1.0) < 1e-12)
+					{
+						apex_node = i;
+						break;
+					}
+
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
+				const int nfv = mesh3d.n_face_vertices(eid);
+				assert(nfv == 3 || nfv == 4);
+				assert(nodes.size() >= nfv);
+
+				// face corners come first in the local ordering (cyclic for quads);
+				// the same order as a next_around_face walk from the lf-scan index
+				// (tet/prism/pyramid/hex *_face_local_nodes all use it), so walking
+				// it again recovers each corner's global mesh vertex id
+				std::vector<Eigen::RowVector3d> c(nfv);
+				for (int k = 0; k < nfv; ++k)
+					c[k] = ref_nodes.row(nodes(k));
+
+				Navigation3D::Index nav;
+				for (int lf = 0; lf < mesh3d.n_cell_faces(el); ++lf)
+				{
+					nav = mesh3d.get_index_from_element(el, lf, 0);
+					if (nav.face == eid)
+						break;
+				}
+				assert(nav.face == eid);
+				std::vector<int> gv(nfv);
+				{
+					Navigation3D::Index cur = nav;
+					for (int k = 0; k < nfv; ++k)
+					{
+						gv[k] = cur.vertex;
+						cur = mesh3d.next_around_face(cur);
+					}
+				}
+
+				Eigen::MatrixXd pts;
+				std::vector<std::array<int, 2>> coords;
+				std::vector<std::tuple<int, int, int>> local_tris;
+				if (nfv == 3)
+				{
+					pts.resize((M + 1) * (M + 2) / 2, 3);
+					coords.resize(pts.rows());
+					std::vector<int> off(M + 2, 0);
+					for (int r = 0; r <= M; ++r)
+						off[r + 1] = off[r] + (M + 1 - r);
+					for (int r = 0; r <= M; ++r)
+						for (int i = 0; i <= M - r; ++i)
+						{
+							pts.row(off[r] + i) = c[0] + (double(i) / M) * (c[1] - c[0]) + (double(r) / M) * (c[2] - c[0]);
+							coords[off[r] + i] = {{i, r}};
+						}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M - r; ++i)
+						{
+							local_tris.emplace_back(off[r] + i, off[r] + i + 1, off[r + 1] + i);
+							if (i + r < M - 1)
+								local_tris.emplace_back(off[r] + i + 1, off[r + 1] + i + 1, off[r + 1] + i);
+						}
+					}
+				}
+				else
+				{
+					pts.resize((M + 1) * (M + 1), 3);
+					coords.resize(pts.rows());
+					const auto gid = [M](const int i, const int r) { return r * (M + 1) + i; };
+					for (int r = 0; r <= M; ++r)
+					{
+						for (int i = 0; i <= M; ++i)
+						{
+							const double u = double(i) / M, v = double(r) / M;
+							pts.row(gid(i, r)) = (1 - u) * (1 - v) * c[0] + u * (1 - v) * c[1] + u * v * c[2] + (1 - u) * v * c[3];
+							coords[gid(i, r)] = {{i, r}};
+						}
+					}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M; ++i)
+						{
+							local_tris.emplace_back(gid(i, r), gid(i + 1, r), gid(i, r + 1));
+							local_tris.emplace_back(gid(i + 1, r + 1), gid(i, r + 1), gid(i + 1, r));
+						}
+					}
+				}
+
+				std::vector<polyfem::assembler::AssemblyValues> vals;
+				b.evaluate_bases(pts, vals);
+
+				const auto edge_key = [M](const int va, const int vb, const int step) {
+					return va < vb ? std::array<int, 4>{{1, va, vb, step}}
+								   : std::array<int, 4>{{1, vb, va, M - step}};
+				};
+
+				std::vector<int> ids(pts.rows());
+				for (int s = 0; s < pts.rows(); ++s)
+				{
+					const int i = coords[s][0], r = coords[s][1];
+					std::array<int, 4> key;
+					if (nfv == 3)
+					{
+						if (r == 0 && i == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (r == 0 && i == M)
+							key = {{0, gv[1], 0, 0}};
+						else if (r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[2], r);
+						else if (i + r == M)
+							key = edge_key(gv[1], gv[2], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+					else
+					{
+						if (i == 0 && r == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (i == M && r == 0)
+							key = {{0, gv[1], 0, 0}};
+						else if (i == M && r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (i == 0 && r == M)
+							key = {{0, gv[3], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == M)
+							key = edge_key(gv[1], gv[2], r);
+						else if (r == M)
+							key = edge_key(gv[3], gv[2], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[3], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+
+					const auto it = vertex_id.find(key);
+					if (it != vertex_id.end())
+					{
+						ids[s] = it->second;
+						continue;
+					}
+
+					Eigen::Vector3d pos = Eigen::Vector3d::Zero();
+					std::map<int, double> weights;
+					if (apex_node >= 0 && std::abs(pts(s, 2) - 1.0) < 1e-12)
+					{
+						for (const auto &g : b.bases[apex_node].global())
+						{
+							pos += g.val * g.node.transpose();
+							weights[g.index] += g.val;
+						}
+					}
+					else
+						for (size_t i2 = 0; i2 < vals.size(); ++i2)
+						{
+							const double Ni = vals[i2].val(s);
+							if (std::abs(Ni) < 1e-12)
+								continue;
+							for (const auto &g : b.bases[i2].global())
+							{
+								pos += Ni * g.val * g.node.transpose();
+								weights[g.index] += Ni * g.val;
+							}
+						}
+					assert(pos.allFinite());
+
+					const int vid = int(vertices.size());
+					vertex_id[key] = vid;
+					vertices.push_back(pos);
+					for (const auto &kv : weights)
+						if (std::abs(kv.second) > 1e-10)
+							displacement_map_entries.emplace_back(vid, kv.first, kv.second);
+					ids[s] = vid;
+				}
+
+				for (const auto &t : local_tris)
+					proxy_tris.emplace_back(ids[std::get<0>(t)], ids[std::get<1>(t)], ids[std::get<2>(t)]);
+			}
+		}
+
+		node_positions.resize(vertices.size(), 3);
+		for (int i = 0; i < int(vertices.size()); ++i)
+			node_positions.row(i) = vertices[i];
+
+		boundary_triangles.resize(proxy_tris.size(), 3);
+		for (int i = 0; i < int(proxy_tris.size()); ++i)
+			boundary_triangles.row(i) << std::get<0>(proxy_tris[i]), std::get<2>(proxy_tris[i]), std::get<1>(proxy_tris[i]);
+
+		if (boundary_triangles.rows() > 0)
+			igl::edges(boundary_triangles, boundary_edges);
+
+		if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+			igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
+	}
 
 	void OutGeometryData::extract_boundary_mesh(
 		const mesh::Mesh &mesh,
@@ -116,8 +728,11 @@ namespace polyfem::io
 
 			const bool is_simplicial = mesh.is_simplicial();
 
-			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
-			node_positions.setZero();
+			std::vector<Eigen::Vector3d> node_positions_vec;
+			node_positions_vec.reserve(n_bases + (is_simplicial ? 0 : mesh.n_faces()));
+
+			// node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
+			// node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -125,6 +740,164 @@ namespace polyfem::io
 			std::vector<bool> visited_node(n_bases, false);
 
 			std::stringstream print_warning;
+
+			// Hybrid (prism/pyramid) meshes: element orders can differ across an
+			// interface (anisotropic prisms promote their tet/pyramid neighbors),
+			// so tessellating each boundary face at its own order produces
+			// T-junctions along shared edges, and stitched interface nodes have
+			// no DOF of their own.  Build the proxy from the DOFs on the
+			// boundary instead: every proxy vertex IS a global DOF (weight-1
+			// displacement map), each face edge is subdivided by the DOFs
+			// located on it -- a property of the edge, not of the element
+			// looking at it, so neighboring faces conform by construction --
+			// and face interiors by the element's own owned face nodes.
+			// Stitched nodes are skipped; the DOFs they depend on subdivide the
+			// edge instead.
+			bool has_prism_or_pyramid = false;
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				if (mesh.is_prism(lb.element_id()) || mesh.is_pyramid(lb.element_id()))
+				{
+					has_prism_or_pyramid = true;
+					break;
+				}
+			}
+
+			if (has_prism_or_pyramid && mesh3d.is_conforming())
+			{
+				const auto edge_dofs = build_edge_dofs(mesh, bases);
+				constexpr long S = PROXY_PARAM_SCALE;
+
+				const auto emit_dof = [&](const int gindex, const Eigen::Vector3d &pos) {
+					if (gindex >= int(node_positions_vec.size()))
+						node_positions_vec.resize(gindex + 1, Eigen::Vector3d::Zero());
+					node_positions_vec[gindex] = pos;
+					if (!visited_node[gindex])
+						displacement_map_entries.emplace_back(gindex, gindex, 1);
+					visited_node[gindex] = true;
+				};
+
+				Eigen::MatrixXd ref_nodes;
+				for (const LocalBoundary &lb : total_local_boundary)
+				{
+					const int el = lb.element_id();
+					const basis::ElementBases &b = bases[el];
+					if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+						continue;
+
+					for (int j = 0; j < lb.size(); ++j)
+					{
+						const int eid = lb.global_primitive_id(j);
+						const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
+						const int nfv = mesh3d.n_face_vertices(eid);
+						assert(nfv == 3 || nfv == 4);
+						assert(nodes.size() >= nfv);
+
+						// exact face parameters (units of 1/S) and the DOF of each point
+						std::vector<std::array<long, 2>> pts;
+						std::vector<int> dof;
+
+						// face corners come first in the local ordering (cyclic for quads)
+						std::array<std::array<long, 2>, 4> cp;
+						if (nfv == 3)
+							cp = {{{{0, 0}}, {{S, 0}}, {{0, S}}, {{0, 0}}}};
+						else
+							cp = {{{{0, 0}}, {{S, 0}}, {{S, S}}, {{0, S}}}};
+						std::array<int, 4> cd{{-1, -1, -1, -1}};
+						bool ok = true;
+						for (int k = 0; k < nfv; ++k)
+						{
+							const auto &glob = b.bases[nodes(k)].global();
+							assert(glob.size() == 1); // face corners always own their DOF
+							if (glob.size() != 1)
+							{
+								ok = false;
+								break;
+							}
+							cd[k] = glob.front().index;
+							pts.push_back(cp[k]);
+							dof.push_back(cd[k]);
+							emit_dof(cd[k], glob.front().node.transpose());
+						}
+						if (!ok)
+							continue;
+
+						// edge subdivision: the DOFs located on each face edge
+						for (int k = 0; k < nfv; ++k)
+						{
+							const int va = cd[k], vb = cd[(k + 1) % nfv];
+							const auto it = edge_dofs.find({std::min(va, vb), std::max(va, vb)});
+							if (it == edge_dofs.end())
+								continue;
+							for (const auto &ed : it->second)
+							{
+								const long s = va < vb ? std::get<0>(ed) : S - std::get<0>(ed);
+								const auto &A = cp[k];
+								const auto &B = cp[(k + 1) % nfv];
+								pts.push_back({{(A[0] * (S - s) + B[0] * s) / S, (A[1] * (S - s) + B[1] * s) / S}});
+								dof.push_back(std::get<1>(ed));
+								emit_dof(std::get<1>(ed), std::get<2>(ed));
+							}
+						}
+
+						// owned face-interior nodes at the element's own resolution
+						// (reference faces are planar parallelograms -> affine map)
+						const Eigen::RowVector3d c0 = ref_nodes.row(nodes(0));
+						const Eigen::RowVector3d A3 = ref_nodes.row(nodes(1)) - c0;
+						const Eigen::RowVector3d B3 = ref_nodes.row(nodes(nfv - 1)) - c0;
+						const double aa = A3.squaredNorm(), bb = B3.squaredNorm(), ab = A3.dot(B3);
+						const double det = aa * bb - ab * ab;
+						for (long n = nfv; n < nodes.size(); ++n)
+						{
+							const auto &glob = b.bases[nodes(n)].global();
+							if (glob.size() != 1)
+								continue; // stitched interface node
+							const Eigen::RowVector3d d3 = ref_nodes.row(nodes(n)) - c0;
+							const double du = d3.dot(A3), dv = d3.dot(B3);
+							const double u = (du * bb - dv * ab) / det;
+							const double v = (dv * aa - du * ab) / det;
+							const long lu = std::lround(u * S), lv = std::lround(v * S);
+							assert(std::abs(u * S - lu) < 1e-6 && std::abs(v * S - lv) < 1e-6);
+							// nodes on a face edge already subdivide the edge above
+							const bool on_edge = nfv == 3
+													 ? (lu == 0 || lv == 0 || lu + lv == S)
+													 : (lu == 0 || lu == S || lv == 0 || lv == S);
+							if (on_edge)
+								continue;
+							pts.push_back({{lu, lv}});
+							dof.push_back(glob.front().index);
+							emit_dof(glob.front().index, glob.front().node.transpose());
+						}
+
+						std::vector<std::array<int, 3>> local_tris;
+						if (!triangulate_lattice(pts, nfv, local_tris))
+							triangulate_convex_pointset(pts, local_tris);
+						for (const auto &t : local_tris)
+							tris.emplace_back(dof[t[0]], dof[t[1]], dof[t[2]]);
+					}
+				}
+
+				// downstream consumers (e.g. the shape-derivative code) expect every
+				// FE node to have a row, as the pre-split extraction guaranteed
+				node_positions_vec.resize(
+					std::max(node_positions_vec.size(), size_t(n_bases)), Eigen::Vector3d::Zero());
+
+				node_positions.resize(node_positions_vec.size(), 3);
+				for (int i = 0; i < int(node_positions_vec.size()); ++i)
+					node_positions.row(i) = node_positions_vec[i];
+
+				boundary_triangles.resize(tris.size(), 3);
+				for (int i = 0; i < int(tris.size()); ++i)
+					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+
+				if (boundary_triangles.rows() > 0)
+					igl::edges(boundary_triangles, boundary_edges);
+
+				if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+					igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
+
+				return;
+			}
 
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
@@ -151,7 +924,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -165,7 +939,8 @@ namespace polyfem::io
 						bary /= 4;
 
 						const int new_node = n_bases + eid;
-						node_positions.row(new_node) = bary;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), new_node + 1));
+						node_positions_vec[new_node] = bary;
 						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
 						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
 						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
@@ -187,7 +962,7 @@ namespace polyfem::io
 						assert(!is_simplicial);
 						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
-						RowVectorNd bary = RowVectorNd::Zero(3);
+						std::vector<int> loc_local_nodes;
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -197,9 +972,10 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							bary += glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
 						}
 
 						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
@@ -212,10 +988,215 @@ namespace polyfem::io
 							}
 						};
 
-						if (loc_nodes.size() == 3)
+						// tri face
+						if (lid < 2)
+						{
+							if (loc_nodes.size() == 3)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 6)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 10)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+								tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+								update_mapping(loc_nodes);
+							}
+							else
+							{
+								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							}
+						}
+						else
+						{
+							if (loc_nodes.size() < 4 || loc_local_nodes.size() < 4)
+							{
+								logger().trace("skipping prism quad face {} since it has only {} complete nodes", eid, loc_nodes.size());
+								continue;
+							}
+
+							const int p = b.bases.empty() ? -1 : b.bases.front().order();
+							const int n_tri_nodes = (p + 1) * (p + 2) / 2;
+							const int q = n_tri_nodes > 0 && b.bases.size() % n_tri_nodes == 0 ? int(b.bases.size()) / n_tri_nodes - 1 : -1;
+
+							if (p < 1 || p > 3 || q < 1 || q > 3 || (p == 3 && q == 3))
+							{
+								logger().trace("skipping prism quad face {} with unsupported p={}, q={}", eid, p, q);
+								continue;
+							}
+
+							auto is_vertical_prism_edge = [](const int a, const int b) {
+								return (a >= 0 && a < 3 && b == a + 3) || (b >= 0 && b < 3 && a == b + 3);
+							};
+
+							std::vector<int> edge_orders(4);
+							for (int k = 0; k < 4; ++k)
+								edge_orders[k] = is_vertical_prism_edge(loc_local_nodes[k], loc_local_nodes[(k + 1) % 4]) ? q : p;
+
+							const int u_order = edge_orders[0];
+							const int v_order = edge_orders[1];
+							const int expected_nodes = (u_order + 1) * (v_order + 1);
+							if (loc_nodes.size() != expected_nodes || edge_orders[0] != edge_orders[2] || edge_orders[1] != edge_orders[3])
+							{
+								logger().trace("skipping prism quad face {} with p={}, q={} and {} nodes", eid, p, q, loc_nodes.size());
+								continue;
+							}
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [u_order](const int i, const int j) {
+								return j * (u_order + 1) + i;
+							};
+
+							grid[grid_index(0, 0)] = loc_nodes[0];
+							grid[grid_index(u_order, 0)] = loc_nodes[1];
+							grid[grid_index(u_order, v_order)] = loc_nodes[2];
+							grid[grid_index(0, v_order)] = loc_nodes[3];
+
+							int node_index = 4;
+							for (int i = 1; i < u_order; ++i)
+								grid[grid_index(i, 0)] = loc_nodes[node_index++];
+							for (int j = 1; j < v_order; ++j)
+								grid[grid_index(u_order, j)] = loc_nodes[node_index++];
+							for (int i = u_order - 1; i > 0; --i)
+								grid[grid_index(i, v_order)] = loc_nodes[node_index++];
+							for (int j = v_order - 1; j > 0; --j)
+								grid[grid_index(0, j)] = loc_nodes[node_index++];
+
+							for (int j = 1; j < v_order; ++j)
+								for (int i = 1; i < u_order; ++i)
+									grid[grid_index(i, j)] = loc_nodes[node_index++];
+
+							assert(node_index == loc_nodes.size());
+							assert(std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }));
+
+							for (int j = 0; j < v_order; ++j)
+							{
+								for (int i = 0; i < u_order; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+
+						continue;
+					}
+					else if (mesh.is_pyramid(lb.element_id()))
+					{
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						std::vector<int> loc_local_nodes;
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
+							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
+						}
+
+						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
+							for (int k = 0; k < loc_nodes.size(); ++k)
+							{
+								if (!visited_node[loc_nodes[k]])
+									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+								visited_node[loc_nodes[k]] = true;
+							}
+						};
+
+						const int p = b.bases.empty() ? -1 : b.bases.front().order();
+						if (p < 1 || p > 3)
+						{
+							logger().trace("skipping pyramid face {} with unsupported p={}", eid, p);
+							continue;
+						}
+
+						if (lid == 0)
+						{
+							const int expected_nodes = (p + 1) * (p + 1);
+							if (loc_nodes.size() != expected_nodes || loc_local_nodes.size() != expected_nodes)
+							{
+								logger().trace("skipping pyramid quad face {} with p={} and {} nodes", eid, p, loc_nodes.size());
+								continue;
+							}
+
+							Eigen::MatrixXd pyramid_nodes;
+							autogen::pyramid_nodes_3d(p, pyramid_nodes);
+
+							const Eigen::RowVector3d origin = pyramid_nodes.row(loc_local_nodes[0]);
+							const Eigen::RowVector3d u_axis = pyramid_nodes.row(loc_local_nodes[1]) - origin;
+							const Eigen::RowVector3d v_axis = pyramid_nodes.row(loc_local_nodes[3]) - origin;
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [p](const int i, const int j) {
+								return j * (p + 1) + i;
+							};
+
+							bool valid_grid = true;
+							for (int n = 0; n < loc_nodes.size(); ++n)
+							{
+								const Eigen::RowVector3d rel = pyramid_nodes.row(loc_local_nodes[n]) - origin;
+								const int i = int(std::lround(p * rel.dot(u_axis) / u_axis.squaredNorm()));
+								const int j = int(std::lround(p * rel.dot(v_axis) / v_axis.squaredNorm()));
+								if (i < 0 || i > p || j < 0 || j > p)
+								{
+									logger().trace("skipping pyramid quad face {} with invalid local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								if (grid[grid_index(i, j)] >= 0)
+								{
+									logger().trace("skipping pyramid quad face {} with duplicate local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								grid[grid_index(i, j)] = loc_nodes[n];
+							}
+
+							if (!valid_grid || !std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }))
+								continue;
+
+							for (int j = 0; j < p; ++j)
+							{
+								for (int i = 0; i < p; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 3)
 						{
 							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 6)
@@ -224,7 +1205,6 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
 							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
 							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 10)
@@ -240,90 +1220,9 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
 							update_mapping(loc_nodes);
 						}
-						else if (loc_nodes.size() == 15)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							bary /= 4;
-
-							const int new_node = n_bases + eid;
-							node_positions.row(new_node) = bary;
-							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
-							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
-							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
-
-							update_mapping(loc_nodes);
-						}
 						else
 						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
-							continue;
-						}
-
-						continue;
-					}
-
-					else if (mesh.is_pyramid(lb.element_id()))
-					{
-						assert(!is_simplicial);
-						assert(!mesh.has_poly());
-						std::vector<int> loc_nodes;
-
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							auto &bs = b.bases[nodes(n)];
-							const auto &glob = bs.global();
-							if (glob.size() != 1)
-								continue;
-
-							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							loc_nodes.push_back(gindex);
-						}
-
-						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
-							for (int k = 0; k < loc_nodes.size(); ++k)
-							{
-								if (!visited_node[loc_nodes[k]])
-									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
-
-								visited_node[loc_nodes[k]] = true;
-							}
-						};
-
-						if (loc_nodes.size() == 3)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[3]);
-							update_mapping(loc_nodes);
-						}
-						else
-						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							logger().trace("skipping pyramid tri face {} with p={} and {} nodes", eid, p, loc_nodes.size());
 							continue;
 						}
 
@@ -366,7 +1265,8 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) = glob.front().node;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+						node_positions_vec[gindex] = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -434,6 +1334,16 @@ namespace polyfem::io
 			if (print_warning.str().size() > 0)
 				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
 
+			// downstream consumers (e.g. the shape-derivative code) expect every
+			// FE node to have a row, as the pre-split extraction guaranteed
+			node_positions_vec.resize(
+				std::max(node_positions_vec.size(), size_t(n_bases + (is_simplicial ? 0 : mesh.n_faces()))),
+				Eigen::Vector3d::Zero());
+
+			node_positions.resize(node_positions_vec.size(), 3);
+			for (int i = 0; i < node_positions_vec.size(); ++i)
+				node_positions.row(i) = node_positions_vec[i];
+
 			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
@@ -444,6 +1354,9 @@ namespace polyfem::io
 			{
 				igl::edges(boundary_triangles, boundary_edges);
 			}
+
+			if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+				igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
 		}
 		else
 		{
@@ -935,7 +1848,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(output_orders(i) == 2 ? -1 : output_orders(i), ref_pts);
+					if (output_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -983,7 +1899,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(output_orders(i) == 2 ? -1 : output_orders(i), ref_pts);
+					if (output_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1061,10 +1980,13 @@ namespace polyfem::io
 				// 	std::swap(elements[i].vertices[29], elements[i].vertices[31]);  // hack
 				// }
 				if (output_orders(i) > 2)
-					error_msg = "Saving high-order meshes not implemented for P2+ elements!";
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 			}
 			else if (output_orders(i) > 1)
-				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			{
+				if (mesh.is_cube(i))
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			}
 		}
 
 		if (!error_msg.empty())
@@ -1116,6 +2038,33 @@ namespace polyfem::io
 				else if (mesh.is_pyramid(i))
 					elements[i].ctype = CellType::Pyramid;
 			}
+		}
+
+		if (mesh.is_volume())
+		{
+			// ParaView does not reliably render high-order Lagrange pyramids;
+			// tessellate only those cells while keeping linear pyramids and the
+			// other element types in their native representation.
+			std::vector<CellElement> expanded_elements;
+			expanded_elements.reserve(elements.size());
+			for (size_t i = 0; i < bases.size(); ++i)
+			{
+				if (!mesh.is_pyramid(i) || output_orders(i) == 1)
+				{
+					expanded_elements.push_back(std::move(elements[i]));
+					continue;
+				}
+
+				for (int t = 0; t < ref_element_sampler.pyramid_volume().rows(); ++t)
+				{
+					CellElement tet;
+					tet.ctype = CellType::Tetrahedron;
+					for (int j = 0; j < ref_element_sampler.pyramid_volume().cols(); ++j)
+						tet.vertices.push_back(elements[i].vertices[ref_element_sampler.pyramid_volume()(t, j)]);
+					expanded_elements.push_back(std::move(tet));
+				}
+			}
+			elements.swap(expanded_elements);
 		}
 
 		assert(pts_index == points.rows());
@@ -1194,6 +2143,30 @@ namespace polyfem::io
 			return;
 		}
 
+		const std::filesystem::path fs_path(path);
+		const std::string path_stem = fs_path.stem().string();
+		const std::string base_path = (fs_path.parent_path() / path_stem).string();
+		paraviewo::VTMWriter vtm(t);
+		save_vtu(path, space, output_fields, t, dt, opts, vtm, "");
+		vtm.save(base_path + ".vtm");
+	}
+
+	void OutGeometryData::save_vtu(
+		const std::string &path,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
+		const double t,
+		const double dt,
+		const ExportOptions &opts,
+		paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
+	{
+		if (!space.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+
 		const bool save_contact =
 			space.collision_mesh
 			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces
@@ -1231,18 +2204,19 @@ namespace polyfem::io
 			save_points(base_path + "_points" + opts.file_extension(), space, output_fields, opts);
 		}
 
-		paraviewo::VTMWriter vtm(t);
+		const auto block_name = [&block_prefix](const std::string &name) {
+			return block_prefix.empty() ? name : block_prefix + " " + name;
+		};
 		if (opts.volume)
-			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
+			vtm.add_dataset(block_name("Volume"), "data", path_stem + opts.file_extension());
 		if (opts.surface)
-			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
+			vtm.add_dataset(block_name("Surface"), "data", path_stem + "_surf" + opts.file_extension());
 		if (save_contact)
-			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
+			vtm.add_dataset(block_name("Contact"), "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
-			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
+			vtm.add_dataset(block_name("Wireframe"), "data", path_stem + "_wire" + opts.file_extension());
 		if (opts.points)
-			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
-		vtm.save(base_path + ".vtm");
+			vtm.add_dataset(block_name("Points"), "data", path_stem + "_points" + opts.file_extension());
 	}
 
 	void OutGeometryData::save_volume(

@@ -153,8 +153,8 @@ namespace polyfem::varform
 		assert(mass_assembler_);
 		assert(pure_mass_assembler_);
 
-		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], fe_space_id, mesh, space_disc_orders);
+		Eigen::VectorXi space_disc_orders, space_disc_ordersq;
+		assign_discr_orders(args["space"], fe_space_id, mesh, space_disc_orders, space_disc_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -174,6 +174,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			space_disc_orders,
+			space_disc_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -332,12 +333,12 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
+	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "v",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "v",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), velocity);
 
@@ -345,12 +346,12 @@ namespace polyfem::varform
 			rhs_assembler_->initial_velocity(velocity);
 	}
 
-	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "a",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "a",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), acceleration);
 
@@ -358,12 +359,12 @@ namespace polyfem::varform
 			rhs_assembler_->initial_acceleration(acceleration);
 	}
 
-	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution) const
+	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution, const std::string &state_prefix) const
 	{
 		assert(rhs_assembler_ != nullptr);
 
 		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "u",
+			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "u",
 			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
 			mesh_->dimension(), solution);
 
@@ -382,8 +383,7 @@ namespace polyfem::varform
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const
 	{
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const int discr_order = std::max(space_.disc_orders.maxCoeff(), gdiscr_order);
-		return n_boundary_samples(discr_order, gdiscr_order);
+		return n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gdiscr_order);
 	}
 
 	std::vector<int> ElasticVarForm::elastic_primitive_to_node() const

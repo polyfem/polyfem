@@ -1574,7 +1574,7 @@ namespace polyfem::legacy::io
 		Eigen::Vector<bool, -1> validity;
 		if (opts.jacobian_validity)
 			polyfem::io::Evaluator::mark_flipped_cells(
-				mesh, gbases, bases, state.disc_orders,
+				mesh, gbases, bases, state.disc_orders, state.disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 

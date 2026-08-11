@@ -23,6 +23,8 @@
 #include <igl/AABB.h>
 #include <igl/per_face_normals.h>
 
+#include <cmath>
+
 namespace polyfem::io
 {
 	using namespace mesh;
@@ -55,6 +57,23 @@ namespace polyfem::io
 			{
 				logger().error("Invalid tensor dimensions.");
 			}
+		}
+
+		void avoid_pyramid_apex(Eigen::MatrixXd &points)
+		{
+			assert(points.cols() == 3);
+			constexpr double eps = 1e-8;
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				if (std::abs(points(i, 2) - 1.0) < eps)
+					points(i, 2) = 1.0 - eps;
+			}
+		}
+
+		void pyramid_nodes_for_output(const int order, Eigen::MatrixXd &points)
+		{
+			autogen::pyramid_nodes_3d(order, points);
+			avoid_pyramid_apex(points);
 		}
 	} // namespace
 
@@ -233,7 +252,7 @@ namespace polyfem::io
 			else if (mesh.is_pyramid(i))
 			{
 				assert(mesh.dimension() == 3);
-				autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+				pyramid_nodes_for_output(disc_orders(i), local_pts);
 			}
 			else
 			{
@@ -479,6 +498,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &gbasis,
 		const std::vector<basis::ElementBases> &basis,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
@@ -510,12 +530,16 @@ namespace polyfem::io
 			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
-			if (use_sampler)
+			if (use_sampler || (mesh.is_volume() && mesh.is_pyramid(i) && disc_orders(i) > 1))
 			{
 				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
+				else if (mesh.is_pyramid(i))
+					local_pts = sampler.pyramid_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -532,6 +556,11 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+					{
+						int max_order = std::max(disc_orders(i), disc_ordersq(i));
+						autogen::prism_nodes_3d(max_order, max_order, local_pts);
+					}
 					else
 						continue;
 				}
@@ -590,7 +619,7 @@ namespace polyfem::io
 			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
-			if (use_sampler)
+			if (use_sampler || (mesh.is_volume() && mesh.is_pyramid(i) && disc_orders(i) > 1))
 			{
 				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
@@ -623,7 +652,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						pyramid_nodes_for_output(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -794,7 +823,7 @@ namespace polyfem::io
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (use_sampler)
+			if (use_sampler || (mesh.is_volume() && mesh.is_pyramid(i) && disc_orders(i) > 1))
 			{
 				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
@@ -827,7 +856,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						pyramid_nodes_for_output(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -895,7 +924,7 @@ namespace polyfem::io
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (use_sampler)
+			if (use_sampler || (mesh.is_volume() && mesh.is_pyramid(i) && disc_orders(i) > 1))
 			{
 				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
@@ -928,7 +957,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						pyramid_nodes_for_output(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -1008,7 +1037,7 @@ namespace polyfem::io
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (use_sampler)
+			if (use_sampler || (mesh.is_volume() && mesh.is_pyramid(i) && disc_orders(i) > 1))
 			{
 				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
@@ -1041,7 +1070,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						pyramid_nodes_for_output(disc_orders(i), local_pts);
 					}
 					else
 						continue;

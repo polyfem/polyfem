@@ -41,9 +41,9 @@ namespace polyfem::varform
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 		void build_rhs_assembler() override;
 
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
-		void initial_elastic_solution(Eigen::MatrixXd &solution) const;
+		void initial_velocity(Eigen::MatrixXd &velocity, const std::string &state_prefix = "") const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration, const std::string &state_prefix = "") const;
+		void initial_elastic_solution(Eigen::MatrixXd &solution, const std::string &state_prefix = "") const;
 		QuadratureOrders elastic_boundary_samples() const;
 		std::vector<int> elastic_primitive_to_node() const;
 		std::vector<int> elastic_node_to_primitive() const;

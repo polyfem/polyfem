@@ -21,6 +21,7 @@
 #include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/ActiveFiber.hpp>
+#include <polyfem/assembler/HGODispersion.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
@@ -46,7 +47,7 @@ namespace polyfem
 		{
 			if (formulation == "Bilaplacian")
 				return "BilaplacianAux";
-			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "OperatorSplitting")
+			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "NavierStokesFSI" || formulation == "OperatorSplitting")
 				return "StokesPressure";
 			else if (formulation == "IncompressibleLinearElasticity")
 				return "IncompressibleLinearElasticityPressure";
@@ -104,6 +105,8 @@ namespace polyfem
 
 			else if (formulation == "HGOFiber")
 				return std::make_shared<HGOFiber>();
+			else if (formulation == "HGODispersion")
+				return std::make_shared<HGODispersion>();
 
 			else if (formulation == "ActiveFiber")
 				return std::make_shared<ActiveFiber>();
@@ -113,6 +116,8 @@ namespace polyfem
 			else if (formulation == "StokesPressure")
 				return std::make_shared<StokesPressure>();
 			else if (formulation == "NavierStokes")
+				return std::make_shared<NavierStokesVelocity>();
+			else if (formulation == "NavierStokesFSI")
 				return std::make_shared<NavierStokesVelocity>();
 			else if (formulation == "OperatorSplitting")
 				return std::make_shared<OperatorSplitting>();
@@ -131,7 +136,7 @@ namespace polyfem
 				return std::make_shared<BilaplacianMixed>();
 			else if (formulation == "IncompressibleLinearElasticity")
 				return std::make_shared<IncompressibleLinearElasticityMixed>();
-			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "OperatorSplitting")
+			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "NavierStokesFSI" || formulation == "OperatorSplitting")
 				return std::make_shared<StokesMixed>();
 
 			log_and_throw_error("Inavalid mixed assembler name {}", formulation);
@@ -221,7 +226,7 @@ namespace polyfem
 				else
 					return basis_degree * 2 + 1;
 			}
-			else if (assembler == "NavierStokes")
+			else if (assembler == "NavierStokes" || assembler == "NavierStokesFSI")
 			{
 				if (b_type == BasisType::SIMPLEX_LAGRANGE)
 					return std::max((basis_degree - 1) + basis_degree, 1);
@@ -270,6 +275,7 @@ namespace polyfem
 				"IncompressibleOgden",
 				"IsochoricNeoHookean",
 				"HGOFiber",
+				"HGODispersion",
 				"ActiveFiber",
 				"FixedCorotational",
 				"VolumePenalty",

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/solver/FullNLProblem.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 #include <polyfem/utils/Logger.hpp>
@@ -30,7 +29,6 @@ namespace polyfem::solver
 
 	public:
 		NLProblem(const int full_size,
-				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
 				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
