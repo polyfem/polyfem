@@ -172,14 +172,15 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		Eigen::VectorXi pressure_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], pressure_space_id_, mesh, pressure_disc_orders);
+		Eigen::VectorXi pressure_disc_orders, pressure_disc_ordersq;
+		assign_discr_orders(args["space"], pressure_space_id_, mesh, pressure_disc_orders, pressure_disc_ordersq);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(
 			mesh,
 			/*iso_parametric=*/true,
 			pressure_disc_orders,
+			pressure_disc_ordersq,
 			pressure_basis_type,
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,

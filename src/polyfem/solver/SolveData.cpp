@@ -128,6 +128,9 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping,
 
+		// BC augmented-Lagrangian mass-metric lumping
+		const BCLumpingMode al_lumping,
+
 		// Boundary-ID periodic constraints
 		const mesh::Mesh *periodic_mesh,
 		const std::vector<mesh::LocalBoundary> *periodic_local_boundary,
@@ -213,7 +216,8 @@ namespace polyfem::solver
 			if (!boundary_nodes.empty())
 				al_form.push_back(std::make_shared<BCLagrangianForm>(
 					ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
+					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t,
+					al_lumping));
 			// forms.push_back(al_form.back());
 		}
 

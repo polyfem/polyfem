@@ -227,9 +227,17 @@ namespace polyfem::varform
 		const int n_fe_bases = space_.n_bases;
 		space_.n_bases += obstacle.n_vertices();
 
-		logger().info("Building collision mesh...");
-		build_collision_mesh(mesh, args);
-		preprocess_contact_parameters();
+		if (is_contact_enabled())
+		{
+			logger().info("Building collision mesh...");
+			build_collision_mesh(mesh, args);
+			preprocess_contact_parameters();
+
+			// FIXME!! handle periodic collision mesh
+			//  if (periodic_bc && args["contact"]["periodic"])
+			//  	build_periodic_collision_mesh();
+		}
+
 		logger().info("Done!");
 
 		for (int i = n_fe_bases; i < space_.n_bases; ++i)
@@ -335,6 +343,14 @@ namespace polyfem::varform
 					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
+			}
+			else if (collision_mesh_args.contains("tessellation_type")
+					 && collision_mesh_args["tessellation_type"] == "max_order")
+			{
+				io::OutGeometryData::extract_boundary_mesh_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
+					utils::json_value<int>(collision_mesh_args, "sampling_order", 0));
 			}
 			else if (collision_mesh_args.contains("max_edge_length"))
 			{
@@ -547,7 +563,8 @@ namespace polyfem::varform
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
 
-				solve_data.time_integrator->update_quantities(sol);
+				if (solve_data.time_integrator)
+					solve_data.time_integrator->update_quantities(sol);
 
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
@@ -639,6 +656,10 @@ namespace polyfem::varform
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
 			args["solver"]["rayleigh_damping"],
+
+			// BC AL lumping
+			args["solver"]["augmented_lagrangian"]["lumping"],
+
 			// Boundary-ID periodic constraints
 			mesh_.get(), &boundary_.total_local_boundary,
 			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);

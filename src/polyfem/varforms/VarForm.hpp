@@ -121,18 +121,19 @@ namespace polyfem
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
-			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
-			void assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
+			void assign_discr_orders(const json &space_args, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders, Eigen::VectorXi &disc_ordersq);
+			void assign_discr_orders(const json &space_args, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders, Eigen::VectorXi &disc_ordersq);
 			virtual void assemble_rhs(const mesh::Mesh &mesh) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			void prepare();
-			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
+			QuadratureOrders n_boundary_samples(const int discr_order, const int discr_orderq, const int gdiscr_order) const;
 
 			void build_fe_space(
 				mesh::Mesh &mesh,
 				const bool iso_parametric,
 				const Eigen::VectorXi &disc_orders,
+				const Eigen::VectorXi &disc_ordersq,
 				const std::string &basis_type,
 				const std::string &poly_basis_type,
 				const assembler::Assembler &space_assembler,
