@@ -77,16 +77,14 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase_method,
 		const double ccd_tolerance,
 		const int ccd_max_iterations,
-		const json &options,
-		const Eigen::VectorXd &lumped_vertex_masses)
+		const json &options)
 		: BarrierContactForm(
 			  collision_mesh, dhat, avg_mass,
 			  use_area_weighting, use_improved_max_operator,
 			  /*use_adaptive_barrier_stiffness=*/true,
 			  is_time_dependent, enable_shape_derivatives,
 			  broad_phase_method, ccd_tolerance, ccd_max_iterations,
-			  make_barrier_potential(dhat, options)),
-		  lumped_vertex_masses_(lumped_vertex_masses)
+			  make_barrier_potential(dhat, options))
 	{
 		if (enable_shape_derivatives)
 			log_and_throw_error(
@@ -493,6 +491,9 @@ namespace polyfem::solver
 			{
 				const ipc::VectorMax12d positions =
 					collision.dof(kappa_surface_, E, F);
+				// Do not freeze IPC's gap-dependent mass feasibility term. Dynamic
+				// curvature is already represented by the inertia Hessian included in
+				// kappa_hessian_; see the semi-implicit writeup, section 5.2.
 				ipc::VectorMax4d local_mass = ipc::VectorMax4d::Zero(n_verts);
 				ipc::MatrixMax12d local_hess = ipc::MatrixMax12d::Zero(
 					dim * n_verts, dim * n_verts);

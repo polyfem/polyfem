@@ -439,22 +439,6 @@ namespace polyfem::solver
 			if (stiffness_mode == BarrierStiffnessMode::SemiImplicit && use_physical_barrier)
 				log_and_throw_error("barrier_stiffness=\"semi_implicit\" does not support the physical barrier; set use_physical_barrier=false!");
 
-			// Lumped mass per full-mesh vertex for the semi-implicit
-			// per-contact stiffness; zeros when there is no mass matrix
-			// (quasistatic) or for obstacle vertices.
-			Eigen::VectorXd lumped_vertex_masses;
-			if (stiffness_mode == BarrierStiffnessMode::SemiImplicit)
-			{
-				lumped_vertex_masses = Eigen::VectorXd::Zero(collision_mesh.full_num_vertices());
-				if (mass.size() > 0)
-				{
-					const StiffnessMatrix lumped_mass = utils::lump_matrix(mass);
-					for (long v = 0; v < lumped_vertex_masses.size(); v++)
-						if (v * dim < lumped_mass.rows())
-							lumped_vertex_masses[v] = lumped_mass.coeff(v * dim, v * dim);
-				}
-			}
-
 			if (periodic_contact)
 			{
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
@@ -494,7 +478,7 @@ namespace polyfem::solver
 							use_improved_max_operator, is_time_dependent,
 							enable_shape_derivatives, broad_phase,
 							ccd_tolerance * units.characteristic_length(),
-							ccd_max_iterations, semi_implicit_opts, lumped_vertex_masses);
+							ccd_max_iterations, semi_implicit_opts);
 					else
 						contact_form = std::make_shared<BarrierContactForm>(
 							collision_mesh, dhat, avg_mass, use_area_weighting,

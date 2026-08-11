@@ -26,8 +26,7 @@ namespace polyfem::solver
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const double ccd_tolerance,
 			const int ccd_max_iterations,
-			const json &options = json::object(),
-			const Eigen::VectorXd &lumped_vertex_masses = Eigen::VectorXd());
+			const json &options = json::object());
 
 		void update_barrier_stiffness(
 			const Eigen::VectorXd &x,
@@ -75,8 +74,6 @@ namespace polyfem::solver
 			system_hessian_provider_;
 		std::function<void(const Eigen::VectorXd &, Eigen::VectorXd &)>
 			system_gradient_provider_;
-		Eigen::VectorXd lumped_vertex_masses_;
-
 		Eigen::MatrixXd kappa_surface_;
 		StiffnessMatrix kappa_hessian_;
 		mutable std::map<std::array<long, 5>, double> kappa_cache_;

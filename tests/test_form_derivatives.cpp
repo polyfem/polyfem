@@ -316,15 +316,11 @@ TEST_CASE("semi-implicit barrier contact form derivatives", "[form][form_derivat
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
-	// Unit lumped masses exercise the m/d^2 term of the per-contact stiffness
-	const Eigen::VectorXd lumped_masses =
-		Eigen::VectorXd::Ones(state_ptr->collision_mesh.full_num_vertices());
-
 	SemiImplicitBarrierContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		/*use_area_weighting=*/false, /*use_improved_max_operator=*/false,
 		is_time_dependent, /*enable_shape_derivatives=*/false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations, json::object(), lumped_masses);
+		ccd_tolerance, ccd_max_iterations, json::object());
 
 	// Synthetic SPD system Hessian (position-independent)
 	form.set_system_hessian_provider(
@@ -358,14 +354,11 @@ TEST_CASE("semi-implicit friction form derivatives", "[form][form_derivatives][f
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
-	const Eigen::VectorXd lumped_masses =
-		Eigen::VectorXd::Ones(state_ptr->collision_mesh.full_num_vertices());
-
 	SemiImplicitBarrierContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		/*use_area_weighting=*/false, /*use_improved_max_operator=*/false,
 		is_time_dependent, /*enable_shape_derivatives=*/false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations, json::object(), lumped_masses);
+		ccd_tolerance, ccd_max_iterations, json::object());
 
 	contact_form.set_system_hessian_provider(
 		[ndof](const Eigen::VectorXd &, StiffnessMatrix &hessian) {
