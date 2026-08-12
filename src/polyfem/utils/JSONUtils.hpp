@@ -14,7 +14,7 @@ namespace polyfem
 		void apply_common_params(json &args);
 
 		/// @brief Expand string entries in dirichlet_boundary that point to .json files
-		void expand_bc_sidecars(json &args, const json &tmpl);
+		void expand_bc_sidecars(json &args, const json &rules);
 
 		// Templated degree to radians so a scalar or vector can be given
 		template <typename T>

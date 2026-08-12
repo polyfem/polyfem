@@ -605,11 +605,19 @@ TEST_CASE("expand_bc_sidecars", "[utils]")
 		file << R"([{"id": 1, "value": [1, 2, 3]}, {"id": 2, "value": [4, 5, 6]}])";
 	}
 
-	json tmpl;
-	tmpl["dimension"] = json::array({true, true, true});
-	tmpl["fe_space"] = -1;
-	tmpl["time_reference"] = json::array();
-	tmpl["interpolation"] = json::array();
+	// A minimal stand-in for json-specs/dirichlet-boundary-condition.json.
+	// Kept local so the test does not depend on the generated spec header.
+	const json rules = json::parse(R"([
+		{"pointer": "/", "type": "object", "required": ["id", "value"],
+		 "optional": ["fe_space", "time_reference", "interpolation", "dimension"]},
+		{"pointer": "/id", "type": "int"},
+		{"pointer": "/value", "type": "list"},
+		{"pointer": "/fe_space", "type": "int", "default": -1},
+		{"pointer": "/dimension", "type": "list", "default": [true, true, true]},
+		{"pointer": "/dimension/*", "type": "bool", "default": true},
+		{"pointer": "/time_reference", "type": "list", "default": []},
+		{"pointer": "/interpolation", "type": "list", "default": []}
+	])");
 
 	SECTION("json sidecar is expanded inline")
 	{
@@ -618,7 +626,7 @@ TEST_CASE("expand_bc_sidecars", "[utils]")
 		args["boundary_conditions"]["dirichlet_boundary"] =
 			json::array({sidecar_path.string()});
 
-		expand_bc_sidecars(args, tmpl);
+		expand_bc_sidecars(args, rules);
 
 		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
 		REQUIRE(bcs.size() == 2);
@@ -636,7 +644,7 @@ TEST_CASE("expand_bc_sidecars", "[utils]")
 		args["root_path"] = "";
 		args["boundary_conditions"]["dirichlet_boundary"] = json::array({nodal_path});
 
-		expand_bc_sidecars(args, tmpl);
+		expand_bc_sidecars(args, rules);
 
 		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
 		REQUIRE(bcs.size() == 1);
@@ -650,7 +658,7 @@ TEST_CASE("expand_bc_sidecars", "[utils]")
 		args["boundary_conditions"]["dirichlet_boundary"] =
 			json::array({{{"id", 7}, {"value", json::array({0, 0, 0})}}});
 
-		expand_bc_sidecars(args, tmpl);
+		expand_bc_sidecars(args, rules);
 
 		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
 		REQUIRE(bcs.size() == 1);
