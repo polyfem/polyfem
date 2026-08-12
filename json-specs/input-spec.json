@@ -1862,68 +1862,14 @@
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
-        "type": "object",
-        "default": null,
-        "required": [
-            "id",
-            "value"
-        ],
-        "optional": [
-            "fe_space",
-            "time_reference",
-            "interpolation",
-            "dimension"
-        ],
+        "type": "include",
+        "spec_file": "dirichlet-boundary-condition.json",
         "doc": "Dirichlet boundary condition."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
         "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension. If the file has a .json extension, it is instead read as an array of Dirichlet boundary condition objects and expanded inline."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
-        "type": "list",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/fe_space",
-        "type": "int",
-        "default": -1,
-        "doc": "Finite element space ID for the Dirichlet boundary condition. If not specified, default to the all finite element spaces."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
-        "default": [],
-        "type": "list",
-        "doc": "List of times when the Dirichlet boundary condition is specified"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",

@@ -17,6 +17,7 @@
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem.hpp>
+#include <polyfem/embedded_spec/polyfem_dirichlet.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 
@@ -287,16 +288,8 @@ namespace polyfem
 
 		args = jse.inject_defaults(args_in, rules);
 
-		{
-			// Defaults mirror json-specs/input-spec.json and boundary-condition.json
-			// for /boundary_conditions/dirichlet_boundary/*; keep in sync.
-			json tmpl = json::object();
-			tmpl["dimension"] = json::array({true, true, true});
-			tmpl["fe_space"] = -1;
-			tmpl["time_reference"] = json::array();
-			tmpl["interpolation"] = json::array();
-			expand_bc_sidecars(args, tmpl);
-		}
+		expand_bc_sidecars(
+			args, jse::embed::polyfem_dirichlet_spec::polyfem_dirichlet::spec());
 
 		Units units;
 		units.init(args["units"]);

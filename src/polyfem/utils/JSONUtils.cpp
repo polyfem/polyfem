@@ -6,6 +6,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include <jse/jse.h>
+
 #include <Eigen/Geometry>
 
 namespace polyfem
@@ -59,7 +61,7 @@ namespace polyfem
 			args.erase("common"); // Remove common params from the final json
 		}
 
-		void expand_bc_sidecars(json &args, const json &tmpl)
+		void expand_bc_sidecars(json &args, const json &rules)
 		{
 			if (!args.contains("boundary_conditions"))
 				return;
@@ -96,11 +98,11 @@ namespace polyfem
 						if (!sidecar.is_array())
 							log_and_throw_error("dirichlet_boundary file {} must contain an array", path);
 
+						jse::JSE jse;
 						for (const auto &e : sidecar)
 						{
-							json filled = tmpl;
-							filled.merge_patch(e);
-							expanded.push_back(filled);
+							json filled = e;
+							expanded.push_back(jse.inject_defaults(filled, rules));
 						}
 						continue;
 					}
