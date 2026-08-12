@@ -138,7 +138,7 @@ namespace polyfem::varform
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_elastic_solution(solution, initial_condition_override);
+			initial_solution(solution, initial_condition_override);
 			solution.col(0) = sol;
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity, initial_condition_override);
@@ -255,9 +255,9 @@ namespace polyfem::varform
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 			else if (sol.size() <= 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 
 			if (!problem->is_time_dependent())
 			{

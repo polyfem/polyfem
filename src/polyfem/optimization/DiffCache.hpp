@@ -30,7 +30,6 @@ namespace polyfem
 		/// @param[in] step Current time step.
 		/// @param[in] varform Current forward simulation varform. Will mutate it to get latest value.
 		/// @param[in] sol Current solution.
-		/// @param[in] disp_grad Pointer to displacement gradient matrix. Assumes zero if nullptr.
 		/// @param[in] pressure Pointer to pressure matrix. PASS nullptr ONLY.
 		///
 		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
@@ -38,7 +37,6 @@ namespace polyfem
 			int step,
 			varform::DifferentiableVarForm &varform,
 			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd *disp_grad,
 			const Eigen::MatrixXd *pressure);
 
 		const Eigen::MatrixXd &adjoint_mat() const { return adjoint_mat_; }

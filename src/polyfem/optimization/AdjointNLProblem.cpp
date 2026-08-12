@@ -431,7 +431,7 @@ namespace polyfem::solver
 					{
 						const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
 						const varform::ForwardStepCallback post_step = [varform, diff_cache](const int step, const Eigen::MatrixXd &solution) {
-							diff_cache->cache_transient(step, *varform, solution, nullptr, nullptr);
+							diff_cache->cache_transient(step, *varform, solution, nullptr);
 						};
 						Eigen::MatrixXd solution;
 						varform->solve(solution, initial_conditions, post_step, true);
@@ -451,7 +451,7 @@ namespace polyfem::solver
 				{
 					const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
 					const varform::ForwardStepCallback post_step = [varform, diff_cache](const int step, const Eigen::MatrixXd &solution) {
-						diff_cache->cache_transient(step, *varform, solution, nullptr, nullptr);
+						diff_cache->cache_transient(step, *varform, solution, nullptr);
 					};
 					Eigen::MatrixXd solution;
 					varform->solve(solution, initial_conditions, post_step, true);

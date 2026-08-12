@@ -709,7 +709,7 @@ namespace polyfem::varform
 				time_integrator::ImplicitTimeIntegrator::DynamicOrder::Second);
 
 			Eigen::MatrixXd displacement_solution, displacement_velocity, displacement_acceleration;
-			initial_elastic_solution(displacement_solution);
+			initial_solution(displacement_solution);
 			displacement_solution.col(0) = displacement;
 			initial_velocity(displacement_velocity);
 			initial_acceleration(displacement_acceleration);
@@ -942,7 +942,7 @@ namespace polyfem::varform
 			if (sol.size() <= 0)
 			{
 				Eigen::MatrixXd displacement, temperature;
-				initial_elastic_solution(displacement);
+				initial_solution(displacement);
 				initial_temperature_solution(temperature);
 				const int cols = std::max(displacement.cols(), temperature.cols());
 				if (displacement.cols() != cols)

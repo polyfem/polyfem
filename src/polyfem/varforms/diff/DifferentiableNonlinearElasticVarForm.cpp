@@ -505,9 +505,9 @@ namespace polyfem::varform
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
-				initial_elastic_solution(solution, initial_condition_override);
+				initial_solution(solution, initial_condition_override);
 			else if (solution.size() <= 0)
-				initial_elastic_solution(solution, initial_condition_override);
+				initial_solution(solution, initial_condition_override);
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
 				assert(solution.cols() == 1 && "Static initial solution override must have exactly one column");
@@ -556,9 +556,9 @@ namespace polyfem::varform
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
-				initial_elastic_solution(solution, initial_condition_override);
+				initial_solution(solution, initial_condition_override);
 			else if (solution.size() <= 0)
-				initial_elastic_solution(solution, initial_condition_override);
+				initial_solution(solution, initial_condition_override);
 
 			if (solution.cols() > 1)
 				solution.conservativeResize(Eigen::NoChange, 1);

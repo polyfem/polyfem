@@ -1,5 +1,4 @@
 #include "NLHomoProblem.hpp"
-#include <polyfem/legacy/State.hpp>
 #include "forms/PeriodicContactForm.hpp"
 #include "forms/lagrangian/MacroStrainLagrangianForm.hpp"
 #include <polyfem/assembler/MacroStrain.hpp>
@@ -7,25 +6,6 @@
 
 namespace polyfem::solver
 {
-	NLHomoProblem::NLHomoProblem(const int full_size,
-								 const assembler::MacroStrainValue &macro_strain_constraint,
-								 const legacy::State &state,
-								 const double t,
-								 const std::vector<std::shared_ptr<Form>> &forms,
-								 const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-								 const bool solve_symmetric_macro_strain,
-								 const std::shared_ptr<polysolve::linear::Solver> &solver,
-								 const double char_length,
-								 const double char_force,
-								 StiffnessMatrix lumped_mass,
-								 const int dimension)
-		: NLHomoProblem(
-			  full_size, macro_strain_constraint, state.n_bases, state.mesh_nodes,
-			  t, forms, penalty_forms, solve_symmetric_macro_strain, solver,
-			  char_length, char_force, std::move(lumped_mass), dimension)
-	{
-	}
-
 	NLHomoProblem::NLHomoProblem(
 		const int full_size,
 		const assembler::MacroStrainValue &macro_strain_constraint,

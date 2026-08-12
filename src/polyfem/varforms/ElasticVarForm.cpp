@@ -357,16 +357,6 @@ namespace polyfem::varform
 			rhs_assembler_->initial_velocity(velocity);
 	}
 
-	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity, const std::string &state_prefix) const
-	{
-		initial_velocity(velocity, nullptr, state_prefix);
-	}
-
-	void ElasticVarForm::initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *override) const
-	{
-		initial_elastic_solution(solution, override);
-	}
-
 	void ElasticVarForm::initial_acceleration(
 		Eigen::MatrixXd &acceleration,
 		const InitialConditionOverride *override,
@@ -391,12 +381,7 @@ namespace polyfem::varform
 			rhs_assembler_->initial_acceleration(acceleration);
 	}
 
-	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration, const std::string &state_prefix) const
-	{
-		initial_acceleration(acceleration, nullptr, state_prefix);
-	}
-
-	void ElasticVarForm::initial_elastic_solution(
+	void ElasticVarForm::initial_solution(
 		Eigen::MatrixXd &solution,
 		const InitialConditionOverride *override,
 		const std::string &state_prefix) const
@@ -426,11 +411,6 @@ namespace polyfem::varform
 				solution.setZero();
 			}
 		}
-	}
-
-	void ElasticVarForm::initial_elastic_solution(Eigen::MatrixXd &solution, const std::string &state_prefix) const
-	{
-		initial_elastic_solution(solution, nullptr, state_prefix);
 	}
 
 	QuadratureOrders ElasticVarForm::elastic_boundary_samples() const

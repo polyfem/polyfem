@@ -645,9 +645,9 @@ namespace polyfem::varform
 			//  mesh->dimension(), solution);
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 			else if (sol.size() <= 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
 				assert(sol.cols() == 1 && "Static initial solution override must have exactly one column");
@@ -691,9 +691,9 @@ namespace polyfem::varform
 			//  mesh->dimension(), solution);
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 			else if (sol.size() <= 0)
-				initial_elastic_solution(sol, initial_condition_override);
+				initial_solution(sol, initial_condition_override);
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
@@ -940,7 +940,7 @@ namespace polyfem::varform
 			solve_data_.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_elastic_solution(solution, initial_condition_override, state_prefix); // Reload this because we need all previous solutions
+			initial_solution(solution, initial_condition_override, state_prefix); // Reload this because we need all previous solutions
 			solution.col(0) = sol;                                                        // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity, initial_condition_override, state_prefix);
@@ -983,7 +983,7 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::initial_solution_for_embedding(
 		Eigen::MatrixXd &solution, const std::string &state_prefix) const
 	{
-		initial_elastic_solution(solution, state_prefix);
+		initial_solution(solution, nullptr, state_prefix);
 		if (solution.cols() > 1)
 			solution.conservativeResize(Eigen::NoChange, 1);
 	}

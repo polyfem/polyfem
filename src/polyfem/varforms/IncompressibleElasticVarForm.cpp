@@ -281,7 +281,7 @@ namespace polyfem::varform
 	void IncompressibleElasticVarForm::prepare_initial_solution(Eigen::MatrixXd &sol) const
 	{
 		if (sol.size() <= 0)
-			initial_elastic_solution(sol);
+			initial_solution(sol);
 		if (sol.cols() > 1)
 			sol.conservativeResize(Eigen::NoChange, 1);
 		sol.conservativeResize(stacked_ndof(), sol.cols());

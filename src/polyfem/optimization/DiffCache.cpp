@@ -288,7 +288,6 @@ namespace polyfem
 		int step,
 		varform::DifferentiableVarForm &varform,
 		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd *disp_grad,
 		const Eigen::MatrixXd *pressure)
 	{
 		if (pressure)
@@ -301,15 +300,7 @@ namespace polyfem
 			basis_nodes_to_gbasis_nodes_ = compute_basis_nodes_to_gbasis_nodes(varform);
 		}
 
-		Eigen::MatrixXd disp_grad_final;
-		if (disp_grad)
-		{
-			disp_grad_final = *disp_grad;
-		}
-		else
-		{
-			disp_grad_final = varform.displacement_gradient();
-		}
+		const Eigen::MatrixXd disp_grad = varform.displacement_gradient();
 
 		StiffnessMatrix gradu_h(sol.size(), sol.size());
 		if (step == 0)
@@ -324,7 +315,7 @@ namespace polyfem
 		ipc::TangentialCollisions cur_tangential_adhesion_set;
 
 		if (!varform.get_problem().is_time_dependent() || step > 0)
-			compute_force_jacobian(varform, sol, disp_grad_final, gradu_h);
+			compute_force_jacobian(varform, sol, disp_grad, gradu_h);
 
 		const auto *solve_data = varform.solve_data();
 		assert(solve_data && "Optimization varforms must expose solve data");
@@ -346,7 +337,7 @@ namespace polyfem
 		{
 			if (varform.get_args()["time"]["quasistatic"].get<bool>())
 			{
-				cache_quantities_quasistatic(step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad_final);
+				cache_quantities_quasistatic(step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad);
 			}
 			else
 			{
@@ -379,7 +370,7 @@ namespace polyfem
 		}
 		else
 		{
-			cache_quantities_static(sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad_final);
+			cache_quantities_static(sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad);
 		}
 	}
 

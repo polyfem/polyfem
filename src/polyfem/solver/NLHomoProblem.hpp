@@ -8,10 +8,6 @@ namespace polyfem
 	{
 		class MacroStrainValue;
 	}
-	namespace legacy
-	{
-		class State;
-	}
 	namespace mesh
 	{
 		class MeshNodes;
@@ -27,18 +23,6 @@ namespace polyfem::solver
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
-		NLHomoProblem(const int full_size,
-					  const assembler::MacroStrainValue &macro_strain_constraint,
-					  const legacy::State &state,
-					  const double t,
-					  const std::vector<std::shared_ptr<Form>> &forms,
-					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-					  const bool solve_symmetric_macro_strain,
-					  const std::shared_ptr<polysolve::linear::Solver> &solver,
-					  const double char_length,
-					  const double char_force,
-					  StiffnessMatrix lumped_mass,
-					  const int dimension);
 		NLHomoProblem(const int full_size,
 					  const assembler::MacroStrainValue &macro_strain_constraint,
 					  int n_bases,
