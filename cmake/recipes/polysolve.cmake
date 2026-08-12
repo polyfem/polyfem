@@ -10,6 +10,6 @@ message(STATUS "Third-party: creating target 'polysolve'")
 include(CPM)
 CPMAddPackage(
     NAME polysolve
-    GIT_REPOSITORY https://github.com/MeshFEM/catamari2polysolve.git
+    GIT_REPOSITORY https://github.com/MeshFEM/polysolve.git
     GIT_TAG integrate
 )
