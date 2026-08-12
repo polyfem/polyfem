@@ -136,23 +136,31 @@ namespace polyfem::varform
 		if (args.value("/space/remesh/enabled"_json_pointer, false))
 			return false;
 
-		if (args.value("/contact/periodic"_json_pointer, false))
-			return false;
-
 		const bool homogenization = args.contains("/constraints/macro_displacement_gradient"_json_pointer);
+		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
+		const bool has_periodic_constraints =
+			has_non_empty_entries(args, "/boundary_conditions/periodic"_json_pointer);
+		const bool periodic_contact = args.value("/contact/periodic"_json_pointer, false);
+		if (periodic_contact)
+		{
+			if (!homogenization)
+				return false;
+			if (!has_contact)
+				return false;
+			if (!has_periodic_constraints)
+				return false;
+		}
+
 		if (homogenization && !is_optimization)
 			return false;
 		if (homogenization && args.contains("time") && !args["time"].is_null())
 			return false;
 
-		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
 								  || has_non_empty_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
 		const bool has_file_constraints =
 			has_non_empty_entries(args, "/constraints/hard"_json_pointer)
 			|| has_non_empty_entries(args, "/constraints/soft"_json_pointer);
-		const bool has_periodic_constraints =
-			has_non_empty_entries(args, "/boundary_conditions/periodic"_json_pointer);
 		const json zero_mean = args.contains("/constraints/zero_mean"_json_pointer)
 								   ? args.at("/constraints/zero_mean"_json_pointer)
 								   : json(false);

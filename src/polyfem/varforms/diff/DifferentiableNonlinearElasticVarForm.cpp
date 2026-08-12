@@ -224,7 +224,9 @@ namespace polyfem::varform
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
-			args["contact"]["enabled"], collision_mesh_, args["contact"]["dhat"],
+			args["contact"]["enabled"],
+			args["contact"]["periodic"] ? periodic_collision_mesh_ : collision_mesh_,
+			args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
@@ -247,7 +249,7 @@ namespace polyfem::varform
 			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			macro_strain_constraint_,
-			false, Eigen::VectorXi(),
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis_,
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
@@ -609,7 +611,8 @@ namespace polyfem::varform
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
-				solve_data_.time_integrator->update_quantities(solution);
+				if (solve_data_.time_integrator)
+					solve_data_.time_integrator->update_quantities(solution);
 				solve_data_.nl_problem->update_quantities(t0 + (t + 1) * dt, solution);
 				solve_data_.update_dt();
 				solve_data_.update_barrier_stiffness(solution);

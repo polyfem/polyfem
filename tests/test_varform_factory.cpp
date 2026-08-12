@@ -119,8 +119,9 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	CHECK(differentiable_periodic->name() == "NonlinearElasticStatic");
 
 	periodic_homogenization_args["/contact/periodic"_json_pointer] = true;
-	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
-	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true) == nullptr);
+	periodic_homogenization_args["/contact/enabled"_json_pointer] = true;
+	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
+	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true) != nullptr);
 
 	json zero_mean_args = args;
 	zero_mean_args["/constraints/zero_mean"_json_pointer] = true;

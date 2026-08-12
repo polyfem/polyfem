@@ -25,6 +25,7 @@
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <igl/Timer.h>
@@ -57,6 +58,8 @@ namespace polyfem::varform
 	{
 		ElasticVarForm::reset();
 		collision_mesh_ = ipc::CollisionMesh();
+		periodic_collision_mesh_ = ipc::CollisionMesh();
+		periodic_collision_mesh_to_basis_.resize(0);
 		obstacle.clear();
 		solve_data_ = solver::SolveData();
 		forms.clear();
@@ -233,9 +236,8 @@ namespace polyfem::varform
 			build_collision_mesh(mesh, args);
 			preprocess_contact_parameters();
 
-			// FIXME!! handle periodic collision mesh
-			//  if (periodic_bc && args["contact"]["periodic"])
-			//  	build_periodic_collision_mesh();
+			if (args["contact"]["periodic"])
+				build_periodic_collision_mesh();
 		}
 
 		logger().info("Done!");
@@ -445,6 +447,167 @@ namespace polyfem::varform
 		collision_mesh_.init_area_jacobians();
 	}
 
+	void NonlinearElasticVarForm::build_periodic_collision_mesh()
+	{
+		assert(!mesh_->is_volume());
+		const int dim = mesh_->dimension();
+		const int n_tiles = 2;
+
+		if (mesh_->dimension() != 2)
+			log_and_throw_error("Periodic collision mesh is only implemented in 2D!");
+		if (obstacle.n_vertices() != 0)
+			log_and_throw_error("Periodic contact does not support obstacles.");
+
+		const int n_bases = space_.n_bases;
+		const json &conditions = args["boundary_conditions"]["periodic"];
+		Eigen::VectorXi periodic_dof_mask = Eigen::VectorXi::Zero(n_bases);
+		Eigen::MatrixXd periodic_tile_offsets(dim, conditions.size());
+		for (int i = 0; i < int(conditions.size()); ++i)
+		{
+			const json &condition = conditions[i];
+			const std::array<int, 2> boundary_ids = {{condition["boundary_ids"][0].get<int>(),
+													  condition["boundary_ids"][1].get<int>()}};
+			const auto mapping = solver::PeriodicBoundaryLagrangianForm::build_mapping(
+				n_bases * dim, dim, *mesh_, space_.basis_list(), boundary_.total_local_boundary,
+				boundary_ids, condition.value("tolerance", 1e-5));
+			periodic_tile_offsets.col(i) = mapping.translation.transpose();
+			for (const int dof : mapping.boundary_dofs)
+				periodic_dof_mask(dof) = 1;
+		}
+
+		Eigen::MatrixXd V(n_bases, dim);
+		for (const auto &bs : space_.basis_list())
+			for (const auto &b : bs.bases)
+				for (const auto &g : b.global())
+					V.row(g.index) = g.node;
+
+		Eigen::MatrixXi E = collision_mesh_.edges();
+		for (int i = 0; i < E.size(); i++)
+		{
+			E(i) = collision_mesh_.to_full_vertex_id(E(i));
+			if (E(i) < 0 || E(i) >= n_bases)
+				log_and_throw_error("Periodic contact requires collision vertices to map to FE basis nodes.");
+		}
+
+		Eigen::MatrixXd bbox(V.cols(), 2);
+		bbox.col(0) = V.colwise().minCoeff();
+		bbox.col(1) = V.colwise().maxCoeff();
+
+		// remove boundary edges on periodic BC, buggy
+		{
+			std::vector<int> ind;
+			for (int i = 0; i < E.rows(); i++)
+			{
+				if (!periodic_dof_mask(E(i, 0)) || !periodic_dof_mask(E(i, 1)))
+					ind.push_back(i);
+			}
+
+			E = E(ind, Eigen::all).eval();
+		}
+
+		Eigen::MatrixXd Vtmp, Vnew;
+		Eigen::MatrixXi Etmp, Enew;
+		Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
+		Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
+
+		if (periodic_tile_offsets.rows() != dim || periodic_tile_offsets.cols() != dim
+			|| Eigen::FullPivLU<Eigen::MatrixXd>(periodic_tile_offsets).rank() != dim)
+			log_and_throw_error("Periodic contact requires {} linearly independent periodic boundary pairs", dim);
+		const Eigen::MatrixXd &tile_offset = periodic_tile_offsets;
+
+		for (int i = 0, idx = 0; i < n_tiles; i++)
+		{
+			for (int j = 0; j < n_tiles; j++)
+			{
+				Eigen::Vector2d block_id;
+				block_id << i, j;
+
+				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
+				for (int vid = 0; vid < V.rows(); vid++)
+					Vtmp.block(idx * V.rows() + vid, 0, 1, 2) += (tile_offset * block_id).transpose();
+
+				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
+				idx += 1;
+			}
+		}
+
+		// clean duplicated vertices
+		Eigen::VectorXi indices;
+		{
+			std::vector<int> tmp;
+			for (int i = 0; i < V.rows(); i++)
+			{
+				if (periodic_dof_mask(i))
+					tmp.push_back(i);
+			}
+
+			indices.resize(tmp.size() * n_tiles * n_tiles);
+			for (int i = 0; i < n_tiles * n_tiles; i++)
+			{
+				indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+				indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
+			}
+		}
+
+		Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
+		potentially_duplicate_mask.setZero();
+		potentially_duplicate_mask(indices).array() = 1;
+
+		Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+
+		Eigen::VectorXi SVI;
+		std::vector<int> SVJ;
+		SVI.setConstant(Vtmp.rows(), -1);
+		int id = 0;
+		double relative_tolerance = 1e-5;
+		for (const json &condition : conditions)
+			relative_tolerance = std::max(relative_tolerance, condition.value("tolerance", 1e-5));
+		const double eps = (bbox.col(1) - bbox.col(0)).maxCoeff() * relative_tolerance;
+		for (int i = 0; i < Vtmp.rows(); i++)
+		{
+			if (SVI[i] < 0)
+			{
+				SVI[i] = id;
+				SVJ.push_back(i);
+				if (potentially_duplicate_mask(i))
+				{
+					Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
+					for (int j = 0; j < diffs.size(); j++)
+						if (diffs(j) < eps)
+							SVI[indices[j]] = id;
+				}
+				id++;
+			}
+		}
+
+		Vnew = Vtmp(SVJ, Eigen::all);
+
+		Enew.resizeLike(Etmp);
+		for (int d = 0; d < Etmp.cols(); d++)
+			Enew.col(d) = SVI(Etmp.col(d));
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
+
+		Eigen::MatrixXi boundary_triangles;
+		Eigen::SparseMatrix<double> displacement_map;
+		periodic_collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+													  std::vector<bool>(Vnew.rows(), false),
+													  Vnew,
+													  Enew,
+													  boundary_triangles,
+													  displacement_map);
+
+		periodic_collision_mesh_.init_area_jacobians();
+
+		periodic_collision_mesh_to_basis_.setConstant(Vnew.rows(), -1);
+		for (int i = 0; i < V.rows(); i++)
+			for (int j = 0; j < n_tiles * n_tiles; j++)
+				periodic_collision_mesh_to_basis_(SVI[j * V.rows() + i]) = i;
+
+		if (periodic_collision_mesh_to_basis_.maxCoeff() + 1 != V.rows())
+			log_and_throw_error("Failed to tile mesh!");
+	}
+
 	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticVarForm::build_pressure_assembler() const
 	{
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
@@ -584,7 +747,8 @@ namespace polyfem::varform
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
 
-				solve_data_.time_integrator->update_quantities(sol);
+				if (solve_data_.time_integrator)
+					solve_data_.time_integrator->update_quantities(sol);
 
 				solve_data_.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 

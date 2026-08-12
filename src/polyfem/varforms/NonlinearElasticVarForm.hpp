@@ -77,9 +77,12 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
 		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
+		void build_periodic_collision_mesh();
 		void preprocess_contact_parameters();
 
 		ipc::CollisionMesh collision_mesh_;
+		ipc::CollisionMesh periodic_collision_mesh_;
+		Eigen::VectorXi periodic_collision_mesh_to_basis_;
 		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler_ = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler_ = nullptr;
