@@ -400,7 +400,7 @@ TEST_CASE("time_int", tagsrun)
 }
 
 #ifdef POLYFEM_WITH_TRIANGLE
-TEST_CASE("triangle", tagsrun)
+TEST_CASE("triangle_data", tagsrun)
 {
 	run_data("triangle", POLYFEM_DATA_DIR);
 }
