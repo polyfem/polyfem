@@ -184,7 +184,6 @@ namespace polyfem::legacy
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 		}
 
 		solve_data.contact_form = nullptr;
@@ -215,6 +214,7 @@ namespace polyfem::legacy
 
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
+			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 		}
 		solve_data.update_dt();
 	}

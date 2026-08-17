@@ -133,7 +133,6 @@ namespace polyfem::varform
 		if (problem->is_time_dependent())
 		{
 			time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			inertia_form = std::make_shared<solver::InertiaForm>(mass_, *time_integrator);
 
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
@@ -147,6 +146,7 @@ namespace polyfem::varform
 			assert(acceleration.rows() == sol.size());
 
 			time_integrator->init(solution, velocity, acceleration, dt);
+			inertia_form = std::make_shared<solver::InertiaForm>(mass_, *time_integrator);
 
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
