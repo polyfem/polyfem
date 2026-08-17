@@ -216,6 +216,7 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 		spdlog::info("Authenticating...");
 		json authen = in_args.at(tests_key);
 		double margin = authen.value("margin", 1e-5);
+		bool authenticated = true;
 		for (const std::string &key : test_keys)
 		{
 			const double prev_val = authen[key];
@@ -224,8 +225,13 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2} relerr_{0}={3}", key, prev_val, curr_val, relerr);
-				return AUTHETICATION_FAILED;
+				authenticated = false;
 			}
+		}
+		if (!authenticated)
+		{
+			spdlog::error("Computed tests: {}", out.dump());
+			return AUTHETICATION_FAILED;
 		}
 		spdlog::info("Authenticated ✅");
 	}
