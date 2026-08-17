@@ -114,6 +114,7 @@ namespace polyfem::solver
 			const bool use_physical_barrier,
 			const json &barrier_stiffness,
 			const double initial_barrier_stiffness,
+			const json &semi_implicit_opts,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
@@ -164,6 +165,14 @@ namespace polyfem::solver
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x);
+
+		/// Scale an AL penalty from elastic-plus-inertia curvature. Contact and
+		/// AL curvature are intentionally excluded.
+		double hessian_scaled_al_weight(const Eigen::VectorXd &x, const double multiplier) const;
+
+		/// Normalize each AL penalty metric to unit mean diagonal. Used only by
+		/// the opt-in adaptive_inexact strategy.
+		void normalize_al_penalty_metric();
 
 		/// @brief updates the dt inside the different forms
 		void update_dt();

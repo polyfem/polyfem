@@ -74,6 +74,7 @@ namespace polyfem::solver
 
 		/// @brief Cached constraint set for the current solution
 		ipc::SmoothCollisions collision_set_;
+		Eigen::MatrixXd cached_displaced_surface_;
 
 		/// @brief Contact potential
 		ipc::SmoothContactPotential barrier_potential_;

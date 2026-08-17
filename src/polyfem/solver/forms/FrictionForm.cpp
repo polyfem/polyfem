@@ -1,5 +1,6 @@
 #include "FrictionForm.hpp"
 #include "BarrierContactForm.hpp"
+#include "SemiImplicitBarrierContactForm.hpp"
 #include "SmoothContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
@@ -102,6 +103,12 @@ namespace polyfem::solver
 			collision_set.set_enable_shape_derivatives(barrier_contact->enable_shape_derivatives());
 			collision_set.build(
 				collision_mesh_, displaced_surface, barrier_contact->dhat(), /*dmin=*/0, broad_phase.get());
+
+			// Per-contact stiffness scales so the lagged friction normal
+			// forces see trim * kappa_i instead of a single global stiffness.
+			if (const auto semi_implicit =
+					dynamic_cast<const SemiImplicitBarrierContactForm *>(barrier_contact))
+				semi_implicit->assign_collision_stiffness(collision_set);
 
 			ipc::BarrierPotential bp = barrier_contact->barrier_potential();
 			bp.set_stiffness(barrier_contact->barrier_stiffness());

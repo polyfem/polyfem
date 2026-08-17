@@ -8,6 +8,7 @@
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SemiImplicitBarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
@@ -25,6 +26,7 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <h5pp/h5pp.h>
 
@@ -90,6 +92,7 @@ namespace polyfem::solver
 		const bool use_physical_barrier,
 		const json &barrier_stiffness,
 		const double initial_barrier_stiffness,
+		const json &semi_implicit_opts,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
@@ -426,7 +429,19 @@ namespace polyfem::solver
 		friction_form = nullptr;
 		if (contact_enabled)
 		{
-			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
+			BarrierStiffnessMode stiffness_mode;
+			if (barrier_stiffness.is_number())
+				stiffness_mode = BarrierStiffnessMode::Fixed;
+			else if (barrier_stiffness.is_string() && barrier_stiffness.get<std::string>() == "semi_implicit")
+				stiffness_mode = BarrierStiffnessMode::SemiImplicit;
+			else
+				stiffness_mode = BarrierStiffnessMode::Adaptive;
+			const bool use_adaptive_barrier_stiffness = stiffness_mode != BarrierStiffnessMode::Fixed;
+
+			if (stiffness_mode == BarrierStiffnessMode::SemiImplicit && (periodic_contact || use_gcp_formulation))
+				log_and_throw_error("barrier_stiffness=\"semi_implicit\" is only supported with the standard barrier contact form (no periodic contact, no GCP)!");
+			if (stiffness_mode == BarrierStiffnessMode::SemiImplicit && use_physical_barrier)
+				log_and_throw_error("barrier_stiffness=\"semi_implicit\" does not support the physical barrier; set use_physical_barrier=false!");
 
 			if (periodic_contact)
 			{
@@ -461,13 +476,77 @@ namespace polyfem::solver
 				}
 				else
 				{
-					contact_form = std::make_shared<BarrierContactForm>(
-						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
-						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations);
+					if (stiffness_mode == BarrierStiffnessMode::SemiImplicit)
+						contact_form = std::make_shared<SemiImplicitBarrierContactForm>(
+							collision_mesh, dhat, avg_mass, use_area_weighting,
+							use_improved_max_operator, is_time_dependent,
+							enable_shape_derivatives, broad_phase,
+							ccd_tolerance * units.characteristic_length(),
+							ccd_max_iterations, semi_implicit_opts);
+					else
+						contact_form = std::make_shared<BarrierContactForm>(
+							collision_mesh, dhat, avg_mass, use_area_weighting,
+							use_improved_max_operator, use_physical_barrier,
+							use_adaptive_barrier_stiffness, is_time_dependent,
+							enable_shape_derivatives, broad_phase,
+							ccd_tolerance * units.characteristic_length(),
+							ccd_max_iterations);
 				}
 
-				if (use_adaptive_barrier_stiffness)
+				if (stiffness_mode == BarrierStiffnessMode::SemiImplicit)
+				{
+					// The global barrier stiffness acts as the trim
+					// multiplier on top of the per-contact stiffnesses.
+					contact_form->set_barrier_stiffness(1.0);
+
+					auto barrier_form = std::dynamic_pointer_cast<SemiImplicitBarrierContactForm>(contact_form);
+					assert(barrier_form != nullptr);
+					if (elastic_form != nullptr)
+					{
+						// The weighted elastic (+ inertia, when transient)
+						// Hessian as it appears in the Newton system: the
+						// local curvature of the incremental potential.
+						std::weak_ptr<ElasticForm> weak_elastic = elastic_form;
+						std::weak_ptr<InertiaForm> weak_inertia = inertia_form;
+						barrier_form->set_system_hessian_provider(
+							[weak_elastic, weak_inertia](const Eigen::VectorXd &x, StiffnessMatrix &hessian) {
+								auto ef = weak_elastic.lock();
+								if (!ef)
+									log_and_throw_error("Elastic form expired in semi-implicit stiffness provider!");
+								ef->second_derivative(x, hessian);
+								if (auto inf = weak_inertia.lock(); inf && inf->enabled())
+								{
+									StiffnessMatrix inertia_hessian;
+									inf->second_derivative(x, inertia_hessian);
+									hessian += inertia_hessian;
+								}
+							});
+
+						// Weighted gradient of all non-contact energies
+						// (same set as the classic adaptive path uses in
+						// update_barrier_stiffness); the barrier form
+						// balances its own gradient against it to calibrate
+						// the global trim.
+						std::array<std::weak_ptr<Form>, 4> weak_energy_forms{
+							{elastic_form, inertia_form, body_form, pressure_form}};
+						barrier_form->set_system_gradient_provider(
+							[weak_energy_forms](const Eigen::VectorXd &x, Eigen::VectorXd &grad_energy) {
+								grad_energy = Eigen::VectorXd::Zero(x.size());
+								for (const auto &weak_form : weak_energy_forms)
+								{
+									auto form = weak_form.lock();
+									if (!form || !form->enabled())
+										continue;
+									Eigen::VectorXd grad_form;
+									form->first_derivative(x, grad_form);
+									grad_energy += grad_form;
+								}
+							});
+					}
+					else
+						log_and_throw_error("barrier_stiffness=\"semi_implicit\" requires an elastic form!");
+				}
+				else if (use_adaptive_barrier_stiffness)
 				{
 					contact_form->set_barrier_stiffness(initial_barrier_stiffness);
 					// logger().debug("Using adaptive barrier stiffness");
@@ -540,6 +619,15 @@ namespace polyfem::solver
 		if (contact_form == nullptr || !contact_form->use_adaptive_barrier_stiffness())
 			return;
 
+		// Semi-implicit mode assembles its own energy gradient through the
+		// injected gradient provider (it also needs it at stall restarts and
+		// post-step refreshes, where this method is not called).
+		if (auto barrier_form = std::dynamic_pointer_cast<SemiImplicitBarrierContactForm>(contact_form))
+		{
+			barrier_form->update_barrier_stiffness(x, Eigen::MatrixXd());
+			return;
+		}
+
 		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
 		const std::array<std::shared_ptr<Form>, 4> energy_forms{
 			{elastic_form, inertia_form, body_form, pressure_form}};
@@ -554,6 +642,49 @@ namespace polyfem::solver
 		}
 
 		contact_form->update_barrier_stiffness(x, grad_energy);
+	}
+
+	double SolveData::hessian_scaled_al_weight(
+		const Eigen::VectorXd &x, const double multiplier) const
+	{
+		StiffnessMatrix system_hessian(x.size(), x.size());
+		bool has_curvature = false;
+		const std::array<std::shared_ptr<Form>, 2> curvature_forms{
+			{elastic_form, inertia_form}};
+		for (const std::shared_ptr<Form> &form : curvature_forms)
+		{
+			if (form == nullptr || !form->enabled())
+				continue;
+			StiffnessMatrix contribution;
+			form->second_derivative(x, contribution);
+			if (!has_curvature)
+			{
+				system_hessian = std::move(contribution);
+				has_curvature = true;
+			}
+			else
+				system_hessian += contribution;
+		}
+		double max_entry = 0;
+		for (int k = 0; k < system_hessian.outerSize(); ++k)
+			for (StiffnessMatrix::InnerIterator it(system_hessian, k); it; ++it)
+				max_entry = std::max(max_entry, std::abs(it.value()));
+		const double weight = multiplier * max_entry;
+		if (!(weight > 0) || !std::isfinite(weight))
+			log_and_throw_error(
+				"Unable to compute a positive finite hessian-scaled AL weight "
+				"from elastic-plus-inertia curvature (max |H| = {:g}).",
+				max_entry);
+		logger().info(
+			"Using hessian-scaled initial AL weight: {:g} (max |H_elastic+inertia| = {:g})",
+			weight, max_entry);
+		return weight;
+	}
+
+	void SolveData::normalize_al_penalty_metric()
+	{
+		for (const std::shared_ptr<AugmentedLagrangianForm> &form : al_form)
+			form->normalize_penalty_metric();
 	}
 
 	void SolveData::update_dt()

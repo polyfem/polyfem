@@ -77,10 +77,25 @@ namespace polyfem::solver
 
 	double FullNLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
+		// Clamp SEQUENTIALLY: each form bounds the step over the interval
+		// already clamped by the forms before it, instead of the full
+		// [x0, x1]. Forms are ordered elastic-first, contact-last, so the
+		// inversion-free bound shrinks the sweep the (expensive) contact
+		// CCD has to price -- trial Newton steps in distorted states are
+		// orders larger than any acceptable step, and CCD on such a sweep
+		// is wasted work and, in the broad phase, a memory explosion risk
+		// for thin geometry.
 		double step = 1;
 		for (auto &f : forms_)
-			if (f->enabled())
-				step = std::min(step, f->max_step_size(x0, x1));
+		{
+			if (!f->enabled())
+				continue;
+			const double s =
+				f->max_step_size(x0, step == 1 ? x1 : TVector(x0 + step * (x1 - x0)));
+			step *= s;
+			if (step <= 0)
+				return 0;
+		}
 		return step;
 	}
 
