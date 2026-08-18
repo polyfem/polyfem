@@ -66,15 +66,21 @@ namespace spdlog::level
 namespace polyfem::solver
 {
 
-	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
+	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(
+		const json &solver_params,
+		const json &linear_solver_params,
+		const double characteristic_length,
+		const bool strict_validation)
 	{
 		auto names = polysolve::nonlinear::Solver::available_solvers();
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
-			return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+			return polysolve::nonlinear::Solver::create(
+				solver_params, linear_solver_params, characteristic_length, adjoint_logger(), strict_validation);
 
 		names = polysolve::nonlinear::BoxConstraintSolver::available_solvers();
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
-			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+			return polysolve::nonlinear::BoxConstraintSolver::create(
+				solver_params, linear_solver_params, characteristic_length, adjoint_logger(), strict_validation);
 
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}

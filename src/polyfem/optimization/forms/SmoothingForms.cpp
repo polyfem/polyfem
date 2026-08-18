@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <memory>
+#include <numeric>
 #include <set>
 #include <utility>
 #include <vector>
@@ -26,6 +27,12 @@ namespace polyfem::solver
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 		assert(mesh.is_simplicial());
+		// empty implies all active.
+		if (active_dims_.empty())
+		{
+			active_dims_.resize(dim);
+			std::iota(active_dims_.begin(), active_dims_.end(), 0);
+		}
 
 		surface_ids_ = std::set(surface_selections.begin(), surface_selections.end());
 

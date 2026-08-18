@@ -11,6 +11,8 @@
 
 #include <Eigen/Core>
 
+#include <polysolve/nonlinear/Criteria.hpp>
+
 #include <string>
 #include <vector>
 #include <memory>
@@ -38,6 +40,9 @@ namespace polyfem
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
 		void init(const json &args, const bool strict_validation);
+
+		/// Run optimization, including remeshing restarts when the selected trigger requests them.
+		int run(json args, const bool strict_validation);
 
 		/// main input arguments containing all defaults
 		json args;
@@ -74,7 +79,7 @@ namespace polyfem
 
 		double eval(Eigen::VectorXd &x) const;
 
-		void solve(Eigen::VectorXd &x);
+		polysolve::nonlinear::Status solve(Eigen::VectorXd &x);
 
 		//---------------------------------------------------
 		//-----------------varforms--------------------
@@ -82,6 +87,7 @@ namespace polyfem
 
 		/// Variational formulations used by the optimization.
 		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms;
+		std::vector<json> state_args;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables
@@ -109,6 +115,9 @@ namespace polyfem
 		/// logger sink to stdout
 		spdlog::sink_ptr console_sink_ = nullptr;
 		spdlog::sink_ptr file_sink_ = nullptr;
+
+		bool remeshing_requested_ = false;
+		bool strict_validation_ = true;
 
 		//---------------------------------------------------
 		//-----------------output--------------------

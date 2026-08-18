@@ -37,6 +37,7 @@ namespace polyfem::solver
 			Eigen::VectorXd X = utils::flatten(V);
 
 			variables_to_simulation.compute_state_variable(ParameterType::Shape, *current_varform, x, X);
+			variables_to_simulation.compute_state_variable(ParameterType::PeriodicShape, *current_varform, x, X);
 
 			return X;
 		}
@@ -121,7 +122,8 @@ namespace polyfem::solver
 									   const VariableToSimulationGroup &variables_to_simulation,
 									   const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-									   const json &args)
+									   const json &args,
+									   std::function<bool()> remeshing_trigger)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
@@ -130,7 +132,8 @@ namespace polyfem::solver
 		  save_freq(args["output"]["save_frequency"]),
 		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
 		  smooth_line_search(args["solver"]["advanced"]["smooth_line_search"]),
-		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
+		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"]),
+		  remeshing_trigger_(std::move(remeshing_trigger))
 	{
 		cur_grad.setZero(0);
 
@@ -174,12 +177,17 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
-									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
-									   const VariableToSimulationGroup &variables_to_simulation,
-									   const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
-									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_varforms, all_diff_caches, args)
+	AdjointNLProblem::AdjointNLProblem(
+		std::shared_ptr<AdjointForm> form,
+		const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
+		const VariableToSimulationGroup &variables_to_simulation,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
+		const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+		const json &args,
+		std::function<bool()> remeshing_trigger)
+		: AdjointNLProblem(
+			  form, variables_to_simulation, all_varforms, all_diff_caches, args,
+			  std::move(remeshing_trigger))
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -381,36 +389,40 @@ namespace polyfem::solver
 		if (!enable_slim)
 			return false;
 
-		for (const auto &v : variables_to_simulation_.data)
-			v->update(x0);
+		// SLIM smoothing for shape optimization.
 
-		std::vector<Eigen::MatrixXd> V_old_list;
-		for (auto varform : all_varforms_)
+		std::vector<Eigen::MatrixXd> V_old;
+		std::vector<Eigen::MatrixXd> V_new;
+		for (const auto &varform : all_varforms_)
 		{
-			Eigen::MatrixXd V;
-			varform->get_vertices(V);
-			V_old_list.push_back(V);
+			V_old.push_back(utils::unflatten(
+				get_updated_mesh_nodes(variables_to_simulation_, varform, x0),
+				varform->get_mesh().dimension()));
+			V_new.push_back(utils::unflatten(
+				get_updated_mesh_nodes(variables_to_simulation_, varform, x1),
+				varform->get_mesh().dimension()));
 		}
 
-		for (const auto &v : variables_to_simulation_.data)
-			v->update(x1);
-
-		// Apply slim to all varforms on a frequency
-		int varform_index = 0;
-		for (auto varform : all_varforms_)
+		std::vector<Eigen::MatrixXd> V_smooth;
+		V_smooth.reserve(all_varforms_.size());
+		for (int i = 0; i < all_varforms_.size(); ++i)
 		{
-			Eigen::MatrixXd V_new, V_smooth;
+			const auto &varform = all_varforms_[i];
+			Eigen::MatrixXd V_out;
 			Eigen::MatrixXi F;
-			varform->get_vertices(V_new);
 			varform->get_elements(F);
 
-			bool slim_success = polyfem::mesh::apply_slim(V_old_list[varform_index++], F, V_new, V_smooth, 50);
-
-			if (!slim_success)
-				log_and_throw_adjoint_error("SLIM cannot succeed");
-
-			varform->set_vertex_positions(V_smooth);
+			if (!polyfem::mesh::apply_slim(V_old[i], F, V_new[i], V_out, 50))
+			{
+				adjoint_logger().warn("SLIM failed; keeping the accepted unsmoothed step.");
+				return false;
+			}
+			V_smooth.push_back(std::move(V_out));
 		}
+
+		for (int i = 0; i < all_varforms_.size(); ++i)
+			all_varforms_[i]->set_vertex_positions(V_smooth[i]);
+
 		adjoint_logger().debug("SLIM succeeded!");
 
 		return true;
@@ -464,6 +476,9 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::stop(const TVector &x)
 	{
+		if (remeshing_trigger_ && remeshing_trigger_())
+			return true;
+
 		if (stopping_conditions_.size() == 0)
 			return false;
 

@@ -14,6 +14,8 @@
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 
+#include <cmath>
+
 namespace polyfem::solver
 {
 	namespace

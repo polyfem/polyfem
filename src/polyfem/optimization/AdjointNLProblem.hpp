@@ -8,6 +8,7 @@
 
 #include <Eigen/Core>
 
+#include <functional>
 #include <memory>
 #include <vector>
 #include <fstream>
@@ -23,14 +24,15 @@ namespace polyfem::solver
 						 const VariableToSimulationGroup &variables_to_simulation,
 						 const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-						 const json &args);
-
+						 const json &args,
+						 std::function<bool()> remeshing_trigger = {});
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 						 const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 						 const VariableToSimulationGroup &variables_to_simulation,
 						 const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-						 const json &args);
+						 const json &args,
+						 std::function<bool()> remeshing_trigger = {});
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -71,5 +73,6 @@ namespace polyfem::solver
 		int save_iter = 0;
 
 		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
+		std::function<bool()> remeshing_trigger_;
 	};
 } // namespace polyfem::solver

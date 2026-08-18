@@ -40,6 +40,7 @@ namespace polyfem::solver
 		int inverse_dof() const override;
 		Eigen::VectorXd inverse_eval() const override;
 		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const override;
+		const Eigen::VectorXi &active_geometry_nodes() const { return active_geom_nodes_; }
 
 	private:
 		int dim_;
