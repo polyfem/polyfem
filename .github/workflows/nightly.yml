@@ -85,7 +85,7 @@ jobs:
         run: ctest --test-dir build --verbose --output-on-failure
 
       - name: Slow integration tests
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && matrix.threading == 'TBB' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && (matrix.threading == 'TBB' || matrix.threading == 'CPP') }}
         run: ./build/tests/unit_tests "[slow]" --rng-seed 1
 
   ####################
