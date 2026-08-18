@@ -78,13 +78,14 @@ jobs:
             -DPOLYFEM_PORTABLE_BUILD=ON
 
       - name: Build
+        id: build
         run: cmake --build build && ccache --show-stats
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
 
       - name: Slow integration tests
-        if: matrix.config == 'Release' && matrix.threading == 'TBB'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && matrix.threading == 'TBB' }}
         run: ./build/tests/unit_tests "[slow]" --rng-seed 1
 
   ####################
