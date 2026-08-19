@@ -11,7 +11,7 @@ It requires every active PolyFEM entrypoint there to appear exactly once in:
 
 - the existing run manifests for scenes with golden numerical values;
 - `triangle.txt`, which runs only when `POLYFEM_WITH_TRIANGLE` is enabled;
-- `slow.txt`, which runs in the nightly Linux Release/TBB job; or
+- `slow.txt`, which runs in the nightly Linux Release/CPP and Release/TBB jobs; or
 - `known_issues.txt` for scenes with a documented solver/runtime bug.
 
 Configuration files reached through `common` are checked as dependencies, not
