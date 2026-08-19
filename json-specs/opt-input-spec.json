@@ -116,7 +116,7 @@
     },
     {
         "pointer": "/remeshing/trigger/periodic/period",
-        "default": 10,
+        "default": 100,
         "type": "int",
         "min": 1,
         "doc": "Number of accepted optimization iterations between periodic remeshing restarts."
@@ -132,7 +132,7 @@
     },
     {
         "pointer": "/remeshing/trigger/scaled_jacobian/quality_threshold",
-        "default": 0.1,
+        "default": 0.001,
         "type": "float",
         "min": 0.0,
         "max": 1.0,
