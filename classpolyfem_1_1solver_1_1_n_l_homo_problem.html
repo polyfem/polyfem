@@ -137,13 +137,13 @@ Inheritance diagram for polyfem::solver::NLHomoProblem:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::NLHomoProblem:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_homo_problem__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_homo_problem__coll__graph.svg" width="471" height="303"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad994984d0a15774d335593ec7b2c1e8d" id="r_ad994984d0a15774d335593ec7b2c1e8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ad994984d0a15774d335593ec7b2c1e8d">NLHomoProblem</a> (const int <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983">full_size</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_macro_strain_value.html">assembler::MacroStrainValue</a> &amp;macro_strain_constraint, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const double t, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a>, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html">AugmentedLagrangianForm</a> &gt; &gt; &amp;penalty_forms, const bool solve_symmetric_macro_strain, const std::shared_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, const double char_length, const double char_force, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> lumped_mass, const int dimension)</td></tr>
-<tr class="separator:ad994984d0a15774d335593ec7b2c1e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4107cf569e88ea3bc71016364673401c" id="r_a4107cf569e88ea3bc71016364673401c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a4107cf569e88ea3bc71016364673401c">NLHomoProblem</a> (const int <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983">full_size</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_macro_strain_value.html">assembler::MacroStrainValue</a> &amp;macro_strain_constraint, int n_bases, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">mesh::MeshNodes</a> &gt; mesh_nodes, double t, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a>, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html">AugmentedLagrangianForm</a> &gt; &gt; &amp;penalty_forms, bool solve_symmetric_macro_strain, const std::shared_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, double char_length, double char_force, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> lumped_mass, int dimension)</td></tr>
+<tr class="separator:a4107cf569e88ea3bc71016364673401c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b8e79453cb452aa0334e6ed3e40578b" id="r_a8b8e79453cb452aa0334e6ed3e40578b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8b8e79453cb452aa0334e6ed3e40578b">~NLHomoProblem</a> ()=default</td></tr>
 <tr class="separator:a8b8e79453cb452aa0334e6ed3e40578b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc939f7fb7319e0f358c778e72e211bd" id="r_abc939f7fb7319e0f358c778e72e211bd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#abc939f7fb7319e0f358c778e72e211bd">value</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
@@ -278,8 +278,12 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a36a094d03bbdea2c588c9fc31d3bf438" id="r_a36a094d03bbdea2c588c9fc31d3bf438"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a36a094d03bbdea2c588c9fc31d3bf438">state_</a></td></tr>
-<tr class="separator:a36a094d03bbdea2c588c9fc31d3bf438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef96f8bff390301f91d4862c40359b9d" id="r_aef96f8bff390301f91d4862c40359b9d"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#aef96f8bff390301f91d4862c40359b9d">n_bases_</a></td></tr>
+<tr class="separator:aef96f8bff390301f91d4862c40359b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ec5e1a679591253193b8d4f471d07cd" id="r_a1ec5e1a679591253193b8d4f471d07cd"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a1ec5e1a679591253193b8d4f471d07cd">dimension_</a></td></tr>
+<tr class="separator:a1ec5e1a679591253193b8d4f471d07cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09dcda5585f4430557f05bf3141996b9" id="r_a09dcda5585f4430557f05bf3141996b9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">mesh::MeshNodes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a09dcda5585f4430557f05bf3141996b9">mesh_nodes_</a></td></tr>
+<tr class="separator:a09dcda5585f4430557f05bf3141996b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4ddbee323b4546c5f9a837f16f92a6c" id="r_ac4ddbee323b4546c5f9a837f16f92a6c"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ac4ddbee323b4546c5f9a837f16f92a6c">only_symmetric</a></td></tr>
 <tr class="separator:ac4ddbee323b4546c5f9a837f16f92a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a433efa40a950ad33addc0692e4556728" id="r_a433efa40a950ad33addc0692e4556728"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_macro_strain_value.html">assembler::MacroStrainValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a433efa40a950ad33addc0692e4556728">macro_strain_constraint_</a></td></tr>
@@ -369,8 +373,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00019">19</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ad994984d0a15774d335593ec7b2c1e8d" name="ad994984d0a15774d335593ec7b2c1e8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad994984d0a15774d335593ec7b2c1e8d">&#9670;&#160;</a></span>NLHomoProblem()</h2>
+<a id="a4107cf569e88ea3bc71016364673401c" name="a4107cf569e88ea3bc71016364673401c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4107cf569e88ea3bc71016364673401c">&#9670;&#160;</a></span>NLHomoProblem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -390,13 +394,19 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const double&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">mesh::MeshNodes</a> &gt;&#160;</td>
+          <td class="paramname"><em>mesh_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
         </tr>
         <tr>
@@ -414,7 +424,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool&#160;</td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>solve_symmetric_macro_strain</em>, </td>
         </tr>
         <tr>
@@ -426,13 +436,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const double&#160;</td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>char_length</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const double&#160;</td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>char_force</em>, </td>
         </tr>
         <tr>
@@ -444,7 +454,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>dimension</em>&#160;</td>
         </tr>
         <tr>
@@ -455,13 +465,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00010">10</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00009">9</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00092">mesh_nodes_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_homo_problem_ad994984d0a15774d335593ec7b2c1e8d_cgraph.svg" width="544" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_homo_problem_a4107cf569e88ea3bc71016364673401c_cgraph.svg" width="544" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -516,9 +526,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00078">78</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00079">79</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>.</p>
 
 </div>
 </div>
@@ -545,11 +555,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">468</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">472</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">polyfem::solver::NLProblem::full_size_</a>, <a class="el" href="_evaluator_8cpp_source.html#l01110">polyfem::io::Evaluator::get_bases_position()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced_grad()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00228">polyfem::legacy::State::mesh_nodes</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00213">polyfem::legacy::State::n_bases</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">polyfem::solver::NLProblem::full_size_</a>, <a class="el" href="_evaluator_8cpp_source.html#l01110">polyfem::io::Evaluator::get_bases_position()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00092">mesh_nodes_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">n_bases_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00348">full_to_reduced_diag()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00335">full_to_reduced_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00352">full_to_reduced_diag()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00339">full_to_reduced_grad()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -589,11 +599,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">137</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">141</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">polyfem::solver::NLProblem::full_size_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00113">polyfem::solver::NLProblem::Q2_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">value()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">polyfem::solver::NLProblem::full_size_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00113">polyfem::solver::NLProblem::Q2_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">value()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -623,9 +633,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00058">58</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00062">62</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00701">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00701">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -650,11 +660,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00086">86</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00090">90</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00723">polyfem::solver::NLProblem::full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00723">polyfem::solver::NLProblem::full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">gradient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">gradient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -684,11 +694,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">253</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">257</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">constraint_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00113">polyfem::solver::NLProblem::Q2_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">value()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00113">polyfem::solver::NLProblem::Q2_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">value()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -718,7 +728,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00315">315</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00319">319</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>.</p>
 <div class="dynheader">
@@ -755,9 +765,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00321">321</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">325</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00701">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01123">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00228">polyfem::legacy::State::mesh_nodes</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00213">polyfem::legacy::State::n_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00701">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01123">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00092">mesh_nodes_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">n_bases_</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -792,9 +802,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a529c6fba6f22c0039c3e4b8821541d54">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00348">348</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00352">352</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">constraint_grad()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00734">polyfem::solver::NLProblem::full_to_reduced_diag()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00734">polyfem::solver::NLProblem::full_to_reduced_diag()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -829,11 +839,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a439a8f0538b3bb8f306cb98ac30c7873">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00335">335</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00339">339</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">constraint_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00723">polyfem::solver::NLProblem::full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00723">polyfem::solver::NLProblem::full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">gradient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">gradient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -883,9 +893,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a727281312b26149dbbce7d9e4f283d58">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">114</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">118</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00093">polyfem::solver::NLProblem::current_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00086">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00335">full_to_reduced_grad()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00112">polyfem::solver::FullNLProblem::gradient()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00120">polyfem::solver::NLProblem::penalty_problem_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00093">polyfem::solver::NLProblem::current_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00090">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00339">full_to_reduced_grad()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00112">polyfem::solver::FullNLProblem::gradient()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00120">polyfem::solver::NLProblem::penalty_problem_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -917,9 +927,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00079">79</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00080">80</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">only_symmetric</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">only_symmetric</a>.</p>
 
 </div>
 </div>
@@ -959,11 +969,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ac5391ca8bfaf7182e806ea462405c8a9">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">214</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">218</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00125">polyfem::solver::FullNLProblem::hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00125">polyfem::solver::FullNLProblem::hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1003,9 +1013,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a929c7630e9b5945154a75a80fdaacfd2">polyfem::solver::FullNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00393">393</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00397">397</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00026">polyfem::solver::FullNLProblem::init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00026">polyfem::solver::FullNLProblem::init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1040,9 +1050,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0e3b514d6a956fd5121b7c67f2af6d75">polyfem::solver::FullNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00448">448</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00452">452</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00548">polyfem::solver::NLProblem::init_lagging()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00548">polyfem::solver::NLProblem::init_lagging()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1074,11 +1084,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">30</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">34</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_full_to_mid_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_mid_to_full_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">only_symmetric</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_full_to_mid_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_mid_to_full_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">only_symmetric</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00010">NLHomoProblem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00009">NLHomoProblem()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1123,9 +1133,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a841013a529ef716a506472ceb76d0ac8">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00409">409</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00413">413</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00607">polyfem::solver::NLProblem::is_step_collision_free()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00607">polyfem::solver::NLProblem::is_step_collision_free()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1170,9 +1180,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a2c2932dd5ee7a1c2e85de2df28a10a84">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00400">400</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00404">404</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00597">polyfem::solver::NLProblem::is_step_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00597">polyfem::solver::NLProblem::is_step_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1217,9 +1227,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae63f768e702778c005f9071033343674">polyfem::solver::FullNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00427">427</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00431">431</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00579">polyfem::solver::NLProblem::line_search_begin()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00579">polyfem::solver::NLProblem::line_search_begin()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1252,11 +1262,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">374</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">378</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_full_to_mid_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_full_to_mid_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00058">extended_to_reduced()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00321">full_to_reduced()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00062">extended_to_reduced()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">full_to_reduced()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1289,11 +1299,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">378</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">382</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_mid_to_full_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_mid_to_full_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">extended_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00086">extended_to_reduced_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">extended_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00090">extended_to_reduced_grad()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1317,11 +1327,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">370</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">374</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00058">extended_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00086">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00321">full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00348">full_to_reduced_diag()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00335">full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00206">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00062">extended_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00090">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00352">full_to_reduced_diag()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00339">full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00210">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1364,11 +1374,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">382</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">386</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_macro_strain_8hpp_source.html#l00049">polyfem::assembler::MacroStrainValue::eval()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">fixed_mask_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_full_to_mid_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_mid_to_full_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">macro_strain_constraint_</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00103">polyfem::solver::NLProblem::t_</a>.</p>
+<p class="reference">References <a class="el" href="_macro_strain_8hpp_source.html#l00049">polyfem::assembler::MacroStrainValue::eval()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00096">fixed_mask_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_full_to_mid_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_mid_to_full_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_strain_constraint_</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00103">polyfem::solver::NLProblem::t_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00206">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00210">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1418,9 +1428,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ab8cc510c88b527c67a442ce8a9dd1f79">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00418">418</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00422">422</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00587">polyfem::solver::NLProblem::max_step_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00587">polyfem::solver::NLProblem::max_step_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1455,9 +1465,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a41a25a627b677650437bf5040115bf98">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00433">433</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00437">437</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00680">polyfem::solver::NLProblem::post_step()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00680">polyfem::solver::NLProblem::post_step()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1492,9 +1502,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00206">206</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00210">210</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1529,11 +1539,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">71</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">75</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00393">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00448">init_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00409">is_step_collision_free()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00400">is_step_valid()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00427">line_search_begin()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00418">max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00433">post_step()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00441">solution_changed()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00454">update_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00461">update_quantities()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00397">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00452">init_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00413">is_step_collision_free()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00404">is_step_valid()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00431">line_search_begin()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00422">max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00437">post_step()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00445">solution_changed()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00458">update_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00465">update_quantities()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">value()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1563,11 +1573,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">360</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">364</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_evaluator_8cpp_source.html#l01123">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00228">polyfem::legacy::State::mesh_nodes</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00213">polyfem::legacy::State::n_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_evaluator_8cpp_source.html#l01123">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00092">mesh_nodes_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">n_bases_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00393">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00433">post_step()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00397">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00437">post_step()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">value()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1597,9 +1607,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00232">232</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00236">236</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">fixed_mask_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">macro_full_to_mid_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">macro_mid_to_reduced_</a>, <a class="el" href="legacy_2_state_8hpp_source.html#l00573">polyfem::legacy::State::mesh</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">state_</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00106">polyfem::solver::NLProblem::dim</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">dimension_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00096">fixed_mask_</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">macro_full_to_mid_</a>, and <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">macro_mid_to_reduced_</a>.</p>
 
 </div>
 </div>
@@ -1629,9 +1639,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a98ee7d8df27b7bb57316050985b6220b">polyfem::solver::FullNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00441">441</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00445">445</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00672">polyfem::solver::NLProblem::solution_changed()</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00672">polyfem::solver::NLProblem::solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1676,9 +1686,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a716b36504c50e7abbbfee7fa621f3dc4">polyfem::solver::FullNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00454">454</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00458">458</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00556">polyfem::solver::NLProblem::update_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00556">polyfem::solver::NLProblem::update_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1723,9 +1733,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a7110f930d05e90196a0824700ff9bca5">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00461">461</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00465">465</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00564">polyfem::solver::NLProblem::update_quantities()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00564">polyfem::solver::NLProblem::update_quantities()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1760,11 +1770,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ab854a9e6e1e661a25bcb1bf9e2eaa2a6">polyfem::solver::NLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">99</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">103</a> of file <a class="el" href="_n_l_homo_problem_8cpp_source.html">NLHomoProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00093">polyfem::solver::NLProblem::current_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00120">polyfem::solver::NLProblem::penalty_problem_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>, <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00103">polyfem::solver::FullNLProblem::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00093">polyfem::solver::NLProblem::current_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00062">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">homo_forms</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00120">polyfem::solver::NLProblem::penalty_problem_</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>, <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00103">polyfem::solver::FullNLProblem::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">extended_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">extended_hessian_to_reduced_hessian()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1779,6 +1789,32 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a1ec5e1a679591253193b8d4f471d07cd" name="a1ec5e1a679591253193b8d4f471d07cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ec5e1a679591253193b8d4f471d07cd">&#9670;&#160;</a></span>dimension_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int polyfem::solver::NLHomoProblem::dimension_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">91</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00141">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00062">extended_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00090">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00257">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00339">full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00210">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00075">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00236">set_fixed_entry()</a>.</p>
+
+</div>
+</div>
 <a id="a138a461bedd6f505467a018f1311323f" name="a138a461bedd6f505467a018f1311323f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a138a461bedd6f505467a018f1311323f">&#9670;&#160;</a></span>fixed_mask_</h2>
 
@@ -1799,9 +1835,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">93</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00096">96</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00232">set_fixed_entry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00236">set_fixed_entry()</a>.</p>
 
 </div>
 </div>
@@ -1825,9 +1861,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">97</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00100">100</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00078">add_form()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00114">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00393">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00448">init_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00409">is_step_collision_free()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00400">is_step_valid()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00427">line_search_begin()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00418">max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00433">post_step()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00441">solution_changed()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00454">update_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00461">update_quantities()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00099">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00079">add_form()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00118">gradient()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00218">hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00397">init()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00452">init_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00413">is_step_collision_free()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00404">is_step_valid()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00431">line_search_begin()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00422">max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00437">post_step()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00445">solution_changed()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00458">update_lagging()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00465">update_quantities()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00103">value()</a>.</p>
 
 </div>
 </div>
@@ -1851,9 +1887,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">95</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">98</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00232">set_fixed_entry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00236">set_fixed_entry()</a>.</p>
 
 </div>
 </div>
@@ -1877,9 +1913,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00095">95</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00098">98</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced_grad()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_full_to_reduced_grad()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>.</p>
 
 </div>
 </div>
@@ -1903,9 +1939,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">94</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00097">97</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00370">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00232">set_fixed_entry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">macro_full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00374">macro_reduced_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00236">set_fixed_entry()</a>.</p>
 
 </div>
 </div>
@@ -1929,9 +1965,61 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00091">91</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00094">94</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00382">macro_reduced_to_full()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00386">macro_reduced_to_full()</a>.</p>
+
+</div>
+</div>
+<a id="a09dcda5585f4430557f05bf3141996b9" name="a09dcda5585f4430557f05bf3141996b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09dcda5585f4430557f05bf3141996b9">&#9670;&#160;</a></span>mesh_nodes_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">mesh::MeshNodes</a>&gt; polyfem::solver::NLHomoProblem::mesh_nodes_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00092">92</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00009">NLHomoProblem()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
+
+</div>
+</div>
+<a id="aef96f8bff390301f91d4862c40359b9d" name="aef96f8bff390301f91d4862c40359b9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef96f8bff390301f91d4862c40359b9d">&#9670;&#160;</a></span>n_bases_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int polyfem::solver::NLHomoProblem::n_bases_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">90</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00472">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00325">full_to_reduced()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00364">reduced_to_full()</a>.</p>
 
 </div>
 </div>
@@ -1955,35 +2043,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00090">90</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00093">93</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00079">has_symmetry_constraint()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>.</p>
-
-</div>
-</div>
-<a id="a36a094d03bbdea2c588c9fc31d3bf438" name="a36a094d03bbdea2c588c9fc31d3bf438"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36a094d03bbdea2c588c9fc31d3bf438">&#9670;&#160;</a></span>state_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a>&amp; polyfem::solver::NLHomoProblem::state_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00089">89</a> of file <a class="el" href="_n_l_homo_problem_8hpp_source.html">NLHomoProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00468">constraint_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00137">extended_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00058">extended_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00086">extended_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00253">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00321">full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00335">full_to_reduced_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00030">init_projection()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00206">reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00071">reduced_to_extended()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00360">reduced_to_full()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00232">set_fixed_entry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8hpp_source.html#l00080">has_symmetry_constraint()</a>, and <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00034">init_projection()</a>.</p>
 
 </div>
 </div>

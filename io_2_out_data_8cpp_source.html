@@ -2437,7 +2437,7 @@ $(document).ready(function(){initNavTree('io_2_out_data_8cpp_source.html',''); i
 <div class="line"><a id="l02287" name="l02287"></a><span class="lineno"> 2287</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; tets.rows(); ++i)</div>
 <div class="line"><a id="l02288" name="l02288"></a><span class="lineno"> 2288</span>                {</div>
 <div class="line"><a id="l02289" name="l02289"></a><span class="lineno"> 2289</span>                    elements.emplace_back();</div>
-<div class="line"><a id="l02290" name="l02290"></a><span class="lineno"> 2290</span>                    elements.back().ctype = CellType::Tetrahedron;</div>
+<div class="line"><a id="l02290" name="l02290"></a><span class="lineno"> 2290</span>                    elements.back().ctype = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume</a>() ? CellType::Tetrahedron : CellType::Triangle;</div>
 <div class="line"><a id="l02291" name="l02291"></a><span class="lineno"> 2291</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; tets.cols(); ++j)</div>
 <div class="line"><a id="l02292" name="l02292"></a><span class="lineno"> 2292</span>                        elements.back().vertices.push_back(tets(i, j));</div>
 <div class="line"><a id="l02293" name="l02293"></a><span class="lineno"> 2293</span>                }</div>

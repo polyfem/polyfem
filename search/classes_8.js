@@ -12,7 +12,7 @@ var searchData=
   ['inequalityconstraintform_9',['InequalityConstraintForm',['../classpolyfem_1_1solver_1_1_inequality_constraint_form.html',1,'polyfem::solver']]],
   ['inertiaforcederivative_10',['InertiaForceDerivative',['../classpolyfem_1_1solver_1_1_inertia_force_derivative.html',1,'polyfem::solver']]],
   ['inertiaform_11',['InertiaForm',['../classpolyfem_1_1solver_1_1_inertia_form.html',1,'polyfem::solver']]],
-  ['initialconditionoverride_12',['InitialConditionOverride',['../classpolyfem_1_1legacy_1_1_initial_condition_override.html',1,'polyfem::legacy']]],
+  ['initialconditionoverride_12',['initialconditionoverride',['../classpolyfem_1_1legacy_1_1_initial_condition_override.html',1,'polyfem::legacy::InitialConditionOverride'],['../structpolyfem_1_1varform_1_1_initial_condition_override.html',1,'polyfem::varform::InitialConditionOverride']]],
   ['initialconditionvariabletosimulation_13',['InitialConditionVariableToSimulation',['../classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html',1,'polyfem::solver']]],
   ['insertconstantmap_14',['InsertConstantMap',['../classpolyfem_1_1solver_1_1_insert_constant_map.html',1,'polyfem::solver']]],
   ['integrablefunctional_15',['IntegrableFunctional',['../classpolyfem_1_1_integrable_functional.html',1,'polyfem']]],

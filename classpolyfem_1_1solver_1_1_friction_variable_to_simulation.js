@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_friction_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a08c8bbcf86bc429036d8cf6fbf043dcc", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a9ab4217b38e03efb4c84114ea9e79bff", null ],
-    [ "FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a3b3d1ae5b690c089d203b2395e75ed38", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a639eb2acb5561d51da7c89ba4d14b954", null ],
+    [ "VarFormPtrs", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a69a8e28369565fc152da114b27efc0f6", null ],
+    [ "FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a594d856d37fa3c494fa914a72eeaf27a", null ],
+    [ "affects_varform", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a7cba2a3d0b241401f686bf0072993577", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a50f2a9c074c985ea6db0653518a866a3", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a10b492083529412dfc645e3cf450cf92", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a6f781432325e4de1d30cae6381533c20", null ],
@@ -15,5 +15,5 @@ var classpolyfem_1_1solver_1_1_friction_variable_to_simulation =
     [ "update_state_variables", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#aa06908312ddb6f7ed6514c4312811d3c", null ],
     [ "diff_caches_", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a18df5571b8b1528a30f489ee42073437", null ],
     [ "parametrization_", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#abe40cd0718f4f465bb6072da77603519", null ],
-    [ "states_", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a480b44fc72c12daedd1e6aaf93f95740", null ]
+    [ "varforms_", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#a4c8c23fa936f4fd17abfd36baeee56c3", null ]
 ];

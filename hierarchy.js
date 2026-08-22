@@ -123,6 +123,14 @@ var hierarchy =
       [ "polyfem::assembler::ThermalMassDensity", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html", null ]
     ] ],
     [ "polyfem::DiffCache", "classpolyfem_1_1_diff_cache.html", null ],
+    [ "polyfem::varform::DifferentiableVarForm", "classpolyfem_1_1varform_1_1_differentiable_var_form.html", [
+      [ "polyfem::varform::DifferentiableLinearElasticVarForm", "classpolyfem_1_1varform_1_1_differentiable_linear_elastic_var_form.html", null ],
+      [ "polyfem::varform::DifferentiableNonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html", [
+        [ "polyfem::varform::DifferentiableNonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_static_var_form.html", null ],
+        [ "polyfem::varform::DifferentiableNonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_transient_var_form.html", null ]
+      ] ],
+      [ "polyfem::varform::DifferentiableScalarVarForm", "classpolyfem_1_1varform_1_1_differentiable_scalar_var_form.html", null ]
+    ] ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", [
       [ "DScalar1< _Scalar, _Gradient >", "struct_d_scalar1.html", null ],
       [ "DScalar2< _Scalar, _Gradient, _Hessian >", "struct_d_scalar2.html", null ]
@@ -265,6 +273,7 @@ var hierarchy =
     [ "polyfem::mesh::Navigation::Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", null ],
     [ "polyfem::solver::InertiaForceDerivative", "classpolyfem_1_1solver_1_1_inertia_force_derivative.html", null ],
     [ "polyfem::legacy::InitialConditionOverride", "classpolyfem_1_1legacy_1_1_initial_condition_override.html", null ],
+    [ "polyfem::varform::InitialConditionOverride", "structpolyfem_1_1varform_1_1_initial_condition_override.html", null ],
     [ "polyfem::IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", null ],
     [ "polyfem::basis::InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", null ],
     [ "polyfem::utils::InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", null ],
@@ -528,8 +537,11 @@ var hierarchy =
       [ "polyfem::varform::BilaplacianVarForm", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html", null ],
       [ "polyfem::varform::ElasticVarForm", "classpolyfem_1_1varform_1_1_elastic_var_form.html", [
         [ "polyfem::varform::IncompressibleElasticVarForm", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html", null ],
-        [ "polyfem::varform::LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", null ],
+        [ "polyfem::varform::LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", [
+          [ "polyfem::varform::DifferentiableLinearElasticVarForm", "classpolyfem_1_1varform_1_1_differentiable_linear_elastic_var_form.html", null ]
+        ] ],
         [ "polyfem::varform::NonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html", [
+          [ "polyfem::varform::DifferentiableNonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html", null ],
           [ "polyfem::varform::NonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form.html", null ],
           [ "polyfem::varform::NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", null ],
           [ "polyfem::varform::ThermoElasticVarForm", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html", null ]
@@ -541,7 +553,9 @@ var hierarchy =
         [ "polyfem::varform::StokesVarForm", "classpolyfem_1_1varform_1_1_stokes_var_form.html", null ]
       ] ],
       [ "polyfem::varform::OperatorSplittingVarForm", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html", null ],
-      [ "polyfem::varform::ScalarVarForm", "classpolyfem_1_1varform_1_1_scalar_var_form.html", null ]
+      [ "polyfem::varform::ScalarVarForm", "classpolyfem_1_1varform_1_1_scalar_var_form.html", [
+        [ "polyfem::varform::DifferentiableScalarVarForm", "classpolyfem_1_1varform_1_1_differentiable_scalar_var_form.html", null ]
+      ] ]
     ] ],
     [ "polyfem::varform::VarFormBoundaryState", "structpolyfem_1_1varform_1_1_var_form_boundary_state.html", null ],
     [ "polyfem::varform::VarFormFactory", "classpolyfem_1_1varform_1_1_var_form_factory.html", null ],

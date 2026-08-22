@@ -131,16 +131,26 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp.html',''); initResizab
 <code>#include &lt;<a class="el" href="_geogram_utils_8hpp_source.html">polyfem/utils/GeogramUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_optimizations_8hpp_source.html">polyfem/optimization/Optimizations.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_adjoint_tools_8hpp_source.html">polyfem/optimization/AdjointTools.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_diff_cache_8hpp_source.html">polyfem/optimization/DiffCache.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_adjoint_n_l_problem_8hpp_source.html">polyfem/optimization/AdjointNLProblem.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_build_from_json_8hpp_source.html">polyfem/optimization/BuildFromJson.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_variable_to_simulation_group_8hpp_source.html">polyfem/optimization/var2sims/VariableToSimulationGroup.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_shape_variable_to_simulation_8hpp_source.html">polyfem/optimization/var2sims/ShapeVariableToSimulation.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_msh_writer_8hpp_source.html">polyfem/io/MshWriter.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_m_m_g_remesh_8hpp_source.html">polyfem/mesh/remesh/MMGRemesh.hpp</a>&gt;</code><br />
 <code>#include &lt;polysolve/nonlinear/Solver.hpp&gt;</code><br />
 <code>#include &lt;spdlog/sinks/stdout_color_sinks.h&gt;</code><br />
 <code>#include &lt;spdlog/sinks/basic_file_sink.h&gt;</code><br />
 <code>#include &lt;spdlog/sinks/ostream_sink.h&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">

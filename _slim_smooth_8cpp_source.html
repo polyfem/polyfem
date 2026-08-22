@@ -203,16 +203,24 @@ $(document).ready(function(){initNavTree('_slim_smooth_8cpp_source.html',''); in
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        V_smooth(boundary_indices, Eigen::all) = boundary_constraints;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;SLIM finished in {} iterations&quot;</span>, it);</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (good_enough)</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;SLIM succeeded.&quot;</span>);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().warn(<span class="stringliteral">&quot;SLIM cannot smooth correctly. Error: {}&quot;</span>, error);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> good_enough;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (!good_enough)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().warn(<span class="stringliteral">&quot;SLIM cannot smooth correctly. Error: {}&quot;</span>, error);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (!V_smooth.allFinite() || <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a61c2ed59ec36469fc091dc685362bffa">utils::is_flipped</a>(V_smooth, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>))</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().warn(<span class="stringliteral">&quot;SLIM produced an invalid or flipped mesh.&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;SLIM succeeded.&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
 </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>} <span class="comment">// namespace polyfem::mesh</span></div>
-<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00047">AdjointNLProblem.cpp:47</a></div></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>} <span class="comment">// namespace polyfem::mesh</span></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00048">AdjointNLProblem.cpp:48</a></div></div>
 <div class="ttc" id="a_geometry_utils_8hpp_html"><div class="ttname"><a href="_geometry_utils_8hpp.html">GeometryUtils.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_slim_smooth_8hpp_html"><div class="ttname"><a href="_slim_smooth_8hpp.html">SlimSmooth.hpp</a></div></div>

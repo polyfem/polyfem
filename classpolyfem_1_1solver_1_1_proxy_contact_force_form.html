@@ -142,14 +142,14 @@ Collaboration diagram for polyfem::solver::ProxyContactForceForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1afc8f3bb045e9d2e4e52600ac12d0c0" id="r_a1afc8f3bb045e9d2e4e52600ac12d0c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a1afc8f3bb045e9d2e4e52600ac12d0c0">ProxyContactForceForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; state, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; diff_cache, const double dhat, const bool quadratic_potential, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
-<tr class="separator:a1afc8f3bb045e9d2e4e52600ac12d0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10157aef3e6fba5eb664d2376b16adfe" id="r_a10157aef3e6fba5eb664d2376b16adfe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a10157aef3e6fba5eb664d2376b16adfe">ProxyContactForceForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; varform, std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; diff_cache, const double dhat, const bool quadratic_potential, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
+<tr class="separator:a10157aef3e6fba5eb664d2376b16adfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7606bc34011d3201424cf9496200ae57" id="r_a7606bc34011d3201424cf9496200ae57"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a7606bc34011d3201424cf9496200ae57">~ProxyContactForceForm</a> ()=default</td></tr>
 <tr class="separator:a7606bc34011d3201424cf9496200ae57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a524170a459038f9bf13e983449228ad7" id="r_a524170a459038f9bf13e983449228ad7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a524170a459038f9bf13e983449228ad7">value_unweighted_step</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="separator:a524170a459038f9bf13e983449228ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24829b91914f2235020600dd5021895b" id="r_a24829b91914f2235020600dd5021895b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a24829b91914f2235020600dd5021895b">compute_adjoint_rhs_step</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const override</td></tr>
-<tr class="separator:a24829b91914f2235020600dd5021895b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7629e0c1b0f24ae77b449dd67d4b992" id="r_af7629e0c1b0f24ae77b449dd67d4b992"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#af7629e0c1b0f24ae77b449dd67d4b992">compute_adjoint_rhs_step</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &amp;varform, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const override</td></tr>
+<tr class="separator:af7629e0c1b0f24ae77b449dd67d4b992"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac0ea4d95a34ed7287b36b5f1dbfa0cd" id="r_aac0ea4d95a34ed7287b36b5f1dbfa0cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aac0ea4d95a34ed7287b36b5f1dbfa0cd">compute_partial_gradient_step</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const override</td></tr>
 <tr class="separator:aac0ea4d95a34ed7287b36b5f1dbfa0cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a882b62bb50f60c92dc12657f573f9cea" id="r_a882b62bb50f60c92dc12657f573f9cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a882b62bb50f60c92dc12657f573f9cea">solution_changed_step</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
@@ -159,15 +159,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa3569d3ab37e1d87b49b5c21a00fa39d inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f57682d8354d371c761eb1b154e8a10 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a5f57682d8354d371c761eb1b154e8a10"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10">name</a> () const override</td></tr>
 <tr class="separator:a5f57682d8354d371c761eb1b154e8a10 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6ef11f05d87e8c8744b5bf0a6b07df9 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_ad6ef11f05d87e8c8744b5bf0a6b07df9"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#ad6ef11f05d87e8c8744b5bf0a6b07df9">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const final override</td></tr>
-<tr class="separator:ad6ef11f05d87e8c8744b5bf0a6b07df9 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c4df9e01585829ed08a676c0fc18494 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a2c4df9e01585829ed08a676c0fc18494"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a2c4df9e01585829ed08a676c0fc18494">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &amp;varform, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const final override</td></tr>
+<tr class="separator:a2c4df9e01585829ed08a676c0fc18494 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44dd9952e895ef6b3468edf3b886e3ef inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a44dd9952e895ef6b3468edf3b886e3ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a44dd9952e895ef6b3468edf3b886e3ef">compute_partial_gradient</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
 <tr class="separator:a44dd9952e895ef6b3468edf3b886e3ef inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85d26d3ef8d2ad6941dab6edb6b5efbf inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a85d26d3ef8d2ad6941dab6edb6b5efbf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a85d26d3ef8d2ad6941dab6edb6b5efbf">value_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const final override</td></tr>
 <tr class="memdesc:a85d26d3ef8d2ad6941dab6edb6b5efbf inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form.  <br /></td></tr>
 <tr class="separator:a85d26d3ef8d2ad6941dab6edb6b5efbf inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa479caa6bd05b85ee357ba68181bfe7b inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_aa479caa6bd05b85ee357ba68181bfe7b"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#aa479caa6bd05b85ee357ba68181bfe7b">compute_adjoint_rhs_step_prev</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
-<tr class="separator:aa479caa6bd05b85ee357ba68181bfe7b inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3523e3f224d11508b548612cdbbcaa76 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a3523e3f224d11508b548612cdbbcaa76"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a3523e3f224d11508b548612cdbbcaa76">compute_adjoint_rhs_step_prev</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &amp;varform, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
+<tr class="separator:a3523e3f224d11508b548612cdbbcaa76 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_aebe03b410b4ba7f4fa6b0f3547c5902e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#aebe03b410b4ba7f4fa6b0f3547c5902e">solution_changed</a> (const Eigen::VectorXd &amp;new_x) final override</td></tr>
 <tr class="memdesc:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
 <tr class="separator:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,8 +187,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a185871b84b48eb67a6436c8f2fcfd304"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a185871b84b48eb67a6436c8f2fcfd304">get_variable_to_simulations</a> () const</td></tr>
 <tr class="separator:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5edfbf61036ea24a6e0aeddc03de0261 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a5edfbf61036ea24a6e0aeddc03de0261"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5edfbf61036ea24a6e0aeddc03de0261">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
-<tr class="separator:a5edfbf61036ea24a6e0aeddc03de0261 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5276dcc7a52b62d0da2b605c7acf3ede inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a5276dcc7a52b62d0da2b605c7acf3ede"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5276dcc7a52b62d0da2b605c7acf3ede">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &amp;varform, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache) const</td></tr>
+<tr class="separator:a5276dcc7a52b62d0da2b605c7acf3ede inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a809444267534055ed66f02df2f4e7fa6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a809444267534055ed66f02df2f4e7fa6">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
 <tr class="memdesc:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -293,8 +293,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:aca5b1a35cf46fb1b513ff1386946411d" id="r_aca5b1a35cf46fb1b513ff1386946411d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aca5b1a35cf46fb1b513ff1386946411d">state_</a></td></tr>
-<tr class="separator:aca5b1a35cf46fb1b513ff1386946411d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61fb6f9f04eb34ce9a22c436f89509b8" id="r_a61fb6f9f04eb34ce9a22c436f89509b8"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a61fb6f9f04eb34ce9a22c436f89509b8">varform_</a></td></tr>
+<tr class="separator:a61fb6f9f04eb34ce9a22c436f89509b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42ea27c4466a342962ca141f91789715" id="r_a42ea27c4466a342962ca141f91789715"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a42ea27c4466a342962ca141f91789715">diff_cache_</a></td></tr>
 <tr class="separator:a42ea27c4466a342962ca141f91789715"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2b3e4fd43bea1c2b040fa6e339ad7e6" id="r_ac2b3e4fd43bea1c2b040fa6e339ad7e6"><td class="memItemLeft" align="right" valign="top">std::set&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ac2b3e4fd43bea1c2b040fa6e339ad7e6">boundary_ids_</a></td></tr>
@@ -357,8 +357,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8hpp_source.html#l00070">70</a> of file <a class="el" href="_surface_traction_forms_8hpp_source.html">SurfaceTractionForms.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a1afc8f3bb045e9d2e4e52600ac12d0c0" name="a1afc8f3bb045e9d2e4e52600ac12d0c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1afc8f3bb045e9d2e4e52600ac12d0c0">&#9670;&#160;</a></span>ProxyContactForceForm()</h2>
+<a id="a10157aef3e6fba5eb664d2376b16adfe" name="a10157aef3e6fba5eb664d2376b16adfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10157aef3e6fba5eb664d2376b16adfe">&#9670;&#160;</a></span>ProxyContactForceForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -372,8 +372,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt;&#160;</td>
+          <td class="paramname"><em>varform</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -409,11 +409,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8cpp_source.html#l00803">803</a> of file <a class="el" href="_surface_traction_forms_8cpp_source.html">SurfaceTractionForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00102">boundary_ids_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00114">broad_phase_method_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00850">build_collision_mesh()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00108">collision_set_indicator_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00109">collision_sets_</a>, and <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">state_</a>.</p>
+<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00102">boundary_ids_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00114">broad_phase_method_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00850">build_collision_mesh()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00108">collision_set_indicator_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00109">collision_sets_</a>, and <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">varform_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_a1afc8f3bb045e9d2e4e52600ac12d0c0_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_a10157aef3e6fba5eb664d2376b16adfe_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -469,7 +469,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8cpp_source.html#l00850">850</a> of file <a class="el" href="_surface_traction_forms_8cpp_source.html">SurfaceTractionForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00027">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00102">boundary_ids_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00103">boundary_ids_to_dof_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00808">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00104">can_collide_cache_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="legacy_2io_2_out_data_8cpp_source.html#l00151">polyfem::legacy::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00019">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="_element_bases_8hpp_source.html#l00035">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00106">node_positions_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">state_</a>, <a class="el" href="_assembler_8cpp_source.html#l00025">vals</a>, and <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">weights</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00102">boundary_ids_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00103">boundary_ids_to_dof_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00808">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00104">can_collide_cache_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00707">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00019">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="_element_bases_8hpp_source.html#l00035">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00106">node_positions_</a>, <a class="el" href="_assembler_8cpp_source.html#l00025">vals</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">varform_</a>, and <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">weights</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_surface_traction_forms_8cpp_source.html#l00803">ProxyContactForceForm()</a>, and <a class="el" href="_surface_traction_forms_8hpp_source.html#l00085">solution_changed_step()</a>.</p>
 <div class="dynheader">
@@ -510,8 +510,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a24829b91914f2235020600dd5021895b" name="a24829b91914f2235020600dd5021895b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24829b91914f2235020600dd5021895b">&#9670;&#160;</a></span>compute_adjoint_rhs_step()</h2>
+<a id="af7629e0c1b0f24ae77b449dd67d4b992" name="af7629e0c1b0f24ae77b449dd67d4b992"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7629e0c1b0f24ae77b449dd67d4b992">&#9670;&#160;</a></span>compute_adjoint_rhs_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -534,8 +534,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &amp;&#160;</td>
+          <td class="paramname"><em>varform</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -556,15 +556,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a6f3f1b9ce3753bd89e7f68d8b07f46a4">polyfem::solver::StaticForm</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a2cc6afc499970e53641f8c76414349fc">polyfem::solver::StaticForm</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8cpp_source.html#l01003">1003</a> of file <a class="el" href="_surface_traction_forms_8cpp_source.html">SurfaceTractionForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>.</p>
+<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">varform_</a>, and <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_a24829b91914f2235020600dd5021895b_cgraph.svg" width="496" height="180"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_af7629e0c1b0f24ae77b449dd67d4b992_cgraph.svg" width="496" height="180"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -613,11 +613,11 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8cpp_source.html#l01039">1039</a> of file <a class="el" href="_surface_traction_forms_8cpp_source.html">SurfaceTractionForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_group_8cpp_source.html#l00049">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01377">polyfem::solver::AdjointTools::map_node_to_primitive_order()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00045">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_group_8cpp_source.html#l00049">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01374">polyfem::solver::AdjointTools::map_node_to_primitive_order()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">varform_</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00045">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00128">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_aac0ea4d95a34ed7287b36b5f1dbfa0cd_cgraph.svg" width="100%" height="543"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_proxy_contact_force_form_aac0ea4d95a34ed7287b36b5f1dbfa0cd_cgraph.svg" width="100%" height="559"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -754,7 +754,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_surface_traction_forms_8cpp_source.html#l00988">988</a> of file <a class="el" href="_surface_traction_forms_8cpp_source.html">SurfaceTractionForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">state_</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="reference">References <a class="el" href="_surface_traction_forms_8hpp_source.html#l00118">barrier_potential_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00111">collision_mesh_</a>, <a class="el" href="_surface_traction_forms_8hpp_source.html#l00101">diff_cache_</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00977">get_or_compute_collision_set()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_surface_traction_forms_8hpp_source.html#l00100">varform_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1102,8 +1102,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="aca5b1a35cf46fb1b513ff1386946411d" name="aca5b1a35cf46fb1b513ff1386946411d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca5b1a35cf46fb1b513ff1386946411d">&#9670;&#160;</a></span>state_</h2>
+<a id="a61fb6f9f04eb34ce9a22c436f89509b8" name="a61fb6f9f04eb34ce9a22c436f89509b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61fb6f9f04eb34ce9a22c436f89509b8">&#9670;&#160;</a></span>varform_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1112,7 +1112,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;const <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a>&gt; polyfem::solver::ProxyContactForceForm::state_</td>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a>&gt; polyfem::solver::ProxyContactForceForm::varform_</td>
         </tr>
       </table>
   </td>

@@ -1,31 +1,29 @@
 <map id="polyfem::utils::lump_matrix" name="polyfem::utils::lump_matrix">
-<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="888,261,1041,301"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1legacy_1_1_state.html#a5027e45456740284c6a6e90709a9e717" title="assemble mass, step 4 of solve build mass matrix based on defined basis modifies mass (and maybe more..." alt="" coords="623,37,791,77"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="949,249,932,212,908,169,877,127,838,91,816,79,791,70,793,65,818,74,842,87,881,123,912,166,937,209,954,247"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a59adc2502d881f79a8a4b27583271838" title=" " alt="" coords="596,101,819,141"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="940,252,896,202,869,177,839,156,813,144,815,139,841,151,872,172,900,198,944,248"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a374ff1dc4f6f26c87756e140cc464391" title=" " alt="" coords="596,165,819,205"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="917,257,839,220,802,208,804,203,841,215,919,252"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a06aa725b0244e6445d48dcf2f48a5a6d" title=" " alt="" coords="607,229,808,269"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="874,273,808,265,809,259,875,267"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" title=" " alt="" coords="575,293,840,333"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="875,295,841,299,840,294,874,290"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" title=" " alt="" coords="596,357,819,397"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="919,311,841,348,804,360,802,355,839,343,917,306"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" title=" " alt="" coords="610,422,805,477"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="943,314,899,364,872,390,841,412,806,429,804,424,839,407,868,386,896,360,939,311"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="587,501,827,541"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="955,316,939,356,915,404,883,451,842,491,821,504,818,499,838,487,879,448,911,401,934,354,950,314"/>
+<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="888,229,1041,269"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1legacy_1_1_state.html#a5027e45456740284c6a6e90709a9e717" title="assemble mass, step 4 of solve build mass matrix based on defined basis modifies mass (and maybe more..." alt="" coords="623,5,791,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="949,217,932,180,908,137,877,95,838,59,816,47,791,38,793,33,818,42,842,55,881,91,912,134,937,177,954,215"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a59adc2502d881f79a8a4b27583271838" title=" " alt="" coords="596,69,819,109"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="940,220,896,170,869,145,839,124,813,112,815,107,841,119,872,140,900,166,944,216"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a374ff1dc4f6f26c87756e140cc464391" title=" " alt="" coords="596,133,819,173"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="917,225,839,188,802,176,804,171,841,183,919,220"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a06aa725b0244e6445d48dcf2f48a5a6d" title=" " alt="" coords="607,197,808,237"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="874,241,808,233,809,227,875,235"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" title=" " alt="" coords="575,261,840,301"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="875,263,841,267,840,262,874,258"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" title=" " alt="" coords="596,325,819,365"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="919,279,841,316,804,328,802,323,839,311,917,274"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" title=" " alt="" coords="610,390,805,445"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="943,282,899,332,872,358,841,380,806,397,804,392,839,375,868,354,896,328,939,279"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="587,469,827,509"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="955,284,939,324,915,372,883,419,842,459,821,472,818,467,838,455,879,416,911,369,934,322,950,282"/>
 <area shape="rect" id="Node000003" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="341,5,489,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="609,49,489,36,490,31,610,44"/>
-<area shape="rect" id="Node000006" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a0aab07822700745f38ea85dd84f76511" title=" " alt="" coords="326,69,505,109"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="610,71,505,82,505,77,609,65"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="610,28,490,28,490,23,610,23"/>
 <area shape="rect" id="Node000004" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="108,13,256,38"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="327,28,256,28,256,23,327,23"/>
 <area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,13,60,38"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="94,28,60,28,60,23,94,23"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a5ddff49852956d7654fb835ad932e177" title=" " alt="" coords="311,222,520,277"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="593,252,520,252,520,247,593,247"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aafbb794602d1f6a31de52a78f6699112" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="304,501,527,541"/>
-<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="573,524,527,524,527,519,573,519"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a5ddff49852956d7654fb835ad932e177" title=" " alt="" coords="311,190,520,245"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="593,220,520,220,520,215,593,215"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aafbb794602d1f6a31de52a78f6699112" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="304,469,527,509"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="573,492,527,492,527,487,573,487"/>
 </map>

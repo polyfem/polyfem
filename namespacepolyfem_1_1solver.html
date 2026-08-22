@@ -219,7 +219,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> of the lagged friction disapative potential and forces.  <a href="classpolyfem_1_1solver_1_1_friction_form.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html">FrictionVariableToSimulation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps one friction coefficient to the whole state.  <a href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps one friction coefficient to the whole varform.  <a href="classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_f_s_i_interface_form.html">FSIInterfaceForm</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Residual-only coupling of the physical fluid/solid interface and of the computational ALE mesh to the solid boundary.  <a href="classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#details">More...</a><br /></td></tr>
@@ -397,7 +397,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html">TransientForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1legacy_1_1_state.html" title="main class that contains the polyfem solver and all its state">legacy::State</a> variables.  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps optimization variables to forward simulation <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html" title="Optimization-facing interface implemented by differentiated VarForm adapters.">varform::DifferentiableVarForm</a> variables.  <a href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -448,27 +448,27 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ae348c4163f5aa6fd389752f717522d83" id="r_ae348c4163f5aa6fd389752f717522d83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#ae348c4163f5aa6fd389752f717522d83">apply_objective_json_spec</a> (<a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;rules)</td></tr>
 <tr class="separator:ae348c4163f5aa6fd389752f717522d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a564a642f23defd77f8919859fb06b419" id="r_a564a642f23defd77f8919859fb06b419"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419">is_active_geom_nodes_valid</a> (const Eigen::VectorXi &amp;active_geom_nodes, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:a564a642f23defd77f8919859fb06b419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active geometry nodes selection given states.  <br /></td></tr>
-<tr class="separator:a564a642f23defd77f8919859fb06b419"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff95b453bc6793a92531c843a4f912ea" id="r_aff95b453bc6793a92531c843a4f912ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#aff95b453bc6793a92531c843a4f912ea">is_active_dims_valid</a> (const Eigen::VectorXi &amp;active_dimensions, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:aff95b453bc6793a92531c843a4f912ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active dimensions selection given states.  <br /></td></tr>
-<tr class="separator:aff95b453bc6793a92531c843a4f912ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa12ab80ab8b4ce2fe248119533d1aa86" id="r_aa12ab80ab8b4ce2fe248119533d1aa86"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#aa12ab80ab8b4ce2fe248119533d1aa86">is_active_dofs_valid</a> (const Eigen::VectorXi &amp;active_dofs, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:aa12ab80ab8b4ce2fe248119533d1aa86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active solution space dofs selection given states.  <br /></td></tr>
-<tr class="separator:aa12ab80ab8b4ce2fe248119533d1aa86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d721d40ae40b39ada893ab7e85a2434" id="r_a2d721d40ae40b39ada893ab7e85a2434"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434">is_active_time_slices_valid</a> (const Eigen::VectorXi &amp;active_time_slices, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:a2d721d40ae40b39ada893ab7e85a2434"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active time slices selection given states.  <br /></td></tr>
-<tr class="separator:a2d721d40ae40b39ada893ab7e85a2434"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f341b92cbaed8ef6e37845ad0346181" id="r_a3f341b92cbaed8ef6e37845ad0346181"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a3f341b92cbaed8ef6e37845ad0346181">is_active_dirichlet_boundary_ids_valid</a> (const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:a3f341b92cbaed8ef6e37845ad0346181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active Dirichlet boundary ids selection given states.  <br /></td></tr>
-<tr class="separator:a3f341b92cbaed8ef6e37845ad0346181"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a1892591f0362e47de70ad2254fa5d2" id="r_a0a1892591f0362e47de70ad2254fa5d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a0a1892591f0362e47de70ad2254fa5d2">is_active_dirichlet_node_valid</a> (const Eigen::VectorXi &amp;active_dirichlet_nodes, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:a0a1892591f0362e47de70ad2254fa5d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active Dirichlet node ids selection given states.  <br /></td></tr>
-<tr class="separator:a0a1892591f0362e47de70ad2254fa5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a626a8ca4f91ee497c0475f00ef51cf11" id="r_a626a8ca4f91ee497c0475f00ef51cf11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11">is_active_pressure_boundary_ids_valid</a> (const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;states, std::string &amp;reason)</td></tr>
-<tr class="memdesc:a626a8ca4f91ee497c0475f00ef51cf11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active pressure boundary ids selection given states.  <br /></td></tr>
-<tr class="separator:a626a8ca4f91ee497c0475f00ef51cf11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae75ececdde4973bcea7632de62aefdb7" id="r_ae75ececdde4973bcea7632de62aefdb7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7">is_active_geom_nodes_valid</a> (const Eigen::VectorXi &amp;active_geom_nodes, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:ae75ececdde4973bcea7632de62aefdb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active geometry nodes selection given varforms.  <br /></td></tr>
+<tr class="separator:ae75ececdde4973bcea7632de62aefdb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5c6c04af21d3fbd99595025ac384ad1" id="r_aa5c6c04af21d3fbd99595025ac384ad1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#aa5c6c04af21d3fbd99595025ac384ad1">is_active_dims_valid</a> (const Eigen::VectorXi &amp;active_dimensions, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:aa5c6c04af21d3fbd99595025ac384ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active dimensions selection given varforms.  <br /></td></tr>
+<tr class="separator:aa5c6c04af21d3fbd99595025ac384ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76b8199d8b9bab1ed7fdbccf4d1efa3a" id="r_a76b8199d8b9bab1ed7fdbccf4d1efa3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a76b8199d8b9bab1ed7fdbccf4d1efa3a">is_active_dofs_valid</a> (const Eigen::VectorXi &amp;active_dofs, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:a76b8199d8b9bab1ed7fdbccf4d1efa3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active solution space dofs selection given varforms.  <br /></td></tr>
+<tr class="separator:a76b8199d8b9bab1ed7fdbccf4d1efa3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4286fa41dac680292f151facd5e7e08e" id="r_a4286fa41dac680292f151facd5e7e08e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a4286fa41dac680292f151facd5e7e08e">is_active_time_slices_valid</a> (const Eigen::VectorXi &amp;active_time_slices, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:a4286fa41dac680292f151facd5e7e08e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active time slices selection given varforms.  <br /></td></tr>
+<tr class="separator:a4286fa41dac680292f151facd5e7e08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95405c514e7c8aa6a4f61a67bf6e7575" id="r_a95405c514e7c8aa6a4f61a67bf6e7575"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a95405c514e7c8aa6a4f61a67bf6e7575">is_active_dirichlet_boundary_ids_valid</a> (const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:a95405c514e7c8aa6a4f61a67bf6e7575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active Dirichlet boundary ids selection given varforms.  <br /></td></tr>
+<tr class="separator:a95405c514e7c8aa6a4f61a67bf6e7575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97aa2c855609b7f35177426b47179845" id="r_a97aa2c855609b7f35177426b47179845"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a97aa2c855609b7f35177426b47179845">is_active_dirichlet_node_valid</a> (const Eigen::VectorXi &amp;active_dirichlet_nodes, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:a97aa2c855609b7f35177426b47179845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active Dirichlet node ids selection given varforms.  <br /></td></tr>
+<tr class="separator:a97aa2c855609b7f35177426b47179845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d46f1afbb375f110b134510e0f027f" id="r_ab6d46f1afbb375f110b134510e0f027f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#ab6d46f1afbb375f110b134510e0f027f">is_active_pressure_boundary_ids_valid</a> (const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;varforms, std::string &amp;reason)</td></tr>
+<tr class="memdesc:ab6d46f1afbb375f110b134510e0f027f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate active pressure boundary ids selection given varforms.  <br /></td></tr>
+<tr class="separator:ab6d46f1afbb375f110b134510e0f027f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4461f8bf1e7aebc14d56ce057b06b138" id="r_a4461f8bf1e7aebc14d56ce057b06b138"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138">NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9">BCLumpingMode</a>, {{<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a1bd9f08e59279f78296ae19f5775abc9">BCLumpingMode::ROW_SUM</a>, &quot;row_sum&quot;}, {<a class="el" href="namespacepolyfem_1_1solver.html#a30284109a63f5ae8362093e1ccab27a9a6f1dfd3b4fdadb2a546050a32bf062b2">BCLumpingMode::HRZ</a>, &quot;hrz&quot;}})</td></tr>
 <tr class="separator:a4461f8bf1e7aebc14d56ce057b06b138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -610,7 +610,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="ad27032b2014cdcea2f5718580272f48faad22a1be59b755962010de3a6aa93458" name="ad27032b2014cdcea2f5718580272f48faad22a1be59b755962010de3a6aa93458"></a>VertexSum&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8hpp_source.html#l00028">28</a> of file <a class="el" href="_adjoint_tools_8hpp_source.html">AdjointTools.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8hpp_source.html#l00024">24</a> of file <a class="el" href="_adjoint_tools_8hpp_source.html">AdjointTools.hpp</a>.</p>
 
 </div>
 </div>
@@ -641,11 +641,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00144">144</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00149">149</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00144">apply_objective_json_spec()</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
+<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00149">apply_objective_json_spec()</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00144">apply_objective_json_spec()</a>, and <a class="el" href="_optimizations_8cpp_source.html#l00172">polyfem::solver::AdjointOptUtils::apply_opt_json_spec()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00149">apply_objective_json_spec()</a>, and <a class="el" href="_optimizations_8cpp_source.html#l00177">polyfem::solver::AdjointOptUtils::apply_opt_json_spec()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -654,13 +654,13 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_ae348c4163f5aa6fd389752f717522d83_icgraph.svg" width="664" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_ae348c4163f5aa6fd389752f717522d83_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="aff95b453bc6793a92531c843a4f912ea" name="aff95b453bc6793a92531c843a4f912ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff95b453bc6793a92531c843a4f912ea">&#9670;&#160;</a></span>is_active_dims_valid()</h2>
+<a id="aa5c6c04af21d3fbd99595025ac384ad1" name="aa5c6c04af21d3fbd99595025ac384ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5c6c04af21d3fbd99595025ac384ad1">&#9670;&#160;</a></span>is_active_dims_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -674,8 +674,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -691,11 +691,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active dimensions selection given states. </p>
+<p>Validate active dimensions selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_dimensions</td><td>Vector of active dimensions. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -707,13 +707,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_aff95b453bc6793a92531c843a4f912ea_icgraph.svg" width="496" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_aa5c6c04af21d3fbd99595025ac384ad1_icgraph.svg" width="496" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a3f341b92cbaed8ef6e37845ad0346181" name="a3f341b92cbaed8ef6e37845ad0346181"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f341b92cbaed8ef6e37845ad0346181">&#9670;&#160;</a></span>is_active_dirichlet_boundary_ids_valid()</h2>
+<a id="a95405c514e7c8aa6a4f61a67bf6e7575" name="a95405c514e7c8aa6a4f61a67bf6e7575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95405c514e7c8aa6a4f61a67bf6e7575">&#9670;&#160;</a></span>is_active_dirichlet_boundary_ids_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -727,8 +727,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -744,11 +744,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active Dirichlet boundary ids selection given states. </p>
+<p>Validate active Dirichlet boundary ids selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_boundary_ids</td><td>Vector of active Dirichlet boundary ids. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -761,13 +761,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a3f341b92cbaed8ef6e37845ad0346181_icgraph.svg" width="540" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a95405c514e7c8aa6a4f61a67bf6e7575_icgraph.svg" width="540" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a0a1892591f0362e47de70ad2254fa5d2" name="a0a1892591f0362e47de70ad2254fa5d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a1892591f0362e47de70ad2254fa5d2">&#9670;&#160;</a></span>is_active_dirichlet_node_valid()</h2>
+<a id="a97aa2c855609b7f35177426b47179845" name="a97aa2c855609b7f35177426b47179845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97aa2c855609b7f35177426b47179845">&#9670;&#160;</a></span>is_active_dirichlet_node_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -781,8 +781,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -798,11 +798,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active Dirichlet node ids selection given states. </p>
+<p>Validate active Dirichlet node ids selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_node_ids</td><td>Vector of active geometric node ids. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -816,18 +816,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a0a1892591f0362e47de70ad2254fa5d2_cgraph.svg" width="464" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a97aa2c855609b7f35177426b47179845_cgraph.svg" width="464" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a0a1892591f0362e47de70ad2254fa5d2_icgraph.svg" width="528" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a97aa2c855609b7f35177426b47179845_icgraph.svg" width="528" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="aa12ab80ab8b4ce2fe248119533d1aa86" name="aa12ab80ab8b4ce2fe248119533d1aa86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa12ab80ab8b4ce2fe248119533d1aa86">&#9670;&#160;</a></span>is_active_dofs_valid()</h2>
+<a id="a76b8199d8b9bab1ed7fdbccf4d1efa3a" name="a76b8199d8b9bab1ed7fdbccf4d1efa3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76b8199d8b9bab1ed7fdbccf4d1efa3a">&#9670;&#160;</a></span>is_active_dofs_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -841,8 +841,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -858,11 +858,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active solution space dofs selection given states. </p>
+<p>Validate active solution space dofs selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">active_dofs</td><td>Vector of active state dof indexes. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">active_dofs</td><td>Vector of active varform dof indexes. Empty implies all active. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -874,13 +874,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_aa12ab80ab8b4ce2fe248119533d1aa86_icgraph.svg" width="468" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a76b8199d8b9bab1ed7fdbccf4d1efa3a_icgraph.svg" width="468" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a564a642f23defd77f8919859fb06b419" name="a564a642f23defd77f8919859fb06b419"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a564a642f23defd77f8919859fb06b419">&#9670;&#160;</a></span>is_active_geom_nodes_valid()</h2>
+<a id="ae75ececdde4973bcea7632de62aefdb7" name="ae75ececdde4973bcea7632de62aefdb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae75ececdde4973bcea7632de62aefdb7">&#9670;&#160;</a></span>is_active_geom_nodes_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -894,8 +894,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -911,11 +911,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active geometry nodes selection given states. </p>
+<p>Validate active geometry nodes selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_geom_nodes</td><td>Vector of active geometry node indexes. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -927,13 +927,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a564a642f23defd77f8919859fb06b419_icgraph.svg" width="100%" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_ae75ececdde4973bcea7632de62aefdb7_icgraph.svg" width="100%" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a626a8ca4f91ee497c0475f00ef51cf11" name="a626a8ca4f91ee497c0475f00ef51cf11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a626a8ca4f91ee497c0475f00ef51cf11">&#9670;&#160;</a></span>is_active_pressure_boundary_ids_valid()</h2>
+<a id="ab6d46f1afbb375f110b134510e0f027f" name="ab6d46f1afbb375f110b134510e0f027f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d46f1afbb375f110b134510e0f027f">&#9670;&#160;</a></span>is_active_pressure_boundary_ids_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -947,8 +947,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -964,11 +964,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active pressure boundary ids selection given states. </p>
+<p>Validate active pressure boundary ids selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_boundary_ids</td><td>Vector of active pressure boundary ids. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -980,13 +980,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a626a8ca4f91ee497c0475f00ef51cf11_icgraph.svg" width="544" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_ab6d46f1afbb375f110b134510e0f027f_icgraph.svg" width="544" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a2d721d40ae40b39ada893ab7e85a2434" name="a2d721d40ae40b39ada893ab7e85a2434"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d721d40ae40b39ada893ab7e85a2434">&#9670;&#160;</a></span>is_active_time_slices_valid()</h2>
+<a id="a4286fa41dac680292f151facd5e7e08e" name="a4286fa41dac680292f151facd5e7e08e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4286fa41dac680292f151facd5e7e08e">&#9670;&#160;</a></span>is_active_time_slices_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1000,8 +1000,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1legacy_1_1_state.html">legacy::State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_var_form.html">varform::DifferentiableVarForm</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>varforms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1017,11 +1017,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Validate active time slices selection given states. </p>
+<p>Validate active time slices selection given varforms. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">active_time_slices</td><td>Vector of active time slice indexes. Empty implies all active. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">states</td><td>Shared ptr to all states. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">varforms</td><td>Shared ptr to all varforms. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">reason</td><td>Reason why validation failed. Set only when invalid. </td></tr>
   </table>
   </dd>
@@ -1033,7 +1033,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a2d721d40ae40b39ada893ab7e85a2434_icgraph.svg" width="534" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_a4286fa41dac680292f151facd5e7e08e_icgraph.svg" width="534" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

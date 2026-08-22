@@ -1,7 +1,7 @@
 var classpolyfem_1_1solver_1_1_spatial_integral_form =
 [
-    [ "SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a4591245e0d8f96a8aaab28f1bf185730", null ],
-    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a521f090a0649802d632dd88389d84bd6", null ],
+    [ "SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a8ed24b1c17ae19b9d26c2d434e27dc66", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ad164d3b8d804d1cdf11a18ed370549e6", null ],
     [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#acd253fe5ef90f51233b5f3c90d878549", null ],
     [ "get_integral_functional", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65", null ],
     [ "name", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf", null ],
@@ -10,5 +10,5 @@ var classpolyfem_1_1solver_1_1_spatial_integral_form =
     [ "diff_cache_", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ad7fa440acc440445ac1f210e43f55e16", null ],
     [ "ids_", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a259689f7a833bdeaa144f86024927ecf", null ],
     [ "spatial_integral_type_", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a79b7d0bf367d7b1c9f3f9358ad542807", null ],
-    [ "state_", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a31a6279b6ca1244fae3afb8b3bb10857", null ]
+    [ "varform_", "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a721078fec1ec057e094f8f62921720bc", null ]
 ];

@@ -29,7 +29,7 @@ var classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form =
     [ "solid_displacement_offset", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a0f53c58ad66be8bf61052b5c329ade94", null ],
     [ "solid_varform_args", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a16816d6941e54f323d8f09250794904e", null ],
     [ "solve_nonlinear_step", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#ac3ccfaf42935d4351c54bad053a49c3e", null ],
-    [ "solve_problem", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a3598b4db63a72d70f70540aeb35dc6e5", null ],
+    [ "solve_problem", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a820da4adcfda0a260ce25fd2b15ee8ca", null ],
     [ "time_integrator_args", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#ab626353f3fef23dcd51184b48f1e49a3", null ],
     [ "total_ndof", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#ad62435c4efe8957f393434d11b6d8bf9", null ],
     [ "update_transient_form_weights", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a6bc2f6a36f567d870d3d3b117652aefa", null ],

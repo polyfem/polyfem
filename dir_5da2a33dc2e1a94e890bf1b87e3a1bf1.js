@@ -18,6 +18,6 @@ var dir_5da2a33dc2e1a94e890bf1b87e3a1bf1 =
     [ "Optimizations.hpp", "_optimizations_8hpp.html", "_optimizations_8hpp" ],
     [ "OptState.cpp", "_opt_state_8cpp.html", null ],
     [ "OptState.hpp", "_opt_state_8hpp.html", "_opt_state_8hpp" ],
-    [ "StateDiff.cpp", "_state_diff_8cpp.html", "_state_diff_8cpp" ],
-    [ "StateDiff.hpp", "_state_diff_8hpp.html", "_state_diff_8hpp" ]
+    [ "VarFormDiff.cpp", "_var_form_diff_8cpp.html", "_var_form_diff_8cpp" ],
+    [ "VarFormDiff.hpp", "_var_form_diff_8hpp.html", "_var_form_diff_8hpp" ]
 ];

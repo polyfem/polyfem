@@ -1,9 +1,9 @@
 var _build_from_json_8cpp =
 [
-    [ "build_form", "_build_from_json_8cpp.html#af779573e51dc0096fb72b759199eaa23", null ],
-    [ "build_parametrization", "_build_from_json_8cpp.html#a3ea711afd6fb71143cbe4fa223a4dad8", null ],
-    [ "build_state", "_build_from_json_8cpp.html#ab1b0702b63864220b191f8c3e63b464f", null ],
-    [ "build_states", "_build_from_json_8cpp.html#a30b38a90a19618ca1a3192a528585c05", null ],
-    [ "build_variable_to_simulation", "_build_from_json_8cpp.html#a7808a2a3ae71984395b604c40f109769", null ],
-    [ "build_variable_to_simulation_group", "_build_from_json_8cpp.html#a47e6e0b0f23730f9f4a3a0303daba3c6", null ]
+    [ "build_differentiable_varform", "_build_from_json_8cpp.html#ac1496de9068924b5c99da5f07ddd7e53", null ],
+    [ "build_form", "_build_from_json_8cpp.html#a3ccc7aa70237f3ca9ed823ca6e5a2f88", null ],
+    [ "build_parametrization", "_build_from_json_8cpp.html#a79de28d137863135077f23f38a8011bf", null ],
+    [ "build_varforms", "_build_from_json_8cpp.html#ab60db02907d01d6f7886aa0f54d3b86c", null ],
+    [ "build_variable_to_simulation", "_build_from_json_8cpp.html#a74a89cb777641a2cdc8e622a5dd8364a", null ],
+    [ "build_variable_to_simulation_group", "_build_from_json_8cpp.html#ad3d93f1d565c18732f9ec0ee5b808a1f", null ]
 ];

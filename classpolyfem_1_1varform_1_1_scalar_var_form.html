@@ -122,8 +122,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1varform_1_1_scalar_var
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pri-methods">Private Member Functions</a> &#124;
-<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classpolyfem_1_1varform_1_1_scalar_var_form-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::varform::ScalarVarForm Class Reference</div></div>
@@ -134,12 +133,12 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1varform_1_1_scalar_var
 <div class="dynheader">
 Inheritance diagram for polyfem::varform::ScalarVarForm:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form__inherit__graph.svg" width="210" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form__inherit__graph.svg" width="244" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for polyfem::varform::ScalarVarForm:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form__coll__graph.svg" width="100%" height="541"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form__coll__graph.svg" width="100%" height="578"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -173,9 +172,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aafbe2e8d4a6af2fd3162b3befa55498c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aafbe2e8d4a6af2fd3162b3befa55498c">set_mesh</a> (std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &gt; mesh, const double loading_mesh_time=0)</td></tr>
 <tr class="memdesc:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the mesh for the variational formulation.  <br /></td></tr>
 <tr class="separator:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a2d3ed9797e6e3b70640c54bc6e8dd03e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2d3ed9797e6e3b70640c54bc6e8dd03e">solve</a> (Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="memdesc:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the variational formulation and store the solution in the given matrix.  <br /></td></tr>
-<tr class="separator:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a31aaf862de7e19aad7250cf2ace8c431"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a31aaf862de7e19aad7250cf2ace8c431">solve</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *initial_condition_override=nullptr, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step={})</td></tr>
+<tr class="memdesc:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the variational formulation and store the solution in the given matrix.  <br /></td></tr>
+<tr class="separator:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ae2d3fa777d70670eff70e269550e7 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a54ae2d3fa777d70670eff70e269550e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a54ae2d3fa777d70670eff70e269550e7">set_time_callback</a> (const std::function&lt; void(int, int, double, double)&gt; &amp;callback)</td></tr>
 <tr class="separator:a54ae2d3fa777d70670eff70e269550e7 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e8e86b5349866a95738d5950732b4bd inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a6e8e86b5349866a95738d5950732b4bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a6e8e86b5349866a95738d5950732b4bd">problem_dimension</a> () const</td></tr>
@@ -203,7 +202,26 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a6ed7a703ac5565f95b97ee18c2c647c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fd06063f5b63be1fe777b981f21bf33" id="r_a7fd06063f5b63be1fe777b981f21bf33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33">assemble_mass_mat</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac0b26aef4fc50f8ce54ab37cdd5fd7f1">args</a>) override</td></tr>
 <tr class="separator:a7fd06063f5b63be1fe777b981f21bf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9324a65160289708b95233d8c7e54bf5" id="r_a9324a65160289708b95233d8c7e54bf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a9324a65160289708b95233d8c7e54bf5">build_rhs_assembler</a> () override</td></tr>
+<tr class="separator:a9324a65160289708b95233d8c7e54bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaacd2e53c4665b4cdf1e5b6de5a8318d" id="r_aaacd2e53c4665b4cdf1e5b6de5a8318d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#aaacd2e53c4665b4cdf1e5b6de5a8318d">prepare_initial_solution</a> (Eigen::MatrixXd &amp;solution) const</td></tr>
+<tr class="separator:aaacd2e53c4665b4cdf1e5b6de5a8318d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eaf4fcfdf4044ebf66006f25d8011be" id="r_a8eaf4fcfdf4044ebf66006f25d8011be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a8eaf4fcfdf4044ebf66006f25d8011be">build_stiffness_mat</a> (<a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness)</td></tr>
+<tr class="separator:a8eaf4fcfdf4044ebf66006f25d8011be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36e2b6652679f57a668c9f45d11b105d" id="r_a36e2b6652679f57a668c9f45d11b105d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a36e2b6652679f57a668c9f45d11b105d">solve_problem</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *initial_condition_override, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step) override</td></tr>
+<tr class="separator:a36e2b6652679f57a668c9f45d11b105d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa48b2ab00bdd8cd5da3a2e8d5cb5077c" id="r_aa48b2ab00bdd8cd5da3a2e8d5cb5077c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#aa48b2ab00bdd8cd5da3a2e8d5cb5077c">solve_linear_system</a> (const std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;A, Eigen::VectorXd &amp;b, const bool compute_spectrum, Eigen::MatrixXd &amp;sol)</td></tr>
+<tr class="separator:aa48b2ab00bdd8cd5da3a2e8d5cb5077c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed9f2d9ae3b269cf02fa6c608c43147" id="r_a4ed9f2d9ae3b269cf02fa6c608c43147"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a4ed9f2d9ae3b269cf02fa6c608c43147">solve_linear_system_with_constraints</a> (const std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;A, Eigen::VectorXd &amp;b, const bool compute_spectrum, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;boundary_samples, const double time, Eigen::MatrixXd &amp;sol)</td></tr>
+<tr class="separator:a4ed9f2d9ae3b269cf02fa6c608c43147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6e6243eda7bb5679e44940934956810" id="r_ab6e6243eda7bb5679e44940934956810"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#ab6e6243eda7bb5679e44940934956810">solve_static</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step)</td></tr>
+<tr class="separator:ab6e6243eda7bb5679e44940934956810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7bdf79a3dd1ebc7fe8e1e463505ba31" id="r_ab7bdf79a3dd1ebc7fe8e1e463505ba31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#ab7bdf79a3dd1ebc7fe8e1e463505ba31">solve_transient</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step)</td></tr>
+<tr class="separator:ab7bdf79a3dd1ebc7fe8e1e463505ba31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
+<tr class="memitem:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a20554bf4a4a5446d4266e763fcf09735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a20554bf4a4a5446d4266e763fcf09735">prepare</a> ()</td></tr>
+<tr class="memdesc:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare all discretization and assembly data without running a solve.  <br /></td></tr>
+<tr class="separator:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa94006c70b30b95c1c899a3f1be43d2d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aa94006c70b30b95c1c899a3f1be43d2d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aa94006c70b30b95c1c899a3f1be43d2d">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
 <tr class="separator:aa94006c70b30b95c1c899a3f1be43d2d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f7c7381cee9ee4faf99c8273f92b4ef inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a1f7c7381cee9ee4faf99c8273f92b4ef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a1f7c7381cee9ee4faf99c8273f92b4ef">resolve_input_path</a> (const std::string &amp;path, const bool only_if_exists=false) const</td></tr>
@@ -214,8 +232,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a54777d3d3f82d73fe7a484f534e8c363 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6c3e1e0c70b1e70c6e53536b3ce721e inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_af6c3e1e0c70b1e70c6e53536b3ce721e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#af6c3e1e0c70b1e70c6e53536b3ce721e">assign_discr_orders</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;space_args, const int fe_space_id, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::VectorXi &amp;disc_orders, Eigen::VectorXi &amp;disc_ordersq)</td></tr>
 <tr class="separator:af6c3e1e0c70b1e70c6e53536b3ce721e inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a20554bf4a4a5446d4266e763fcf09735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a20554bf4a4a5446d4266e763fcf09735">prepare</a> ()</td></tr>
-<tr class="separator:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9034a1c80ba93d8963da92c28c819a5b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a9034a1c80ba93d8963da92c28c819a5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a9034a1c80ba93d8963da92c28c819a5b">n_boundary_samples</a> (const int discr_order, const int discr_orderq, const int gdiscr_order) const</td></tr>
 <tr class="separator:a9034a1c80ba93d8963da92c28c819a5b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4390de8b27f02cfe214e53d00889158 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aa4390de8b27f02cfe214e53d00889158"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aa4390de8b27f02cfe214e53d00889158">build_fe_space</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool iso_parametric, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const std::string &amp;basis_type, const std::string &amp;poly_basis_type, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;space_assembler, const int value_dim, const int quadrature_order, const int mass_quadrature_order, const bool use_corner_quadrature, const int n_harmonic_samples, const int integral_constraints, <a class="el" href="classpolyfem_1_1varform_1_1_f_e_space.html">FESpace</a> &amp;space, <a class="el" href="structpolyfem_1_1varform_1_1_var_form_boundary_state.html">VarFormBoundaryState</a> &amp;boundary, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_geometry_mapping.html">GeometryMapping</a> &gt; geometry=nullptr)</td></tr>
@@ -241,27 +257,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a81492d606792c300663ccfb2ae377d28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">io::OutputFieldFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81492d606792c300663ccfb2ae377d28">output_field_function</a> (const Eigen::MatrixXd &amp;solution, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">io::OutGeometryData::ExportOptions</a> &amp;opts) const</td></tr>
 <tr class="separator:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
-Private Member Functions</h2></td></tr>
-<tr class="memitem:a9324a65160289708b95233d8c7e54bf5" id="r_a9324a65160289708b95233d8c7e54bf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a9324a65160289708b95233d8c7e54bf5">build_rhs_assembler</a> () override</td></tr>
-<tr class="separator:a9324a65160289708b95233d8c7e54bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaacd2e53c4665b4cdf1e5b6de5a8318d" id="r_aaacd2e53c4665b4cdf1e5b6de5a8318d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#aaacd2e53c4665b4cdf1e5b6de5a8318d">prepare_initial_solution</a> (Eigen::MatrixXd &amp;solution) const</td></tr>
-<tr class="separator:aaacd2e53c4665b4cdf1e5b6de5a8318d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eaf4fcfdf4044ebf66006f25d8011be" id="r_a8eaf4fcfdf4044ebf66006f25d8011be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a8eaf4fcfdf4044ebf66006f25d8011be">build_stiffness_mat</a> (<a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness)</td></tr>
-<tr class="separator:a8eaf4fcfdf4044ebf66006f25d8011be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a1eae4f7c62f34177ac8f72128c4f9b" id="r_a7a1eae4f7c62f34177ac8f72128c4f9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a7a1eae4f7c62f34177ac8f72128c4f9b">solve_problem</a> (Eigen::MatrixXd &amp;sol) override</td></tr>
-<tr class="separator:a7a1eae4f7c62f34177ac8f72128c4f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa48b2ab00bdd8cd5da3a2e8d5cb5077c" id="r_aa48b2ab00bdd8cd5da3a2e8d5cb5077c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#aa48b2ab00bdd8cd5da3a2e8d5cb5077c">solve_linear_system</a> (const std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;A, Eigen::VectorXd &amp;b, const bool compute_spectrum, Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="separator:aa48b2ab00bdd8cd5da3a2e8d5cb5077c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ed9f2d9ae3b269cf02fa6c608c43147" id="r_a4ed9f2d9ae3b269cf02fa6c608c43147"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a4ed9f2d9ae3b269cf02fa6c608c43147">solve_linear_system_with_constraints</a> (const std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;A, Eigen::VectorXd &amp;b, const bool compute_spectrum, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;boundary_samples, const double time, Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="separator:a4ed9f2d9ae3b269cf02fa6c608c43147"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a3c059512bdba90cf36505eb133f8ae" id="r_a7a3c059512bdba90cf36505eb133f8ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a7a3c059512bdba90cf36505eb133f8ae">solve_static</a> (Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="separator:a7a3c059512bdba90cf36505eb133f8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a872cf50621bd2d89feb240d2a26ada98" id="r_a872cf50621bd2d89feb240d2a26ada98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a872cf50621bd2d89feb240d2a26ada98">solve_transient</a> (Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="separator:a872cf50621bd2d89feb240d2a26ada98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
-Private Attributes</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
 <tr class="memitem:a89e2bd841e13810b440063f53be708ec" id="r_a89e2bd841e13810b440063f53be708ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1varform_1_1_f_e_space.html">FESpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a89e2bd841e13810b440063f53be708ec">space_</a></td></tr>
 <tr class="separator:a89e2bd841e13810b440063f53be708ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a647e4f4878515968984afb9be14c12fd" id="r_a647e4f4878515968984afb9be14c12fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpolyfem_1_1varform_1_1_var_form_boundary_state.html">VarFormBoundaryState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a647e4f4878515968984afb9be14c12fd">boundary_</a></td></tr>
@@ -288,6 +285,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a3324522eeca2ae50ae5961489a472777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a176a8625e1963d116c7855b63be035fd" id="r_a176a8625e1963d116c7855b63be035fd"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_h_r_z_mass.html">assembler::HRZMass</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a176a8625e1963d116c7855b63be035fd">pure_mass_assembler_</a> = nullptr</td></tr>
 <tr class="separator:a176a8625e1963d116c7855b63be035fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4294ab5b14ffac39d7f8266f2a7af5" id="r_abe4294ab5b14ffac39d7f8266f2a7af5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#abe4294ab5b14ffac39d7f8266f2a7af5">solve_data_</a></td></tr>
+<tr class="separator:abe4294ab5b14ffac39d7f8266f2a7af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08991525920b71d49382fdd6108c1c73" id="r_a08991525920b71d49382fdd6108c1c73"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a08991525920b71d49382fdd6108c1c73">t0</a> = 0</td></tr>
 <tr class="separator:a08991525920b71d49382fdd6108c1c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2afdf6ce78e34afa5877fd0f3ead3739" id="r_a2afdf6ce78e34afa5877fd0f3ead3739"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a2afdf6ce78e34afa5877fd0f3ead3739">time_steps</a> = 0</td></tr>
@@ -296,19 +295,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aee17e2a1d349c9cda004baacdc8ebd11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a332f3a5ebab34638cda183d65984e3" id="r_a1a332f3a5ebab34638cda183d65984e3"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a1a332f3a5ebab34638cda183d65984e3">time_integrator</a></td></tr>
 <tr class="separator:a1a332f3a5ebab34638cda183d65984e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:ad17e1540d6687d998c9f8fd5f4696c62" id="r_ad17e1540d6687d998c9f8fd5f4696c62"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62">polyfem::test::VarFormTestAccess</a></td></tr>
-<tr class="separator:ad17e1540d6687d998c9f8fd5f4696c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
-<tr class="memitem:a668c18fa074c78fc53177e39616c175e inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a668c18fa074c78fc53177e39616c175e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a668c18fa074c78fc53177e39616c175e">read_initial_x_from_file</a> (const std::string &amp;state_path, const std::string &amp;x_name, const bool reorder, const Eigen::VectorXi &amp;in_node_to_node, const int dim, Eigen::MatrixXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a668c18fa074c78fc53177e39616c175e inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a25b2ecc05f22686e33c81a9ae03729f3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a25b2ecc05f22686e33c81a9ae03729f3">rebuild_node_positions</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; int &gt; &amp;node_ids, std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;positions)</td></tr>
-<tr class="separator:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
 <tr class="memitem:a26217cca68b3985499fd3a7c3e4e2843 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a26217cca68b3985499fd3a7c3e4e2843"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a26217cca68b3985499fd3a7c3e4e2843">problem</a></td></tr>
 <tr class="memdesc:a26217cca68b3985499fd3a7c3e4e2843 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">current problem, it contains rhs and bc  <br /></td></tr>
@@ -336,10 +322,23 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a76c3561877fd82034b666a00df46c22b inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a81f258e8e3dd396ad29ecb70164ff060"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81f258e8e3dd396ad29ecb70164ff060">prepared_</a> = false</td></tr>
 <tr class="separator:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ad17e1540d6687d998c9f8fd5f4696c62" id="r_ad17e1540d6687d998c9f8fd5f4696c62"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_scalar_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62">polyfem::test::VarFormTestAccess</a></td></tr>
+<tr class="separator:ad17e1540d6687d998c9f8fd5f4696c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
+<tr class="memitem:a668c18fa074c78fc53177e39616c175e inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a668c18fa074c78fc53177e39616c175e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a668c18fa074c78fc53177e39616c175e">read_initial_x_from_file</a> (const std::string &amp;state_path, const std::string &amp;x_name, const bool reorder, const Eigen::VectorXi &amp;in_node_to_node, const int dim, Eigen::MatrixXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a668c18fa074c78fc53177e39616c175e inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a25b2ecc05f22686e33c81a9ae03729f3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a25b2ecc05f22686e33c81a9ae03729f3">rebuild_node_positions</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; int &gt; &amp;node_ids, std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;positions)</td></tr>
+<tr class="separator:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00014">14</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00017">17</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7fd06063f5b63be1fe777b981f21bf33" name="a7fd06063f5b63be1fe777b981f21bf33"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7fd06063f5b63be1fe777b981f21bf33">&#9670;&#160;</a></span>assemble_mass_mat()</h2>
@@ -377,9 +376,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a775eca87ec2649919081afd9b33311cc">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">280</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">284</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00029">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">avg_mass_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00029">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">avg_mass_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::mat_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::nn_zero</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00072">polyfem::io::OutStatsData::num_dofs</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00218">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00221">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -414,9 +413,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#abefa09bb69d315d9131bf3eaf0dab27f">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">249</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">253</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_stats_data_8hpp_source.html#l00031">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">rhs_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::root_path</a>, and <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_out_stats_data_8hpp_source.html#l00031">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh::bounding_box()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">rhs_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00223">polyfem::varform::VarForm::root_path</a>, and <a class="el" href="_var_form_8hpp_source.html#l00221">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -467,9 +466,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a78d1f942567289b1e39b6b557077b9ab">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">113</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">116</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00044">ass_vals_cache_</a>, <a class="el" href="_var_form_8cpp_source.html#l00743">polyfem::varform::VarForm::assign_discr_orders()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00043">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_var_form_8cpp_source.html#l00320">polyfem::varform::VarForm::build_fe_space()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00165">polyfem::varform::VarFormBoundaryState::clear_boundary_conditions()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02702">polyfem::io::OutStatsData::compute_mesh_size()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02785">polyfem::io::OutStatsData::count_flipped_elements()</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f">polyfem::assembler::Dirichlet</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00155">polyfem::varform::VarFormBoundaryState::local_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00156">polyfem::varform::VarFormBoundaryState::local_neumann_boundary</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00061">polyfem::io::OutStatsData::mesh_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00080">polyfem::io::OutStatsData::n_flipped</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152">polyfem::assembler::Neumann</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00179">polyfem::varform::VarFormBoundaryState::normalize_boundary_nodes()</a>, <a class="el" href="_a_priori_8cpp_source.html#l00242">polyfem::refinement::APriori::p_refine()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">pure_mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00055">pure_mass_assembler_</a>, <a class="el" href="_var_form_8cpp_source.html#l01117">polyfem::varform::VarForm::rebuild_node_positions()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::stats</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>, and <a class="el" href="_mesh_8cpp_source.html#l00456">polyfem::mesh::Mesh::update_nodes()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">ass_vals_cache_</a>, <a class="el" href="_var_form_8cpp_source.html#l00745">polyfem::varform::VarForm::assign_discr_orders()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00153">polyfem::varform::VarFormBoundaryState::boundary_nodes</a>, <a class="el" href="_var_form_8cpp_source.html#l00319">polyfem::varform::VarForm::build_fe_space()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00165">polyfem::varform::VarFormBoundaryState::clear_boundary_conditions()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02702">polyfem::io::OutStatsData::compute_mesh_size()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02785">polyfem::io::OutStatsData::count_flipped_elements()</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f">polyfem::assembler::Dirichlet</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00155">polyfem::varform::VarFormBoundaryState::local_boundary</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00156">polyfem::varform::VarFormBoundaryState::local_neumann_boundary</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00061">polyfem::io::OutStatsData::mesh_size</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_out_stats_data_8hpp_source.html#l00080">polyfem::io::OutStatsData::n_flipped</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152">polyfem::assembler::Neumann</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00179">polyfem::varform::VarFormBoundaryState::normalize_boundary_nodes()</a>, <a class="el" href="_a_priori_8cpp_source.html#l00242">polyfem::refinement::APriori::p_refine()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00049">pure_mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">pure_mass_assembler_</a>, <a class="el" href="_var_form_8cpp_source.html#l01119">polyfem::varform::VarForm::rebuild_node_positions()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_var_form_8hpp_source.html#l00218">polyfem::varform::VarForm::stats</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>, and <a class="el" href="_mesh_8cpp_source.html#l00456">polyfem::mesh::Mesh::update_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -496,18 +495,18 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a49714e3ac11d29d8d710cc97405f60b1">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">232</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">235</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00043">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">mass_ass_vals_cache_</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">rhs_assembler_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_ass_vals_cache_</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00162">polyfem::varform::VarFormBoundaryState::neumann_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00163">polyfem::varform::VarFormBoundaryState::neumann_nodes_position</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_solve_data_8hpp_source.html#l00174">polyfem::solver::SolveData::rhs_assembler</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">solve_data_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">assemble_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">assemble_rhs()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -540,12 +539,12 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00669">669</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00673">673</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_var_form_utils_8hpp_source.html#l00097">polyfem::varform::internal::write_matrix_market()</a>.</p>
 <div class="dynheader">
@@ -585,9 +584,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a46b80cd359dd6c0791390959a7753085">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00400">400</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00404">404</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02830">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, and <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::stats</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02830">polyfem::io::OutStatsData::compute_errors()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, and <a class="el" href="_var_form_8hpp_source.html#l00218">polyfem::varform::VarForm::stats</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -622,9 +621,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a3e82691900c4d00607a30b907b2c500c">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00413">413</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00417">417</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00361">polyfem::io::Evaluator::compute_stress_at_quadrature_points()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00882">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02073">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_var_form_8cpp_source.html#l00896">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8cpp_source.html#l00905">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00211">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00375">output_space()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l01108">polyfem::varform::VarForm::resolve_output_path()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00361">polyfem::io::Evaluator::compute_stress_at_quadrature_points()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00063">dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00884">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02073">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_var_form_8cpp_source.html#l00898">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_output_data_8hpp_source.html#l00077">polyfem::io::OutputSpace::mesh</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_var_form_8cpp_source.html#l00907">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00230">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00379">output_space()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l01110">polyfem::varform::VarForm::resolve_output_path()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -692,9 +691,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac1311771ee2986e9ff8eb12d7cb83860">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">63</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">66</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">dt</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00022">polyfem::problem::ProblemFactory::factory()</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00084">polyfem::problem::ProblemFactory::get_problem()</a>, <a class="el" href="_var_form_8cpp_source.html#l00277">polyfem::varform::VarForm::init()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00058">polyfem::assembler::AssemblerUtils::make_assembler()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00055">pure_mass_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00204">polyfem::varform::VarForm::root_path</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">t0</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">time_steps</a>, and <a class="el" href="_var_form_8hpp_source.html#l00196">polyfem::varform::VarForm::units</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00063">dt</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00022">polyfem::problem::ProblemFactory::factory()</a>, <a class="el" href="_problem_factory_8cpp_source.html#l00084">polyfem::problem::ProblemFactory::get_problem()</a>, <a class="el" href="_var_form_8cpp_source.html#l00276">polyfem::varform::VarForm::init()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00058">polyfem::assembler::AssemblerUtils::make_assembler()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">pure_mass_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00223">polyfem::varform::VarForm::root_path</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00061">t0</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">time_steps</a>, and <a class="el" href="_var_form_8hpp_source.html#l00215">polyfem::varform::VarForm::units</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -739,9 +738,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a6c548dd57b1a40789073dc462c0ae30b">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00104">104</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00107">107</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00055">pure_mass_assembler_</a>, and <a class="el" href="_var_form_8cpp_source.html#l00867">polyfem::varform::VarForm::set_materials()</a>.</p>
+<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">pure_mass_assembler_</a>, and <a class="el" href="_var_form_8cpp_source.html#l00869">polyfem::varform::VarForm::set_materials()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -778,13 +777,13 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00019">19</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00022">22</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00346">save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00005">polyfem::varform::DifferentiableScalarVarForm::name()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00350">save_json()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a45a4eac1bb5650325a9a0b125cada3ae_icgraph.svg" width="427" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a45a4eac1bb5650325a9a0b125cada3ae_icgraph.svg" width="476" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -842,9 +841,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#adf2e3f4a9b321e0c3e9712a540487dcb">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00496">496</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00500">500</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_jacobian_8cpp_source.html#l00122">polyfem::utils::count_invalid()</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00056">polyfem::io::OutputFieldOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00689">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_output_data_8hpp_source.html#l00051">polyfem::io::OutputSample::node_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00050">polyfem::io::OutputSample::primitive_ids</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, and <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00109">polyfem::varform::FESpace::basis_list()</a>, <a class="el" href="_jacobian_8cpp_source.html#l00122">polyfem::utils::count_invalid()</a>, <a class="el" href="_output_data_8hpp_source.html#l00049">polyfem::io::OutputSample::element_ids</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00056">polyfem::io::OutputFieldOptions::export_field()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00689">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_output_data_8hpp_source.html#l00048">polyfem::io::OutputSample::local_points</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_output_data_8hpp_source.html#l00051">polyfem::io::OutputSample::node_ids</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_output_data_8hpp_source.html#l00050">polyfem::io::OutputSample::primitive_ids</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, and <a class="el" href="_output_data_8hpp_source.html#l00056">polyfem::io::OutputSample::time</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -881,11 +880,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a3a03b1c1c55ff634ec6472daf851a58f">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00375">375</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00379">379</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00043">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00080">polyfem::varform::FESpace::polys</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00083">polyfem::varform::FESpace::polys_3d</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>.</p>
+<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">boundary_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00160">polyfem::varform::VarFormBoundaryState::dirichlet_nodes</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00161">polyfem::varform::VarFormBoundaryState::dirichlet_nodes_position</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00115">polyfem::varform::FESpace::geometry_basis_list()</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00080">polyfem::varform::FESpace::polys</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00083">polyfem::varform::FESpace::polys_3d</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00154">polyfem::varform::VarFormBoundaryState::total_local_boundary</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00413">export_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00417">export_data()</a>, and <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00024">polyfem::varform::DifferentiableScalarVarForm::save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -894,7 +893,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_aee3b9aa4a06b5bcf8513fbcff34ecb84_icgraph.svg" width="427" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_aee3b9aa4a06b5bcf8513fbcff34ecb84_icgraph.svg" width="476" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -918,14 +917,14 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00325">325</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00329">329</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l00039">polyfem::varform::VarForm::read_initial_x_from_file()</a>, <a class="el" href="_var_form_8cpp_source.html#l01103">polyfem::varform::VarForm::resolve_input_path()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="_var_form_8cpp_source.html#l00038">polyfem::varform::VarForm::read_initial_x_from_file()</a>, <a class="el" href="_var_form_8cpp_source.html#l01105">polyfem::varform::VarForm::resolve_input_path()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, and <a class="el" href="_f_e_space_8hpp_source.html#l00091">polyfem::varform::FESpace::space_in_node_to_node</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -959,9 +958,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#afa6a94e0d1ec698fa6f7ff762bf27718">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">41</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">43</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00044">ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">avg_mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00043">boundary_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">dt</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00049">pure_mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">pure_mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00055">pure_mass_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00122">polyfem::varform::FESpace::reset()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00185">polyfem::varform::VarFormBoundaryState::reset()</a>, <a class="el" href="_var_form_8cpp_source.html#l00265">polyfem::varform::VarForm::reset()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">t0</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00083">time_integrator</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">time_steps</a>.</p>
+<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">avg_mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">boundary_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00063">dt</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00034">polyfem::assembler::AssemblyValsCache::init_empty()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">mass_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00052">pure_mass_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00049">pure_mass_ass_vals_cache_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">pure_mass_assembler_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00122">polyfem::varform::FESpace::reset()</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00185">polyfem::varform::VarFormBoundaryState::reset()</a>, <a class="el" href="_var_form_8cpp_source.html#l00264">polyfem::varform::VarForm::reset()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">rhs_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">solve_data_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00061">t0</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00090">time_integrator</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">time_steps</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1015,9 +1014,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aeabf8ab4b40f55256c46551840d94cc9">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00346">346</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00350">350</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00197">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00104">polyfem::varform::FESpace::is_iso_parametric()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_var_form_8hpp_source.html#l00207">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00019">name()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00195">polyfem::varform::VarForm::problem</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l03073">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00199">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00202">polyfem::varform::VarForm::timings</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00216">polyfem::varform::VarForm::args</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00071">polyfem::varform::FESpace::disc_orders</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00074">polyfem::varform::FESpace::disc_ordersq</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00104">polyfem::varform::FESpace::is_iso_parametric()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_var_form_8hpp_source.html#l00226">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="_f_e_space_8hpp_source.html#l00065">polyfem::varform::FESpace::n_bases</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00022">name()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">primary_assembler_</a>, <a class="el" href="_var_form_8hpp_source.html#l00214">polyfem::varform::VarForm::problem</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l03073">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">space_</a>, <a class="el" href="_var_form_8hpp_source.html#l00218">polyfem::varform::VarForm::stats</a>, and <a class="el" href="_var_form_8hpp_source.html#l00221">polyfem::varform::VarForm::timings</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1073,12 +1072,12 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00691">691</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00695">695</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
@@ -1148,12 +1147,12 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00725">725</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00729">729</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00776">polyfem::solver::NLProblem::full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00723">polyfem::solver::NLProblem::full_to_reduced_grad()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00063">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">weights</a>.</p>
 <div class="dynheader">
@@ -1164,8 +1163,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a7a1eae4f7c62f34177ac8f72128c4f9b" name="a7a1eae4f7c62f34177ac8f72128c4f9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a1eae4f7c62f34177ac8f72128c4f9b">&#9670;&#160;</a></span>solve_problem()</h2>
+<a id="a36e2b6652679f57a668c9f45d11b105d" name="a36e2b6652679f57a668c9f45d11b105d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36e2b6652679f57a668c9f45d11b105d">&#9670;&#160;</a></span>solve_problem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1177,32 +1176,48 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::varform::ScalarVarForm::solve_problem </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em></td><td>)</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *&#160;</td>
+          <td class="paramname"><em>initial_condition_override</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;&#160;</td>
+          <td class="paramname"><em>post_step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a1084ac626f90fe0123b1a3ac4b936228">polyfem::varform::VarForm</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a9b461af2bb4fe5af89f4b6976d3d798a">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00912">912</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00937">937</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00045">polyfem::varform::InitialConditionOverride::acceleration</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_var_form_8hpp_source.html#l00043">polyfem::varform::InitialConditionOverride::solution</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_var_form_8hpp_source.html#l00044">polyfem::varform::InitialConditionOverride::velocity</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a7a1eae4f7c62f34177ac8f72128c4f9b_cgraph.svg" width="368" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a36e2b6652679f57a668c9f45d11b105d_cgraph.svg" width="368" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a7a3c059512bdba90cf36505eb133f8ae" name="a7a3c059512bdba90cf36505eb133f8ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a3c059512bdba90cf36505eb133f8ae">&#9670;&#160;</a></span>solve_static()</h2>
+<a id="ab6e6243eda7bb5679e44940934956810" name="ab6e6243eda7bb5679e44940934956810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6e6243eda7bb5679e44940934956810">&#9670;&#160;</a></span>solve_static()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1214,30 +1229,40 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::varform::ScalarVarForm::solve_static </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em></td><td>)</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;&#160;</td>
+          <td class="paramname"><em>post_step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00838">838</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00842">842</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a7a3c059512bdba90cf36505eb133f8ae_cgraph.svg" width="368" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_ab6e6243eda7bb5679e44940934956810_cgraph.svg" width="368" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a872cf50621bd2d89feb240d2a26ada98" name="a872cf50621bd2d89feb240d2a26ada98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a872cf50621bd2d89feb240d2a26ada98">&#9670;&#160;</a></span>solve_transient()</h2>
+<a id="ab7bdf79a3dd1ebc7fe8e1e463505ba31" name="ab7bdf79a3dd1ebc7fe8e1e463505ba31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7bdf79a3dd1ebc7fe8e1e463505ba31">&#9670;&#160;</a></span>solve_transient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1249,24 +1274,34 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::varform::ScalarVarForm::solve_transient </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em></td><td>)</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;&#160;</td>
+          <td class="paramname"><em>post_step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00859">859</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8cpp_source.html#l00880">880</a> of file <a class="el" href="_scalar_var_form_8cpp_source.html">ScalarVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00097">polyfem::time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_a872cf50621bd2d89feb240d2a26ada98_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_scalar_var_form_ab7bdf79a3dd1ebc7fe8e1e463505ba31_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1292,7 +1327,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00016">16</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00019">19</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -1312,14 +1347,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00044">44</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00088">polyfem::varform::DifferentiableScalarVarForm::assembly_cache()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1338,14 +1373,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">50</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">53</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">assemble_mass_mat()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">assemble_mass_mat()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1364,14 +1399,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00043">43</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00375">output_space()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00074">polyfem::varform::DifferentiableScalarVarForm::boundary_state()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00379">output_space()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1390,14 +1425,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00063">63</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00413">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00417">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>, and <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00024">polyfem::varform::DifferentiableScalarVarForm::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -1416,14 +1451,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">51</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">assemble_mass_mat()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">assemble_mass_mat()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00090">polyfem::varform::DifferentiableScalarVarForm::mass_matrix()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1442,14 +1477,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00089">polyfem::varform::DifferentiableScalarVarForm::mass_assembly_cache()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1468,14 +1503,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">54</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00104">load_mesh()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00107">load_mesh()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00082">polyfem::varform::DifferentiableScalarVarForm::mass_assembler()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1494,14 +1529,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">53</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00056">56</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00413">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00104">load_mesh()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00346">save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00417">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00107">load_mesh()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00076">polyfem::varform::DifferentiableScalarVarForm::primary_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00350">save_json()</a>.</p>
 
 </div>
 </div>
@@ -1520,14 +1555,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00052">52</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1546,14 +1581,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1572,14 +1607,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">58</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00104">load_mesh()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00107">load_mesh()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1598,14 +1633,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00051">51</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00054">54</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00325">prepare_initial_solution()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00329">prepare_initial_solution()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1624,14 +1659,40 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00050">50</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00249">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00325">prepare_initial_solution()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00253">assemble_rhs()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00100">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00109">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00329">prepare_initial_solution()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
+
+</div>
+</div>
+<a id="abe4294ab5b14ffac39d7f8266f2a7af5" name="abe4294ab5b14ffac39d7f8266f2a7af5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4294ab5b14ffac39d7f8266f2a7af5">&#9670;&#160;</a></span>solve_data_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a> polyfem::varform::ScalarVarForm::solve_data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00100">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00109">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00092">polyfem::varform::DifferentiableScalarVarForm::solve_data()</a>, and <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00091">polyfem::varform::DifferentiableScalarVarForm::solve_data()</a>.</p>
 
 </div>
 </div>
@@ -1650,14 +1711,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00042">42</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00280">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00113">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00232">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00400">compute_errors()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00413">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00496">output_fields()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00375">output_space()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00325">prepare_initial_solution()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00346">save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00284">assemble_mass_mat()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00116">build_basis()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00235">build_rhs_assembler()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00404">compute_errors()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00417">export_data()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00500">output_fields()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00379">output_space()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00329">prepare_initial_solution()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00073">polyfem::varform::DifferentiableScalarVarForm::primary_space()</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00350">save_json()</a>.</p>
 
 </div>
 </div>
@@ -1676,14 +1737,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00061">61</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1702,14 +1763,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00100">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00109">polyfem::varform::DifferentiableScalarVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>
@@ -1728,14 +1789,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00058">58</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">62</a> of file <a class="el" href="_scalar_var_form_8hpp_source.html">ScalarVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00063">init()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00041">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_scalar_var_form_8cpp_source.html#l00066">init()</a>, and <a class="el" href="_scalar_var_form_8cpp_source.html#l00043">reset()</a>.</p>
 
 </div>
 </div>

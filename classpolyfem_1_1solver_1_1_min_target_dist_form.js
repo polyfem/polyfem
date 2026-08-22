@@ -1,8 +1,8 @@
 var classpolyfem_1_1solver_1_1_min_target_dist_form =
 [
-    [ "MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#a11c2e23e4bfd9c28b8d7caf2ce0db96e", null ],
+    [ "MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#ae4430d999855b4a4d3b5f0812af9dfd6", null ],
     [ "~MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#a9c917129057a02bcc18cc633bb7b7f7f", null ],
-    [ "compute_adjoint_rhs", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#a9f7ccea42402d5cdb1c93d1ed96e73e1", null ],
+    [ "compute_adjoint_rhs", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#ab66e5fdbd23ce819f176b67b3da7b1c7", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#a325f3cb549665f3623bec804d9e8ad82", null ],
     [ "eval2", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#a0a74a09cc881b67e7c21f51f357fd655", null ],
     [ "eval2_grad", "classpolyfem_1_1solver_1_1_min_target_dist_form.html#ad6e13b5bb5b523193fae3340e29b3c36", null ],

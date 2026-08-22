@@ -3,7 +3,7 @@ var classpolyfem_1_1varform_1_1_navier_stokes_var_form =
     [ "build_forms", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a0402fa002962f881a1a1edbaeb44733d", null ],
     [ "name", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a4299fd6a452e49eca099998892bbd9b2", null ],
     [ "solve_nonlinear_step", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#acdd0076b200b225c848ae37a0f7db95b", null ],
-    [ "solve_problem", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#acd2af95f5b1407a1bfb6a71106847677", null ],
+    [ "solve_problem", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a60bed85afcc4df33b083f48742839d02", null ],
     [ "update_transient_form_weights", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a54eeca0221af2de9c419698d4842e441", null ],
     [ "al_forms_", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#af628d65d342e4ccc9f54789e99a62279", null ],
     [ "average_pressure_form_", "classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a7ddfda8baea79635e43e979e628d1052", null ],

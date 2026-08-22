@@ -2,7 +2,7 @@ var classpolyfem_1_1_state =
 [
     [ "State", "classpolyfem_1_1_state.html#a7ea2ea7e63cd4551c91179074321d60b", null ],
     [ "~State", "classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4", null ],
-    [ "init", "classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4", null ],
+    [ "init", "classpolyfem_1_1_state.html#a3b4065aa5d0563c8101a7ca757649765", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#ae358e188d7a615e5599fa603ec05f72a", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#a4a235688d76d5d47e6af9b3ef9aff0f0", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#acaa1229f1ede8d832e273e685588432b", null ],

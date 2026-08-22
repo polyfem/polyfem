@@ -17,7 +17,7 @@ var classpolyfem_1_1varform_1_1_bilaplacian_var_form =
     [ "reset", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a454845b180ebe0c48cd229d7587e4ec5", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a0cea4f98c7867ab16b0f36c4a72e1c70", null ],
     [ "solve_linear_system", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#ac790b6bf01fae4387cd23dddc0ff897b", null ],
-    [ "solve_problem", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a29a65aaf7df8993148a03ebfd6bf7f68", null ],
+    [ "solve_problem", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#ac0bb134e7a26419f11aeeca1debe70ad", null ],
     [ "solve_static_linear", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a1b5ede05b6e7b007318bc7804c0ee7be", null ],
     [ "solve_transient_linear", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a60d377a905cd837d18bb19fcfa20f5ae", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#ac7659a89d70fdb38dc3ce9ea65b5db25", null ],

@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a12a27397c72145199a0824ed51ece39b", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a7e9af4c19988b775cdc056d321b7d929", null ],
-    [ "InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a97e1aaada3683ac9214aa07aff17a18d", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa886d403ee3853c31d043e78ec3f9fe6", null ],
+    [ "VarFormPtrs", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a1fe1f5fb90cc14bf8291087c7273faba", null ],
+    [ "InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a58c9a0288cb07db87ede495c67c2b593", null ],
+    [ "affects_varform", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a7ac68730441e5329255e6a2d6bd658f1", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a69fd44c14a3d1d40335dc0bd1610f053", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a362b5b788dad19c69ecdc855e8c0af65", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a34affb3780a8053fa5ade4fb7519246b", null ],
@@ -17,5 +17,5 @@ var classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation =
     [ "diff_caches_", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a9d24546532353bd0a7bc5b92e2799d74", null ],
     [ "dof_num_", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#a623eefe312280aefc30f89f4209b0551", null ],
     [ "parametrization_", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#afeba01099946e528e12ac16b9c39d35b", null ],
-    [ "states_", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#af38ab65b5f1ecc1acddf4a17e828f58f", null ]
+    [ "varforms_", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html#aa83b96030cb7d1dd40d49c101b090d11", null ]
 ];

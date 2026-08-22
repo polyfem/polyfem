@@ -16,7 +16,7 @@ var classpolyfem_1_1varform_1_1_operator_splitting_var_form =
     [ "primary_ndof", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a8fe11c5d63d7e06cfbefc6d15ad40bd5", null ],
     [ "reset", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a701cc6fbd71ab83685407e8332e9cf6a", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a1dfde857c6ef83067e22f035d10f0346", null ],
-    [ "solve_problem", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ac3e5ed53eb03e0b85f4da3686fa7447f", null ],
+    [ "solve_problem", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ac75b5945f39996f6d5b617846ff52d87", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a175692b0bbb401b5302181351eee588d", null ],
     [ "stack_solution", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ab8bac6a665798a7b19216f2e321dcfd6", null ],
     [ "stacked_ndof", "classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#aba84c02d1c22fe0ac40a9539dfc26189", null ],

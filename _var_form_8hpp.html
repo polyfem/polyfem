@@ -121,12 +121,12 @@ $(document).ready(function(){initNavTree('_var_form_8hpp.html',''); initResizabl
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">VarForm.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_assembler_8hpp_source.html">polyfem/assembler/Assembler.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_mass_8hpp_source.html">polyfem/assembler/Mass.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_problem_8hpp_source.html">polyfem/assembler/Problem.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_rhs_assembler_8hpp_source.html">polyfem/assembler/RhsAssembler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
@@ -140,10 +140,10 @@ $(document).ready(function(){initNavTree('_var_form_8hpp.html',''); initResizabl
 <code>#include &lt;<a class="el" href="_f_e_space_8hpp_source.html">polyfem/varforms/FESpace.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;iosfwd&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -161,6 +161,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">polyfem::varform::InitialConditionOverride</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -174,6 +176,11 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1varform" id="r_namespacepolyfem_1_1varform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html">polyfem::varform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a213fe561712fd8d6ce35d6bbc882d31c" id="r_a213fe561712fd8d6ce35d6bbc882d31c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">polyfem::varform::ForwardStepCallback</a> = std::function&lt; void(int step, const Eigen::MatrixXd &amp;solution)&gt;</td></tr>
+<tr class="separator:a213fe561712fd8d6ce35d6bbc882d31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -172,9 +172,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aafbe2e8d4a6af2fd3162b3befa55498c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aafbe2e8d4a6af2fd3162b3befa55498c">set_mesh</a> (std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &gt; mesh, const double loading_mesh_time=0)</td></tr>
 <tr class="memdesc:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the mesh for the variational formulation.  <br /></td></tr>
 <tr class="separator:aafbe2e8d4a6af2fd3162b3befa55498c inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a2d3ed9797e6e3b70640c54bc6e8dd03e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2d3ed9797e6e3b70640c54bc6e8dd03e">solve</a> (Eigen::MatrixXd &amp;sol)</td></tr>
-<tr class="memdesc:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the variational formulation and store the solution in the given matrix.  <br /></td></tr>
-<tr class="separator:a2d3ed9797e6e3b70640c54bc6e8dd03e inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a31aaf862de7e19aad7250cf2ace8c431"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a31aaf862de7e19aad7250cf2ace8c431">solve</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *initial_condition_override=nullptr, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step={})</td></tr>
+<tr class="memdesc:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the variational formulation and store the solution in the given matrix.  <br /></td></tr>
+<tr class="separator:a31aaf862de7e19aad7250cf2ace8c431 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ae2d3fa777d70670eff70e269550e7 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a54ae2d3fa777d70670eff70e269550e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a54ae2d3fa777d70670eff70e269550e7">set_time_callback</a> (const std::function&lt; void(int, int, double, double)&gt; &amp;callback)</td></tr>
 <tr class="separator:a54ae2d3fa777d70670eff70e269550e7 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e8e86b5349866a95738d5950732b4bd inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a6e8e86b5349866a95738d5950732b4bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a6e8e86b5349866a95738d5950732b4bd">problem_dimension</a> () const</td></tr>
@@ -192,8 +192,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:acd2af95f5b1407a1bfb6a71106847677" id="r_acd2af95f5b1407a1bfb6a71106847677"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#acd2af95f5b1407a1bfb6a71106847677">solve_problem</a> (Eigen::MatrixXd &amp;sol) override</td></tr>
-<tr class="separator:acd2af95f5b1407a1bfb6a71106847677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60bed85afcc4df33b083f48742839d02" id="r_a60bed85afcc4df33b083f48742839d02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a60bed85afcc4df33b083f48742839d02">solve_problem</a> (Eigen::MatrixXd &amp;sol, const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *initial_condition_override, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step) override</td></tr>
+<tr class="separator:a60bed85afcc4df33b083f48742839d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0402fa002962f881a1a1edbaeb44733d" id="r_a0402fa002962f881a1a1edbaeb44733d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#a0402fa002962f881a1a1edbaeb44733d">build_forms</a> (Eigen::MatrixXd &amp;sol, double t)</td></tr>
 <tr class="separator:a0402fa002962f881a1a1edbaeb44733d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdd0076b200b225c848ae37a0f7db95b" id="r_acdd0076b200b225c848ae37a0f7db95b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_navier_stokes_var_form.html#acdd0076b200b225c848ae37a0f7db95b">solve_nonlinear_step</a> (int step, Eigen::MatrixXd &amp;sol)</td></tr>
@@ -254,6 +254,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac2ef06b4552d0d2fac2753829dafb8ba inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form" id="r_ac2ef06b4552d0d2fac2753829dafb8ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html#ac2ef06b4552d0d2fac2753829dafb8ba">build_rhs_assembler</a> () override</td></tr>
 <tr class="separator:ac2ef06b4552d0d2fac2753829dafb8ba inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
+<tr class="memitem:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a20554bf4a4a5446d4266e763fcf09735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a20554bf4a4a5446d4266e763fcf09735">prepare</a> ()</td></tr>
+<tr class="memdesc:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare all discretization and assembly data without running a solve.  <br /></td></tr>
+<tr class="separator:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa94006c70b30b95c1c899a3f1be43d2d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aa94006c70b30b95c1c899a3f1be43d2d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aa94006c70b30b95c1c899a3f1be43d2d">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
 <tr class="separator:aa94006c70b30b95c1c899a3f1be43d2d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f7c7381cee9ee4faf99c8273f92b4ef inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a1f7c7381cee9ee4faf99c8273f92b4ef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a1f7c7381cee9ee4faf99c8273f92b4ef">resolve_input_path</a> (const std::string &amp;path, const bool only_if_exists=false) const</td></tr>
@@ -264,8 +267,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a54777d3d3f82d73fe7a484f534e8c363 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6c3e1e0c70b1e70c6e53536b3ce721e inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_af6c3e1e0c70b1e70c6e53536b3ce721e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#af6c3e1e0c70b1e70c6e53536b3ce721e">assign_discr_orders</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;space_args, const int fe_space_id, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::VectorXi &amp;disc_orders, Eigen::VectorXi &amp;disc_ordersq)</td></tr>
 <tr class="separator:af6c3e1e0c70b1e70c6e53536b3ce721e inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a20554bf4a4a5446d4266e763fcf09735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a20554bf4a4a5446d4266e763fcf09735">prepare</a> ()</td></tr>
-<tr class="separator:a20554bf4a4a5446d4266e763fcf09735 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9034a1c80ba93d8963da92c28c819a5b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a9034a1c80ba93d8963da92c28c819a5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a9034a1c80ba93d8963da92c28c819a5b">n_boundary_samples</a> (const int discr_order, const int discr_orderq, const int gdiscr_order) const</td></tr>
 <tr class="separator:a9034a1c80ba93d8963da92c28c819a5b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4390de8b27f02cfe214e53d00889158 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aa4390de8b27f02cfe214e53d00889158"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aa4390de8b27f02cfe214e53d00889158">build_fe_space</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool iso_parametric, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const std::string &amp;basis_type, const std::string &amp;poly_basis_type, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;space_assembler, const int value_dim, const int quadrature_order, const int mass_quadrature_order, const bool use_corner_quadrature, const int n_harmonic_samples, const int integral_constraints, <a class="el" href="classpolyfem_1_1varform_1_1_f_e_space.html">FESpace</a> &amp;space, <a class="el" href="structpolyfem_1_1varform_1_1_var_form_boundary_state.html">VarFormBoundaryState</a> &amp;boundary, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1varform_1_1_geometry_mapping.html">GeometryMapping</a> &gt; geometry=nullptr)</td></tr>
@@ -376,7 +377,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00111">111</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00115">115</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a0402fa002962f881a1a1edbaeb44733d" name="a0402fa002962f881a1a1edbaeb44733d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0402fa002962f881a1a1edbaeb44733d">&#9670;&#160;</a></span>build_forms()</h2>
@@ -412,7 +413,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00981">981</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00987">987</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
@@ -451,7 +452,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00114">114</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00118">118</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -489,7 +490,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01097">1097</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01103">1103</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_a_l_solver_8hpp_source.html#l00053">polyfem::solver::ALSolver::post_subsolve</a>.</p>
 <div class="dynheader">
@@ -500,8 +501,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="acd2af95f5b1407a1bfb6a71106847677" name="acd2af95f5b1407a1bfb6a71106847677"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd2af95f5b1407a1bfb6a71106847677">&#9670;&#160;</a></span>solve_problem()</h2>
+<a id="a60bed85afcc4df33b083f48742839d02" name="a60bed85afcc4df33b083f48742839d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60bed85afcc4df33b083f48742839d02">&#9670;&#160;</a></span>solve_problem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -513,8 +514,24 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::varform::NavierStokesVarForm::solve_problem </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>sol</em></td><td>)</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *&#160;</td>
+          <td class="paramname"><em>initial_condition_override</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;&#160;</td>
+          <td class="paramname"><em>post_step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -524,15 +541,15 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a1084ac626f90fe0123b1a3ac4b936228">polyfem::varform::VarForm</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a9b461af2bb4fe5af89f4b6976d3d798a">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01132">1132</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01138">1138</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00097">polyfem::time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af18582d2f8e496aacff89d56534e12cba7fb55ed0b7a30342ba6da306428cae04">polyfem::time_integrator::ImplicitTimeIntegrator::First</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_navier_stokes_var_form_acd2af95f5b1407a1bfb6a71106847677_cgraph.svg" width="100%" height="406"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_navier_stokes_var_form_a60bed85afcc4df33b083f48742839d02_cgraph.svg" width="100%" height="406"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -560,7 +577,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01086">1086</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l01092">1092</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -585,7 +602,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00124">124</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00131">131</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -609,7 +626,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00129">129</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00136">136</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -633,7 +650,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00130">130</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00137">137</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -657,7 +674,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00123">123</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00130">130</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -681,7 +698,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00131">131</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00138">138</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -705,7 +722,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00128">128</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00135">135</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -729,7 +746,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00127">127</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00134">134</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -753,7 +770,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00125">125</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00132">132</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -777,7 +794,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00126">126</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00133">133</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -801,7 +818,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00122">122</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00129">129</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>

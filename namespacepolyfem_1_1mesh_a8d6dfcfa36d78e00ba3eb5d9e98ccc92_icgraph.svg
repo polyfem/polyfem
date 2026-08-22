@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 1269;
+var viewWidth = 1485;
 var viewHeight = 289;
 var sectionId = 'dynsection-53';
 </script>
@@ -58,18 +58,18 @@ var sectionId = 'dynsection-53';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Compute the maximum edge length of a triangle mesh (V, F)">
-<polygon fill="#999999" stroke="#666666" points="1261,-154 1143,-154 1143,-124 1261,-124 1261,-154"/>
-<text text-anchor="start" x="1151" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::max</text>
-<text text-anchor="middle" x="1202" y="-131" font-family="Helvetica,sans-Serif" font-size="10.00">_edge_length</text>
+<polygon fill="#999999" stroke="#666666" points="1477,-154 1359,-154 1359,-124 1477,-124 1477,-154"/>
+<text text-anchor="start" x="1367" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::max</text>
+<text text-anchor="middle" x="1418" y="-131" font-family="Helvetica,sans-Serif" font-size="10.00">_edge_length</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge11_Node000001_Node000001" class="edge">
+<g id="edge14_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
-<g id="a_edge11_Node000001_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1233.16,-164.6C1228.9,-168.97 1218.51,-172 1202,-172 1174.19,-172 1163.76,-163.41 1170.71,-154.28"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1236.66,-164.32 1233.29,-154.28 1229.66,-164.23 1236.66,-164.32"/>
+<g id="a_edge14_Node000001_Node000001"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1449.16,-164.6C1444.9,-168.97 1434.51,-172 1418,-172 1390.19,-172 1379.76,-163.41 1386.71,-154.28"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1452.66,-164.32 1449.29,-154.28 1445.66,-164.23 1452.66,-164.32"/>
 </a>
 </g>
 </g>
@@ -77,9 +77,9 @@ var sectionId = 'dynsection-53';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="353,-118 233,-118 233,-88 353,-88 353,-118"/>
-<text text-anchor="start" x="241" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::build</text>
-<text text-anchor="middle" x="293" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
+<polygon fill="white" stroke="#666666" points="569,-118 449,-118 449,-88 569,-88 569,-118"/>
+<text text-anchor="start" x="457" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::build</text>
+<text text-anchor="middle" x="509" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
 </a>
 </g>
 </g>
@@ -87,121 +87,121 @@ var sectionId = 'dynsection-53';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1156.91,-120.06C1141.36,-113.93 1123.61,-107.55 1107,-103 992.2,-71.56 962.03,-58 843,-58 843,-58 843,-58 674.5,-58 547.33,-58 514.4,-55.89 389,-77 373.49,-79.61 356.85,-83.7 341.91,-87.88"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1155.7,-123.34 1166.28,-123.82 1158.31,-116.85 1155.7,-123.34"/>
-</a>
-</g>
-</g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1mesh_1_1_wild_remesher.html#afc60dd47618c862c91fe57caf5505651" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1107,-237 940,-237 940,-207 1107,-207 1107,-237"/>
-<text text-anchor="start" x="948" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::WildRemesher</text>
-<text text-anchor="middle" x="1023.5" y="-214" font-family="Helvetica,sans-Serif" font-size="10.00">::collapse_edge_before</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4_Node000001_Node000005" class="edge">
-<title>Node1&#45;&gt;Node5</title>
-<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1168.86,-159.42C1151.05,-170.24 1128.27,-183.25 1107,-193 1095.96,-198.06 1083.76,-202.79 1072.21,-206.9"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1171,-162.22 1177.68,-154 1167.33,-156.26 1171,-162.22"/>
-</a>
-</g>
-</g>
-<!-- Node6 -->
-<g id="Node000006" class="node">
-<title>Node6</title>
-<g id="a_Node000006"><a xlink:href="namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" target="_top" xlink:title="Tessilate a triangle mesh (V, F) with well shaped triangles.">
-<polygon fill="white" stroke="#666666" points="548.5,-116 411.5,-116 411.5,-86 548.5,-86 548.5,-116"/>
-<text text-anchor="start" x="419.5" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
-<text text-anchor="middle" x="480" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">_tessellation</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node6 -->
-<g id="edge5_Node000001_Node000006" class="edge">
-<title>Node1&#45;&gt;Node6</title>
-<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1132.77,-123.81C1124.13,-122.3 1115.38,-120.97 1107,-120 905.01,-96.69 664.09,-97.3 548.9,-99.32"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1132.36,-127.29 1142.83,-125.65 1133.62,-120.4 1132.36,-127.29"/>
-</a>
-</g>
-</g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" target="_top" xlink:title="Refine a triangle (a, b, c) into a well shaped triangle mesh.">
-<polygon fill="white" stroke="#666666" points="744,-159 607,-159 607,-129 744,-129 744,-159"/>
-<text text-anchor="start" x="615" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
-<text text-anchor="middle" x="675.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge6_Node000001_Node000007" class="edge">
-<title>Node1&#45;&gt;Node7</title>
-<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1132.77,-154.24C1124.13,-155.74 1115.38,-157.06 1107,-158 962.56,-174.25 924.75,-176.18 780,-163 768.36,-161.94 756.07,-160.22 744.18,-158.24"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1133.63,-157.64 1142.83,-152.4 1132.37,-150.76 1133.63,-157.64"/>
+<path fill="none" stroke="#63b8ff" d="M1372.91,-120.06C1357.36,-113.93 1339.61,-107.55 1323,-103 1208.2,-71.56 1178.03,-58 1059,-58 1059,-58 1059,-58 890.5,-58 763.33,-58 730.4,-55.89 605,-77 589.49,-79.61 572.85,-83.7 557.91,-87.88"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1371.7,-123.34 1382.28,-123.82 1374.31,-116.85 1371.7,-123.34"/>
 </a>
 </g>
 </g>
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" target="_top" xlink:title="Refine a triangle (a, b, c) into a well shaped triangle mesh.">
-<polygon fill="white" stroke="#666666" points="571,-164 389,-164 389,-134 571,-134 571,-164"/>
-<text text-anchor="start" x="397" y="-152" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
-<text text-anchor="middle" x="480" y="-141" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle_barycentric_coordinates</text>
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1mesh_1_1_wild_remesher.html#afc60dd47618c862c91fe57caf5505651" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1323,-237 1156,-237 1156,-207 1323,-207 1323,-237"/>
+<text text-anchor="start" x="1164" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::WildRemesher</text>
+<text text-anchor="middle" x="1239.5" y="-214" font-family="Helvetica,sans-Serif" font-size="10.00">::collapse_edge_before</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node8 -->
-<g id="edge10_Node000001_Node000008" class="edge">
+<g id="edge7_Node000001_Node000008" class="edge">
 <title>Node1&#45;&gt;Node8</title>
-<g id="a_edge10_Node000001_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1188.08,-163.26C1172.7,-189.28 1144.32,-229.11 1107,-246 893.09,-342.81 600.57,-210.68 509.34,-164.14"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1191.24,-164.79 1193.16,-154.37 1185.16,-161.32 1191.24,-164.79"/>
+<g id="a_edge7_Node000001_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1384.86,-159.42C1367.05,-170.24 1344.27,-183.25 1323,-193 1311.96,-198.06 1299.76,-202.79 1288.21,-206.9"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1387,-162.22 1393.68,-154 1383.33,-156.26 1387,-162.22"/>
 </a>
 </g>
 </g>
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" target="_top" xlink:title="Refine an edge (a, b) so each refined edge has length at most max_edge_length.">
-<polygon fill="white" stroke="#666666" points="1100,-148.5 947,-148.5 947,-129.5 1100,-129.5 1100,-148.5"/>
-<text text-anchor="middle" x="1023.5" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine_edge</text>
+<g id="a_Node000009"><a xlink:href="namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" target="_top" xlink:title="Tessilate a triangle mesh (V, F) with well shaped triangles.">
+<polygon fill="white" stroke="#666666" points="764.5,-116 627.5,-116 627.5,-86 764.5,-86 764.5,-116"/>
+<text text-anchor="start" x="635.5" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
+<text text-anchor="middle" x="696" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">_tessellation</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node9 -->
-<g id="edge12_Node000001_Node000009" class="edge">
+<g id="edge8_Node000001_Node000009" class="edge">
 <title>Node1&#45;&gt;Node9</title>
-<g id="a_edge12_Node000001_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1132.63,-139C1121.95,-139 1110.86,-139 1100.03,-139"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1132.72,-142.5 1142.72,-139 1132.72,-135.5 1132.72,-142.5"/>
+<g id="a_edge8_Node000001_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1348.77,-123.81C1340.13,-122.3 1331.38,-120.97 1323,-120 1121.01,-96.69 880.09,-97.3 764.9,-99.32"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1348.36,-127.29 1358.83,-125.65 1349.62,-120.4 1348.36,-127.29"/>
+</a>
+</g>
+</g>
+<!-- Node10 -->
+<g id="Node000010" class="node">
+<title>Node10</title>
+<g id="a_Node000010"><a xlink:href="namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" target="_top" xlink:title="Refine a triangle (a, b, c) into a well shaped triangle mesh.">
+<polygon fill="white" stroke="#666666" points="960,-159 823,-159 823,-129 960,-129 960,-159"/>
+<text text-anchor="start" x="831" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
+<text text-anchor="middle" x="891.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node10 -->
+<g id="edge9_Node000001_Node000010" class="edge">
+<title>Node1&#45;&gt;Node10</title>
+<g id="a_edge9_Node000001_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1348.77,-154.24C1340.13,-155.74 1331.38,-157.06 1323,-158 1178.56,-174.25 1140.75,-176.18 996,-163 984.36,-161.94 972.07,-160.22 960.18,-158.24"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1349.63,-157.64 1358.83,-152.4 1348.37,-150.76 1349.63,-157.64"/>
 </a>
 </g>
 </g>
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a" target="_top" xlink:title="Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length.">
-<polygon fill="white" stroke="#666666" points="1089,-30 958,-30 958,0 1089,0 1089,-30"/>
-<text text-anchor="start" x="966" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::regular</text>
-<text text-anchor="middle" x="1023.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_grid_tessellation</text>
+<g id="a_Node000011"><a xlink:href="namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" target="_top" xlink:title="Refine a triangle (a, b, c) into a well shaped triangle mesh.">
+<polygon fill="white" stroke="#666666" points="787,-164 605,-164 605,-134 787,-134 787,-164"/>
+<text text-anchor="start" x="613" y="-152" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::irregular</text>
+<text text-anchor="middle" x="696" y="-141" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle_barycentric_coordinates</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node11 -->
-<g id="edge15_Node000001_Node000011" class="edge">
+<g id="edge13_Node000001_Node000011" class="edge">
 <title>Node1&#45;&gt;Node11</title>
-<g id="a_edge15_Node000001_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1183.26,-115.81C1165.89,-94.5 1137.63,-63.39 1107,-44 1098.28,-38.48 1088.37,-33.84 1078.52,-30.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1180.61,-118.09 1189.58,-123.72 1186.08,-113.72 1180.61,-118.09"/>
+<g id="a_edge13_Node000001_Node000011"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1404.08,-163.26C1388.7,-189.28 1360.32,-229.11 1323,-246 1109.09,-342.81 816.57,-210.68 725.34,-164.14"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1407.24,-164.79 1409.16,-154.37 1401.16,-161.32 1407.24,-164.79"/>
+</a>
+</g>
+</g>
+<!-- Node12 -->
+<g id="Node000012" class="node">
+<title>Node12</title>
+<g id="a_Node000012"><a xlink:href="namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" target="_top" xlink:title="Refine an edge (a, b) so each refined edge has length at most max_edge_length.">
+<polygon fill="white" stroke="#666666" points="1316,-148.5 1163,-148.5 1163,-129.5 1316,-129.5 1316,-148.5"/>
+<text text-anchor="middle" x="1239.5" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine_edge</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node12 -->
+<g id="edge15_Node000001_Node000012" class="edge">
+<title>Node1&#45;&gt;Node12</title>
+<g id="a_edge15_Node000001_Node000012"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1348.63,-139C1337.95,-139 1326.86,-139 1316.03,-139"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1348.72,-142.5 1358.72,-139 1348.72,-135.5 1348.72,-142.5"/>
+</a>
+</g>
+</g>
+<!-- Node14 -->
+<g id="Node000014" class="node">
+<title>Node14</title>
+<g id="a_Node000014"><a xlink:href="namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a" target="_top" xlink:title="Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length.">
+<polygon fill="white" stroke="#666666" points="1305,-30 1174,-30 1174,0 1305,0 1305,-30"/>
+<text text-anchor="start" x="1182" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::regular</text>
+<text text-anchor="middle" x="1239.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_grid_tessellation</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node14 -->
+<g id="edge18_Node000001_Node000014" class="edge">
+<title>Node1&#45;&gt;Node14</title>
+<g id="a_edge18_Node000001_Node000014"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1399.26,-115.81C1381.89,-94.5 1353.63,-63.39 1323,-44 1314.28,-38.48 1304.37,-33.84 1294.52,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1396.61,-118.09 1405.58,-123.72 1402.08,-113.72 1396.61,-118.09"/>
 </a>
 </g>
 </g>
@@ -209,9 +209,9 @@ var sectionId = 'dynsection-53';
 <g id="Node000003" class="node">
 <title>Node3</title>
 <g id="a_Node000003"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="161.5,-142 35.5,-142 35.5,-112 161.5,-112 161.5,-142"/>
-<text text-anchor="start" x="43.5" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="98.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
+<polygon fill="white" stroke="#666666" points="377.5,-142 251.5,-142 251.5,-112 377.5,-112 377.5,-142"/>
+<text text-anchor="start" x="259.5" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="314.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
 </a>
 </g>
 </g>
@@ -219,8 +219,8 @@ var sectionId = 'dynsection-53';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M222.98,-111.61C203,-114.1 181.33,-116.8 161.79,-119.23"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="223.45,-115.07 232.94,-110.36 222.58,-108.13 223.45,-115.07"/>
+<path fill="none" stroke="#63b8ff" d="M438.98,-111.61C419,-114.1 397.33,-116.8 377.79,-119.23"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="439.45,-115.07 448.94,-110.36 438.58,-108.13 439.45,-115.07"/>
 </a>
 </g>
 </g>
@@ -228,9 +228,9 @@ var sectionId = 'dynsection-53';
 <g id="Node000004" class="node">
 <title>Node4</title>
 <g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="197,-94 0,-94 0,-64 197,-64 197,-94"/>
-<text text-anchor="start" x="8" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
-<text text-anchor="middle" x="98.5" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
+<polygon fill="white" stroke="#666666" points="413,-94 216,-94 216,-64 413,-64 413,-94"/>
+<text text-anchor="start" x="224" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
+<text text-anchor="middle" x="314.5" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
 </a>
 </g>
 </g>
@@ -238,63 +238,121 @@ var sectionId = 'dynsection-53';
 <g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
 <g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M222.88,-94.38C214.49,-93.34 205.81,-92.25 197.12,-91.17"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="222.58,-97.87 232.94,-95.64 223.45,-90.93 222.58,-97.87"/>
+<path fill="none" stroke="#63b8ff" d="M438.88,-94.38C430.49,-93.34 421.81,-92.25 413.12,-91.17"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.58,-97.87 448.94,-95.64 439.45,-90.93 438.58,-97.87"/>
 </a>
 </g>
 </g>
-<!-- Node7&#45;&gt;Node6 -->
-<g id="edge7_Node000007_Node000006" class="edge">
-<title>Node7&#45;&gt;Node6</title>
-<g id="a_edge7_Node000007_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M596.97,-126.77C580.98,-123.22 564.25,-119.5 548.64,-116.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="596.3,-130.21 606.82,-128.96 597.82,-123.37 596.3,-130.21"/>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="165,-142 15,-142 15,-112 165,-112 165,-142"/>
+<text text-anchor="start" x="23" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
+<text text-anchor="middle" x="90" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_basis</text>
 </a>
 </g>
 </g>
-<!-- Node7&#45;&gt;Node8 -->
-<g id="edge8_Node000007_Node000008" class="edge">
-<title>Node7&#45;&gt;Node8</title>
-<g id="a_edge8_Node000007_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M596.67,-146.01C588.25,-146.23 579.63,-146.45 571.08,-146.67"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="596.92,-149.51 606.82,-145.75 596.74,-142.51 596.92,-149.51"/>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge4_Node000004_Node000005" class="edge">
+<title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M233.93,-96.17C209.95,-101.34 183.82,-106.98 160.54,-112"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="234.67,-99.59 243.71,-94.06 233.2,-92.74 234.67,-99.59"/>
 </a>
 </g>
 </g>
-<!-- Node8&#45;&gt;Node2 -->
-<g id="edge9_Node000008_Node000002" class="edge">
-<title>Node8&#45;&gt;Node2</title>
-<g id="a_edge9_Node000008_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M408.68,-131.52C390.36,-126.96 370.81,-122.1 353.14,-117.7"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="407.87,-134.92 418.42,-133.94 409.56,-128.13 407.87,-134.92"/>
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43f8570ffc5b9e903724c7f55592a2b1" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="180,-94 0,-94 0,-64 180,-64 180,-94"/>
+<text text-anchor="start" x="8" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Collision</text>
+<text text-anchor="middle" x="90" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">BarrierForm::CollisionBarrierForm</text>
 </a>
 </g>
 </g>
-<!-- Node10 -->
-<g id="Node000010" class="node">
-<title>Node10</title>
-<g id="a_Node000010"><a xlink:href="namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" target="_top" xlink:title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length.">
-<polygon fill="white" stroke="#666666" points="904,-154 780,-154 780,-124 904,-124 904,-154"/>
-<text text-anchor="start" x="788" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine</text>
-<text text-anchor="middle" x="842" y="-131" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle_edges</text>
+<!-- Node4&#45;&gt;Node6 -->
+<g id="edge5_Node000004_Node000006" class="edge">
+<title>Node4&#45;&gt;Node6</title>
+<g id="a_edge5_Node000004_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M205.82,-79C197.21,-79 188.56,-79 180.1,-79"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="205.91,-82.5 215.91,-79 205.91,-75.5 205.91,-82.5"/>
 </a>
 </g>
 </g>
-<!-- Node9&#45;&gt;Node10 -->
-<g id="edge13_Node000009_Node000010" class="edge">
-<title>Node9&#45;&gt;Node10</title>
-<g id="a_edge13_Node000009_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M936.8,-139C925.75,-139 914.63,-139 904.09,-139"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="936.9,-142.5 946.9,-139 936.9,-135.5 936.9,-142.5"/>
+<!-- Node7 -->
+<g id="Node000007" class="node">
+<title>Node7</title>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a33aa718b7cae2a77bbef45bbb99d4814" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="175.5,-45.5 4.5,-45.5 4.5,-4.5 175.5,-4.5 175.5,-45.5"/>
+<text text-anchor="start" x="12.5" y="-33.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Deformed</text>
+<text text-anchor="start" x="12.5" y="-22.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm::Deformed</text>
+<text text-anchor="middle" x="90" y="-11.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm</text>
 </a>
 </g>
 </g>
-<!-- Node10&#45;&gt;Node7 -->
-<g id="edge14_Node000010_Node000007" class="edge">
-<title>Node10&#45;&gt;Node7</title>
-<g id="a_edge14_Node000010_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M769.56,-141.17C761.13,-141.43 752.54,-141.69 744.16,-141.94"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="769.86,-144.66 779.75,-140.86 769.64,-137.67 769.86,-144.66"/>
+<!-- Node4&#45;&gt;Node7 -->
+<g id="edge6_Node000004_Node000007" class="edge">
+<title>Node4&#45;&gt;Node7</title>
+<g id="a_edge6_Node000004_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M241.68,-61.57C220.58,-56.45 197.32,-50.8 175.51,-45.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="240.98,-65 251.52,-63.96 242.63,-58.2 240.98,-65"/>
+</a>
+</g>
+</g>
+<!-- Node10&#45;&gt;Node9 -->
+<g id="edge10_Node000010_Node000009" class="edge">
+<title>Node10&#45;&gt;Node9</title>
+<g id="a_edge10_Node000010_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M812.97,-126.77C796.98,-123.22 780.25,-119.5 764.64,-116.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="812.3,-130.21 822.82,-128.96 813.82,-123.37 812.3,-130.21"/>
+</a>
+</g>
+</g>
+<!-- Node10&#45;&gt;Node11 -->
+<g id="edge11_Node000010_Node000011" class="edge">
+<title>Node10&#45;&gt;Node11</title>
+<g id="a_edge11_Node000010_Node000011"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M812.67,-146.01C804.25,-146.23 795.63,-146.45 787.08,-146.67"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="812.92,-149.51 822.82,-145.75 812.74,-142.51 812.92,-149.51"/>
+</a>
+</g>
+</g>
+<!-- Node11&#45;&gt;Node2 -->
+<g id="edge12_Node000011_Node000002" class="edge">
+<title>Node11&#45;&gt;Node2</title>
+<g id="a_edge12_Node000011_Node000002"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M624.68,-131.52C606.36,-126.96 586.81,-122.1 569.14,-117.7"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="623.87,-134.92 634.42,-133.94 625.56,-128.13 623.87,-134.92"/>
+</a>
+</g>
+</g>
+<!-- Node13 -->
+<g id="Node000013" class="node">
+<title>Node13</title>
+<g id="a_Node000013"><a xlink:href="namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" target="_top" xlink:title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length.">
+<polygon fill="white" stroke="#666666" points="1120,-154 996,-154 996,-124 1120,-124 1120,-154"/>
+<text text-anchor="start" x="1004" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine</text>
+<text text-anchor="middle" x="1058" y="-131" font-family="Helvetica,sans-Serif" font-size="10.00">_triangle_edges</text>
+</a>
+</g>
+</g>
+<!-- Node12&#45;&gt;Node13 -->
+<g id="edge16_Node000012_Node000013" class="edge">
+<title>Node12&#45;&gt;Node13</title>
+<g id="a_edge16_Node000012_Node000013"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1152.8,-139C1141.75,-139 1130.63,-139 1120.09,-139"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1152.9,-142.5 1162.9,-139 1152.9,-135.5 1152.9,-142.5"/>
+</a>
+</g>
+</g>
+<!-- Node13&#45;&gt;Node10 -->
+<g id="edge17_Node000013_Node000010" class="edge">
+<title>Node13&#45;&gt;Node10</title>
+<g id="a_edge17_Node000013_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M985.56,-141.17C977.13,-141.43 968.54,-141.69 960.16,-141.94"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="985.86,-144.66 995.75,-140.86 985.64,-137.67 985.86,-144.66"/>
 </a>
 </g>
 </g>

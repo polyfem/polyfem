@@ -1,30 +1,36 @@
 <map id="polyfem::utils::triangle_area_3D" name="polyfem::utils::triangle_area_3D">
-<area shape="rect" id="Node000001" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1349,89,1520,129"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="1095,97,1301,122"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1335,112,1302,112,1302,107,1335,107"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6" title="Assembles the cross mass matrix between to function spaces." alt="" coords="316,30,491,85"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1161,93,1108,68,1046,48,971,36,895,29,742,26,603,34,491,47,491,41,602,29,742,21,895,23,972,30,1047,43,1110,63,1164,88"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a99350043c4c953c27b539e95779a48cc" title=" " alt="" coords="829,57,1047,97"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="1081,98,1046,93,1047,88,1082,92"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="847,185,1029,225"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="1158,130,1048,176,1012,188,1010,183,1046,171,1156,125"/>
-<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211" title="Reorder the vertices of a triangle so they are in clockwise order." alt="" coords="853,121,1023,161"/>
-<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="1082,126,1024,134,1023,128,1081,121"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="39,5,234,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="302,48,234,40,234,34,303,43"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="14,69,259,109"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="303,72,260,77,259,72,302,67"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" title="Tessilate a triangle mesh (V, F) with well shaped triangles." alt="" coords="569,169,751,209"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="833,202,752,197,752,192,833,197"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="539,233,781,273"/>
-<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="834,226,777,236,776,231,833,221"/>
-<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc" title=" " alt="" coords="323,233,483,273"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="525,256,484,256,484,251,525,251"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="53,201,221,241"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="309,245,221,234,221,229,310,239"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" title=" " alt="" coords="5,265,268,305"/>
-<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="310,267,269,272,268,267,310,262"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de" title="Clip a triangle using triangle." alt="" coords="575,73,745,113"/>
-<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="839,127,745,111,746,105,840,122"/>
-<area shape="poly" id="edge14_Node000014_Node000003" title=" " alt="" coords="561,82,490,72,491,67,561,77"/>
+<area shape="rect" id="Node000001" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1637,89,1808,129"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="1383,97,1589,122"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1623,112,1590,112,1590,107,1623,107"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6" title="Assembles the cross mass matrix between to function spaces." alt="" coords="604,30,779,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1449,93,1396,68,1334,48,1259,36,1183,29,1030,26,891,34,779,47,779,41,890,29,1030,21,1183,23,1260,30,1335,43,1398,63,1452,88"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a99350043c4c953c27b539e95779a48cc" title=" " alt="" coords="1117,57,1335,97"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="1369,98,1334,93,1335,88,1370,92"/>
+<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="1135,185,1317,225"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="1446,130,1336,176,1300,188,1298,183,1334,171,1444,125"/>
+<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211" title="Reorder the vertices of a triangle so they are in clockwise order." alt="" coords="1141,121,1311,161"/>
+<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="1370,126,1312,134,1311,128,1369,121"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="327,5,522,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="590,48,522,40,522,34,591,43"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="302,69,547,109"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="591,72,548,77,547,72,590,67"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" title="Tessilate a triangle mesh (V, F) with well shaped triangles." alt="" coords="857,169,1039,209"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1121,202,1040,197,1040,192,1121,197"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="827,233,1069,273"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="1122,226,1065,236,1064,231,1121,221"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc" title=" " alt="" coords="611,233,771,273"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="813,256,772,256,772,251,813,251"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="341,201,509,241"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="597,245,509,234,509,229,598,239"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" title=" " alt="" coords="293,265,556,305"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="598,267,557,272,556,267,598,262"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" title=" " alt="" coords="25,201,225,241"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="317,265,219,244,220,239,318,260"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43f8570ffc5b9e903724c7f55592a2b1" title=" " alt="" coords="5,265,245,305"/>
+<area shape="poly" id="edge13_Node000012_Node000014" title=" " alt="" coords="280,288,245,288,245,283,280,283"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a33aa718b7cae2a77bbef45bbb99d4814" title=" " alt="" coords="11,330,239,385"/>
+<area shape="poly" id="edge14_Node000012_Node000015" title=" " alt="" coords="328,311,240,333,239,327,327,306"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de" title="Clip a triangle using triangle." alt="" coords="863,73,1033,113"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="1127,127,1033,111,1034,105,1128,122"/>
+<area shape="poly" id="edge17_Node000017_Node000003" title=" " alt="" coords="849,82,778,72,779,67,849,77"/>
 </map>

@@ -1,17 +1,32 @@
 <map id="polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step" name="polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,107,237,161"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a88d749c30d57b09dabc3a76916c05505" title="Compute parametrization jacobian for all var2sim matching parameter type and output to target state." alt="" coords="317,5,512,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,104,284,70,309,62,311,67,286,75,194,109"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#acf2ec6e2315125264bb9862aa785d1ca" title=" " alt="" coords="285,85,544,125"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="237,120,271,116,272,122,238,125"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="325,149,504,175"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="238,142,312,150,312,155,237,148"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="332,199,497,239"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="206,159,286,183,321,193,320,198,285,189,205,164"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1legacy_1_1_state.html#af15fbffe9c021f92e56a171081623abd" title=" " alt="" coords="592,85,760,125"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="544,102,578,102,578,107,544,107"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1legacy_1_1_state.html#aebd4d1f72c28d6ecaf99780138bc0aca" title=" " alt="" coords="808,85,976,125"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="760,102,794,102,794,107,760,107"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1legacy_1_1_state.html#a09103939ffb7c7e750909cf260903451" title="check if using iso parametric bases" alt="" coords="1024,85,1192,125"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="976,102,1010,102,1010,107,976,107"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,114,237,169"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#aacf9efc0a3b21e1b47bc1aebcd952ae9" title="Compute parametrization jacobian for all var2sim matching parameter type and output to target varform..." alt="" coords="317,13,512,67"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,111,284,77,309,69,311,74,286,83,194,116"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a01adf675b4c68456112e03ae5d22c4ed" title=" " alt="" coords="285,92,544,132"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="237,127,271,124,272,129,238,132"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="325,157,504,182"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="238,150,312,157,312,162,237,155"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="332,207,497,247"/>
+<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="203,166,286,192,319,201,318,206,285,197,202,171"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="627,5,790,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="495,89,543,76,635,47,637,52,545,81,497,95"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#a5e5a3d681d36e002be5b6d667467570e" title=" " alt="" coords="1155,36,1388,76"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="544,101,1141,62,1141,67,544,106"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#a5ec48fc0fc92145de909ac7f0dc63a21" title=" " alt="" coords="592,120,825,160"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="544,122,579,125,578,130,544,127"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#acb55571633385f0aee1250fce6d53a14" title=" " alt="" coords="1155,228,1388,268"/>
+<area shape="poly" id="edge14_Node000003_Node000008" title=" " alt="" coords="510,130,545,142,569,156,593,170,663,192,736,210,883,234,1022,245,1141,249,1140,254,1021,251,882,239,734,215,661,197,591,174,567,161,543,146,508,135"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="909,5,1071,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="790,23,895,23,895,28,790,28"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="812,157,874,169,1152,223,1151,228,873,175,811,163"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#aa354b37995fd0024c1d4b27d7eeb8477" title=" " alt="" coords="873,120,1107,160"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="825,137,860,137,860,143,825,143"/>
+<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="1052,117,1154,85,1182,77,1184,82,1155,91,1053,122"/>
+<area shape="poly" id="edge13_Node000009_Node000008" title=" " alt="" coords="1065,158,1108,176,1132,195,1156,214,1171,221,1169,225,1153,218,1129,200,1105,181,1063,163"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="1182,100,1361,140"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="1106,129,1168,125,1168,130,1107,134"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#a1ebc70815f2ac768932950dfcb2373c5" title=" " alt="" coords="1155,164,1388,204"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="1107,156,1141,161,1141,166,1106,161"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1436,107,1561,133"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="1361,117,1422,117,1422,123,1361,123"/>
 </map>

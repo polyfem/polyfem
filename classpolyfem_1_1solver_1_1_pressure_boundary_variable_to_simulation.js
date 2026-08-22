@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation =
 [
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a0cfc72ba488a54c04f7bde314581ba9c", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#afe3e15cbba7346c870e38f704712e5bb", null ],
-    [ "PressureBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#aec83ac4f58d775e122d69dc0ee4f9f33", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ac08f2af8b26ce79234bdbfe85699af8a", null ],
+    [ "VarFormPtrs", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a7fa07ad86142c4f044b8095c9197d1f8", null ],
+    [ "PressureBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a03a71566d34ca48c814b7034e0cd6934", null ],
+    [ "affects_varform", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#aa0212acfda1c7536270ee26df8309776", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a7d8c51c65bc33e9405ed7cd34e87be3b", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a2146118b2316398172c661a104df6e15", null ],
     [ "inverse_dof", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a5d41aa62c467e5a7e4b9cfef27fd4a8c", null ],
@@ -18,6 +18,6 @@ var classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation =
     [ "diff_caches_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a1e6a2373188e39004fa811536de541d0", null ],
     [ "is_transient_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#adee514bfeeef34dce223201ef2f668e5", null ],
     [ "parametrization_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a45217071d863d98749d402abb65862da", null ],
-    [ "states_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ac4f37a652be9de912f6c18819f88ef6f", null ],
-    [ "time_steps_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ae17ada74783af8d9f3ebe0c82191c3e8", null ]
+    [ "time_steps_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ae17ada74783af8d9f3ebe0c82191c3e8", null ],
+    [ "varforms_", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a471230f42ddf3c101a10f90a45fff800", null ]
 ];

@@ -2,9 +2,9 @@ var classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation =
 [
     [ "BoundaryNodeMap", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#aef169312f0fb5507f577b23d381671ce", null ],
     [ "DiffCachePtrs", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#afe94188edb8cada5ca492232fa88fea9", null ],
-    [ "StatePtrs", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ab00141c539457f8a19d46ee6f174d863", null ],
-    [ "DirichletBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#afa4e88c5e65b24c38d75e015df9fd3e5", null ],
-    [ "affect_state", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a865f57c167a0f0e38aeabbdb930f9b6a", null ],
+    [ "VarFormPtrs", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ae6512caf2861fc3f0c0d83412274244c", null ],
+    [ "DirichletBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#acd3dd4ca8188a356d36df010bb11f6eb", null ],
+    [ "affects_varform", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#acabe02636c2e42e00a590f3a3b832198", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a17588f2f57bbd6529199a0efc966ef7b", null ],
     [ "build_boundary_node_maps", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ae791b4166dddd01f846cc1fe4818100f", null ],
     [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ad95e47a2f19fa6eb94467d945460f42a", null ],
@@ -21,6 +21,6 @@ var classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation =
     [ "diff_caches_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a45c0b7a039dbb801d735cbd72c8fd267", null ],
     [ "dim_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a4f58dae9f7c39831faa181c65a7e1c85", null ],
     [ "parametrization_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ab679638a9d3ebcba856872f9a572714a", null ],
-    [ "states_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a01df4171e570804e02a96c7d7ae9a236", null ],
-    [ "time_steps_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ac36bc0f5d4e6026ba588c6c17132aa47", null ]
+    [ "time_steps_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ac36bc0f5d4e6026ba588c6c17132aa47", null ],
+    [ "varforms_", "classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#a746e8ca355dcd021d5509b98541bbe2f", null ]
 ];

@@ -15,7 +15,7 @@ var classpolyfem_1_1varform_1_1_incompressible_elastic_var_form =
     [ "reset", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#af6ca01714a9caf73815a48a3f2e93213", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a71e871ddf098f01260999a4a6c952617", null ],
     [ "solve_linear_system", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a7603b88b26b5e5e6ec1a0276e88d18ad", null ],
-    [ "solve_problem", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ad2ac68f8b23867bf1a3b8d724f82c6ff", null ],
+    [ "solve_problem", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a6a8cf52f847c8de787f9f05766a2fc97", null ],
     [ "solve_static_linear", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a1416bec22ca33ebc604130508b6c834a", null ],
     [ "solve_transient_linear", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a46b819041d0e3d5e7155ea78394a33ab", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#ab2b87c9760b3de7beaa1414dc1ed3ccf", null ],

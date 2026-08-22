@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="contents">
 <a href="_active_selection_utils_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;<a class="code" href="_active_selection_utils_8hpp.html">polyfem/optimization/var2sims/ActiveSelectionUtils.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="legacy_2_state_8hpp.html">polyfem/legacy/State.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_differentiable_var_form_8hpp.html">polyfem/varforms/diff/DifferentiableVarForm.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
@@ -147,19 +147,19 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419">   20</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419">is_active_geom_nodes_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_geom_nodes,</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7">   20</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7">is_active_geom_nodes_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_geom_nodes,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                                    std::string &amp;reason)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="comment">// Check state vertex num consistency.</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordtype">int</span> num = states[0]-&gt;mesh-&gt;n_vertices();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="comment">// Check varform vertex num consistency.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordtype">int</span> num = varforms[0]-&gt;get_mesh().n_vertices();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">if</span> (s-&gt;mesh-&gt;n_vertices() != num)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">if</span> (varform-&gt;get_mesh().n_vertices() != num)</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                reason = <span class="stringliteral">&quot;Mesh vertex num mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                reason = <span class="stringliteral">&quot;Mesh vertex num mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            }</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        }</div>
@@ -191,19 +191,19 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#aff95b453bc6793a92531c843a4f912ea">   62</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#aff95b453bc6793a92531c843a4f912ea">is_active_dims_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dimensions,</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                              <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#aa5c6c04af21d3fbd99595025ac384ad1">   62</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#aa5c6c04af21d3fbd99595025ac384ad1">is_active_dims_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dimensions,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                              <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                              std::string &amp;reason)</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="comment">// Check state dim consistency.</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">int</span> dim = states[0]-&gt;mesh-&gt;dimension();</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="comment">// Check varform dim consistency.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">int</span> dim = varforms[0]-&gt;get_mesh().dimension();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">if</span> (s-&gt;mesh-&gt;dimension() != dim)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">if</span> (varform-&gt;get_mesh().dimension() != dim)</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            {</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                reason = <span class="stringliteral">&quot;Mesh dimension mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                reason = <span class="stringliteral">&quot;Mesh dimension mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            }</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
@@ -235,19 +235,19 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
 <div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#aa12ab80ab8b4ce2fe248119533d1aa86">  104</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#aa12ab80ab8b4ce2fe248119533d1aa86">is_active_dofs_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dofs,</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                              <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a76b8199d8b9bab1ed7fdbccf4d1efa3a">  104</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a76b8199d8b9bab1ed7fdbccf4d1efa3a">is_active_dofs_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dofs,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                              <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                              std::string &amp;reason)</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="comment">// Check state ndof consistency.</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">int</span> ndof = states[0]-&gt;ndof();</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="comment">// Check varform ndof consistency.</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">int</span> ndof = varforms[0]-&gt;primary_space().ndof();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        {</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">if</span> (s-&gt;ndof() != ndof)</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">if</span> (varform-&gt;primary_space().ndof() != ndof)</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                reason = <span class="stringliteral">&quot;legacy::State ndof mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                reason = <span class="stringliteral">&quot;varform::DifferentiableVarForm ndof mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            }</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        }</div>
@@ -279,19 +279,19 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
 <div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434">  146</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434">is_active_time_slices_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_time_slices,</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                     <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a4286fa41dac680292f151facd5e7e08e">  146</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a4286fa41dac680292f151facd5e7e08e">is_active_time_slices_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_time_slices,</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                     <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                                     std::string &amp;reason)</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="comment">// Check state time_steps consistency.</span></div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordtype">int</span> time_steps = states[0]-&gt;args[<span class="stringliteral">&quot;time&quot;</span>][<span class="stringliteral">&quot;time_steps&quot;</span>];</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="comment">// Check varform time_steps consistency.</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordtype">int</span> time_steps = varforms[0]-&gt;get_args()[<span class="stringliteral">&quot;time&quot;</span>][<span class="stringliteral">&quot;time_steps&quot;</span>];</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        {</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="keywordflow">if</span> (<span class="keywordtype">int</span>(s-&gt;args[<span class="stringliteral">&quot;time&quot;</span>][<span class="stringliteral">&quot;time_steps&quot;</span>]) != time_steps)</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="keywordflow">if</span> (<span class="keywordtype">int</span>(varform-&gt;get_args()[<span class="stringliteral">&quot;time&quot;</span>][<span class="stringliteral">&quot;time_steps&quot;</span>]) != time_steps)</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            {</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                reason = <span class="stringliteral">&quot;time_steps mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                reason = <span class="stringliteral">&quot;time_steps mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            }</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        }</div>
@@ -323,11 +323,11 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
 <div class="foldopen" id="foldopen00188" data-start="{" data-end="}">
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a3f341b92cbaed8ef6e37845ad0346181">  188</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a3f341b92cbaed8ef6e37845ad0346181">is_active_dirichlet_boundary_ids_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_boundary_ids,</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                                <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a95405c514e7c8aa6a4f61a67bf6e7575">  188</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a95405c514e7c8aa6a4f61a67bf6e7575">is_active_dirichlet_boundary_ids_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_boundary_ids,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                                <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                                                std::string &amp;reason)</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    {</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (active_boundary_ids.size() == 0)</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        {</div>
@@ -343,13 +343,13 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        }</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="comment">// Validate ids exist and dimensions are all active.</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordtype">int</span> dim = states[0]-&gt;mesh-&gt;dimension();</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordtype">int</span> dim = varforms[0]-&gt;get_mesh().dimension();</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        {</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <span class="comment">// boundary_dims is a map where</span></div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <span class="comment">// key: boundary id</span></div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="comment">// value: array&lt;bool, 3&gt;, true means that dimension is active.</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keyword">auto</span> boundry_dims = s-&gt;boundary_conditions_ids(<span class="stringliteral">&quot;dirichlet_boundary&quot;</span>);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keyword">auto</span> boundry_dims = varform-&gt;boundary_conditions_ids(<span class="stringliteral">&quot;dirichlet_boundary&quot;</span>);</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; active_boundary_ids.size(); ++i)</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            {</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                <span class="comment">// Check boundary id exists.</span></div>
@@ -361,7 +361,7 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>                }</div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="keywordflow">if</span> (s-&gt;mesh-&gt;dimension() != dim)</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="keywordflow">if</span> (varform-&gt;get_mesh().dimension() != dim)</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                {</div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                    reason = <span class="stringliteral">&quot;Inconsistent boundary node dimension&quot;</span>;</div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -384,36 +384,36 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
 <div class="foldopen" id="foldopen00247" data-start="{" data-end="}">
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a0a1892591f0362e47de70ad2254fa5d2">  247</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a0a1892591f0362e47de70ad2254fa5d2">is_active_dirichlet_node_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dirichlet_nodes,</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                                        <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a97aa2c855609b7f35177426b47179845">  247</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a97aa2c855609b7f35177426b47179845">is_active_dirichlet_node_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_dirichlet_nodes,</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                                        <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                                        std::string &amp;reason)</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    {</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <span class="comment">// Basic node index checks (range/duplicates and mesh consistency).</span></div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419">is_active_geom_nodes_valid</a>(active_dirichlet_nodes, states, reason))</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7">is_active_geom_nodes_valid</a>(active_dirichlet_nodes, varforms, reason))</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        {</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        }</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">int</span> vertex_num = states[0]-&gt;mesh-&gt;n_vertices();</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keywordtype">int</span> dim = states[0]-&gt;mesh-&gt;dimension();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">int</span> vertex_num = varforms[0]-&gt;get_mesh().n_vertices();</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keywordtype">int</span> dim = varforms[0]-&gt;get_mesh().dimension();</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        {</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordflow">if</span> (s-&gt;mesh-&gt;n_vertices() != vertex_num)</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordflow">if</span> (varform-&gt;get_mesh().n_vertices() != vertex_num)</div>
 <div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            {</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                reason = <span class="stringliteral">&quot;Mesh vertex num mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                reason = <span class="stringliteral">&quot;Mesh vertex num mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            }</div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            <span class="keywordflow">if</span> (s-&gt;mesh-&gt;dimension() != dim)</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            <span class="keywordflow">if</span> (varform-&gt;get_mesh().dimension() != dim)</div>
 <div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            {</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                reason = <span class="stringliteral">&quot;Mesh dimension mismatch between states&quot;</span>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                reason = <span class="stringliteral">&quot;Mesh dimension mismatch between varforms&quot;</span>;</div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            }</div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordflow">if</span> (!s-&gt;problem-&gt;has_nodal_dirichlet())</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordflow">if</span> (!varform-&gt;get_problem().has_nodal_dirichlet())</div>
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            {</div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                reason = <span class="stringliteral">&quot;Nodal Dirichlet matrix is missing (cannot update nodal Dirichlet values)&quot;</span>;</div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -422,15 +422,15 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; active_dirichlet_nodes.size(); ++i)</div>
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            {</div>
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                <span class="keywordtype">int</span> v_in = active_dirichlet_nodes(i);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                <span class="keywordtype">int</span> v = s-&gt;in_node_to_node(v_in);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                <span class="keywordtype">int</span> v = varform-&gt;primary_space().space_in_node_to_node(v_in);</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                <span class="keywordflow">if</span> (v &lt; 0 || v &gt;= vertex_num)</div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                {</div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                    reason = fmt::format(<span class="stringliteral">&quot;Invalid in_node_to_node mapping: input vertex {} -&gt; {}&quot;</span>, v_in, v);</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                }</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordtype">int</span> tag = s-&gt;mesh-&gt;get_node_id(v);</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                <span class="keywordflow">if</span> (!s-&gt;problem-&gt;is_nodal_dirichlet_boundary(v, tag))</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordtype">int</span> tag = varform-&gt;get_mesh().get_node_id(v);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                <span class="keywordflow">if</span> (!varform-&gt;get_problem().is_nodal_dirichlet_boundary(v, tag))</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                {</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                    reason = fmt::format(<span class="stringliteral">&quot;Input vertex {} is not a nodal Dirichlet node&quot;</span>, v_in);</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -438,7 +438,7 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; dim; ++d)</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                {</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                    <span class="keywordflow">if</span> (!s-&gt;problem-&gt;is_nodal_dimension_dirichlet(v, tag, d))</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                    <span class="keywordflow">if</span> (!varform-&gt;get_problem().is_nodal_dimension_dirichlet(v, tag, d))</div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                    {</div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                        reason = fmt::format(<span class="stringliteral">&quot;Nodal Dirichlet at input vertex {} has inactive dimensions (not supported)&quot;</span>, v_in);</div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -452,11 +452,11 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 </div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
 <div class="foldopen" id="foldopen00313" data-start="{" data-end="}">
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11">  313</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11">is_active_pressure_boundary_ids_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_boundary_ids,</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                                               <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;legacy::State&gt;&gt; &amp;states,</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1solver.html#ab6d46f1afbb375f110b134510e0f027f">  313</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1solver.html#ab6d46f1afbb375f110b134510e0f027f">is_active_pressure_boundary_ids_valid</a>(<span class="keyword">const</span> Eigen::VectorXi &amp;active_boundary_ids,</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                                               <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;varform::DifferentiableVarForm&gt;&gt; &amp;varforms,</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>                                               std::string &amp;reason)</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    {</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        assert(!states.empty());</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        assert(!varforms.empty());</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="keywordflow">if</span> (active_boundary_ids.size() == 0)</div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        {</div>
@@ -471,11 +471,11 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        }</div>
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;s : states)</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;varform : varforms)</div>
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        {</div>
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keywordtype">id</span> : active_boundary_ids)</div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            {</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>                <span class="keywordflow">if</span> (!s-&gt;problem-&gt;is_boundary_pressure(<span class="keywordtype">id</span>))</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>                <span class="keywordflow">if</span> (!varform-&gt;get_problem().is_boundary_pressure(<span class="keywordtype">id</span>))</div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                {</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>                    reason = fmt::format(<span class="stringliteral">&quot;Invalid pressure boundary id {}&quot;</span>, <span class="keywordtype">id</span>);</div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -489,16 +489,16 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
 <div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>} <span class="comment">// namespace polyfem::solver</span></div>
 <div class="ttc" id="a_active_selection_utils_8hpp_html"><div class="ttname"><a href="_active_selection_utils_8hpp.html">ActiveSelectionUtils.hpp</a></div></div>
+<div class="ttc" id="a_differentiable_var_form_8hpp_html"><div class="ttname"><a href="_differentiable_var_form_8hpp.html">DifferentiableVarForm.hpp</a></div></div>
 <div class="ttc" id="a_generic_problem_8hpp_html"><div class="ttname"><a href="_generic_problem_8hpp.html">GenericProblem.hpp</a></div></div>
-<div class="ttc" id="alegacy_2_state_8hpp_html"><div class="ttname"><a href="legacy_2_state_8hpp.html">State.hpp</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1solver_html"><div class="ttname"><a href="namespacepolyfem_1_1solver.html">polyfem::solver</a></div><div class="ttdef"><b>Definition</b> <a href="_solver_c_s_v_writer_8hpp_source.html#l00010">SolverCSVWriter.hpp:11</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_a0a1892591f0362e47de70ad2254fa5d2"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a0a1892591f0362e47de70ad2254fa5d2">polyfem::solver::is_active_dirichlet_node_valid</a></div><div class="ttdeci">bool is_active_dirichlet_node_valid(const Eigen::VectorXi &amp;active_dirichlet_nodes, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active Dirichlet node ids selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00247">ActiveSelectionUtils.cpp:247</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_a2d721d40ae40b39ada893ab7e85a2434"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a2d721d40ae40b39ada893ab7e85a2434">polyfem::solver::is_active_time_slices_valid</a></div><div class="ttdeci">bool is_active_time_slices_valid(const Eigen::VectorXi &amp;active_time_slices, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active time slices selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00146">ActiveSelectionUtils.cpp:146</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_a3f341b92cbaed8ef6e37845ad0346181"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a3f341b92cbaed8ef6e37845ad0346181">polyfem::solver::is_active_dirichlet_boundary_ids_valid</a></div><div class="ttdeci">bool is_active_dirichlet_boundary_ids_valid(const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active Dirichlet boundary ids selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00188">ActiveSelectionUtils.cpp:188</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_a564a642f23defd77f8919859fb06b419"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a564a642f23defd77f8919859fb06b419">polyfem::solver::is_active_geom_nodes_valid</a></div><div class="ttdeci">bool is_active_geom_nodes_valid(const Eigen::VectorXi &amp;active_geom_nodes, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active geometry nodes selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00020">ActiveSelectionUtils.cpp:20</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_a626a8ca4f91ee497c0475f00ef51cf11"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a626a8ca4f91ee497c0475f00ef51cf11">polyfem::solver::is_active_pressure_boundary_ids_valid</a></div><div class="ttdeci">bool is_active_pressure_boundary_ids_valid(const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active pressure boundary ids selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00313">ActiveSelectionUtils.cpp:313</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_aa12ab80ab8b4ce2fe248119533d1aa86"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#aa12ab80ab8b4ce2fe248119533d1aa86">polyfem::solver::is_active_dofs_valid</a></div><div class="ttdeci">bool is_active_dofs_valid(const Eigen::VectorXi &amp;active_dofs, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active solution space dofs selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00104">ActiveSelectionUtils.cpp:104</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_aff95b453bc6793a92531c843a4f912ea"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#aff95b453bc6793a92531c843a4f912ea">polyfem::solver::is_active_dims_valid</a></div><div class="ttdeci">bool is_active_dims_valid(const Eigen::VectorXi &amp;active_dimensions, const std::vector&lt; std::shared_ptr&lt; legacy::State &gt; &gt; &amp;states, std::string &amp;reason)</div><div class="ttdoc">Validate active dimensions selection given states.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00062">ActiveSelectionUtils.cpp:62</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_a4286fa41dac680292f151facd5e7e08e"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a4286fa41dac680292f151facd5e7e08e">polyfem::solver::is_active_time_slices_valid</a></div><div class="ttdeci">bool is_active_time_slices_valid(const Eigen::VectorXi &amp;active_time_slices, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active time slices selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00146">ActiveSelectionUtils.cpp:146</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_a76b8199d8b9bab1ed7fdbccf4d1efa3a"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a76b8199d8b9bab1ed7fdbccf4d1efa3a">polyfem::solver::is_active_dofs_valid</a></div><div class="ttdeci">bool is_active_dofs_valid(const Eigen::VectorXi &amp;active_dofs, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active solution space dofs selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00104">ActiveSelectionUtils.cpp:104</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_a95405c514e7c8aa6a4f61a67bf6e7575"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a95405c514e7c8aa6a4f61a67bf6e7575">polyfem::solver::is_active_dirichlet_boundary_ids_valid</a></div><div class="ttdeci">bool is_active_dirichlet_boundary_ids_valid(const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active Dirichlet boundary ids selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00188">ActiveSelectionUtils.cpp:188</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_a97aa2c855609b7f35177426b47179845"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#a97aa2c855609b7f35177426b47179845">polyfem::solver::is_active_dirichlet_node_valid</a></div><div class="ttdeci">bool is_active_dirichlet_node_valid(const Eigen::VectorXi &amp;active_dirichlet_nodes, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active Dirichlet node ids selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00247">ActiveSelectionUtils.cpp:247</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_aa5c6c04af21d3fbd99595025ac384ad1"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#aa5c6c04af21d3fbd99595025ac384ad1">polyfem::solver::is_active_dims_valid</a></div><div class="ttdeci">bool is_active_dims_valid(const Eigen::VectorXi &amp;active_dimensions, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active dimensions selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00062">ActiveSelectionUtils.cpp:62</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_ab6d46f1afbb375f110b134510e0f027f"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#ab6d46f1afbb375f110b134510e0f027f">polyfem::solver::is_active_pressure_boundary_ids_valid</a></div><div class="ttdeci">bool is_active_pressure_boundary_ids_valid(const Eigen::VectorXi &amp;active_boundary_ids, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active pressure boundary ids selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00313">ActiveSelectionUtils.cpp:313</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html_ae75ececdde4973bcea7632de62aefdb7"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7">polyfem::solver::is_active_geom_nodes_valid</a></div><div class="ttdeci">bool is_active_geom_nodes_valid(const Eigen::VectorXi &amp;active_geom_nodes, const std::vector&lt; std::shared_ptr&lt; varform::DifferentiableVarForm &gt; &gt; &amp;varforms, std::string &amp;reason)</div><div class="ttdoc">Validate active geometry nodes selection given varforms.</div><div class="ttdef"><b>Definition</b> <a href="_active_selection_utils_8cpp_source.html#l00020">ActiveSelectionUtils.cpp:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
