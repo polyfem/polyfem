@@ -714,8 +714,14 @@ namespace polyfem::varform
 		return fields;
 	}
 
-	void OperatorSplittingVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void OperatorSplittingVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Operator splitting does not support initial-condition overrides");
+		assert(!post_step && "Operator splitting does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 
 		if (!problem->is_time_dependent())
@@ -734,7 +740,8 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd local_pts;
 		const auto &gbases = space_.geometry_basis_list();
-		const int discr_order = space_.disc_orders.size() > 0 ? space_.disc_orders.maxCoeff() : 1;
+		assert(space_.disc_orders.size() > 0 && "Operator splitting requires initialized FE orders");
+		const int discr_order = space_.disc_orders.maxCoeff();
 		if (mesh_->dimension() == 2)
 		{
 			if (gbases[0].bases.size() == 3)

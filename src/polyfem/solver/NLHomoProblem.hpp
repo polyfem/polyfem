@@ -8,9 +8,9 @@ namespace polyfem
 	{
 		class MacroStrainValue;
 	}
-	namespace legacy
+	namespace mesh
 	{
-		class State;
+		class MeshNodes;
 	}
 } // namespace polyfem
 
@@ -25,16 +25,17 @@ namespace polyfem::solver
 
 		NLHomoProblem(const int full_size,
 					  const assembler::MacroStrainValue &macro_strain_constraint,
-					  const legacy::State &state,
-					  const double t,
+					  int n_bases,
+					  std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+					  double t,
 					  const std::vector<std::shared_ptr<Form>> &forms,
 					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-					  const bool solve_symmetric_macro_strain,
+					  bool solve_symmetric_macro_strain,
 					  const std::shared_ptr<polysolve::linear::Solver> &solver,
-					  const double char_length,
-					  const double char_force,
+					  double char_length,
+					  double char_force,
 					  StiffnessMatrix lumped_mass,
-					  const int dimension);
+					  int dimension);
 		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
@@ -86,7 +87,9 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
 		TVector macro_reduced_to_full(const TVector &reduced, bool homogeneous = false) const;
 
-		const legacy::State &state_;
+		const int n_bases_;
+		const int dimension_;
+		std::shared_ptr<mesh::MeshNodes> mesh_nodes_;
 		const bool only_symmetric;
 		const assembler::MacroStrainValue &macro_strain_constraint_;
 

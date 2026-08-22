@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/CompositeForm.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
 #include <Eigen/Core>
@@ -9,7 +9,7 @@
 
 namespace polyfem::solver
 {
-	Eigen::MatrixXd CompositeForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd CompositeForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
@@ -18,9 +18,9 @@ namespace polyfem::solver
 		for (int i = 0; i < forms_.size(); i++)
 		{
 			if (i == 0)
-				term = composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, state, diff_cache);
+				term = composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, varform, diff_cache);
 			else
-				term += composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, state, diff_cache);
+				term += composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, varform, diff_cache);
 		}
 
 		return term * weight();
