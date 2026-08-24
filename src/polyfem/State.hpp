@@ -35,7 +35,10 @@ namespace polyfem
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
-		void init(const json &args, const bool strict_validation);
+		void init(
+			const json &args,
+			bool strict_validation,
+			bool is_adjoint_optimization = false);
 
 		/// @param[in] max_threads max number of threads
 		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());

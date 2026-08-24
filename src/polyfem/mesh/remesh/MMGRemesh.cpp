@@ -7,13 +7,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "MMGRemesh.hpp"
 // #include <cellogram/MeshUtils.h>
+#include <algorithm>
 #include <iomanip>
 #include <cassert>
+#include <vector>
 #include <geogram/basic/attributes.h>
 #include <geogram/mesh/mesh.h>
 #include <geogram/mesh/mesh_io.h>
+#include <igl/boundary_facets.h>
 #include <mmg/libmmg.h>
 
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -29,6 +33,40 @@ namespace polyfem::mesh
 {
 	namespace
 	{
+		// Flip triangle/tet if there signed volume is negative.
+		bool orient_simplices(const Eigen::MatrixXd &vertices, Eigen::MatrixXi &elements)
+		{
+			for (int e = 0; e < elements.rows(); ++e)
+			{
+				double vol = 0;
+				if (elements.cols() == 3)
+				{
+					vol = utils::triangle_area_2D(
+						vertices.row(elements(e, 0)),
+						vertices.row(elements(e, 1)),
+						vertices.row(elements(e, 2)));
+				}
+				else
+				{
+					assert(elements.cols() == 4);
+					vol = utils::tetrahedron_volume(
+						vertices.row(elements(e, 0)),
+						vertices.row(elements(e, 1)),
+						vertices.row(elements(e, 2)),
+						vertices.row(elements(e, 3)));
+				}
+
+				if (vol == 0)
+				{
+					logger().error("MMG produced a degenerate simplex {}", e);
+					return false;
+				}
+				if (vol < 0)
+					std::swap(elements(e, 1), elements(e, 2));
+			}
+			return true;
+		}
+
 		void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M)
 		{
 			M.clear();
@@ -119,7 +157,7 @@ namespace polyfem::mesh
 			/* Notes:
 			 * - indexing seems to start at 1 in MMG */
 
-			assert(mmg->dim == 3);
+			assert(mmg->dim == 2 || mmg->dim == 3);
 			M.clear();
 			M.vertices.create_vertices((uint)mmg->np);
 			M.edges.create_edges((uint)mmg->na);
@@ -132,6 +170,9 @@ namespace polyfem::mesh
 				{
 					M.vertices.point_ptr(v)[d] = mmg->point[v + 1].c[d];
 				}
+				// Geogram mesh is 3D, init z coordinate to zero for 2D MMG mesh.
+				if (mmg->dim == 2)
+					M.vertices.point_ptr(v)[2] = 0.;
 			}
 			for (uint e = 0; e < M.edges.nb(); ++e)
 			{
@@ -144,7 +185,7 @@ namespace polyfem::mesh
 				M.facets.set_vertex(t, 1, (uint)mmg->tria[t + 1].v[1] - 1);
 				M.facets.set_vertex(t, 2, (uint)mmg->tria[t + 1].v[2] - 1);
 			}
-			for (uint c = 0; c < M.cells.nb(); ++c)
+			for (uint c = 0; mmg->dim == 3 && c < M.cells.nb(); ++c)
 			{
 				M.cells.set_vertex(c, 0, (uint)mmg->tetra[c + 1].v[0] - 1);
 				M.cells.set_vertex(c, 1, (uint)mmg->tetra[c + 1].v[1] - 1);
@@ -254,6 +295,54 @@ namespace polyfem::mesh
 			return true;
 		}
 
+		bool geo_to_mmg2d(const GEO::Mesh &M, MMG5_pMesh &mmg, MMG5_pSol &sol)
+		{
+			assert(M.vertices.dimension() == 3);
+			assert(M.facets.are_simplices());
+
+			MMG2D_Init_mesh(MMG5_ARG_start, MMG5_ARG_ppMesh, &mmg, MMG5_ARG_ppMet, &sol, MMG5_ARG_end);
+			if (!MMG2D_Set_meshSize(mmg, M.vertices.nb(), M.facets.nb(), 0, M.edges.nb()))
+			{
+				logger().error("mmg2d_remesh: failed to allocate the MMG mesh");
+				return false;
+			}
+
+			for (int v = 0; v < mmg->np; ++v)
+			{
+				mmg->point[v + 1].c[0] = M.vertices.point_ptr(v)[0];
+				mmg->point[v + 1].c[1] = M.vertices.point_ptr(v)[1];
+			}
+			for (int e = 0; e < mmg->na; ++e)
+			{
+				// MMG use 1 based indexing.
+				mmg->edge[e + 1].a = M.edges.vertex(e, 0) + 1;
+				mmg->edge[e + 1].b = M.edges.vertex(e, 1) + 1;
+			}
+			for (int t = 0; t < mmg->nt; ++t)
+			{
+				// MMG use 1 based indexing.
+				mmg->tria[t + 1].v[0] = M.facets.vertex(t, 0) + 1;
+				mmg->tria[t + 1].v[1] = M.facets.vertex(t, 1) + 1;
+				mmg->tria[t + 1].v[2] = M.facets.vertex(t, 2) + 1;
+			}
+
+			if (!MMG2D_Set_solSize(mmg, sol, MMG5_Vertex, M.vertices.nb(), MMG5_Scalar))
+			{
+				logger().error("failed to MMG2D_Set_solSize");
+				return false;
+			}
+
+			for (int v = 0; v < M.vertices.nb(); ++v)
+				sol->m[v + 1] = 1.;
+
+			if (!MMG2D_Chk_meshData(mmg, sol))
+			{
+				logger().error("error in mmg: inconsistent mesh and sol");
+				return false;
+			}
+			return true;
+		}
+
 		void mmg2d_free(MMG5_pMesh mmg, MMG5_pSol sol)
 		{
 			MMG2D_Free_all(MMG5_ARG_start,
@@ -284,16 +373,40 @@ namespace polyfem::mesh
 			return ok;
 		}
 
-		bool mmg2d_tri_remesh(const GEO::Mesh &M, GEO::Mesh &M_out, const MmgOptions &opt)
+		bool mmg2d_tri_remesh(
+			const GEO::Mesh &M,
+			const std::vector<int> *pinned_vertices,
+			GEO::Mesh &M_out,
+			const MmgOptions &opt)
 		{
 			MMG5_pMesh mesh = nullptr;
 			MMG5_pSol met = nullptr;
-			bool ok = geo_to_mmg(M, mesh, met, false);
+			bool ok = geo_to_mmg2d(M, mesh, met);
 			if (!ok)
 			{
 				logger().error("mmg2d_remesh: failed to convert mesh to MMG5_pMesh");
 				mmg2d_free(mesh, met);
 				return false;
+			}
+
+			// Pin vertices and edges.
+			std::vector<bool> is_pinned(M.vertices.nb(), false);
+			if (pinned_vertices != nullptr)
+			{
+				for (const int v : *pinned_vertices)
+				{
+					assert(v >= 0 && v < M.vertices.nb());
+					is_pinned[v] = true;
+					MMG2D_Set_requiredVertex(mesh, v + 1);
+				}
+			}
+			for (int e = 0; e < M.edges.nb(); ++e)
+			{
+				if (is_pinned[M.edges.vertex(e, 0)]
+					&& is_pinned[M.edges.vertex(e, 1)])
+				{
+					MMG2D_Set_requiredEdge(mesh, e + 1);
+				}
 			}
 
 			/* Set remeshing options */
@@ -302,10 +415,18 @@ namespace polyfem::mesh
 			{
 				MMG2D_Set_solSize(mesh, met, MMG5_Vertex, 0, MMG5_Tensor);
 			}
-			if (opt.hsiz == 0. || opt.metric_attribute != "no_metric")
+			const bool with_metric = opt.metric_attribute != "no_metric";
+			if (opt.hsiz == 0. || with_metric)
 			{
-				MMG2D_Set_dparameter(mesh, met, MMG2D_DPARAM_hmin, opt.hmin);
-				MMG2D_Set_dparameter(mesh, met, MMG2D_DPARAM_hmax, opt.hmax);
+				if (with_metric || !opt.optim)
+				{
+					MMG2D_Set_dparameter(mesh, met, MMG2D_DPARAM_hmin, opt.hmin);
+					MMG2D_Set_dparameter(mesh, met, MMG2D_DPARAM_hmax, opt.hmax);
+				}
+				else
+				{
+					met->np = 0;
+				}
 			}
 			else
 			{
@@ -319,15 +440,17 @@ namespace polyfem::mesh
 			MMG2D_Set_iparameter(mesh, met, MMG2D_IPARAM_noinsert, int(opt.noinsert));
 			MMG2D_Set_iparameter(mesh, met, MMG2D_IPARAM_nomove, int(opt.nomove));
 			MMG2D_Set_iparameter(mesh, met, MMG2D_IPARAM_nosurf, int(opt.nosurf));
-			if (opt.metric_attribute != "no_metric")
+			MMG2D_Set_iparameter(mesh, met, MMG2D_IPARAM_optim, int(opt.optim));
+			if (with_metric)
 			{
 				if (!M.vertices.attributes().is_defined(opt.metric_attribute))
 				{
 					logger().error("mmg2D_remesh: {} is not a vertex attribute, cancel", opt.metric_attribute);
+					mmg2d_free(mesh, met);
 					return false;
 				}
 				GEO::Attribute<double> h_local(M.vertices.attributes(), opt.metric_attribute);
-				for (uint v = 0; v < M.vertices.nb(); ++v)
+				for (int v = 0; v < M.vertices.nb(); ++v)
 				{
 					met->m[v + 1] = h_local[v];
 				}
@@ -409,7 +532,11 @@ namespace polyfem::mesh
 			return ok;
 		}
 
-		bool mmg3d_tet_remesh(const GEO::Mesh &M, GEO::Mesh &M_out, const MmgOptions &opt)
+		bool mmg3d_tet_remesh(
+			const GEO::Mesh &M,
+			const std::vector<int> *pinned_vertices,
+			GEO::Mesh &M_out,
+			const MmgOptions &opt)
 		{
 			MMG5_pMesh mesh = nullptr;
 			MMG5_pSol met = nullptr;
@@ -421,16 +548,45 @@ namespace polyfem::mesh
 				return false;
 			}
 
+			// Pin vertices and triangles.
+			std::vector<bool> is_pinned(M.vertices.nb(), false);
+			if (pinned_vertices != nullptr)
+			{
+				for (const int v : *pinned_vertices)
+				{
+					assert(v >= 0 && v < M.vertices.nb());
+					is_pinned[v] = true;
+					MMG3D_Set_requiredVertex(mesh, v + 1);
+				}
+			}
+			for (int f = 0; f < M.facets.nb(); ++f)
+			{
+				if (is_pinned[M.facets.vertex(f, 0)]
+					&& is_pinned[M.facets.vertex(f, 1)]
+					&& is_pinned[M.facets.vertex(f, 2)])
+				{
+					MMG3D_Set_requiredTriangle(mesh, f + 1);
+				}
+			}
+
 			/* Set remeshing options */
 			MMG3D_Set_dparameter(mesh, met, MMG3D_DPARAM_angleDetection, opt.angle_value);
 			if (opt.enable_anisotropy)
 			{
 				MMG3D_Set_solSize(mesh, met, MMG5_Vertex, 0, MMG5_Tensor);
 			}
-			if (opt.hsiz == 0. || opt.metric_attribute != "no_metric")
+			const bool with_metric = opt.metric_attribute != "no_metric";
+			if (opt.hsiz == 0. || with_metric)
 			{
-				MMG3D_Set_dparameter(mesh, met, MMG3D_DPARAM_hmin, opt.hmin);
-				MMG3D_Set_dparameter(mesh, met, MMG3D_DPARAM_hmax, opt.hmax);
+				if (with_metric || !opt.optim)
+				{
+					MMG3D_Set_dparameter(mesh, met, MMG3D_DPARAM_hmin, opt.hmin);
+					MMG3D_Set_dparameter(mesh, met, MMG3D_DPARAM_hmax, opt.hmax);
+				}
+				else
+				{
+					met->np = 0;
+				}
 			}
 			else
 			{
@@ -447,15 +603,16 @@ namespace polyfem::mesh
 			MMG3D_Set_iparameter(mesh, met, MMG3D_IPARAM_opnbdy, int(opt.opnbdy));
 			MMG3D_Set_iparameter(mesh, met, MMG3D_IPARAM_optim, int(opt.optim));
 			MMG3D_Set_iparameter(mesh, met, MMG3D_IPARAM_optimLES, int(opt.optimLES));
-			if (opt.metric_attribute != "no_metric")
+			if (with_metric)
 			{
 				if (!M.vertices.attributes().is_defined(opt.metric_attribute))
 				{
 					logger().error("mmg3D_remesh: {} is not a vertex attribute, cancel", opt.metric_attribute);
+					mmg3d_free(mesh, met);
 					return false;
 				}
 				GEO::Attribute<double> h_local(M.vertices.attributes(), opt.metric_attribute);
-				for (uint v = 0; v < M.vertices.nb(); ++v)
+				for (int v = 0; v < M.vertices.nb(); ++v)
 				{
 					met->m[v + 1] = h_local[v];
 				}
@@ -584,32 +741,70 @@ namespace polyfem::mesh
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	bool remesh_2d(
+		const Eigen::MatrixXd &V,
+		const Eigen::MatrixXi &F,
+		Eigen::MatrixXd &OV,
+		Eigen::MatrixXi &OF,
+		MmgOptions opt,
+		const std::vector<int> *pinned_vertices)
+	{
+		assert(V.cols() == 2);
+		assert(F.cols() == 3);
+		GEO::Mesh M, M_out;
+		to_geogram_mesh(V, F, M);
+		if (!mmg2d_tri_remesh(M, pinned_vertices, M_out, opt))
+			return false;
+		Eigen::MatrixXi OT;
+		from_geogram_mesh(M_out, OV, OF, OT);
+		// Geogram mesh is 3d only, truncate unused third column.
+		OV.conservativeResize(OV.rows(), 2);
+		// MMG does not preserve orientation. Ensure singed area is positive.
+		return orient_simplices(OV, OF);
+	}
+
 	void remesh_adaptive_2d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXd &S,
 							Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, MmgOptions opt)
 	{
 		assert(V.cols() == 2 || V.cols() == 3);
 		assert(V.rows() == S.size());
+		assert(F.cols() == 3);
 		GEO::Mesh M, M_out;
 		to_geogram_mesh(V, F, M);
 
-		// Remeshing options
 		opt.metric_attribute = "scalar";
-
 		GEO::Attribute<double> scalar(M.vertices.attributes(), opt.metric_attribute);
 		for (int v = 0; v < M.vertices.nb(); ++v)
-		{
 			scalar[v] = S(v);
-		}
 
-		// Remesh surface
-		mmg2d_tri_remesh(M, M_out, opt);
-
-		// Convert output
+		if (!mmg2d_tri_remesh(M, nullptr, M_out, opt))
+			return;
 		Eigen::MatrixXi OT;
 		from_geogram_mesh(M_out, OV, OF, OT);
-
-		// Promised a 2D mesh, so drop z-coordinate
 		OV.conservativeResize(OV.rows(), 2);
+		orient_simplices(OV, OF);
+	}
+
+	bool remesh_3d(
+		const Eigen::MatrixXd &V,
+		const Eigen::MatrixXi &T,
+		Eigen::MatrixXd &OV,
+		Eigen::MatrixXi &OF,
+		Eigen::MatrixXi &OT,
+		MmgOptions opt,
+		const std::vector<int> *pinned_vertices)
+	{
+		assert(V.cols() == 3);
+		assert(T.cols() == 4);
+		GEO::Mesh M, M_out;
+		Eigen::MatrixXi boundary;
+		igl::boundary_facets(T, boundary);
+		to_geogram_mesh(V, boundary, T, M);
+		if (!mmg3d_tet_remesh(M, pinned_vertices, M_out, opt))
+			return false;
+		from_geogram_mesh(M_out, OV, OF, OT);
+		// MMG does not preserve orientation. Ensure singed area is positive.
+		return orient_simplices(OV, OT);
 	}
 
 	void remesh_adaptive_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &T, const Eigen::VectorXd &S,
@@ -630,10 +825,12 @@ namespace polyfem::mesh
 		}
 
 		// Remesh volume
-		mmg3d_tet_remesh(M, M_out, opt);
+		if (!mmg3d_tet_remesh(M, nullptr, M_out, opt))
+			return;
 
 		// Convert output
 		from_geogram_mesh(M_out, OV, OF, OT);
+		orient_simplices(OV, OT);
 	}
 
 } // namespace polyfem::mesh

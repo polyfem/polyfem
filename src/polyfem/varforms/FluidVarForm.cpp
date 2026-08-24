@@ -923,8 +923,14 @@ namespace polyfem::varform
 		}
 	}
 
-	void StokesVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void StokesVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Stokes does not support initial-condition overrides");
+		assert(!post_step && "Stokes does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();
@@ -1129,8 +1135,14 @@ namespace polyfem::varform
 			args["solver"]["linear"], units.characteristic_length(), nl_solver);
 	}
 
-	void NavierStokesVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NavierStokesVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Navier-Stokes does not support initial-condition overrides");
+		assert(!post_step && "Navier-Stokes does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

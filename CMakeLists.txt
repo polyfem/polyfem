@@ -85,6 +85,11 @@ option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
 option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
 option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
 
+if(POLYFEM_WITH_OPTIMIZATION AND NOT POLYFEM_WITH_MMG)
+    message(STATUS "Enabling MMG because optimization support requires remeshing")
+    set(POLYFEM_WITH_MMG ON CACHE BOOL "Build MMG utils for remeshing" FORCE)
+endif()
+
 if(POLYFEM_PORTABLE_BUILD)
     set(CMAKE_DISABLE_FIND_PACKAGE_AVX ON CACHE BOOL "Disable AVX autodetection for portable builds" FORCE)
 
@@ -351,7 +356,7 @@ endif()
 
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
-    include(mmg)
+    include(mmg_remesh)
     target_link_libraries(polyfem PUBLIC mmg::mmg)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()

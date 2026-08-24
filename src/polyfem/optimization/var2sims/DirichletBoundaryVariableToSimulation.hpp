@@ -29,18 +29,18 @@ namespace polyfem::solver
 	class DirichletBoundaryVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using StatePtrs = std::vector<std::shared_ptr<legacy::State>>;
+		using VarFormPtrs = std::vector<std::shared_ptr<varform::DifferentiableVarForm>>;
 		using DiffCachePtrs = std::vector<std::shared_ptr<DiffCache>>;
 
 		/// @brief Construct DirichletBoundaryVariableToSimulation.
-		/// @param[in] states Shared ptr to all forward sim states.
+		/// @param[in] varforms Shared ptr to all forward sim varforms.
 		/// @param[in] diff_caches Shared ptr to all diff caches.
 		/// @param[in] parametrizations Parametrizations.
 		/// @param[in] active_boundary_ids Active Dirichlet boundary ids. Empty implies all active.
 		/// @param[in] active_time_slices Active time slices. Empty implies all active.
 		/// @throw std::runtime_error Throw if input is invalid.
 		DirichletBoundaryVariableToSimulation(
-			StatePtrs states,
+			VarFormPtrs varforms,
 			DiffCachePtrs diff_caches,
 			CompositeParametrization parametrizations,
 			Eigen::VectorXi active_boundary_ids,
@@ -48,7 +48,7 @@ namespace polyfem::solver
 
 		std::string name() const override;
 		ParameterType parameter_type() const override;
-		bool affect_state(const legacy::State &target) const override;
+		bool affects_varform(const varform::DifferentiableVarForm &target) const override;
 		void update(const Eigen::VectorXd &x) override;
 		void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const override;
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -57,20 +57,20 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const override;
 
 	private:
-		/// boundary order in this var2sim -> component (dim) -> offset in state.boundary_nodes
+		/// boundary order in this var2sim -> component (dim) -> offset in varform.boundary_state().boundary_nodes
 		using BoundaryNodeMap = std::vector<std::vector<std::vector<int>>>;
 
 		int dim_;
 		int time_steps_;
 
-		StatePtrs states_;
+		VarFormPtrs varforms_;
 		DiffCachePtrs diff_caches_;
 		CompositeParametrization parametrization_;
 
 		Eigen::VectorXi active_boundary_ids_;
 		Eigen::VectorXi active_time_slices_;
 
-		/// boundary node map per state.
+		/// boundary node map per varform.
 		std::vector<BoundaryNodeMap> boundary_node_maps_;
 
 		int para_out_dof() const;

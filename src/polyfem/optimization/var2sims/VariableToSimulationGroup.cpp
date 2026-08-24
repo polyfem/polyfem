@@ -15,7 +15,7 @@ namespace polyfem::solver
 	}
 
 	void VariableToSimulationGroup::compute_state_variable(const ParameterType type,
-														   const legacy::State &target,
+														   const varform::DifferentiableVarForm &target,
 														   const Eigen::VectorXd &x,
 														   Eigen::VectorXd &state_variable) const
 	{
@@ -26,7 +26,7 @@ namespace polyfem::solver
 			{
 				continue;
 			}
-			if (!v2s->affect_state(target))
+			if (!v2s->affects_varform(target))
 			{
 				continue;
 			}
@@ -47,7 +47,7 @@ namespace polyfem::solver
 	}
 
 	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(ParameterType type,
-																			  const legacy::State &target,
+																			  const varform::DifferentiableVarForm &target,
 																			  const Eigen::VectorXd &x,
 																			  const std::function<Eigen::VectorXd()> &grad) const
 	{
@@ -58,7 +58,7 @@ namespace polyfem::solver
 			{
 				continue;
 			}
-			if (!v2s->affect_state(target))
+			if (!v2s->affects_varform(target))
 			{
 				continue;
 			}

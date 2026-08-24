@@ -34,7 +34,10 @@ namespace polyfem::varform
 		void assemble_rhs(const mesh::Mesh &mesh) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 		void build_rhs_assembler() override;
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step) override;
 
 	private:
 		int mesh_displacement_ndof() const;

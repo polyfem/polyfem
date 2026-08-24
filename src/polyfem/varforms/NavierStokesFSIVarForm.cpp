@@ -1017,8 +1017,14 @@ namespace polyfem::varform
 		al_solver.solve_reduced(*fsi_problem_, sol, nonlinear_params, args["solver"]["linear"], units.characteristic_length(), nonlinear_solver);
 	}
 
-	void NavierStokesFSIVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NavierStokesFSIVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Navier-Stokes FSI does not support initial-condition overrides");
+		assert(!post_step && "Navier-Stokes FSI does not support post-step callbacks");
+
 		igl::Timer timer;
 		timer.start();
 		prepare_fsi_initial_solution(sol);
