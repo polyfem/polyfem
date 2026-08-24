@@ -224,6 +224,8 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
+    # IPC Toolkit uses TBB internally even when PolyFEM uses C++ threads.
+    target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
     # These definitions help avoid problems with GCC using TBB backend
     target_compile_definitions(polyfem PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
