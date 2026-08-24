@@ -30,7 +30,6 @@
 
 #include <fstream>
 #include <limits>
-
 #include <spdlog/fmt/fmt.h>
 #include <paraviewo/VTMWriter.hpp>
 
@@ -637,10 +636,13 @@ namespace polyfem::varform
 		space.n_bases += new_bases;
 	}
 
-	void VarForm::solve(Eigen::MatrixXd &sol)
+	void VarForm::solve(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
 		prepare();
-		solve_problem(sol);
+		solve_problem(sol, initial_condition_override, post_step);
 	}
 
 	void VarForm::build_node_mapping(

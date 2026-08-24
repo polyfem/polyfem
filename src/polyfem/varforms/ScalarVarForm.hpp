@@ -2,6 +2,9 @@
 
 #include <polyfem/varforms/VarForm.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/solver/SolveData.hpp>
+
 #include <memory>
 
 namespace polysolve::linear
@@ -36,7 +39,7 @@ namespace polyfem::varform
 		void assemble_rhs(const mesh::Mesh &mesh) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 
-	private:
+	protected:
 		void build_rhs_assembler() override;
 
 		FESpace space_;
@@ -53,6 +56,7 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::Assembler> primary_assembler_ = nullptr;
 		std::shared_ptr<assembler::Mass> mass_assembler_ = nullptr;
 		std::shared_ptr<assembler::HRZMass> pure_mass_assembler_ = nullptr;
+		solver::SolveData solve_data_;
 
 		double t0 = 0;
 		int time_steps = 0;
@@ -62,7 +66,10 @@ namespace polyfem::varform
 
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
@@ -77,8 +84,8 @@ namespace polyfem::varform
 			const QuadratureOrders &boundary_samples,
 			const double time,
 			Eigen::MatrixXd &sol);
-		void solve_static(Eigen::MatrixXd &sol);
-		void solve_transient(Eigen::MatrixXd &sol);
+		void solve_static(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
+		void solve_transient(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step);
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};

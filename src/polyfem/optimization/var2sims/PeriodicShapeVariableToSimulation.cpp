@@ -1,9 +1,9 @@
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Core>
@@ -15,49 +15,50 @@
 namespace polyfem::solver
 {
 	PeriodicShapeVariableToSimulation::PeriodicShapeVariableToSimulation(
-		StatePtrs states,
+		VarFormPtrs varforms,
 		DiffCachePtrs diff_caches,
 		CompositeParametrization parametrizations)
-		: dim_(states[0]->mesh->dimension()),
-		  vertex_num_(states[0]->mesh->n_vertices()),
-		  states_(std::move(states)),
+		: dim_(varforms[0]->get_mesh().dimension()),
+		  vertex_num_(varforms[0]->get_mesh().n_vertices()),
+		  varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
-		for (const auto &s : states_)
+		for (const auto &varform : varforms_)
 		{
-			if (s->mesh->dimension() != dim_)
+			if (varform->get_mesh().dimension() != dim_)
 			{
-				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh dimension mismatch between states.");
+				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh dimension mismatch between varforms.");
 			}
-			if (s->mesh->n_vertices() != vertex_num_)
+			if (varform->get_mesh().n_vertices() != vertex_num_)
 			{
-				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh vertex num mismatch between states.");
+				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: mesh vertex num mismatch between varforms.");
 			}
-			if (s->problem->is_time_dependent())
+			if (varform->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: transient simulations are not supported.");
 			}
-			if (!s->has_periodic_bc())
+			if (!varform->has_periodic_boundary())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: periodic boundary conditions are not enabled.");
 			}
-			if (s->periodic_tile_offsets.rows() != dim_ || s->periodic_tile_offsets.cols() != dim_
-				|| Eigen::FullPivLU<Eigen::MatrixXd>(s->periodic_tile_offsets).rank() != dim_)
+			const Eigen::MatrixXd tile_offsets = varform->periodic_tile_offsets();
+			if (tile_offsets.rows() != dim_ || tile_offsets.cols() != dim_
+				|| Eigen::FullPivLU<Eigen::MatrixXd>(tile_offsets).rank() != dim_)
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: partial periodicity is not supported.");
 			}
-			if (!s->is_homogenization())
+			if (!varform->is_homogenization())
 			{
 				log_and_throw_adjoint_error("Fail to construct periodic shape variable to simulation. Reason: only homogenization problems are supported.");
 			}
 		}
 
 		Eigen::MatrixXd V;
-		states_[0]->get_vertices(V);
+		varforms_[0]->get_vertices(V);
 		periodic_mesh_map_ = std::make_unique<PeriodicMeshToMesh>(V);
 	}
 
@@ -71,11 +72,11 @@ namespace polyfem::solver
 		return ParameterType::PeriodicShape;
 	}
 
-	bool PeriodicShapeVariableToSimulation::affect_state(const legacy::State &target) const
+	bool PeriodicShapeVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 				return true;
 		}
 		return false;
@@ -88,11 +89,8 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd V = utils::unflatten(periodic_mesh_map_->eval(y), dim_);
 
-		for (auto &s : states_)
-		{
-			for (int i = 0; i < vertex_num_; ++i)
-				s->mesh->set_point(i, V.row(i));
-		}
+		for (auto &varform : varforms_)
+			varform->set_vertex_positions(V);
 	}
 
 	void PeriodicShapeVariableToSimulation::update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const
@@ -107,15 +105,15 @@ namespace polyfem::solver
 		assert(y.size() == para_out_dof());
 
 		Eigen::VectorXd term, cur_term;
-		for (int i = 0; i < states_.size(); ++i)
+		for (int i = 0; i < varforms_.size(); ++i)
 		{
-			auto &state = states_[i];
+			auto &varform = varforms_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
+			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
 
 			AdjointTools::dJ_periodic_shape_adjoint_term(
-				*state,
+				*varform,
 				*diff_cache,
 				*periodic_mesh_map_,
 				y,
@@ -145,7 +143,7 @@ namespace polyfem::solver
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval() const
 	{
 		Eigen::MatrixXd V;
-		states_[0]->get_vertices(V);
+		varforms_[0]->get_vertices(V);
 
 		Eigen::VectorXd y = periodic_mesh_map_->inverse_eval(utils::flatten(V));
 		return parametrization_.inverse_eval(y);

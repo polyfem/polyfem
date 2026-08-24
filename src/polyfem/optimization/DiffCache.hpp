@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 
 #include <polyfem/utils/Types.hpp>
 
@@ -12,6 +12,7 @@
 #include <Eigen/Core>
 
 #include <cassert>
+#include <optional>
 #include <vector>
 
 namespace polyfem
@@ -21,23 +22,21 @@ namespace polyfem
 	{
 	public:
 		/// Initial-condition override storage for initial condition optimization.
-		legacy::InitialConditionOverride initial_condition_override;
+		std::optional<varform::InitialConditionOverride> initial_condition_override;
 
 		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat);
 
 		/// @brief Cache time-dependent adjoint optimization data.
 		/// @param[in] step Current time step.
-		/// @param[in] state Current forward simulation state. Will mutate it to get latest value.
+		/// @param[in] varform Current forward simulation varform. Will mutate it to get latest value.
 		/// @param[in] sol Current solution.
-		/// @param[in] disp_grad Pointer to displacement gradient matrix. Assumes zero if nullptr.
 		/// @param[in] pressure Pointer to pressure matrix. PASS nullptr ONLY.
 		///
 		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
 		void cache_transient(
 			int step,
-			legacy::State &state,
+			varform::DifferentiableVarForm &varform,
 			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd *disp_grad,
 			const Eigen::MatrixXd *pressure);
 
 		const Eigen::MatrixXd &adjoint_mat() const { return adjoint_mat_; }

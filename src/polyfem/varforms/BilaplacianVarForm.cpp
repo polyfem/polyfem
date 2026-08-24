@@ -709,8 +709,14 @@ namespace polyfem::varform
 		}
 	}
 
-	void BilaplacianVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void BilaplacianVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Bilaplacian does not support initial-condition overrides");
+		assert(!post_step && "Bilaplacian does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

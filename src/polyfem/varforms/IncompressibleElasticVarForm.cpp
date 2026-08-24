@@ -281,7 +281,7 @@ namespace polyfem::varform
 	void IncompressibleElasticVarForm::prepare_initial_solution(Eigen::MatrixXd &sol) const
 	{
 		if (sol.size() <= 0)
-			initial_elastic_solution(sol);
+			initial_solution(sol);
 		if (sol.cols() > 1)
 			sol.conservativeResize(Eigen::NoChange, 1);
 		sol.conservativeResize(stacked_ndof(), sol.cols());
@@ -421,8 +421,14 @@ namespace polyfem::varform
 		}
 	}
 
-	void IncompressibleElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void IncompressibleElasticVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Incompressible elasticity does not support initial-condition overrides");
+		assert(!post_step && "Incompressible elasticity does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

@@ -1,10 +1,10 @@
 #include <polyfem/optimization/var2sims/PressureBoundaryVariableToSimulation.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/var2sims/ActiveSelectionUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -21,40 +21,40 @@ namespace polyfem::solver
 {
 
 	PressureBoundaryVariableToSimulation::PressureBoundaryVariableToSimulation(
-		StatePtrs states,
+		VarFormPtrs varforms,
 		DiffCachePtrs diff_caches,
 		CompositeParametrization parametrizations,
 		Eigen::VectorXi active_boundary_ids,
 		Eigen::VectorXi active_time_slices)
-		: is_transient_(states[0]->problem->is_time_dependent()),
+		: is_transient_(varforms[0]->get_problem().is_time_dependent()),
 		  time_steps_(0),
-		  states_(std::move(states)),
+		  varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations)),
 		  active_boundary_ids_(std::move(active_boundary_ids)),
 		  active_time_slices_(std::move(active_time_slices))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (s->problem->is_time_dependent() != is_transient_)
+			if (varform->get_problem().is_time_dependent() != is_transient_)
 			{
-				log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: inconsistent transient/static states.");
+				log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: inconsistent transient/static varforms.");
 			}
 		}
 
 		// time_step field might not be populated for static problem.
 		if (is_transient_)
 		{
-			time_steps_ = states_[0]->args["time"]["time_steps"].get<int>();
+			time_steps_ = varforms_[0]->get_args()["time"]["time_steps"].get<int>();
 		}
 
 		// Expand implicit all-active boundary id selection (keep JSON order; no sort/unique pass).
 		if (active_boundary_ids_.size() == 0)
 		{
-			json boundary_json = states_[0]->args["boundary_conditions"]["pressure_boundary"];
+			json boundary_json = varforms_[0]->get_args()["boundary_conditions"]["pressure_boundary"];
 			std::vector<int> tmp;
 			for (const json &bc : utils::json_as_array(boundary_json))
 			{
@@ -75,13 +75,13 @@ namespace polyfem::solver
 			active_time_slices_ = Eigen::VectorXi::LinSpaced(time_steps_, 0, time_steps_ - 1);
 		}
 
-		// Validate expanded selections against every state.
+		// Validate expanded selections against every varform.
 		std::string reason;
-		if (!is_active_pressure_boundary_ids_valid(active_boundary_ids_, states_, reason))
+		if (!is_active_pressure_boundary_ids_valid(active_boundary_ids_, varforms_, reason))
 		{
 			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
 		}
-		if (is_transient_ && !is_active_time_slices_valid(active_time_slices_, states_, reason))
+		if (is_transient_ && !is_active_time_slices_valid(active_time_slices_, varforms_, reason))
 		{
 			log_and_throw_adjoint_error("Fail to construct pressure boundary variable to simulation. Reason: {}", reason);
 		}
@@ -97,11 +97,11 @@ namespace polyfem::solver
 		return ParameterType::PressureBC;
 	}
 
-	bool PressureBoundaryVariableToSimulation::affect_state(const legacy::State &target) const
+	bool PressureBoundaryVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 			{
 				return true;
 			}
@@ -114,14 +114,8 @@ namespace polyfem::solver
 		Eigen::VectorXd y = parametrization_.eval(x);
 		assert(y.size() == para_out_dof());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(s->problem);
-			if (!tensor_problem)
-			{
-				log_and_throw_adjoint_error("Only tensor problems are supported.");
-			}
-
 			if (is_transient_)
 			{
 				for (int ti = 0; ti < active_time_slices_.size(); ++ti)
@@ -130,7 +124,7 @@ namespace polyfem::solver
 					for (int bi = 0; bi < active_boundary_ids_.size(); ++bi)
 					{
 						int boundary_id = active_boundary_ids_(bi);
-						tensor_problem->update_pressure_boundary(boundary_id, time_step, y(ti * active_boundary_ids_.size() + bi));
+						varform->set_pressure_boundary(boundary_id, time_step, y(ti * active_boundary_ids_.size() + bi));
 					}
 				}
 			}
@@ -139,7 +133,7 @@ namespace polyfem::solver
 				for (int bi = 0; bi < active_boundary_ids_.size(); ++bi)
 				{
 					int boundary_id = active_boundary_ids_(bi);
-					tensor_problem->update_pressure_boundary(boundary_id, /*time_step=*/1, y(bi));
+					varform->set_pressure_boundary(boundary_id, /*time_step=*/1, y(bi));
 				}
 			}
 		}
@@ -160,18 +154,18 @@ namespace polyfem::solver
 		// Create temp to workaround this.
 		std::vector<int> tmp(active_boundary_ids_.data(), active_boundary_ids_.data() + bnum);
 
-		for (int si = 0; si < states_.size(); ++si)
+		for (int si = 0; si < varforms_.size(); ++si)
 		{
-			auto &state = states_[si];
+			auto &varform = varforms_[si];
 			auto &diff_cache = diff_caches_[si];
 
 			if (is_transient_)
 			{
-				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
+				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*varform, *diff_cache, 1);
 
 				Eigen::VectorXd cur_term;
-				AdjointTools::dJ_pressure_transient_adjoint_term(*state, *diff_cache, tmp, adjoint_nu, adjoint_p, cur_term);
+				AdjointTools::dJ_pressure_transient_adjoint_term(*varform, *diff_cache, tmp, adjoint_nu, adjoint_p, cur_term);
 
 				assert(cur_term.size() == time_steps_ * bnum);
 				for (int ti = 0; ti < active_time_slices_.size(); ++ti)
@@ -182,9 +176,9 @@ namespace polyfem::solver
 			}
 			else
 			{
-				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
+				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
 				Eigen::VectorXd cur_term;
-				AdjointTools::dJ_pressure_static_adjoint_term(*state, tmp, diff_cache->u(0), adjoint_p, cur_term);
+				AdjointTools::dJ_pressure_static_adjoint_term(*varform, tmp, diff_cache->u(0), adjoint_p, cur_term);
 				assert(cur_term.size() == bnum);
 				term += cur_term;
 			}
@@ -204,7 +198,7 @@ namespace polyfem::solver
 		Eigen::VectorXd y = Eigen::VectorXd::Zero(para_out_dof());
 		int bnum = active_boundary_ids_.size();
 
-		json boundary_json = states_[0]->args["boundary_conditions"]["pressure_boundary"];
+		json boundary_json = varforms_[0]->get_args()["boundary_conditions"]["pressure_boundary"];
 		std::vector<json> boundaries = utils::json_as_array(boundary_json);
 
 		for (int bi = 0; bi < bnum; ++bi)
