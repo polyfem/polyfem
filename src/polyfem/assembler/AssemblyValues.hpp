@@ -4,7 +4,6 @@
 
 #include <Eigen/Dense>
 
-
 namespace polyfem
 {
 	namespace assembler

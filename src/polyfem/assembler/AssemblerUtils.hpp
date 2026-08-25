@@ -14,12 +14,14 @@ namespace polyfem::assembler
 
 		static std::shared_ptr<Assembler> make_assembler(const std::string &formulation);
 		static std::shared_ptr<MixedAssembler> make_mixed_assembler(const std::string &formulation);
+		static std::shared_ptr<MixedNLAssembler> make_mixed_nl_assembler(const std::string &formulation);
 
 		enum class BasisType
 		{
 			SIMPLEX_LAGRANGE,
 			CUBE_LAGRANGE,
 			PRISM_LAGRANGE,
+			PYRAMID_LAGRANGE,
 			SPLINE,
 			POLY
 		};
@@ -51,7 +53,7 @@ namespace polyfem::assembler
 		AllElasticMaterials();
 
 		void set_size(const int size);
-		void add_multimaterial(const int index, const json &params, const Units &units);
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path);
 		std::shared_ptr<assembler::ElasticityNLAssembler> get_assembler(const std::string &name) const;
 
 		std::map<std::string, Assembler::ParamFunc> parameters() const;

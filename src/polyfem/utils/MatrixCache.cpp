@@ -222,7 +222,6 @@ namespace polyfem::utils
 
 			current_e_ = -1;
 			current_e_index_ = -1;
-
 		}
 		std::fill(values_.begin(), values_.end(), 0);
 		return mat_;
@@ -240,7 +239,7 @@ namespace polyfem::utils
 
 		if (a.mapping().empty() || mapping().empty())
 		{
-		out->mat_ = a.mat_ + mat_;
+			out->mat_ = a.mat_ + mat_;
 			const size_t this_e_size = second_cache_entries_.size();
 			const size_t a_e_size = a.second_cache_entries_.size();
 

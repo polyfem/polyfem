@@ -57,7 +57,7 @@ namespace polyfem::assembler
 										 Eigen::MatrixXd &dstress_dlambda) const override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		// class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return params_; }

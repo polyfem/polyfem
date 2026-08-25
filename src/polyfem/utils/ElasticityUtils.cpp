@@ -190,6 +190,11 @@ namespace polyfem
 										const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const assembler::NonLinearAssemblerData &)> &funn)
 	{
 		Eigen::MatrixXd hessian;
+#ifdef WIN32
+		(void)fun60;
+		(void)fun81;
+		(void)funN;
+#endif
 
 		switch (size * n_bases)
 		{
@@ -229,6 +234,7 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
+#ifndef WIN32
 		case 60:
 		{
 			auto auto_diff_energy = fun60(data);
@@ -241,19 +247,24 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
+#endif
 		default: // default handled after with hessian size
 			break;
 		}
 
 		if (hessian.size() <= 0)
 		{
+#ifndef WIN32
 			if (n_bases * size <= SMALL_N)
 			{
 				auto auto_diff_energy = funN(data);
 				hessian = auto_diff_energy.getHessian();
 			}
 			else
+#endif
 			{
+				// On Windows/MSVC, the stack-backed dynamic Hessian path can overflow
+				// the stack for modest element sizes. Use the fully dynamic path there.
 				static bool show_message = true;
 
 				if (show_message)
@@ -345,11 +356,23 @@ namespace polyfem
 
 	Eigen::MatrixXd pk1_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
 	{
+		bool fnan = !(F.array() == F.array()).all();
+		bool stressnan = !(stress.array() == stress.array()).all();
+
+		if (fnan || stressnan)
+			return F;
+
 		return F.determinant() * stress * F.inverse().transpose();
 	}
 
 	Eigen::MatrixXd pk2_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
 	{
+		bool fnan = !(F.array() == F.array()).all();
+		bool stressnan = !(stress.array() == stress.array()).all();
+
+		if (fnan || stressnan)
+			return F;
+
 		return F.determinant() * F.inverse() * stress * F.inverse().transpose();
 	}
 } // namespace polyfem

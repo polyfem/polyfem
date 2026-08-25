@@ -1,31 +1,28 @@
 #include "NormalAdhesionForm.hpp"
 
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/Types.hpp>
 
-#include <polyfem/io/OBJWriter.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
+#include <ipc/potentials/potential.hpp>
 
-#include <ipc/barrier/adaptive_stiffness.hpp>
-#include <ipc/utils/world_bbox_diagonal_length.hpp>
-
-#include <igl/writePLY.h>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 
 namespace polyfem::solver
 {
 	NormalAdhesionForm::NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
-							const double dhat_p,
-							const double dhat_a,
-							const double Y,
-							const bool is_time_dependent,
-							const bool enable_shape_derivatives,
-							const ipc::BroadPhaseMethod broad_phase_method,
-							const double ccd_tolerance,
-							const int ccd_max_iterations)
+										   const double dhat_p,
+										   const double dhat_a,
+										   const double Y,
+										   const bool is_time_dependent,
+										   const bool enable_shape_derivatives,
+										   const ipc::BroadPhaseMethod broad_phase_method,
+										   const double ccd_tolerance,
+										   const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
 		  dhat_p_(dhat_p),
 		  dhat_a_(dhat_a),
@@ -48,16 +45,6 @@ namespace polyfem::solver
 	void NormalAdhesionForm::init(const Eigen::VectorXd &x)
 	{
 		update_collision_set(compute_displaced_surface(x));
-	}
-
-	void NormalAdhesionForm::force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
-
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(normal_adhesion_potential_.shape_derivative(collision_set, collision_mesh_, displaced_surface));
-		term = dq_h.transpose() * adjoint_sol;
 	}
 
 	void NormalAdhesionForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -153,9 +140,12 @@ namespace polyfem::solver
 
 		ipc::PSDProjectionMethod psd_projection_method;
 
-		if (project_to_psd_) {
+		if (project_to_psd_)
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
+		}
+		else
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
@@ -198,5 +188,4 @@ namespace polyfem::solver
 		prev_distance_ = curr_distance;
 	}
 
-	
 } // namespace polyfem::solver

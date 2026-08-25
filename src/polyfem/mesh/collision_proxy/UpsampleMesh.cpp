@@ -22,7 +22,7 @@ namespace polyfem::mesh
 		{
 			// c
 			// | \
-    		// a--b
+			// a--b
 			Eigen::MatrixXd V(coords.rows(), a.size());
 			for (int i = 0; i < coords.rows(); i++)
 			{

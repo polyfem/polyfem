@@ -68,16 +68,33 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
+option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
+option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
-option(POLYFEM_WITH_BEZIER   "Use bezier, for Jacobian positivity check"    ON)
+set(POLYFEM_WITH_MISO "Use miso-generated code for Jacobian check" ON)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
+option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
+option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
+option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
+option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
+
+if(POLYFEM_PORTABLE_BUILD)
+    set(CMAKE_DISABLE_FIND_PACKAGE_AVX ON CACHE BOOL "Disable AVX autodetection for portable builds" FORCE)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
+        set(SIMD_C_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C programs with SIMD support" FORCE)
+        set(SIMD_CXX_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C++ programs with SIMD support" FORCE)
+    else()
+        set(IPC_TOOLKIT_WITH_SIMD OFF CACHE BOOL "Enable SIMD" FORCE)
+    endif()
+endif()
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -91,9 +108,9 @@ endif()
 
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to use" FORCE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require the selected C++ standard" FORCE)
+    set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler-specific C++ extensions" FORCE)
 endif()
 
 ### Configuration
@@ -110,6 +127,10 @@ include(polyfem_use_colors)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (POLYFEM_SILENCE_DEP_WARNINGS)
+  include(polyfem_silence_dep_warnings)
+endif()
 
 ################################################################################
 # Polyfem library
@@ -146,12 +167,10 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
+if(POLYFEM_WITH_OPTIMIZATION)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
+endif()
+
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -161,40 +180,29 @@ endif ()
 # CUDA
 ################################################################################
 
-if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
-    include(CheckLanguage)
-    check_language(CUDA)
-    if(CMAKE_CUDA_COMPILER)
-        enable_language(CUDA)
-    else()
-        message(FATAL_ERROR "No CUDA support found!")
-    endif()
+if (POLYFEM_WITH_CUDA)
+  # If CMAKE_CUDA_ARCHITECTURES was not specified, set it to native.
+  if(DEFINED CMAKE_CUDA_ARCHITECTURES)
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was specified, skipping auto-detection")
+  else()
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was not specified, set it to native")
+    set(CMAKE_CUDA_ARCHITECTURES "native")
+  endif()
+  message(STATUS "Targeting CUDA_ARCHITECTURES \"${CMAKE_CUDA_ARCHITECTURES}\"")
 
-    set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  # Enable CUDA support
+  enable_language(CUDA)
+  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24.0")
-        set(CMAKE_CUDA_ARCHITECTURES "native")
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "native")
-    else()
-        include(FindCUDA/select_compute_arch)
-        CUDA_DETECT_INSTALLED_GPUS(CUDA_ARCH_LIST)
-        string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
-        string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
-    endif()
+  # Enalbe CUDA support for libraries.
+  set(IPC_TOOLKIT_WITH_CUDA ON)
+  set(POLYSOLVE_WITH_CUDA ON)
 endif()
 
 ################################################################################
 # Required libraries
 ################################################################################
-
-if(WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
 
 # polysolve
 include(polysolve)
@@ -202,13 +210,8 @@ target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # libigl
 include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
+target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 
-if(NOT WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -271,10 +274,10 @@ include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # Jacobian
-if(POLYFEM_WITH_BEZIER)
-    include(bezier)
-    target_link_libraries(polyfem PRIVATE bezier)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_BEZIER)
+if(POLYFEM_WITH_MISO)
+    include(hocgv_miso)
+    target_link_libraries(polyfem PRIVATE miso)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
 endif()
 
 # spdlog
@@ -305,9 +308,52 @@ target_link_libraries(polyfem PUBLIC units::units)
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
+
+
+################################################################################
+# JSON specifications
+################################################################################
+
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+set(POLYFEM_GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated")
+set(POLYFEM_EMBEDDED_SPEC_DIR "${POLYFEM_GENERATED_INCLUDE_DIR}/polyfem/embedded_spec")
+
+jse_add_spec(polyfem_spec
+	ALIAS polyfem::spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_opt_spec
+	ALIAS polyfem::opt_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_opt.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_objective_spec
+	ALIAS polyfem::objective_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_objective.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATED_INCLUDE_DIR}>")
+add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec)
+target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec)
+
 ################################################################################
 # Optional libraries
 ################################################################################
+
+if(POLYFEM_WITH_PYTHON)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+    include(pybind11)
+    target_link_libraries(polyfem PUBLIC pybind11::embed Python3::Python)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_PYTHON)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_PYTHON_EXECUTABLE="${Python3_EXECUTABLE}")
+endif()
 
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
@@ -316,12 +362,16 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-# wmtk library
-# Include lagrange first to fetch a newer version than
-# what is used in the toolkit.
-include(lagrange)
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
+if(POLYFEM_WITH_ITR)
+    # wmtk library
+    # Include lagrange first to fetch a newer version than
+    # what is used in the toolkit.
+    include(lagrange)
+    include(wmtk)
+    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_ITR)
+endif()
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)

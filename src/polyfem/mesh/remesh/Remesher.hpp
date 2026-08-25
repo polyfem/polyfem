@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 
@@ -16,6 +16,8 @@ namespace polyfem::time_integrator
 
 namespace polyfem::mesh
 {
+	using State = polyfem::legacy::State;
+
 	class Remesher
 	{
 		// --------------------------------------------------------------------

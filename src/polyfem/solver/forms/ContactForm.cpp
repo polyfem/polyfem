@@ -29,6 +29,7 @@ namespace polyfem::solver
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
+		  barrier_stiffness_(1.0),
 		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),

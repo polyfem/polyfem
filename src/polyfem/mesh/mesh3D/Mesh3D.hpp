@@ -89,6 +89,7 @@ namespace polyfem
 			//  │╱  \ │
 			// v0────v1
 			std::array<int, 6> get_ordered_vertices_from_prism(const int element_index) const;
+			std::array<int, 5> get_ordered_vertices_from_pyramid(const int element_index) const;
 
 			virtual void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const = 0;
 			virtual void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const = 0;

@@ -5,8 +5,11 @@ set(AUTOGEN_BASES
 	auto_q_bases_1d_nodes.cpp
 	auto_q_bases_1d_grad.cpp
 
-		auto_b_bases.cpp
+	auto_b_bases.cpp
 	auto_b_bases.hpp
+
+	auto_pyramid_bases.cpp
+	auto_pyramid_bases.hpp
 
 	auto_q_bases_2d_val.cpp
 	auto_q_bases_2d_nodes.cpp
@@ -54,16 +57,25 @@ target_link_libraries(lib_n_bases PRIVATE Eigen3::Eigen)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${AUTOGEN})
 
-if(WIN32)
-	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -Od)
-	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -bigobj)
-endif()
+
 
 add_library(polyfem_autogen ${AUTOGEN_BASES})
 target_include_directories(polyfem_autogen PRIVATE ${PROJECT_BINARY_DIR}/include)
 target_link_libraries(polyfem_autogen PRIVATE Eigen3::Eigen lib_n_bases)
 
 target_compile_features(polyfem_autogen PRIVATE cxx_std_17)
+
+if(MSVC)
+	cmake_policy(SET CMP0141 NEW)
+
+	set_property(TARGET polyfem_autogen PROPERTY MSVC_DEBUG_INFORMATION_FORMAT "")
+
+	target_compile_options(polyfem_autogen PRIVATE 
+	/Oy-
+	/bigobj)
+
+	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_OPTIONS "/Od;/Ob0;/GL-")
+endif()
 
 target_link_libraries(polyfem PRIVATE polyfem_autogen)
 target_sources(polyfem PRIVATE ${SOURCES} ${AUTOGEN})

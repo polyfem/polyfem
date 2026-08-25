@@ -15,6 +15,14 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		class Mesh;
+
+		struct MeshWithID
+		{
+			int id;
+			std::unique_ptr<Mesh> mesh;
+		};
+
 		/// Type of Element, check [Poly-Spline Finite Element Method] for a complete description.
 		/// **NOTE**:
 		/// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope
@@ -32,6 +40,7 @@ namespace polyfem
 			INTERIOR_POLYTOPE,             /// Interior polytope
 			BOUNDARY_POLYTOPE,             /// Boundary polytope
 			PRISM,                         /// Prism
+			PYRAMID,                       /// Pyramid
 			UNDEFINED,                     /// For invalid configurations
 		};
 
@@ -103,6 +112,9 @@ namespace polyfem
 			/// @brief Create a copy of the mesh
 			/// @return pointer to the new copy mesh
 			virtual std::unique_ptr<Mesh> copy() const = 0;
+
+			/// Split the mesh according to its per-element geometry IDs.
+			std::vector<MeshWithID> split() const;
 
 		protected:
 			///
@@ -415,6 +427,12 @@ namespace polyfem
 			/// @return is a prism
 			bool is_prism(const int el_id) const;
 
+			/// @brief checks if element is a pyramid
+			///
+			/// @param[in] el_id element id
+			/// @return is a pyramid
+			bool is_pyramid(const int el_id) const;
+
 			/// @brief Returns the elements types
 			///
 			/// @return vector of element types
@@ -517,6 +535,22 @@ namespace polyfem
 			{
 				return body_ids_;
 			}
+
+			/// Set the geometry selection, one ID per element.
+			void set_geometry_ids(const std::vector<int> &geometry_ids)
+			{
+				assert(geometry_ids.size() == n_elements());
+				geometry_ids_ = geometry_ids;
+			}
+
+			/// Get the geometry ID of an element. The default geometry is 0.
+			int get_geometry_id(const int element) const
+			{
+				return has_geometry_ids() ? geometry_ids_.at(element) : 0;
+			}
+
+			const std::vector<int> &get_geometry_ids() const { return geometry_ids_; }
+			bool has_geometry_ids() const { return !geometry_ids_.empty(); }
 			/// @brief checks if points selections are available
 			///
 			/// @return points selections are available
@@ -585,6 +619,20 @@ namespace polyfem
 				for (int i = 0; i < n_elements(); ++i)
 				{
 					if (is_prism(i))
+						return true;
+				}
+
+				return false;
+			}
+
+			/// @brief checks if the mesh has pyramids
+			///
+			/// @return if the mesh has pyramids
+			bool has_pyramids() const
+			{
+				for (int i = 0; i < n_elements(); ++i)
+				{
+					if (is_pyramid(i))
 						return true;
 				}
 
@@ -661,6 +709,10 @@ namespace polyfem
 			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
+			/// Remove all top-dimensional elements whose mask entry is false.
+			virtual void remove_elements(const std::vector<bool> &keep) = 0;
+			void filter_element_data(const std::vector<bool> &keep);
+
 			/// @brief loads a mesh from the path
 			///
 			/// @param[in] path file location
@@ -680,6 +732,8 @@ namespace polyfem
 			std::vector<int> boundary_ids_;
 			/// list of volume labels
 			std::vector<int> body_ids_;
+			/// list of geometry labels, one per top-dimensional element
+			std::vector<int> geometry_ids_;
 			/// list of geometry orders, one per cell
 			Eigen::MatrixXi orders_;
 			/// stores if the mesh is rational

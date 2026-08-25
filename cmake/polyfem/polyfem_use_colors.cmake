@@ -21,7 +21,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   # https://developercommunity.visualstudio.com/content/problem/220812/experimentalexternal-generates-a-lot-of-c4193-warn.html
   if(MSVC_VERSION GREATER 1920)
       add_compile_options(/experimental:external)
-      add_compile_options(/external:W1)
+      add_compile_options(/external:W0)
   endif()
 
   # When building in parallel, MSVC sometimes fails with the following error:

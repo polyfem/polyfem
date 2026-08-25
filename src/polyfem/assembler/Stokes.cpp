@@ -6,11 +6,11 @@ namespace polyfem::assembler
 		: viscosity_("viscosity")
 	{
 	}
-	void StokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
+	void StokesVelocity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 
-		viscosity_.add_multimaterial(index, params, units.viscosity());
+		viscosity_.add_multimaterial(index, params, units.viscosity(), root_path);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

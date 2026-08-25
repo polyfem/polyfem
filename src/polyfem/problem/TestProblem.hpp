@@ -20,7 +20,7 @@ namespace polyfem
 
 			bool is_scalar() const override { return params_["is_scalar"]; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 		private:
 			template <typename T>

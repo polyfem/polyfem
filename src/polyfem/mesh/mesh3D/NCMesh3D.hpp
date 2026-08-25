@@ -378,6 +378,7 @@ namespace polyfem
 			};
 
 		protected:
+			void remove_elements(const std::vector<bool> &keep) override;
 			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &M) override;
 

@@ -108,7 +108,7 @@ namespace polyfem::solver
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite
-		void set_project_to_psd(bool val) { project_to_psd_ = val; }
+		virtual void set_project_to_psd(bool val) { project_to_psd_ = val; }
 
 		/// @brief Get if the form's second derivative is projected to psd
 		bool is_project_to_psd() const { return project_to_psd_; }

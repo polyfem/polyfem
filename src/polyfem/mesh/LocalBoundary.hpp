@@ -14,6 +14,7 @@ namespace polyfem
 			TRI_LINE,  ///< Boundary of a triangle in 2D
 			QUAD_LINE, ///< Boundary of a quad in 2D
 			PRISM,
+			PYRAMID,
 			TRI,
 			QUAD,
 			POLYGON,

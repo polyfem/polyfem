@@ -6,11 +6,8 @@ set(test_sources
   test_assembler.cpp
   test_bases.cpp
   test_clipping.cpp
-  test_diff.cpp
-  test_opt.cpp
   test_cmesh.cpp
   test_collision_proxy.cpp
-  test_form_derivatives.cpp
   test_geometry_utils.cpp
   test_hdf5.cpp
   test_interpolation.cpp
@@ -18,9 +15,9 @@ set(test_sources
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_navier_stokes_forms.cpp
   test_output.cpp
-  test_parametrizations.cpp
-  test_periodic.cpp
+  test_periodic_boundary.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp
@@ -28,8 +25,19 @@ set(test_sources
   test_tbb.cpp
   test_time_integrators.cpp
   test_utils.cpp
+  test_varform_factory.cpp
   verify_run.cpp
+  test_hgo_dispersion.cpp
 )
+
+if(POLYFEM_WITH_OPTIMIZATION)
+  list(APPEND test_sources
+    test_diff.cpp
+    test_opt.cpp
+    test_form_derivatives.cpp
+    test_parametrizations.cpp
+  )
+endif()
 
 add_executable(unit_tests ${test_sources})
 # set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
@@ -79,24 +87,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests)
-
-################################################################################
-# CUDA
-################################################################################
-
-if(IPC_TOOLKIT_WITH_CUDA)
-  include(CheckLanguage)
-  check_language(CUDA)
-  if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-  else()
-    message(FATAL_ERROR "No CUDA support found!")
-  endif()
-
-  # Nvidia 1080/1080Ti -> compute_61
-  # Nvidia V100 -> compute_70
-  # Nvidia RTX8000 -> compute_75
-  # Nvidia 3080Ti -> compute_86
-  set_target_properties(unit_tests PROPERTIES CUDA_ARCHITECTURES "70;75;86")
-endif()
+catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS EXTRA_ARGS --rng-seed 1)

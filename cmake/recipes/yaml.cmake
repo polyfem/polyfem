@@ -8,4 +8,9 @@ endif()
 message(STATUS "Third-party: creating target 'yaml-cpp::yaml-cpp'")
 
 include(CPM)
-CPMAddPackage("gh:jbeder/yaml-cpp#0.8.0")
+CPMAddPackage(
+    NAME yaml-cpp
+    GITHUB_REPOSITORY jbeder/yaml-cpp
+    VERSION 0.9.0
+    GIT_TAG yaml-cpp-0.9.0
+)

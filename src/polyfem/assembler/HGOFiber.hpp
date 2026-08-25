@@ -11,7 +11,7 @@ namespace polyfem::assembler
 		HGOFiber();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "HGOFiber"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -26,6 +26,9 @@ namespace polyfem::assembler
 			const double k1 = k1_(p, t, el_id);
 			const double k2 = k2_(p, t, el_id);
 			const T i4Bar = I4Bar(p, t, el_id, def_grad);
+
+			if (i4Bar <= T(1.0))
+				return T(0.0);
 
 			const T temp = i4Bar - T(1.0);
 

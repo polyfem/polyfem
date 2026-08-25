@@ -22,6 +22,45 @@ namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
 
+	void apply_geometry_selection(
+		Mesh &mesh,
+		const json &geometry_selection,
+		const std::string &root_path)
+	{
+		if (geometry_selection.is_object() && geometry_selection.contains("same_as_volume"))
+		{
+			if (!geometry_selection["same_as_volume"].get<bool>())
+				return;
+
+			std::vector<int> geometry_ids(mesh.n_elements());
+			for (int e = 0; e < mesh.n_elements(); ++e)
+				geometry_ids[e] = mesh.get_body_id(e);
+			mesh.set_geometry_ids(geometry_ids);
+			return;
+		}
+
+		Selection::BBox bbox;
+		mesh.bounding_box(bbox[0], bbox[1]);
+		const auto selections = Selection::build_selections(geometry_selection, bbox, root_path);
+
+		Eigen::MatrixXd barycenters;
+		mesh.compute_element_barycenters(barycenters);
+		std::vector<int> geometry_ids(mesh.n_elements(), 0);
+		for (int e = 0; e < mesh.n_elements(); ++e)
+		{
+			const auto vertices = mesh.element_vertices(e);
+			for (const auto &selection : selections)
+			{
+				if (selection->inside(e, vertices, barycenters.row(e)))
+				{
+					geometry_ids[e] = selection->id(e, vertices, barycenters.row(e));
+					break;
+				}
+			}
+		}
+		mesh.set_geometry_ids(geometry_ids);
+	}
+
 	std::unique_ptr<Mesh> read_fem_mesh(
 		const Units &units,
 		const json &j_mesh,
@@ -66,6 +105,10 @@ namespace polyfem::mesh
 		mesh->bounding_box(bbox[0], bbox[1]);
 
 		// --------------------------------------------------------------------
+		std::vector<std::shared_ptr<Selection>> surface_selections =
+			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
+
+		// --------------------------------------------------------------------
 
 		const int n_refs = j_mesh["n_refs"];
 		const double refinement_location = j_mesh["advanced"]["refinement_location"];
@@ -79,6 +122,9 @@ namespace polyfem::mesh
 		// }
 		if (n_refs > 0)
 		{
+			if (mesh->has_boundary_ids() && surface_selections.empty())
+				log_and_throw_error("Unable to refine a mesh with stored surface selections; provide an explicit surface_selection to recompute them after refinement.");
+
 			// Check if the stored volume selection is uniform.
 			assert(mesh->n_elements() > 0);
 			const int uniform_value = mesh->get_body_id(0);
@@ -144,13 +190,26 @@ namespace polyfem::mesh
 
 		if (!node_selections.empty())
 		{
+			bool boundary_only = true;
+			for (const auto &selection : node_selections)
+			{
+				if (!selection->boundary_only())
+				{
+					boundary_only = false;
+					break;
+				}
+			}
+
 			mesh->compute_node_ids([&](const size_t n_id, const RowVectorNd &p, bool is_boundary) {
-				if (!is_boundary)
+				if (boundary_only && !is_boundary)
 					return -1;
 
 				const std::vector<int> tmp = {int(n_id)};
 				for (const auto &selection : node_selections)
 				{
+					if (selection->boundary_only() && !is_boundary)
+						continue;
+
 					if (selection->inside(n_id, tmp, p))
 						return selection->id(n_id, tmp, p);
 				}
@@ -163,17 +222,27 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		std::vector<std::shared_ptr<Selection>> surface_selections =
-			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
-
 		if (!surface_selections.empty())
 		{
+			bool boundary_only = true;
+			for (const auto &selection : surface_selections)
+			{
+				if (!selection->boundary_only())
+				{
+					boundary_only = false;
+					break;
+				}
+			}
+
 			mesh->compute_boundary_ids([&](const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p, bool is_boundary) {
-				if (!is_boundary)
+				if (boundary_only && !is_boundary)
 					return -1;
 
 				for (const auto &selection : surface_selections)
 				{
+					if (selection->boundary_only() && !is_boundary)
+						continue;
+
 					if (selection->inside(p_id, vs, p))
 						return selection->id(p_id, vs, p);
 				}
@@ -219,6 +288,11 @@ namespace polyfem::mesh
 				return 0;
 			});
 		}
+
+		// --------------------------------------------------------------------
+
+		if (is_param_valid(j_mesh, "geometry_selection"))
+			apply_geometry_selection(*mesh, j_mesh["geometry_selection"], root_path);
 
 		// --------------------------------------------------------------------
 
@@ -592,7 +666,7 @@ namespace polyfem::mesh
 				}
 
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacement);
+					vertices, codim_vertices, codim_edges, faces, displacement, root_path);
 			}
 			else if (geometry["type"] == "plane")
 			{

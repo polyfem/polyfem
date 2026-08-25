@@ -3,6 +3,15 @@
 
 namespace polyfem::assembler
 {
+	namespace
+	{
+		inline RowVectorNd zero_point(const int dim)
+		{
+			assert(dim == 2 || dim == 3);
+			return RowVectorNd::Zero(dim);
+		}
+	} // namespace
+
 	Helmholtz::Helmholtz()
 		: k_("k")
 	{
@@ -33,26 +42,23 @@ namespace polyfem::assembler
 	{
 		Eigen::Matrix<double, 1, 1> result;
 		assert(pt.size() == 1);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
-		for (int d = 0; d < size(); ++d)
-			val(d) = 0;
+		const RowVectorNd val = zero_point(pt(0).getHessian().rows());
 
 		const double tmp = k_(val, 0, 0);
 		result(0) = pt(0).getHessian().trace() + tmp * tmp * pt(0).getValue();
 		return result;
 	}
 
-	void Helmholtz::add_multimaterial(const int index, const json &params, const Units &units)
+	void Helmholtz::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
-		k_.add_multimaterial(index, params, "");
+		k_.add_multimaterial(index, params, "", root_path);
 	}
 
 	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
-		val.setZero();
+		const RowVectorNd val = zero_point(dim);
 		const double tmp = k_(val, 0, 0);
 
 		if (dim == 2)

@@ -7,11 +7,11 @@ namespace polyfem::assembler
 	{
 	}
 
-	void MooneyRivlinElasticity::add_multimaterial(const int index, const json &params, const Units &units)
+	void MooneyRivlinElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
-		c1_.add_multimaterial(index, params, units.stress());
-		c2_.add_multimaterial(index, params, units.stress());
-		k_.add_multimaterial(index, params, units.stress());
+		c1_.add_multimaterial(index, params, units.stress(), root_path);
+		c2_.add_multimaterial(index, params, units.stress(), root_path);
+		k_.add_multimaterial(index, params, units.stress(), root_path);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> MooneyRivlinElasticity::parameters() const

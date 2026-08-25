@@ -20,7 +20,7 @@ namespace polyfem
 			std::map<std::string, ParamFunc> parameters() const override;
 
 			// inialize material parameter
-			void add_multimaterial(const int index, const json &params, const Units &units) override;
+			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 			/// computes local stiffness matrix (1x1) for bases i,j
 			/// where i,j is passed in through data

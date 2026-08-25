@@ -200,14 +200,14 @@ namespace polyfem
 			return res;
 		}
 
-		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
 			val.setZero();
 		}
 
-		void KernelProblem::set_parameters(const json &params)
+		void KernelProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("n_kernels") && !params["n_kernels"] > 0)
 				n_kernels_ = params["n_kernels"];

@@ -94,16 +94,16 @@ namespace polyfem
 		public:
 			PointBasedTensorProblem(const std::string &name);
 
-			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			bool is_rhs_zero(const int fe_space_id = -1) const override { return abs(rhs_) < 1e-10; }
 
-			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 			void add_constant(const int bc_tag, const Eigen::Vector3d &value)
 			{
@@ -130,8 +130,12 @@ namespace polyfem
 			void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 			void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 
-			bool is_dimension_dirichet(const int tag, const int dim) const override;
-			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
+			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
+			bool all_dimensions_dirichlet(const int fe_space_id) const override
+			{
+				(void)fe_space_id;
+				return all_dimensions_dirichlet_;
+			}
 
 		private:
 			bool initialized_ = false;

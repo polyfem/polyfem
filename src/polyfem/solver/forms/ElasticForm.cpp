@@ -3,12 +3,19 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/utils/Jacobian.hpp>
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <memory>
+#include <stdexcept>
+#include <tuple>
+#include <vector>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -18,27 +25,13 @@ namespace polyfem::solver
 {
 	namespace
 	{
-		class LocalThreadVecStorage
-		{
-		public:
-			Eigen::MatrixXd vec;
-			assembler::ElementAssemblyValues vals;
-			QuadratureVector da;
-
-			LocalThreadVecStorage(const int size)
-			{
-				vec.resize(size, 1);
-				vec.setZero();
-			}
-		};
-
 		Eigen::MatrixXd refined_nodes(const int dim, const int i)
 		{
 			Eigen::MatrixXd A(dim + 1, dim);
 			if (dim == 2)
 			{
-				A << 0., 0., 
-					1., 0., 
+				A << 0., 0.,
+					1., 0.,
 					0., 1.;
 				switch (i)
 				{
@@ -60,9 +53,9 @@ namespace polyfem::solver
 			}
 			else
 			{
-				A << 0, 0, 0, 
-					1, 0, 0, 
-					0, 1, 0, 
+				A << 0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
 					0, 0, 1;
 				switch (i)
 				{
@@ -79,31 +72,34 @@ namespace polyfem::solver
 					break;
 				case 4:
 				{
-					Eigen::VectorXd tmp = 1 - A.col(1).array() - A.col(2).array();
-					A.col(2) += A.col(0) + A.col(1);
+					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
+					A.col(2) += A.col(1);
+					A.col(1) = A.col(0);
 					A.col(0) = tmp;
 					break;
 				}
 				case 5:
 				{
-					Eigen::VectorXd tmp = 1. - A.col(1).array();
-					A.col(2) += A.col(1);
+					Eigen::VectorXd tmp = 1. - A.col(0).array();
 					A.col(1) += A.col(0);
 					A.col(0) = tmp;
 					break;
 				}
 				case 6:
 				{
-					Eigen::VectorXd tmp = A.col(0) + A.col(1);
-					A.col(1) = 1. - A.col(0).array();
-					A.col(0) = tmp;
+					Eigen::VectorXd tmp0 = A.col(0);
+					Eigen::VectorXd tmp1 = A.col(1);
+					A.col(0) = tmp1;
+					A.col(1) = 1. - tmp0.array() - tmp1.array();
+					A.col(2) += tmp0 + tmp1;
 					break;
 				}
 				case 7:
 				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
-					A.col(1) += A.col(2);
-					A.col(2) = tmp;
+					Eigen::VectorXd tmp = A.col(1);
+					A.col(0) += tmp;
+					A.col(1) = 1. - tmp.array();
+					A.col(2) += tmp;
 					break;
 				}
 				default:
@@ -128,13 +124,13 @@ namespace polyfem::solver
 			for (int i = 0; i < tree.n_children(); i++)
 			{
 				Eigen::MatrixXd uv;
-				uv.setZero(dim+1, dim+1);
+				uv.setZero(dim + 1, dim + 1);
 				uv.rightCols(dim) = refined_nodes(dim, i);
 				if (dim == 2)
 					uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
 				else
 					uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
-				
+
 				Eigen::MatrixXd pts_ = uv * pts;
 
 				auto [tmp, L] = extract_subelement(pts_, tree.child(i));
@@ -151,7 +147,7 @@ namespace polyfem::solver
 			}
 			return {out, levels};
 		}
-	
+
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
 		{
 			Eigen::MatrixXd pts(dim + 1, dim);
@@ -177,7 +173,11 @@ namespace polyfem::solver
 			else
 			{
 				TetQuadrature tet_quadrature(true);
-				tet_quadrature.get_quadrature(order, tmp);
+				// The corner rule for order 4 (Liu-Vinokur 9) has a large negative
+				// weight at the centroid, which corrupts non-polynomial integrands
+				// like NeoHookean near inversion. Order 5 has all-positive weights.
+				const int safe_order = (order == 4) ? 5 : order;
+				tet_quadrature.get_quadrature(safe_order, tmp);
 				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
 				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
 			}
@@ -190,40 +190,10 @@ namespace polyfem::solver
 				quad.points.middleRows(i * tmp.size(), tmp.size()) = tmp.points * quad_points.middleRows(i * (dim + 1), dim + 1);
 				quad.weights.segment(i * tmp.size(), tmp.size()) = tmp.weights / pow(2, dim * levels[i]);
 			}
-			assert (fabs(quad.weights.sum() - tmp.weights.sum()) < 1e-8);
+			assert(fabs(quad.weights.sum() - tmp.weights.sum()) < 1e-8);
 
 			return quad;
 		}
-
-		// Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
-		// {
-		// 	assembler::ElementAssemblyValues vals;
-		// 	vals.compute(0, uv.cols() == 3, uv, bs, gbs);
-
-		// 	Eigen::MatrixXd out(uv.rows(), 2);
-		// 	for (long p = 0; p < uv.rows(); ++p)
-		// 	{
-		// 		Eigen::MatrixXd disp_grad;
-		// 		disp_grad.setZero(uv.cols(), uv.cols());
-
-		// 		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
-		// 		{
-		// 			const auto &loc_val = vals.basis_values[j];
-
-		// 			for (int d = 0; d < uv.cols(); ++d)
-		// 			{
-		// 				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
-		// 				{
-		// 					disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-		// 		out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
-		// 	}
-		// 	return out;
-		// }
 
 		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
 		{
@@ -249,7 +219,8 @@ namespace polyfem::solver
 							 const double t, const double dt,
 							 const bool is_volume,
 							 const double jacobian_threshold,
-							 const ElementInversionCheck check_inversion)
+							 const ElementInversionCheck check_inversion,
+							 const unsigned conservative_max_iter)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
@@ -258,6 +229,7 @@ namespace polyfem::solver
 		  t_(t),
 		  jacobian_threshold_(jacobian_threshold),
 		  check_inversion_(check_inversion),
+		  conservative_max_iter_(conservative_max_iter),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -268,14 +240,14 @@ namespace polyfem::solver
 		quadrature_hierarchy_.resize(bases_.size());
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
-	
+
 		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{
 			Eigen::VectorXd x0;
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
 			if (!is_step_collision_free(x0, x0))
 				log_and_throw_error("Initial state has inverted elements!");
-				
+
 			int basis_order = 0;
 			int gbasis_order = 0;
 			for (int e = 0; e < bases_.size(); e++)
@@ -289,6 +261,14 @@ namespace polyfem::solver
 				else if (gbasis_order != geom_bases_[e].bases.front().order())
 					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
+
+			// Replace the corner quadrature set by LagrangeBasis for every element.
+			// The default corner rule for order 4 has a negative centroid weight
+			// (see refine_quadrature); override it here so the base quadrature is
+			// also safe before any adaptive refinement occurs.
+			const int dim = is_volume_ ? 3 : 2;
+			for (int e = 0; e < (int)bases_.size(); e++)
+				update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
 		}
 	}
 
@@ -339,6 +319,7 @@ namespace polyfem::solver
 	{
 		for (auto &t : quadrature_hierarchy_)
 			t = Tree();
+		pending_refinement_.reset();
 	}
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -347,6 +328,7 @@ namespace polyfem::solver
 			return 1.;
 
 		const int dim = is_volume_ ? 3 : 2;
+
 		double step, invalidStep;
 		int invalidID;
 
@@ -355,41 +337,43 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, 0., conservative_max_iter_);
 			}
 
-			logger().log(step == 0 ? spdlog::level::warn : (step == 1. ? spdlog::level::trace : spdlog::level::debug), 
-				"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
+			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
+						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree.depth());
 		}
 
-		if (invalidID >= 0 && step <= 0.5)
+		if (invalidID >= 0 && step == 0)
 		{
-			auto& bs = bases_[invalidID];
-			auto& gbs = geom_bases_[invalidID];
-			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree)) // if the tree is refined
-				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
-
-			// verify that new quadrature points don't make x0 invalid
-			// {
-			// 	Quadrature quad;
-			// 	bs.compute_quadrature(quad);
-			// 	const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
-			// 	const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
-			// 	const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
-			// 	const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
-			// 	logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
-			// }
+			// A step of 0 can never be accepted, so it will never reach
+			// post_step(); commit the refinement candidate immediately so
+			// the next iteration's energy/gradient/Hessian actually sees
+			// this near-degenerate point instead of repeating the same
+			// failure against stale quadrature.
+			commit_refinement(invalidID, subdivision_tree);
+			pending_refinement_.reset();
+		}
+		else if (invalidID >= 0 && step <= 0.5)
+		{
+			// Store as a candidate only; committed in post_step() if/when
+			// this step is accepted (see pending_refinement_ in the header).
+			pending_refinement_ = std::make_pair(invalidID, std::move(subdivision_tree));
+		}
+		else
+		{
+			pending_refinement_.reset();
 		}
 
 		return step;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
-	{		
+	{
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 
-		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, 0., conservative_max_iter_);
 		return isvalid;
 	}
 
@@ -412,8 +396,29 @@ namespace polyfem::solver
 		// return true;
 	}
 
-	void ElasticForm::solution_changed(const Eigen::VectorXd &new_x)
+	void ElasticForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
+		if (!pending_refinement_.has_value())
+			return;
+
+		auto [id, subdivision_tree] = *pending_refinement_;
+		commit_refinement(id, subdivision_tree);
+
+		pending_refinement_.reset();
+	}
+
+	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree) const
+	{
+		const int dim = is_volume_ ? 3 : 2;
+
+		// Merge into quadrature_hierarchy_ and rebuild the live quadrature for
+		// this element, if the tree is actually refined.
+		if (quadrature_hierarchy_[id].merge(subdivision_tree))
+		{
+			auto &bs = bases_[id];
+			auto &gbs = geom_bases_[id];
+			update_quadrature(id, dim, quadrature_hierarchy_[id], quadrature_order_, bs, gbs, ass_vals_cache_);
+		}
 	}
 
 	void ElasticForm::compute_cached_stiffness()
@@ -423,213 +428,5 @@ namespace polyfem::solver
 			assembler_.assemble(is_volume_, n_bases_, bases_, geom_bases_,
 								ass_vals_cache_, t_, cached_stiffness_);
 		}
-	}
-
-	void ElasticForm::force_material_derivative(const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
-	{
-		const int dim = is_volume_ ? 3 : 2;
-
-		const int n_elements = int(bases_.size());
-
-		if (assembler_.name() == "ViscousDamping")
-		{
-			term.setZero(2);
-
-			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				for (int e = start; e < end; ++e)
-				{
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x_prev, prev_u, prev_grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
-
-					for (int q = 0; q < local_storage.da.size(); ++q)
-					{
-						Eigen::MatrixXd grad_p_i, grad_u_i, prev_grad_u_i;
-						vector2matrix(grad_p.row(q), grad_p_i);
-						vector2matrix(grad_u.row(q), grad_u_i);
-						vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
-
-						Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
-						assembler::ViscousDamping::compute_dstress_dpsi_dphi(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
-
-						// This needs to be a sum over material parameter basis.
-						local_storage.vec(0) += -matrix_inner_product<double>(f_prime_dpsi, grad_p_i) * local_storage.da(q);
-						local_storage.vec(1) += -matrix_inner_product<double>(f_prime_dphi, grad_p_i) * local_storage.da(q);
-					}
-				}
-			});
-
-			for (const LocalThreadVecStorage &local_storage : storage)
-				term += local_storage.vec;
-		}
-		else
-		{
-			term.setZero(n_elements * 2, 1);
-
-			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				for (int e = start; e < end; ++e)
-				{
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					Eigen::MatrixXd u, grad_u, p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
-
-					for (int q = 0; q < local_storage.da.size(); ++q)
-					{
-						Eigen::MatrixXd grad_p_i, grad_u_i;
-						vector2matrix(grad_p.row(q), grad_p_i);
-						vector2matrix(grad_u.row(q), grad_u_i);
-
-						Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-						assembler_.compute_dstress_dmu_dlambda(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), f_prime_dmu, f_prime_dlambda);
-
-						// This needs to be a sum over material parameter basis.
-						local_storage.vec(e + n_elements) += -matrix_inner_product<double>(f_prime_dmu, grad_p_i) * local_storage.da(q);
-						local_storage.vec(e) += -matrix_inner_product<double>(f_prime_dlambda, grad_p_i) * local_storage.da(q);
-					}
-				}
-			});
-
-			for (const LocalThreadVecStorage &local_storage : storage)
-				term += local_storage.vec;
-		}
-	}
-
-	void ElasticForm::force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
-	{
-		const int dim = is_volume_ ? 3 : 2;
-		const int actual_dim = ((assembler_.name() == "Laplacian") || (assembler_.name() == "Electrostatics")) ? 1 : dim;
-
-		const int n_elements = int(bases_.size());
-		term.setZero(n_verts * dim, 1);
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		if (assembler_.name() == "ViscousDamping")
-		{
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				for (int e = start; e < end; ++e)
-				{
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
-					assembler::ElementAssemblyValues gvals;
-					gvals.compute(e, is_volume_, vals.quadrature.points, geom_bases_[e], geom_bases_[e]);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x_prev, prev_u, prev_grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
-
-					Eigen::MatrixXd grad_u_i, prev_grad_u_i;
-					Eigen::MatrixXd grad_v_i;
-					Eigen::MatrixXd stress_tensor;
-					Eigen::VectorXd f_prime_gradu_gradv, f_prev_prime_prev_gradu_gradv;
-
-					for (int q = 0; q < local_storage.da.size(); ++q)
-					{
-						vector2matrix(grad_u.row(q), grad_u_i);
-						vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
-
-						for (auto &v : gvals.basis_values)
-						{
-							Eigen::MatrixXd stress_grad, stress_prev_grad;
-							assembler_.compute_stress_grad(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), prev_grad_u_i, stress_tensor, stress_grad);
-							assembler_.compute_stress_prev_grad(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), prev_grad_u_i, stress_prev_grad);
-							for (int d = 0; d < dim; d++)
-							{
-								grad_v_i.setZero(dim, dim);
-								grad_v_i.row(d) = v.grad_t_m.row(q);
-
-								f_prime_gradu_gradv = stress_grad * utils::flatten(grad_u_i * grad_v_i);
-								f_prev_prime_prev_gradu_gradv = stress_prev_grad * utils::flatten(prev_grad_u_i * grad_v_i);
-
-								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
-								local_storage.vec(v.global[0].index * dim + d) -= grad_p.row(q).dot(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + utils::flatten(stress_tensor * tmp.transpose())) * local_storage.da(q);
-							}
-						}
-					}
-				}
-			});
-		}
-		else
-		{
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				for (int e = start; e < end; ++e)
-				{
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
-					assembler::ElementAssemblyValues gvals;
-					gvals.compute(e, is_volume_, vals.quadrature.points, geom_bases_[e], geom_bases_[e]);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					Eigen::MatrixXd u, grad_u, p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, x, u, grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
-
-					for (int q = 0; q < local_storage.da.size(); ++q)
-					{
-						Eigen::MatrixXd grad_u_i, grad_p_i, stiffness_i;
-						if (actual_dim == 1)
-						{
-							grad_u_i = grad_u.row(q);
-							grad_p_i = grad_p.row(q);
-						}
-						else
-						{
-							vector2matrix(grad_u.row(q), grad_u_i);
-							vector2matrix(grad_p.row(q), grad_p_i);
-						}
-
-						for (auto &v : gvals.basis_values)
-						{
-							for (int d = 0; d < dim; d++)
-							{
-								Eigen::MatrixXd grad_v_i;
-								grad_v_i.setZero(dim, dim);
-								grad_v_i.row(d) = v.grad_t_m.row(q);
-
-								Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
-								assembler_.compute_stress_grad_multiply_mat(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
-
-								const Eigen::MatrixXd tmp = stress_tensor * grad_v_i.transpose() - grad_v_i.trace() * stress_tensor;
-								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + tmp, grad_p_i) * local_storage.da(q);
-							}
-						}
-					}
-				}
-			});
-		}
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
 	}
 } // namespace polyfem::solver

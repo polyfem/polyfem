@@ -130,7 +130,7 @@ namespace polyfem
 
 		bool is_param_valid(const json &params, const std::string &key)
 		{
-			return params.contains(key) && !params[key].is_null();
+			return !params.is_null() && params.contains(key) && !params[key].is_null();
 		}
 	} // namespace utils
 } // namespace polyfem

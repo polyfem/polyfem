@@ -5,25 +5,17 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-namespace polyfem
-{
-	namespace assembler
-	{
-		class Mass;
-		class AssemblyValsCache;
-	} // namespace assembler
+#include <Eigen/Core>
 
-	namespace basis
-	{
-		class ElementBases;
-	}
-} // namespace polyfem
+#include <functional>
 
 namespace polyfem::solver
 {
 	/// @brief Form of the inertia
 	class InertiaForm : public Form
 	{
+		friend class InertiaForceDerivative;
+
 	public:
 		/// @brief Construct a new Inertia Form object
 		/// @param mass Mass matrix
@@ -33,17 +25,12 @@ namespace polyfem::solver
 
 		std::string name() const override { return "inertia"; }
 
-		static void force_shape_derivative(
-			bool is_volume,
-			const int n_geom_bases,
-			const double t, 
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &geom_bases,
-			const assembler::Mass &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
-			const Eigen::MatrixXd &velocity,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &term);
+		using XTildeUpdater = std::function<void(const double, const Eigen::VectorXd &, Eigen::VectorXd &)>;
+		// Optional hook for fields whose time-dependent essential boundary values require a
+		// lifted time-integrator prediction before applying the mass term.
+		void set_x_tilde_updater(XTildeUpdater updater);
+
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 	protected:
 		/// @brief Compute the value of the form
@@ -62,8 +49,12 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	private:
+		Eigen::VectorXd x_tilde() const;
+
 		// TODO mass might be time dependent
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
+		XTildeUpdater x_tilde_updater_;
+		Eigen::VectorXd x_tilde_;
 	};
 } // namespace polyfem::solver

@@ -24,4 +24,4 @@ option(CATCH_INSTALL_DOCS "Install documentation alongside library" OFF)
 option(CATCH_INSTALL_EXTRAS "Install extras alongside library" OFF)
 
 include(CPM)
-CPMAddPackage("gh:catchorg/Catch2@3.4.0")
+CPMAddPackage("gh:catchorg/Catch2@3.13.0")

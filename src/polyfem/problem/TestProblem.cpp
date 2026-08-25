@@ -160,7 +160,7 @@ namespace polyfem
 			return res;
 		}
 
-		void TestProblem::set_parameters(const json &params)
+		void TestProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			// j_original.update(j_patch);
 			assert(!params.is_null());

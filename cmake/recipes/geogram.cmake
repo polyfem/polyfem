@@ -38,7 +38,7 @@ endif()
 ################################################################################
 
 include(CPM)
-CPMAddPackage("gh:BrunoLevy/geogram@1.9.8")
+CPMAddPackage("gh:polyfem/geogram#0402d16ad5be8e892db239ac38ca724f9497dbd3")
 
 find_path(GEOGRAM_SOURCE_INCLUDE_DIR
 		geogram/basic/common.h
@@ -93,6 +93,3 @@ endif()
 
 
 
-if(NOT TARGET geogram::geogram AND TARGET geogram)  
-    add_library(geogram::geogram ALIAS geogram)  
-endif()

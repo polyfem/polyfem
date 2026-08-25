@@ -1,9 +1,19 @@
 set(SOURCES
 	Form.hpp
+	StackedForm.hpp
+	StackedForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
+	MixedAssemblerForm.hpp
+	MixedAssemblerForm.cpp
+	NavierStokesForm.hpp
+	NavierStokesForm.cpp
+	NavierStokesFSIForm.hpp
+	NavierStokesFSIForm.cpp
+	FSIInterfaceForm.hpp
+	FSIInterfaceForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp
@@ -43,6 +53,4 @@ set(SOURCES
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
-add_subdirectory(parametrization)
-add_subdirectory(adjoint_forms)
 add_subdirectory(lagrangian)

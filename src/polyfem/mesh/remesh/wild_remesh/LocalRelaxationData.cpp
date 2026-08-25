@@ -153,11 +153,11 @@ namespace polyfem::mesh
 		assembler = assembler::AssemblerUtils::make_assembler(state.formulation());
 		assert(assembler->name() == state.formulation());
 		assembler->set_size(dim());
-		assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
+		assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units, state.root_path());
 
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		mass_matrix_assembler->set_size(dim());
-		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
+		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units, state.root_path());
 
 		pressure_assembler = nullptr; // TODO: implement this
 	}
@@ -258,6 +258,7 @@ namespace polyfem::mesh
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],
+				state.args["solver"]["advanced"]["conservative_max_iter"],
 				// Body form
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
@@ -274,6 +275,7 @@ namespace polyfem::mesh
 				/*obstacle_ndof=*/0,
 				/*hard_constraint_files=*/std::vector<std::string>(),
 				/*soft_constraint_files=*/std::vector<json>(),
+				/*zero_mean=*/false,
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
@@ -296,7 +298,7 @@ namespace polyfem::mesh
 				state.args["contact"]["use_offset_formulation"],
 				state.args["contact"]["high_order_contact_params"],
 				// Normal Adhesion Form
-				state.args["contact"]["adhesion"]["adhesion_enabled"],
+				state.is_adhesion_enabled(),
 				state.args["contact"]["adhesion"]["dhat_p"],
 				state.args["contact"]["adhesion"]["dhat_a"],
 				state.args["contact"]["adhesion"]["adhesion_strength"],
@@ -307,7 +309,7 @@ namespace polyfem::mesh
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact
-				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(), /*periodicbc=*/nullptr,
+				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
 				state.args["contact"]["epsv"],

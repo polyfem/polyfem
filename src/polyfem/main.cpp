@@ -5,11 +5,16 @@
 #include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
-#include <polyfem/OptState.hpp>
+#include <polyfem/legacy/State.hpp>
+#ifdef POLYFEM_WITH_OPTIMIZATION
+#include <polyfem/optimization/OptState.hpp>
+#endif
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/io/YamlToJson.hpp>
+#include <polyfem/varforms/VarFormFactory.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -62,11 +67,78 @@ int forward_simulation(const CLI::App &command_line,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args);
 
+#ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
+#endif
+
+int forward_simulation_with_varform_state(const std::vector<std::string> &names,
+										  const std::vector<Eigen::MatrixXi> &cells,
+										  const std::vector<Eigen::MatrixXd> &vertices,
+										  json &in_args,
+										  const bool is_strict)
+{
+	State state;
+	state.init(in_args, is_strict);
+	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+
+	state.variational_formulation->compute_errors(sol);
+
+	io::OutRuntimeData timings = state.variational_formulation->output_timings();
+	logger().info("total time: {}s", timings.total_time());
+
+	state.variational_formulation->save_json(sol);
+	state.variational_formulation->export_data(sol);
+
+	return EXIT_SUCCESS;
+}
+
+int forward_simulation_with_legacy_state(const std::vector<std::string> &names,
+										 const std::vector<Eigen::MatrixXi> &cells,
+										 const std::vector<Eigen::MatrixXd> &vertices,
+										 json &in_args,
+										 const bool is_strict)
+{
+	legacy::State state;
+	state.init(in_args, is_strict);
+
+	logger().warn("Running forward simulation with legacy state.");
+	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+
+	// Mesh was not loaded successfully; load_mesh() logged the error.
+	if (state.mesh == nullptr)
+	{
+		// Cannot proceed without a mesh.
+		return EXIT_FAILURE;
+	}
+
+	state.stats.compute_mesh_stats(*state.mesh);
+
+	state.build_basis();
+
+	state.assemble_rhs();
+	state.assemble_mass_mat();
+
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
+
+	state.solve_problem(sol, pressure);
+
+	state.compute_errors(sol);
+
+	logger().info("total time: {}s", state.timings.total_time());
+
+	state.save_json(sol);
+	state.export_data(sol, pressure);
+
+	return EXIT_SUCCESS;
+}
 
 int main(int argc, char **argv)
 {
@@ -128,7 +200,13 @@ int main(int argc, char **argv)
 			log_and_throw_error(fmt::format("unable to open {} file", json_file));
 
 		if (in_args.contains("states"))
+		{
+#ifndef POLYFEM_WITH_OPTIMIZATION
+			log_and_throw_error("PolyFEM was built without optimization support.");
+#else
 			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
+#endif
+		}
 		else
 			return forward_simulation(command_line, "", output_dir, max_threads,
 									  is_strict, fallback_solver, log_level, in_args);
@@ -191,39 +269,13 @@ int forward_simulation(const CLI::App &command_line,
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
-	State state;
-	state.init(in_args, is_strict);
-	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+	if (varform::uses_varform_state(in_args))
+		return forward_simulation_with_varform_state(names, cells, vertices, in_args, is_strict);
 
-	// Mesh was not loaded successfully; load_mesh() logged the error.
-	if (state.mesh == nullptr)
-	{
-		// Cannot proceed without a mesh.
-		return EXIT_FAILURE;
-	}
-
-	state.stats.compute_mesh_stats(*state.mesh);
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
-	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
-
-	state.solve_problem(sol, pressure);
-
-	state.compute_errors(sol);
-
-	logger().info("total time: {}s", state.timings.total_time());
-
-	state.save_json(sol);
-	state.export_data(sol, pressure);
-
-	return EXIT_SUCCESS;
+	return forward_simulation_with_legacy_state(names, cells, vertices, in_args, is_strict);
 }
 
+#ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
 							const unsigned max_threads,
 							const bool is_strict,
@@ -240,7 +292,7 @@ int optimization_simulation(const CLI::App &command_line,
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
+	opt_state.create_states(opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
 	opt_state.create_problem();
 
@@ -256,3 +308,4 @@ int optimization_simulation(const CLI::App &command_line,
 	opt_state.solve(x);
 	return EXIT_SUCCESS;
 }
+#endif
