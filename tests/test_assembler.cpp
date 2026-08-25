@@ -1488,9 +1488,8 @@ TEST_CASE("per-body material arrays use body-local element indices", "[assembler
 	Mass mass;
 	mass.set_size(3);
 
-	const json materials = json::array({
-		{{"id", 7}, {"rho", json::array({10.0, 11.0})}},
-		{{"id", 8}, {"rho", json::array({20.0, 21.0})}}});
+	const json materials = json::array({{{"id", 7}, {"rho", json::array({10.0, 11.0})}},
+										{{"id", 8}, {"rho", json::array({20.0, 21.0})}}});
 	mass.set_materials({7, 8, 7, 8}, materials, units, "");
 
 	const Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
