@@ -126,7 +126,7 @@ int run_opt(std::shared_ptr<OptState> opt_state)
 {
 	try
 	{
-		opt_state->create_states(opt_state->args["solver"]["max_threads"].get<int>());
+		opt_state->create_varforms(opt_state->args["solver"]["max_threads"].get<int>());
 		opt_state->init_variables();
 		opt_state->create_problem();
 
