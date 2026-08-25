@@ -1,4 +1,5 @@
 #include "Assembler.hpp"
+#include "MatParams.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -222,7 +223,8 @@ namespace polyfem::assembler
 				continue;
 			}
 
-			const json &tmp = it->second;
+			json tmp = it->second;
+			tmp[MATERIAL_ELEMENT_INDEX] = eid_to_eid_in_body[e];
 			this->add_multimaterial(e, tmp, units, root_path);
 		}
 
