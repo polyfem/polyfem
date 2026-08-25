@@ -511,18 +511,8 @@ namespace polyfem::io
 			for (int j = 0; j < lb.size(); ++j)
 			{
 				const int eid = lb.global_primitive_id(j);
-				const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
 				const int nfv = mesh3d.n_face_vertices(eid);
 				assert(nfv == 3 || nfv == 4);
-				assert(nodes.size() >= nfv);
-
-				// face corners come first in the local ordering (cyclic for quads);
-				// the same order as a next_around_face walk from the lf-scan index
-				// (tet/prism/pyramid/hex *_face_local_nodes all use it), so walking
-				// it again recovers each corner's global mesh vertex id
-				std::vector<Eigen::RowVector3d> c(nfv);
-				for (int k = 0; k < nfv; ++k)
-					c[k] = ref_nodes.row(nodes(k));
 
 				Navigation3D::Index nav;
 				for (int lf = 0; lf < mesh3d.n_cell_faces(el); ++lf)
@@ -540,6 +530,46 @@ namespace polyfem::io
 						gv[k] = cur.vertex;
 						cur = mesh3d.next_around_face(cur);
 					}
+				}
+
+				// Map the global face vertices to canonical element-reference
+				// vertices. This cannot use the first entries of `nodes`: nodal
+				// Lagrange faces store corners first, but spline faces use tensor-grid
+				// ordering (where the first four entries are generally not corners).
+				Eigen::MatrixXd ref_vertices;
+				std::vector<int> local_to_global;
+				if (mesh.is_simplex(el))
+				{
+					autogen::p_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_tet(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else if (mesh.is_cube(el))
+				{
+					autogen::q_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_hex(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else if (mesh.is_prism(el))
+				{
+					autogen::prism_nodes_3d(1, 1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_prism(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else
+				{
+					assert(mesh.is_pyramid(el));
+					autogen::pyramid_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_pyramid(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+
+				std::vector<Eigen::RowVector3d> c(nfv);
+				for (int k = 0; k < nfv; ++k)
+				{
+					const auto it = std::find(local_to_global.begin(), local_to_global.end(), gv[k]);
+					assert(it != local_to_global.end());
+					c[k] = ref_vertices.row(std::distance(local_to_global.begin(), it));
 				}
 
 				Eigen::MatrixXd pts;
