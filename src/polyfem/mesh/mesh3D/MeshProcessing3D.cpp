@@ -283,10 +283,9 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		if (hmi.elements[i].hex && (vs.size() != 8 || !degree3))
 			hmi.elements[i].hex = false;
 
-		hmi.elements[i].vs.clear();
-
 		if (hmi.elements[i].hex)
 		{
+			hmi.elements[i].vs.clear();
 			int top_fid = hmi.elements[i].fs[0];
 			hmi.elements[i].vs = hmi.faces[top_fid].vs;
 
@@ -377,7 +376,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			hmi.elements[i].fs = fs;
 			hmi.elements[i].fs_flag = fs_flag;
 		}
-		else
+		else if (hmi.elements[i].vs.empty())
 			hmi.elements[i].vs = vs;
 		for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++)
 			hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);

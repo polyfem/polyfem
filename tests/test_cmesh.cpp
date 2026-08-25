@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
@@ -20,12 +19,6 @@ using namespace polyfem::mesh;
 
 namespace
 {
-	class TestCMesh3D : public CMesh3D
-	{
-	public:
-		bool load_geogram(const GEO::Mesh &mesh) { return load(mesh); }
-	};
-
 	int edge_id(const Mesh &mesh, const int v0, const int v1)
 	{
 		for (int e = 0; e < mesh.n_edges(); ++e)
@@ -146,28 +139,13 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 
 TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
 {
-	Eigen::MatrixXd vertices(4, 3);
-	vertices << 0, 0, 1,
-		1, 0, 0,
-		0, 1, 0,
-		0, 0, 0;
-	Eigen::MatrixXi cells(1, 4);
-	cells << 3, 1, 2, 0;
+	const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/standard/reordered-local-vertices.msh");
+	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh->n_cell_vertices(0) == 4);
 
-	GEO::Mesh geogram_mesh;
-	geogram_mesh.vertices.create_vertices(vertices.rows());
-	for (int v = 0; v < vertices.rows(); ++v)
-		for (int d = 0; d < vertices.cols(); ++d)
-			geogram_mesh.vertices.point(v)[d] = vertices(v, d);
-	geogram_mesh.cells.create_tets(cells.rows());
-	for (int lv = 0; lv < cells.cols(); ++lv)
-		geogram_mesh.cells.set_vertex(0, lv, cells(0, lv));
-
-	TestCMesh3D mesh;
-	REQUIRE(mesh.load_geogram(geogram_mesh));
-	REQUIRE(mesh.n_cell_vertices(0) == 4);
-	for (int lv = 0; lv < cells.cols(); ++lv)
-		CHECK(mesh.cell_vertex(0, lv) == cells(0, lv));
+	const std::array<int, 4> expected_order = {3, 1, 2, 0};
+	for (int lv = 0; lv < expected_order.size(); ++lv)
+		CHECK(mesh->cell_vertex(0, lv) == expected_order[lv]);
 }
 
 TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")
