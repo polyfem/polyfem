@@ -1,9 +1,9 @@
 #include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>
@@ -27,6 +27,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem_opt.hpp>
@@ -65,15 +66,21 @@ namespace spdlog::level
 namespace polyfem::solver
 {
 
-	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
+	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(
+		const json &solver_params,
+		const json &linear_solver_params,
+		const double characteristic_length,
+		const bool strict_validation)
 	{
 		auto names = polysolve::nonlinear::Solver::available_solvers();
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
-			return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+			return polysolve::nonlinear::Solver::create(
+				solver_params, linear_solver_params, characteristic_length, adjoint_logger(), strict_validation);
 
 		names = polysolve::nonlinear::BoxConstraintSolver::available_solvers();
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
-			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+			return polysolve::nonlinear::BoxConstraintSolver::create(
+				solver_params, linear_solver_params, characteristic_length, adjoint_logger(), strict_validation);
 
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
@@ -133,12 +140,10 @@ namespace polyfem::solver
 		return x;
 	}
 
-	void AdjointOptUtils::solve_pde(legacy::State &state)
+	void AdjointOptUtils::solve_pde(varform::DifferentiableVarForm &varform)
 	{
-		state.assemble_rhs();
-		state.assemble_mass_mat();
-		Eigen::MatrixXd sol, pressure;
-		state.solve_problem(sol, pressure);
+		Eigen::MatrixXd solution;
+		varform.solve(solution, nullptr, {}, false);
 	}
 
 	void apply_objective_json_spec(json &args, const json &rules)
@@ -204,7 +209,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<legacy::State>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms)
 	{
 		if (args["number"].is_number())
 		{
@@ -220,26 +225,26 @@ namespace polyfem::solver
 			if (selection.contains("surface_selection"))
 			{
 				auto surface_selection = selection["surface_selection"].get<std::vector<int>>();
-				auto state_id = selection["state"];
+				auto varform_id = selection["state"];
 				std::set<int> node_ids = {};
 				for (const auto &surface : surface_selection)
 				{
 					std::vector<int> ids;
-					compute_surface_node_ids(*states[state_id], surface, ids);
+					compute_surface_node_ids(*varforms[varform_id], surface, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
-				return node_ids.size() * states[state_id]->mesh->dimension();
+				return node_ids.size() * varforms[varform_id]->get_mesh().dimension();
 			}
 			else if (selection.contains("volume_selection"))
 			{
 				auto volume_selection = selection["volume_selection"].get<std::vector<int>>();
-				auto state_id = selection["state"];
+				auto varform_id = selection["state"];
 				std::set<int> node_ids = {};
 				for (const auto &volume : volume_selection)
 				{
 					std::vector<int> ids;
-					compute_volume_node_ids(*states[state_id], volume, ids);
+					compute_volume_node_ids(*varforms[varform_id], volume, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
@@ -247,12 +252,12 @@ namespace polyfem::solver
 				if (selection["exclude_boundary_nodes"])
 				{
 					std::vector<int> ids;
-					compute_total_surface_node_ids(*states[state_id], ids);
+					compute_total_surface_node_ids(*varforms[varform_id], ids);
 					for (const auto &i : ids)
 						node_ids.erase(i);
 				}
 
-				return node_ids.size() * states[state_id]->mesh->dimension();
+				return node_ids.size() * varforms[varform_id]->get_mesh().dimension();
 			}
 		}
 

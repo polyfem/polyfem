@@ -2038,7 +2038,7 @@ namespace polyfem::legacy::io
 				for (int i = 0; i < tets.rows(); ++i)
 				{
 					elements.emplace_back();
-					elements.back().ctype = CellType::Tetrahedron;
+					elements.back().ctype = mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle;
 					for (int j = 0; j < tets.cols(); ++j)
 						elements.back().vertices.push_back(tets(i, j));
 				}

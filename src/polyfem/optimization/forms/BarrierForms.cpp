@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/BarrierForms.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -58,17 +58,17 @@ namespace polyfem::solver
 
 	} // namespace
 
-	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state, const double dhat, const double dmin)
-		: AdjointForm(variable_to_simulation), state_(std::move(state)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
+	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const double dhat, const double dmin)
+		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
 	{
-		legacy::State::build_collision_mesh(
-			*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->geom_bases(),
-			state_->total_local_boundary, state_->obstacle, state_->args,
-			[this](const std::string &p) { return this->state_->resolve_input_path(p); },
-			state_->in_node_to_node, collision_mesh_);
+		varform::NonlinearElasticVarForm::build_collision_mesh(
+			varform_->get_mesh(), varform_->primary_space().geometry->n_bases, varform_->primary_space().geometry_basis_list(), varform_->primary_space().geometry_basis_list(),
+			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(),
+			[this](const std::string &p) { return this->varform_->input_path(p); },
+			varform_->primary_space().space_in_node_to_node, collision_mesh_);
 
 		Eigen::MatrixXd V;
-		state_->get_vertices(V);
+		varform_->get_vertices(V);
 		X_init = utils::flatten(V);
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
@@ -76,16 +76,16 @@ namespace polyfem::solver
 
 	double CollisionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
 	void CollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *varform_, x, [this, &x]() {
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
-			return AdjointTools::map_node_to_primitive_order(*state_, grad);
+			return AdjointTools::map_node_to_primitive_order(*varform_, grad);
 		});
 	}
 
@@ -93,14 +93,14 @@ namespace polyfem::solver
 	{
 		AdjointForm::solution_changed(x);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 		build_collision_set(displaced_surface);
 	}
 
 	bool CollisionBarrierForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_->mesh->dimension());
-		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_->mesh->dimension());
+		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), varform_->get_mesh().dimension());
+		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), varform_->get_mesh().dimension());
 
 		// Skip CCD if the displacement is zero.
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
@@ -120,8 +120,8 @@ namespace polyfem::solver
 
 	double CollisionBarrierForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_->mesh->dimension());
-		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_->mesh->dimension());
+		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), varform_->get_mesh().dimension());
+		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), varform_->get_mesh().dimension());
 
 		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		double max_step = ipc::compute_collision_free_stepsize(
@@ -151,17 +151,17 @@ namespace polyfem::solver
 	Eigen::VectorXd CollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *state_, x, X);
-		return AdjointTools::map_primitive_to_node_order(*state_, X);
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *varform_, x, X);
+		return AdjointTools::map_primitive_to_node_order(*varform_, X);
 	}
 
 	LayerThicknessForm::LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
-										   std::shared_ptr<const legacy::State> state,
+										   std::shared_ptr<const varform::DifferentiableVarForm> varform,
 										   const std::vector<int> &boundary_ids,
 										   const double dhat,
 										   const bool use_log_barrier,
 										   const double dmin)
-		: CollisionBarrierForm(variable_to_simulations, std::move(state), dhat, dmin),
+		: CollisionBarrierForm(variable_to_simulations, std::move(varform), dhat, dmin),
 		  boundary_ids_(boundary_ids)
 	{
 		for (const auto &id : boundary_ids_)
@@ -178,8 +178,8 @@ namespace polyfem::solver
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		legacy::io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->total_local_boundary,
-														   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+		io::OutGeometryData::extract_boundary_mesh(varform_->get_mesh(), varform_->primary_space().geometry->n_bases, varform_->primary_space().geometry_basis_list(), varform_->boundary_state().total_local_boundary,
+												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
 		is_on_surface.resize(node_positions.rows(), false);
@@ -188,23 +188,23 @@ namespace polyfem::solver
 		Eigen::MatrixXd points, uv, normals;
 		Eigen::VectorXd weights;
 		Eigen::VectorXi global_primitive_ids;
-		for (const auto &lb : state_->total_local_boundary)
+		for (const auto &lb : varform_->boundary_state().total_local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), *state_->mesh, false, uv, points, normals, weights, global_primitive_ids);
+			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, varform_->n_boundary_samples(), varform_->get_mesh(), false, uv, points, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
 
-			const basis::ElementBases &gbs = state_->geom_bases()[e];
+			const basis::ElementBases &gbs = varform_->primary_space().geometry_basis_list()[e];
 
-			vals.compute(e, state_->mesh->is_volume(), points, gbs, gbs);
+			vals.compute(e, varform_->get_mesh().is_volume(), points, gbs, gbs);
 
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = gbs.local_nodes_for_primitive(primitive_global_id, *state_->mesh);
-				const int boundary_id = state_->mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbs.local_nodes_for_primitive(primitive_global_id, varform_->get_mesh());
+				const int boundary_id = varform_->get_mesh().get_boundary_id(primitive_global_id);
 
 				if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
 					continue;
@@ -222,7 +222,7 @@ namespace polyfem::solver
 		Eigen::SparseMatrix<double> displacement_map;
 		if (!displacement_map_entries.empty())
 		{
-			displacement_map.resize(node_positions.rows(), state_->n_geom_bases);
+			displacement_map.resize(node_positions.rows(), varform_->primary_space().geometry->n_bases);
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
@@ -241,7 +241,7 @@ namespace polyfem::solver
 				}
 			}
 
-			if (state_->mesh->is_volume())
+			if (varform_->get_mesh().is_volume())
 			{
 				for (int i = 0; i < boundary_triangles.rows(); ++i)
 				{
@@ -293,20 +293,20 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
-		: AdjointForm(variable_to_simulation), state_(std::move(state)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
+		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
 	{
-		if (state_->n_bases != state_->n_geom_bases)
+		if (varform_->primary_space().n_bases != varform_->primary_space().geometry->n_bases)
 			log_and_throw_adjoint_error("[{}] Should use linear FE basis!", name());
 
-		legacy::State::build_collision_mesh(
-			*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->geom_bases(),
-			state_->total_local_boundary, state_->obstacle, state_->args,
-			[this](const std::string &p) { return this->state_->resolve_input_path(p); },
-			state_->in_node_to_node, collision_mesh_);
+		varform::NonlinearElasticVarForm::build_collision_mesh(
+			varform_->get_mesh(), varform_->primary_space().geometry->n_bases, varform_->primary_space().geometry_basis_list(), varform_->primary_space().geometry_basis_list(),
+			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(),
+			[this](const std::string &p) { return this->varform_->input_path(p); },
+			varform_->primary_space().space_in_node_to_node, collision_mesh_);
 
 		Eigen::MatrixXd V;
-		state_->get_vertices(V);
+		varform_->get_vertices(V);
 		X_init = utils::flatten(V);
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
@@ -314,17 +314,17 @@ namespace polyfem::solver
 
 	double DeformedCollisionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 
 		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
 	void DeformedCollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *varform_, x, [this, &x]() {
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
-			return AdjointTools::map_node_to_primitive_order(*state_, grad);
+			return AdjointTools::map_node_to_primitive_order(*varform_, grad);
 		});
 	}
 
@@ -332,14 +332,14 @@ namespace polyfem::solver
 	{
 		AdjointForm::solution_changed(x);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), varform_->get_mesh().dimension()));
 		build_collision_set(displaced_surface);
 	}
 
 	bool DeformedCollisionBarrierForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		// const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_->mesh->dimension());
-		// const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_->mesh->dimension());
+		// const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), varform_->get_mesh().dimension());
+		// const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), varform_->get_mesh().dimension());
 
 		// // Skip CCD if the displacement is zero.
 		// if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
@@ -357,8 +357,8 @@ namespace polyfem::solver
 
 	double DeformedCollisionBarrierForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		// const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_->mesh->dimension());
-		// const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_->mesh->dimension());
+		// const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), varform_->get_mesh().dimension());
+		// const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), varform_->get_mesh().dimension());
 
 		// double max_step = ipc::compute_collision_free_stepsize(
 		//     collision_mesh_,
@@ -383,19 +383,19 @@ namespace polyfem::solver
 	Eigen::VectorXd DeformedCollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *state_, x, X);
-		return AdjointTools::map_primitive_to_node_order(*state_, X) + diff_cache_->u(0);
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *varform_, x, X);
+		return AdjointTools::map_primitive_to_node_order(*varform_, X) + diff_cache_->u(0);
 	}
 
 	SmoothContactForceForm::SmoothContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const legacy::State> state,
+		std::shared_ptr<const varform::DifferentiableVarForm> varform,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const json &args)
 		: StaticForm(variable_to_simulations),
-		  state_(std::move(state)),
+		  varform_(std::move(varform)),
 		  diff_cache_(std::move(diff_cache)),
-		  params_(state_->args["contact"]["dhat"], state_->args["contact"]["alpha_t"], 0, state_->args["contact"]["alpha_n"], 0, state_->mesh->is_volume() ? 2 : 1),
+		  params_(varform_->get_args()["contact"]["dhat"], varform_->get_args()["contact"]["alpha_t"], 0, varform_->get_args()["contact"]["alpha_n"], 0, varform_->get_mesh().is_volume() ? 2 : 1),
 		  potential_(params_)
 	{
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
@@ -407,19 +407,19 @@ namespace polyfem::solver
 	void SmoothContactForceForm::build_collision_mesh()
 	{
 		// Deep copy and change the can_collide() function
-		collision_mesh_ = state_->collision_mesh;
+		collision_mesh_ = varform_->collision_mesh();
 
-		// const int num_fe_nodes = state_->n_bases - state_->obstacle.n_vertices();
+		// const int num_fe_nodes = varform_->primary_space().n_bases - varform_->obstacle.n_vertices();
 
 		// collision_mesh_.can_collide = [this, num_fe_nodes](size_t vi, size_t vj) {
-		// 	return this->collision_mesh_.to_full_vertex_id(vi) >= num_fe_nodes || this->collision_mesh_.to_full_vertex_id(vj) >= num_fe_nodes;
+		// 	return this->collision_mesh()_.to_full_vertex_id(vi) >= num_fe_nodes || this->collision_mesh()_.to_full_vertex_id(vj) >= num_fe_nodes;
 		// };
 
-		std::vector<int> is_obstacle(state_->n_bases);
-		for (int e = 0; e < state_->bases.size(); e++)
+		std::vector<int> is_obstacle(varform_->primary_space().n_bases);
+		for (int e = 0; e < varform_->primary_space().basis_list().size(); e++)
 		{
-			const auto &b = state_->bases[e];
-			if (state_->mesh->get_body_id(e) == 1)
+			const auto &b = varform_->primary_space().basis_list()[e];
+			if (varform_->get_mesh().get_body_id(e) == 1)
 				for (const auto &bs : b.bases)
 				{
 					for (const auto &g : bs.global())
@@ -437,14 +437,14 @@ namespace polyfem::solver
 	ipc::SmoothCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		ipc::SmoothCollisions collisions;
-		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state_->solve_data.contact_form.get());
+		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(varform_->solve_data()->contact_form.get());
 		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase().get());
 		return collisions;
 	}
 
 	double SmoothContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(varform_->solve_data()->contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
@@ -458,9 +458,9 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(varform_->solve_data()->contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
@@ -478,7 +478,7 @@ namespace polyfem::solver
 
 	void SmoothContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(state_->solve_data.contact_form != nullptr);
+		assert(varform_->solve_data()->contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
@@ -488,7 +488,7 @@ namespace polyfem::solver
 		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, ipc::PSDProjectionMethod::NONE);
 		hessian = collision_mesh_.to_full_dof(hessian);
 
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x, &forces, &hessian]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *varform_, x, [this, &x, &forces, &hessian]() {
 			// Eigen::VectorXd grads = 2 * hessian.transpose() * forces;
 
 			Eigen::VectorXd coeff(forces.size());
@@ -497,7 +497,7 @@ namespace polyfem::solver
 			Eigen::VectorXd grads = (hessian * (coeff.array() * forces.array()).matrix());
 
 			grads = diff_cache_->basis_nodes_to_gbasis_nodes() * grads;
-			return AdjointTools::map_node_to_primitive_order(*state_, grads);
+			return AdjointTools::map_node_to_primitive_order(*varform_, grads);
 		});
 	}
 

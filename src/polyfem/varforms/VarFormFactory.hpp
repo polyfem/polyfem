@@ -12,8 +12,8 @@ namespace polyfem::varform
 	class VarFormFactory
 	{
 	public:
-		static bool supports(const std::string &formulation, const json &args);
-		static std::shared_ptr<VarForm> create(const std::string &formulation, const json &args);
+		static bool supports(const std::string &formulation, const json &args, bool is_optimization = false);
+		static std::shared_ptr<VarForm> create(const std::string &formulation, const json &args, bool is_optimization = false);
 	};
 
 	/// @brief Extracts the formulation type from the given JSON arguments. this is temporary until legacy state is removed

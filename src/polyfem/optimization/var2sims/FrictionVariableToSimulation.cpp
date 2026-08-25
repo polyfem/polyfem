@@ -1,7 +1,7 @@
 #include <polyfem/optimization/var2sims/FrictionVariableToSimulation.hpp>
 
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/var2sims/ParameterType.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -13,19 +13,19 @@
 namespace polyfem::solver
 {
 
-	FrictionVariableToSimulation::FrictionVariableToSimulation(StatePtrs states,
+	FrictionVariableToSimulation::FrictionVariableToSimulation(VarFormPtrs varforms,
 															   DiffCachePtrs diff_caches,
 															   CompositeParametrization parametrizations)
-		: states_(std::move(states)),
+		: varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (!s->problem->is_time_dependent())
+			if (!varform->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct friction variable to simulation. Reason: Can't optimize friction for static problem.");
 			}
@@ -42,11 +42,11 @@ namespace polyfem::solver
 		return ParameterType::FrictionCoefficient;
 	}
 
-	bool FrictionVariableToSimulation::affect_state(const legacy::State &target) const
+	bool FrictionVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
-		for (const auto &s : states_)
+		for (const auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 			{
 				return true;
 			}
@@ -59,9 +59,9 @@ namespace polyfem::solver
 		Eigen::VectorXd y = parametrization_.eval(x);
 		assert(y.size() == para_out_dof());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			s->args["contact"]["friction_coefficient"] = y(0);
+			varform->set_friction_coefficient(y(0));
 		}
 	}
 
@@ -74,15 +74,15 @@ namespace polyfem::solver
 	Eigen::VectorXd FrictionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (int i = 0; i < int(states_.size()); ++i)
+		for (int i = 0; i < int(varforms_.size()); ++i)
 		{
-			auto &state = states_[i];
+			auto &varform = varforms_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			assert(state->problem->is_time_dependent());
-			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
-			AdjointTools::dJ_friction_transient_adjoint_term(*state, *diff_cache, adjoint_nu, adjoint_p, cur_term);
+			assert(varform->get_problem().is_time_dependent());
+			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*varform, *diff_cache, 1);
+			AdjointTools::dJ_friction_transient_adjoint_term(*varform, *diff_cache, adjoint_nu, adjoint_p, cur_term);
 
 			if (term.size() != cur_term.size())
 			{
@@ -106,7 +106,7 @@ namespace polyfem::solver
 	Eigen::VectorXd FrictionVariableToSimulation::inverse_eval() const
 	{
 		Eigen::VectorXd y(para_out_dof());
-		y(0) = states_[0]->args["contact"]["friction_coefficient"].get<double>();
+		y(0) = varforms_[0]->get_args()["contact"]["friction_coefficient"].get<double>();
 		return parametrization_.inverse_eval(y);
 	}
 

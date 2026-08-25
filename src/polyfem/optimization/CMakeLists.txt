@@ -1,7 +1,7 @@
 set(SOURCES
 	OptState.cpp
 	OptState.hpp
-	StateDiff.cpp
+	VarFormDiff.cpp
 	Optimizations.hpp
 	Optimizations.cpp
 	AdjointNLProblem.hpp

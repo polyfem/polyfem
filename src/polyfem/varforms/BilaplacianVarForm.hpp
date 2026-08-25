@@ -3,6 +3,7 @@
 #include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 namespace polysolve::linear
@@ -36,7 +37,10 @@ namespace polyfem::varform
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step) override;
 
 		int stacked_ndof() const;
 		void prepare_initial_solution(Eigen::MatrixXd &sol) const;

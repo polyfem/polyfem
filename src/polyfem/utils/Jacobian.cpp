@@ -136,7 +136,7 @@ namespace polyfem::utils
 
 		auto run_solve = [&](auto problem, int e) {
 			Parameters params;
-			params.constraintEpsilon = {0.0};
+			params.constraintEpsilon.assign(1, 0.0);
 			params.maxIter = max_iter;
 			params.findOne = true;
 			Info info;
@@ -215,7 +215,7 @@ namespace polyfem::utils
 
 		auto run_solve = [threshold, max_iter](auto problem, int e) {
 			Parameters params;
-			params.constraintEpsilon = {threshold};
+			params.constraintEpsilon.assign(1, threshold);
 			params.maxIter = max_iter;
 			params.findOne = true;
 			Info info;
@@ -320,7 +320,7 @@ namespace polyfem::utils
 
 			Parameters params;
 			params.targetPrecision = precision;
-			params.constraintEpsilon = {threshold};
+			params.constraintEpsilon.assign(1, threshold);
 			params.maxIter = max_iter;
 			params.requiredMinimum = 0.;
 			params.minBoxWidth = 0.;
