@@ -74,13 +74,19 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_TRIANGLE=ON \
             -DPOLYFEM_PORTABLE_BUILD=ON
 
       - name: Build
+        id: build
         run: cmake --build build && ccache --show-stats
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
+
+      - name: Slow integration tests
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && (matrix.threading == 'TBB' || matrix.threading == 'CPP') }}
+        run: ./build/tests/unit_tests "[slow]" --rng-seed 1
 
   ####################
   # MacOS
@@ -129,7 +135,8 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_TRIANGLE=ON
 
       - name: Build
         run: cmake --build build && ccache --show-stats
