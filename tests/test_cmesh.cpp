@@ -144,7 +144,7 @@ TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
 	REQUIRE(mesh->n_cell_vertices(0) == 4);
 
 	const std::array<int, 4> expected_order = {3, 1, 2, 0};
-	for (int lv = 0; lv < expected_order.size(); ++lv)
+	for (int lv = 0; lv < int(expected_order.size()); ++lv)
 		CHECK(mesh->cell_vertex(0, lv) == expected_order[lv]);
 }
 
