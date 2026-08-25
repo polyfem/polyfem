@@ -504,12 +504,9 @@ namespace polyfem
 						}
 					}
 
-					for (auto fid : cell.fs)
-					{
-						cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-					}
-					sort(cell.vs.begin(), cell.vs.end());
-					cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+					cell.vs.resize(M.cells.nb_vertices(c));
+					for (int lv = 0; lv < (int)M.cells.nb_vertices(c); ++lv)
+						cell.vs[lv] = M.cells.vertex(c, lv);
 
 					// Compute a point in the kernel (assumes the barycenter is ok)
 					Eigen::RowVector3d p(0, 0, 0);
