@@ -1481,3 +1481,20 @@ TEST_CASE("assembler material dispatch", "[assembler]")
 	REQUIRE(assembler.materials[2]["value"] == 70);
 	REQUIRE(assembler.root_paths == std::vector<std::string>{"/materials", "/materials", "/materials"});
 }
+
+TEST_CASE("per-body material arrays use body-local element indices", "[assembler]")
+{
+	Units units;
+	Mass mass;
+	mass.set_size(3);
+
+	const json materials = json::array({{{"id", 7}, {"rho", json::array({10.0, 11.0})}},
+										{{"id", 8}, {"rho", json::array({20.0, 21.0})}}});
+	mass.set_materials({7, 8, 7, 8}, materials, units, "");
+
+	const Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
+	CHECK(mass.density()(p, p, 0, 0) == 10.0);
+	CHECK(mass.density()(p, p, 0, 1) == 20.0);
+	CHECK(mass.density()(p, p, 0, 2) == 11.0);
+	CHECK(mass.density()(p, p, 0, 3) == 21.0);
+}
