@@ -8,6 +8,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #ifdef POLYFEM_WITH_ITR
 #include <wmtk/TriMesh.h>
@@ -591,3 +592,78 @@ TEST_CASE("wmtk_instantiation", "[utils]")
 	wmtk::TriMesh mesh;
 }
 #endif
+
+TEST_CASE("expand_bc_sidecars", "[utils]")
+{
+	using namespace polyfem::utils;
+
+	const std::filesystem::path sidecar_path =
+		std::filesystem::temp_directory_path() / "polyfem_dirichlet_sidecar.json";
+	{
+		std::ofstream file(sidecar_path);
+		REQUIRE(file.is_open());
+		file << R"([{"id": 1, "value": [1, 2, 3]}, {"id": 2, "value": [4, 5, 6]}])";
+	}
+
+	// A minimal stand-in for json-specs/dirichlet-boundary-condition.json.
+	// Kept local so the test does not depend on the generated spec header.
+	const json rules = json::parse(R"([
+		{"pointer": "/", "type": "object", "required": ["id", "value"],
+		 "optional": ["fe_space", "time_reference", "interpolation", "dimension"]},
+		{"pointer": "/id", "type": "int"},
+		{"pointer": "/value", "type": "list"},
+		{"pointer": "/fe_space", "type": "int", "default": -1},
+		{"pointer": "/dimension", "type": "list", "default": [true, true, true]},
+		{"pointer": "/dimension/*", "type": "bool", "default": true},
+		{"pointer": "/time_reference", "type": "list", "default": []},
+		{"pointer": "/interpolation", "type": "list", "default": []}
+	])");
+
+	SECTION("json sidecar is expanded inline")
+	{
+		json args;
+		args["root_path"] = "";
+		args["boundary_conditions"]["dirichlet_boundary"] =
+			json::array({sidecar_path.string()});
+
+		expand_bc_sidecars(args, rules);
+
+		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
+		REQUIRE(bcs.size() == 2);
+		CHECK(bcs[0]["id"] == 1);
+		CHECK(bcs[1]["id"] == 2);
+		CHECK(bcs[0]["fe_space"] == -1);
+		CHECK(bcs[0]["interpolation"].is_array());
+		CHECK(bcs[0]["dimension"].size() == 3);
+	}
+
+	SECTION("non-json strings are left untouched")
+	{
+		const std::string nodal_path = "some_nodal_file.txt";
+		json args;
+		args["root_path"] = "";
+		args["boundary_conditions"]["dirichlet_boundary"] = json::array({nodal_path});
+
+		expand_bc_sidecars(args, rules);
+
+		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
+		REQUIRE(bcs.size() == 1);
+		CHECK(bcs[0] == nodal_path);
+	}
+
+	SECTION("inline objects are left untouched")
+	{
+		json args;
+		args["root_path"] = "";
+		args["boundary_conditions"]["dirichlet_boundary"] =
+			json::array({{{"id", 7}, {"value", json::array({0, 0, 0})}}});
+
+		expand_bc_sidecars(args, rules);
+
+		const json &bcs = args["boundary_conditions"]["dirichlet_boundary"];
+		REQUIRE(bcs.size() == 1);
+		CHECK(bcs[0]["id"] == 7);
+	}
+
+	std::filesystem::remove(sidecar_path);
+}
