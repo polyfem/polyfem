@@ -329,6 +329,21 @@ namespace polyfem::varform
 		Eigen::MatrixXi collision_edges, collision_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 
+		const auto extract_default_collision_mesh = [&]() {
+			if (args.at("/space/basis_type"_json_pointer) == "Spline")
+			{
+				io::OutGeometryData::extract_boundary_mesh_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+			}
+			else
+			{
+				io::OutGeometryData::extract_boundary_mesh(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+			}
+		};
+
 		if (args.contains("/contact/collision_mesh"_json_pointer)
 			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
 		{
@@ -377,16 +392,12 @@ namespace polyfem::varform
 			}
 			else
 			{
-				io::OutGeometryData::extract_boundary_mesh(
-					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
-					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+				extract_default_collision_mesh();
 			}
 		}
 		else
 		{
-			io::OutGeometryData::extract_boundary_mesh(
-				mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
-				collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+			extract_default_collision_mesh();
 		}
 
 		std::vector<bool> is_orientable_vertex(collision_vertices.rows(), true);

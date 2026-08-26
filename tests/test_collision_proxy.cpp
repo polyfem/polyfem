@@ -20,6 +20,8 @@
 #include <igl/is_vertex_manifold.h>
 #include <igl/point_mesh_squared_distance.h>
 
+#include <ipc/ipc.hpp>
+
 namespace
 {
 	// windows in release generates this error when building p4 bases
@@ -272,4 +274,37 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 		displacement_map_entries);
 
 	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);
+}
+
+TEST_CASE("spline contact builds a displacement map", "[build_collision_proxy]")
+{
+	polyfem::json in_args;
+	in_args["/geometry/0/mesh"_json_pointer] = std::string(POLYFEM_DATA_DIR) + "/quad_test/hex.HYBRID";
+	in_args["/materials/type"_json_pointer] = "NeoHookean";
+	in_args["/materials/E"_json_pointer] = 1e5;
+	in_args["/materials/nu"_json_pointer] = 0.3;
+	in_args["/materials/rho"_json_pointer] = 1e3;
+	in_args["/space/basis_type"_json_pointer] = "Spline";
+	in_args["/contact/enabled"_json_pointer] = true;
+	in_args["/time/time_steps"_json_pointer] = 1;
+	in_args["/time/tend"_json_pointer] = 1;
+	in_args["/output/log/level"_json_pointer] = "warning";
+
+	polyfem::State state;
+	state.init(in_args, true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	const polyfem::io::OutputSpace output_space = state.variational_formulation->output_space();
+	REQUIRE(output_space.collision_mesh != nullptr);
+	CHECK(output_space.collision_mesh->num_faces() > 0);
+	CHECK_FALSE(ipc::has_intersections(
+		*output_space.collision_mesh, output_space.collision_mesh->rest_positions()));
+
+	const Eigen::MatrixXd mapped_displacements = output_space.collision_mesh->map_displacements(
+		Eigen::MatrixXd::Zero(debug.n_bases, debug.mesh->dimension()));
+	CHECK(mapped_displacements.rows() == output_space.collision_mesh->rest_positions().rows());
 }

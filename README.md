@@ -12,23 +12,31 @@ PolyFEM is a polyvalent C++ FEM library.
 Compilation
 -----------
 
-All the C++ dependencies required to build the code are included. It should work on Windows, macOS, and Linux, and it should build out-of-the-box with CMake:
+PolyFEM is tested on Windows, macOS, and Linux. A source build requires:
 
-    mkdir build
-    cd build
-    cmake ..
-    make -j4
+- CMake 3.25 or newer;
+- a C++17 compiler;
+- Git and an internet connection during the first CMake configuration, which downloads the C++ dependencies; and
+- Python 3, including its development headers, unless Python expressions are disabled with `-DPOLYFEM_WITH_PYTHON=OFF`.
+
+Ninja is optional, but recommended for consistent cross-platform build commands. Configure and build PolyFEM with:
+
+    cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+    cmake --build build
+
+To build without Ninja, omit `-G Ninja`; CMake will select a generator available on the system.
 
 On Linux, `zenity` is required for the file dialog window to work. On macOS and Windows, the native windows are used directly.
 
-On Mac, the current CMake setup does not work with SuiteSparse installed via macports. Please either use Homebrew or disable SPQR with -DPOLYSOLVE_WITH_SPQR=OFF
+On macOS, the current CMake setup does not work with SuiteSparse installed via MacPorts. Please either use Homebrew or disable SPQR with `-DPOLYSOLVE_WITH_SPQR=OFF`.
 
 
 ### Optional
-The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might require a working installation of Python and some additional packages to build correctly:
 
-- `numpy` and `sympy` (optional)
-- `quadpy` (optional)
+The formula for higher-order bases can be regenerated at CMake time using external Python scripts. Regeneration additionally requires:
+
+- `numpy` and `sympy`
+- `quadpy`
 
 Usage
 -----
@@ -43,6 +51,11 @@ Documentation
 -------------
 
 The full documentation can be found at [https://polyfem.github.io/](https://polyfem.github.io/)
+
+Community Projects
+------------------
+
+- [PolyFEM Blender Plugin](https://github.com/ETSim/PolyFEMBlenderPlugin) provides a community-maintained Blender interface for creating and running PolyFEM scenes.
 
 
 
