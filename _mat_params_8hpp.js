@@ -7,5 +7,6 @@ var _mat_params_8hpp =
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", "classpolyfem_1_1assembler_1_1_density" ],
     [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", "classpolyfem_1_1assembler_1_1_no_density" ],
     [ "polyfem::assembler::ThermalMassDensity", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html", "classpolyfem_1_1assembler_1_1_thermal_mass_density" ],
-    [ "polyfem::assembler::FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", "classpolyfem_1_1assembler_1_1_fiber_direction" ]
+    [ "polyfem::assembler::FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", "classpolyfem_1_1assembler_1_1_fiber_direction" ],
+    [ "MATERIAL_ELEMENT_INDEX", "_mat_params_8hpp.html#a2f801823c84b74e526e11c71a7d23fec", null ]
 ];

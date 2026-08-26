@@ -102,5 +102,6 @@ var namespacepolyfem_1_1assembler =
       [ "Neumann", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152", null ]
     ] ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
-    [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
+    [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ],
+    [ "MATERIAL_ELEMENT_INDEX", "namespacepolyfem_1_1assembler.html#a2f801823c84b74e526e11c71a7d23fec", null ]
 ];

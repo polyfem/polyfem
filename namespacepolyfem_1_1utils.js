@@ -60,6 +60,7 @@ var namespacepolyfem_1_1utils =
     [ "create_thread_storage", "namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae", null ],
     [ "deg2rad", "namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19", null ],
     [ "determinant", "namespacepolyfem_1_1utils.html#af10d78c286c83d909e3cace312c4d1ac", null ],
+    [ "expand_bc_sidecars", "namespacepolyfem_1_1utils.html#a82c7a66efb371b771a664181c4865427", null ],
     [ "extract_nodes", "namespacepolyfem_1_1utils.html#ab984fbb966c452b34d3a3a3ab929e34e", null ],
     [ "extract_nodes", "namespacepolyfem_1_1utils.html#ae60d5a3e782afc99c0c595421a870c1a", null ],
     [ "flatten", "namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4", null ],
