@@ -17,6 +17,7 @@
 
 #include <jse/jse.h>
 #include <polyfem/embedded_spec/polyfem.hpp>
+#include <polyfem/embedded_spec/polyfem_dirichlet.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 
@@ -289,6 +290,9 @@ namespace polyfem
 		}
 
 		args = jse.inject_defaults(args_in, rules);
+
+		expand_bc_sidecars(
+			args, jse::embed::polyfem_dirichlet_spec::polyfem_dirichlet::spec());
 
 		Units units;
 		units.init(args["units"]);

@@ -338,9 +338,15 @@ jse_add_spec(polyfem_objective_spec
 	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
 )
 
+jse_add_spec(polyfem_dirichlet_spec
+	ALIAS polyfem::dirichlet_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/dirichlet-boundary-condition.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_dirichlet.hpp"
+)
+
 target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATED_INCLUDE_DIR}>")
-add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec)
-target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec)
+add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec polyfem_dirichlet_spec)
+target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec polyfem::dirichlet_spec)
 
 ################################################################################
 # Optional libraries
