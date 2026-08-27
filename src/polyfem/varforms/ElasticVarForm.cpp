@@ -348,13 +348,7 @@ namespace polyfem::varform
 			return;
 		}
 
-		const bool was_velocity_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "v",
-			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-			mesh_->dimension(), velocity);
-
-		if (!was_velocity_loaded)
-			rhs_assembler_->initial_velocity(velocity);
+		rhs_assembler_->initial_velocity(velocity);
 	}
 
 	void ElasticVarForm::initial_acceleration(
@@ -372,13 +366,7 @@ namespace polyfem::varform
 			return;
 		}
 
-		const bool was_acceleration_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "a",
-			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-			mesh_->dimension(), acceleration);
-
-		if (!was_acceleration_loaded)
-			rhs_assembler_->initial_acceleration(acceleration);
+		rhs_assembler_->initial_acceleration(acceleration);
 	}
 
 	void ElasticVarForm::initial_solution(
@@ -396,20 +384,12 @@ namespace polyfem::varform
 			return;
 		}
 
-		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), state_prefix + "u",
-			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-			mesh_->dimension(), solution);
-
-		if (!was_solution_loaded)
+		if (problem->is_time_dependent())
+			rhs_assembler_->initial_solution(solution);
+		else
 		{
-			if (problem->is_time_dependent())
-				rhs_assembler_->initial_solution(solution);
-			else
-			{
-				solution.resize(rhs_.size(), 1);
-				solution.setZero();
-			}
+			solution.resize(rhs_.size(), 1);
+			solution.setZero();
 		}
 	}
 
@@ -1296,26 +1276,12 @@ namespace polyfem::varform
 		const double t0,
 		const double dt,
 		const int t,
+		const Eigen::MatrixXd &solution,
 		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
 	{
 		if (!mesh_)
 			return;
-
-		const int global_t = output_file_index(t);
-		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		bool rest_mesh_written = false;
-		if (!rest_mesh_path.empty())
-		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			build_mesh_matrices(V, F);
-			io::MshWriter::write(
-				resolve_output_path(fmt::format(rest_mesh_path, global_t)),
-				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
-			rest_mesh_written = true;
-		}
-
-		save_step_state(t0, dt, t, time_integrator, rest_mesh_written);
+		save_step_state(t0, dt, t, solution, time_integrator);
 	}
 
 	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const

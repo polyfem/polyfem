@@ -4,6 +4,7 @@
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -43,24 +44,67 @@ namespace polyfem
 
 		void ImplicitTimeIntegrator::save_state(const std::string &state_path) const
 		{
-			assert(!state_path.empty());
-
 			const int ndof = x_prev().size();
-			const int prev_steps = x_prevs().size();
+			const int history = x_prevs().size();
+			Eigen::MatrixXd values(ndof, history);
+			for (int i = 0; i < history; ++i)
+				values.col(i) = x_prevs()[i];
+			write_matrix(state_path, "u", values, true);
+			for (int i = 0; i < history; ++i)
+				values.col(i) = v_prevs()[i];
+			write_matrix(state_path, "v", values, false);
+			for (int i = 0; i < history; ++i)
+				values.col(i) = a_prevs()[i];
+			write_matrix(state_path, "a", values, false);
+		}
 
-			Eigen::MatrixXd tmp(ndof, prev_steps);
+		void ImplicitTimeIntegrator::serialize_checkpoint(io::CheckpointWriter &writer, const std::string &group) const
+		{
+			if (x_prevs_.empty() || x_prevs_.size() != v_prevs_.size() || x_prevs_.size() != a_prevs_.size())
+				log_and_throw_error("Cannot checkpoint an uninitialized or inconsistent time integrator.");
+			const int ndof = x_prevs_.front().size();
+			const int history = x_prevs_.size();
+			Eigen::MatrixXd x(ndof, history), v(ndof, history), a(ndof, history);
+			for (int i = 0; i < history; ++i)
+			{
+				if (x_prevs_[i].size() != ndof || v_prevs_[i].size() != ndof || a_prevs_[i].size() != ndof)
+					log_and_throw_error("Cannot checkpoint inconsistent time-integrator history dimensions.");
+				x.col(i) = x_prevs_[i];
+				v.col(i) = v_prevs_[i];
+				a.col(i) = a_prevs_[i];
+			}
+			writer.write_matrix(group + "/x", x);
+			writer.write_matrix(group + "/v", v);
+			writer.write_matrix(group + "/a", a);
+			writer.write_long(group + "/dynamic_order", dynamic_order_ == DynamicOrder::First ? 1 : 2);
+			writer.write_long(group + "/history_length", history);
+			writer.write_double(group + "/dt", dt_);
+		}
 
-			for (int i = 0; i < prev_steps; ++i)
-				tmp.col(i) = x_prevs()[i];
-			write_matrix(state_path, "u", tmp, /*replace=*/true);
-
-			for (int i = 0; i < prev_steps; ++i)
-				tmp.col(i) = v_prevs()[i];
-			write_matrix(state_path, "v", tmp, /*replace=*/false);
-
-			for (int i = 0; i < prev_steps; ++i)
-				tmp.col(i) = a_prevs()[i];
-			write_matrix(state_path, "a", tmp, /*replace=*/false);
+		void ImplicitTimeIntegrator::deserialize_checkpoint(
+			const io::CheckpointReader &reader,
+			const std::string &group,
+			const double expected_dt)
+		{
+			for (const std::string &key : {"x", "v", "a", "dynamic_order", "history_length", "dt"})
+				if (!reader.exists(group + "/" + key))
+					log_and_throw_error("Checkpoint integrator group {} is missing {}.", group, key);
+			const long order = reader.read_long(group + "/dynamic_order");
+			if (order != (dynamic_order_ == DynamicOrder::First ? 1 : 2))
+				log_and_throw_error("Checkpoint dynamic order is incompatible with {}.", group);
+			const long history = reader.read_long(group + "/history_length");
+			if (history < 1 || history > max_steps())
+				log_and_throw_error("Checkpoint history length {} is incompatible with {}.", history, group);
+			const double stored_dt = reader.read_double(group + "/dt");
+			if (std::abs(stored_dt - expected_dt) > 1e-12 * std::max({1.0, std::abs(stored_dt), std::abs(expected_dt)}))
+				log_and_throw_error("Checkpoint dt {} does not match configured dt {}.", stored_dt, expected_dt);
+			const Eigen::MatrixXd x = reader.read_matrix(group + "/x");
+			const Eigen::MatrixXd v = reader.read_matrix(group + "/v");
+			const Eigen::MatrixXd a = reader.read_matrix(group + "/a");
+			if (x.rows() == 0 || x.cols() != history || v.rows() != x.rows() || a.rows() != x.rows()
+				|| v.cols() != history || a.cols() != history)
+				log_and_throw_error("Checkpoint integrator history dimensions are invalid in {}.", group);
+			init(x, v, a, stored_dt);
 		}
 
 		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(

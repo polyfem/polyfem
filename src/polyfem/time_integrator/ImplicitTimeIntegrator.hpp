@@ -8,6 +8,12 @@
 #include <vector>
 #include <deque>
 
+namespace polyfem::io
+{
+	class CheckpointReader;
+	class CheckpointWriter;
+}
+
 namespace polyfem::time_integrator
 {
 	class BDF;
@@ -66,9 +72,13 @@ namespace polyfem::time_integrator
 
 		/// @brief Access the time step size.
 		const double &dt() const { return dt_; }
+		DynamicOrder dynamic_order() const { return dynamic_order_; }
+		int maximum_steps() const { return max_steps(); }
 
-		/// @brief Save the values of \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param state_path path for the output file containing \f$x, v, a\f$ as hdf5
+		void serialize_checkpoint(io::CheckpointWriter &writer, const std::string &group) const;
+		void deserialize_checkpoint(const io::CheckpointReader &reader, const std::string &group, double expected_dt);
+
+		/// Legacy State persistence. Non-legacy code uses serialize_checkpoint().
 		virtual void save_state(const std::string &state_path) const;
 
 		/// @brief Factory method for constructing an implicit time integrator.

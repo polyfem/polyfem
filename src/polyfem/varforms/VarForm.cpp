@@ -271,9 +271,26 @@ namespace polyfem::varform
 		problem = nullptr;
 		time_callback = nullptr;
 		mesh_ = nullptr;
+		checkpoint_reader_ = nullptr;
+		output_index_offset_ = 0;
 	}
 
-	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void VarForm::init(
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path,
+		const io::ResourceIO &resources)
+	{
+		resources_ = &resources;
+		init(formulation, units, args, out_path);
+	}
+
+	void VarForm::init(
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path)
 	{
 		reset();
 
@@ -291,6 +308,7 @@ namespace polyfem::varform
 
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)
 	{
+		set_obstacle(mesh::Obstacle());
 		mesh_ = std::move(mesh);
 		timings.loading_mesh_time = loading_mesh_time;
 		output_sampler_initialized_ = false;
@@ -299,6 +317,29 @@ namespace polyfem::varform
 			return;
 
 		load_mesh(*mesh_, args);
+	}
+
+	void VarForm::set_geometry(mesh::LoadedGeometry geometry, const double loading_mesh_time)
+	{
+		set_obstacle(std::move(geometry.obstacle));
+		mesh_ = std::move(geometry.fem);
+		timings.loading_mesh_time = loading_mesh_time;
+		output_sampler_initialized_ = false;
+		prepared_ = false;
+		if (mesh_)
+			load_mesh(*mesh_, args);
+	}
+
+	void VarForm::set_obstacle(mesh::Obstacle &&) {}
+
+	void VarForm::init_child_varform(
+		VarForm &child,
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path) const
+	{
+		child.init(formulation, units, args, out_path, *resources_);
 	}
 
 	void VarForm::prepare()
@@ -642,6 +683,7 @@ namespace polyfem::varform
 		const ForwardStepCallback &post_step)
 	{
 		prepare();
+		resources_->freeze_dependency_manifest();
 		solve_problem(sol, initial_condition_override, post_step);
 	}
 
@@ -927,15 +969,66 @@ namespace polyfem::varform
 		const double t0,
 		const double dt,
 		const int t,
-		const time_integrator::ImplicitTimeIntegrator *time_integrator,
-		const bool rest_mesh_written) const
+		const Eigen::MatrixXd &solution,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
 	{
 		const int global_t = output_file_index(t);
-		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
-		if (!state_path.empty() && time_integrator)
-			time_integrator->save_state(state_path);
+		const std::string pattern = args["output"]["checkpoint"]["path"];
+		if (pattern.empty())
+			return;
 
-		save_restart_json(t0, dt, t, rest_mesh_written);
+		json continuation = args;
+		continuation["time"]["t0"] = t0 + dt * t;
+		continuation["time"]["time_steps"] = std::max(0, args["time"]["time_steps"].get<int>() - t);
+		continuation["time"].erase("tend");
+		continuation["input"]["checkpoint"]["path"] = "";
+		io::CheckpointMetadata metadata;
+		metadata.formulation = name();
+		metadata.step = t;
+		metadata.time = t0 + dt * t;
+		metadata.dt = dt;
+		metadata.remaining_steps = continuation["time"]["time_steps"];
+		metadata.output_index = global_t;
+
+		io::CheckpointWriter writer(resolve_output_path(fmt::format(pattern, global_t)), continuation, metadata);
+		writer.write_mesh("/checkpoint/meshes/active", *mesh_);
+		serialize_checkpoint(writer, solution, metadata);
+		if (time_integrator)
+			time_integrator->serialize_checkpoint(writer, "/checkpoint/state/primary_integrator");
+		writer.embed_resources(*resources_);
+		writer.finalize();
+	}
+
+	void VarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &) const
+	{
+		writer.write_matrix("/checkpoint/state/solution", solution);
+	}
+
+	void VarForm::deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution)
+	{
+		if (reader.metadata().formulation != name())
+			log_and_throw_error(
+				"Checkpoint formulation '{}' does not match '{}'.",
+				reader.metadata().formulation, name());
+		if (!reader.exists("/checkpoint/state/solution"))
+			log_and_throw_error("Checkpoint is missing formulation-owned solution state.");
+		solution = reader.read_matrix("/checkpoint/state/solution");
+		output_index_offset_ = reader.metadata().output_index;
+	}
+
+	void VarForm::restore_checkpoint_integrator(
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &integrator,
+		const std::string &group,
+		const double dt) const
+	{
+		if (!checkpoint_reader_)
+			return;
+		if (!integrator)
+			log_and_throw_error("Checkpoint requires integrator state at {}, but no integrator was constructed.", group);
+		integrator->deserialize_checkpoint(*checkpoint_reader_, group, dt);
 	}
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
@@ -1002,109 +1095,18 @@ namespace polyfem::varform
 			time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 	}
 
-	void VarForm::save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const
-	{
-		const std::string restart_json_path = args["output"]["restart_json"];
-		if (restart_json_path.empty())
-			return;
-
-		const int global_t = output_file_index(t);
-
-		json restart_json;
-		restart_json["root_path"] = root_path;
-		restart_json["common"] = root_path;
-		restart_json["time"] = {{"t0", t0 + dt * t}};
-		restart_json["output"] = {{"data", {{"file_index_offset", global_t}}}};
-
-		restart_json["space"] = R"({
-			"remesh": {
-				"collapse": {
-					"abs_max_edge_length": -1,
-					"rel_max_edge_length": -1
-				}
-			}
-		})"_json;
-
-		const double starting_min_edge_length = stats.min_edge_length;
-		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
-			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
-			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
-		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
-
-		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		if (!rest_mesh_path.empty())
-		{
-			if (!rest_mesh_written)
-				logger().warn("Restart JSON for {} references a rest mesh that this formulation does not write.", name());
-
-			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t));
-
-			std::vector<json> patch;
-			if (args["geometry"].is_array())
-			{
-				const std::vector<json> in_geometry = args["geometry"];
-				for (int i = 0; i < in_geometry.size(); ++i)
-				{
-					if (!in_geometry[i]["is_obstacle"].get<bool>())
-					{
-						patch.push_back({
-							{"op", "remove"},
-							{"path", fmt::format("/geometry/{}", i)},
-						});
-					}
-				}
-
-				const int remaining_geometry = in_geometry.size() - patch.size();
-				assert(remaining_geometry >= 0);
-
-				patch.push_back({
-					{"op", "add"},
-					{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
-					{"value",
-					 {
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
-			}
-			else
-			{
-				assert(args["geometry"].is_object());
-				patch.push_back({
-					{"op", "remove"},
-					{"path", "/geometry"},
-				});
-				patch.push_back({
-					{"op", "replace"},
-					{"path", "/geometry"},
-					{"value",
-					 {
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
-			}
-
-			restart_json["patch"] = patch;
-		}
-
-		restart_json["input"] = {{
-			"data",
-			{
-				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t))},
-			},
-		}};
-
-		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
-		file << restart_json;
-	}
-
 	int VarForm::output_file_index(const int t) const
 	{
-		return t + args["output"]["data"]["file_index_offset"].get<int>();
+		return t + output_index_offset_;
 	}
 
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
 	{
-		return utils::resolve_path(path, root_path, only_if_exists);
+		if (path.empty())
+			return path;
+		if (only_if_exists && !resources_->exists(path))
+			return path;
+		return resources_->materialize(path).string();
 	}
 
 	std::string VarForm::resolve_output_path(const std::string &path) const

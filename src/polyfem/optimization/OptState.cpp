@@ -112,6 +112,25 @@ namespace polyfem
 			return result;
 		}
 
+		std::vector<json> load_state_jsons(
+			const io::ResourceIO &resources,
+			const json &args,
+			std::vector<std::unique_ptr<const io::ResourceIO>> &state_resources)
+		{
+			std::vector<json> result;
+			state_resources.clear();
+			for (int i = 0; i < args.size(); ++i)
+			{
+				const std::string path = args[i]["path"].get<std::string>();
+				if (!resources.exists(path))
+					log_and_throw_adjoint_error("Can't find json for varform::DifferentiableVarForm {}", i);
+				result.push_back(json::parse(resources.read_string(path)));
+				const std::string parent = std::filesystem::path(path).parent_path().generic_string();
+				state_resources.push_back(resources.with_root(parent));
+			}
+			return result;
+		}
+
 		void validate_remeshing_json(const json &args)
 		{
 			const std::string trigger = parse_remeshing_trigger(args);
@@ -277,6 +296,21 @@ namespace polyfem
 
 	int OptState::run(json input_args, const bool strict_validation)
 	{
+		std::filesystem::path root = std::filesystem::current_path();
+		if (utils::is_param_valid(input_args, "root_path"))
+			root = input_args["root_path"].get<std::string>();
+		owned_resources_ = std::make_unique<io::FileSystemIO>(root);
+		return run(std::move(input_args), *owned_resources_, strict_validation);
+	}
+
+	int OptState::run(
+		json input_args,
+		const io::ResourceIO &resources,
+		const bool strict_validation)
+	{
+		if (&resources != owned_resources_.get())
+			owned_resources_.reset();
+		resources_ = &resources;
 		input_args = solver::AdjointOptUtils::apply_opt_json_spec(input_args, strict_validation);
 
 		std::string mode = parse_remeshing_trigger(input_args);
@@ -284,12 +318,13 @@ namespace polyfem
 		if (remeshing_enabled)
 			validate_remeshing_json(input_args);
 
-		std::filesystem::path output_root = utils::resolve_path(
-			input_args["output"]["directory"], input_args["root_path"], false);
+		std::filesystem::path output_root = input_args["output"]["directory"].get<std::string>();
+		if (!output_root.is_absolute())
+			output_root = resources_->host_directory() / output_root;
 		int max_restarts = remeshing_enabled
 							   ? input_args["remeshing"]["max_restarts"].get<int>()
 							   : 0;
-		state_args = load_state_jsons(input_args["root_path"], input_args["states"]);
+		state_args = load_state_jsons(*resources_, input_args["states"], state_resources);
 
 		int state = 0;
 		int geometry = 0;
@@ -316,7 +351,7 @@ namespace polyfem
 				state_args[state]["output"]["directory"] = round_dir.string();
 			}
 
-			init(round_args, strict_validation);
+			init(round_args, *resources_, strict_validation);
 			create_varforms(args["solver"]["max_threads"].get<int>());
 			init_variables();
 			create_problem();
@@ -418,12 +453,30 @@ namespace polyfem
 
 	void OptState::init(const json &p_args_in, const bool strict_validation)
 	{
+		std::filesystem::path root = std::filesystem::current_path();
+		if (utils::is_param_valid(p_args_in, "root_path"))
+			root = p_args_in["root_path"].get<std::string>();
+		owned_resources_ = std::make_unique<io::FileSystemIO>(root);
+		init(p_args_in, *owned_resources_, strict_validation);
+	}
+
+	void OptState::init(
+		const json &p_args_in,
+		const io::ResourceIO &resources,
+		const bool strict_validation)
+	{
+		if (&resources != owned_resources_.get())
+			owned_resources_.reset();
+		resources_ = &resources;
 		strict_validation_ = strict_validation;
 		json args_in = p_args_in; // mutable copy
 		args = solver::AdjointOptUtils::apply_opt_json_spec(args_in, strict_validation);
 
 		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = utils::resolve_path(args["output"]["directory"], root_path(), false);
+		std::filesystem::path output_path = args["output"]["directory"].get<std::string>();
+		if (!output_path.is_absolute())
+			output_path = resources_->host_directory() / output_path;
+		const std::string output_dir = output_path.lexically_normal().string();
 		if (!output_dir.empty())
 		{
 			std::filesystem::create_directories(output_dir);
@@ -433,7 +486,9 @@ namespace polyfem
 		std::string out_path_log = args["output"]["log"]["path"];
 		if (!out_path_log.empty())
 		{
-			out_path_log = utils::resolve_path(out_path_log, root_path(), false);
+			out_path_log = (std::filesystem::path(out_path_log).is_absolute()
+				? std::filesystem::path(out_path_log)
+				: std::filesystem::path(output_dir) / out_path_log).lexically_normal().string();
 		}
 
 		init_logger(
@@ -451,7 +506,7 @@ namespace polyfem
 	void OptState::create_varforms(const int max_threads)
 	{
 		if (state_args.empty())
-			state_args = load_state_jsons(root_path(), args["states"]);
+			state_args = load_state_jsons(*resources_, args["states"], state_resources);
 
 		size_t threads = max_threads <= 0
 							 ? std::numeric_limits<unsigned int>::max()
@@ -462,7 +517,7 @@ namespace polyfem
 			json cur_args = state_args[i];
 			if (!args["output"]["log"].empty())
 				cur_args["output"]["log"].merge_patch(args["output"]["log"]);
-			varforms.push_back(from_json::build_differentiable_varform(cur_args, threads));
+			varforms.push_back(from_json::build_differentiable_varform(cur_args, *state_resources.at(i), threads));
 		}
 
 		diff_caches.resize(varforms.size());

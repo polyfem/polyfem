@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
@@ -23,6 +24,11 @@ namespace polyfem::varform
 	class VarForm;
 }
 
+namespace polyfem::io
+{
+	class CheckpointReader;
+}
+
 namespace polyfem
 {
 	/// VarForm-only simulation state.
@@ -37,6 +43,16 @@ namespace polyfem
 		/// @param[in] strict_validation strict validation of input
 		void init(
 			const json &args,
+			bool strict_validation,
+			bool is_adjoint_optimization = false);
+
+		void init(
+			const io::CheckpointReader &checkpoint,
+			bool strict_validation);
+
+		void init(
+			const json &args,
+			const io::ResourceIO &resources,
 			bool strict_validation,
 			bool is_adjoint_optimization = false);
 
@@ -94,26 +110,25 @@ namespace polyfem
 
 		/// loads the mesh from the json arguments
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		/// @param[in] names keys in the hdf5
-		/// @param[in] cells list of cells from hdf5
-		/// @param[in] vertices list of vertices from hdf5
-		void load_mesh(bool non_conforming = false,
-					   const std::vector<std::string> &names = std::vector<std::string>(),
-					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
-					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
+		void load_mesh(bool non_conforming = false);
 
 		/// loads the mesh from a geogram mesh
 		/// @param[in] meshin geo mesh
 		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		/// @param[in] skip_boundary_sideset skip_boundary_sideset = false it uses the lambda boundary_marker to assign the sideset
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
+		void set_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim
 		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quad mesh if dim is 2)
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false);
+		void set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false);
+
+	private:
+		std::unique_ptr<const io::ResourceIO> owned_resources_;
+		const io::ResourceIO *resources_ = nullptr;
+		const io::CheckpointReader *checkpoint_ = nullptr;
 	};
 
 } // namespace polyfem

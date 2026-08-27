@@ -60,6 +60,7 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		void set_obstacle(mesh::Obstacle &&obstacle) override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void build_rhs_assembler() override;

@@ -689,7 +689,7 @@ TEST_CASE("modified-neohookean-barrier-active", "[assembler]")
 	State state;
 	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
 	state.init(in_args, false);
-	state.load_mesh(V, F);
+	state.set_mesh(V, F);
 	test::VarFormTestAccess::prepare(*state.variational_formulation);
 
 	const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);

@@ -19,6 +19,18 @@
 
 namespace polyfem::varform
 {
+	void OperatorSplittingVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		Eigen::MatrixXd velocity, pressure;
+		split_solution(solution, velocity, pressure);
+		writer.write_matrix("/checkpoint/state/velocity", velocity);
+		writer.write_matrix("/checkpoint/state/pressure", pressure);
+	}
+
 	using namespace varform::internal;
 
 	void OperatorSplittingVarForm::reset()
@@ -505,20 +517,12 @@ namespace polyfem::varform
 		if (sol.size() <= 0)
 		{
 			assert(rhs_assembler_ != nullptr);
-			const bool was_solution_loaded = read_initial_x_from_file(
-				resolve_input_path(args["input"]["data"]["state"]), "u",
-				args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-				mesh_->dimension(), sol);
-
-			if (!was_solution_loaded)
+			if (problem->is_time_dependent())
+				rhs_assembler_->initial_solution(sol);
+			else
 			{
-				if (problem->is_time_dependent())
-					rhs_assembler_->initial_solution(sol);
-				else
-				{
-					sol.resize(rhs_.size(), 1);
-					sol.setZero();
-				}
+				sol.resize(rhs_.size(), 1);
+				sol.setZero();
 			}
 		}
 		if (sol.cols() > 1)
@@ -834,6 +838,7 @@ namespace polyfem::varform
 
 			stack_solution(velocity, pressure, sol);
 			save_timestep(time, t, t0, dt, sol);
+			save_step_state(t0, dt, t, sol, nullptr);
 			notify_time_step(t, time_steps, t0, dt);
 		}
 

@@ -1,10 +1,14 @@
 set(SOURCES
+	GeometryLoader.cpp
+	GeometryLoader.hpp
 	GeometryReader.cpp
 	GeometryReader.hpp
 	LocalBoundary.cpp
 	LocalBoundary.hpp
 	Mesh.cpp
 	Mesh.hpp
+	MeshLoader.cpp
+	MeshLoader.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
 	MeshUtils.cpp

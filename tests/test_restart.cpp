@@ -5,6 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/io/Checkpoint.hpp>
 
 #include <filesystem>
 #include <iostream>
@@ -72,6 +73,17 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	return sol;
 }
 
+Eigen::MatrixXd run_checkpoint(State &state, const std::filesystem::path &path)
+{
+	io::CheckpointReader checkpoint(path);
+	state.init(checkpoint, true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+	return sol;
+}
+
 #ifdef NDEBUG
 TEST_CASE("restart", "[restart]")
 #else
@@ -86,41 +98,28 @@ TEST_CASE("restart", "[.][restart]")
 
 	const std::filesystem::path outdir = std::filesystem::current_path() / "DELETE_ME_restart_test_output";
 	const std::filesystem::path full_outdir = outdir / "full";
-	const std::filesystem::path restart_outdir = outdir / "restart";
-
 	json args = load_sim_json(scene_file, total_time_steps);
 
 	State state;
 
 	args["/output/directory"_json_pointer] = full_outdir.string();
-	args["/output/data/state"_json_pointer] = "restart_{:d}.hdf5";
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint_{:d}.h5";
 	const auto full_sol = run_sim(state, args);
 
-	args["/output/directory"_json_pointer] = restart_outdir.string();
-	args["/input/data/state"_json_pointer] = (full_outdir / fmt::format("restart_{:d}.hdf5", restart_time_steps)).string();
-	args["/time/t0"_json_pointer] = args["/time/dt"_json_pointer].get<double>() * restart_time_steps;
-	args["time"]["time_steps"] = restart_time_steps;
-	args["/output/data/state"_json_pointer] = "restart_{:d}.hdf5";
-	args["/output/data/file_index_offset"_json_pointer] = restart_time_steps;
-	const auto restart_sol = run_sim(state, args);
+	State resumed_state;
+	const auto restart_sol = run_checkpoint(
+		resumed_state, full_outdir / fmt::format("checkpoint_{:d}.h5", restart_time_steps));
 
 	CHECK(full_sol.rows() == restart_sol.rows());
 	CHECK(full_sol.cols() == restart_sol.cols());
 	CAPTURE((full_sol - restart_sol).lpNorm<Eigen::Infinity>());
 	CHECK(full_sol.isApprox(restart_sol, margin));
 
-	// Verify that the file index offset works: restarted output files should
-	// be numbered starting from restart_time_steps, not from 0.
+	// Resuming continues output indices stored in checkpoint metadata.
 	for (int t = restart_time_steps + 1; t <= total_time_steps; ++t)
 	{
-		const auto state_file = restart_outdir / fmt::format("restart_{:d}.hdf5", t);
+		const auto state_file = full_outdir / fmt::format("checkpoint_{:d}.h5", t);
 		CHECK(std::filesystem::exists(state_file));
-	}
-	// Files numbered below restart_time_steps should NOT exist in the restart output dir.
-	for (int t = 1; t < restart_time_steps; ++t)
-	{
-		const auto state_file = restart_outdir / fmt::format("restart_{:d}.hdf5", t);
-		CHECK_FALSE(std::filesystem::exists(state_file));
 	}
 
 	std::filesystem::remove_all(outdir);

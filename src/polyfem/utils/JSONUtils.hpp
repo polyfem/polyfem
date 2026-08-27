@@ -6,12 +6,19 @@
 #include <Eigen/Core>
 #include <igl/PI.h>
 #include <filesystem>
+#include <memory>
+
+namespace polyfem::io
+{
+	class ResourceIO;
+}
 
 namespace polyfem
 {
 	namespace utils
 	{
 		void apply_common_params(json &args);
+		std::unique_ptr<const io::ResourceIO> apply_common_params(json &args, const io::ResourceIO &resources);
 
 		// Templated degree to radians so a scalar or vector can be given
 		template <typename T>

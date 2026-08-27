@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/utils/Selection.hpp>
@@ -12,7 +13,7 @@ namespace polyfem::mesh
 	/// @brief      read a FEM mesh from a geometry JSON
 	///
 	/// @param[in]  j_mesh           geometry JSON
-	/// @param[in]  root_path       root path of JSON
+	/// @param[in]  resources       logical resource reader
 	/// @param[in]  non_conforming  if true, the mesh will be non-conforming
 	///
 	/// @return created Mesh object
@@ -20,24 +21,21 @@ namespace polyfem::mesh
 	std::unique_ptr<Mesh> read_fem_mesh(
 		const Units &units,
 		const json &j_mesh,
-		const std::string &root_path,
+		const io::ResourceIO &resources,
 		const bool non_conforming = false);
 
 	///
 	/// @brief      read FEM meshes from a geometry JSON array (or single)
 	///
 	/// @param[in]  geometry        geometry JSON object(s)
-	/// @param[in]  root_path       root path of JSON
+	/// @param[in]  resources       logical resource reader
 	///
 	/// @return created Mesh object
 	///
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const Units &units,
 		const json &geometry,
-		const std::string &root_path,
-		const std::vector<std::string> &names = std::vector<std::string>(),
-		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
-		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+		const io::ResourceIO &resources,
 		const bool non_conforming = false);
 
 	/// Apply a geometry selection to a FEM mesh.
@@ -50,7 +48,7 @@ namespace polyfem::mesh
 	/// @brief      read a obstacle mesh from a geometry JSON
 	///
 	/// @param[in]  j_mesh           geometry JSON
-	/// @param[in]  root_path       root path of JSON
+	/// @param[in]  resources       logical resource reader
 	/// @param[out] vertices        #V x 3/2 output vertices positions
 	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
 	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
@@ -59,7 +57,7 @@ namespace polyfem::mesh
 	void read_obstacle_mesh(
 		const Units &units,
 		const json &j_mesh,
-		const std::string &root_path,
+		const io::ResourceIO &resources,
 		const int dim,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
@@ -72,7 +70,7 @@ namespace polyfem::mesh
 	/// @param[in]  geometry        geometry JSON object(s)
 	/// @param[in]  displacements   displacements JSON object(s)
 	/// @param[in]  dirichlets    	dirichlet bc JSON object(s)
-	/// @param[in]  root_path       root path of JSON
+	/// @param[in]  resources       logical resource reader
 	///
 	/// @return created Obstacle object
 	///
@@ -81,11 +79,8 @@ namespace polyfem::mesh
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::vector<json> &dirichlets,
-		const std::string &root_path,
+		const io::ResourceIO &resources,
 		const int dim,
-		const std::vector<std::string> &names = std::vector<std::string>(),
-		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
-		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 		const bool non_conforming = false);
 
 	///

@@ -593,20 +593,12 @@ namespace polyfem::varform
 		if (sol.size() <= 0)
 		{
 			assert(rhs_assembler_ != nullptr);
-			const bool was_solution_loaded = read_initial_x_from_file(
-				resolve_input_path(args["input"]["data"]["state"]), "u",
-				args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-				mesh_->dimension(), sol);
-
-			if (!was_solution_loaded)
+			if (problem->is_time_dependent())
+				rhs_assembler_->initial_solution(sol);
+			else
 			{
-				if (problem->is_time_dependent())
-					rhs_assembler_->initial_solution(sol);
-				else
-				{
-					sol.resize(rhs_.size(), 1);
-					sol.setZero();
-				}
+				sol.resize(rhs_.size(), 1);
+				sol.setZero();
 			}
 		}
 		if (sol.cols() > 1)
@@ -877,6 +869,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			dt);
 		time_integrator = bdf;
+		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -917,7 +910,7 @@ namespace polyfem::varform
 			bdf->update_quantities(velocity.col(0));
 
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, time_integrator.get());
+			save_step_state(t0, dt, t, sol, time_integrator.get());
 			logger().info("{}/{}  t={}", t, time_steps, time);
 			notify_time_step(t, time_steps, t0, dt);
 		}
@@ -1167,6 +1160,7 @@ namespace polyfem::varform
 				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()), dt);
 			time_integrator = bdf;
+			restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
 
 			build_forms(sol, t0 + dt);
 			save_timestep(t0, 0, t0, dt, sol);
@@ -1182,7 +1176,7 @@ namespace polyfem::varform
 				nl_problem_->update_quantities(t0 + (step + 1) * dt, sol);
 
 				save_timestep(time, step, t0, dt, sol);
-				save_step_state(t0, dt, step, time_integrator.get());
+				save_step_state(t0, dt, step, sol, time_integrator.get());
 				notify_time_step(step, time_steps, t0, dt);
 			}
 		}

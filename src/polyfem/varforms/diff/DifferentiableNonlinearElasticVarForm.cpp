@@ -620,7 +620,7 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
-			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, solution, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}

@@ -63,6 +63,7 @@ namespace polyfem::varform
 			const double t0,
 			const double dt,
 			const int t,
+			const Eigen::MatrixXd &solution,
 			const time_integrator::ImplicitTimeIntegrator *time_integrator) const;
 		std::vector<io::OutputField> elastic_output_fields(
 			const io::OutputSample &sample,

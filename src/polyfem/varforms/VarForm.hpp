@@ -7,9 +7,12 @@
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
+#include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/varforms/FESpace.hpp>
 
@@ -73,11 +76,25 @@ namespace polyfem
 			/// @param units unit system to use for the formulation
 			/// @param args json input arguments, used to initialize the formulation
 			/// @param out_path output path for the formulation, used to save intermediate data
-			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
+			void init(
+				const std::string &formulation,
+				const Units &units,
+				const json &args,
+				const std::string &out_path,
+				const io::ResourceIO &resources);
+
+			virtual void init(
+				const std::string &formulation,
+				const Units &units,
+				const json &args,
+				const std::string &out_path);
+
+			void set_checkpoint_reader(const io::CheckpointReader &reader) { checkpoint_reader_ = &reader; }
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
 			void set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time = 0);
+			void set_geometry(mesh::LoadedGeometry geometry, double loading_mesh_time = 0);
 
 			/// @brief Solve the variational formulation and store the solution in the given matrix
 			/// @param sol matrix to store the solution
@@ -126,6 +143,14 @@ namespace polyfem
 			void save_json(const Eigen::MatrixXd &solution) const;
 			virtual void export_data(const Eigen::MatrixXd &solution) const = 0;
 
+			virtual void serialize_checkpoint(
+				io::CheckpointWriter &writer,
+				const Eigen::MatrixXd &solution,
+				const io::CheckpointMetadata &metadata) const;
+			virtual void deserialize_checkpoint(
+				const io::CheckpointReader &reader,
+				Eigen::MatrixXd &solution);
+
 		protected:
 			/// Prepare all discretization and assembly data without running a solve.
 			void prepare();
@@ -134,6 +159,10 @@ namespace polyfem
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
 			void set_materials(assembler::Assembler &assembler, const int size) const;
+			void restore_checkpoint_integrator(
+				const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &integrator,
+				const std::string &group,
+				double dt) const;
 			virtual void reset() = 0;
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
@@ -188,16 +217,16 @@ namespace polyfem
 
 		protected:
 			virtual void build_rhs_assembler() = 0;
+			virtual void set_obstacle(mesh::Obstacle &&obstacle);
 
 			void save_step_state(
 				const double t0,
 				const double dt,
 				const int t,
-				const time_integrator::ImplicitTimeIntegrator *time_integrator,
-				const bool rest_mesh_written = false) const;
+				const Eigen::MatrixXd &solution,
+				const time_integrator::ImplicitTimeIntegrator *time_integrator) const;
 
 			void ensure_output_sampler() const;
-			void save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			bool save_timestep_to_vtm(
 				const double time, const int t, const double dt,
@@ -206,6 +235,12 @@ namespace polyfem
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;
 			void notify_time_step(const int t, const int time_steps, const double t0, const double dt) const;
+			void init_child_varform(
+				VarForm &child,
+				const std::string &formulation,
+				const Units &units,
+				const json &args,
+				const std::string &out_path) const;
 
 			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
 			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
@@ -222,6 +257,7 @@ namespace polyfem
 
 			std::string root_path;
 			std::string output_path;
+			const io::CheckpointReader *checkpoint_reader_ = nullptr;
 
 			std::unique_ptr<mesh::Mesh> mesh_;
 
@@ -230,7 +266,12 @@ namespace polyfem
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;
 			bool prepared_ = false;
+			int output_index_offset_ = 0;
 
+		private:
+			const io::ResourceIO *resources_ = nullptr;
+
+		protected:
 			static bool read_initial_x_from_file(
 				const std::string &state_path,
 				const std::string &x_name,

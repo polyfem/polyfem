@@ -2406,7 +2406,7 @@
             "directory",
             "log",
             "json",
-            "restart_json",
+            "checkpoint",
             "paraview",
             "data",
             "advanced",
@@ -2440,10 +2440,19 @@
         "doc": "File name for JSON output statistics on time/error/etc."
     },
     {
-        "pointer": "/output/restart_json",
+        "pointer": "/output/checkpoint",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "path"
+        ],
+        "doc": "Versioned, self-contained transient checkpoint output."
+    },
+    {
+        "pointer": "/output/checkpoint/path",
         "default": "",
         "type": "string",
-        "doc": "File name for JSON output to restart the simulation."
+        "doc": "Checkpoint path with an integer format placeholder."
     },
     {
         "pointer": "/output/paraview",
@@ -2652,12 +2661,9 @@
             "full_mat",
             "stiffness_mat",
             "stress_mat",
-            "state",
-            "rest_mesh",
             "mises",
             "nodes",
-            "advanced",
-            "file_index_offset"
+            "advanced"
         ],
         "doc": "File names to write output data to."
     },
@@ -2686,18 +2692,6 @@
         "doc": "Exports stress"
     },
     {
-        "pointer": "/output/data/state",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/rest_mesh",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the rest mesh in MSH format, used to restart the sim"
-    },
-    {
         "pointer": "/output/data/mises",
         "default": "",
         "type": "string",
@@ -2723,12 +2717,6 @@
         "default": false,
         "type": "bool",
         "doc": "Reorder nodes accodring to input"
-    },
-    {
-        "pointer": "/output/data/file_index_offset",
-        "default": 0,
-        "type": "int",
-        "doc": "Starting file index offset for output files. Set automatically by restart JSON so that file numbering continues from the previous run."
     },
     {
         "pointer": "/output/reference",
@@ -2854,31 +2842,31 @@
         "default": null,
         "type": "object",
         "optional": [
-            "data"
+            "checkpoint"
         ],
         "doc": "input data"
     },
     {
-        "pointer": "/input/data",
+        "pointer": "/input/checkpoint",
         "default": null,
         "type": "object",
         "optional": [
-            "state",
+            "path",
             "reorder"
         ],
-        "doc": "input to restart time dependent sim"
+        "doc": "Versioned checkpoint continuation input."
     },
     {
-        "pointer": "/input/data/state",
+        "pointer": "/input/checkpoint/path",
         "default": "",
         "type": "file",
-        "doc": "input state as hdf5"
+        "doc": "Self-contained HDF5 checkpoint."
     },
     {
-        "pointer": "/input/data/reorder",
+        "pointer": "/input/checkpoint/reorder",
         "default": false,
         "type": "bool",
-        "doc": "reorder input data"
+        "doc": "Reorder checkpoint data using the input mesh ordering."
     },
     {
         "pointer": "/preset_problem",

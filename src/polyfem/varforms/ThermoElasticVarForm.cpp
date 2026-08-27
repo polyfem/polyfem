@@ -44,6 +44,16 @@
 
 namespace polyfem::varform
 {
+	void ThermoElasticVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		if (temperature_time_integrator_)
+			temperature_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/temperature_integrator");
+	}
+
 	namespace
 	{
 		json first_material(const json &materials)
@@ -312,13 +322,6 @@ namespace polyfem::varform
 		problem->init(mesh);
 		temperature_problem_->init(mesh);
 
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
-			args["geometry"],
-			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
-			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			root_path, mesh.dimension());
 	}
 
 	void ThermoElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -654,14 +657,7 @@ namespace polyfem::varform
 	void ThermoElasticVarForm::initial_temperature_solution(Eigen::MatrixXd &solution) const
 	{
 		assert(temperature_rhs_assembler_ != nullptr);
-
-		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "temperature",
-			args["input"]["data"]["reorder"], temperature_space_.space_in_node_to_node,
-			/*dim=*/1, solution);
-
-		if (!was_solution_loaded)
-			temperature_rhs_assembler_->initial_solution(solution);
+		temperature_rhs_assembler_->initial_solution(solution);
 	}
 
 	Eigen::MatrixXd ThermoElasticVarForm::stacked_solution(
@@ -714,6 +710,7 @@ namespace polyfem::varform
 			initial_velocity(displacement_velocity);
 			initial_acceleration(displacement_acceleration);
 			solve_data_.time_integrator->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
+			restore_checkpoint_integrator(solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt);
 		}
 		else
 		{
@@ -770,6 +767,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd temperature_velocity = Eigen::MatrixXd::Zero(temperature_solution.rows(), temperature_solution.cols());
 			Eigen::MatrixXd temperature_acceleration = Eigen::MatrixXd::Zero(temperature_solution.rows(), temperature_solution.cols());
 			temperature_time_integrator_->init(temperature_solution, temperature_velocity, temperature_acceleration, dt);
+			restore_checkpoint_integrator(temperature_time_integrator_, "/checkpoint/state/temperature_integrator", dt);
 
 			temperature_inertia_form_ = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
 			if (!temperature_boundary_.boundary_nodes.empty())
@@ -1013,7 +1011,7 @@ namespace polyfem::varform
 
 				logger().info("{}/{}  t={}", t, time_steps, time);
 				notify_time_step(t, time_steps, t0, dt);
-				save_step_state(t0, dt, t, nullptr);
+				save_step_state(t0, dt, t, sol, solve_data_.time_integrator.get());
 			}
 		}
 

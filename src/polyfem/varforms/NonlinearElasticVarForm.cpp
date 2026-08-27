@@ -72,14 +72,11 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		ElasticVarForm::load_mesh(mesh, args);
+	}
 
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
-			args["geometry"],
-			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
-			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			root_path, mesh.dimension());
+	void NonlinearElasticVarForm::set_obstacle(mesh::Obstacle &&loaded_obstacle)
+	{
+		obstacle = std::move(loaded_obstacle);
 	}
 
 	io::OutputSpace NonlinearElasticVarForm::output_space() const
@@ -770,7 +767,7 @@ namespace polyfem::varform
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
 
-			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, sol, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}
@@ -967,6 +964,7 @@ namespace polyfem::varform
 			}
 
 			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
+			restore_checkpoint_integrator(solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt);
 			assert(solve_data_.time_integrator != nullptr && "Transient nonlinear elasticity requires an initialized time integrator");
 		}
 		else

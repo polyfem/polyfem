@@ -127,13 +127,14 @@ namespace polyfem::from_json
 
 	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
 		const json &args,
+		const io::ResourceIO &resources,
 		const size_t max_threads)
 	{
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
 
 		State state;
-		state.init(in_args, true, true);
+		state.init(in_args, resources, true, true);
 		state.load_mesh();
 		auto differentiable_varform =
 			std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation);
@@ -145,30 +146,6 @@ namespace polyfem::from_json
 		}
 		differentiable_varform->prepare();
 		return differentiable_varform;
-	}
-
-	std::vector<std::shared_ptr<varform::DifferentiableVarForm>> build_varforms(
-		const std::string &root_path,
-		const json &args,
-		const size_t max_threads,
-		const json &output_log)
-	{
-		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms(args.size());
-		for (int i = 0; i < args.size(); ++i)
-		{
-			json cur_args;
-			std::string abs_path = utils::resolve_path(args[i]["path"], root_path, false);
-			if (!load_json(abs_path, cur_args))
-			{
-				log_and_throw_adjoint_error("Can't find json for varform::DifferentiableVarForm {}", i);
-			}
-
-			if (!output_log.empty())
-				cur_args["output"]["log"].merge_patch(output_log);
-
-			varforms[i] = build_differentiable_varform(cur_args, max_threads);
-		}
-		return varforms;
 	}
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(

@@ -377,6 +377,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(displacement.rows(), displacement.cols()),
 			dt);
 		time_integrator = bdf;
+		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -415,7 +416,7 @@ namespace polyfem::varform
 			bdf->update_quantities(displacement.col(0));
 
 			save_timestep(time, t, t0, dt, sol);
-			save_elastic_step_state(t0, dt, t, time_integrator.get());
+			save_elastic_step_state(t0, dt, t, sol, time_integrator.get());
 			logger().info("{}/{}  t={}", t, time_steps, time);
 			notify_time_step(t, time_steps, t0, dt);
 		}

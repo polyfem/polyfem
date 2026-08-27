@@ -548,20 +548,12 @@ namespace polyfem::varform
 		if (sol.size() <= 0)
 		{
 			assert(rhs_assembler_ != nullptr);
-			const bool was_solution_loaded = read_initial_x_from_file(
-				resolve_input_path(args["input"]["data"]["state"]), "u",
-				args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-				/*dim=*/1, sol);
-
-			if (!was_solution_loaded)
+			if (problem->is_time_dependent())
+				rhs_assembler_->initial_solution(sol);
+			else
 			{
-				if (problem->is_time_dependent())
-					rhs_assembler_->initial_solution(sol);
-				else
-				{
-					sol.resize(rhs_.size(), 1);
-					sol.setZero();
-				}
+				sol.resize(rhs_.size(), 1);
+				sol.setZero();
 			}
 		}
 		if (sol.cols() > 1)
@@ -663,6 +655,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(value.rows(), value.cols()),
 			dt);
 		time_integrator = bdf;
+		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -703,7 +696,7 @@ namespace polyfem::varform
 			bdf->update_quantities(value.col(0));
 
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, time_integrator.get());
+			save_step_state(t0, dt, t, sol, time_integrator.get());
 			logger().info("{}/{}  t={}", t, time_steps, time);
 			notify_time_step(t, time_steps, t0, dt);
 		}
