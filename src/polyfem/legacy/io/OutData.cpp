@@ -18,6 +18,7 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -1215,7 +1216,8 @@ namespace polyfem::legacy::io
 		const std::string &solution_path,
 		const std::string &stress_path,
 		const std::string &mises_path,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 		if (!state.mesh)
 		{
@@ -1296,7 +1298,7 @@ namespace polyfem::legacy::io
 			save_vtu(
 				vis_mesh_path, state, sol, pressure,
 				tend, dt, opts,
-				is_contact_enabled);
+				is_contact_enabled, quadrature_points_ee);
 		}
 		if (!nodes_path.empty())
 		{
@@ -1395,7 +1397,8 @@ namespace polyfem::legacy::io
 		const double t,
 		const double dt,
 		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 		if (!state.mesh)
 		{
@@ -1438,7 +1441,7 @@ namespace polyfem::legacy::io
 		if (opts.surface)
 		{
 			save_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
-						 is_contact_enabled);
+						 is_contact_enabled, quadrature_points_ee);
 		}
 
 		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
@@ -2107,7 +2110,8 @@ namespace polyfem::legacy::io
 		const double t,
 		const double dt_in,
 		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
@@ -2241,6 +2245,18 @@ namespace polyfem::legacy::io
 			writer.add_field("discr", discr);
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
+
+		if (!quadrature_points_ee.empty())
+		{
+			Eigen::MatrixXd field(boundary_vis_primitive_ids.rows(), 1);
+			field.setZero();
+			for (int i = 0; i < boundary_vis_primitive_ids.rows(); ++i)
+			{
+				if (quadrature_points_ee.count(boundary_vis_primitive_ids(i)))
+					field(i) = quadrature_points_ee.at(boundary_vis_primitive_ids(i));
+			}
+			writer.add_field("quadrature_points_ee", field);
+		}
 
 		if (actual_dim == 1 && opts.export_field("solution_grad"))
 			writer.add_field("solution_grad", vect);
@@ -2471,6 +2487,18 @@ namespace polyfem::legacy::io
 			assert(forces_reshaped.rows() == surface_displacements.rows());
 			assert(forces_reshaped.cols() == surface_displacements.cols());
 			writer.add_field("tangential_adhesion_forces", forces_reshaped);
+		}
+
+		const auto ho_form = std::dynamic_pointer_cast<solver::HighOrderContactForm>(contact_form);
+		if (ho_form && problem_dim == 3)
+		{
+			const auto &ho_collisions = ho_form->collision_set();
+
+			Eigen::VectorXd edge_counts =
+				ho_collisions.edge_collision_counts(collision_mesh.num_edges());
+
+			writer.set_edges(collision_mesh.edges());
+			writer.add_edge_field("edge_collision_counts", edge_counts);
 		}
 
 		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());

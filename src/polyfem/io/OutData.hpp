@@ -8,6 +8,7 @@
 
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
+#include <polyfem/solver/SolveData.hpp>
 
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
