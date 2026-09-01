@@ -112,8 +112,12 @@ namespace polyfem::solver
 			const bool use_area_weighting,
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
+			const std::string &collision_set_type,
+			const bool skip_obstacles,
+			const std::string &barrier,
 			const json &barrier_stiffness,
 			const double initial_barrier_stiffness,
+			const double dhat_epsilon_scale,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
@@ -121,6 +125,7 @@ namespace polyfem::solver
 
 			// Smooth Contact Form
 			const bool use_gcp_formulation,
+			const bool use_tpegcp_formulation,
 			const double alpha_t,
 			const double alpha_n,
 			const bool use_adaptive_dhat,
@@ -128,7 +133,6 @@ namespace polyfem::solver
 
 			// High Order Contact Form
 			const bool use_high_order_formulation,
-			const bool use_offset_formulation,
 			json high_order_contact_params,
 
 			// Normal Adhesion Form

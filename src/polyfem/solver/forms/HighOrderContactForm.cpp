@@ -5,34 +5,100 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 
 #include <ipc/utils/eigen_ext.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
+#include <ipc/barrier/barrier.hpp>
 
 namespace polyfem::solver
 {
-	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault) {
+	namespace {
+		ipc::FaceQuadRule build_quad_rule(const int order)
+		{
+			polyfem::quadrature::Quadrature quad;
+			polyfem::quadrature::TriQuadrature(true).get_quadrature(order, quad);
+
+			ipc::FaceQuadRule rule;
+			rule.reserve(quad.size());
+			for (int i = 0; i < quad.size(); i++) {
+				const double x = quad.points(i, 0);
+				const double y = quad.points(i, 1);
+				// polyfem divides weights by 2 (reference triangle area); multiply
+				// back to match ipc-toolkit's convention of weights summing to 1.
+				const double w = quad.weights(i) * 2.0;
+				rule.push_back({{{1.0 - x - y, x, y}}, w});
+			}
+			return rule;
+		}
+	} // namespace
+
+	
+	/// Check if a quadrature point is at a triangle vertex (one barycentric
+	/// coordinate ≈ 1, others ≈ 0).
+	bool is_vertex_point(const ipc::FaceQuadPoint& qp, int vertex, double tol = 1e-12)
+	{
+		for (int i = 0; i < 3; i++) {
+			if (std::abs(qp.lambda[i] - (i == vertex ? 1.0 : 0.0)) > tol)
+				return false;
+		}
+		return true;
+	}
+
+	/// Verify the quadrature rule contains the 3 triangle vertices.
+	void verify_vertices_in_quad_rule(const ipc::FaceQuadRule& rule)
+	{
+		for (int v = 0; v < 3; v++) {
+			bool found = false;
+			for (const auto& qp : rule) {
+				if (is_vertex_point(qp, v)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				throw std::runtime_error("Face quadrature rule is missing triangle vertex " + std::to_string(v) + "; choose a quadrature scheme that includes corner points");
+		}
+	}
+
+	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
-		const bool skip_obst = high_order_contact_params["skip_obstacles"];
-		int power = high_order_contact_params["exponent"];
-		if (power < 1) power = powerdefault;
-		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, skip_obst);
+		const bool use_ogc = high_order_contact_params["use_ogc"];
+		const bool area_weights = high_order_contact_params["area_weights"];
+		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
+			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
+		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, use_ogc, area_weights, itype);
+		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
+		if (quadrature_order > 0) {
+			params.face_quad_rule = build_quad_rule(quadrature_order);
+			verify_vertices_in_quad_rule(params.face_quad_rule);
+		}
+		return params;
 	}
 
 	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
 											   const double dhat,
 											   const double avg_mass,
 											   const json high_order_contact_params,
+											   const bool skip_obstacles,
+											   std::shared_ptr<ipc::Barrier> barrier,
+											   const bool use_adaptive_dhat,
 											   const bool use_adaptive_barrier_stiffness,
 											   const bool is_time_dependent,
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1)),
-											   barrier_potential_(params)
+											   const int ccd_max_iterations,
+											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, high_order_contact_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
+											   barrier_potential_(params, high_order_contact_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
 	{
+		// Compute adaptive support at rest configuration if enabled
+		if (use_adaptive_dhat_) {
+			adaptive_support_ = ipc::HighOrderCollisions::compute_adaptive_dhat(
+				collision_mesh, collision_mesh.rest_positions(), params);
+		}
 	}
 
 	void HighOrderContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
@@ -56,7 +122,7 @@ namespace polyfem::solver
 			return;
 
 		collision_set_.build(
-			collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false, broad_phase_.get());
+			collision_mesh_, displaced_surface, params, adaptive_support_.get(), broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 
@@ -88,10 +154,13 @@ namespace polyfem::solver
 	void HighOrderContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
+		// 	static int hessian_call_count = 0;
+		// 	const std::string filename = "collision_mesh_hessian_" + std::to_string(hessian_call_count++) + ".obj";
 		// 	io::OBJWriter::write(
-		// 		"collision_mesh.obj",
+		// 		filename,
 		// 		compute_displaced_surface(x),
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
+		// 	polyfem::logger().debug("Exported collision mesh to {}", filename);
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
 		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);
@@ -106,12 +175,23 @@ namespace polyfem::solver
 		update_collision_set(displaced_surface);
 
 		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
-		const double curr_active_distance = collision_set_.compute_active_minimum_distance(collision_mesh_, displaced_surface);
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();
 			const auto log_level = (ratio < 1e-6) ? spdlog::level::err : ((ratio < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
-			polyfem::logger().log(log_level, "Minimum distance during solve: {}, active distance: {}, dhat: {}", sqrt(curr_distance), sqrt(curr_active_distance), dhat());
+			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
+		}
+
+		{
+			const double min_dist_fed = params.min_dist_seen();
+			if (std::isfinite(min_dist_fed))
+			{
+				const double ratio_fed = min_dist_fed / dhat();
+				const auto log_level_fed = (ratio_fed < 1e-6) ? spdlog::level::err
+				                         : ((ratio_fed < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
+				polyfem::logger().log(log_level_fed, "Minimum distance fed to barrier: {}, dhat: {}", min_dist_fed, dhat());
+			}
+			params.reset_min_dist();
 		}
 
 		if (data.iter_num == 0)
@@ -125,7 +205,8 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface), 1e-7);
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface),
+					dhat_epsilon_scale_);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{

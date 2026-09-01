@@ -27,7 +27,9 @@ namespace polyfem::solver
 						  const bool enable_shape_derivatives,
 						  const ipc::BroadPhaseMethod broad_phase_method,
 						  const double ccd_tolerance,
-						  const int ccd_max_iterations);
+						  const int ccd_max_iterations,
+						  const double dhat_epsilon_scale,
+						  const bool use_tpe_kernel = false);
 
 		virtual std::string name() const override { return "smooth-contact"; }
 
@@ -42,6 +44,8 @@ namespace polyfem::solver
 		const ipc::SmoothContactParameters &get_params() const { return params; }
 
 		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
+
+		const ipc::SmoothContactPotential &barrier_potential() const { return barrier_potential_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value

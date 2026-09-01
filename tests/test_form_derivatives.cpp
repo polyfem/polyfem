@@ -11,6 +11,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
@@ -295,7 +296,7 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 	form.set_barrier_stiffness(barrier_stiffness);
 
 	test_form(form, *state_ptr);
@@ -321,7 +322,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	SmoothContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	test_form(form, *state_ptr);
 }
@@ -385,7 +386,7 @@ namespace
 					use_convergent_formulation, use_convergent_formulation,
 					use_convergent_formulation, use_adaptive_barrier_stiffness,
 					is_time_dependent, false, broad_phase_method,
-					ccd_tolerance, ccd_max_iterations);
+					ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 				contact_form.set_barrier_stiffness(barrier_stiffness);
 
 				FrictionForm form(
@@ -397,6 +398,59 @@ namespace
 			}
 	}
 } // namespace
+
+TEST_CASE("smooth contact friction form derivatives", "[form][form_derivatives][friction_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	const double epsv = 1e-3;
+	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
+	const double dhat = 1e-3;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const bool use_adaptive_barrier_stiffness = false;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+	const json contact_args = json::object({{"alpha_t", 0.2}, {"alpha_n", 0.1}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
+
+	const SmoothContactForm contact_form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
+
+	FrictionForm form(
+		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		/*n_lagging_iters=*/-1);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("high-order contact friction form derivatives", "[form][form_derivatives][friction_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	const double epsv = 1e-3;
+	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
+	const double dhat = 1e-3;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const bool use_adaptive_barrier_stiffness = false;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+	const json ho_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"normalize_weights", false}});
+
+	const HighOrderContactForm contact_form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
+		/*use_adaptive_dhat=*/false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
+
+	FrictionForm form(
+		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		/*n_lagging_iters=*/-1);
+
+	test_form(form, *state_ptr);
+}
 
 TEST_CASE("friction form derivatives 2d convergent", "[form][form_derivatives][friction_form]")
 {

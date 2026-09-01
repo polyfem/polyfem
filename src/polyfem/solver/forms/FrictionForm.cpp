@@ -1,6 +1,7 @@
 #include "FrictionForm.hpp"
 #include "BarrierContactForm.hpp"
 #include "SmoothContactForm.hpp"
+#include "HighOrderContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -121,6 +122,19 @@ namespace polyfem::solver
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface,
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
+		}
+		else if (const auto ho_contact = dynamic_cast<const HighOrderContactForm*>(&contact_form_))
+		{
+			ipc::HighOrderCollisions collision_set;
+			collision_set.build(
+				collision_mesh_, displaced_surface, ho_contact->get_params(),
+				ho_contact->get_adaptive_support().get(), broad_phase.get());
+
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface, collision_set,
+				ho_contact->get_params(), contact_form_.barrier_stiffness(),
+				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_,
+				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
 		else
 		{

@@ -39,6 +39,9 @@ namespace polyfem::io
 			bool wire;
 			bool points;
 			bool contact_forces;
+			bool contact_forces_vertex;
+			bool contact_forces_edge;
+			bool contact_forces_face;
 			bool friction_forces;
 			bool normal_adhesion_forces;
 			bool contact_potential;
@@ -51,6 +54,8 @@ namespace polyfem::io
 			bool reorder_output;
 
 			bool use_hdf5;
+
+			bool obstacle_volume;
 
 			/// @brief initialize the flags based on the input args
 			/// @param[in] args input arguments used to set most of the flags
@@ -317,6 +322,30 @@ namespace polyfem::io
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr,
 			Eigen::MatrixXd &local_points) const;
+
+		void save_volume_vector_field(
+			const State &state,
+			const Eigen::MatrixXd &points,
+			const ExportOptions &opts,
+			const std::string &name,
+			const Eigen::VectorXd &field,
+			paraviewo::ParaviewWriter &writer) const;
+	};
+
+
+	class GradientNormCSVWriter
+	{
+	public:
+		GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices);
+		~GradientNormCSVWriter();
+
+		void write(const int i, const Eigen::MatrixXd &sol);
+
+	protected:
+		std::ofstream file;
+		const solver::SolveData &solve_data;
+		const ipc::CollisionMesh &collision_mesh_;
+		const int n_obstacle_vertices_;
 	};
 
 	class ContactPotentialCSVWriter

@@ -3,10 +3,12 @@
 #include "ContactForm.hpp"
 #include <ipc/high_order_contact/high_order_collisions.hpp>
 #include <ipc/high_order_contact/high_order_contact_potential.hpp>
+#include <ipc/high_order_contact/adaptive_support.hpp>
 #include <cmath>
 
 namespace polyfem::solver
 {
+
     class HighOrderContactForm : public ContactForm
     {
     public:
@@ -14,12 +16,16 @@ namespace polyfem::solver
 					const double dhat,
 					const double avg_mass,
 					const json high_order_contact_params,
+					const bool skip_obstacles,
+					std::shared_ptr<ipc::Barrier> barrier,
+					const bool use_adaptive_dhat,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations);
+					const int ccd_max_iterations,
+					const double dhat_epsilon_scale);
 
 		virtual std::string name() const override { return "high-order-contact"; }
 
@@ -36,8 +42,16 @@ namespace polyfem::solver
 
 		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
 
+		const ipc::HighOrderContactPotential &barrier_potential() const { return barrier_potential_; }
+
 		const ipc::HighOrderContactPotential::CountMap &get_ee_qp_count() const {
 			return barrier_potential_.get_edge_evaluation_count();
+		}
+
+		bool using_adaptive_dhat() const { return use_adaptive_dhat_; }
+
+		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const {
+			return adaptive_support_;
 		}
 
 	protected:
@@ -75,5 +89,11 @@ namespace polyfem::solver
 		ipc::HighOrderContactPotential barrier_potential_;
 
     	Eigen::MatrixXd cached_displaced_surface;
+
+		/// @brief Whether to use adaptive dhat
+		bool use_adaptive_dhat_;
+
+		/// @brief Adaptive support for per-vertex dhat values (computed at rest config)
+		std::shared_ptr<ipc::AdaptiveSupport> adaptive_support_;
 	};
 }

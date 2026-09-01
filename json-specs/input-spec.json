@@ -1131,20 +1131,24 @@
             "epsv",
             "friction_coefficient",
             "use_high_order_formulation",
-            "use_offset_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
             "use_physical_barrier",
+            "collision_set_type",
+            "skip_obstacles",
+            "barrier",
             "collision_mesh",
             "use_gcp_formulation",
+            "use_tpegcp_formulation",
             "high_order_contact_params",
             "alpha_n",
             "alpha_t",
             "min_distance_ratio",
             "use_adaptive_dhat",
             "periodic",
-            "adhesion"
+            "adhesion",
+            "use_standard_distance_type"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1155,8 +1159,9 @@
         "optional": [
             "dbar_factor",
             "quadrature_order",
-            "exponent",
-            "skip_obstacles"
+            "use_ogc",
+            "area_weights",
+            "normalize_weights"
         ]
     },
     {
@@ -1168,22 +1173,41 @@
     {
         "pointer": "/contact/high_order_contact_params/quadrature_order",
         "type": "int",
-        "default": 16,
+        "default": 1,
         "min": 0,
         "doc": "Quadrature order for high-order contact."
     },
     {
-        "pointer": "/contact/high_order_contact_params/exponent",
-        "type": "int",
-        "default": 0,
-        "min": 0,
-        "doc": "Exponent for high-order contact. Default is 0, which sets it to dimension-1."
+        "pointer": "/contact/high_order_contact_params/use_ogc",
+        "default": false,
+        "type": "bool",
+        "doc": "Use the construction logic and potential formulation from Offset Geometric Contact (Chen et al. 2025)."
     },
     {
-        "pointer": "/contact/high_order_contact_params/skip_obstacles",
+        "pointer": "/contact/high_order_contact_params/area_weights",
         "default": true,
         "type": "bool",
-        "doc": "Do integration only on non-fixed primitives."
+        "doc": "Weigh quadrature points by area in high-order contact potential."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/normalize_weights",
+        "default": true,
+        "type": "bool",
+        "doc": "Normalize quadrature weights in high-order contact potential."
+    },
+    {
+        "pointer": "/contact/barrier",
+        "default": "default",
+        "type": "string",
+        "options": [
+            "default",
+            "log",
+            "normalized_log",
+            "linear_inverse",
+            "quadratic_inverse",
+            "two_stage"
+        ],
+        "doc": "Barrier function for contact. 'default' uses the default barrier for each contact model. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (InversePowerBarrier with p=2), 'two_stage' (TwoStageBarrier)."
     },
     {
         "pointer": "/contact/use_high_order_formulation",
@@ -1191,10 +1215,10 @@
         "type": "bool"
     },
     {
-        "pointer": "/contact/use_offset_formulation",
+        "pointer": "/contact/use_standard_distance_type",
         "default": false,
         "type": "bool",
-        "doc": "True if the offset contact formulation is used."
+        "doc": "Use the standard analytic distance-type classification (point-edge, point-triangle, edge-edge) instead of the predicate-based one. The standard version avoids Geogram exact-arithmetic fallbacks for nearly-parallel or degenerate configurations."
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
@@ -1214,6 +1238,12 @@
         "default": false,
         "type": "bool",
         "doc": "True if the smooth contact formulation is used."
+    },
+    {
+        "pointer": "/contact/use_tpegcp_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "True if the TPEGCP formulation is used: the same smooth contact (GCP) pipeline as use_gcp_formulation, but with GCP's own orientation/localization terms replaced by a tangent-point energy-style power kernel (ported from a comparison branch), as a baseline for comparing against use_gcp_formulation. Mutually exclusive with use_gcp_formulation (checked first) and the other contact formulations."
     },
     {
         "pointer": "/contact/alpha_t",
@@ -1286,6 +1316,18 @@
         "default": true,
         "type": "bool",
         "doc": "If using the convergent formulation, whether or not to use physical barrier stiffness. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/collision_set_type",
+        "default": "IPC",
+        "type": "string",
+        "doc": "Type of collision set to use. Options: \"IPC\", \"IMPROVED_MAX_APPROX\", \"OGC\"."
+    },
+    {
+        "pointer": "/contact/skip_obstacles",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, skip obstacle primitives when building the collision set."
     },
     {
         "pointer": "/contact/collision_mesh",
@@ -1526,7 +1568,8 @@
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "initial_barrier_stiffness"
+            "initial_barrier_stiffness",
+            "dhat_epsilon_scale"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1535,6 +1578,13 @@
         "default": 1,
         "type": "float",
         "doc": "Initial barrier stiffness if adaptive barrier is used."
+    },
+    {
+        "pointer": "/solver/contact/dhat_epsilon_scale",
+        "default": 1e-7,
+        "min": 0,
+        "type": "float",
+        "doc": "dhat_epsilon_scale passed to ipc::update_barrier_stiffness during the adaptive per-step update: the stiffness is raised only when the minimum distance drops below dhat_epsilon_scale * bbox_diagonal."
     },
     {
         "pointer": "/solver/contact/CCD",
@@ -2408,7 +2458,8 @@
             "data",
             "advanced",
             "reference",
-            "stats"
+            "stats",
+            "gradient_norm"
         ],
         "doc": "output settings"
     },
@@ -2435,6 +2486,12 @@
         "default": "",
         "type": "string",
         "doc": "File name for JSON output statistics on time/error/etc."
+    },
+    {
+        "pointer": "/output/gradient_norm",
+        "default": "",
+        "type": "string",
+        "doc": "If non-empty, path to a CSV that receives the L2 norm of each Form's gradient at every saved timestep."
     },
     {
         "pointer": "/output/restart_json",
@@ -2529,6 +2586,9 @@
             "material",
             "body_ids",
             "contact_forces",
+            "contact_forces_vertex",
+            "contact_forces_edge",
+            "contact_forces_face",
             "friction_forces",
             "normal_adhesion_forces",
             "tangential_adhesion_forces",
@@ -2540,9 +2600,16 @@
             "nodes",
             "forces",
             "force_high_order",
-            "jacobian_validity"
+            "jacobian_validity",
+            "obstacle_volume"
         ],
         "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/obstacle_volume",
+        "default": true,
+        "type": "bool",
+        "doc": "If true and the obstacle was loaded from a tetrahedral mesh, export the obstacle in volumetric (tet) form instead of its surface in the paraview output."
     },
     {
         "pointer": "/output/paraview/options/use_hdf5",
@@ -2567,6 +2634,24 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out contact forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_vertex",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the vertex-subset contact forces (high-order contact only)"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_edge",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the edge-subset contact forces (high-order contact only)"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_face",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the face-subset contact forces (high-order contact, 3D only)"
     },
     {
         "pointer": "/output/paraview/options/friction_forces",

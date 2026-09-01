@@ -25,10 +25,12 @@ namespace polyfem
 			v_.resize(0, 0);
 			f_.resize(0, 0);
 			e_.resize(0, 0);
+			tets_.resize(0, 0);
 
 			in_f_.resize(0, 0);
 			in_e_.resize(0, 0);
 			in_v_.resize(0);
+			in_tets_.resize(0, 0);
 
 			displacements_.clear();
 
@@ -41,10 +43,25 @@ namespace polyfem
 			const Eigen::MatrixXd &vertices,
 			const Eigen::VectorXi &codim_vertices,
 			const Eigen::MatrixXi &codim_edges,
-			const Eigen::MatrixXi &faces)
+			const Eigen::MatrixXi &faces,
+			const Eigen::MatrixXi &tets)
 		{
 			if (vertices.size() == 0)
 				return;
+
+			if (tets.size() && (tets.cols() == 3 || tets.cols() == 4))
+			{
+				const int tc = tets.cols();
+				tets_.conservativeResize(tets_.rows() + tets.rows(), tc);
+				tets_.bottomRows(tets.rows()) = tets.array() + v_.rows();
+
+				in_tets_.conservativeResize(in_tets_.rows() + tets.rows(), tc);
+				in_tets_.bottomRows(tets.rows()) = tets.array() + v_.rows();
+			}
+			else if (tets.size())
+			{
+				log_and_throw_error("Obstacle volumetric cells must be triangles (2D) or tetrahedra (3D)!");
+			}
 
 			if (dim_ == 0)
 				dim_ = vertices.cols();
@@ -99,9 +116,10 @@ namespace polyfem
 			const Eigen::MatrixXi &codim_edges,
 			const Eigen::MatrixXi &faces,
 			const json &displacement,
-			const std::string &root_path)
+			const std::string &root_path,
+			const Eigen::MatrixXi &tets)
 		{
-			append_mesh(vertices, codim_vertices, codim_edges, faces);
+			append_mesh(vertices, codim_vertices, codim_edges, faces, tets);
 
 			displacements_.emplace_back();
 			for (size_t d = 0; d < dim_; ++d)
@@ -127,12 +145,13 @@ namespace polyfem
 			const Eigen::VectorXi &codim_vertices,
 			const Eigen::MatrixXi &codim_edges,
 			const Eigen::MatrixXi &faces,
-			const int fps)
+			const int fps,
+			const Eigen::MatrixXi &tets)
 		{
 			if (vertices.size() == 0 || vertices[0].size() == 0)
 				return;
 
-			append_mesh(vertices[0], codim_vertices, codim_edges, faces);
+			append_mesh(vertices[0], codim_vertices, codim_edges, faces, tets);
 
 			std::array<std::vector<Eigen::MatrixXd>, 3> displacements_xyz;
 			for (size_t i = 0; i < vertices.size(); ++i)
