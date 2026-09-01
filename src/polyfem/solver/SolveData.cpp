@@ -16,7 +16,6 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
-#include <polyfem/solver/forms/TangentPointForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
@@ -151,9 +150,6 @@ namespace polyfem::solver
 		const double tangential_adhesion_coefficient,
 		const double epsa,
 		const int tangential_adhesion_iterations,
-
-		// Tangent Point Form
-		const bool tangent_point_enabled,
 
 		// Homogenization
 		const assembler::MacroStrainValue &macro_strain_constraint,
@@ -441,12 +437,6 @@ namespace polyfem::solver
 						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, barrier_from_string(barrier), use_adaptive_dhat, use_adaptive_barrier_stiffness, is_time_dependent,
 						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
-				else if (tangent_point_enabled)
-				{
-					contact_form = std::make_shared<TangentPointForm>(
-						collision_mesh, dhat, avg_mass, is_time_dependent, enable_shape_derivatives, broad_phase,
-						ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
-				}
 				else
 				{
 					contact_form = std::make_shared<BarrierContactForm>(
@@ -473,9 +463,6 @@ namespace polyfem::solver
 
 			if (friction_coefficient != 0)
 			{
-				if (std::dynamic_pointer_cast<TangentPointForm>(contact_form))
-					log_and_throw_error("Friction is not supported with the tangent-point contact formulation");
-
 				friction_form = std::make_shared<FrictionForm>(
 					collision_mesh, time_integrator, epsv, friction_coefficient,
 					broad_phase, *contact_form, friction_iterations);

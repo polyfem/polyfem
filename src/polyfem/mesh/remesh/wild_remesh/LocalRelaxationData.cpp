@@ -308,8 +308,6 @@ namespace polyfem::mesh
 				state.args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
 				state.args["contact"]["adhesion"]["epsa"],
 				state.args["solver"]["contact"]["tangential_adhesion_iterations"],
-				// Tangent Point Form
-				state.args["contact"]["tangent_point_enabled"],
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact

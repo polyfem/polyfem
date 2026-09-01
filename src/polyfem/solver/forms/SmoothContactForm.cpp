@@ -93,11 +93,9 @@ namespace polyfem::solver
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		// TPEGCP's kernel has no analytic PSD guarantee (same situation as
-		// TangentPointForm's standalone TPE kernel -- see the note there), so
-		// unlike GCP's own terms, always request CLAMP for it rather than
-		// deferring to project_to_psd_, which no forward-solve code path
-		// ever sets to true.
+		// TPEGCP's kernel has no analytic PSD guarantee, so unlike GCP's own
+		// terms, always request CLAMP for it rather than deferring to
+		// project_to_psd_, which no forward-solve code path ever sets to true.
 		const auto psd_method = params.use_tpe_kernel ? ipc::PSDProjectionMethod::CLAMP
 														: (project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);
 		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), psd_method);

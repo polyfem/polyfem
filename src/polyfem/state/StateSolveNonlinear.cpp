@@ -329,8 +329,6 @@ namespace polyfem
 			args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
 			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
-			// Tangent Point Form
-			args["contact"]["tangent_point_enabled"],
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact

@@ -22,8 +22,6 @@ set(SOURCES
 	NormalAdhesionForm.hpp
 	TangentialAdhesionForm.cpp
 	TangentialAdhesionForm.hpp
-	TangentPointForm.cpp
-	TangentPointForm.hpp
 	BarrierContactForm.cpp
 	BarrierContactForm.hpp
 	HighOrderContactForm.cpp
