@@ -939,7 +939,8 @@ namespace polyfem::solver
 						/*lagged_displacements=*/surface_solution_prev,
 						surface_velocities,
 						bp,
-						0., true));
+						/*dmin=*/0.,
+						/*no_mu=*/true));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(varform.boundary_state().boundary_nodes).setZero();

@@ -466,9 +466,10 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	Eigen::VectorXi codim_vertices;
 	Eigen::MatrixXi codim_edges;
 	Eigen::MatrixXi faces;
+	Eigen::MatrixXi tets;
 
 	json points_mesh = obstacle_mesh_json(line_path, "points");
-	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	REQUIRE(vertices.rows() == 2);
 	REQUIRE(vertices.cols() == 2);
 	CHECK(codim_vertices.size() == 2);
@@ -480,7 +481,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	refined_edges_mesh["advanced"]["refinement_location"] = 0.25;
 	refined_edges_mesh["transformation"]["scale"] = 2.0;
 	refined_edges_mesh["transformation"]["translation"] = json::array({1.0, 0.0});
-	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	REQUIRE(vertices.rows() == 3);
 	REQUIRE(codim_edges.rows() == 2);
 	CHECK(faces.size() == 0);
@@ -491,17 +492,17 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	CHECK(codim_edges.row(1).isApprox(Eigen::RowVector2i(2, 1)));
 
 	json edge_from_surface_mesh = obstacle_mesh_json(tri_path, "edges");
-	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json surface_in_2d_mesh = obstacle_mesh_json(tri_path, "surface");
-	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json volume_obstacle = obstacle_mesh_json(line_path, "volume");
-	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 1);
 	CHECK(faces.size() == 0);
 }

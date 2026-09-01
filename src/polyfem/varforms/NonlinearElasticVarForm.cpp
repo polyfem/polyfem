@@ -820,8 +820,12 @@ namespace polyfem::varform
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
+			args["contact"]["collision_set_type"].get<std::string>(),
+			args["contact"]["skip_obstacles"].get<bool>(),
+			args["contact"]["barrier"].get<std::string>(),
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
+			args["solver"]["contact"]["dhat_epsilon_scale"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -832,6 +836,9 @@ namespace polyfem::varform
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
+			// High Order Contact Form
+			args["contact"]["use_high_order_formulation"],
+			args["contact"]["high_order_contact_params"],
 			// Normal Adhesion Form
 			args["contact"]["adhesion"]["adhesion_enabled"],
 			args["contact"]["adhesion"]["dhat_p"],

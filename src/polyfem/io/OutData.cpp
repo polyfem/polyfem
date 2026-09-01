@@ -20,6 +20,7 @@
 
 #include <polyfem/utils/getRSS.h>
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -462,7 +463,6 @@ namespace polyfem::io
 			// on unordered_map<..., unique_ptr<...>> is O(1) and does not deep-copy.
 			auto gradient_with_only = [&](const std::string &kind) -> Eigen::VectorXd {
 				auto v  = std::move(ho_collision_set.vertex_collisions);
-				auto v2 = std::move(ho_collision_set.vertex_collisions_2d);
 				auto ee = std::move(ho_collision_set.edge_edge_collisions);
 				auto e2 = std::move(ho_collision_set.edge_collisions_2d);
 				auto f  = std::move(ho_collision_set.face_collisions);
@@ -470,7 +470,6 @@ namespace polyfem::io
 				if (kind == "vertex")
 				{
 					ho_collision_set.vertex_collisions = std::move(v);
-					ho_collision_set.vertex_collisions_2d = std::move(v2);
 				}
 				else if (kind == "edge")
 				{
@@ -488,7 +487,6 @@ namespace polyfem::io
 				if (kind != "vertex")
 				{
 					ho_collision_set.vertex_collisions = std::move(v);
-					ho_collision_set.vertex_collisions_2d = std::move(v2);
 				}
 				if (kind != "edge")
 				{
@@ -2450,8 +2448,6 @@ namespace polyfem::io
 					elements.back().ctype = CellType::Vertex;
 					elements.back().vertices.push_back(obstacle->get_vertex_connectivity()(i) + orig_p);
 				}
-			}
-		}
 			}
 		}
 

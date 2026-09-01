@@ -1140,7 +1140,6 @@
             "barrier",
             "collision_mesh",
             "use_gcp_formulation",
-            "use_tpegcp_formulation",
             "high_order_contact_params",
             "alpha_n",
             "alpha_t",
@@ -1159,7 +1158,6 @@
         "optional": [
             "dbar_factor",
             "quadrature_order",
-            "use_ogc",
             "area_weights",
             "normalize_weights"
         ]
@@ -1176,12 +1174,6 @@
         "default": 1,
         "min": 0,
         "doc": "Quadrature order for high-order contact."
-    },
-    {
-        "pointer": "/contact/high_order_contact_params/use_ogc",
-        "default": false,
-        "type": "bool",
-        "doc": "Use the construction logic and potential formulation from Offset Geometric Contact (Chen et al. 2025)."
     },
     {
         "pointer": "/contact/high_order_contact_params/area_weights",
@@ -1238,12 +1230,6 @@
         "default": false,
         "type": "bool",
         "doc": "True if the smooth contact formulation is used."
-    },
-    {
-        "pointer": "/contact/use_tpegcp_formulation",
-        "default": false,
-        "type": "bool",
-        "doc": "True if the TPEGCP formulation is used: the same smooth contact (GCP) pipeline as use_gcp_formulation, but with GCP's own orientation/localization terms replaced by a tangent-point energy-style power kernel (ported from a comparison branch), as a baseline for comparing against use_gcp_formulation. Mutually exclusive with use_gcp_formulation (checked first) and the other contact formulations."
     },
     {
         "pointer": "/contact/alpha_t",

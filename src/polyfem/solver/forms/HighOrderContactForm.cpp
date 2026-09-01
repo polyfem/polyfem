@@ -65,11 +65,10 @@ namespace polyfem::solver
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
-		const bool use_ogc = high_order_contact_params["use_ogc"];
 		const bool area_weights = high_order_contact_params["area_weights"];
 		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
-		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, use_ogc, area_weights, itype);
+		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, area_weights, itype);
 		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
 		if (quadrature_order > 0) {
 			params.face_quad_rule = build_quad_rule(quadrature_order);
