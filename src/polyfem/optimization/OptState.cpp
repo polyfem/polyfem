@@ -92,26 +92,6 @@ namespace polyfem
 			return "none";
 		}
 
-		/// @brief Read forward sim state json config from file.
-		/// @param root_path
-		/// @param args Json array of state containing "path" field.
-		std::vector<json> load_state_jsons(const std::string &root_path, const json &args)
-		{
-			std::vector<json> result;
-			for (int i = 0; i < args.size(); ++i)
-			{
-				json state_args;
-				const std::string state_path = utils::resolve_path(args[i]["path"], root_path, false);
-				std::ifstream file(state_path);
-				if (!file.is_open())
-					log_and_throw_adjoint_error("Can't find json for varform::DifferentiableVarForm {}", i);
-				file >> state_args;
-				state_args["root_path"] = state_path;
-				result.push_back(std::move(state_args));
-			}
-			return result;
-		}
-
 		std::vector<json> load_state_jsons(
 			const io::ResourceIO &resources,
 			const json &args,
@@ -299,8 +279,8 @@ namespace polyfem
 		std::filesystem::path root = std::filesystem::current_path();
 		if (utils::is_param_valid(input_args, "root_path"))
 			root = input_args["root_path"].get<std::string>();
-		owned_resources_ = std::make_unique<io::FileSystemIO>(root);
-		return run(std::move(input_args), *owned_resources_, strict_validation);
+		resources_ = std::make_unique<io::FileSystemIO>(root);
+		return run(std::move(input_args), *resources_, strict_validation);
 	}
 
 	int OptState::run(
@@ -308,9 +288,7 @@ namespace polyfem
 		const io::ResourceIO &resources,
 		const bool strict_validation)
 	{
-		if (&resources != owned_resources_.get())
-			owned_resources_.reset();
-		resources_ = &resources;
+		resources_ = resources.with_root("");
 		input_args = solver::AdjointOptUtils::apply_opt_json_spec(input_args, strict_validation);
 
 		std::string mode = parse_remeshing_trigger(input_args);
@@ -456,8 +434,8 @@ namespace polyfem
 		std::filesystem::path root = std::filesystem::current_path();
 		if (utils::is_param_valid(p_args_in, "root_path"))
 			root = p_args_in["root_path"].get<std::string>();
-		owned_resources_ = std::make_unique<io::FileSystemIO>(root);
-		init(p_args_in, *owned_resources_, strict_validation);
+		resources_ = std::make_unique<io::FileSystemIO>(root);
+		init(p_args_in, *resources_, strict_validation);
 	}
 
 	void OptState::init(
@@ -465,9 +443,7 @@ namespace polyfem
 		const io::ResourceIO &resources,
 		const bool strict_validation)
 	{
-		if (&resources != owned_resources_.get())
-			owned_resources_.reset();
-		resources_ = &resources;
+		resources_ = resources.with_root("");
 		strict_validation_ = strict_validation;
 		json args_in = p_args_in; // mutable copy
 		args = solver::AdjointOptUtils::apply_opt_json_spec(args_in, strict_validation);
@@ -596,6 +572,11 @@ namespace polyfem
 
 	void OptState::init_variables()
 	{
+		std::vector<std::reference_wrapper<const io::ResourceIO>> resource_refs;
+		resource_refs.reserve(state_resources.size());
+		for (const auto &resources : state_resources)
+			resource_refs.emplace_back(*resources);
+
 		const json &parameters = args["parameters"];
 		bool is_auto = parameters.is_string() && parameters.get<std::string>() == "auto";
 
@@ -617,7 +598,7 @@ namespace polyfem
 				}
 			}
 
-			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], varforms, diff_caches, {});
+			variable_to_simulations = from_json::build_variable_to_simulation_group(args["variable_to_simulation"], varforms, diff_caches, {}, resource_refs);
 
 			ndof = variable_to_simulations.data[0]->inverse_dof();
 			variable_sizes = {ndof};
@@ -638,7 +619,7 @@ namespace polyfem
 
 		/* variable to simulations */
 		variable_to_simulations = from_json::build_variable_to_simulation_group(
-			args["variable_to_simulation"], varforms, diff_caches, variable_sizes);
+			args["variable_to_simulation"], varforms, diff_caches, variable_sizes, resource_refs);
 
 		// Verify varaible dof.
 		for (int i = 0; i < variable_to_simulations.data.size(); ++i)
@@ -656,15 +637,20 @@ namespace polyfem
 
 	void OptState::create_problem()
 	{
+		std::vector<std::reference_wrapper<const io::ResourceIO>> resource_refs;
+		resource_refs.reserve(state_resources.size());
+		for (const auto &resources : state_resources)
+			resource_refs.emplace_back(*resources);
+
 		/* forms */
 		std::shared_ptr<solver::AdjointForm> obj = from_json::build_form(
-			args["functionals"], variable_to_simulations, varforms, diff_caches);
+			args["functionals"], variable_to_simulations, varforms, diff_caches, resource_refs);
 
 		/* stopping conditions */
 		std::vector<std::shared_ptr<solver::AdjointForm>> stopping_conditions;
 		for (const auto &arg : args["stopping_conditions"])
 			stopping_conditions.push_back(
-				from_json::build_form(arg, variable_to_simulations, varforms, diff_caches));
+				from_json::build_form(arg, variable_to_simulations, varforms, diff_caches, resource_refs));
 
 		std::function<bool()> remeshing_trigger;
 		const std::string mode = parse_remeshing_trigger(args);

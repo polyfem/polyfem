@@ -35,6 +35,12 @@ using namespace polyfem::utils;
 
 namespace
 {
+	const io::ResourceIO &test_resources()
+	{
+		static const io::FileSystemIO resources(".");
+		return resources;
+	}
+
 	class RecordingAssembler : public Assembler
 	{
 	public:
@@ -42,16 +48,16 @@ namespace
 		std::map<std::string, ParamFunc> parameters() const override { return {}; }
 		bool is_linear() const override { return true; }
 
-		void add_multimaterial(const int index, const json &params, const Units &, const std::string &root_path) override
+		void add_multimaterial(const int index, const json &params, const Units &, const io::ResourceIO &resources) override
 		{
 			indices.push_back(index);
 			materials.push_back(params);
-			root_paths.push_back(root_path);
+			resource_roots.push_back(resources.describe(""));
 		}
 
 		std::vector<int> indices;
 		std::vector<json> materials;
-		std::vector<std::string> root_paths;
+		std::vector<std::string> resource_roots;
 	};
 
 	class ConfigurableNeoHookeanAutodiff : public NeoHookeanAutodiff
@@ -361,8 +367,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);
 
-	autodiff.add_multimaterial(0, in_args["materials"], units, debug.root_path);
-	real.add_multimaterial(0, in_args["materials"], units, debug.root_path);
+	autodiff.add_multimaterial(0, in_args["materials"], units, test_resources());
+	real.add_multimaterial(0, in_args["materials"], units, test_resources());
 
 	const int el_id = 0;
 	const auto &bs = (*debug.bases)[el_id];
@@ -516,7 +522,7 @@ namespace
 
 	// Set up a SumModel combining NeoHookean and InversionBarrier, both with E=1e5, nu=0.3.
 	// This is the composable replacement for the old ModifiedNeoHookeanElasticity.
-	std::shared_ptr<SumModel> make_modified_assembler(const Units &units, const std::string &root_path)
+	std::shared_ptr<SumModel> make_modified_assembler(const Units &units)
 	{
 		auto a = std::make_shared<SumModel>();
 		a->set_size(2);
@@ -533,7 +539,7 @@ namespace
 		barrier_mat["E"] = 1e5;
 		barrier_mat["nu"] = 0.3;
 		mat["models"].push_back(barrier_mat);
-		a->add_multimaterial(0, mat, units, root_path);
+		a->add_multimaterial(0, mat, units, test_resources());
 		return a;
 	}
 } // namespace
@@ -545,7 +551,7 @@ TEST_CASE("modified-neohookean-gradient", "[assembler]")
 	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
 	Units units;
 	units.init(state->args["units"]);
-	auto assembler = make_modified_assembler(units, debug.root_path);
+	auto assembler = make_modified_assembler(units);
 
 	const int dim = 2;
 	const int el_id = 0;
@@ -590,7 +596,7 @@ TEST_CASE("modified-neohookean-hessian", "[assembler]")
 	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
 	Units units;
 	units.init(state->args["units"]);
-	auto assembler = make_modified_assembler(units, debug.root_path);
+	auto assembler = make_modified_assembler(units);
 
 	const int dim = 2;
 	const int el_id = 0;
@@ -639,7 +645,7 @@ TEST_CASE("modified-neohookean-barrier-zero", "[assembler]")
 	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
 	Units units;
 	units.init(state->args["units"]);
-	auto modified = make_modified_assembler(units, debug.root_path);
+	auto modified = make_modified_assembler(units);
 
 	NeoHookeanElasticity neo;
 	neo.set_size(2);
@@ -647,7 +653,7 @@ TEST_CASE("modified-neohookean-barrier-zero", "[assembler]")
 	mat["type"] = "NeoHookean";
 	mat["E"] = 1e5;
 	mat["nu"] = 0.3;
-	neo.add_multimaterial(0, mat, units, debug.root_path);
+	neo.add_multimaterial(0, mat, units, test_resources());
 
 	const int el_id = 0;
 	const auto &bs = (*debug.bases)[el_id];
@@ -696,14 +702,14 @@ TEST_CASE("modified-neohookean-barrier-active", "[assembler]")
 	Units units;
 	units.init(state.args["units"]);
 
-	auto modified = make_modified_assembler(units, debug.root_path);
+	auto modified = make_modified_assembler(units);
 	NeoHookeanElasticity neo;
 	neo.set_size(2);
 	json mat;
 	mat["type"] = "NeoHookean";
 	mat["E"] = 1e5;
 	mat["nu"] = 0.3;
-	neo.add_multimaterial(0, mat, units, debug.root_path);
+	neo.add_multimaterial(0, mat, units, test_resources());
 
 	const auto &bs = (*debug.bases)[0];
 	ElementAssemblyValues vals;
@@ -761,9 +767,9 @@ void check_neo_hookean_synthetic_nonlinear_branch(const int dim, const int n_bas
 	stress.set_autodiff_type(AutodiffType::STRESS);
 
 	const json material = {{"E", 12.0}, {"nu", 0.23}};
-	fast.add_multimaterial(0, material, units, "");
-	full.add_multimaterial(0, material, units, "");
-	stress.add_multimaterial(0, material, units, "");
+	fast.add_multimaterial(0, material, units, test_resources());
+	full.add_multimaterial(0, material, units, test_resources());
+	stress.add_multimaterial(0, material, units, test_resources());
 
 	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
 	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
@@ -806,9 +812,9 @@ void check_generic_elastic_autodiff_mode(const int dim, const int n_bases)
 	no_ad.set_autodiff_type(AutodiffType::NONE);
 
 	const json material = {{"k", 3.0}};
-	full.add_multimaterial(0, material, units, "");
-	stress.add_multimaterial(0, material, units, "");
-	no_ad.add_multimaterial(0, material, units, "");
+	full.add_multimaterial(0, material, units, test_resources());
+	stress.add_multimaterial(0, material, units, test_resources());
+	no_ad.add_multimaterial(0, material, units, test_resources());
 
 	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
 	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
@@ -905,7 +911,7 @@ TEST_CASE("ALE Navier-Stokes local Jacobian blocks", "[assembler][navier_stokes]
 		assembler->add_multimaterial(
 			0,
 			{{"viscosity", "0.7 + 0.2*x - 0.1*y"}, {"rho", "1.3 - 0.1*x + 0.05*y"}},
-			Units(), "");
+			Units(), test_resources());
 	}
 	const NavierStokesFSIAssemblerData::BodyForceEvaluator body_force = [](
 																			const int, const Eigen::MatrixXd &points, const double time, Eigen::MatrixXd &values) {
@@ -987,7 +993,7 @@ TEST_CASE("ALE identity mapping reproduces Navier-Stokes", "[assembler][navier_s
 	NavierStokesFSIMixed ale_mixed;
 	ale_velocity.set_size(dim);
 	ale_mixed.set_size(dim);
-	ale_velocity.add_multimaterial(0, {{"viscosity", 0.7}, {"rho", 1.0}}, Units(), "");
+	ale_velocity.add_multimaterial(0, {{"viscosity", 0.7}, {"rho", 1.0}}, Units(), test_resources());
 
 	std::array<Eigen::VectorXd, 3> x = {{fixture.x.col(0),
 										 Eigen::VectorXd::LinSpaced(n_bases, -0.03, 0.02),
@@ -1011,7 +1017,7 @@ TEST_CASE("ALE identity mapping reproduces Navier-Stokes", "[assembler][navier_s
 	stokes.set_size(dim);
 	navier_stokes.set_size(dim);
 	stokes_mixed.set_size(dim);
-	stokes.add_multimaterial(0, {{"viscosity", 0.7}}, Units(), "");
+	stokes.add_multimaterial(0, {{"viscosity", 0.7}}, Units(), test_resources());
 
 	Eigen::MatrixXd stiffness = Eigen::MatrixXd::Zero(velocity_size, velocity_size);
 	for (int i = 0; i < n_bases; ++i)
@@ -1058,7 +1064,7 @@ TEST_CASE("generic elastic stress product operations", "[assembler][elasticity]"
 	assembler.set_size(3);
 	assembler.set_autodiff_type(AutodiffType::STRESS);
 	Units units;
-	assembler.add_multimaterial(0, {{"k", 3.0}}, units, "");
+	assembler.add_multimaterial(0, {{"k", 3.0}}, units, test_resources());
 
 	Eigen::MatrixXd grad_u(3, 3);
 	grad_u << 0.03, 0.01, 0.00,
@@ -1244,8 +1250,8 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 	SECTION("generic scalar parameters")
 	{
 		GenericMatParam parameter("coefficient");
-		parameter.add_multimaterial(0, {{"coefficient", 2.5}}, "", "");
-		parameter.add_multimaterial(1, {{"coefficient", "x + 2*y + t"}}, "", "");
+		parameter.add_multimaterial(0, {{"coefficient", 2.5}}, "", test_resources());
+		parameter.add_multimaterial(1, {{"coefficient", "x + 2*y + t"}}, "", test_resources());
 
 		RowVectorNd point(2);
 		point << 3, 4;
@@ -1257,11 +1263,11 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 	SECTION("generic parameter arrays")
 	{
 		GenericMatParams parameters("coefficients");
-		parameters.add_multimaterial(0, {{"unused", 1}}, "", "");
+		parameters.add_multimaterial(0, {{"unused", 1}}, "", test_resources());
 		REQUIRE(parameters.size() == 0);
 
-		parameters.add_multimaterial(0, {{"coefficients", json::array({1.0, "x + y"})}}, "", "");
-		parameters.add_multimaterial(1, {{"coefficients", json::array({3.0, 4.0})}}, "", "");
+		parameters.add_multimaterial(0, {{"coefficients", json::array({1.0, "x + y"})}}, "", test_resources());
+		parameters.add_multimaterial(1, {{"coefficients", json::array({3.0, 4.0})}}, "", test_resources());
 		REQUIRE(parameters.size() == 2);
 		REQUIRE(parameters[0](0, 0, 0, 0, 0) == Catch::Approx(1));
 		REQUIRE(parameters[1](2, 5, 0, 0, 0) == Catch::Approx(7));
@@ -1273,7 +1279,7 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 	{
 		ElasticityTensor tensor;
 		tensor.resize(2);
-		tensor.set_from_lambda_mu(2, 3, "", "");
+		tensor.set_from_lambda_mu(2, 3, "", test_resources());
 		REQUIRE(tensor(0, 0) == Catch::Approx(8));
 		REQUIRE(tensor(1, 0) == Catch::Approx(2));
 		REQUIRE(tensor(2, 2) == Catch::Approx(3));
@@ -1281,7 +1287,7 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 		const std::array<double, 3> strain = {{1, 2, 3}};
 		REQUIRE(tensor.compute_stress<3>(strain, 0) == Catch::Approx(12));
 
-		tensor.set_from_entries({10, 2, 0, 20, 0, 5}, "", "");
+		tensor.set_from_entries({10, 2, 0, 20, 0, 5}, "", test_resources());
 		REQUIRE(tensor(0, 0) == Catch::Approx(10));
 		REQUIRE(tensor(0, 1) == Catch::Approx(2));
 		REQUIRE(tensor(2, 2) == Catch::Approx(5));
@@ -1293,12 +1299,12 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 		tensor.unrotate_stiffness();
 		REQUIRE(tensor(0, 0) == Catch::Approx(10));
 
-		tensor.set_from_young_poisson(100, 0.25, "", "");
+		tensor.set_from_young_poisson(100, 0.25, "", test_resources());
 		REQUIRE(tensor(0, 0) == Catch::Approx(100.0 / (1 - 0.25 * 0.25)));
 
 		ElasticityTensor tensor3d;
 		tensor3d.resize(3);
-		tensor3d.set_from_lambda_mu(2, 3, "", "");
+		tensor3d.set_from_lambda_mu(2, 3, "", test_resources());
 		REQUIRE(tensor3d(0, 0) == Catch::Approx(8));
 		REQUIRE(tensor3d(0, 2) == Catch::Approx(2));
 		REQUIRE(tensor3d(5, 5) == Catch::Approx(3));
@@ -1308,13 +1314,13 @@ TEST_CASE("material parameter helpers", "[assembler][mat_params]")
 	{
 		FiberDirection identity;
 		identity.resize(3);
-		identity.add_multimaterial(0, json::array(), "", "");
+		identity.add_multimaterial(0, json::array(), "", test_resources());
 		REQUIRE_FALSE(identity.has_rotation());
 		REQUIRE(identity(0, 0, 0, 0, 0, 0, 0, 0).isApprox(Eigen::Matrix3d::Identity()));
 
 		FiberDirection fibers;
 		fibers.resize(3);
-		fibers.add_multimaterial(0, json::array({0, 1, 0, 1, 0, 0, 0, 0, 1}), "", "");
+		fibers.add_multimaterial(0, json::array({0, 1, 0, 1, 0, 0, 0, 0, 1}), "", test_resources());
 		REQUIRE(fibers.has_rotation());
 		const auto direction = fibers(0, 0, 0, 0, 0, 0, 0, 0);
 		REQUIRE(direction(0, 1) == Catch::Approx(1));
@@ -1332,7 +1338,7 @@ TEST_CASE("density and Lame parameter helpers", "[assembler][mat_params]")
 	SECTION("Lame parameters")
 	{
 		LameParameters plane_stress;
-		plane_stress.add_multimaterial(0, {{"E", 100.0}, {"nu", 0.25}}, false, "", "");
+		plane_stress.add_multimaterial(0, {{"E", 100.0}, {"nu", 0.25}}, false, "", test_resources());
 		double lambda = 0;
 		double mu = 0;
 		plane_stress.lambda_mu(0, 0, 0, 0, 0, 0, 0, 0, lambda, mu);
@@ -1340,13 +1346,13 @@ TEST_CASE("density and Lame parameter helpers", "[assembler][mat_params]")
 		REQUIRE(mu == Catch::Approx(40));
 
 		LameParameters volume;
-		volume.add_multimaterial(0, {{"young", 100.0}, {"nu", 0.25}}, true, "", "");
+		volume.add_multimaterial(0, {{"young", 100.0}, {"nu", 0.25}}, true, "", test_resources());
 		volume.lambda_mu(0, 0, 0, 0, 0, 0, 0, 0, lambda, mu);
 		REQUIRE(lambda == Catch::Approx(40));
 		REQUIRE(mu == Catch::Approx(40));
 
 		LameParameters direct;
-		direct.add_multimaterial(0, {{"lambda", 7.0}, {"mu", 11.0}}, true, "", "");
+		direct.add_multimaterial(0, {{"lambda", 7.0}, {"mu", 11.0}}, true, "", test_resources());
 		direct.lambda_mu(0, 0, 0, 0, 0, 0, 0, 0, lambda, mu);
 		REQUIRE(lambda == Catch::Approx(7));
 		REQUIRE(mu == Catch::Approx(11));
@@ -1360,8 +1366,8 @@ TEST_CASE("density and Lame parameter helpers", "[assembler][mat_params]")
 	SECTION("densities")
 	{
 		Density density;
-		density.add_multimaterial(0, {{"rho", 2.5}}, "", "");
-		density.add_multimaterial(1, {{"density", "x + y"}}, "", "");
+		density.add_multimaterial(0, {{"rho", 2.5}}, "", test_resources());
+		density.add_multimaterial(1, {{"density", "x + y"}}, "", test_resources());
 		REQUIRE(density(0, 0, 0, 0, 0, 0, 0, 0) == Catch::Approx(2.5));
 		REQUIRE(density(0, 0, 0, 2, 3, 0, 0, 1) == Catch::Approx(5));
 
@@ -1371,13 +1377,13 @@ TEST_CASE("density and Lame parameter helpers", "[assembler][mat_params]")
 
 		NoDensity no_density;
 		REQUIRE(no_density(param, point, 0, 42) == Catch::Approx(1));
-		REQUIRE_THROWS(no_density.add_multimaterial(0, json::object(), "", ""));
+		REQUIRE_THROWS(no_density.add_multimaterial(0, json::object(), "", test_resources()));
 	}
 
 	SECTION("thermal mass density")
 	{
 		ThermalMassDensity density;
-		density.add_multimaterial(0, {{"rho", 3.0}, {"heat_capacity", 4.0}}, "", "", "");
+		density.add_multimaterial(0, {{"rho", 3.0}, {"heat_capacity", 4.0}}, "", "", test_resources());
 		REQUIRE(density(0, 0, 0, 0, 0, 0, 0, 0) == Catch::Approx(12));
 
 		RowVectorNd point(3);
@@ -1464,22 +1470,24 @@ TEST_CASE("assembler material dispatch", "[assembler]")
 	Units units;
 	RecordingAssembler assembler;
 
-	assembler.set_materials({4, 4}, {{"value", 3}}, units, "/root/path");
+	const io::FileSystemIO root_resources("/root/path");
+	assembler.set_materials({4, 4}, {{"value", 3}}, units, root_resources);
 	REQUIRE(assembler.indices == std::vector<int>{0});
 	REQUIRE(assembler.materials[0]["value"] == 3);
-	REQUIRE(assembler.root_paths[0] == "/root/path");
+	REQUIRE(assembler.resource_roots[0] == "/root/path");
 
 	assembler.indices.clear();
 	assembler.materials.clear();
-	assembler.root_paths.clear();
+	assembler.resource_roots.clear();
 	const json materials = json::array({{{"id", json::array({7, 9})}, {"value", 70}},
 										{{"id", 8}, {"value", 80}}});
-	assembler.set_materials({7, 8, 9, 10}, materials, units, "/materials");
+	const io::FileSystemIO material_resources("/materials");
+	assembler.set_materials({7, 8, 9, 10}, materials, units, material_resources);
 	REQUIRE(assembler.indices == std::vector<int>{0, 1, 2});
 	REQUIRE(assembler.materials[0]["value"] == 70);
 	REQUIRE(assembler.materials[1]["value"] == 80);
 	REQUIRE(assembler.materials[2]["value"] == 70);
-	REQUIRE(assembler.root_paths == std::vector<std::string>{"/materials", "/materials", "/materials"});
+	REQUIRE(assembler.resource_roots == std::vector<std::string>{"/materials", "/materials", "/materials"});
 }
 
 TEST_CASE("per-body material arrays use body-local element indices", "[assembler]")
@@ -1490,7 +1498,7 @@ TEST_CASE("per-body material arrays use body-local element indices", "[assembler
 
 	const json materials = json::array({{{"id", 7}, {"rho", json::array({10.0, 11.0})}},
 										{{"id", 8}, {"rho", json::array({20.0, 21.0})}}});
-	mass.set_materials({7, 8, 7, 8}, materials, units, "");
+	mass.set_materials({7, 8, 7, 8}, materials, units, test_resources());
 
 	const Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
 	CHECK(mass.density()(p, p, 0, 0) == 10.0);

@@ -40,7 +40,10 @@ namespace polyfem::solver
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform);
+		AMIPSForm(
+			const VariableToSimulationGroup &variable_to_simulation,
+			std::shared_ptr<const varform::DifferentiableVarForm> varform,
+			const io::ResourceIO &resources);
 
 		virtual std::string name() const override { return "AMIPS"; }
 

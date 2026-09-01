@@ -103,13 +103,6 @@ namespace polyfem
 		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 
 	private:
-		inline std::string root_path() const
-		{
-			if (utils::is_param_valid(args, "root_path"))
-				return args["root_path"].get<std::string>();
-			return "";
-		}
-
 		/// @brief Check and throw if any forward simulation varform::DifferentiableVarForm is not supported.
 		void check_unsupported() const;
 
@@ -122,8 +115,7 @@ namespace polyfem
 
 		bool remeshing_requested_ = false;
 		bool strict_validation_ = true;
-		std::unique_ptr<const io::ResourceIO> owned_resources_;
-		const io::ResourceIO *resources_ = nullptr;
+		std::unique_ptr<const io::ResourceIO> resources_;
 
 		//---------------------------------------------------
 		//-----------------output--------------------

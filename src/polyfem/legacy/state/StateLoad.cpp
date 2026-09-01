@@ -1,6 +1,7 @@
 #include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
@@ -75,12 +76,13 @@ namespace polyfem::legacy
 
 		timer.start();
 		logger().info("Loading obstacles...");
+		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
 		obstacle = mesh::read_obstacle_geometry(
 			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			args["root_path"], mesh->dimension());
+			resources, mesh->dimension());
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -95,6 +97,9 @@ namespace polyfem::legacy
 	{
 		assert(names.size() == cells.size());
 		assert(vertices.size() == cells.size());
+		assert(names.empty());
+		assert(cells.empty());
+		assert(vertices.empty());
 
 		reset_mesh();
 
@@ -102,13 +107,13 @@ namespace polyfem::legacy
 		timer.start();
 
 		logger().info("Loading mesh ...");
+		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
 			mesh = mesh::read_fem_geometry(
 				units,
-				args["geometry"], args["root_path"],
-				names, vertices, cells, non_conforming);
+				args["geometry"], resources, non_conforming);
 		}
 
 		if (mesh == nullptr)
@@ -160,7 +165,7 @@ namespace polyfem::legacy
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			args["root_path"], mesh->dimension(), names, vertices, cells);
+			resources, mesh->dimension(), non_conforming);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

@@ -77,13 +77,14 @@ TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][
 	using namespace polyfem::mesh;
 
 	const Units units;
+	const io::FileSystemIO resources(".");
 	const std::filesystem::path mesh_path = std::filesystem::path(POLYFEM_DATA_DIR) / "gmsh_physical_sides_2d_v22.msh";
 
 	SECTION("explicit surface selections override imported tags")
 	{
 		json args = fem_mesh_json(mesh_path);
 		args["surface_selection"] = 77;
-		const auto mesh = read_fem_mesh(units, args, "");
+		const auto mesh = read_fem_mesh(units, args, resources);
 		REQUIRE(mesh != nullptr);
 		for (int e = 0; e < mesh->n_edges(); ++e)
 			CHECK(mesh->get_boundary_id(e) == (mesh->is_boundary_edge(e) ? 77 : -1));
@@ -94,7 +95,7 @@ TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][
 		json args = fem_mesh_json(mesh_path);
 		args["n_refs"] = 1;
 		REQUIRE_THROWS_WITH(
-			read_fem_mesh(units, args, ""),
+			read_fem_mesh(units, args, resources),
 			Catch::Matchers::ContainsSubstring("stored surface selections"));
 	}
 }
@@ -106,9 +107,10 @@ TEST_CASE("geometry reader applies geometry selection from the mesh object", "[g
 
 	const std::filesystem::path mesh_path =
 		std::filesystem::path(POLYFEM_DATA_DIR) / "standard/simple_fsi_square.msh";
+	const io::FileSystemIO resources(".");
 	json args = fem_mesh_json(mesh_path);
 	args["geometry_selection"] = {{"same_as_volume", true}};
-	const auto mesh = read_fem_mesh(Units(), args, "");
+	const auto mesh = read_fem_mesh(Units(), args, resources);
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->has_geometry_ids());
 
@@ -141,7 +143,8 @@ TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 
 	const json selection = json::array({{{"id", 4}, {"box", {{-1.0, -1.0}, {0.49, 2.0}}}, {"boundary_only", false}},
 										{{"id", 9}, {"box", {{0.49, -1.0}, {2.0, 2.0}}}, {"boundary_only", false}}});
-	apply_geometry_selection(*mesh, selection, "");
+	const polyfem::io::FileSystemIO resources(".");
+	apply_geometry_selection(*mesh, selection, resources);
 	REQUIRE(mesh->get_geometry_ids() == std::vector<int>{9, 4});
 
 	auto pieces = mesh->split();
@@ -196,7 +199,8 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
 		return e == 0 ? 7 : 12;
 	});
-	apply_geometry_selection(*mesh, {{"same_as_volume", true}}, "");
+	const polyfem::io::FileSystemIO resources(".");
+	apply_geometry_selection(*mesh, {{"same_as_volume", true}}, resources);
 	CHECK(mesh->get_geometry_ids() == std::vector<int>{7, 12});
 
 	auto pieces = mesh->split();
@@ -205,7 +209,7 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	CHECK(pieces[1].id == 12);
 
 	auto default_mesh = Mesh::create(vertices, cells);
-	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, "");
+	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, resources);
 	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
 }
 
@@ -450,6 +454,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	using namespace polyfem::mesh;
 
 	const Units units;
+	const polyfem::io::FileSystemIO resources(".");
 	const std::filesystem::path line_path = write_geometry_reader_obj(
 		"line.obj",
 		"v 0 0 0\n"
@@ -468,7 +473,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	Eigen::MatrixXi faces;
 
 	json points_mesh = obstacle_mesh_json(line_path, "points");
-	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, points_mesh, resources, 2, vertices, codim_vertices, codim_edges, faces);
 	REQUIRE(vertices.rows() == 2);
 	REQUIRE(vertices.cols() == 2);
 	CHECK(codim_vertices.size() == 2);
@@ -480,7 +485,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	refined_edges_mesh["advanced"]["refinement_location"] = 0.25;
 	refined_edges_mesh["transformation"]["scale"] = 2.0;
 	refined_edges_mesh["transformation"]["translation"] = json::array({1.0, 0.0});
-	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, refined_edges_mesh, resources, 2, vertices, codim_vertices, codim_edges, faces);
 	REQUIRE(vertices.rows() == 3);
 	REQUIRE(codim_edges.rows() == 2);
 	CHECK(faces.size() == 0);
@@ -491,17 +496,17 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	CHECK(codim_edges.row(1).isApprox(Eigen::RowVector2i(2, 1)));
 
 	json edge_from_surface_mesh = obstacle_mesh_json(tri_path, "edges");
-	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, edge_from_surface_mesh, resources, 2, vertices, codim_vertices, codim_edges, faces);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json surface_in_2d_mesh = obstacle_mesh_json(tri_path, "surface");
-	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, surface_in_2d_mesh, resources, 2, vertices, codim_vertices, codim_edges, faces);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json volume_obstacle = obstacle_mesh_json(line_path, "volume");
-	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, volume_obstacle, resources, 2, vertices, codim_vertices, codim_edges, faces);
 	CHECK(codim_edges.rows() == 1);
 	CHECK(faces.size() == 0);
 }
@@ -512,6 +517,7 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 	using namespace polyfem::mesh;
 
 	const Units units;
+	const io::FileSystemIO resources(".");
 	const std::filesystem::path line_path = write_geometry_reader_obj(
 		"array_line.obj",
 		"v 0 0 0\n"
@@ -524,7 +530,7 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 	line_array["type"] = "mesh_array";
 	line_array["array"] = {{"relative", false}, {"offset", 2.0}, {"size", json::array({2, 1})}};
 
-	Obstacle obstacle = read_obstacle_geometry(units, json::array({line_array}), {}, {}, "", 2);
+	Obstacle obstacle = read_obstacle_geometry(units, json::array({line_array}), {}, {}, resources, 2);
 	CHECK(obstacle.dim() == 2);
 	CHECK(obstacle.n_vertices() == 4);
 	CHECK(obstacle.n_edges() == 2);
@@ -547,7 +553,7 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 		{"point", json::array({0.0, 0.0})},
 		{"normal", json::array({1.0, 0.0})}};
 
-	Obstacle planes = read_obstacle_geometry(units, json::array({disabled, plane, ground}), {}, {}, "", 2);
+	Obstacle planes = read_obstacle_geometry(units, json::array({disabled, plane, ground}), {}, {}, resources, 2);
 	REQUIRE(planes.planes().size() == 2);
 	CHECK(planes.planes()[0].normal().norm() == Catch::Approx(1.0).margin(1e-12));
 	CHECK(planes.planes()[1].normal().norm() == Catch::Approx(1.0).margin(1e-12));
@@ -556,6 +562,6 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 		{"enabled", true},
 		{"is_obstacle", true},
 		{"type", "invalid"}};
-	REQUIRE_THROWS(read_obstacle_geometry(units, json::array({invalid}), {}, {}, "", 2));
-	REQUIRE_THROWS(read_fem_geometry(units, json::array(), ""));
+	REQUIRE_THROWS(read_obstacle_geometry(units, json::array({invalid}), {}, {}, resources, 2));
+	REQUIRE_THROWS(read_fem_geometry(units, json::array(), resources));
 }

@@ -32,6 +32,7 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &ass_vals_cache,
 				const Problem &problem,
+				const io::ResourceIO &resources,
 				const std::string bc_method,
 				const json &solver_params,
 				const int fe_space_id = -1);
@@ -136,6 +137,7 @@ namespace polyfem
 			const std::vector<basis::ElementBases> &gbases_; ///< basis functions associated with geometric mapping
 			const AssemblyValsCache &ass_vals_cache_;
 			const Problem &problem_;
+			const io::ResourceIO &resources_;
 			const std::string bc_method_;
 			const json solver_params_;
 			const int fe_space_id_;

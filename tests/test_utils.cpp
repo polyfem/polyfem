@@ -163,16 +163,17 @@ TEST_CASE("bessel", "[utils]")
 
 TEST_CASE("expression", "[utils]")
 {
+	const io::FileSystemIO resources(".");
 	json jexpr = {{"value", "x^2+sqrt(x*y)+sin(z)*x"}};
 	json jexpr2d = {{"value", "x^2+sqrt(x*y)"}};
 	json jval = {{"value", 1}};
 
 	utils::ExpressionValue expr;
-	expr.init(jexpr["value"], "");
+	expr.init(jexpr["value"], resources);
 	utils::ExpressionValue expr2d;
-	expr2d.init(jexpr2d["value"], "");
+	expr2d.init(jexpr2d["value"], resources);
 	utils::ExpressionValue val;
-	val.init(jval["value"], "");
+	val.init(jval["value"], resources);
 
 	expr.set_unit_type("");
 	expr2d.set_unit_type("");
@@ -183,7 +184,7 @@ TEST_CASE("expression", "[utils]")
 	REQUIRE(val(2, 3, 4) == Catch::Approx(1).margin(1e-16));
 
 	utils::ExpressionValue time_expr;
-	time_expr.init(json::array({"x", "2*x"}), "");
+	time_expr.init(json::array({"x", "2*x"}), resources);
 	time_expr.set_t(json::array({0, 1}));
 	time_expr.set_unit_type("");
 
@@ -201,7 +202,7 @@ TEST_CASE("expression", "[utils]")
 	}
 
 	utils::ExpressionValue python_expr;
-	python_expr.init({{"file_name", python_file.string()}, {"function_name", "value"}}, "");
+	python_expr.init({{"file_name", python_file.string()}, {"function_name", "value"}}, resources);
 	python_expr.set_unit_type("");
 
 	REQUIRE_FALSE(python_expr.is_zero());

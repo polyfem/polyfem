@@ -18,6 +18,7 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
+		using VarForm::VarForm;
 		std::string name() const override { return "Bilaplacian"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;

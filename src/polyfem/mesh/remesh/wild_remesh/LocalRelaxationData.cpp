@@ -250,11 +250,12 @@ namespace polyfem::mesh
 		}
 
 		std::vector<std::shared_ptr<solver::Form>> forms;
+		const polyfem::io::FileSystemIO resources(state.root_path());
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				state.units, dim(), current_time, state.in_node_to_node,
+				state.units, resources, dim(), current_time, state.in_node_to_node,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],

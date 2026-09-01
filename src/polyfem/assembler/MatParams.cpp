@@ -78,7 +78,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path)
+	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources)
 	{
 		for (int i = param_.size(); i <= index; ++i)
 		{
@@ -88,7 +88,7 @@ namespace polyfem::assembler
 
 		if (params.count(param_name_))
 		{
-			param_[index].init(params[param_name_], root_path);
+			param_[index].init(params[param_name_], resources);
 			if (params.contains(MATERIAL_ELEMENT_INDEX))
 				param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
@@ -117,7 +117,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParams::add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path)
+	void GenericMatParams::add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources)
 	{
 		if (!params.contains(param_name_))
 			return;
@@ -137,7 +137,7 @@ namespace polyfem::assembler
 				params_.at(i).param_.back().set_unit_type(unit_type);
 			}
 
-			params_.at(i).param_[index].init(params_array[i], root_path);
+			params_.at(i).param_[index].init(params_array[i], resources);
 			if (params.contains(MATERIAL_ELEMENT_INDEX))
 				params_.at(i).param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
@@ -177,7 +177,7 @@ namespace polyfem::assembler
 		return stiffness_tensor_(i, j);
 	}
 
-	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -187,7 +187,7 @@ namespace polyfem::assembler
 					entries[0],
 					entries[1],
 					entries[2],
-					entries[3], stress_units, root_path);
+					entries[3], stress_units, resources);
 
 				return;
 			}
@@ -213,7 +213,7 @@ namespace polyfem::assembler
 					entries[2],
 					entries[3],
 					entries[4],
-					stress_units, root_path);
+					stress_units, resources);
 
 				return;
 			}
@@ -228,7 +228,7 @@ namespace polyfem::assembler
 					entries[5],
 					entries[6],
 					entries[7],
-					entries[8], stress_units, root_path);
+					entries[8], stress_units, resources);
 
 				return;
 			}
@@ -263,7 +263,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -307,7 +307,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_young_poisson(const double young, const double nu, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_young_poisson(const double young, const double nu, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -333,7 +333,7 @@ namespace polyfem::assembler
 	void ElasticityTensor::set_orthotropic(
 		double Ex, double Ey, double Ez,
 		double nuXY, double nuXZ, double nuYZ,
-		double muYZ, double muZX, double muXY, const std::string &stress_units, const std::string &root_path)
+		double muYZ, double muZX, double muXY, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 3);
 
@@ -353,7 +353,7 @@ namespace polyfem::assembler
 		stiffness_tensor_ = compliance.inverse();
 	}
 
-	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 2);
 
@@ -371,7 +371,7 @@ namespace polyfem::assembler
 	void ElasticityTensor::set_transversely_isotropic(
 		double Et, double Ea,
 		double nu_t, double nu_a,
-		double Ga, const std::string &stress_units, const std::string &root_path)
+		double Ga, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 3);
 
@@ -455,7 +455,7 @@ namespace polyfem::assembler
 		assert(!std::isinf(mu));
 	}
 
-	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const std::string &root_path)
+	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const io::ResourceIO &resources)
 	{
 		const int size = is_volume ? 3 : 2;
 		assert(size_ == -1 || size == size_);
@@ -471,16 +471,16 @@ namespace polyfem::assembler
 
 		if (params.count("young"))
 		{
-			set_e_nu(index, params["young"], params["nu"], stress_unit, root_path);
+			set_e_nu(index, params["young"], params["nu"], stress_unit, resources);
 		}
 		else if (params.count("E"))
 		{
-			set_e_nu(index, params["E"], params["nu"], stress_unit, root_path);
+			set_e_nu(index, params["E"], params["nu"], stress_unit, resources);
 		}
 		else if (params.count("lambda"))
 		{
-			lambda_or_E_[index].init(params["lambda"], root_path);
-			mu_or_nu_[index].init(params["mu"], root_path);
+			lambda_or_E_[index].init(params["lambda"], resources);
+			mu_or_nu_[index].init(params["mu"], resources);
 
 			lambda_or_E_[index].set_unit_type(stress_unit);
 			mu_or_nu_[index].set_unit_type(stress_unit);
@@ -494,12 +494,12 @@ namespace polyfem::assembler
 		}
 	}
 
-	void LameParameters::set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const std::string &root_path)
+	void LameParameters::set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const io::ResourceIO &resources)
 	{
 		// TODO: conversion is always called
 		is_lambda_mu_ = false;
-		lambda_or_E_[index].init(E, root_path);
-		mu_or_nu_[index].init(nu, root_path);
+		lambda_or_E_[index].init(E, resources);
+		mu_or_nu_[index].init(nu, resources);
 
 		lambda_or_E_[index].set_unit_type(stress_unit);
 		// nu has no unit
@@ -523,7 +523,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void Density::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path)
+	void Density::add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources)
 	{
 		for (int i = rho_.size(); i <= index; ++i)
 		{
@@ -532,11 +532,11 @@ namespace polyfem::assembler
 
 		if (params.count("rho"))
 		{
-			rho_[index].init(params["rho"], root_path);
+			rho_[index].init(params["rho"], resources);
 		}
 		else if (params.count("density"))
 		{
-			rho_[index].init(params["density"], root_path);
+			rho_[index].init(params["density"], resources);
 		}
 		if (params.contains(MATERIAL_ELEMENT_INDEX))
 			rho_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
@@ -549,15 +549,15 @@ namespace polyfem::assembler
 	{
 	}
 
-	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path)
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources)
 	{
-		add_multimaterial(index, params, density_unit, "", root_path);
+		add_multimaterial(index, params, density_unit, "", resources);
 	}
 
-	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path)
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const io::ResourceIO &resources)
 	{
-		rho_.add_multimaterial(index, params, density_unit, root_path);
-		heat_capacity_.add_multimaterial(index, params, heat_capacity_unit, root_path);
+		rho_.add_multimaterial(index, params, density_unit, resources);
+		heat_capacity_.add_multimaterial(index, params, heat_capacity_unit, resources);
 	}
 
 	double ThermalMassDensity::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
@@ -667,7 +667,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit, const std::string &root_path)
+	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit, const io::ResourceIO &resources)
 	{
 		// Per-element fiber file:
 		//   { "type": "per_element_file", "path": "...vtk", "field": "FIB_DIR1" }
@@ -678,7 +678,7 @@ namespace polyfem::assembler
 		if (dir.is_object() && dir.value("type", std::string()) == "per_element_file")
 		{
 			const std::string field = dir.value("field", std::string("FIB_DIR1"));
-			const std::string p = utils::resolve_path(dir.at("path").get<std::string>(), root_path);
+			const std::string p = resources.materialize(dir.at("path").get<std::string>()).string();
 
 			per_el_fibers_ = read_cell_vectors_legacy_vtk(p, field);
 			for (auto &v : per_el_fibers_)
@@ -715,7 +715,7 @@ namespace polyfem::assembler
 					{
 						log_and_throw_error(fmt::format("Fiber must be a {} vector, row {} is {}", size, i, dir[i].dump()));
 					}
-					dir_[index](i, 0).init(dir[i], root_path);
+					dir_[index](i, 0).init(dir[i], resources);
 					dir_[index](i, 0).set_unit_type(unit);
 					continue;
 				}
@@ -725,7 +725,7 @@ namespace polyfem::assembler
 				}
 				for (int j = 0; j < size; ++j)
 				{
-					dir_[index](i, j).init(dir[i][j], root_path);
+					dir_[index](i, j).init(dir[i][j], resources);
 					dir_[index](i, j).set_unit_type(unit);
 				}
 			}
@@ -740,7 +740,7 @@ namespace polyfem::assembler
 			{
 				for (int j = 0; j < size; ++j)
 				{
-					dir_[index](i, j).init(dir[i * size + j], root_path);
+					dir_[index](i, j).init(dir[i * size + j], resources);
 					dir_[index](i, j).set_unit_type(unit);
 				}
 			}

@@ -28,34 +28,6 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 	return opt->count() > 0;
 }
 
-bool load_json(const std::string &json_file, json &out)
-{
-	try
-	{
-		out = io::load_json_input(json_file).config;
-		out["root_path"] = json_file;
-		return true;
-	}
-	catch (...)
-	{
-		return false;
-	}
-}
-
-bool load_yaml(const std::string &yaml_file, json &out)
-{
-	try
-	{
-		out = io::load_yaml_input(yaml_file).config;
-		out["root_path"] = yaml_file;
-	}
-	catch (...)
-	{
-		return false;
-	}
-	return true;
-}
-
 int forward_simulation(const CLI::App &command_line,
 					   const io::ResourceIO &resources,
 					   const std::string &output_dir,

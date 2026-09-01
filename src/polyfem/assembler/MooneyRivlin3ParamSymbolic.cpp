@@ -531,12 +531,12 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MooneyRivlin3ParamSymbolic::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void MooneyRivlin3ParamSymbolic::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		c1_.add_multimaterial(index, params, units.stress(), root_path);
-		c2_.add_multimaterial(index, params, units.stress(), root_path);
-		c3_.add_multimaterial(index, params, units.stress(), root_path);
-		d1_.add_multimaterial(index, params, units.stress(), root_path);
+		c1_.add_multimaterial(index, params, units.stress(), resources);
+		c2_.add_multimaterial(index, params, units.stress(), resources);
+		c3_.add_multimaterial(index, params, units.stress(), resources);
+		d1_.add_multimaterial(index, params, units.stress(), resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> MooneyRivlin3ParamSymbolic::parameters() const

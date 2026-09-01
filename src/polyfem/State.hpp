@@ -11,6 +11,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -126,9 +127,8 @@ namespace polyfem
 		void set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false);
 
 	private:
-		std::unique_ptr<const io::ResourceIO> owned_resources_;
-		const io::ResourceIO *resources_ = nullptr;
-		const io::CheckpointReader *checkpoint_ = nullptr;
+		std::unique_ptr<const io::ResourceIO> resources_;
+		std::optional<std::reference_wrapper<const io::CheckpointReader>> checkpoint_;
 	};
 
 } // namespace polyfem

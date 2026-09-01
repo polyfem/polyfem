@@ -35,32 +35,6 @@
 
 namespace polyfem::varform
 {
-	bool VarForm::read_initial_x_from_file(
-		const std::string &state_path,
-		const std::string &x_name,
-		const bool reorder,
-		const Eigen::VectorXi &in_node_to_node,
-		const int dim,
-		Eigen::MatrixXd &x)
-	{
-		if (state_path.empty())
-			return false;
-
-		if (!io::read_matrix(state_path, x_name, x))
-		{
-			logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
-			return false;
-		}
-
-		if (reorder)
-		{
-			const int ndof = in_node_to_node.size() * dim;
-			x.topRows(ndof) = utils::reorder_matrix(x.topRows(ndof), in_node_to_node, -1, dim);
-		}
-
-		return true;
-	}
-
 	namespace
 	{
 
@@ -271,19 +245,8 @@ namespace polyfem::varform
 		problem = nullptr;
 		time_callback = nullptr;
 		mesh_ = nullptr;
-		checkpoint_reader_ = nullptr;
+		checkpoint_reader_.reset();
 		output_index_offset_ = 0;
-	}
-
-	void VarForm::init(
-		const std::string &formulation,
-		const Units &units,
-		const json &args,
-		const std::string &out_path,
-		const io::ResourceIO &resources)
-	{
-		resources_ = &resources;
-		init(formulation, units, args, out_path);
 	}
 
 	void VarForm::init(
@@ -296,11 +259,6 @@ namespace polyfem::varform
 
 		this->units = units;
 		this->args = args;
-
-		if (utils::is_param_valid(args, "root_path"))
-			root_path = args["root_path"].get<std::string>();
-		else
-			root_path = "";
 
 		this->output_path = out_path;
 		output_sampler_initialized_ = false;
@@ -339,7 +297,7 @@ namespace polyfem::varform
 		const json &args,
 		const std::string &out_path) const
 	{
-		child.init(formulation, units, args, out_path, *resources_);
+		child.init(formulation, units, args, out_path);
 	}
 
 	void VarForm::prepare()
@@ -683,7 +641,7 @@ namespace polyfem::varform
 		const ForwardStepCallback &post_step)
 	{
 		prepare();
-		resources_->freeze_dependency_manifest();
+		resources_.freeze_dependency_manifest();
 		solve_problem(sol, initial_condition_override, post_step);
 	}
 
@@ -809,9 +767,7 @@ namespace polyfem::varform
 			}
 			else if (order_json.is_string())
 			{
-				const std::string orders_path = utils::resolve_path(order_json, root_path);
-				Eigen::MatrixXi tmp;
-				io::read_matrix(orders_path, tmp);
+				const Eigen::MatrixXi tmp = resources_.read_int_matrix(order_json.get<std::string>());
 				assert(tmp.size() == orders.size());
 				assert(tmp.cols() == 1);
 				orders = tmp;
@@ -920,7 +876,7 @@ namespace polyfem::varform
 		for (int i = 0; i < mesh_->n_elements(); ++i)
 			body_ids[i] = mesh_->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"], units, root_path);
+		assembler.set_materials(body_ids, args["materials"], units, resources_);
 	}
 
 	void VarForm::ensure_output_sampler() const
@@ -995,7 +951,7 @@ namespace polyfem::varform
 		serialize_checkpoint(writer, solution, metadata);
 		if (time_integrator)
 			time_integrator->serialize_checkpoint(writer, "/checkpoint/state/primary_integrator");
-		writer.embed_resources(*resources_);
+		writer.embed_resources(resources_);
 		writer.finalize();
 	}
 
@@ -1028,7 +984,7 @@ namespace polyfem::varform
 			return;
 		if (!integrator)
 			log_and_throw_error("Checkpoint requires integrator state at {}, but no integrator was constructed.", group);
-		integrator->deserialize_checkpoint(*checkpoint_reader_, group, dt);
+		integrator->deserialize_checkpoint(checkpoint_reader_->get(), group, dt);
 	}
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
@@ -1098,15 +1054,6 @@ namespace polyfem::varform
 	int VarForm::output_file_index(const int t) const
 	{
 		return t + output_index_offset_;
-	}
-
-	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
-	{
-		if (path.empty())
-			return path;
-		if (only_if_exists && !resources_->exists(path))
-			return path;
-		return resources_->materialize(path).string();
 	}
 
 	std::string VarForm::resolve_output_path(const std::string &path) const

@@ -810,7 +810,10 @@ namespace polyfem::legacy
 		}
 
 		if (args["constraints"].contains("macro_displacement_gradient"))
-			macro_strain_constraint.init(dim, args["constraints"]["macro_displacement_gradient"], root_path());
+		{
+			const polyfem::io::FileSystemIO resources(root_path());
+			macro_strain_constraint.init(dim, args["constraints"]["macro_displacement_gradient"], resources);
+		}
 
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
@@ -1559,12 +1562,13 @@ namespace polyfem::legacy
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+		const polyfem::io::FileSystemIO resources(root_path());
 
 		return std::make_shared<RhsAssembler>(
 			*assembler, *mesh, &obstacle,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
+			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem, resources,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -1611,7 +1615,8 @@ namespace polyfem::legacy
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params, root_path());
+		const polyfem::io::FileSystemIO resources(root_path());
+		problem->set_parameters(p_params, resources);
 
 		rhs.resize(0, 0);
 

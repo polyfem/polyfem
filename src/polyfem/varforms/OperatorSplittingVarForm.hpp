@@ -11,6 +11,7 @@ namespace polyfem::varform
 	class OperatorSplittingVarForm : public VarForm
 	{
 	public:
+		using VarForm::VarForm;
 		std::string name() const override { return "OperatorSplitting"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;

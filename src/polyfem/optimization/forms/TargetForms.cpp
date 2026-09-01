@@ -200,9 +200,9 @@ namespace polyfem::solver
 
 	void TargetForm::set_reference(const json &func, const json &grad_func)
 	{
-		target_func.init(func, varform_->get_root_path());
+		target_func.init(func, resources_);
 		for (size_t k = 0; k < grad_func.size(); k++)
-			target_func_grad[k].init(grad_func[k], varform_->get_root_path());
+			target_func_grad[k].init(grad_func[k], resources_);
 		have_target_func = true;
 	}
 
@@ -490,20 +490,13 @@ namespace polyfem::solver
 		return j;
 	}
 
-	NodeTargetForm::NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args, const io::ResourceIO &resources)
 		: StaticForm(variable_to_simulations), varform_(std::move(varform)), diff_cache_(std::move(diff_cache))
 	{
 		const int dim = varform_->get_mesh().dimension();
 
-		std::string target_data_path =
-			varform_->input_path(args["target_data_path"].get<std::string>());
-		if (!std::filesystem::is_regular_file(target_data_path))
-		{
-			throw std::runtime_error("Marker path invalid!");
-		}
 		// N x (dim * 2), each row is [rest_x, rest_y, rest_z, deform_x, deform_y, deform_z]
-		Eigen::MatrixXd data;
-		io::read_matrix(target_data_path, data);
+		const Eigen::MatrixXd data = resources.read_matrix(args["target_data_path"].get<std::string>());
 
 		// markers to nodes
 		target_vertex_positions.setZero(data.rows(), dim);

@@ -42,7 +42,7 @@ namespace polyfem::mesh
 	void apply_geometry_selection(
 		Mesh &mesh,
 		const json &geometry_selection,
-		const std::string &root_path);
+		const io::ResourceIO &resources);
 
 	///
 	/// @brief      read a obstacle mesh from a geometry JSON

@@ -230,17 +230,16 @@ namespace polyfem::varform
 
 		json tmp;
 		tmp["is_time_dependent"] = is_time_dependent;
-		problem->set_parameters(tmp, root_path);
-		temperature_problem_->set_parameters(tmp, root_path);
+		problem->set_parameters(tmp, resources_);
+		temperature_problem_->set_parameters(tmp, resources_);
 
 		auto bc = args["boundary_conditions"];
-		bc["root_path"] = root_path;
-		problem->set_parameters(bc, root_path);
-		temperature_problem_->set_parameters(bc, root_path);
-		problem->set_parameters(args["initial_conditions"], root_path);
-		temperature_problem_->set_parameters(args["initial_conditions"], root_path);
-		problem->set_parameters(args["output"], root_path);
-		temperature_problem_->set_parameters(args["output"], root_path);
+		problem->set_parameters(bc, resources_);
+		temperature_problem_->set_parameters(bc, resources_);
+		problem->set_parameters(args["initial_conditions"], resources_);
+		temperature_problem_->set_parameters(args["initial_conditions"], resources_);
+		problem->set_parameters(args["output"], resources_);
+		temperature_problem_->set_parameters(args["output"], resources_);
 
 		problem->set_units(*primary_assembler_, units);
 		temperature_problem_->set_units(*temperature_assembler_, units);
@@ -306,17 +305,17 @@ namespace polyfem::varform
 		const json elastic_materials = elastic_material_args();
 
 		primary_assembler_->set_size(mesh.dimension());
-		primary_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
+		primary_assembler_->set_materials(body_ids, elastic_materials, units, resources_);
 		thermoelastic_assembler_->set_size(mesh.dimension());
-		thermoelastic_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		thermoelastic_assembler_->set_materials(body_ids, args["materials"], units, resources_);
 		mass_assembler_->set_size(mesh.dimension());
-		mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
+		mass_assembler_->set_materials(body_ids, elastic_materials, units, resources_);
 		pure_mass_assembler_->set_size(mass_assembler_->size());
 
 		temperature_assembler_->set_size(1);
-		temperature_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		temperature_assembler_->set_materials(body_ids, args["materials"], units, resources_);
 		temperature_mass_assembler_->set_size(1);
-		temperature_mass_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		temperature_mass_assembler_->set_materials(body_ids, args["materials"], units, resources_);
 		temperature_pure_mass_assembler_->set_size(1);
 
 		problem->init(mesh);
@@ -555,7 +554,7 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(),
-			mass_ass_vals_cache_, *problem,
+			mass_ass_vals_cache_, *problem, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			displacement_space_id_);
@@ -567,7 +566,7 @@ namespace polyfem::varform
 			temperature_boundary_.dirichlet_nodes_position, temperature_boundary_.neumann_nodes_position,
 			temperature_space_.n_bases, /*size=*/1,
 			temperature_space_.basis_list(), temperature_space_.geometry_basis_list(),
-			temperature_mass_ass_vals_cache_, *temperature_problem_,
+			temperature_mass_ass_vals_cache_, *temperature_problem_, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			temperature_space_id_);
@@ -578,7 +577,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		json p_params = {};
 		p_params["formulation"] = primary_assembler_->name();
-		p_params["root_path"] = root_path;
 		{
 			RowVectorNd min, max, delta;
 			mesh.bounding_box(min, max);
@@ -588,8 +586,8 @@ namespace polyfem::varform
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params, root_path);
-		temperature_problem_->set_parameters(p_params, root_path);
+		problem->set_parameters(p_params, resources_);
+		temperature_problem_->set_parameters(p_params, resources_);
 
 		rhs_.resize(0, 0);
 		temperature_rhs_.resize(0, 0);

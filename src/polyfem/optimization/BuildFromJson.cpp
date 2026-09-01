@@ -5,6 +5,7 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
@@ -58,21 +59,6 @@ namespace polyfem::from_json
 {
 	namespace
 	{
-		bool load_json(const std::string &json_file, json &out)
-		{
-			std::ifstream file(json_file);
-			if (!file.is_open())
-			{
-				return false;
-			}
-
-			file >> out;
-
-			out["root_path"] = json_file;
-
-			return true;
-		}
-
 		Eigen::VectorXi eigen_vector_xi_from_json(const json &j)
 		{
 			auto tmp = j.get<std::vector<int>>();
@@ -80,18 +66,13 @@ namespace polyfem::from_json
 			return out;
 		}
 
-		Eigen::VectorXi eigen_vector_xi_from_file(const std::string &path)
+		Eigen::VectorXi eigen_vector_xi_from_file(const std::string &path, const io::ResourceIO &resources)
 		{
-			Eigen::MatrixXi mat;
-			if (!io::read_matrix(path, mat))
-			{
-				log_and_throw_adjoint_error("Cannot read integer vector file {}", path);
-			}
-
+			const Eigen::MatrixXi mat = resources.read_int_matrix(path);
 			return mat.reshaped();
 		}
 
-		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const varform::DifferentiableVarForm &varform)
+		Eigen::VectorXi parse_active_geometry_nodes(const json &j, const varform::DifferentiableVarForm &varform, const io::ResourceIO &resources)
 		{
 			if (j.is_array())
 			{
@@ -99,7 +80,7 @@ namespace polyfem::from_json
 			}
 			if (j.is_string())
 			{
-				return eigen_vector_xi_from_file(varform.input_path(j.get<std::string>()));
+				return eigen_vector_xi_from_file(j.get<std::string>(), resources);
 			}
 
 			// Advanced selection.
@@ -247,15 +228,18 @@ namespace polyfem::from_json
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes)
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources)
 	{
 		using namespace polyfem::solver;
 
 		// Collect relevant varforms from the state-index JSON field.
 		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> relevant_varforms;
 		std::vector<std::shared_ptr<DiffCache>> rel_diff_caches;
+		int resource_id;
 		if (args["state"].is_array())
 		{
+			resource_id = args["state"][0].get<int>();
 			for (int i : args["state"])
 			{
 				relevant_varforms.push_back(varforms[i]);
@@ -265,6 +249,7 @@ namespace polyfem::from_json
 		else
 		{
 			const int varform_id = args["state"];
+			resource_id = varform_id;
 			relevant_varforms.push_back(varforms[varform_id]);
 			rel_diff_caches.push_back(diff_caches[varform_id]);
 		}
@@ -283,7 +268,7 @@ namespace polyfem::from_json
 		if (var2sim_type == "shape")
 		{
 			Eigen::VectorXi active_dimensions = eigen_vector_xi_from_json(args["active_dimensions"]);
-			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0]);
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources[resource_id].get());
 
 			var2sim = std::make_shared<ShapeVariableToSimulation>(
 				std::move(relevant_varforms),
@@ -335,7 +320,7 @@ namespace polyfem::from_json
 		}
 		else if (var2sim_type == "dirichlet-nodes")
 		{
-			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0]);
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources[resource_id].get());
 			var2sim = std::make_shared<DirichletNodesVariableToSimulation>(
 				std::move(relevant_varforms),
 				std::move(rel_diff_caches),
@@ -372,13 +357,14 @@ namespace polyfem::from_json
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes)
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources)
 	{
 		solver::VariableToSimulationGroup v2s_group;
 		for (const auto &arg : args)
 		{
 			v2s_group.data.push_back(
-				build_variable_to_simulation(arg, varforms, diff_caches, variable_sizes));
+				build_variable_to_simulation(arg, varforms, diff_caches, variable_sizes, resources));
 		}
 		return v2s_group;
 	}
@@ -387,7 +373,8 @@ namespace polyfem::from_json
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
-		const std::vector<std::shared_ptr<DiffCache>> &diff_caches)
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources)
 	{
 		using namespace polyfem::solver;
 
@@ -397,7 +384,7 @@ namespace polyfem::from_json
 			std::vector<std::shared_ptr<AdjointForm>> forms;
 			for (const auto &arg : args)
 			{
-				forms.push_back(build_form(arg, var2sim, varforms, diff_caches));
+				forms.push_back(build_form(arg, var2sim, varforms, diff_caches, resources));
 			}
 
 			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
@@ -408,7 +395,7 @@ namespace polyfem::from_json
 			if (type == "transient_integral")
 			{
 				std::shared_ptr<StaticForm> static_obj =
-					std::dynamic_pointer_cast<StaticForm>(build_form(args["static_objective"], var2sim, varforms, diff_caches));
+					std::dynamic_pointer_cast<StaticForm>(build_form(args["static_objective"], var2sim, varforms, diff_caches, resources));
 				if (!static_obj)
 				{
 					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
@@ -422,7 +409,7 @@ namespace polyfem::from_json
 			else if (type == "proxy_transient_integral")
 			{
 				std::shared_ptr<StaticForm> static_obj =
-					std::dynamic_pointer_cast<StaticForm>(build_form(args["static_objective"], var2sim, varforms, diff_caches));
+					std::dynamic_pointer_cast<StaticForm>(build_form(args["static_objective"], var2sim, varforms, diff_caches, resources));
 				if (!static_obj)
 				{
 					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
@@ -440,27 +427,27 @@ namespace polyfem::from_json
 			else if (type == "power")
 			{
 				std::shared_ptr<AdjointForm> obj_aux =
-					build_form(args["objective"], var2sim, varforms, diff_caches);
+					build_form(args["objective"], var2sim, varforms, diff_caches, resources);
 				obj = std::make_shared<PowerForm>(obj_aux, args["power"]);
 			}
 			else if (type == "divide")
 			{
 				std::shared_ptr<AdjointForm> obj1 =
-					build_form(args["objective"][0], var2sim, varforms, diff_caches);
+					build_form(args["objective"][0], var2sim, varforms, diff_caches, resources);
 				std::shared_ptr<AdjointForm> obj2 =
-					build_form(args["objective"][1], var2sim, varforms, diff_caches);
+					build_form(args["objective"][1], var2sim, varforms, diff_caches, resources);
 				std::vector<std::shared_ptr<AdjointForm>> objs({obj1, obj2});
 				obj = std::make_shared<DivideForm>(objs);
 			}
 			else if (type == "plus-const")
 			{
 				obj = std::make_shared<PlusConstCompositeForm>(
-					build_form(args["objective"], var2sim, varforms, diff_caches), args["value"]);
+					build_form(args["objective"], var2sim, varforms, diff_caches, resources), args["value"]);
 			}
 			else if (type == "log")
 			{
 				obj = std::make_shared<LogCompositeForm>(
-					build_form(args["objective"], var2sim, varforms, diff_caches));
+					build_form(args["objective"], var2sim, varforms, diff_caches, resources));
 			}
 			else if (type == "compliance")
 			{
@@ -480,7 +467,7 @@ namespace polyfem::from_json
 			else if (type == "target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
 				auto reference_cached =
 					args["reference_cached_body_ids"].get<std::vector<int>>();
 				tmp->set_reference(
@@ -492,7 +479,7 @@ namespace polyfem::from_json
 			else if (type == "displacement-target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
 
 				Eigen::VectorXd target_displacement;
 				target_displacement.setZero(varforms[args["state"]]->get_mesh().dimension());
@@ -580,28 +567,21 @@ namespace polyfem::from_json
 					var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
 				double delta = args["delta"].get<double>();
 
-				std::string mesh_path =
-					varforms[args["state"]]->input_path(args["mesh_path"].get<std::string>());
-				Eigen::MatrixXd V;
-				Eigen::MatrixXi E, F;
-				bool read = polyfem::io::OBJReader::read(mesh_path, V, E, F);
-				if (!read)
-				{
-					log_and_throw_error(fmt::format("Could not read mesh! {}", mesh_path));
-				}
-				tmp->set_surface_mesh_target(V, F, delta);
+				const auto surface = mesh::MeshLoader(resources[args["state"].get<int>()].get())
+								 .load_surface(args["mesh_path"].get<std::string>());
+				tmp->set_surface_mesh_target(surface.vertices, surface.faces, delta);
 				obj = tmp;
 			}
 			else if (type == "function-target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
 				tmp->set_reference(args["target_function"], args["target_function_gradient"]);
 				obj = tmp;
 			}
 			else if (type == "node-target")
 			{
-				obj = std::make_shared<NodeTargetForm>(varforms[args["state"]], diff_caches[args["state"]], var2sim, args);
+				obj = std::make_shared<NodeTargetForm>(varforms[args["state"]], diff_caches[args["state"]], var2sim, args, resources[args["state"].get<int>()].get());
 			}
 			else if (type == "min-dist-target")
 			{
@@ -653,7 +633,7 @@ namespace polyfem::from_json
 			}
 			else if (type == "soft_constraint")
 			{
-				std::vector<std::shared_ptr<AdjointForm>> forms({build_form(args["objective"], var2sim, varforms, diff_caches)});
+				std::vector<std::shared_ptr<AdjointForm>> forms({build_form(args["objective"], var2sim, varforms, diff_caches, resources)});
 				Eigen::VectorXd bounds = args["soft_bound"];
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
@@ -663,7 +643,8 @@ namespace polyfem::from_json
 			}
 			else if (type == "AMIPS")
 			{
-				obj = std::make_shared<AMIPSForm>(var2sim, varforms[args["state"]]);
+				obj = std::make_shared<AMIPSForm>(
+					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get());
 			}
 			else if (type == "boundary_smoothing")
 			{
@@ -686,25 +667,25 @@ namespace polyfem::from_json
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(
-					var2sim, varforms[args["state"]], args["dhat"]);
+					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(), args["dhat"]);
 			}
 			else if (type == "layer_thickness")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, varforms[args["state"]],
+					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(),
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
 			}
 			else if (type == "layer_thickness_log")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, varforms[args["state"]],
+					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(),
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true,
 					args["dmin"]);
 			}
 			else if (type == "deformed_collision_barrier")
 			{
 				obj = std::make_shared<DeformedCollisionBarrierForm>(
-					var2sim, varforms[args["state"]], diff_caches[args["state"]], args["dhat"]);
+					var2sim, varforms[args["state"]], diff_caches[args["state"]], resources[args["state"].get<int>()].get(), args["dhat"]);
 			}
 			else if (type == "parametrized_product")
 			{

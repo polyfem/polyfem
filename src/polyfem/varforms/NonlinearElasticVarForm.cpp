@@ -292,7 +292,7 @@ namespace polyfem::varform
 			*primary_assembler_, *mesh_, &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
-			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
+			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			/*fe_space_id=*/-1);
@@ -305,7 +305,7 @@ namespace polyfem::varform
 	{
 		build_collision_mesh(
 			mesh, space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), boundary_.total_local_boundary, obstacle,
-			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
+			args, resources_,
 			space_.space_in_node_to_node, collision_mesh_);
 	}
 
@@ -317,7 +317,7 @@ namespace polyfem::varform
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
 		const mesh::Obstacle &obstacle,
 		const json &args,
-		const std::function<std::string(const std::string &)> &resolve_input_path,
+		const io::ResourceIO &resources,
 		const Eigen::VectorXi &in_node_to_node,
 		ipc::CollisionMesh &collision_mesh_)
 	{
@@ -349,12 +349,11 @@ namespace polyfem::varform
 			{
 				assert(displacement_map_entries.empty());
 				assert(collision_mesh_args.contains("mesh"));
-				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
 				// TODO: handle transformation per geometry
 				const json transformation = utils::json_as_array(args["geometry"])[0]["transformation"];
 				mesh::load_collision_proxy(
-					utils::resolve_path(collision_mesh_args["mesh"], root_path),
-					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
+					resources.materialize(collision_mesh_args["mesh"].get<std::string>()).string(),
+					resources.materialize(collision_mesh_args["linear_map"].get<std::string>()).string(),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
@@ -794,6 +793,7 @@ namespace polyfem::varform
 		forms = solve_data_.init_forms(
 			// General
 			units,
+			resources_,
 			dim, t, space_.space_in_node_to_node,
 			// Elastic form
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,

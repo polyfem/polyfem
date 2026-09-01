@@ -22,6 +22,7 @@
 #include <cassert>
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <map>
 #include <vector>
 #include <string>
@@ -56,6 +57,8 @@ namespace polyfem
 			friend class polyfem::test::VarFormTestAccess;
 
 		public:
+			explicit VarForm(const io::ResourceIO &resources)
+				: resources_(resources) {}
 			virtual ~VarForm() = default;
 
 			/// @brief Get the name of the variational formulation
@@ -76,20 +79,13 @@ namespace polyfem
 			/// @param units unit system to use for the formulation
 			/// @param args json input arguments, used to initialize the formulation
 			/// @param out_path output path for the formulation, used to save intermediate data
-			void init(
-				const std::string &formulation,
-				const Units &units,
-				const json &args,
-				const std::string &out_path,
-				const io::ResourceIO &resources);
-
 			virtual void init(
 				const std::string &formulation,
 				const Units &units,
 				const json &args,
 				const std::string &out_path);
 
-			void set_checkpoint_reader(const io::CheckpointReader &reader) { checkpoint_reader_ = &reader; }
+			void set_checkpoint_reader(const io::CheckpointReader &reader) { checkpoint_reader_ = std::cref(reader); }
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
@@ -156,7 +152,6 @@ namespace polyfem
 			void prepare();
 
 			std::string resolve_output_path(const std::string &path) const;
-			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
 			void set_materials(assembler::Assembler &assembler, const int size) const;
 			void restore_checkpoint_integrator(
@@ -255,9 +250,8 @@ namespace polyfem
 			/// runtime statistics
 			io::OutRuntimeData timings;
 
-			std::string root_path;
 			std::string output_path;
-			const io::CheckpointReader *checkpoint_reader_ = nullptr;
+			std::optional<std::reference_wrapper<const io::CheckpointReader>> checkpoint_reader_;
 
 			std::unique_ptr<mesh::Mesh> mesh_;
 
@@ -268,17 +262,8 @@ namespace polyfem
 			bool prepared_ = false;
 			int output_index_offset_ = 0;
 
-		private:
-			const io::ResourceIO *resources_ = nullptr;
-
 		protected:
-			static bool read_initial_x_from_file(
-				const std::string &state_path,
-				const std::string &x_name,
-				const bool reorder,
-				const Eigen::VectorXi &in_node_to_node,
-				const int dim,
-				Eigen::MatrixXd &x);
+			const io::ResourceIO &resources_;
 
 			static void rebuild_node_positions(
 				const std::vector<basis::ElementBases> &bases,

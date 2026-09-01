@@ -258,9 +258,11 @@ namespace polyfem::legacy
 		set_materials(*damping_prev_assembler);
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
+		const polyfem::io::FileSystemIO resources(root_path());
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
+			resources,
 			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,

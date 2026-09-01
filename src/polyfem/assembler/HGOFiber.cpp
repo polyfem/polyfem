@@ -7,14 +7,14 @@ namespace polyfem::assembler
 	{
 	}
 
-	void HGOFiber::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void HGOFiber::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		GenericFiber<HGOFiber>::add_multimaterial(index, params, units, root_path);
+		GenericFiber<HGOFiber>::add_multimaterial(index, params, units, resources);
 
-		k1_.add_multimaterial(index, params, units.stress(), root_path);
-		k2_.add_multimaterial(index, params, "", root_path);
+		k1_.add_multimaterial(index, params, units.stress(), resources);
+		k2_.add_multimaterial(index, params, "", resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> HGOFiber::parameters() const

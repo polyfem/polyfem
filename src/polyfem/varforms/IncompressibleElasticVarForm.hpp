@@ -15,6 +15,7 @@ namespace polyfem::varform
 	class IncompressibleElasticVarForm : public ElasticVarForm
 	{
 	public:
+		using ElasticVarForm::ElasticVarForm;
 		std::string name() const override { return "IncompressibleElastic"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;

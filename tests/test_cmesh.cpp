@@ -473,6 +473,7 @@ TEST_CASE("cmesh 3d selections and geometry queries", "[mesh_test]")
 
 TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 {
+	const io::FileSystemIO resources(".");
 	Obstacle obstacle;
 
 	Eigen::MatrixXd vertices(2, 2);
@@ -487,7 +488,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 	json displacement;
 	displacement["value"] = json::array({"x + t", "y + 2*t"});
 
-	obstacle.append_mesh(vertices, codim_vertices, codim_edges, faces, displacement, "");
+	obstacle.append_mesh(vertices, codim_vertices, codim_edges, faces, displacement, resources);
 	CHECK(obstacle.dim() == 2);
 	CHECK(obstacle.n_vertices() == 2);
 	CHECK(obstacle.n_edges() == 1);
@@ -529,7 +530,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 	CHECK(matrix_sol(1, 0) == Catch::Approx(1.5));
 	CHECK(matrix_sol(1, 1) == Catch::Approx(1.0));
 
-	obstacle.change_displacement(0, json::array({"x", "y"}), "", "");
+	obstacle.change_displacement(0, json::array({"x", "y"}), resources, "");
 	matrix_sol.setZero();
 	obstacle.update_displacement(0.5, matrix_sol);
 	CHECK(matrix_sol(0, 0) == Catch::Approx(0.0));
@@ -544,6 +545,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 
 TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh_test]")
 {
+	const io::FileSystemIO resources(".");
 	Obstacle empty_obstacle;
 	Eigen::MatrixXd no_vertices(0, 2);
 	Eigen::VectorXi no_codim_vertices(0);
@@ -551,7 +553,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	Eigen::MatrixXi no_faces(0, 3);
 	json empty_displacement;
 	empty_displacement["value"] = json::array({0, 0});
-	empty_obstacle.append_mesh(no_vertices, no_codim_vertices, no_edges, no_faces, empty_displacement, "");
+	empty_obstacle.append_mesh(no_vertices, no_codim_vertices, no_edges, no_faces, empty_displacement, resources);
 	empty_obstacle.append_mesh_sequence({}, no_codim_vertices, no_edges, no_faces, 24);
 	CHECK(empty_obstacle.n_vertices() == 0);
 	CHECK(empty_obstacle.dim() == 0);
@@ -563,7 +565,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 		0, 1;
 	Eigen::MatrixXi invalid_faces(1, 4);
 	invalid_faces << 0, 1, 2, 0;
-	REQUIRE_THROWS(invalid_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, invalid_faces, empty_displacement, ""));
+	REQUIRE_THROWS(invalid_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, invalid_faces, empty_displacement, resources));
 
 	Obstacle obstacle;
 	Eigen::MatrixXd vertices(3, 3);
@@ -575,7 +577,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	json displacement;
 	displacement["value"] = json::array({"x + t", "y + t", "z + t"});
 	displacement["interpolation"] = {{"type", "linear"}};
-	obstacle.append_mesh(vertices, Eigen::VectorXi(0), Eigen::MatrixXi(0, 2), faces, displacement, "");
+	obstacle.append_mesh(vertices, Eigen::VectorXi(0), Eigen::MatrixXi(0, 2), faces, displacement, resources);
 	CHECK(obstacle.dim() == 3);
 	CHECK(obstacle.n_vertices() == 3);
 	CHECK(obstacle.n_faces() == 1);
@@ -592,7 +594,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	json array_displacement;
 	array_displacement["value"] = json::array({"x + 1", "y + 1"});
 	array_displacement["interpolation"] = json::array({json{{"type", "linear"}}, json{{"type", "none"}}});
-	array_interp_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, no_faces, array_displacement, "");
+	array_interp_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, no_faces, array_displacement, resources);
 	Eigen::MatrixXd array_sol = Eigen::MatrixXd::Zero(array_interp_obstacle.n_vertices(), array_interp_obstacle.dim());
 	array_interp_obstacle.update_displacement(0.5, array_sol);
 	CHECK(array_sol(0, 0) == Catch::Approx(0.5));

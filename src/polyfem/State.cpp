@@ -68,18 +68,6 @@ namespace polyfem
 
 	namespace
 	{
-		std::string root_path(const json &args)
-		{
-			if (utils::is_param_valid(args, "root_path"))
-				return args["root_path"].get<std::string>();
-			return "";
-		}
-
-		std::string resolve_input_path(const json &args, const std::string &path, const bool only_if_exists = false)
-		{
-			return utils::resolve_path(path, root_path(args), only_if_exists);
-		}
-
 		std::string resolve_output_path(const std::string &output_dir, const std::string &path)
 		{
 			if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
@@ -252,8 +240,8 @@ namespace polyfem
 		std::filesystem::path root = std::filesystem::current_path();
 		if (utils::is_param_valid(p_args_in, "root_path"))
 			root = p_args_in["root_path"].get<std::string>();
-		owned_resources_ = std::make_unique<io::FileSystemIO>(root);
-		init(p_args_in, *owned_resources_, strict_validation, is_adjoint_optimization);
+		resources_ = std::make_unique<io::FileSystemIO>(root);
+		init(p_args_in, *resources_, strict_validation, is_adjoint_optimization);
 	}
 
 	void State::init(
@@ -262,30 +250,17 @@ namespace polyfem
 		const bool strict_validation,
 		const bool is_adjoint_optimization)
 	{
-		checkpoint_ = nullptr;
+		checkpoint_.reset();
 		json args_in = p_args_in;
-		std::unique_ptr<const io::ResourceIO> rooted_resources;
-		if (utils::is_param_valid(args_in, "root_path"))
-			rooted_resources = resources.with_root(args_in["root_path"].get<std::string>());
+		const std::string resource_root = utils::is_param_valid(args_in, "root_path")
+									  ? args_in["root_path"].get<std::string>()
+									  : std::string();
+		resources_ = resources.with_root(resource_root);
 		args_in.erase("root_path");
-		if (rooted_resources)
-		{
-			owned_resources_ = std::move(rooted_resources);
-			resources_ = owned_resources_.get();
-		}
-		else
-		{
-			if (&resources != owned_resources_.get())
-				owned_resources_.reset();
-			resources_ = &resources;
-		}
 		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);
 
 		if (auto common_resources = apply_common_params(args_in, *resources_))
-		{
-			owned_resources_ = std::move(common_resources);
-			resources_ = owned_resources_.get();
-		}
+			resources_ = std::move(common_resources);
 
 		json rules;
 		jse::JSE jse;
@@ -351,12 +326,6 @@ namespace polyfem
 		if (!out_path_log.empty())
 			out_path_log = resolve_output_path(output_dir, out_path_log);
 
-		for (auto &path : args["constraints"]["hard"])
-			path = resources_->materialize(path.get<std::string>()).string();
-
-		for (auto &path : args["constraints"]["soft"])
-			path["data"] = resources_->materialize(path["data"].get<std::string>()).string();
-
 		init_logger(
 			out_path_log,
 			args["output"]["log"]["level"],
@@ -399,27 +368,27 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args, is_adjoint_optimization);
+		variational_formulation = varform::VarFormFactory::create(formulation, args, *resources_, is_adjoint_optimization);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
 		logger().info("Using variational formulation: {}", variational_formulation->name());
 		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
-		variational_formulation->init(formulation, units, args, output_dir, *resources_);
+		variational_formulation->init(formulation, units, args, output_dir);
 		args["contact"].erase("_dhat_was_explicit");
 	}
 
 	void State::init(const io::CheckpointReader &checkpoint, const bool strict_validation)
 	{
 		init(checkpoint.config(), checkpoint.resources(), strict_validation, false);
-		checkpoint_ = &checkpoint;
+		checkpoint_ = std::cref(checkpoint);
 		variational_formulation->set_checkpoint_reader(checkpoint);
 		const std::string formulation = varform::formulation_from_args(args);
-		if (checkpoint_->metadata().formulation != variational_formulation->name())
+		if (checkpoint_->get().metadata().formulation != variational_formulation->name())
 			log_and_throw_error(
 				"Checkpoint formulation '{}' is incompatible with configured formulation '{}'.",
-				checkpoint_->metadata().formulation, variational_formulation->name());
-		if (std::abs(args["time"]["dt"].get<double>() - checkpoint_->metadata().dt) > 1e-12)
+				checkpoint_->get().metadata().formulation, variational_formulation->name());
+		if (std::abs(args["time"]["dt"].get<double>() - checkpoint_->get().metadata().dt) > 1e-12)
 			log_and_throw_error("Checkpoint dt is incompatible with its continuation configuration.");
 	}
 
@@ -475,7 +444,7 @@ namespace polyfem
 		mesh::LoadedGeometry loaded_geometry;
 		if (checkpoint_)
 		{
-			loaded_geometry.fem = checkpoint_->read_mesh("/checkpoint/meshes/active", non_conforming);
+			loaded_geometry.fem = checkpoint_->get().read_mesh("/checkpoint/meshes/active", non_conforming);
 			loaded_geometry.obstacle = geometry_loader.load_obstacles(
 				args["geometry"], obstacle_displacements, dirichlet_conditions,
 				loaded_geometry.fem->dimension(), non_conforming);
@@ -521,7 +490,7 @@ namespace polyfem
 		assert(variational_formulation != nullptr);
 
 		if (checkpoint_)
-			variational_formulation->deserialize_checkpoint(*checkpoint_, sol);
+			variational_formulation->deserialize_checkpoint(checkpoint_->get(), sol);
 		variational_formulation->set_time_callback(time_callback);
 		variational_formulation->solve(sol);
 	}

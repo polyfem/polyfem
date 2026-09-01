@@ -21,7 +21,7 @@ namespace polyfem::mesh
 	void apply_geometry_selection(
 		Mesh &mesh,
 		const json &geometry_selection,
-		const std::string &root_path)
+		const io::ResourceIO &resources)
 	{
 		if (geometry_selection.is_object() && geometry_selection.contains("same_as_volume"))
 		{
@@ -37,7 +37,7 @@ namespace polyfem::mesh
 
 		Selection::BBox bbox;
 		mesh.bounding_box(bbox[0], bbox[1]);
-		const auto selections = Selection::build_selections(geometry_selection, bbox, root_path);
+		const auto selections = Selection::build_selections(geometry_selection, bbox, resources);
 
 		Eigen::MatrixXd barycenters;
 		mesh.compute_element_barycenters(barycenters);
@@ -73,8 +73,6 @@ namespace polyfem::mesh
 
 		std::unique_ptr<Mesh> mesh = MeshLoader(resources).load_fem(
 			j_mesh["mesh"].get<std::string>(), non_conforming);
-		const std::string selection_root = resources.host_directory().string();
-
 		// --------------------------------------------------------------------
 
 		// NOTE: Normaliziation is done before transformations are applied and/or any selection operators
@@ -106,7 +104,7 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		std::vector<std::shared_ptr<Selection>> surface_selections =
-			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, selection_root) : std::vector<std::shared_ptr<Selection>>();
+			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, resources) : std::vector<std::shared_ptr<Selection>>();
 
 		// --------------------------------------------------------------------
 
@@ -186,7 +184,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		const std::vector<std::shared_ptr<Selection>> node_selections =
-			is_param_valid(j_mesh, "point_selection") ? Selection::build_selections(j_mesh["point_selection"], bbox, selection_root) : std::vector<std::shared_ptr<Selection>>();
+			is_param_valid(j_mesh, "point_selection") ? Selection::build_selections(j_mesh["point_selection"], bbox, resources) : std::vector<std::shared_ptr<Selection>>();
 
 		if (!node_selections.empty())
 		{
@@ -272,7 +270,7 @@ namespace polyfem::mesh
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
-				Selection::build_selections(volume_selection, bbox, selection_root);
+				Selection::build_selections(volume_selection, bbox, resources);
 
 			// Append the mesh's stored ids to the volume selection as a lowest priority selection
 			if (mesh->has_body_ids())
@@ -292,7 +290,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		if (is_param_valid(j_mesh, "geometry_selection"))
-			apply_geometry_selection(*mesh, j_mesh["geometry_selection"], selection_root);
+			apply_geometry_selection(*mesh, j_mesh["geometry_selection"], resources);
 
 		// --------------------------------------------------------------------
 
@@ -531,7 +529,6 @@ namespace polyfem::mesh
 		const bool non_conforming)
 	{
 		Obstacle obstacle;
-		const std::string expression_root = resources.host_directory().string();
 
 		if (geometry.empty())
 			return obstacle;
@@ -654,7 +651,7 @@ namespace polyfem::mesh
 				}
 
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacement, expression_root);
+					vertices, codim_vertices, codim_edges, faces, displacement, resources);
 			}
 			else if (geometry["type"] == "plane")
 			{

@@ -27,6 +27,7 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
+		using VarForm::VarForm;
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;

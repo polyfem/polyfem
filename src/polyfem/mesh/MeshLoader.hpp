@@ -22,13 +22,13 @@ namespace polyfem::mesh
 	{
 	public:
 		explicit MeshLoader(const io::ResourceIO &resources)
-			: resources_(&resources) {}
+			: resources_(resources) {}
 
 		std::unique_ptr<Mesh> load_fem(const std::string &path, bool non_conforming = false) const;
 		SurfaceMesh load_surface(const std::string &path) const;
 
 	private:
 		void validate_group(const std::string &group, const std::string &expected_type) const;
-		const io::ResourceIO *resources_;
+		const io::ResourceIO &resources_;
 	};
 } // namespace polyfem::mesh

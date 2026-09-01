@@ -322,11 +322,11 @@ namespace polyfem
 			}
 		}
 
-		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 		{
 			for (auto &it : elastic_material_map_)
 			{
-				it.second->add_multimaterial(index, params, units, root_path);
+				it.second->add_multimaterial(index, params, units, resources);
 			}
 		}
 

@@ -31,18 +31,21 @@ namespace polyfem::from_json
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
-		const std::vector<std::shared_ptr<DiffCache>> &diff_caches);
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 } // namespace polyfem::from_json

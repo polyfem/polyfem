@@ -435,18 +435,17 @@ namespace polyfem::varform
 
 		mesh_displacement_problem_ = std::make_shared<assembler::GenericTensorProblem>("NavierStokesFSIMeshDisplacement");
 		mesh_displacement_problem_->clear();
-		mesh_displacement_problem_->set_parameters({{"is_time_dependent", true}}, root_path);
+		mesh_displacement_problem_->set_parameters({{"is_time_dependent", true}}, resources_);
 		auto boundary_conditions = args["boundary_conditions"];
-		boundary_conditions["root_path"] = root_path;
-		mesh_displacement_problem_->set_parameters(boundary_conditions, root_path);
-		mesh_displacement_problem_->set_parameters(args["initial_conditions"], root_path);
-		mesh_displacement_problem_->set_parameters(args["output"], root_path);
+		mesh_displacement_problem_->set_parameters(boundary_conditions, resources_);
+		mesh_displacement_problem_->set_parameters(args["initial_conditions"], resources_);
+		mesh_displacement_problem_->set_parameters(args["output"], resources_);
 		mesh_displacement_problem_->set_units(*mesh_elastic_assembler_, units);
 
 		if (has_solid_)
 		{
 			solid_args_ = solid_varform_args();
-			solid_varform_ = std::make_shared<NonlinearElasticTransientVarForm>();
+			solid_varform_ = std::make_shared<NonlinearElasticTransientVarForm>(resources_);
 			init_child_varform(*solid_varform_, solid_elastic_formulation_, units, solid_args_, out_path);
 		}
 	}
@@ -566,13 +565,13 @@ namespace polyfem::varform
 		for (const auto &assembler : ale_assemblers_)
 		{
 			assembler->set_size(mesh_->dimension());
-			assembler->set_materials(body_ids, this->args["materials"], units, root_path);
+			assembler->set_materials(body_ids, this->args["materials"], units, resources_);
 		}
 		const json mesh_materials = mesh_material_args();
 		mesh_elastic_assembler_->set_size(mesh_->dimension());
-		mesh_elastic_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
+		mesh_elastic_assembler_->set_materials(body_ids, mesh_materials, units, resources_);
 		mesh_mass_assembler_->set_size(mesh_->dimension());
-		mesh_mass_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
+		mesh_mass_assembler_->set_materials(body_ids, mesh_materials, units, resources_);
 		mesh_pure_mass_assembler_->set_size(mesh_->dimension());
 		mesh_displacement_problem_->init(*mesh_);
 	}
@@ -701,7 +700,7 @@ namespace polyfem::varform
 			mesh_displacement_boundary_.dirichlet_nodes_position, mesh_displacement_boundary_.neumann_nodes_position,
 			mesh_displacement_space_.n_bases, mesh_->dimension(),
 			mesh_displacement_space_.basis_list(), space_.geometry_basis_list(),
-			mesh_displacement_mass_ass_vals_cache_, *mesh_displacement_problem_,
+			mesh_displacement_mass_ass_vals_cache_, *mesh_displacement_problem_, resources_,
 			args["space"]["advanced"]["bc_method"], solver_params,
 			mesh_displacement_space_id_);
 	}

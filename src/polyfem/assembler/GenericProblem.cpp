@@ -672,7 +672,7 @@ namespace polyfem
 			updated_dirichlet_node_ordering_ = true;
 		}
 
-		void GenericTensorProblem::set_parameters(const json &params, const std::string &root_path)
+		void GenericTensorProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (is_param_valid(params, "is_time_dependent"))
 			{
@@ -697,7 +697,7 @@ namespace polyfem
 						if (body_rhs_[k].size > 3)
 							log_and_throw_error("RHS for body {} and FE space {} has {} components; at most 3 are supported.", body_rhs_[k].body_id, body_rhs_[k].fe_space_id, body_rhs_[k].size);
 						for (int d = 0; d < body_rhs_[k].size; ++d)
-							body_rhs_[k].value[d].init(value.is_array() ? value[d] : value, root_path);
+							body_rhs_[k].value[d].init(value.is_array() ? value[d] : value, resources);
 					}
 				}
 				else if (has_fe_spaces)
@@ -711,7 +711,7 @@ namespace polyfem
 							log_and_throw_error("RHS for FE space {} has {} components; at most 3 are supported.", id, size);
 						rhs_size_[id] = size;
 						for (int k = 0; k < size; ++k)
-							rhs_[id][k].init(value.is_array() ? value[k] : value, root_path);
+							rhs_[id][k].init(value.is_array() ? value[k] : value, resources);
 					}
 				}
 				else if (rr.is_array() && !rr.empty())
@@ -720,7 +720,7 @@ namespace polyfem
 						log_and_throw_error("RHS has {} components; at most 3 are supported.", rr.size());
 					rhs_size_[-1] = int(rr.size());
 					for (size_t k = 0; k < rr.size(); ++k)
-						rhs_[-1][k].init(rr[k], root_path);
+						rhs_[-1][k].init(rr[k], resources);
 				}
 				else if (!rr.is_array())
 					log_and_throw_error("Invalid tensor problem RHS: expected an array.");
@@ -733,7 +733,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_[k].init(ex[k], root_path);
+						exact_[k].init(ex[k], resources);
 				}
 				else
 				{
@@ -748,7 +748,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k], root_path);
+						exact_grad_[k].init(ex[k], resources);
 				}
 				else
 				{
@@ -769,13 +769,8 @@ namespace polyfem
 				{
 					if (j_boundary[i - offset].is_string())
 					{
-						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
-						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error("unable to open {} file", path);
-
-						Eigen::MatrixXd tmp;
-						io::read_matrix(path, tmp);
-						nodal_dirichlet_mat_.emplace_back(tmp);
+						const std::string path = j_boundary[i - offset].get<std::string>();
+						nodal_dirichlet_mat_.emplace_back(resources.read_matrix(path));
 
 						continue;
 					}
@@ -805,17 +800,17 @@ namespace polyfem
 						displacements_[i].size = int(ff.size());
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
-							displacements_[i].value[k].init(ff[k], root_path);
+							displacements_[i].value[k].init(ff[k], resources);
 							if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
 								displacements_[i].value[k].set_t(j_boundary[i - offset]["time_reference"]);
-							nodal_dirichlet_[current_id].value[k].init(ff[k], root_path);
+							nodal_dirichlet_[current_id].value[k].init(ff[k], resources);
 						}
 					}
 					else
 					{
 						displacements_[i].size = 1;
-						displacements_[i].value[0].init(ff, root_path);
-						nodal_dirichlet_[current_id].value[0].init(ff, root_path);
+						displacements_[i].value[0].init(ff, resources);
+						nodal_dirichlet_[current_id].value[0].init(ff, resources);
 					}
 					nodal_dirichlet_[current_id].size = displacements_[i].size;
 
@@ -865,7 +860,7 @@ namespace polyfem
 					if (forces_[i].size > 3)
 						log_and_throw_error("Neumann condition for FE space {} has {} components; at most 3 are supported.", forces_[i].fe_space_id, forces_[i].size);
 					for (int k = 0; k < forces_[i].size; ++k)
-						forces_[i].value[k].init(ff.is_array() ? ff[k] : ff, root_path);
+						forces_[i].value[k].init(ff.is_array() ? ff[k] : ff, resources);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -887,13 +882,8 @@ namespace polyfem
 				{
 					if (j_boundary[i].is_string())
 					{
-						const std::string path = resolve_path(j_boundary[i], params["root_path"]);
-						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error("unable to open {} file", path);
-
-						Eigen::MatrixXd tmp;
-						io::read_matrix(path, tmp);
-						nodal_neumann_mat_.emplace_back(tmp);
+						const std::string path = j_boundary[i].get<std::string>();
+						nodal_neumann_mat_.emplace_back(resources.read_matrix(path));
 
 						continue;
 					}
@@ -907,7 +897,7 @@ namespace polyfem
 					if (nodal_neumann.size > 3)
 						log_and_throw_error("Nodal Neumann condition for FE space {} has {} components; at most 3 are supported.", nodal_neumann.fe_space_id, nodal_neumann.size);
 					for (int k = 0; k < nodal_neumann.size; ++k)
-						nodal_neumann.value[k].init(ff.is_array() ? ff[k] : ff, root_path);
+						nodal_neumann.value[k].init(ff.is_array() ? ff[k] : ff, resources);
 
 					if (j_boundary[i]["interpolation"].is_array())
 					{
@@ -939,7 +929,7 @@ namespace polyfem
 					normal_aligned_forces_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					auto ff = j_boundary[i - offset]["value"];
-					normal_aligned_forces_[i].value.init(ff, root_path);
+					normal_aligned_forces_[i].value.init(ff, resources);
 
 					if (j_boundary[i - offset].contains("interpolation"))
 						normal_aligned_forces_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
@@ -964,7 +954,7 @@ namespace polyfem
 					pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					pressures_[i].value.init(ff, root_path);
+					pressures_[i].value.init(ff, resources);
 					if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
 						pressures_[i].value.set_t(j_boundary[i - offset]["time_reference"]);
 
@@ -991,7 +981,7 @@ namespace polyfem
 						cavity_pressures_[boundary_id] = ScalarBCValue();
 
 						auto ff = j_boundary[i - offset]["value"];
-						cavity_pressures_[boundary_id].value.init(ff, root_path);
+						cavity_pressures_[boundary_id].value.init(ff, resources);
 
 						cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
 					}
@@ -1013,7 +1003,7 @@ namespace polyfem
 					if (initial_position_[k].size > 3)
 						log_and_throw_error("Initial solution for FE space {} has {} components; at most 3 are supported.", initial_position_[k].fe_space_id, initial_position_[k].size);
 					for (int d = 0; d < initial_position_[k].size; ++d)
-						initial_position_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
+						initial_position_[k].value[d].init(v.is_array() ? v[d] : v, resources);
 				}
 			}
 
@@ -1032,7 +1022,7 @@ namespace polyfem
 					if (initial_velocity_[k].size > 3)
 						log_and_throw_error("Initial velocity for FE space {} has {} components; at most 3 are supported.", initial_velocity_[k].fe_space_id, initial_velocity_[k].size);
 					for (int d = 0; d < initial_velocity_[k].size; ++d)
-						initial_velocity_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
+						initial_velocity_[k].value[d].init(v.is_array() ? v[d] : v, resources);
 				}
 			}
 
@@ -1051,7 +1041,7 @@ namespace polyfem
 					if (initial_acceleration_[k].size > 3)
 						log_and_throw_error("Initial acceleration for FE space {} has {} components; at most 3 are supported.", initial_acceleration_[k].fe_space_id, initial_acceleration_[k].size);
 					for (int d = 0; d < initial_acceleration_[k].size; ++d)
-						initial_acceleration_[k].value[d].init(v.is_array() ? v[d] : v, root_path);
+						initial_acceleration_[k].value[d].init(v.is_array() ? v[d] : v, resources);
 				}
 			}
 		}
@@ -1631,7 +1621,7 @@ namespace polyfem
 			updated_dirichlet_node_ordering_ = true;
 		}
 
-		void GenericScalarProblem::set_parameters(const json &params, const std::string &root_path)
+		void GenericScalarProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (is_param_valid(params, "is_time_dependent"))
 			{
@@ -1651,22 +1641,22 @@ namespace polyfem
 					{
 						body_rhs_[k].body_id = entries[k]["id"];
 						body_rhs_[k].fe_space_id = fe_space_id(entries[k]);
-						body_rhs_[k].value.init(entries[k]["value"], root_path);
+						body_rhs_[k].value.init(entries[k]["value"], resources);
 					}
 				}
 				else if (has_fe_spaces)
 				{
 					for (const json &entry : rr)
-						rhs_[fe_space_id(entry)].init(entry["value"], root_path);
+						rhs_[fe_space_id(entry)].init(entry["value"], resources);
 				}
 				else if (!rr.is_array() || !rr.empty())
-					rhs_[-1].init(rr, root_path);
+					rhs_[-1].init(rr, resources);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = !params["reference"]["solution"].empty();
-				exact_.init(params["reference"]["solution"], root_path);
+				exact_.init(params["reference"]["solution"], resources);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
@@ -1676,7 +1666,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k], root_path);
+						exact_grad_[k].init(ex[k], resources);
 				}
 				else
 				{
@@ -1697,13 +1687,8 @@ namespace polyfem
 				{
 					if (j_boundary[i - offset].is_string())
 					{
-						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
-						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error(fmt::format("unable to open {} file", path));
-
-						Eigen::MatrixXd tmp;
-						io::read_matrix(path, tmp);
-						nodal_dirichlet_mat_.emplace_back(tmp);
+						const std::string path = j_boundary[i - offset].get<std::string>();
+						nodal_dirichlet_mat_.emplace_back(resources.read_matrix(path));
 
 						continue;
 					}
@@ -1726,8 +1711,8 @@ namespace polyfem
 					nodal_dirichlet_[current_id].fe_space_id = dirichlet_[i].fe_space_id;
 
 					auto ff = j_boundary[i - offset]["value"];
-					dirichlet_[i].value.init(ff, root_path);
-					nodal_dirichlet_[current_id].value.init(ff, root_path);
+					dirichlet_[i].value.init(ff, resources);
+					nodal_dirichlet_[current_id].value.init(ff, resources);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1761,7 +1746,7 @@ namespace polyfem
 					neumann_[i].fe_space_id = fe_space_id(j_boundary[i - offset]);
 
 					auto ff = j_boundary[i - offset]["value"];
-					neumann_[i].value.init(ff, root_path);
+					neumann_[i].value.init(ff, resources);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1785,13 +1770,8 @@ namespace polyfem
 				{
 					if (j_boundary[i].is_string())
 					{
-						const std::string path = resolve_path(j_boundary[i], params["root_path"]);
-						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error(fmt::format("unable to open {} file", path));
-
-						Eigen::MatrixXd tmp;
-						io::read_matrix(path, tmp);
-						nodal_neumann_mat_.emplace_back(tmp);
+						const std::string path = j_boundary[i].get<std::string>();
+						nodal_neumann_mat_.emplace_back(resources.read_matrix(path));
 
 						continue;
 					}
@@ -1799,7 +1779,7 @@ namespace polyfem
 					const int id = j_boundary[i]["id"];
 					ScalarBCValue nodal_neumann;
 					nodal_neumann.fe_space_id = fe_space_id(j_boundary[i]);
-					nodal_neumann.value.init(j_boundary[i]["value"], root_path);
+					nodal_neumann.value.init(j_boundary[i]["value"], resources);
 
 					if (j_boundary[i]["interpolation"].is_array())
 					{
@@ -1827,7 +1807,7 @@ namespace polyfem
 				{
 					initial_solution_[k].body_id = rr[k]["id"];
 					initial_solution_[k].fe_space_id = fe_space_id(rr[k]);
-					initial_solution_[k].value.init(rr[k]["value"], root_path);
+					initial_solution_[k].value.init(rr[k]["value"], resources);
 				}
 			}
 		}
