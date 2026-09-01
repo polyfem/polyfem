@@ -121,9 +121,9 @@ namespace polyfem::varform
 		return args["materials"].value("type", "");
 	}
 
-	bool uses_varform_state(json args)
+	bool uses_varform_state(json args, const io::ResourceIO &resources)
 	{
-		utils::apply_common_params(args);
+		utils::apply_common_params(args, resources);
 		const std::string formulation = formulation_from_args(args);
 		return !formulation.empty() && VarFormFactory::supports(formulation, args);
 	}

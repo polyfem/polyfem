@@ -85,7 +85,7 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"solid_material", {{"type", "NeoHookean"}}}};
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) != nullptr);
-	CHECK(varform::uses_varform_state(contact_fsi_args));
+	CHECK(varform::uses_varform_state(contact_fsi_args, resources));
 
 	contact_fsi_args["materials"].erase("solid_material");
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
@@ -580,7 +580,8 @@ TEST_CASE("macro displacement gradient remains on legacy state path", "[varform]
 		{"value", {{0, 0}, {0, 0}}},
 		{"fixed_components", {0}}};
 
-	CHECK_FALSE(varform::uses_varform_state(args));
+	const io::FileSystemIO resources(args["root_path"].get<std::string>());
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
 
 	legacy::State state;
 	state.init(args, false);

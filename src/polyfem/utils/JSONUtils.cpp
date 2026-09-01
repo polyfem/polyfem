@@ -52,7 +52,7 @@ namespace polyfem
 				common_params = common_params.patch(patch);
 			args = std::move(common_params);
 			args.erase("common");
-			return has_explicit_root ? std::move(common_resources) : nullptr;
+			return common_resources;
 		}
 
 		void apply_common_params(json &args)

@@ -249,7 +249,7 @@ int forward_simulation(const CLI::App &command_line,
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
-	if (varform::uses_varform_state(in_args))
+	if (varform::uses_varform_state(in_args, resources))
 		return forward_simulation_with_varform_state(resources, in_args, is_strict);
 
 	if (dynamic_cast<const io::HDF5IO *>(&resources) != nullptr)
@@ -268,7 +268,7 @@ int forward_simulation(const CLI::App &command_line,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args)
 {
-	if (!varform::uses_varform_state(in_args))
+	if (!varform::uses_varform_state(in_args, checkpoint.resources()))
 		log_and_throw_error("Checkpoints are supported only by the non-legacy State.");
 
 	json tmp = json::object();

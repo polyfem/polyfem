@@ -7,7 +7,10 @@
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/InputLoader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -57,8 +60,21 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	const fs::path bundle = directory / "bundle.h5";
 	{
 		h5pp::File file(bundle.string(), h5pp::FileAccess::REPLACE);
-		file.writeDataset(std::string(R"({"geometry":[]})"), "/config");
+		file.writeDataset(std::string(R"({"common":"configs/common.json","geometry":[]})"), "/config");
+		file.writeDataset(std::string(R"({"materials":{"type":"NeoHookean"}})"), "/configs/common.json");
+		file.writeDataset(std::string("common-local resource"), "/configs/local.txt");
 		file.writeDataset(std::string("embedded text"), "/assets/note.txt");
+		file.writeDataset(
+			std::string(
+				"# vtk DataFile Version 2.0\n"
+				"fibers\n"
+				"ASCII\n"
+				"DATASET UNSTRUCTURED_GRID\n"
+				"CELL_DATA 2\n"
+				"VECTORS FIB_DIR1 double\n"
+				"2 0 0\n"
+				"0 3 0\n"),
+			"/assets/fibers.vtk");
 		Eigen::MatrixXd vertices(3, 2);
 		vertices << 0, 0, 1, 0, 0, 1;
 		Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic> cells(1, 3);
@@ -71,8 +87,21 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	}
 	const io::LoadedInput loaded = io::load_hdf5_input(bundle);
 	CHECK(loaded.config["geometry"].empty());
+	CHECK(varform::uses_varform_state(loaded.config, *loaded.resources));
+	json effective_config = loaded.config;
+	auto common_resources = utils::apply_common_params(effective_config, *loaded.resources);
+	REQUIRE(common_resources != nullptr);
+	CHECK(common_resources->read_string("local.txt") == "common-local resource");
 	CHECK(loaded.resources->read_string("assets/note.txt") == "embedded text");
 	CHECK(loaded.resources->materialize("assets/note.txt").extension() == ".txt");
+	assembler::FiberDirection fibers;
+	fibers.resize(3);
+	fibers.add_multimaterial(
+		0,
+		json{{"type", "per_element_file"}, {"path", "assets/fibers.vtk"}, {"field", "FIB_DIR1"}},
+		"", *loaded.resources);
+	CHECK(fibers(0, 0, 0, 0, 0, 0, 0, 0).isApprox(Eigen::Vector3d::UnitX()));
+	CHECK(fibers(0, 0, 0, 0, 0, 0, 0, 1).isApprox(Eigen::Vector3d::UnitY()));
 	mesh::MeshLoader loader(*loaded.resources);
 	const auto mesh = loader.load_fem("meshes/triangle");
 	REQUIRE(mesh != nullptr);

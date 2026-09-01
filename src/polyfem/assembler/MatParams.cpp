@@ -4,7 +4,6 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp> // utils::resolve_path
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 namespace polyfem::assembler
@@ -22,12 +21,10 @@ namespace polyfem::assembler
 		// Reads a named VECTORS array under CELL_DATA from a legacy ASCII VTK
 		// file. Returns one Eigen::Vector3d per cell, in file order.
 		std::vector<Eigen::Vector3d> read_cell_vectors_legacy_vtk(
-			const std::string &path, const std::string &field_name)
+			std::istream &in,
+			const std::string &description,
+			const std::string &field_name)
 		{
-			std::ifstream in(path);
-			if (!in)
-				log_and_throw_error(fmt::format("Cannot open fiber file: {}", path));
-
 			std::vector<Eigen::Vector3d> out;
 			std::string line;
 			int n_cell_data = -1;
@@ -55,7 +52,7 @@ namespace polyfem::assembler
 					{
 						if (!(in >> out[i].x() >> out[i].y() >> out[i].z()))
 							log_and_throw_error(fmt::format(
-								"Fiber VTK '{}' ended early: expected {} vectors", path, n_cell_data));
+								"Fiber VTK '{}' ended early: expected {} vectors", description, n_cell_data));
 					}
 					found = true;
 					break;
@@ -63,7 +60,7 @@ namespace polyfem::assembler
 			}
 			if (!found)
 				log_and_throw_error(fmt::format(
-					"VECTORS '{}' not found under CELL_DATA in {}", field_name, path));
+					"VECTORS '{}' not found under CELL_DATA in {}", field_name, description));
 			return out;
 		}
 
@@ -678,9 +675,11 @@ namespace polyfem::assembler
 		if (dir.is_object() && dir.value("type", std::string()) == "per_element_file")
 		{
 			const std::string field = dir.value("field", std::string("FIB_DIR1"));
-			const std::string p = resources.materialize(dir.at("path").get<std::string>()).string();
+			const std::string path = dir.at("path").get<std::string>();
+			const std::string description = resources.describe(path);
+			auto input = resources.open(path, false);
 
-			per_el_fibers_ = read_cell_vectors_legacy_vtk(p, field);
+			per_el_fibers_ = read_cell_vectors_legacy_vtk(*input, description, field);
 			for (auto &v : per_el_fibers_)
 			{
 				const double n = v.norm();
@@ -691,7 +690,7 @@ namespace polyfem::assembler
 			use_per_element_file_ = true;
 			has_rotation_ = false; // a direction vector, not a rotation matrix
 			logger().info("FiberDirection: loaded {} per-element fibers ('{}') from {}",
-						  per_el_fibers_.size(), field, p);
+						  per_el_fibers_.size(), field, description);
 			return; // dir_ left empty; operator() short-circuits
 		}
 

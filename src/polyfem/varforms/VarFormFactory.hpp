@@ -28,6 +28,7 @@ namespace polyfem::varform
 
 	/// @brief Checks if the given JSON arguments use a VarForm state. this is temporary until legacy state is removed
 	/// @param args JSON arguments containing material information.
+	/// @param resources Resource reader used to resolve common configurations.
 	/// @return True if the JSON arguments use a VarForm state, false otherwise.
-	bool uses_varform_state(json args);
+	bool uses_varform_state(json args, const io::ResourceIO &resources);
 } // namespace polyfem::varform
