@@ -1,0 +1,54 @@
+{
+    "geometry": [
+        {
+            "mesh": "../../data/contact/meshes/2D/simple/curve_t2t.obj",
+            "type": "mesh",
+            "surface_selection": 1
+        }
+    ],
+    "materials": [
+        {
+            "type": "NeoHookean",
+            "E": 1,
+            "nu": 0.4,
+            "rho": 1
+        }
+    ],
+    "space": {
+        "discr_order": 1
+    },
+    "time": {
+        "tend": 100.0,
+        "dt": 5.0,
+        "integrator": "ImplicitEuler"
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 8,
+        "use_high_order_formulation": true,
+        "high_order_contact_params": {
+            "quadrature_order": 1
+        }
+    },
+    "solver": {
+        "contact": {
+            "barrier_stiffness": 1
+        },
+        "nonlinear": {
+            "solver": "Newton",
+            "grad_norm": 1e-5
+        }
+    },
+    "output": {
+        "directory": "out",
+        "log": {
+            "level": "info"
+        },
+        "paraview": {
+            "file_name": "curve_selfcontact.pvd",
+            "surface": true,
+            "volume": true
+        },
+        "json": "curve_selfcontact_out.json"
+    }
+}
