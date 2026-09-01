@@ -8,17 +8,10 @@
 
 #include <Eigen/Core>
 
+#include <functional>
 #include <memory>
 #include <vector>
 #include <fstream>
-
-namespace polyfem
-{
-	namespace legacy
-	{
-		class State;
-	}
-} // namespace polyfem
 
 namespace polyfem::solver
 {
@@ -29,16 +22,17 @@ namespace polyfem::solver
 	public:
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 						 const VariableToSimulationGroup &variables_to_simulation,
-						 const std::vector<std::shared_ptr<legacy::State>> &all_states,
+						 const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-						 const json &args);
-
+						 const json &args,
+						 std::function<bool()> remeshing_trigger = {});
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
 						 const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
 						 const VariableToSimulationGroup &variables_to_simulation,
-						 const std::vector<std::shared_ptr<legacy::State>> &all_states,
+						 const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &all_varforms,
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
-						 const json &args);
+						 const json &args,
+						 std::function<bool()> remeshing_trigger = {});
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -61,9 +55,9 @@ namespace polyfem::solver
 	private:
 		std::shared_ptr<AdjointForm> form_;
 		VariableToSimulationGroup variables_to_simulation_;
-		std::vector<std::shared_ptr<legacy::State>> all_states_;
+		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> all_varforms_;
 		std::vector<std::shared_ptr<DiffCache>> all_diff_caches_;
-		std::vector<bool> active_state_mask;
+		std::vector<bool> active_varform_mask;
 		Eigen::VectorXd cur_grad;
 		Eigen::VectorXd curr_x;
 
@@ -79,5 +73,6 @@ namespace polyfem::solver
 		int save_iter = 0;
 
 		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
+		std::function<bool()> remeshing_trigger_;
 	};
 } // namespace polyfem::solver

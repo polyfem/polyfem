@@ -17,23 +17,23 @@ namespace polyfem::solver
 	class InitialConditionVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using StatePtrs = std::vector<std::shared_ptr<legacy::State>>;
+		using VarFormPtrs = std::vector<std::shared_ptr<varform::DifferentiableVarForm>>;
 		using DiffCachePtrs = std::vector<std::shared_ptr<DiffCache>>;
 
 		/// @brief Construct InitialConditionVariableToSimulation.
-		/// @param[in] states Shared ptr to all forward sim states.
+		/// @param[in] varforms Shared ptr to all forward sim varforms.
 		/// @param[in] diff_caches Shared ptr to all diff caches.
 		/// @param[in] parametrizations Parametrizations.
 		/// @param[in] active_dofs Active solution space dofs. Empty implies all active.
 		/// @throw std::runtime_error Throw if input is invalid.
-		InitialConditionVariableToSimulation(StatePtrs states,
+		InitialConditionVariableToSimulation(VarFormPtrs varforms,
 											 DiffCachePtrs diff_caches,
 											 CompositeParametrization parametrizations,
 											 Eigen::VectorXi active_dofs);
 
 		std::string name() const override;
 		ParameterType parameter_type() const override;
-		bool affect_state(const legacy::State &target) const override;
+		bool affects_varform(const varform::DifferentiableVarForm &target) const override;
 		void update(const Eigen::VectorXd &x) override;
 		void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const override;
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -43,7 +43,7 @@ namespace polyfem::solver
 
 	private:
 		int dof_num_;
-		StatePtrs states_;
+		VarFormPtrs varforms_;
 		DiffCachePtrs diff_caches_;
 		CompositeParametrization parametrization_;
 		Eigen::VectorXi active_dofs_;

@@ -13,7 +13,8 @@
             "stopping_conditions",
             "functionals",
             "compute_objective",
-            "root_path"
+            "root_path",
+            "remeshing"
         ],
         "doc": "Root of the configuration file."
     },
@@ -60,6 +61,82 @@
         "default": -1,
         "type": "int",
         "doc": "Specify the state ID, whose solution is used to initialize the solve in this state. Only relevant for nonlinear problems."
+    },
+    {
+        "pointer": "/remeshing",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "state",
+            "geometry",
+            "max_restarts",
+            "trigger"
+        ],
+        "doc": "Optional remeshing for shape optimization. Common restart settings are shared by the selected trigger."
+    },
+    {
+        "pointer": "/remeshing/state",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Index of the simulation state whose optimized geometry is remeshed."
+    },
+    {
+        "pointer": "/remeshing/geometry",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Index of the geometry in the selected state to remesh."
+    },
+    {
+        "pointer": "/remeshing/max_restarts",
+        "default": 20,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of remeshing restarts. This prevents an optimization from remeshing indefinitely."
+    },
+    {
+        "pointer": "/remeshing/trigger",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "periodic",
+            "scaled_jacobian"
+        ],
+        "doc": "The remeshing trigger. Exactly one trigger must be specified when remeshing is enabled."
+    },
+    {
+        "pointer": "/remeshing/trigger/periodic",
+        "default": "skip",
+        "type": "object",
+        "optional": [
+            "period"
+        ],
+        "doc": "Periodic remeshing after a fixed number of accepted optimization iterations."
+    },
+    {
+        "pointer": "/remeshing/trigger/periodic/period",
+        "default": 100,
+        "type": "int",
+        "min": 1,
+        "doc": "Number of accepted optimization iterations between periodic remeshing restarts."
+    },
+    {
+        "pointer": "/remeshing/trigger/scaled_jacobian",
+        "default": "skip",
+        "type": "object",
+        "optional": [
+            "quality_threshold"
+        ],
+        "doc": "Remeshing triggered by the minimum scaled Jacobian determinant."
+    },
+    {
+        "pointer": "/remeshing/trigger/scaled_jacobian/quality_threshold",
+        "default": 0.001,
+        "type": "float",
+        "min": 0.0,
+        "max": 1.0,
+        "doc": "Minimum scaled Jacobian that triggers remeshing."
     },
     {
         "pointer": "/states/*/reuse_stiffness_factorization",

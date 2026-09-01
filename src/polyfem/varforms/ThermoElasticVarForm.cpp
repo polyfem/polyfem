@@ -328,8 +328,8 @@ namespace polyfem::varform
 		assert(primary_assembler_);
 		assert(temperature_assembler_);
 
-		Eigen::VectorXi displacement_orders;
-		assign_discr_orders(args["space"]["discr_order"], displacement_space_id_, mesh, displacement_orders);
+		Eigen::VectorXi displacement_orders, displacement_ordersq;
+		assign_discr_orders(args["space"], displacement_space_id_, mesh, displacement_orders, displacement_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -349,6 +349,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			displacement_orders,
+			displacement_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -468,13 +469,14 @@ namespace polyfem::varform
 
 	void ThermoElasticVarForm::build_temperature_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
-		Eigen::VectorXi temperature_orders;
-		assign_discr_orders(args["space"]["discr_order"], temperature_space_id_, mesh, temperature_orders);
+		Eigen::VectorXi temperature_orders, temperature_ordersq;
+		assign_discr_orders(args["space"], temperature_space_id_, mesh, temperature_orders, temperature_ordersq);
 
 		build_fe_space(
 			mesh,
 			iso_parametric,
 			temperature_orders,
+			temperature_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*temperature_assembler_,
@@ -545,7 +547,7 @@ namespace polyfem::varform
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
-		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+		solve_data_.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
 			*primary_assembler_, *mesh_, &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
@@ -554,7 +556,7 @@ namespace polyfem::varform
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			displacement_space_id_);
-		rhs_assembler_ = solve_data.rhs_assembler;
+		rhs_assembler_ = solve_data_.rhs_assembler;
 
 		temperature_rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
 			*temperature_assembler_, *mesh_, nullptr,
@@ -702,20 +704,20 @@ namespace polyfem::varform
 
 		if (is_time_dependent)
 		{
-			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
+			solve_data_.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
 				time_integrator_args(displacement_space_id_),
 				time_integrator::ImplicitTimeIntegrator::DynamicOrder::Second);
 
 			Eigen::MatrixXd displacement_solution, displacement_velocity, displacement_acceleration;
-			initial_elastic_solution(displacement_solution);
+			initial_solution(displacement_solution);
 			displacement_solution.col(0) = displacement;
 			initial_velocity(displacement_velocity);
 			initial_acceleration(displacement_acceleration);
-			solve_data.time_integrator->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
+			solve_data_.time_integrator->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
 		}
 		else
 		{
-			solve_data.time_integrator = nullptr;
+			solve_data_.time_integrator = nullptr;
 		}
 
 		init_forms(args, mesh_->dimension(), displacement, t);
@@ -724,7 +726,7 @@ namespace polyfem::varform
 			assert(form);
 			stacked_form_->add(displacement_block, form);
 		}
-		solve_data.al_form.clear();
+		solve_data_.al_form.clear();
 
 		temperature_form_ = std::make_shared<solver::ElasticForm>(
 			temperature_space_.n_bases, *temperature_space_.bases, temperature_space_.geometry_basis_list(),
@@ -740,9 +742,12 @@ namespace polyfem::varform
 			t, form_dt, mesh_->is_volume());
 		stacked_form_->add(displacement_block, temperature_block, thermoelastic_form_);
 
+		assert(temperature_space_.disc_orders.size() > 0 && "Thermal boundary quadrature requires initialized FE orders");
+		assert(temperature_space_.geometry && "Thermal boundary quadrature requires an initialized geometry mapping");
+		assert(temperature_space_.geometry->disc_orders.size() > 0 && "Thermal boundary quadrature requires initialized geometry orders");
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
 		const QuadratureOrders temperature_boundary_samples =
-			n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), gdiscr_order);
+			n_boundary_samples(temperature_space_.disc_orders.maxCoeff(), temperature_space_.disc_ordersq.maxCoeff(), gdiscr_order);
 		temperature_body_form_ = std::make_shared<solver::BodyForm>(
 			temperature_ndof(), 0,
 			temperature_boundary_.boundary_nodes, temperature_boundary_.local_boundary,
@@ -803,7 +808,7 @@ namespace polyfem::varform
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
 
-		solve_data.al_form.clear();
+		solve_data_.al_form.clear();
 		if (!boundary_.boundary_nodes.empty() || !temperature_boundary_.boundary_nodes.empty())
 		{
 			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
@@ -833,19 +838,19 @@ namespace polyfem::varform
 						/*obstacle_ndof=*/0, is_time_dependent, t));
 			}
 
-			solve_data.al_form.push_back(stacked_al);
+			solve_data_.al_form.push_back(stacked_al);
 		}
 	}
 
 	void ThermoElasticVarForm::update_transient_form_weights()
 	{
 		assert(problem->is_time_dependent());
-		assert(solve_data.time_integrator);
+		assert(solve_data_.time_integrator && "Transient thermoelasticity requires a displacement time integrator");
 		assert(temperature_time_integrator_);
 
-		solve_data.update_dt();
+		solve_data_.update_dt();
 
-		const double displacement_scaling = solve_data.time_integrator->acceleration_scaling();
+		const double displacement_scaling = solve_data_.time_integrator->acceleration_scaling();
 		const double temperature_scaling = temperature_time_integrator_->acceleration_scaling();
 
 		if (temperature_form_)
@@ -858,8 +863,8 @@ namespace polyfem::varform
 
 	void ThermoElasticVarForm::solve_nonlinear_step(const int step, Eigen::MatrixXd &solution)
 	{
-		assert(solve_data.nl_problem != nullptr);
-		solver::NLProblem &nl_problem = *solve_data.nl_problem;
+		assert(solve_data_.nl_problem != nullptr && "Thermoelastic forms must initialize the nonlinear problem before solving");
+		solver::NLProblem &nl_problem = *solve_data_.nl_problem;
 
 		const json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
 		const json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
@@ -874,13 +879,13 @@ namespace polyfem::varform
 
 		const auto update_displacement_barrier_stiffness = [&](const Eigen::VectorXd &x) {
 			const Eigen::VectorXd displacement = x.head(displacement_ndof());
-			solve_data.update_barrier_stiffness(displacement);
+			solve_data_.update_barrier_stiffness(displacement);
 		};
 
-		if (!solve_data.al_form.empty())
+		if (!solve_data_.al_form.empty())
 		{
 			solver::ALSolver al_solver(
-				solve_data.al_form,
+				solve_data_.al_form,
 				args["solver"]["augmented_lagrangian"]["initial_weight"],
 				args["solver"]["augmented_lagrangian"]["scaling"],
 				args["solver"]["augmented_lagrangian"]["max_weight"],
@@ -917,8 +922,14 @@ namespace polyfem::varform
 		save_subsolve(stats.solver_info.size(), step, solution);
 	}
 
-	void ThermoElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void ThermoElasticVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Thermoelasticity does not support initial-condition overrides");
+		assert(!post_step && "Thermoelasticity does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 
 		igl::Timer timer;
@@ -931,7 +942,7 @@ namespace polyfem::varform
 			if (sol.size() <= 0)
 			{
 				Eigen::MatrixXd displacement, temperature;
-				initial_elastic_solution(displacement);
+				initial_solution(displacement);
 				initial_temperature_solution(temperature);
 				const int cols = std::max(displacement.cols(), temperature.cols());
 				if (displacement.cols() != cols)
@@ -966,16 +977,16 @@ namespace polyfem::varform
 		else
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 
-		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
+		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
 			total_ndof(), problem->is_time_dependent() ? t0 + dt : 1.0,
-			forms, solve_data.al_form,
+			forms, solve_data_.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density,
 			stacked_lumped_mass_.size() > 0 ? stacked_lumped_mass_ : identity_mass(total_ndof()),
 			mesh_->dimension(),
 			problem->is_time_dependent());
-		solve_data.nl_problem->init(sol);
-		solve_data.nl_problem->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
+		solve_data_.nl_problem->init(sol);
+		solve_data_.nl_problem->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
 		stats.solver_info = json::array();
 
 		if (!problem->is_time_dependent())
@@ -994,11 +1005,11 @@ namespace polyfem::varform
 
 				Eigen::MatrixXd displacement, temperature;
 				split_solution(sol, displacement, temperature);
-				solve_data.time_integrator->update_quantities(displacement);
+				solve_data_.time_integrator->update_quantities(displacement);
 				temperature_time_integrator_->update_quantities(temperature);
 				update_transient_form_weights();
-				solve_data.update_barrier_stiffness(displacement);
-				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
+				solve_data_.update_barrier_stiffness(displacement);
+				solve_data_.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				logger().info("{}/{}  t={}", t, time_steps, time);
 				notify_time_step(t, time_steps, t0, dt);

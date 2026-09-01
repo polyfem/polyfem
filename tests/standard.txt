@@ -33,7 +33,7 @@ standard/laplace_spline3d.json
 standard/laplace_ws.json
 standard/laplace_periodic.json
 standard/mooney_rivlin.json
-#standard/mooney_rivlin_p2.json
+standard/mooney_rivlin_p2.json
 standard/mooney_rivlin3param.json
 standard/multimodel.json
 standard/navier_stokes_static.json
@@ -53,11 +53,16 @@ standard/saint_venant_id.json
 standard/saint_venant_rot.json
 standard/stokes_static.json
 standard/unconstrained_ogden.json
-#standard/homogenization.json
 standard/homogenization_3d.json
 standard/pyramid.json
+standard/per-element-materials-multiple-bodies.json
+standard/reordered-local-vertices.json
+standard/spline-self-contact.json
 units/navier_stokes_static.json
 units/neohookean.json
 units/unconstrained_ogden.json
-#multi-material/stretch-cubes.json
+multi-material/stretch-cubes.json
+standard/laplace-rhs.json
+standard/navier_stokes_fsi_moving_arc_no_vol.json
+standard/pressure_bc.json
 time-bc/walking-elephant.json

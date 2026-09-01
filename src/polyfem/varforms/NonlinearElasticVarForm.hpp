@@ -19,9 +19,8 @@ namespace polyfem::varform
 
 		bool is_contact_enabled() const override
 		{
-			return args.contains("contact") && args["contact"].contains("enabled") && args["contact"]["enabled"].get<bool>();
+			return args["contact"]["enabled"];
 		}
-
 		io::OutputSpace output_space() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -42,25 +41,12 @@ namespace polyfem::varform
 
 		int embedding_ndof() const;
 		const std::vector<std::shared_ptr<solver::Form>> &embedding_forms() const { return forms; }
-		const std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> &embedding_al_forms() const { return solve_data.al_form; }
+		const std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> &embedding_al_forms() const { return solve_data_.al_form; }
 		const StiffnessMatrix &embedding_norm_matrix() const { return pure_mass_; }
-		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &embedding_time_integrator() const { return solve_data.time_integrator; }
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &embedding_time_integrator() const { return solve_data_.time_integrator; }
 		const FESpace &embedding_space() const { return space_; }
 
-	protected:
-		void reset() override;
-		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
-		void build_rhs_assembler() override;
-		void init_solve(Eigen::MatrixXd &sol, const double t);
-		void init_solve_data(Eigen::MatrixXd &sol, double t, const std::string &state_prefix);
-		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
-		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
-
-		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
-		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
-		void preprocess_contact_parameters();
-		void build_collision_mesh(
+		static void build_collision_mesh(
 			const mesh::Mesh &mesh,
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
@@ -72,14 +58,38 @@ namespace polyfem::varform
 			const Eigen::VectorXi &in_node_to_node,
 			ipc::CollisionMesh &collision_mesh);
 
-		ipc::CollisionMesh collision_mesh;
+	protected:
+		void reset() override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		void build_rhs_assembler() override;
+		void init_solve(
+			Eigen::MatrixXd &sol,
+			double t,
+			const InitialConditionOverride *initial_condition_override);
+		void init_solve_data(
+			Eigen::MatrixXd &sol,
+			double t,
+			const std::string &state_prefix,
+			const InitialConditionOverride *initial_condition_override = nullptr);
+		virtual void init_forms(const json &args, int dim, Eigen::MatrixXd &sol, double t);
+		virtual void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool init_lagging = true);
+
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
+		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
+		void build_periodic_collision_mesh();
+		void preprocess_contact_parameters();
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::CollisionMesh periodic_collision_mesh_;
+		Eigen::VectorXi periodic_collision_mesh_to_basis_;
 		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
-		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
-		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
+		std::shared_ptr<assembler::ViscousDamping> damping_assembler_ = nullptr;
+		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler_ = nullptr;
 
 		mesh::Obstacle obstacle;
 
-		solver::SolveData solve_data;
+		solver::SolveData solve_data_;
 		std::vector<std::shared_ptr<solver::Form>> forms;
 		bool contact_dhat_was_explicit_ = false;
 
@@ -92,7 +102,10 @@ namespace polyfem::varform
 		std::string name() const override { return "NonlinearElasticTransient"; }
 
 	private:
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step) override;
 	};
 
 	class NonlinearElasticStaticVarForm : public NonlinearElasticVarForm
@@ -101,6 +114,9 @@ namespace polyfem::varform
 		std::string name() const override { return "NonlinearElasticStatic"; }
 
 	private:
-		void solve_problem(Eigen::MatrixXd &sol) override;
+		void solve_problem(
+			Eigen::MatrixXd &sol,
+			const InitialConditionOverride *initial_condition_override,
+			const ForwardStepCallback &post_step) override;
 	};
 } // namespace polyfem::varform

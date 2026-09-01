@@ -11,6 +11,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <set>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -189,10 +190,13 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	}
 	// ------------------------------------------------------------------------
 
-	args["/solver/linear/solver"_json_pointer] =
-		(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos && json_file.find("thermoelastic") == std::string::npos)
-			? "Eigen::SimplicialLDLT"
-			: "Eigen::SparseLU";
+	if (json_file.find("/standard/mooney_rivlin_p2.json") == std::string::npos)
+	{
+		args["/solver/linear/solver"_json_pointer] =
+			(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos && json_file.find("thermoelastic") == std::string::npos)
+				? "Eigen::SimplicialLDLT"
+				: "Eigen::SparseLU";
+	}
 
 	json out = json({});
 	const AuthenticateResult run_result = varform::uses_varform_state(args)
@@ -212,6 +216,7 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 		spdlog::info("Authenticating...");
 		json authen = in_args.at(tests_key);
 		double margin = authen.value("margin", 1e-5);
+		bool authenticated = true;
 		for (const std::string &key : test_keys)
 		{
 			const double prev_val = authen[key];
@@ -220,8 +225,13 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2} relerr_{0}={3}", key, prev_val, curr_val, relerr);
-				return AUTHETICATION_FAILED;
+				authenticated = false;
 			}
+		}
+		if (!authenticated)
+		{
+			spdlog::error("Computed tests: {}", out.dump());
+			return AUTHETICATION_FAILED;
 		}
 		spdlog::info("Authenticated ✅");
 	}
@@ -251,6 +261,9 @@ void run_data(const std::string &test_file, const std::string &dir)
 	std::string line;
 	while (std::getline(file, line))
 	{
+		if (line.empty())
+			continue;
+
 		bool compute_validation = false;
 		if (line[0] == '#')
 			continue;
@@ -274,6 +287,79 @@ void run_data(const std::string &test_file, const std::string &dir)
 			ss << t << std::endl;
 
 		logger().error(ss.str());
+	}
+}
+
+TEST_CASE("all PolyFEM data JSON files are classified", "[data]")
+{
+	const std::vector<std::string> manifests = {
+		"contact_2d", "contact_3d", "adhesion", "selection", "thermo",
+		"standard", "hybrid", "time_int", "miso", "triangle", "slow", "known_issues"};
+	std::set<std::string> classified;
+
+	for (const std::string &manifest : manifests)
+	{
+		std::ifstream file(POLYFEM_TEST_DIR "/" + manifest + ".txt");
+		REQUIRE(file.is_open());
+
+		std::string line;
+		while (std::getline(file, line))
+		{
+			if (line.empty() || line[0] == '#')
+				continue;
+			if (line[0] == '*')
+				line = line.substr(1);
+			CAPTURE(manifest, line);
+			CHECK(classified.insert(line).second);
+			CHECK(std::filesystem::is_regular_file(std::filesystem::path(POLYFEM_DATA_DIR) / line));
+		}
+	}
+
+	std::set<std::string> dependencies;
+	for (const auto &entry : std::filesystem::recursive_directory_iterator(POLYFEM_DATA_DIR))
+	{
+		if (!entry.is_regular_file() || entry.path().extension() != ".json")
+			continue;
+
+		const std::string relative = std::filesystem::relative(entry.path(), POLYFEM_DATA_DIR).generic_string();
+		if (relative.rfind("old-tolerances/", 0) == 0)
+			continue;
+
+		json input;
+		REQUIRE(load_json(entry.path().string(), input));
+		if (input.contains("common"))
+		{
+			REQUIRE(input["common"].is_string());
+			const std::filesystem::path dependency =
+				(entry.path().parent_path() / input["common"].get<std::string>()).lexically_normal();
+			CAPTURE(relative, dependency);
+			CHECK(std::filesystem::is_regular_file(dependency));
+			dependencies.insert(std::filesystem::relative(dependency, POLYFEM_DATA_DIR).generic_string());
+		}
+	}
+
+	for (const auto &entry : std::filesystem::recursive_directory_iterator(POLYFEM_DATA_DIR))
+	{
+		if (!entry.is_regular_file() || entry.path().extension() != ".json")
+			continue;
+
+		const std::string relative = std::filesystem::relative(entry.path(), POLYFEM_DATA_DIR).generic_string();
+		if (relative.rfind("old-tolerances/", 0) == 0)
+			continue;
+
+		json input;
+		REQUIRE(load_json(entry.path().string(), input));
+		const bool is_polyfem_input =
+			input.contains("geometry") || input.contains("common") || input.contains("problem")
+			|| input.contains("materials") || input.contains("space") || input.contains("time")
+			|| input.contains("contact") || input.contains("boundary_conditions")
+			|| input.contains("solver") || input.contains("output") || input.contains("tests");
+
+		CAPTURE(relative);
+		if (is_polyfem_input)
+			CHECK((classified.count(relative) == 1 || dependencies.count(relative) == 1));
+		else
+			CHECK(classified.count(relative) == 0);
 	}
 }
 
@@ -309,9 +395,26 @@ TEST_CASE("standard", tagsrun)
 	run_data("standard", POLYFEM_DATA_DIR);
 }
 
+TEST_CASE("hybrid", tagsrun)
+{
+	run_data("hybrid", POLYFEM_DATA_DIR);
+}
+
 TEST_CASE("time_int", tagsrun)
 {
 	run_data("time_int", POLYFEM_DATA_DIR);
+}
+
+#ifdef POLYFEM_WITH_TRIANGLE
+TEST_CASE("triangle_data", tagsrun)
+{
+	run_data("triangle", POLYFEM_DATA_DIR);
+}
+#endif
+
+TEST_CASE("slow", "[.][slow]")
+{
+	run_data("slow", POLYFEM_DATA_DIR);
 }
 
 TEST_CASE("runners-pref", tagsrun)

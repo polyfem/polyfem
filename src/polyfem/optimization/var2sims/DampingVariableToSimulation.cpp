@@ -3,7 +3,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
-#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Core>
@@ -14,19 +14,19 @@
 namespace polyfem::solver
 {
 
-	DampingVariableToSimulation::DampingVariableToSimulation(StatePtrs states,
+	DampingVariableToSimulation::DampingVariableToSimulation(VarFormPtrs varforms,
 															 DiffCachePtrs diff_caches,
 															 CompositeParametrization parametrizations)
-		: states_(std::move(states)),
+		: varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrizations))
 	{
-		assert(!states_.empty());
-		assert(states_.size() == diff_caches_.size());
+		assert(!varforms_.empty());
+		assert(varforms_.size() == diff_caches_.size());
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (!s->problem->is_time_dependent())
+			if (!varform->get_problem().is_time_dependent())
 			{
 				log_and_throw_adjoint_error("Fail to construct damping variable to simulation. Reason: Can't optimize damping for static problem.");
 			}
@@ -43,11 +43,11 @@ namespace polyfem::solver
 		return ParameterType::DampingCoefficient;
 	}
 
-	bool DampingVariableToSimulation::affect_state(const legacy::State &target) const
+	bool DampingVariableToSimulation::affects_varform(const varform::DifferentiableVarForm &target) const
 	{
-		for (const auto &s : states_)
+		for (const auto &varform : varforms_)
 		{
-			if (s.get() == &target)
+			if (varform.get() == &target)
 			{
 				return true;
 			}
@@ -63,30 +63,9 @@ namespace polyfem::solver
 		double psi = y(0);
 		double phi = y(1);
 
-		for (auto &s : states_)
+		for (auto &varform : varforms_)
 		{
-			if (!s->args["materials"].is_array())
-			{
-				s->args["materials"]["psi"] = psi;
-				s->args["materials"]["phi"] = phi;
-			}
-			else
-			{
-				for (auto &arg : s->args["materials"])
-				{
-					arg["psi"] = psi;
-					arg["phi"] = phi;
-				}
-			}
-
-			if (s->damping_assembler)
-			{
-				json damping_param = {
-					{"psi", psi},
-					{"phi", phi},
-				};
-				s->damping_assembler->add_multimaterial(0, damping_param, s->units, s->root_path());
-			}
+			varform->set_damping_coefficients(psi, phi);
 		}
 	}
 
@@ -99,15 +78,15 @@ namespace polyfem::solver
 	Eigen::VectorXd DampingVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (int i = 0; i < int(states_.size()); ++i)
+		for (int i = 0; i < int(varforms_.size()); ++i)
 		{
-			auto &state = states_[i];
+			auto &varform = varforms_[i];
 			auto &diff_cache = diff_caches_[i];
 
-			assert(state->problem->is_time_dependent());
-			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
-			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
-			AdjointTools::dJ_damping_transient_adjoint_term(*state, *diff_cache, adjoint_nu, adjoint_p, cur_term);
+			assert(varform->get_problem().is_time_dependent());
+			Eigen::MatrixXd adjoint_p = get_adjoint_mat(*varform, *diff_cache, 0);
+			Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*varform, *diff_cache, 1);
+			AdjointTools::dJ_damping_transient_adjoint_term(*varform, *diff_cache, adjoint_nu, adjoint_p, cur_term);
 
 			if (term.size() != cur_term.size())
 			{
@@ -131,7 +110,7 @@ namespace polyfem::solver
 	Eigen::VectorXd DampingVariableToSimulation::inverse_eval() const
 	{
 		Eigen::VectorXd y(para_out_dof());
-		json material = states_[0]->args["materials"];
+		json material = varforms_[0]->get_args()["materials"];
 		if (material.is_array())
 		{
 			material = material[0];

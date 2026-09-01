@@ -1,4 +1,5 @@
 #include "SumModel.hpp"
+#include "MatParams.hpp"
 
 #include <jse/jse.h>
 
@@ -35,7 +36,12 @@ namespace polyfem::assembler
 
 		assert(assemblers_.size() == models.size());
 		for (size_t i = 0; i < assemblers_.size(); ++i)
-			assemblers_[i]->add_multimaterial(index, models[i], units, root_path);
+		{
+			json model = models[i];
+			if (params.contains(MATERIAL_ELEMENT_INDEX))
+				model[MATERIAL_ELEMENT_INDEX] = params[MATERIAL_ELEMENT_INDEX];
+			assemblers_[i]->add_multimaterial(index, model, units, root_path);
+		}
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

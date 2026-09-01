@@ -1,14 +1,12 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
-
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
@@ -18,10 +16,10 @@
 #include <Eigen/Dense>
 
 #include <functional>
+#include <cassert>
 #include <iosfwd>
 #include <memory>
 #include <map>
-#include <unordered_map>
 #include <vector>
 #include <string>
 
@@ -40,6 +38,16 @@ namespace polyfem
 
 	namespace varform
 	{
+		struct InitialConditionOverride
+		{
+			Eigen::MatrixXd solution;
+			Eigen::MatrixXd velocity;
+			Eigen::MatrixXd acceleration;
+		};
+
+		// Called after each completed forward-simulation step.
+		using ForwardStepCallback = std::function<void(int step, const Eigen::MatrixXd &solution)>;
+
 		class VarForm
 		{
 			friend class polyfem::test::VarFormTestAccess;
@@ -73,7 +81,13 @@ namespace polyfem
 
 			/// @brief Solve the variational formulation and store the solution in the given matrix
 			/// @param sol matrix to store the solution
-			void solve(Eigen::MatrixXd &sol);
+			/// @param initial_condition_override Optional initial condition.
+			/// @param post_step Post simulation step callback.
+			void solve(
+				Eigen::MatrixXd &sol,
+				const InitialConditionOverride *initial_condition_override = nullptr,
+				const ForwardStepCallback &post_step = {});
+
 			void set_time_callback(const std::function<void(int, int, double, double)> &callback) { time_callback = callback; }
 
 			/// @brief Get the problem dimension of the variational formulation, for output purposes
@@ -113,6 +127,9 @@ namespace polyfem
 			virtual void export_data(const Eigen::MatrixXd &solution) const = 0;
 
 		protected:
+			/// Prepare all discretization and assembly data without running a solve.
+			void prepare();
+
 			std::string resolve_output_path(const std::string &path) const;
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
@@ -121,18 +138,21 @@ namespace polyfem
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
-			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
-			void assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
+			void assign_discr_orders(const json &space_args, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders, Eigen::VectorXi &disc_ordersq);
+			void assign_discr_orders(const json &space_args, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders, Eigen::VectorXi &disc_ordersq);
 			virtual void assemble_rhs(const mesh::Mesh &mesh) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
-			void prepare();
-			QuadratureOrders n_boundary_samples(const int discr_order, const int gdiscr_order) const;
+			virtual void solve_problem(
+				Eigen::MatrixXd &sol,
+				const InitialConditionOverride *initial_condition_override,
+				const ForwardStepCallback &post_step) = 0;
+			QuadratureOrders n_boundary_samples(const int discr_order, const int discr_orderq, const int gdiscr_order) const;
 
 			void build_fe_space(
 				mesh::Mesh &mesh,
 				const bool iso_parametric,
 				const Eigen::VectorXi &disc_orders,
+				const Eigen::VectorXi &disc_ordersq,
 				const std::string &basis_type,
 				const std::string &poly_basis_type,
 				const assembler::Assembler &space_assembler,

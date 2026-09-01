@@ -3,6 +3,7 @@
 #include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/NavierStokesFSIForm.hpp>
 
@@ -70,6 +71,8 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	}
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args) != nullptr);
+	CHECK_FALSE(varform::VarFormFactory::supports("UnknownFormulation", args));
+	CHECK(varform::VarFormFactory::create("UnknownFormulation", args) == nullptr);
 
 	json contact_fsi_args = args;
 	contact_fsi_args["contact"]["enabled"] = true;
@@ -79,10 +82,12 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"solid_geometry_id", 2},
 		{"displacement_space_id", 3},
 		{"solid_material", {{"type", "NeoHookean"}}}};
+	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) != nullptr);
 	CHECK(varform::uses_varform_state(contact_fsi_args));
 
 	contact_fsi_args["materials"].erase("solid_material");
+	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) == nullptr);
 
 	json static_args = args;
@@ -100,6 +105,23 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args);
 	REQUIRE(linear_with_periodic != nullptr);
 	CHECK(linear_with_periodic->name() == "NonlinearElasticTransient");
+
+	json periodic_homogenization_args = boundary_pair_args;
+	periodic_homogenization_args["time"] = nullptr;
+	periodic_homogenization_args["/constraints/macro_displacement_gradient"_json_pointer] = {
+		{"value", {{0, 0}, {0, 0}}},
+		{"fixed_components", {0}}};
+	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
+	const auto differentiable_periodic =
+		varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true);
+	REQUIRE(differentiable_periodic != nullptr);
+	CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(differentiable_periodic) != nullptr);
+	CHECK(differentiable_periodic->name() == "NonlinearElasticStatic");
+
+	periodic_homogenization_args["/contact/periodic"_json_pointer] = true;
+	periodic_homogenization_args["/contact/enabled"_json_pointer] = true;
+	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
+	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true) != nullptr);
 
 	json zero_mean_args = args;
 	zero_mean_args["/constraints/zero_mean"_json_pointer] = true;

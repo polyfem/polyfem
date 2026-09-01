@@ -574,10 +574,10 @@ namespace polyfem::varform
 		// is marked Neumann.
 		if (has_solid_)
 			use_avg_pressure = true;
-		Eigen::VectorXi orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh_displacement_space_id_, mesh, orders);
+		Eigen::VectorXi orders, ordersq;
+		assign_discr_orders(args["space"], mesh_displacement_space_id_, mesh, orders, ordersq);
 		build_fe_space(
-			mesh, iso_parametric, orders,
+			mesh, iso_parametric, orders, ordersq,
 			args["space"]["basis_type"], args["space"]["poly_basis_type"],
 			*mesh_elastic_assembler_, mesh.dimension(),
 			args["space"]["advanced"]["quadrature_order"],
@@ -850,7 +850,8 @@ namespace polyfem::varform
 				problem->rhs(*primary_assembler_, *mesh_, element, points, time, value, velocity_space_id_);
 			});
 		const int gorder = mesh_->orders().size() == 0 ? 1 : mesh_->orders().maxCoeff();
-		const QuadratureOrders velocity_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), gorder);
+		const QuadratureOrders velocity_samples = n_boundary_samples(
+			space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), gorder);
 		ale_form_->set_velocity_tilde_updater(
 			[this, velocity_samples](const double time, const Eigen::VectorXd &, Eigen::VectorXd &target) {
 				Eigen::MatrixXd projected = target;
@@ -888,7 +889,9 @@ namespace polyfem::varform
 		fluid_neumann_form_->update_quantities(t, velocity);
 		auxiliary_form_->add(velocity_block, fluid_neumann_form_);
 
-		const QuadratureOrders mesh_samples = n_boundary_samples(mesh_displacement_space_.disc_orders.maxCoeff(), gorder);
+		const QuadratureOrders mesh_samples = n_boundary_samples(
+			mesh_displacement_space_.disc_orders.maxCoeff(),
+			mesh_displacement_space_.disc_ordersq.maxCoeff(), gorder);
 		mesh_body_form_ = std::make_shared<solver::BodyForm>(
 			mesh_displacement_ndof(), 0,
 			mesh_displacement_boundary_.boundary_nodes, mesh_displacement_boundary_.local_boundary,
@@ -1014,8 +1017,14 @@ namespace polyfem::varform
 		al_solver.solve_reduced(*fsi_problem_, sol, nonlinear_params, args["solver"]["linear"], units.characteristic_length(), nonlinear_solver);
 	}
 
-	void NavierStokesFSIVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void NavierStokesFSIVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Navier-Stokes FSI does not support initial-condition overrides");
+		assert(!post_step && "Navier-Stokes FSI does not support post-step callbacks");
+
 		igl::Timer timer;
 		timer.start();
 		prepare_fsi_initial_solution(sol);

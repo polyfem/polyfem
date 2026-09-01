@@ -80,8 +80,8 @@ namespace
 			args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
 			opt.init(args, false);
-			create_states_with_patch([](json &state_args) {
-				state_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+			create_varforms_with_patch([](json &varform_args) {
+				varform_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 			});
 			opt.init_variables();
 			opt.create_problem();
@@ -96,26 +96,26 @@ namespace
 		}
 
 	private:
-		void create_states_with_patch(const std::function<void(json &)> &patch)
+		void create_varforms_with_patch(const std::function<void(json &)> &patch)
 		{
 			const int max_threads = 1;
-			opt.states.resize(opt.args["states"].size());
+			opt.varforms.resize(opt.args["states"].size());
 
 			for (int i = 0; i < opt.args["states"].size(); ++i)
 			{
-				json state_args;
+				json varform_args;
 				const std::string abs_path = utils::resolve_path(opt.args["states"][i]["path"], opt.args["root_path"], false);
-				if (!load_json(abs_path, state_args))
-					log_and_throw_adjoint_error("Failed to load optimization state json file!");
+				if (!load_json(abs_path, varform_args))
+					log_and_throw_adjoint_error("Failed to load optimization varform JSON file!");
 
 				if (!opt.args["output"]["log"].empty())
-					state_args["output"]["log"].merge_patch(opt.args["output"]["log"]);
+					varform_args["output"]["log"].merge_patch(opt.args["output"]["log"]);
 
-				patch(state_args);
-				opt.states[i] = from_json::build_state(state_args, max_threads);
+				patch(varform_args);
+				opt.varforms[i] = from_json::build_differentiable_varform(varform_args, max_threads);
 			}
 
-			opt.diff_caches.resize(opt.states.size());
+			opt.diff_caches.resize(opt.varforms.size());
 			for (auto &diff_cache : opt.diff_caches)
 				diff_cache = std::make_shared<DiffCache>();
 		}
@@ -187,8 +187,8 @@ TEST_CASE("topology-opt", "[optimization]")
 	// nonlinear inequality constraints g(x) < 0
 	{
 		auto obj1 = std::make_shared<WeightedVolumeForm>(
-			CompositeParametrization({std::make_shared<LinearFilter>(*ctx.opt.states[0]->mesh, 0.1)}),
-			ctx.opt.states[0]);
+			CompositeParametrization({std::make_shared<LinearFilter>(ctx.opt.varforms[0]->get_mesh(), 0.1)}),
+			ctx.opt.varforms[0]);
 		obj1->set_weight(1 / 1.2);
 		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
 		std::vector<std::shared_ptr<Form>> constraints = {{obj2}};
@@ -260,7 +260,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 	{
 // 		const auto &mesh = states[0]->mesh;
 // 		const auto &bases = states[0]->bases;
-// 		const auto &gbases = states[0]->geom_bases();
+// 		const auto &gbases = states[0]->primary_space().geometry_basis_list();
 // 		dim = mesh->dimension();
 
 // 		std::set<int> node_ids;
@@ -357,7 +357,7 @@ TEST_CASE("shape-stress-opt", EXPENSIVE_TEST_LABEL)
 // 	{
 // 		const auto &mesh = states[0]->mesh;
 // 		const auto &bases = states[0]->bases;
-// 		const auto &gbases = states[0]->geom_bases();
+// 		const auto &gbases = states[0]->primary_space().geometry_basis_list();
 // 		dim = mesh->dimension();
 
 // 		std::set<int> node_ids;

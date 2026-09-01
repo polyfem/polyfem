@@ -22,8 +22,8 @@ namespace polyfem::solver
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
-		TargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
-			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
+		TargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -33,16 +33,18 @@ namespace polyfem::solver
 		~TargetForm() = default;
 
 		virtual std::string name() const override { return "target"; }
-
-		void set_reference(const std::shared_ptr<const legacy::State> &target_state, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids); // target is another simulation solution
-		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; }                                                                                                           // target is a constant displacement
-		void set_reference(const json &func, const json &grad_func);                                                                                                                      // target is a lambda function depending on deformed position
+		// target is another simulation solution
+		void set_reference(const std::shared_ptr<const varform::DifferentiableVarForm> &target_varform, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids);
+		// target is a constant displacement
+		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; }
+		// target is a lambda function depending on deformed position
+		void set_reference(const json &func, const json &grad_func);
 		void set_active_dimension(const std::vector<bool> &mask) { active_dimension_mask = mask; }
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
 
-		std::shared_ptr<const legacy::State> target_state_;
+		std::shared_ptr<const varform::DifferentiableVarForm> target_varform_;
 		std::shared_ptr<const DiffCache> target_diff_cache_;
 		std::map<int, int> e_to_ref_e_;
 
@@ -57,8 +59,8 @@ namespace polyfem::solver
 	class SDFTargetForm : public SpatialIntegralForm
 	{
 	public:
-		SDFTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
-			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
+		SDFTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -91,8 +93,8 @@ namespace polyfem::solver
 	class MeshTargetForm : public SpatialIntegralForm
 	{
 	public:
-		MeshTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
-			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
+		MeshTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -122,18 +124,18 @@ namespace polyfem::solver
 	class NodeTargetForm : public StaticForm
 	{
 	public:
-		NodeTargetForm(std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args);
-		NodeTargetForm(std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args);
+		NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
 		std::string name() const override { return "node-target"; }
 
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
-		std::shared_ptr<const legacy::State> state_;
+		std::shared_ptr<const varform::DifferentiableVarForm> varform_;
 		std::shared_ptr<const DiffCache> diff_cache_;
 
 		Eigen::MatrixXd target_vertex_positions;
@@ -143,9 +145,9 @@ namespace polyfem::solver
 	class BarycenterTargetForm : public StaticForm
 	{
 	public:
-		BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<legacy::State> &state1, std::shared_ptr<const DiffCache> diff_cache1, const std::shared_ptr<legacy::State> &state2, std::shared_ptr<const DiffCache> diff_cache2);
+		BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<varform::DifferentiableVarForm> &varform1, std::shared_ptr<const DiffCache> diff_cache1, const std::shared_ptr<varform::DifferentiableVarForm> &varform2, std::shared_ptr<const DiffCache> diff_cache2);
 
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 
@@ -157,10 +159,10 @@ namespace polyfem::solver
 	class MinTargetDistForm : public AdjointForm
 	{
 	public:
-		MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<legacy::State> &state, std::shared_ptr<const DiffCache> diff_cache);
+		MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<varform::DifferentiableVarForm> &varform, std::shared_ptr<const DiffCache> diff_cache);
 		virtual ~MinTargetDistForm() = default;
 
-		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const override;
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:

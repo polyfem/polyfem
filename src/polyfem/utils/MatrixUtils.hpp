@@ -100,6 +100,12 @@ namespace polyfem
 		/// @return Lumped matrix.
 		Eigen::SparseMatrix<double> lump_matrix(const Eigen::SparseMatrix<double> &M);
 
+		/// @brief Lump a (mass) matrix HRZ-style: keep the diagonal, scaled by a
+		/// common factor so the total (sum of all entries) is preserved.  Unlike
+		/// row-sum lumping this is positive for bases of any order (diagonal
+		/// entries are integrals of squares).
+		Eigen::SparseMatrix<double> lump_matrix_hrz(const Eigen::SparseMatrix<double> &M);
+
 		/// @brief Map a full size matrix to a reduced one by dropping rows and columns.
 		/// @param[in] full_size Number of variables in the full system.
 		/// @param[in] reduced_size Number of variables in the reduced system.

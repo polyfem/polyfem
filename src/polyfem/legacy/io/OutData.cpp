@@ -1577,7 +1577,7 @@ namespace polyfem::legacy::io
 		Eigen::Vector<bool, -1> validity;
 		if (opts.jacobian_validity)
 			polyfem::io::Evaluator::mark_flipped_cells(
-				mesh, gbases, bases, state.disc_orders,
+				mesh, gbases, bases, state.disc_orders, state.disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 
@@ -2041,7 +2041,7 @@ namespace polyfem::legacy::io
 				for (int i = 0; i < tets.rows(); ++i)
 				{
 					elements.emplace_back();
-					elements.back().ctype = CellType::Tetrahedron;
+					elements.back().ctype = mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle;
 					for (int j = 0; j < tets.cols(); ++j)
 						elements.back().vertices.push_back(tets(i, j));
 				}

@@ -1316,7 +1316,9 @@
         "pointer": "/contact/collision_mesh",
         "type": "object",
         "optional": [
-            "enabled"
+            "enabled",
+            "tessellation_type",
+            "sampling_order"
         ],
         "doc": "Construct a collision mesh."
     },
@@ -1340,10 +1342,18 @@
         "type": "string",
         "options": [
             "regular",
-            "irregular"
+            "irregular",
+            "max_order"
         ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/sampling_order",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Lattice order for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
     },
     {
         "pointer": "/contact/collision_mesh/enabled",
@@ -1451,6 +1461,7 @@
             "scaling",
             "max_weight",
             "eta",
+            "lumping",
             "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
@@ -1460,6 +1471,16 @@
         "type": "include",
         "spec_file": "nonlinear-solver-spec.json",
         "doc": "Settings for nonlinear solver in augmented lagrangian."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/lumping",
+        "type": "string",
+        "options": [
+            "row_sum",
+            "hrz"
+        ],
+        "default": "row_sum",
+        "doc": "Lumping used for the mass metric weighting the AL penalty. row_sum is the classic lumping (falls back to hrz automatically when invalid, i.e. for bases of order >= 2); hrz forces HRZ-style diagonal-scaling lumping, which is positive at any order."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -1886,74 +1907,20 @@
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary",
-        "type": "include",
-        "spec_file": "boundary-condition.json",
+        "type": "list",
+        "default": [],
         "doc": "Dirichlet boundary conditions."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
-        "type": "object",
-        "default": null,
-        "required": [
-            "id",
-            "value"
-        ],
-        "optional": [
-            "fe_space",
-            "time_reference",
-            "interpolation",
-            "dimension"
-        ],
+        "type": "include",
+        "spec_file": "dirichlet-boundary-condition.json",
         "doc": "Dirichlet boundary condition."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
-        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
-        "type": "list",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/fe_space",
-        "type": "int",
-        "default": -1,
-        "doc": "Finite element space ID for the Dirichlet boundary condition. If not specified, default to the all finite element spaces."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
-        "default": [],
-        "type": "list",
-        "doc": "List of times when the Dirichlet boundary condition is specified"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for timestep"
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension. If the file has a .json extension, it is instead read as an array of Dirichlet boundary condition objects and expanded inline."
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",

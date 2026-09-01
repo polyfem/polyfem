@@ -30,7 +30,6 @@
 
 #include <fstream>
 #include <limits>
-
 #include <spdlog/fmt/fmt.h>
 #include <paraviewo/VTMWriter.hpp>
 
@@ -253,11 +252,11 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	QuadratureOrders VarForm::n_boundary_samples(const int discr_order, const int gdiscr_order) const
+	QuadratureOrders VarForm::n_boundary_samples(const int discr_order, const int discr_orderq, const int gdiscr_order) const
 	{
 		using assembler::AssemblerUtils;
 		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-		const int boundary_order = std::max(discr_order, gdiscr_order);
+		const int boundary_order = std::max({discr_order, discr_orderq, gdiscr_order});
 		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", boundary_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
 		return {{n_b_samples, n_b_samples}};
 	}
@@ -321,6 +320,7 @@ namespace polyfem::varform
 		mesh::Mesh &mesh,
 		const bool iso_parametric,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::string &basis_type,
 		const std::string &poly_basis_type,
 		const assembler::Assembler &space_assembler,
@@ -349,7 +349,7 @@ namespace polyfem::varform
 		assert(space.geometry);
 
 		space.disc_orders = disc_orders;
-		space.disc_ordersq = disc_orders;
+		space.disc_ordersq = disc_ordersq;
 
 		Eigen::MatrixXi geom_disc_orders;
 		if (build_geom_mapping && !iso_parametric)
@@ -636,10 +636,13 @@ namespace polyfem::varform
 		space.n_bases += new_bases;
 	}
 
-	void VarForm::solve(Eigen::MatrixXd &sol)
+	void VarForm::solve(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
 		prepare();
-		solve_problem(sol);
+		solve_problem(sol, initial_condition_override, post_step);
 	}
 
 	void VarForm::build_node_mapping(
@@ -739,75 +742,113 @@ namespace polyfem::varform
 		}
 	}
 
-	void VarForm::assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
+	void VarForm::assign_discr_orders(
+		const json &space_args,
+		const mesh::Mesh &mesh,
+		Eigen::VectorXi &disc_orders,
+		Eigen::VectorXi &disc_ordersq)
 	{
-		assign_discr_orders(discr_order, -1, mesh, disc_orders);
+		assign_discr_orders(space_args, -1, mesh, disc_orders, disc_ordersq);
 	}
 
-	void VarForm::assign_discr_orders(const json &discr_order, const int fe_space_id, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
+	void VarForm::assign_discr_orders(
+		const json &space_args,
+		const int fe_space_id,
+		const mesh::Mesh &mesh,
+		Eigen::VectorXi &disc_orders,
+		Eigen::VectorXi &disc_ordersq)
 	{
-		disc_orders.resize(mesh.n_elements());
+		const auto assign_order = [&](const json &order_json, Eigen::VectorXi &orders) {
+			orders.resize(mesh.n_elements());
 
-		if (discr_order.is_number_integer())
-		{
-			disc_orders.setConstant(discr_order);
-		}
-		else if (discr_order.is_string())
-		{
-			const std::string discr_orders_path = utils::resolve_path(discr_order, root_path);
-			Eigen::MatrixXi tmp;
-			io::read_matrix(discr_orders_path, tmp);
-			assert(tmp.size() == disc_orders.size());
-			assert(tmp.cols() == 1);
-			disc_orders = tmp;
-		}
-		else if (discr_order.is_array())
-		{
-			disc_orders.setOnes();
-			std::map<int, int> b_orders;
-			bool has_matching_order = false;
-			for (const json &entry : discr_order)
+			if (order_json.is_number_integer())
 			{
-				if (entry.contains("fe_space"))
+				orders.setConstant(order_json);
+			}
+			else if (order_json.is_string())
+			{
+				const std::string orders_path = utils::resolve_path(order_json, root_path);
+				Eigen::MatrixXi tmp;
+				io::read_matrix(orders_path, tmp);
+				assert(tmp.size() == orders.size());
+				assert(tmp.cols() == 1);
+				orders = tmp;
+			}
+			else if (order_json.is_array())
+			{
+				orders.setOnes();
+				std::map<int, int> body_orders;
+				bool has_matching_order = false;
+				for (const json &entry : order_json)
 				{
-					const int entry_space_id = entry["fe_space"].get<int>();
-					if (entry_space_id >= 0 && fe_space_id < 0)
-						log_and_throw_error("FE-space-specific discretization orders require an FE space ID.");
-					if (entry_space_id >= 0 && entry_space_id != fe_space_id)
+					if (entry.contains("fe_space"))
+					{
+						const int entry_space_id = entry["fe_space"].get<int>();
+						if (entry_space_id >= 0 && fe_space_id < 0)
+							log_and_throw_error("FE-space-specific discretization orders require an FE space ID.");
+						if (entry_space_id >= 0 && entry_space_id != fe_space_id)
+							continue;
+					}
+
+					has_matching_order = true;
+					const int order = entry["order"];
+					if (!entry.contains("id") || (entry["id"].is_number_integer() && entry["id"].get<int>() < 0))
+					{
+						orders.setConstant(order);
 						continue;
+					}
+
+					for (const int id : utils::json_as_array<int>(entry["id"]))
+					{
+						body_orders[id] = order;
+						logger().trace("bid {}, discr {}", id, order);
+					}
 				}
 
-				has_matching_order = true;
-				const int order = entry["order"];
-				if (!entry.contains("id") || (entry["id"].is_number_integer() && entry["id"].get<int>() < 0))
-				{
-					disc_orders.setConstant(order);
-					continue;
-				}
+				if (!has_matching_order)
+					log_and_throw_error("Missing discretization order for FE space {}.", fe_space_id);
 
-				for (const int id : utils::json_as_array<int>(entry["id"]))
+				for (int e = 0; e < mesh.n_elements(); ++e)
 				{
-					b_orders[id] = order;
-					logger().trace("bid {}, discr {}", id, order);
+					const auto order = body_orders.find(mesh.get_body_id(e));
+					if (order != body_orders.end())
+						orders[e] = order->second;
 				}
 			}
+			else
+			{
+				log_and_throw_error("Discretization order must be a number, a path, or an array.");
+			}
+		};
 
-			if (!has_matching_order)
-				log_and_throw_error("Missing discretization order for FE space {}.", fe_space_id);
+		assign_order(space_args["discr_order"], disc_orders);
 
+		const json &discr_orderq = space_args["discr_orderq"];
+		if (discr_orderq.is_number_integer() && discr_orderq.get<int>() < 0)
+			disc_ordersq = disc_orders;
+		else
+			assign_order(discr_orderq, disc_ordersq);
+
+		int max_prism_order = 0;
+		for (int e = 0; e < mesh.n_elements(); ++e)
+		{
+			if (mesh.is_prism(e))
+				max_prism_order = std::max({max_prism_order, disc_orders[e], disc_ordersq[e]});
+		}
+
+		if (max_prism_order > 0)
+		{
 			for (int e = 0; e < mesh.n_elements(); ++e)
 			{
-				const int bid = mesh.get_body_id(e);
-				const auto order = b_orders.find(bid);
-				if (order != b_orders.end())
-					disc_orders[e] = order->second;
+				if (mesh.is_simplex(e) || mesh.is_pyramid(e))
+					disc_orders[e] = max_prism_order;
 			}
 		}
-		else
-		{
-			logger().error("space/discr_order must be either a number a path or an array");
-			throw std::runtime_error("invalid json");
-		}
+
+		logger().info(
+			"discretization orders: p=[{}, {}], q=[{}, {}]",
+			disc_orders.minCoeff(), disc_orders.maxCoeff(),
+			disc_ordersq.minCoeff(), disc_ordersq.maxCoeff());
 	}
 
 	void VarForm::save_json(const Eigen::MatrixXd &solution) const

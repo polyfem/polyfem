@@ -100,6 +100,33 @@ Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatri
 	return lumped;
 }
 
+Eigen::SparseMatrix<double> polyfem::utils::lump_matrix_hrz(const Eigen::SparseMatrix<double> &M)
+{
+	double total = 0, trace = 0;
+	for (int k = 0; k < M.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(M, k); it; ++it)
+		{
+			total += it.value();
+			if (it.row() == it.col())
+				trace += it.value();
+		}
+	}
+	const double scale = trace > 0 ? total / trace : 1.0;
+
+	std::vector<Eigen::Triplet<double>> triplets;
+	triplets.reserve(M.rows());
+	for (int k = 0; k < M.outerSize(); ++k)
+		for (Eigen::SparseMatrix<double>::InnerIterator it(M, k); it; ++it)
+			if (it.row() == it.col())
+				triplets.emplace_back(it.row(), it.col(), it.value() * scale);
+
+	Eigen::SparseMatrix<double> lumped(M.rows(), M.rows());
+	lumped.setFromTriplets(triplets.begin(), triplets.end());
+	lumped.makeCompressed();
+	return lumped;
+}
+
 void polyfem::utils::full_to_reduced_matrix(
 	const int full_size,
 	const int reduced_size,

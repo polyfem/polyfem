@@ -137,6 +137,17 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 	}
 }
 
+TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
+{
+	const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/standard/reordered-local-vertices.msh");
+	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh->n_cell_vertices(0) == 4);
+
+	const std::array<int, 4> expected_order = {{3, 1, 2, 0}};
+	for (int lv = 0; lv < int(expected_order.size()); ++lv)
+		CHECK(mesh->cell_vertex(0, lv) == expected_order[lv]);
+}
+
 TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")
 {
 	State state;

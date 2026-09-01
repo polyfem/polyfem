@@ -103,6 +103,8 @@ namespace polyfem::legacy
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form
 			args["solver"]["rayleigh_damping"],
+			// BC AL lumping
+			args["solver"]["augmented_lagrangian"]["lumping"],
 			// Boundary-ID periodic constraints
 			mesh.get(), &total_local_boundary,
 			args["boundary_conditions"]["periodic"], /*fe_space_id=*/-1);
@@ -138,7 +140,9 @@ namespace polyfem::legacy
 		std::shared_ptr<solver::NLHomoProblem> homo_problem = std::make_shared<solver::NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
+			n_bases, mesh_nodes, t, forms, solve_data.al_form, solve_symmetric_flag,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)

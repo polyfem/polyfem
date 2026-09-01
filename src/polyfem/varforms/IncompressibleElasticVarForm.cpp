@@ -172,14 +172,15 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		Eigen::VectorXi pressure_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], pressure_space_id_, mesh, pressure_disc_orders);
+		Eigen::VectorXi pressure_disc_orders, pressure_disc_ordersq;
+		assign_discr_orders(args["space"], pressure_space_id_, mesh, pressure_disc_orders, pressure_disc_ordersq);
 		// to avoid serendipity
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(
 			mesh,
 			/*iso_parametric=*/true,
 			pressure_disc_orders,
+			pressure_disc_ordersq,
 			pressure_basis_type,
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -280,7 +281,7 @@ namespace polyfem::varform
 	void IncompressibleElasticVarForm::prepare_initial_solution(Eigen::MatrixXd &sol) const
 	{
 		if (sol.size() <= 0)
-			initial_elastic_solution(sol);
+			initial_solution(sol);
 		if (sol.cols() > 1)
 			sol.conservativeResize(Eigen::NoChange, 1);
 		sol.conservativeResize(stacked_ndof(), sol.cols());
@@ -420,8 +421,14 @@ namespace polyfem::varform
 		}
 	}
 
-	void IncompressibleElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void IncompressibleElasticVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Incompressible elasticity does not support initial-condition overrides");
+		assert(!post_step && "Incompressible elasticity does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 		igl::Timer timer;
 		timer.start();

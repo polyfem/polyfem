@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/var2sims/ParameterType.hpp>
@@ -11,7 +11,7 @@
 
 namespace polyfem::solver
 {
-	/// @brief Maps optimization variables to forward simulation legacy::State variables.
+	/// @brief Maps optimization variables to forward simulation varform::DifferentiableVarForm variables.
 	class VariableToSimulation
 	{
 	public:
@@ -21,20 +21,20 @@ namespace polyfem::solver
 
 		virtual ParameterType parameter_type() const = 0;
 
-		/// @brief Return true if current var2sim maps to target state.
-		virtual bool affect_state(const legacy::State &target) const = 0;
+		/// @brief Return true if current var2sim maps to target varform.
+		virtual bool affects_varform(const varform::DifferentiableVarForm &target) const = 0;
 
-		/// @brief Update forward simulation states from optimization variables.
+		/// @brief Update forward simulation varforms from optimization variables.
 		/// @param[in] x Optimization variables.
 		virtual void update(const Eigen::VectorXd &x) = 0;
 
-		/// @brief Update state variables from optimization variables.
+		/// @brief Update varform variables from optimization variables.
 		///
-		/// Compared to update() this method update abstract state variables
-		/// instead of writing directly to state.
+		/// Compared to update() this method update abstract varform variables
+		/// instead of writing directly to varform.
 		///
 		/// @param[in] x Optimization variables.
-		/// @param[out] state_variables Abstract state variables update dst.
+		/// @param[out] state_variables Abstract varform variables update dst.
 		virtual void update_state_variables(const Eigen::VectorXd &x, Eigen::VectorXd &state_variables) const = 0;
 
 		/// @brief Compute adjoint contribution of objective gradient.
@@ -55,7 +55,7 @@ namespace polyfem::solver
 		/// @throw std::runtime_error Throw if not implemented.
 		virtual int inverse_dof() const = 0;
 
-		/// @brief Compute optimization variables from forward simulation legacy::State.
+		/// @brief Compute optimization variables from forward simulation varform::DifferentiableVarForm.
 		/// @return Optimization variables.
 		/// @throw std::runtime_error Throw if not implemented.
 		virtual Eigen::VectorXd inverse_eval() const = 0;

@@ -290,22 +290,6 @@ int optimization_simulation(const CLI::App &command_line,
 	opt_args.merge_patch(tmp);
 
 	OptState opt_state;
-	opt_state.init(opt_args, is_strict);
-
-	opt_state.create_states(opt_state.args["solver"]["max_threads"].get<int>());
-	opt_state.init_variables();
-	opt_state.create_problem();
-
-	Eigen::VectorXd x;
-	opt_state.initial_guess(x);
-
-	if (opt_state.args["compute_objective"].get<bool>())
-	{
-		logger().info("Objective is {}", opt_state.eval(x));
-		return EXIT_SUCCESS;
-	}
-
-	opt_state.solve(x);
-	return EXIT_SUCCESS;
+	return opt_state.run(opt_args, is_strict);
 }
 #endif

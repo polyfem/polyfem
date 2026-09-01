@@ -313,8 +313,8 @@ namespace polyfem::varform
 		assert(primary_assembler_);
 		assert(mass_assembler_);
 
-		Eigen::VectorXi space_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, space_disc_orders);
+		Eigen::VectorXi space_disc_orders, space_disc_ordersq;
+		assign_discr_orders(args["space"], mesh, space_disc_orders, space_disc_ordersq);
 
 		if (args["space"]["use_p_ref"])
 		{
@@ -334,6 +334,7 @@ namespace polyfem::varform
 			mesh,
 			iso_parametric,
 			space_disc_orders,
+			space_disc_ordersq,
 			args["space"]["basis_type"],
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -385,13 +386,14 @@ namespace polyfem::varform
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
 		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-		Eigen::VectorXi pressure_disc_orders;
-		assign_discr_orders(args["space"]["discr_order"], mesh, pressure_disc_orders);
+		Eigen::VectorXi pressure_disc_orders, pressure_disc_ordersq;
+		assign_discr_orders(args["space"], mesh, pressure_disc_orders, pressure_disc_ordersq);
 		const std::string pressure_basis_type = args["space"]["basis_type"].get<std::string>() == "Bernstein" ? "Bernstein" : "Lagrange";
 		build_fe_space(
 			mesh,
 			/*iso_parametric=*/true,
 			pressure_disc_orders,
+			pressure_disc_ordersq,
 			pressure_basis_type,
 			args["space"]["poly_basis_type"],
 			*primary_assembler_,
@@ -712,8 +714,14 @@ namespace polyfem::varform
 		return fields;
 	}
 
-	void OperatorSplittingVarForm::solve_problem(Eigen::MatrixXd &sol)
+	void OperatorSplittingVarForm::solve_problem(
+		Eigen::MatrixXd &sol,
+		const InitialConditionOverride *initial_condition_override,
+		const ForwardStepCallback &post_step)
 	{
+		assert(!initial_condition_override && "Operator splitting does not support initial-condition overrides");
+		assert(!post_step && "Operator splitting does not support post-step callbacks");
+
 		stats.spectrum.setZero();
 
 		if (!problem->is_time_dependent())
@@ -732,7 +740,8 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd local_pts;
 		const auto &gbases = space_.geometry_basis_list();
-		const int discr_order = space_.disc_orders.size() > 0 ? space_.disc_orders.maxCoeff() : 1;
+		assert(space_.disc_orders.size() > 0 && "Operator splitting requires initialized FE orders");
+		const int discr_order = space_.disc_orders.maxCoeff();
 		if (mesh_->dimension() == 2)
 		{
 			if (gbases[0].bases.size() == 3)
@@ -790,7 +799,7 @@ namespace polyfem::varform
 
 		pressure = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
 
-		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), discr_order);
+		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), discr_order);
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;

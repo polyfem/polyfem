@@ -38,6 +38,7 @@ namespace polyfem
 			void init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo);
 
 			void set_t(const json &t);
+			void set_index(const int index) { index_ = index; }
 
 			double operator()(double x, double y, double z = 0, double t = 0, int index = -1) const;
 
@@ -83,6 +84,7 @@ namespace polyfem
 			Eigen::MatrixXd mat_;
 			std::vector<ExpressionValue> mat_expr_;
 			std::map<double, int> t_index_;
+			int index_ = -1;
 
 			units::precise_unit unit_type_;
 			units::precise_unit unit_;

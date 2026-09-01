@@ -1,6 +1,7 @@
 #pragma once
 
 #if defined(POLYFEM_WITH_TBB)
+#include <polyfem/utils/par_for.hpp>
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/enumerable_thread_specific.h>

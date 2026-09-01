@@ -1,6 +1,6 @@
 #include <polyfem/optimization/NodeSelectionUtils.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -41,10 +41,10 @@ namespace polyfem
 	} // namespace
 
 	Eigen::VectorXi select_interior_nodes(
-		const legacy::State &state,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &volume_selection)
 	{
-		auto &mesh = state.mesh;
+		const auto *mesh = &varform.get_mesh();
 
 		std::set<int> node_ids{};
 		for (int e = 0; e < mesh->n_elements(); ++e)
@@ -71,13 +71,13 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes(
-		const legacy::State &state,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &surface_selection)
 	{
-		auto &mesh = state.mesh;
+		const auto *mesh = &varform.get_mesh();
 
 		std::set<int> node_ids{};
-		for (const auto &lb : state.total_local_boundary)
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			for (int i = 0; i < lb.size(); ++i)
 			{
@@ -102,10 +102,10 @@ namespace polyfem
 	}
 
 	Eigen::VectorXi select_boundary_nodes_excluding_surfaces(
-		const legacy::State &state,
+		const varform::DifferentiableVarForm &varform,
 		const std::vector<int> &exclude_surface_selections)
 	{
-		auto &mesh = state.mesh;
+		const auto *mesh = &varform.get_mesh();
 
 		if (!mesh->is_simplicial())
 		{
@@ -114,7 +114,7 @@ namespace polyfem
 
 		std::set<int> excluded_node_ids{};
 		std::set<int> all_node_ids{};
-		for (const auto &lb : state.total_local_boundary)
+		for (const auto &lb : varform.boundary_state().total_local_boundary)
 		{
 			int e = lb.element_id();
 			for (int i = 0; i < lb.size(); ++i)

@@ -23,7 +23,7 @@ namespace polyfem
 			tc.get_quadrature(order, tmpt);
 
 			LineQuadrature lc;
-			lc.get_quadrature(order, tmpl);
+			lc.get_quadrature(order_h, tmpl);
 
 			quad.points.resize(tmpt.weights.size() * tmpl.weights.size(), 3);
 			quad.weights.resize(tmpt.weights.size() * tmpl.weights.size());
