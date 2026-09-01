@@ -337,7 +337,6 @@ namespace polyfem::io
 			paraviewo::ParaviewWriter &writer) const;
 	};
 
-
 	class GradientNormCSVWriter
 	{
 	public:

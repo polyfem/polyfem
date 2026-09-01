@@ -462,10 +462,10 @@ namespace polyfem::io
 			// gradient call, then restore everything afterwards. Pointer-swap move
 			// on unordered_map<..., unique_ptr<...>> is O(1) and does not deep-copy.
 			auto gradient_with_only = [&](const std::string &kind) -> Eigen::VectorXd {
-				auto v  = std::move(ho_collision_set.vertex_collisions);
+				auto v = std::move(ho_collision_set.vertex_collisions);
 				auto ee = std::move(ho_collision_set.edge_edge_collisions);
 				auto e2 = std::move(ho_collision_set.edge_collisions_2d);
-				auto f  = std::move(ho_collision_set.face_collisions);
+				auto f = std::move(ho_collision_set.face_collisions);
 
 				if (kind == "vertex")
 				{
