@@ -479,8 +479,15 @@ namespace polyfem::varform
 
 			sampled_values.conservativeResize(sampled_values.rows() + obstacle->n_vertices(), sampled_values.cols());
 			if (dof_values.rows() >= obstacle->ndof())
-				sampled_values.bottomRows(obstacle->n_vertices()) =
+			{
+				const Eigen::MatrixXd obstacle_values =
 					utils::unflatten(dof_values.bottomRows(obstacle->ndof()), sampled_values.cols());
+				if (obstacle_values.rows() == obstacle->n_vertices()
+					&& obstacle_values.cols() == sampled_values.cols())
+					sampled_values.bottomRows(obstacle->n_vertices()) = obstacle_values;
+				else
+					sampled_values.bottomRows(obstacle->n_vertices()).setZero();
+			}
 			else
 				sampled_values.bottomRows(obstacle->n_vertices()).setZero();
 			return true;

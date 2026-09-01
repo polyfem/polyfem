@@ -102,6 +102,7 @@ namespace
 		{
 			const int max_threads = 1;
 			opt.varforms.resize(opt.args["states"].size());
+			opt.state_resources.resize(opt.args["states"].size());
 
 			for (int i = 0; i < opt.args["states"].size(); ++i)
 			{
@@ -113,8 +114,9 @@ namespace
 					varform_args["output"]["log"].merge_patch(opt.args["output"]["log"]);
 
 				patch(varform_args);
+				opt.state_resources[i] = loaded_states.back().resources->with_root("");
 				opt.varforms[i] = from_json::build_differentiable_varform(
-					varform_args, *loaded_states.back().resources, max_threads);
+					varform_args, *opt.state_resources[i], max_threads);
 			}
 
 			opt.diff_caches.resize(opt.varforms.size());

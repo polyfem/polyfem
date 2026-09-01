@@ -114,19 +114,20 @@ namespace polyfem::from_json
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
 
-		State state;
-		state.init(in_args, resources, true, true);
-		state.load_mesh();
+		auto state = std::make_shared<State>();
+		state->init(in_args, resources, true, true);
+		state->load_mesh();
 		auto differentiable_varform =
-			std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation);
+			std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state->variational_formulation);
 		if (!differentiable_varform)
 		{
 			log_and_throw_adjoint_error(
 				"Variational formulation {} does not support differentiable/adjoint optimization.",
-				state.variational_formulation->name());
+				state->variational_formulation->name());
 		}
 		differentiable_varform->prepare();
-		return differentiable_varform;
+		return std::shared_ptr<varform::DifferentiableVarForm>(
+			std::move(state), differentiable_varform.get());
 	}
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
@@ -268,7 +269,7 @@ namespace polyfem::from_json
 		if (var2sim_type == "shape")
 		{
 			Eigen::VectorXi active_dimensions = eigen_vector_xi_from_json(args["active_dimensions"]);
-			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources[resource_id].get());
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources.at(resource_id).get());
 
 			var2sim = std::make_shared<ShapeVariableToSimulation>(
 				std::move(relevant_varforms),
@@ -320,7 +321,7 @@ namespace polyfem::from_json
 		}
 		else if (var2sim_type == "dirichlet-nodes")
 		{
-			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources[resource_id].get());
+			Eigen::VectorXi active_nodes = parse_active_geometry_nodes(args["active_geometry_nodes"], *relevant_varforms[0], resources.at(resource_id).get());
 			var2sim = std::make_shared<DirichletNodesVariableToSimulation>(
 				std::move(relevant_varforms),
 				std::move(rel_diff_caches),
@@ -467,7 +468,7 @@ namespace polyfem::from_json
 			else if (type == "target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources.at(args["state"].get<int>()).get());
 				auto reference_cached =
 					args["reference_cached_body_ids"].get<std::vector<int>>();
 				tmp->set_reference(
@@ -479,7 +480,7 @@ namespace polyfem::from_json
 			else if (type == "displacement-target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources.at(args["state"].get<int>()).get());
 
 				Eigen::VectorXd target_displacement;
 				target_displacement.setZero(varforms[args["state"]]->get_mesh().dimension());
@@ -567,7 +568,7 @@ namespace polyfem::from_json
 					var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
 				double delta = args["delta"].get<double>();
 
-				const auto surface = mesh::MeshLoader(resources[args["state"].get<int>()].get())
+				const auto surface = mesh::MeshLoader(resources.at(args["state"].get<int>()).get())
 								 .load_surface(args["mesh_path"].get<std::string>());
 				tmp->set_surface_mesh_target(surface.vertices, surface.faces, delta);
 				obj = tmp;
@@ -575,13 +576,13 @@ namespace polyfem::from_json
 			else if (type == "function-target")
 			{
 				std::shared_ptr<TargetForm> tmp =
-					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources[args["state"].get<int>()].get());
+					std::make_shared<TargetForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args, resources.at(args["state"].get<int>()).get());
 				tmp->set_reference(args["target_function"], args["target_function_gradient"]);
 				obj = tmp;
 			}
 			else if (type == "node-target")
 			{
-				obj = std::make_shared<NodeTargetForm>(varforms[args["state"]], diff_caches[args["state"]], var2sim, args, resources[args["state"].get<int>()].get());
+				obj = std::make_shared<NodeTargetForm>(varforms[args["state"]], diff_caches[args["state"]], var2sim, args, resources.at(args["state"].get<int>()).get());
 			}
 			else if (type == "min-dist-target")
 			{
@@ -644,7 +645,7 @@ namespace polyfem::from_json
 			else if (type == "AMIPS")
 			{
 				obj = std::make_shared<AMIPSForm>(
-					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get());
+					var2sim, varforms[args["state"]], resources.at(args["state"].get<int>()).get());
 			}
 			else if (type == "boundary_smoothing")
 			{
@@ -667,25 +668,25 @@ namespace polyfem::from_json
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(
-					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(), args["dhat"]);
+					var2sim, varforms[args["state"]], resources.at(args["state"].get<int>()).get(), args["dhat"]);
 			}
 			else if (type == "layer_thickness")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(),
+					var2sim, varforms[args["state"]], resources.at(args["state"].get<int>()).get(),
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
 			}
 			else if (type == "layer_thickness_log")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, varforms[args["state"]], resources[args["state"].get<int>()].get(),
+					var2sim, varforms[args["state"]], resources.at(args["state"].get<int>()).get(),
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true,
 					args["dmin"]);
 			}
 			else if (type == "deformed_collision_barrier")
 			{
 				obj = std::make_shared<DeformedCollisionBarrierForm>(
-					var2sim, varforms[args["state"]], diff_caches[args["state"]], resources[args["state"].get<int>()].get(), args["dhat"]);
+					var2sim, varforms[args["state"]], diff_caches[args["state"]], resources.at(args["state"].get<int>()).get(), args["dhat"]);
 			}
 			else if (type == "parametrized_product")
 			{
