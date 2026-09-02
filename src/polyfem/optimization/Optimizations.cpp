@@ -21,11 +21,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
-
-#include <polyfem/io/OBJReader.hpp>
-#include <polyfem/io/MatrixIO.hpp>
-
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 #include <polysolve/linear/Solver.hpp>
 

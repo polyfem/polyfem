@@ -2,7 +2,7 @@
 
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -365,7 +365,7 @@ namespace polyfem::mesh
 		MatrixNd A;
 		VectorNd b;
 		// TODO: pass correct unit scale
-		construct_affine_transformation(
+		GeometryLoader::construct_affine_transformation(
 			/*unit_scale=*/1, transformation,
 			(bbox[1] - bbox[0]).cwiseAbs().transpose(),
 			A, b);

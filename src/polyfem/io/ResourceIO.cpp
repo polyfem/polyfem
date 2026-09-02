@@ -441,7 +441,7 @@ namespace polyfem::io
 	LoadedInput load_yaml_input(const fs::path &path)
 	{
 		auto resources = std::make_unique<FileSystemIO>(path.parent_path());
-		LoadedInput result{yaml_file_to_json(path.string()), std::move(resources)};
+		LoadedInput result{yaml_string_to_json(resources->read_string(path.filename().string())), std::move(resources)};
 		return apply_explicit_root(std::move(result));
 	}
 

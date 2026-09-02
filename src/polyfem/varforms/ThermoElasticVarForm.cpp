@@ -6,9 +6,6 @@
 #include <polyfem/assembler/MatParams.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/io/MatrixIO.hpp>
-
-#include <polyfem/mesh/GeometryReader.hpp>
 
 #include <polyfem/refinement/APriori.hpp>
 

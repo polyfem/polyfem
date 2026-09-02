@@ -4,7 +4,6 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>

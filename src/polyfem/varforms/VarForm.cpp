@@ -2,7 +2,6 @@
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/varforms/VarFormUtils.hpp>
 

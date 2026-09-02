@@ -6,7 +6,6 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>

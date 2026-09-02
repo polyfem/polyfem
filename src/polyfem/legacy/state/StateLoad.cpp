@@ -3,7 +3,7 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
@@ -78,12 +78,12 @@ namespace polyfem::legacy
 		timer.start();
 		logger().info("Loading obstacles...");
 		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
-		obstacle = mesh::read_obstacle_geometry(
-			units,
+		const mesh::GeometryLoader geometry_loader(units, resources);
+		obstacle = geometry_loader.load_obstacles(
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			resources, mesh->dimension());
+			mesh->dimension());
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -109,12 +109,11 @@ namespace polyfem::legacy
 
 		logger().info("Loading mesh ...");
 		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
+		const mesh::GeometryLoader geometry_loader(units, resources);
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh = mesh::read_fem_geometry(
-				units,
-				args["geometry"], resources, non_conforming);
+			mesh = geometry_loader.load_fem(args["geometry"], non_conforming);
 		}
 
 		if (mesh == nullptr)
@@ -161,12 +160,11 @@ namespace polyfem::legacy
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
+		obstacle = geometry_loader.load_obstacles(
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			resources, mesh->dimension(), non_conforming);
+			mesh->dimension(), non_conforming);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

@@ -3,7 +3,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/io/MatrixIO.hpp>
 
 namespace polyfem
 {

@@ -4,8 +4,6 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <fstream>
-
 #include <Eigen/Geometry>
 
 namespace polyfem
@@ -65,13 +63,9 @@ namespace polyfem
 			if (common_params_path.empty())
 				return;
 
-			std::ifstream file(common_params_path);
-			if (!file.is_open())
-				log_and_throw_error("Unable to open common params {} file", common_params_path);
-
-			json common_params;
-			file >> common_params;
-			file.close();
+			const std::filesystem::path common_path(common_params_path);
+			const io::FileSystemIO resources(common_path.parent_path());
+			json common_params = json::parse(resources.read_string(common_path.filename().string()));
 
 			// Recursively apply common params
 			const bool has_root_path = common_params.contains("root_path");

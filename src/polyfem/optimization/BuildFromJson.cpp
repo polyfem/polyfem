@@ -4,7 +4,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/io/OBJReader.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
@@ -41,7 +40,6 @@
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
 
-#include <polyfem/io/MatrixIO.hpp>
 
 #include <Eigen/Core>
 #include <spdlog/fmt/fmt.h>

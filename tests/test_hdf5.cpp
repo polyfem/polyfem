@@ -58,10 +58,17 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 		std::ofstream out(directory / "nested" / "resource.txt");
 		out << "resource contents";
 	}
+	{
+		std::ofstream out(directory / "nested" / "input.yaml");
+		out << "root_path: .\nvalue: 17\n";
+	}
 	io::FileSystemIO filesystem(directory);
 	CHECK(filesystem.read_string("nested/resource.txt") == "resource contents");
 	CHECK(filesystem.with_root("nested")->exists("resource.txt"));
 	CHECK(filesystem.glob("nested/*.txt") == std::vector<std::string>{"nested/resource.txt"});
+	const io::LoadedInput yaml = io::load_yaml_input(directory / "nested" / "input.yaml");
+	CHECK(yaml.config == json{{"value", 17}});
+	CHECK(yaml.resources->read_string("resource.txt") == "resource contents");
 
 	const fs::path bundle = directory / "bundle.h5";
 	{

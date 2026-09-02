@@ -5,7 +5,6 @@
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/mesh/GeometryLoader.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>

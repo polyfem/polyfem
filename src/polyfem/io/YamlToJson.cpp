@@ -65,9 +65,4 @@ namespace polyfem::io
 		return yaml_to_json(root);
 	}
 
-	json yaml_file_to_json(const std::string &yaml_filepath)
-	{
-		YAML::Node root = YAML::LoadFile(yaml_filepath);
-		return yaml_to_json(root);
-	}
 } // namespace polyfem::io

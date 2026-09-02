@@ -1,6 +1,5 @@
 #include "ExpressionValue.hpp"
 
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
