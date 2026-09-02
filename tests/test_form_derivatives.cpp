@@ -534,8 +534,7 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 	Eigen::VectorXd x = Eigen::VectorXd::Zero(ndof);
 	double k_al = 0;
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
+	std::mt19937 gen(42);
 	std::uniform_real_distribution<> dis(1e6, 1e8);
 
 	for (int i = 0; i < n_rand; ++i)

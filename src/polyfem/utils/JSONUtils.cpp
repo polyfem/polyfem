@@ -17,7 +17,7 @@ namespace polyfem
 				const std::filesystem::path parent = std::filesystem::path(path).parent_path();
 				return parent.empty() ? "." : parent.generic_string();
 			}
-		}
+		} // namespace
 
 		std::unique_ptr<const io::ResourceIO> apply_common_params(json &args, const io::ResourceIO &resources)
 		{
@@ -30,8 +30,8 @@ namespace polyfem
 			json common_params = json::parse(resources.read_string(common_path));
 			auto common_resources = resources.with_root(logical_parent(common_path));
 			const bool has_explicit_root = common_params.contains("root_path")
-				&& common_params["root_path"].is_string()
-				&& !common_params["root_path"].get<std::string>().empty();
+										   && common_params["root_path"].is_string()
+										   && !common_params["root_path"].get<std::string>().empty();
 			if (has_explicit_root)
 				common_resources = common_resources->with_root(common_params["root_path"].get<std::string>());
 			common_params.erase("root_path");
@@ -94,6 +94,57 @@ namespace polyfem
 			args = common_params;
 
 			args.erase("common"); // Remove common params from the final json
+		}
+
+		void expand_bc_sidecars(json &args, const json &rules)
+		{
+			if (!args.contains("boundary_conditions"))
+				return;
+
+			json &bcs = args["boundary_conditions"];
+			if (!bcs.contains("dirichlet_boundary") || !bcs["dirichlet_boundary"].is_array())
+				return;
+
+			const json root_path = args.contains("root_path") ? args["root_path"] : json("");
+
+			json expanded = json::array();
+			for (const auto &entry : bcs["dirichlet_boundary"])
+			{
+				if (entry.is_string())
+				{
+					const std::string path = resolve_path(entry, root_path);
+					if (std::filesystem::path(path).extension() == ".json")
+					{
+						std::ifstream file(path);
+						if (!file.is_open())
+							log_and_throw_error("Unable to open dirichlet_boundary {} file", path);
+
+						json sidecar;
+						try
+						{
+							file >> sidecar;
+						}
+						catch (const std::exception &e)
+						{
+							log_and_throw_error("Invalid JSON in dirichlet_boundary file {}: {}", path, e.what());
+						}
+						file.close();
+
+						if (!sidecar.is_array())
+							log_and_throw_error("dirichlet_boundary file {} must contain an array", path);
+
+						jse::JSE jse;
+						for (const auto &e : sidecar)
+						{
+							json filled = e;
+							expanded.push_back(jse.inject_defaults(filled, rules));
+						}
+						continue;
+					}
+				}
+				expanded.push_back(entry);
+			}
+			bcs["dirichlet_boundary"] = expanded;
 		}
 
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode)
