@@ -246,7 +246,12 @@ namespace polyfem
 			virtual bool is_boundary_element(const int element_global_id) const = 0;
 
 		private:
-			virtual bool build_from_data(const MeshData &data) = 0;
+			/// Import all topology and metadata from MeshData.
+			bool build_from_data(const MeshData &data);
+
+			/// Construct only the dimension-specific topology. Metadata is applied by
+			/// build_from_data after edge/face indices exist.
+			virtual bool build_topology(const MeshData &data) = 0;
 
 		public:
 			/// @brief attach high order nodes

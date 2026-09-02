@@ -93,6 +93,13 @@ namespace polyfem::mesh
 			mesh = std::make_unique<CMesh3D>();
 		if (!mesh || !mesh->build_from_data(data))
 			log_and_throw_error("Unable to construct runtime mesh from MeshData.");
+		return mesh;
+	}
+
+	bool Mesh::build_from_data(const MeshData &data)
+	{
+		if (!build_topology(data))
+			return false;
 
 		std::vector<int> tmp(data.elements.data(), data.elements.data() + data.elements.size());
 		std::sort(tmp.begin(), tmp.end());
@@ -100,37 +107,37 @@ namespace polyfem::mesh
 		if (!tmp.empty() && tmp.front() == -1)
 			tmp.erase(tmp.begin());
 
-		mesh->in_ordered_vertices_ = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+		in_ordered_vertices_ = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
 
-		mesh->in_ordered_edges_.resize(mesh->n_edges(), 2);
-		for (int e = 0; e < mesh->n_edges(); ++e)
-			mesh->in_ordered_edges_.row(e) << mesh->edge_vertex(e, 0), mesh->edge_vertex(e, 1);
-		if (dim == 2)
-			mesh->in_ordered_faces_.resize(0, 0);
+		in_ordered_edges_.resize(n_edges(), 2);
+		for (int e = 0; e < n_edges(); ++e)
+			in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
+		if (dimension() == 2)
+			in_ordered_faces_.resize(0, 0);
 		else
 		{
 			int width = 0;
-			for (int f = 0; f < mesh->n_faces(); ++f)
-				width = std::max(width, mesh->n_face_vertices(f));
-			mesh->in_ordered_faces_.setConstant(mesh->n_faces(), width, -1);
-			for (int f = 0; f < mesh->n_faces(); ++f)
-				for (int lv = 0; lv < mesh->n_face_vertices(f); ++lv)
-					mesh->in_ordered_faces_(f, lv) = mesh->face_vertex(f, lv);
+			for (int f = 0; f < n_faces(); ++f)
+				width = std::max(width, n_face_vertices(f));
+			in_ordered_faces_.setConstant(n_faces(), width, -1);
+			for (int f = 0; f < n_faces(); ++f)
+				for (int lv = 0; lv < n_face_vertices(f); ++lv)
+					in_ordered_faces_(f, lv) = face_vertex(f, lv);
 		}
 
 		if (!data.higher_order_connectivity.empty())
-			mesh->attach_higher_order_nodes(data.higher_order_nodes, data.higher_order_connectivity);
+			attach_higher_order_nodes(data.higher_order_nodes, data.higher_order_connectivity);
 		if (!data.higher_order_weights.empty())
 		{
-			mesh->set_cell_weights(data.higher_order_weights);
-			mesh->set_is_rational(std::any_of(
+			set_cell_weights(data.higher_order_weights);
+			set_is_rational(std::any_of(
 				data.higher_order_weights.begin(), data.higher_order_weights.end(),
 				[](const auto &weights) { return !weights.empty(); }));
 		}
 		if (!data.body_ids.empty())
-			mesh->set_body_ids(data.body_ids);
+			set_body_ids(data.body_ids);
 		if (!data.geometry_ids.empty())
-			mesh->set_geometry_ids(data.geometry_ids);
+			set_geometry_ids(data.geometry_ids);
 
 		if (!data.boundary_ids.empty())
 		{
@@ -143,15 +150,15 @@ namespace polyfem::mesh
 				if (!inserted && it->second != data.boundary_ids[i])
 					logger().warn("Mesh side has multiple labels; using {}.", it->second);
 			}
-			mesh->compute_boundary_ids([&](const size_t primitive, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
+			compute_boundary_ids([&](const size_t primitive, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
 				std::vector<int> side = vertices;
 				std::sort(side.begin(), side.end());
 				const auto it = labels.find(side);
-				return it == labels.end() ? mesh->get_default_boundary_id(primitive) : it->second;
+				return it == labels.end() ? get_default_boundary_id(primitive) : it->second;
 			});
 		}
 
-		return mesh;
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

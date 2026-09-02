@@ -404,7 +404,7 @@ namespace polyfem
 			return true;
 		}
 
-		bool CMesh3D::build_from_data(const MeshData &data)
+		bool CMesh3D::build_topology(const MeshData &data)
 		{
 			const Eigen::MatrixXd &V = data.vertices;
 			const Eigen::MatrixXi &F = data.elements;

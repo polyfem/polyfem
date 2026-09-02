@@ -168,7 +168,7 @@ namespace polyfem
 			in_ordered_faces_.resize(0, 0);
 		}
 
-		bool CMesh2D::build_from_data(const MeshData &data)
+		bool CMesh2D::build_topology(const MeshData &data)
 		{
 			const Eigen::MatrixXd &V = data.vertices;
 			const Eigen::MatrixXi &F = data.elements;
@@ -675,7 +675,7 @@ namespace polyfem
 					faces(i, j) = face_vertex(i, j);
 
 			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
-			copy_mesh->build_from_data(MeshData(std::move(vertices), std::move(faces)));
+			copy_mesh->build_topology(MeshData(std::move(vertices), std::move(faces)));
 
 			// Manually copy parent's data
 			copy_mesh->elements_tag_ = this->elements_tag_;

@@ -221,7 +221,7 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
-			bool build_from_data(const MeshData &data) override;
+			bool build_topology(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 			std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;

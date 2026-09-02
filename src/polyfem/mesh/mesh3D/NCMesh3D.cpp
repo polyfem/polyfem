@@ -98,7 +98,7 @@ namespace polyfem
 			return false;
 		}
 
-		bool NCMesh3D::build_from_data(const MeshData &data)
+		bool NCMesh3D::build_topology(const MeshData &data)
 		{
 			if (data.has_polyhedral_topology())
 				return false;
@@ -254,6 +254,7 @@ namespace polyfem
 		void NCMesh3D::set_boundary_ids(const std::vector<int> &boundary_ids)
 		{
 			assert(boundary_ids.size() == n_faces());
+			Mesh::set_boundary_ids(boundary_ids);
 			for (int i = 0; i < boundary_ids.size(); i++)
 			{
 				faces[valid_to_all_face(i)].boundary_id = boundary_ids[i];
@@ -262,6 +263,7 @@ namespace polyfem
 		void NCMesh3D::set_body_ids(const std::vector<int> &body_ids)
 		{
 			assert(body_ids.size() == n_cells());
+			Mesh::set_body_ids(body_ids);
 			for (int i = 0; i < body_ids.size(); i++)
 			{
 				elements[valid_to_all_elem(i)].body_id = body_ids[i];

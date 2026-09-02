@@ -85,6 +85,74 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]")
+{
+	SECTION("2D conforming and nonconforming meshes")
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			1, 0,
+			1, 1,
+			0, 1;
+		Eigen::MatrixXi cells(2, 3);
+		cells << 0, 1, 2,
+			0, 2, 3;
+
+		for (const bool non_conforming : {false, true})
+		{
+			CAPTURE(non_conforming);
+			MeshData data(vertices, cells);
+			data.body_ids = {21, 22};
+			data.boundary_elements = {{0, 1}, {1, 2}, {0, 2}};
+			data.boundary_ids = {11, 12, 14};
+			const auto mesh = Mesh::create(std::move(data), non_conforming);
+
+			REQUIRE(mesh->has_body_ids());
+			CHECK(mesh->get_body_id(0) == 21);
+			CHECK(mesh->get_body_id(1) == 22);
+			REQUIRE(mesh->has_boundary_ids());
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 0, 1)) == 11);
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 1, 2)) == 12);
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 0, 2)) == 14);
+		}
+	}
+
+	SECTION("3D conforming and nonconforming meshes")
+	{
+		Eigen::MatrixXd vertices(5, 3);
+		vertices << 0, 0, 0,
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1,
+			0, 0, -1;
+		Eigen::MatrixXi cells(2, 4);
+		cells << 0, 1, 2, 3,
+			0, 2, 1, 4;
+
+		for (const bool non_conforming : {false, true})
+		{
+			CAPTURE(non_conforming);
+			MeshData data(vertices, cells);
+			data.body_ids = {41, 42};
+			data.boundary_elements = {{0, 1, 3}, {0, 1, 2}};
+			data.boundary_ids = {31, 33};
+			const auto mesh = Mesh::create(std::move(data), non_conforming);
+
+			REQUIRE(mesh->has_body_ids());
+			CHECK(mesh->get_body_id(0) == 41);
+			CHECK(mesh->get_body_id(1) == 42);
+			REQUIRE(mesh->has_boundary_ids());
+			const int exterior_face = face_id(*mesh, {0, 1, 3});
+			const int interface_face = face_id(*mesh, {0, 1, 2});
+			REQUIRE(exterior_face >= 0);
+			REQUIRE(interface_face >= 0);
+			CHECK(mesh->get_boundary_id(exterior_face) == 31);
+			CHECK_FALSE(mesh->is_boundary_face(interface_face));
+			CHECK(mesh->get_boundary_id(interface_face) == 33);
+		}
+	}
+}
+
 TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gmsh]")
 {
 	SECTION("MSH 2.2 lines, including a higher-order line and an internal edge")

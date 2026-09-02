@@ -83,7 +83,7 @@ namespace polyfem
 			refine(n_refinement - 1, t);
 		}
 
-		bool NCMesh2D::build_from_data(const MeshData &data)
+		bool NCMesh2D::build_topology(const MeshData &data)
 		{
 			const Eigen::MatrixXd &V = data.vertices;
 			const Eigen::MatrixXi &F = data.elements;
@@ -792,6 +792,7 @@ namespace polyfem
 		void NCMesh2D::set_body_ids(const std::vector<int> &body_ids)
 		{
 			assert(body_ids.size() == n_faces());
+			Mesh::set_body_ids(body_ids);
 			for (int i = 0; i < body_ids.size(); i++)
 			{
 				elements[valid_to_all_elem(i)].body_id = body_ids[i];
@@ -801,6 +802,7 @@ namespace polyfem
 		void NCMesh2D::set_boundary_ids(const std::vector<int> &boundary_ids)
 		{
 			assert(boundary_ids.size() == n_edges());
+			Mesh::set_boundary_ids(boundary_ids);
 			for (int i = 0; i < boundary_ids.size(); i++)
 			{
 				edges[valid_to_all_edge(i)].boundary_id = boundary_ids[i];
