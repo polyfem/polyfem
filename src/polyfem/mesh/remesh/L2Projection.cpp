@@ -15,8 +15,8 @@
 namespace polyfem::mesh
 {
 	Eigen::MatrixXd unconstrained_L2_projection(
-		const Eigen::SparseMatrix<double> &M,
-		const Eigen::SparseMatrix<double> &A,
+		const StiffnessMatrix &M,
+		const StiffnessMatrix &A,
 		const Eigen::Ref<const Eigen::MatrixXd> &y)
 	{
 		// Construct a linear solver for M
@@ -71,8 +71,8 @@ namespace polyfem::mesh
 		// Nonlinear solver
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver,
 		// L2 projection form
-		const Eigen::SparseMatrix<double> &M,
-		const Eigen::SparseMatrix<double> &A,
+		const StiffnessMatrix &M,
+		const StiffnessMatrix &A,
 		const Eigen::VectorXd &y,
 		// Inversion-free form
 		const Eigen::MatrixXd &rest_positions,

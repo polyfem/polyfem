@@ -108,8 +108,8 @@ namespace polyfem::utils
 		StiffnessMatrix tmp_, mat_;
 		std::vector<Eigen::Triplet<double>> entries_;              ///< contains global matrix indices and corresponding value
 		std::vector<std::vector<std::pair<int, size_t>>> mapping_; ///< maps row indices to column index/local index pairs
-		std::vector<int> inner_index_, outer_index_;               ///< saves inner/outer indices for sparse matrix
-		std::vector<double> values_;                               ///< buffer for values (corresponds to inner/outer_index_ structure for sparse matrix)
+		std::vector<StiffnessMatrix::StorageIndex> inner_index_, outer_index_; ///< saves inner/outer indices for sparse matrix
+		std::vector<double> values_; ///< buffer for values (corresponds to inner/outer_index_ structure for sparse matrix)
 		const SparseMatrixCache *main_cache_ = nullptr;
 
 		std::vector<std::vector<int>> second_cache_;                         ///< maps element index to local index
