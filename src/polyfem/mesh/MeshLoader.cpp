@@ -42,7 +42,11 @@ namespace polyfem::mesh
 				log_and_throw_error("Invalid weight offsets in {}.", resources.describe(path));
 			std::vector<std::vector<double>> result(offsets.size() - 1);
 			for (size_t i = 0; i + 1 < offsets.size(); ++i)
+			{
+				if (offsets[i] > offsets[i + 1])
+					log_and_throw_error("Offsets in {} are not monotone.", resources.describe(path));
 				result[i].assign(values.begin() + offsets[i], values.begin() + offsets[i + 1]);
+			}
 			return result;
 		}
 	} // namespace
@@ -113,19 +117,34 @@ namespace polyfem::mesh
 		const std::string geometry_ids_path = child_path(path, "geometry_ids");
 		if (resources_.exists(geometry_ids_path))
 			data.geometry_ids = resources_.read_int_vector(geometry_ids_path);
+		const std::string node_ids_path = child_path(path, "node_ids");
+		if (resources_.exists(node_ids_path))
+			data.node_ids = resources_.read_int_vector(node_ids_path);
 		const std::string boundary_ids_path = child_path(path, "boundary_ids");
-		if (resources_.exists(boundary_ids_path))
+		const std::string boundary_elements_path = child_path(path, "boundary_elements");
+		const bool any_boundary = resources_.exists(boundary_ids_path) || resources_.exists(boundary_elements_path);
+		if (any_boundary)
 		{
-			const std::string boundary_elements_path = child_path(path, "boundary_elements");
-			if (!resources_.exists(boundary_elements_path))
-				log_and_throw_error("{} requires boundary_elements.", resources_.describe(boundary_ids_path));
+			if (!resources_.exists(boundary_ids_path) || !resources_.exists(boundary_elements_path))
+				log_and_throw_error("Boundary data in {} requires both boundary_elements and boundary_ids.", resources_.describe(path));
 			const Eigen::MatrixXi elements = resources_.read_int_matrix(boundary_elements_path);
 			data.boundary_ids = resources_.read_int_vector(boundary_ids_path);
 			data.boundary_elements.resize(elements.rows());
 			for (int i = 0; i < elements.rows(); ++i)
 			{
-				for (int j = 0; j < elements.cols() && elements(i, j) >= 0; ++j)
-					data.boundary_elements[i].push_back(elements(i, j));
+				bool found_padding = false;
+				for (int j = 0; j < elements.cols(); ++j)
+				{
+					const int vertex = elements(i, j);
+					if (vertex == -1)
+					{
+						found_padding = true;
+						continue;
+					}
+					if (vertex < 0 || found_padding)
+						log_and_throw_error("Boundary connectivity in {} has invalid padding.", resources_.describe(path));
+					data.boundary_elements[i].push_back(vertex);
+				}
 			}
 		}
 
@@ -145,14 +164,15 @@ namespace polyfem::mesh
 		}
 
 		const std::string weights_path = child_path(path, "higher_order_weights");
-		if (resources_.exists(weights_path))
+		const std::string weight_offsets_path = child_path(path, "higher_order_weight_offsets");
+		const bool any_weights = resources_.exists(weights_path) || resources_.exists(weight_offsets_path);
+		if (any_weights)
 		{
-			const std::string offsets_path = child_path(path, "higher_order_weight_offsets");
-			if (!resources_.exists(offsets_path))
-				log_and_throw_error("{} requires higher_order_weight_offsets.", resources_.describe(weights_path));
+			if (!resources_.exists(weights_path) || !resources_.exists(weight_offsets_path))
+				log_and_throw_error("Higher-order weights in {} require values and offsets.", resources_.describe(path));
 			data.higher_order_weights = unpack_weights(
-				resources_.read_double_vector(weights_path), resources_.read_long_vector(offsets_path),
-				resources_, offsets_path);
+				resources_.read_double_vector(weights_path), resources_.read_long_vector(weight_offsets_path),
+				resources_, weight_offsets_path);
 		}
 
 		const std::string faces_path = child_path(path, "faces");
@@ -183,6 +203,8 @@ namespace polyfem::mesh
 				resources_.read_int_vector(child_path(path, "cell_face_orientations")), cell_face_offsets,
 				resources_, cell_face_offsets_path);
 			const std::vector<int> cell_is_hex = resources_.read_int_vector(child_path(path, "cell_is_hex"));
+			if (std::any_of(cell_is_hex.begin(), cell_is_hex.end(), [](const int value) { return value != 0 && value != 1; }))
+				log_and_throw_error("Polyhedral mesh group {} has invalid cell_is_hex values.", resources_.describe(path));
 			data.cell_is_hex.assign(cell_is_hex.begin(), cell_is_hex.end());
 			data.cell_kernel_points = resources_.read_matrix(child_path(path, "cell_kernel_points"));
 		}

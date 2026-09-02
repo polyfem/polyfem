@@ -64,6 +64,7 @@ namespace polyfem::mesh
 		filter_vector(body_ids_);
 		filter_vector(geometry_ids_);
 		filter_vector(cell_weights_);
+		filter_vector(higher_order_connectivity_);
 
 		if (orders_.size() > 0)
 		{
@@ -96,10 +97,89 @@ namespace polyfem::mesh
 		return mesh;
 	}
 
+	MeshData Mesh::to_mesh_data() const
+	{
+		if (n_vertices() == 0 || n_elements() == 0)
+			log_and_throw_error("Cannot convert an empty runtime mesh to MeshData.");
+
+		Eigen::MatrixXd vertices(n_vertices(), dimension());
+		for (int i = 0; i < n_vertices(); ++i)
+			vertices.row(i) = point(i);
+
+		int element_width = 0;
+		for (int e = 0; e < n_elements(); ++e)
+			element_width = std::max(element_width, n_cell_vertices(e));
+		Eigen::MatrixXi elements = Eigen::MatrixXi::Constant(n_elements(), element_width, -1);
+		for (int e = 0; e < n_elements(); ++e)
+			for (int j = 0; j < n_cell_vertices(e); ++j)
+				elements(e, j) = element_vertex(e, j);
+
+		MeshData data(std::move(vertices), std::move(elements));
+		if (has_body_ids())
+			data.body_ids = body_ids_;
+		if (has_geometry_ids())
+			data.geometry_ids = geometry_ids_;
+		if (has_node_ids())
+			data.node_ids = node_ids_;
+		if (has_boundary_ids())
+		{
+			data.boundary_elements.resize(n_boundary_elements());
+			data.boundary_ids = boundary_ids_;
+			for (int i = 0; i < n_boundary_elements(); ++i)
+				for (int j = 0; j < (is_volume() ? n_face_vertices(i) : 2); ++j)
+					data.boundary_elements[i].push_back(boundary_element_vertex(i, j));
+		}
+
+		if (!higher_order_connectivity_.empty())
+		{
+			if (higher_order_connectivity_.size() != size_t(n_elements())
+				|| higher_order_nodes_.rows() < n_vertices())
+				log_and_throw_error("Runtime mesh has inconsistent higher-order data.");
+			data.higher_order_nodes = higher_order_nodes_;
+			data.higher_order_nodes.topRows(n_vertices()) = data.vertices;
+			data.higher_order_connectivity = higher_order_connectivity_;
+		}
+		if (std::any_of(cell_weights_.begin(), cell_weights_.end(), [](const auto &weights) { return !weights.empty(); }))
+		{
+			if (cell_weights_.size() != size_t(n_elements()))
+				log_and_throw_error("Runtime mesh has inconsistent rational weights.");
+			data.higher_order_weights = cell_weights_;
+		}
+
+		if (has_explicit_polyhedral_topology_ || has_poly())
+		{
+			const auto *mesh3d = dynamic_cast<const Mesh3D *>(this);
+			if (mesh3d == nullptr)
+				log_and_throw_error("Polyhedral topology is only supported for 3D meshes.");
+			data.faces.resize(n_faces());
+			for (int f = 0; f < n_faces(); ++f)
+				for (int j = 0; j < n_face_vertices(f); ++j)
+					data.faces[f].push_back(face_vertex(f, j));
+			data.cell_faces.resize(n_elements());
+			data.cell_face_orientations.resize(n_elements());
+			data.cell_is_hex.resize(n_elements());
+			data.cell_kernel_points.resize(n_elements(), 3);
+			for (int c = 0; c < n_elements(); ++c)
+			{
+				for (int j = 0; j < mesh3d->n_cell_faces(c); ++j)
+				{
+					data.cell_faces[c].push_back(mesh3d->cell_face(c, j));
+					data.cell_face_orientations[c].push_back(mesh3d->cell_face_orientation(c, j));
+				}
+				data.cell_is_hex[c] = is_cube(c);
+				data.cell_kernel_points.row(c) = mesh3d->kernel(c);
+			}
+		}
+
+		data.validate();
+		return data;
+	}
+
 	bool Mesh::build_from_data(const MeshData &data)
 	{
 		if (!build_topology(data))
 			return false;
+		has_explicit_polyhedral_topology_ = data.has_polyhedral_topology();
 
 		std::vector<int> tmp(data.elements.data(), data.elements.data() + data.elements.size());
 		std::sort(tmp.begin(), tmp.end());
@@ -126,7 +206,11 @@ namespace polyfem::mesh
 		}
 
 		if (!data.higher_order_connectivity.empty())
+		{
+			higher_order_nodes_ = data.higher_order_nodes;
+			higher_order_connectivity_ = data.higher_order_connectivity;
 			attach_higher_order_nodes(data.higher_order_nodes, data.higher_order_connectivity);
+		}
 		if (!data.higher_order_weights.empty())
 		{
 			set_cell_weights(data.higher_order_weights);
@@ -138,6 +222,8 @@ namespace polyfem::mesh
 			set_body_ids(data.body_ids);
 		if (!data.geometry_ids.empty())
 			set_geometry_ids(data.geometry_ids);
+		if (!data.node_ids.empty())
+			node_ids_ = data.node_ids;
 
 		if (!data.boundary_ids.empty())
 		{
@@ -345,6 +431,62 @@ namespace polyfem::mesh
 	void Mesh::append(const Mesh &mesh)
 	{
 		const int n_vertices = this->n_vertices();
+		const int other_vertices = mesh.n_vertices();
+		has_explicit_polyhedral_topology_ =
+			has_explicit_polyhedral_topology_ || mesh.has_explicit_polyhedral_topology_;
+		if (!higher_order_connectivity_.empty() || !mesh.higher_order_connectivity_.empty())
+		{
+			auto complete_higher_order = [](const Mesh &source) {
+				std::pair<Eigen::MatrixXd, std::vector<std::vector<int>>> result;
+				if (!source.higher_order_connectivity_.empty())
+				{
+					result.first = source.higher_order_nodes_;
+					result.second = source.higher_order_connectivity_;
+				}
+				else
+				{
+					result.first.resize(source.n_vertices(), source.dimension());
+					result.second.resize(source.n_elements());
+					for (int v = 0; v < source.n_vertices(); ++v)
+						result.first.row(v) = source.point(v);
+					for (int e = 0; e < source.n_elements(); ++e)
+						for (int j = 0; j < source.n_cell_vertices(e); ++j)
+							result.second[e].push_back(source.element_vertex(e, j));
+				}
+				if (result.first.rows() < source.n_vertices()
+					|| result.second.size() != size_t(source.n_elements()))
+					log_and_throw_error("Cannot append inconsistent higher-order mesh data.");
+				for (int v = 0; v < source.n_vertices(); ++v)
+					result.first.row(v) = source.point(v);
+				return result;
+			};
+
+			auto left = complete_higher_order(*this);
+			auto right = complete_higher_order(mesh);
+			const int left_extra = left.first.rows() - n_vertices;
+			const int right_extra = right.first.rows() - other_vertices;
+			Eigen::MatrixXd nodes(n_vertices + other_vertices + left_extra + right_extra, dimension());
+			nodes.topRows(n_vertices) = left.first.topRows(n_vertices);
+			nodes.middleRows(n_vertices, other_vertices) = right.first.topRows(other_vertices);
+			if (left_extra)
+				nodes.middleRows(n_vertices + other_vertices, left_extra) = left.first.bottomRows(left_extra);
+			if (right_extra)
+				nodes.bottomRows(right_extra) = right.first.bottomRows(right_extra);
+
+			for (auto &element : left.second)
+				for (int &node : element)
+					if (node >= n_vertices)
+						node += other_vertices;
+			for (auto &element : right.second)
+				for (int &node : element)
+					node = node < other_vertices
+						? node + n_vertices
+						: node + n_vertices + left_extra;
+			higher_order_nodes_ = std::move(nodes);
+			higher_order_connectivity_ = std::move(left.second);
+			higher_order_connectivity_.insert(
+				higher_order_connectivity_.end(), right.second.begin(), right.second.end());
+		}
 
 		elements_tag_.insert(elements_tag_.end(), mesh.elements_tag_.begin(), mesh.elements_tag_.end());
 
@@ -502,5 +644,23 @@ namespace polyfem::mesh
 		transform_high_order_nodes(edge_nodes_, A, b);
 		transform_high_order_nodes(face_nodes_, A, b);
 		transform_high_order_nodes(cell_nodes_, A, b);
+		transform_higher_order_data(A, b);
+	}
+
+	void Mesh::clear_higher_order_data()
+	{
+		higher_order_nodes_.resize(0, 0);
+		higher_order_connectivity_.clear();
+		cell_weights_.clear();
+		is_rational_ = false;
+	}
+
+	void Mesh::transform_higher_order_data(const MatrixNd &A, const VectorNd &b)
+	{
+		if (higher_order_nodes_.rows() > n_vertices())
+		{
+			auto nodes = higher_order_nodes_.bottomRows(higher_order_nodes_.rows() - n_vertices());
+			nodes = (nodes * A.transpose()).rowwise() + b.transpose();
+		}
 	}
 } // namespace polyfem::mesh

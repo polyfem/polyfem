@@ -219,6 +219,7 @@ namespace polyfem
 			int n_cell_faces(const int c_id) const override { return 4; }
 			int cell_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
 			int cell_face(const int c_id, const int lf_id) const override { return all_to_valid_face(elements[valid_to_all_elem(c_id)].faces(lf_id)); }
+			int cell_face_orientation(const int, const int) const override { return 1; }
 			int cell_edge(const int c_id, const int le_id) const override { return all_to_valid_edge(elements[valid_to_all_elem(c_id)].edges(le_id)); }
 			int face_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(faces[valid_to_all_face(f_id)].vertices(lv_id)); }
 			int face_edge(const int f_id, const int le_id) const;

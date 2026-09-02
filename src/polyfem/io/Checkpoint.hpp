@@ -12,6 +12,7 @@
 namespace polyfem::mesh
 {
 	class Mesh;
+	class MeshData;
 }
 
 namespace polyfem::io
@@ -51,6 +52,7 @@ namespace polyfem::io
 		void write_attribute(const std::string &path, const std::string &name, const std::string &value);
 
 		void write_mesh(const std::string &group, const mesh::Mesh &mesh);
+		void write_mesh(const std::string &group, const mesh::MeshData &mesh);
 		void embed_resources(const ResourceIO &resources);
 		void finalize();
 

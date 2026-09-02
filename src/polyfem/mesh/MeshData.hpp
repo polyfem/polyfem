@@ -23,6 +23,7 @@ namespace polyfem::mesh
 
 		std::vector<int> body_ids;
 		std::vector<int> geometry_ids;
+		std::vector<int> node_ids;
 		std::vector<std::vector<int>> boundary_elements;
 		std::vector<int> boundary_ids;
 

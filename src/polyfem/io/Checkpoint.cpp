@@ -46,6 +46,32 @@ namespace polyfem::io
 		{
 			return fs::path(logical).is_absolute() ? fs::path(logical).lexically_normal().generic_string() : resource_destination(logical);
 		}
+
+		template <typename T>
+		std::pair<std::vector<T>, std::vector<long>> pack_ragged(const std::vector<std::vector<T>> &rows)
+		{
+			std::pair<std::vector<T>, std::vector<long>> packed;
+			packed.second.reserve(rows.size() + 1);
+			packed.second.push_back(0);
+			for (const auto &row : rows)
+			{
+				packed.first.insert(packed.first.end(), row.begin(), row.end());
+				packed.second.push_back(packed.first.size());
+			}
+			return packed;
+		}
+
+		Eigen::MatrixXi pack_padded(const std::vector<std::vector<int>> &rows)
+		{
+			int width = 0;
+			for (const auto &row : rows)
+				width = std::max(width, int(row.size()));
+			Eigen::MatrixXi packed = Eigen::MatrixXi::Constant(rows.size(), width, -1);
+			for (int i = 0; i < rows.size(); ++i)
+				for (int j = 0; j < rows[i].size(); ++j)
+					packed(i, j) = rows[i][j];
+			return packed;
+		}
 	} // namespace
 
 	CheckpointWriter::CheckpointWriter(const fs::path &path, const json &config, const CheckpointMetadata &metadata)
@@ -88,45 +114,55 @@ namespace polyfem::io
 
 	void CheckpointWriter::write_mesh(const std::string &group, const mesh::Mesh &mesh)
 	{
-		const int dimension = mesh.dimension();
-		Eigen::MatrixXd vertices(mesh.n_vertices(), dimension);
-		for (int i = 0; i < mesh.n_vertices(); ++i)
-			vertices.row(i) = mesh.point(i);
-		if (mesh.n_elements() == 0)
-			log_and_throw_error("Cannot checkpoint an empty mesh.");
-		const int width = mesh.n_cell_vertices(0);
-		Eigen::MatrixXi cells(mesh.n_elements(), width);
-		for (int e = 0; e < mesh.n_elements(); ++e)
-		{
-			if (mesh.n_cell_vertices(e) != width)
-				log_and_throw_error("Checkpoint typed mesh codec does not support mixed-width elements yet.");
-			for (int j = 0; j < width; ++j)
-				cells(e, j) = mesh.element_vertex(e, j);
-		}
-		write_matrix(group + "/vertices", vertices);
-		write_int_matrix(group + "/cells", cells);
+		write_mesh(group, mesh.to_mesh_data());
+	}
+
+	void CheckpointWriter::write_mesh(const std::string &group, const mesh::MeshData &data)
+	{
+		data.validate();
+		write_matrix(group + "/vertices", data.vertices);
+		write_int_matrix(group + "/cells", data.elements);
 		write_attribute(group, "schema_version", mesh::MESH_SCHEMA_VERSION);
-		write_attribute(group, "dimension", dimension);
+		write_attribute(group, "dimension", data.dimension());
 		write_attribute(group, "mesh_type", "fem");
-		if (mesh.has_body_ids())
-			write_int_vector(group + "/body_ids", mesh.get_body_ids());
-		if (mesh.has_geometry_ids())
-			write_int_vector(group + "/geometry_ids", mesh.get_geometry_ids());
-		if (mesh.has_boundary_ids())
+		if (!data.body_ids.empty())
+			write_int_vector(group + "/body_ids", data.body_ids);
+		if (!data.geometry_ids.empty())
+			write_int_vector(group + "/geometry_ids", data.geometry_ids);
+		if (!data.node_ids.empty())
+			write_int_vector(group + "/node_ids", data.node_ids);
+		if (!data.boundary_ids.empty())
 		{
-			std::vector<int> ids(mesh.n_boundary_elements());
-			const int boundary_width = dimension == 3 ? mesh.n_face_vertices(0) : 2;
-			Eigen::MatrixXi elements(mesh.n_boundary_elements(), boundary_width);
-			for (int i = 0; i < mesh.n_boundary_elements(); ++i)
-			{
-				ids[i] = mesh.get_boundary_id(i);
-				if (dimension == 3 && mesh.n_face_vertices(i) != boundary_width)
-					log_and_throw_error("Checkpoint typed mesh codec does not support mixed-width boundary elements yet.");
-				for (int j = 0; j < boundary_width; ++j)
-					elements(i, j) = mesh.boundary_element_vertex(i, j);
-			}
-			write_int_matrix(group + "/boundary_elements", elements);
-			write_int_vector(group + "/boundary_ids", ids);
+			write_int_matrix(group + "/boundary_elements", pack_padded(data.boundary_elements));
+			write_int_vector(group + "/boundary_ids", data.boundary_ids);
+		}
+		if (!data.higher_order_connectivity.empty())
+		{
+			const auto packed = pack_ragged(data.higher_order_connectivity);
+			write_matrix(group + "/higher_order_nodes", data.higher_order_nodes);
+			write_int_vector(group + "/higher_order_connectivity", packed.first);
+			write_long_vector(group + "/higher_order_offsets", packed.second);
+		}
+		if (!data.higher_order_weights.empty())
+		{
+			const auto packed = pack_ragged(data.higher_order_weights);
+			write_vector(group + "/higher_order_weights", packed.first);
+			write_long_vector(group + "/higher_order_weight_offsets", packed.second);
+		}
+		if (data.has_polyhedral_topology())
+		{
+			const auto faces = pack_ragged(data.faces);
+			const auto cell_faces = pack_ragged(data.cell_faces);
+			const auto orientations = pack_ragged(data.cell_face_orientations);
+			write_int_vector(group + "/faces", faces.first);
+			write_long_vector(group + "/face_offsets", faces.second);
+			write_int_vector(group + "/cell_faces", cell_faces.first);
+			write_long_vector(group + "/cell_face_offsets", cell_faces.second);
+			write_int_vector(group + "/cell_face_orientations", orientations.first);
+			std::vector<int> is_hex(data.cell_is_hex.size());
+			std::transform(data.cell_is_hex.begin(), data.cell_is_hex.end(), is_hex.begin(), [](const bool value) { return int(value); });
+			write_int_vector(group + "/cell_is_hex", is_hex);
+			write_matrix(group + "/cell_kernel_points", data.cell_kernel_points);
 		}
 	}
 

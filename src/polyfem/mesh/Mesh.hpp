@@ -80,6 +80,9 @@ namespace polyfem
 			/// Construct a runtime mesh from format-independent decoded data.
 			static std::unique_ptr<Mesh> create(MeshData data, bool non_conforming = false);
 
+			/// Capture the complete runtime mesh in the canonical, format-independent representation.
+			MeshData to_mesh_data() const;
+
 			/// @brief Create a copy of the mesh
 			/// @return pointer to the new copy mesh
 			virtual std::unique_ptr<Mesh> copy() const = 0;
@@ -676,6 +679,8 @@ namespace polyfem
 			/// Remove all top-dimensional elements whose mask entry is false.
 			virtual void remove_elements(const std::vector<bool> &keep) = 0;
 			void filter_element_data(const std::vector<bool> &keep);
+			void clear_higher_order_data();
+			void transform_higher_order_data(const MatrixNd &A, const VectorNd &b);
 
 			/// list of element types
 			std::vector<ElementType> elements_tag_;
@@ -700,6 +705,14 @@ namespace polyfem
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;
+			/// Whether the source MeshData supplied explicit face/cell incidence. This
+			/// cannot be reconstructed from element tags alone (a tetrahedral-shaped
+			/// polyhedron is otherwise indistinguishable from a simplex).
+			bool has_explicit_polyhedral_topology_ = false;
+			/// Canonical connectivity is retained because the runtime edge/face caches do not
+			/// preserve the original per-element high-order node ordering.
+			Eigen::MatrixXd higher_order_nodes_;
+			std::vector<std::vector<int>> higher_order_connectivity_;
 
 			/// Order of the input vertices
 			Eigen::VectorXi in_ordered_vertices_;

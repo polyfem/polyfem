@@ -44,6 +44,7 @@ namespace polyfem
 				return element.input_vs.empty() ? element.vs[lv_id] : element.input_vs[lv_id];
 			}
 			inline int cell_face(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs[lf_id]; }
+			inline int cell_face_orientation(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs_flag[lf_id]; }
 			inline int cell_edge(const int c_id, const int le_id) const override { return mesh_.elements[c_id].es[le_id]; }
 			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.faces[f_id].vs[lv_id]; }
 			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edges[e_id].vs[lv_id]; }

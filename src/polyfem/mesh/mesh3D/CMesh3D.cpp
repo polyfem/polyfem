@@ -147,6 +147,7 @@ namespace polyfem
 
 			// TODO refine high order mesh!
 			orders_.resize(0, 0);
+			clear_higher_order_data();
 			if (mesh_.type == MeshType::TET)
 			{
 				MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
@@ -1055,6 +1056,9 @@ namespace polyfem
 				if (n.nodes.size() > 0)
 					n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
 			}
+			transform_higher_order_data(
+				Eigen::Matrix3d::Identity() * scaling,
+				-shift * scaling);
 
 			logger().debug("-- bbox before normalization:");
 			logger().debug("   min   : {}", minV);

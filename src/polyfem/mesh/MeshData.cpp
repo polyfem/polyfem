@@ -39,25 +39,45 @@ namespace polyfem::mesh
 		require_elements(geometry_ids.size(), "geometry_ids");
 		require_elements(higher_order_connectivity.size(), "higher_order_connectivity");
 		require_elements(higher_order_weights.size(), "higher_order_weights");
+		if (!node_ids.empty() && node_ids.size() != size_t(vertices.rows()))
+			log_and_throw_error("MeshData node_ids has {} entries; expected {}.", node_ids.size(), vertices.rows());
 
 		if (boundary_ids.empty() != boundary_elements.empty())
 			log_and_throw_error("MeshData boundary_elements and boundary_ids must be provided together.");
 		if (!boundary_ids.empty() && boundary_ids.size() != boundary_elements.size())
 			log_and_throw_error("MeshData boundary_elements and boundary_ids have different sizes.");
 		for (const auto &element : boundary_elements)
+		{
+			if (element.size() < size_t(dimension()))
+				log_and_throw_error("MeshData contains a boundary element with too few vertices.");
 			for (const int vertex : element)
 				if (vertex < 0 || vertex >= vertices.rows())
 					log_and_throw_error("MeshData boundary connectivity references an invalid vertex.");
+		}
 
 		if (higher_order_connectivity.empty() != (higher_order_nodes.rows() == 0))
 			log_and_throw_error("MeshData higher-order nodes and connectivity must be provided together.");
+		if (!higher_order_connectivity.empty()
+			&& (higher_order_nodes.cols() != dimension() || higher_order_nodes.rows() < vertices.rows()))
+			log_and_throw_error("MeshData higher-order nodes have invalid dimensions.");
 		for (const auto &connectivity : higher_order_connectivity)
 			for (const int node : connectivity)
 				if (node < 0 || node >= higher_order_nodes.rows())
 					log_and_throw_error("MeshData higher-order connectivity references an invalid node.");
+		if (!higher_order_weights.empty())
+		{
+			if (higher_order_connectivity.empty())
+				log_and_throw_error("MeshData higher-order weights require higher-order connectivity.");
+			for (int i = 0; i < higher_order_weights.size(); ++i)
+				if (!higher_order_weights[i].empty()
+					&& higher_order_weights[i].size() != higher_order_connectivity[i].size())
+					log_and_throw_error("MeshData element {} has incompatible higher-order weights.", i);
+		}
 
 		if (has_polyhedral_topology())
 		{
+			if (dimension() != 3)
+				log_and_throw_error("MeshData polyhedral topology requires three-dimensional vertices.");
 			require_elements(cell_faces.size(), "cell_faces");
 			require_elements(cell_face_orientations.size(), "cell_face_orientations");
 			require_elements(cell_is_hex.size(), "cell_is_hex");
@@ -75,6 +95,9 @@ namespace polyfem::mesh
 			{
 				if (cell_faces[i].size() != cell_face_orientations[i].size())
 					log_and_throw_error("MeshData cell {} has inconsistent face orientations.", i);
+				for (const int orientation : cell_face_orientations[i])
+					if (orientation != 0 && orientation != 1)
+						log_and_throw_error("MeshData cell {} has an invalid face orientation.", i);
 				for (const int face : cell_faces[i])
 					if (face < 0 || face >= faces.size())
 						log_and_throw_error("MeshData cell {} references an invalid face.", i);

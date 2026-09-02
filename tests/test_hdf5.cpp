@@ -172,6 +172,16 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	const auto *conforming_polyhedron = dynamic_cast<const mesh::CMesh3D *>(polyhedron.get());
 	REQUIRE(conforming_polyhedron != nullptr);
 	CHECK(conforming_polyhedron->kernel(0).isApprox(Eigen::RowVector3d(0.25, 0.25, 0.25)));
+	const mesh::MeshData polyhedron_data = polyhedron->to_mesh_data();
+	REQUIRE(polyhedron_data.has_polyhedral_topology());
+	CHECK(polyhedron_data.faces.size() == 4);
+	CHECK(polyhedron_data.cell_faces == std::vector<std::vector<int>>{{0, 1, 2, 3}});
+	CHECK(polyhedron_data.cell_face_orientations == std::vector<std::vector<int>>{{1, 1, 1, 1}});
+	CHECK(polyhedron_data.cell_kernel_points.isApprox(Eigen::RowVector3d(0.25, 0.25, 0.25)));
+	const auto restored_polyhedron = mesh::Mesh::create(polyhedron_data);
+	const auto *restored_conforming_polyhedron = dynamic_cast<const mesh::CMesh3D *>(restored_polyhedron.get());
+	REQUIRE(restored_conforming_polyhedron != nullptr);
+	CHECK(restored_conforming_polyhedron->kernel(0).isApprox(Eigen::RowVector3d(0.25, 0.25, 0.25)));
 	fs::remove_all(directory);
 }
 
@@ -185,8 +195,19 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	vertices << 0, 0, 1, 0, 0, 1;
 	Eigen::MatrixXi cells(1, 3);
 	cells << 0, 1, 2;
-	auto mesh = mesh::Mesh::create(mesh::MeshData(vertices, cells), false);
+	mesh::MeshData mesh_data(vertices, cells);
+	mesh_data.body_ids = {7};
+	mesh_data.geometry_ids = {9};
+	mesh_data.node_ids = {21, 22, 23};
+	mesh_data.boundary_elements = {{0, 1}, {1, 2}, {2, 0}};
+	mesh_data.boundary_ids = {11, 12, 13};
+	auto mesh = mesh::Mesh::create(mesh_data, false);
 	REQUIRE(mesh != nullptr);
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	auto higher_order_mesh = mesh::MeshLoader(resources).load_fem("contact/meshes/3D/simple/sphere/coarse/P2.msh");
+	REQUIRE(higher_order_mesh != nullptr);
+	const mesh::MeshData higher_order_data = higher_order_mesh->to_mesh_data();
+	REQUIRE_FALSE(higher_order_data.higher_order_connectivity.empty());
 	io::CheckpointMetadata metadata;
 	metadata.formulation = "Laplacian";
 	metadata.step = 3;
@@ -197,6 +218,7 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	{
 		io::CheckpointWriter writer(path, json{{"time", {{"dt", 0.1}}}}, metadata);
 		writer.write_mesh("/checkpoint/meshes/active", *mesh);
+		writer.write_mesh("/checkpoint/meshes/high_order", *higher_order_mesh);
 		writer.write_matrix("/checkpoint/state/solution", Eigen::MatrixXd::Ones(3, 1));
 		writer.finalize();
 	}
@@ -205,5 +227,23 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	CHECK(reader.metadata().formulation == "Laplacian");
 	CHECK(reader.metadata().step == 3);
 	CHECK(reader.read_matrix("/checkpoint/state/solution").isOnes());
+	const auto restored = reader.read_mesh("/checkpoint/meshes/active");
+	REQUIRE(restored != nullptr);
+	CHECK(restored->get_body_id(0) == 7);
+	CHECK(restored->get_geometry_id(0) == 9);
+	CHECK(restored->get_node_id(2) == 23);
+	std::vector<int> restored_boundary_ids;
+	for (int edge = 0; edge < restored->n_edges(); ++edge)
+		restored_boundary_ids.push_back(restored->get_boundary_id(edge));
+	std::sort(restored_boundary_ids.begin(), restored_boundary_ids.end());
+	CHECK(restored_boundary_ids == std::vector<int>{11, 12, 13});
+
+	const auto restored_higher_order = reader.read_mesh("/checkpoint/meshes/high_order");
+	REQUIRE(restored_higher_order != nullptr);
+	const mesh::MeshData restored_higher_order_data = restored_higher_order->to_mesh_data();
+	CHECK(restored_higher_order_data.vertices.isApprox(higher_order_data.vertices));
+	CHECK(restored_higher_order_data.elements == higher_order_data.elements);
+	CHECK(restored_higher_order_data.higher_order_nodes.isApprox(higher_order_data.higher_order_nodes));
+	CHECK(restored_higher_order_data.higher_order_connectivity == higher_order_data.higher_order_connectivity);
 	fs::remove(path);
 }

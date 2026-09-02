@@ -104,6 +104,7 @@ namespace polyfem
 			}
 
 			orders_.resize(0, 0);
+			clear_higher_order_data();
 
 			bool all_simplicial = true;
 			for (int e = 0; e < n_elements(); ++e)
@@ -455,6 +456,11 @@ namespace polyfem
 				if (n.nodes.size() > 0)
 					n.nodes = (n.nodes.rowwise() - shift) / scaling;
 			}
+			Eigen::Vector2d normalization_translation;
+			normalization_translation << -origin[0] / scaling, -origin[1] / scaling;
+			transform_higher_order_data(
+				Eigen::Matrix2d::Identity() / scaling,
+				normalization_translation);
 
 			logger().debug("-- bbox before normalization:");
 			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
@@ -687,6 +693,9 @@ namespace polyfem
 			copy_mesh->face_nodes_ = this->face_nodes_;
 			copy_mesh->cell_nodes_ = this->cell_nodes_;
 			copy_mesh->cell_weights_ = this->cell_weights_;
+			copy_mesh->has_explicit_polyhedral_topology_ = this->has_explicit_polyhedral_topology_;
+			copy_mesh->higher_order_nodes_ = this->higher_order_nodes_;
+			copy_mesh->higher_order_connectivity_ = this->higher_order_connectivity_;
 			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
 			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
 			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;

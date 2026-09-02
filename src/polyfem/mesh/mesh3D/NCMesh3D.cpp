@@ -76,6 +76,7 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
+			clear_higher_order_data();
 			std::vector<bool> refine_mask(elements.size(), false);
 			for (int i = 0; i < elements.size(); i++)
 				if (elements[i].is_valid())
