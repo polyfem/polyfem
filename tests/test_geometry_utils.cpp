@@ -136,7 +136,7 @@ TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2,
 		0, 2, 3;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) { return 10 + int(e); });
 	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, const bool) { return 20 + int(v); });
 	mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, const bool boundary) { return boundary ? 7 : -1; });
@@ -179,7 +179,7 @@ TEST_CASE("split defaults to geometry zero", "[geometry][split]")
 	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2, 0, 2, 3;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	auto pieces = mesh->split();
 	REQUIRE(pieces.size() == 1);
 	CHECK(pieces[0].id == 0);
@@ -195,7 +195,7 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2, 0, 2, 3;
 
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
 		return e == 0 ? 7 : 12;
 	});
@@ -208,7 +208,7 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	CHECK(pieces[0].id == 7);
 	CHECK(pieces[1].id == 12);
 
-	auto default_mesh = Mesh::create(vertices, cells);
+	auto default_mesh = Mesh::create(MeshData(vertices, cells));
 	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, resources);
 	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
 }
@@ -220,9 +220,9 @@ TEST_CASE("mesh interface is empty for separated meshes", "[geometry][split]")
 	vertices << 0, 0, 1, 0, 0, 1;
 	Eigen::Matrix<int, 1, 3> cell;
 	cell << 0, 1, 2;
-	auto first = Mesh::create(vertices, cell);
+	auto first = Mesh::create(MeshData(vertices, cell));
 	vertices.rowwise() += Eigen::RowVector2d(3, 0);
-	auto second = Mesh::create(vertices, cell);
+	auto second = Mesh::create(MeshData(vertices, cell));
 	CHECK(compute_mesh_interface(
 			  dynamic_cast<const Mesh2D &>(*first),
 			  dynamic_cast<const Mesh2D &>(*second))
@@ -241,7 +241,7 @@ TEST_CASE("geometry split finds a 3D interface", "[geometry][split]")
 	Eigen::Matrix<int, 2, 4> cells;
 	cells << 0, 1, 2, 3,
 		0, 2, 1, 4;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->set_geometry_ids({2, 3});
 	auto pieces = mesh->split();
 	REQUIRE(pieces.size() == 2);
@@ -263,7 +263,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -281,7 +281,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -304,7 +304,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		auto &ncmesh = dynamic_cast<NCMesh2D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();
@@ -332,7 +332,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();

@@ -231,13 +231,7 @@ namespace polyfem
 			bool is_boundary_face(const int face_global_id) const override { return faces[valid_to_all_face(face_global_id)].isboundary; }
 			bool is_boundary_element(const int element_global_id) const override;
 
-			bool save(const std::string &path) const override
-			{
-				// TODO
-				return false;
-			}
-
-			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+			bool build_from_data(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 
@@ -379,8 +373,6 @@ namespace polyfem
 
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
-			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &M) override;
 
 			// index map from vertices to valid ones, and its inverse
 			inline int all_to_valid_vertex(const int id) const

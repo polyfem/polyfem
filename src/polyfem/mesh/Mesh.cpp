@@ -5,15 +5,8 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
-#include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/io/MshReader.hpp>
-
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-
-#include <geogram/mesh/mesh_io.h>
-#include <geogram/mesh/mesh_geometry.h>
 
 #include <Eigen/Geometry>
 
@@ -21,7 +14,6 @@
 #include <igl/oriented_facets.h>
 #include <igl/edges.h>
 
-#include <filesystem>
 #include <unordered_set>
 #include <set>
 #include <type_traits>
@@ -29,7 +21,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace polyfem::mesh
 {
-	using namespace polyfem::io;
 	using namespace polyfem::utils;
 
 	std::vector<MeshWithID> Mesh::split() const
@@ -85,298 +76,79 @@ namespace polyfem::mesh
 		}
 	}
 
-	namespace
+	std::unique_ptr<Mesh> Mesh::create(MeshData data, const bool non_conforming)
 	{
-		std::vector<int> sort_face(const Eigen::RowVectorXi f)
-		{
-			std::vector<int> sorted_face(f.data(), f.data() + f.size());
-			std::sort(sorted_face.begin(), sorted_face.end());
-			return sorted_face;
-		}
-
-		// Constructs a list of unique faces represented in a given mesh (V,T)
-		//
-		// Inputs:
-		//   T: #T × 4 matrix of indices of tet corners
-		// Outputs:
-		//   F: #F × 3 list of faces in no particular order
-		template <typename DerivedT, typename DerivedF>
-		void get_faces(
-			const Eigen::MatrixBase<DerivedT> &T,
-			Eigen::PlainObjectBase<DerivedF> &F)
-		{
-			assert(T.cols() == 4);
-			assert(T.rows() >= 1);
-
-			Eigen::MatrixXi BF, OF;
-			igl::boundary_facets(T, BF);
-			igl::oriented_facets(T, OF); // boundary facets + duplicated interior faces
-			assert((OF.rows() + BF.rows()) % 2 == 0);
-			const int num_faces = (OF.rows() + BF.rows()) / 2;
-			F.resize(num_faces, 3);
-			F.topRows(BF.rows()) = BF;
-			std::unordered_set<std::vector<int>, HashVector> processed_faces;
-			for (int fi = 0; fi < BF.rows(); fi++)
-			{
-				processed_faces.insert(sort_face(BF.row(fi)));
-			}
-
-			for (int fi = 0; fi < OF.rows(); fi++)
-			{
-				std::vector<int> sorted_face = sort_face(OF.row(fi));
-				const auto iter = processed_faces.find(sorted_face);
-				if (iter == processed_faces.end())
-				{
-					F.row(processed_faces.size()) = OF.row(fi);
-					processed_faces.insert(sorted_face);
-				}
-			}
-
-			assert(F.rows() == processed_faces.size());
-		}
-	} // namespace
-
-	std::unique_ptr<Mesh> Mesh::create(const int dim, const bool non_conforming)
-	{
+		data.validate();
+		const int dim = data.dimension();
 		assert(dim == 2 || dim == 3);
+
+		std::unique_ptr<Mesh> mesh;
 		if (dim == 2 && non_conforming)
-			return std::make_unique<NCMesh2D>();
+			mesh = std::make_unique<NCMesh2D>();
 		else if (dim == 2 && !non_conforming)
-			return std::make_unique<CMesh2D>();
+			mesh = std::make_unique<CMesh2D>();
 		else if (dim == 3 && non_conforming)
-			return std::make_unique<NCMesh3D>();
+			mesh = std::make_unique<NCMesh3D>();
 		else if (dim == 3 && !non_conforming)
-			return std::make_unique<CMesh3D>();
-		throw std::runtime_error("Invalid dimension");
-	}
+			mesh = std::make_unique<CMesh3D>();
+		if (!mesh || !mesh->build_from_data(data))
+			log_and_throw_error("Unable to construct runtime mesh from MeshData.");
 
-	std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
-	{
-		if (is_planar(meshin))
-		{
-			generate_edges(meshin);
-			std::unique_ptr<Mesh> mesh = create(2, non_conforming);
-			if (mesh->load(meshin))
-			{
-				mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(meshin.vertices.nb(), 0, meshin.vertices.nb() - 1);
-				assert(mesh->in_ordered_vertices_[0] == 0);
-				assert(mesh->in_ordered_vertices_[1] == 1);
-				assert(mesh->in_ordered_vertices_[2] == 2);
-				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
-
-				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
-
-				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
-				{
-					for (int lv = 0; lv < 2; ++lv)
-					{
-						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
-					}
-					assert(mesh->in_ordered_edges_(e, 0) != mesh->in_ordered_edges_(e, 1));
-				}
-				assert(mesh->in_ordered_edges_.size() > 0);
-
-				mesh->in_ordered_faces_.resize(0, 0);
-
-				return mesh;
-			}
-		}
-		else
-		{
-			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
-			meshin.cells.connect();
-			if (mesh->load(meshin))
-			{
-				mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(meshin.vertices.nb(), 0, meshin.vertices.nb() - 1);
-				assert(mesh->in_ordered_vertices_[0] == 0);
-				assert(mesh->in_ordered_vertices_[1] == 1);
-				assert(mesh->in_ordered_vertices_[2] == 2);
-				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
-
-				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
-
-				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
-				{
-					for (int lv = 0; lv < 2; ++lv)
-					{
-						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
-					}
-				}
-				assert(mesh->in_ordered_edges_.size() > 0);
-
-				mesh->in_ordered_faces_.resize(meshin.facets.nb(), meshin.facets.nb_vertices(0));
-
-				for (int f = 0; f < (int)meshin.edges.nb(); ++f)
-				{
-					assert(mesh->in_ordered_faces_.cols() == meshin.facets.nb_vertices(f));
-
-					for (int lv = 0; lv < mesh->in_ordered_faces_.cols(); ++lv)
-					{
-						mesh->in_ordered_faces_(f, lv) = meshin.facets.vertex(f, lv);
-					}
-				}
-				assert(mesh->in_ordered_faces_.size() > 0);
-
-				return mesh;
-			}
-		}
-
-		logger().error("Failed to load mesh");
-		return nullptr;
-	}
-
-	std::unique_ptr<Mesh> Mesh::create(const std::string &path, const bool non_conforming)
-	{
-		if (!std::filesystem::exists(path))
-		{
-			logger().error(path.empty() ? "No mesh provided!" : "Mesh file does not exist: {}", path);
-			return nullptr;
-		}
-
-		std::string lowername = path;
-		std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-
-		if (StringUtils::endswith(lowername, ".hybrid"))
-		{
-			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
-			if (mesh->load(path))
-			{
-				// TODO add in_ordered_vertices_, in_ordered_edges_, in_ordered_faces_
-				return mesh;
-			}
-		}
-		else if (StringUtils::endswith(lowername, ".msh"))
-		{
-			Eigen::MatrixXd vertices;
-			Eigen::MatrixXi cells;
-			std::vector<std::vector<int>> elements;
-			std::vector<std::vector<double>> weights;
-			std::vector<int> body_ids;
-			std::vector<std::vector<int>> boundary_elements;
-			std::vector<int> boundary_ids;
-
-			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids))
-			{
-				logger().error("Failed to load MSH mesh: {}", path);
-				return nullptr;
-			}
-
-			const int dim = vertices.cols();
-			std::unique_ptr<Mesh> mesh = create(vertices, cells, non_conforming);
-
-			// Only tris and tets
-			if ((dim == 2 && cells.cols() == 3) || (dim == 3 && cells.cols() == 4))
-			{
-				mesh->attach_higher_order_nodes(vertices, elements);
-				mesh->set_cell_weights(weights);
-				// TODO: not clear?
-			}
-
-			for (const auto &w : weights)
-			{
-				if (!w.empty())
-				{
-					mesh->set_is_rational(true);
-					break;
-				}
-			}
-
-			mesh->set_body_ids(body_ids);
-
-			if (!boundary_ids.empty())
-			{
-				std::unordered_map<std::vector<int>, int, HashVector> boundary_element_to_id;
-				for (int i = 0; i < boundary_elements.size(); ++i)
-				{
-					std::sort(boundary_elements[i].begin(), boundary_elements[i].end());
-					const auto [it, inserted] = boundary_element_to_id.emplace(boundary_elements[i], boundary_ids[i]);
-					if (!inserted && it->second != boundary_ids[i])
-						logger().warn("Gmsh side has multiple physical tags; using tag {}.", it->second);
-				}
-
-				int matched_boundaries = 0;
-				mesh->compute_boundary_ids([&](const size_t primitive_id, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
-					std::vector<int> sorted_vertices = vertices;
-					std::sort(sorted_vertices.begin(), sorted_vertices.end());
-					const auto it = boundary_element_to_id.find(sorted_vertices);
-					if (it == boundary_element_to_id.end())
-						return mesh->get_default_boundary_id(primitive_id);
-					++matched_boundaries;
-					return it->second;
-				});
-
-				if (matched_boundaries != boundary_element_to_id.size())
-					logger().warn(
-						"Unable to match {} of {} tagged Gmsh sides to mesh primitives.",
-						boundary_element_to_id.size() - matched_boundaries, boundary_element_to_id.size());
-			}
-
-			return mesh;
-		}
-		else
-		{
-			GEO::Mesh tmp;
-			if (GEO::mesh_load(path, tmp))
-			{
-				return create(tmp, non_conforming);
-			}
-		}
-		logger().error("Failed to load mesh: {}", path);
-		return nullptr;
-	}
-
-	std::unique_ptr<Mesh> Mesh::create(
-		const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming)
-	{
-		const int dim = vertices.cols();
-
-		std::unique_ptr<Mesh> mesh = create(dim, non_conforming);
-
-		mesh->build_from_matrices(vertices, cells);
-
-		std::vector<int> tmp(cells.data(), cells.data() + cells.size());
+		std::vector<int> tmp(data.elements.data(), data.elements.data() + data.elements.size());
 		std::sort(tmp.begin(), tmp.end());
 		tmp.erase(std::unique(tmp.begin(), tmp.end()), tmp.end());
+		if (!tmp.empty() && tmp.front() == -1)
+			tmp.erase(tmp.begin());
 
 		mesh->in_ordered_vertices_ = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
-		// assert(mesh->in_ordered_vertices_[0] == 0);
-		// assert(mesh->in_ordered_vertices_[1] == 1);
-		// assert(mesh->in_ordered_vertices_[2] == 2);
-		// assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == vertices.rows() - 1);
 
+		mesh->in_ordered_edges_.resize(mesh->n_edges(), 2);
+		for (int e = 0; e < mesh->n_edges(); ++e)
+			mesh->in_ordered_edges_.row(e) << mesh->edge_vertex(e, 0), mesh->edge_vertex(e, 1);
 		if (dim == 2)
-		{
-			std::unordered_set<std::pair<int, int>, HashPair> edges;
-			for (int f = 0; f < cells.rows(); ++f)
-			{
-				for (int lv = 0; lv < cells.cols(); ++lv)
-				{
-					const int v0 = cells(f, lv);
-					const int v1 = cells(f, (lv + 1) % cells.cols());
-					edges.emplace(std::pair<int, int>(std::min(v0, v1), std::max(v0, v1)));
-				}
-			}
-			mesh->in_ordered_edges_.resize(edges.size(), 2);
-			int index = 0;
-			for (auto it = edges.begin(); it != edges.end(); ++it)
-			{
-				mesh->in_ordered_edges_(index, 0) = it->first;
-				mesh->in_ordered_edges_(index, 1) = it->second;
-				++index;
-			}
-
-			assert(mesh->in_ordered_edges_.size() > 0);
-
 			mesh->in_ordered_faces_.resize(0, 0);
-		}
 		else
 		{
-			if (cells.cols() == 4)
+			int width = 0;
+			for (int f = 0; f < mesh->n_faces(); ++f)
+				width = std::max(width, mesh->n_face_vertices(f));
+			mesh->in_ordered_faces_.setConstant(mesh->n_faces(), width, -1);
+			for (int f = 0; f < mesh->n_faces(); ++f)
+				for (int lv = 0; lv < mesh->n_face_vertices(f); ++lv)
+					mesh->in_ordered_faces_(f, lv) = mesh->face_vertex(f, lv);
+		}
+
+		if (!data.higher_order_connectivity.empty())
+			mesh->attach_higher_order_nodes(data.higher_order_nodes, data.higher_order_connectivity);
+		if (!data.higher_order_weights.empty())
+		{
+			mesh->set_cell_weights(data.higher_order_weights);
+			mesh->set_is_rational(std::any_of(
+				data.higher_order_weights.begin(), data.higher_order_weights.end(),
+				[](const auto &weights) { return !weights.empty(); }));
+		}
+		if (!data.body_ids.empty())
+			mesh->set_body_ids(data.body_ids);
+		if (!data.geometry_ids.empty())
+			mesh->set_geometry_ids(data.geometry_ids);
+
+		if (!data.boundary_ids.empty())
+		{
+			std::unordered_map<std::vector<int>, int, HashVector> labels;
+			for (int i = 0; i < data.boundary_elements.size(); ++i)
 			{
-				get_faces(cells, mesh->in_ordered_faces_);
-				igl::edges(mesh->in_ordered_faces_, mesh->in_ordered_edges_);
+				std::vector<int> side = data.boundary_elements[i];
+				std::sort(side.begin(), side.end());
+				const auto [it, inserted] = labels.emplace(std::move(side), data.boundary_ids[i]);
+				if (!inserted && it->second != data.boundary_ids[i])
+					logger().warn("Mesh side has multiple labels; using {}.", it->second);
 			}
-			// else TODO
+			mesh->compute_boundary_ids([&](const size_t primitive, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
+				std::vector<int> side = vertices;
+				std::sort(side.begin(), side.end());
+				const auto it = labels.find(side);
+				return it == labels.end() ? mesh->get_default_boundary_id(primitive) : it->second;
+			});
 		}
 
 		return mesh;
@@ -479,29 +251,6 @@ namespace polyfem::mesh
 			const auto p = point(n);
 			node_ids_[n] = marker(n, p, is_boundary);
 		}
-	}
-
-	void Mesh::load_boundary_ids(const std::string &path)
-	{
-		boundary_ids_.resize(n_boundary_elements());
-
-		std::ifstream file(path);
-
-		std::string line;
-		int bindex = 0;
-		while (std::getline(file, line))
-		{
-			std::istringstream iss(line);
-			int v;
-			iss >> v;
-			boundary_ids_[bindex] = v;
-
-			++bindex;
-		}
-
-		assert(boundary_ids_.size() == size_t(bindex));
-
-		file.close();
 	}
 
 	bool Mesh::is_simplex(const int el_id) const

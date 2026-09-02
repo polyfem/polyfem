@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
 
@@ -53,7 +55,7 @@ namespace
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> create_test_tetra_mesh()
@@ -67,7 +69,7 @@ namespace
 		Eigen::MatrixXi cells(1, 4);
 		cells << 0, 1, 2, 3;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	double geogram_facet_signed_area(const GEO::Mesh &mesh, const int facet)
@@ -87,7 +89,8 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 {
 	SECTION("MSH 2.2 lines, including a higher-order line and an internal edge")
 	{
-		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_2d_v22.msh");
+		const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+		const auto mesh = MeshLoader(resources).load_fem("gmsh_physical_sides_2d_v22.msh");
 		REQUIRE(mesh != nullptr);
 		REQUIRE(mesh->has_boundary_ids());
 		REQUIRE(mesh->has_body_ids());
@@ -113,7 +116,8 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 
 	SECTION("MSH 4.1 surfaces, including an internal face")
 	{
-		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_3d_v41.msh");
+		const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+		const auto mesh = MeshLoader(resources).load_fem("gmsh_physical_sides_3d_v41.msh");
 		REQUIRE(mesh != nullptr);
 		REQUIRE(mesh->has_boundary_ids());
 		REQUIRE(mesh->has_body_ids());
@@ -139,7 +143,8 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 
 TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
 {
-	const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/standard/reordered-local-vertices.msh");
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	const auto mesh = MeshLoader(resources).load_fem("standard/reordered-local-vertices.msh");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->n_cell_vertices(0) == 4);
 
@@ -352,8 +357,9 @@ TEST_CASE("append_2d", "[mesh_test]")
 	State state;
 
 	const std::string path = POLYFEM_DATA_DIR;
-	auto m1 = Mesh::create(POLYFEM_DATA_DIR + std::string("/contact/meshes/2D/arch/largeArch.01.obj"));
-	const auto m2 = Mesh::create(POLYFEM_DATA_DIR + std::string("/contact/meshes/2D/arch/largeArch.02.obj"));
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	auto m1 = MeshLoader(resources).load_fem("contact/meshes/2D/arch/largeArch.01.obj");
+	const auto m2 = MeshLoader(resources).load_fem("contact/meshes/2D/arch/largeArch.02.obj");
 
 	m1->append(m2);
 }

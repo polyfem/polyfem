@@ -35,7 +35,7 @@ namespace polyfem::mesh
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_mesh");
 
-		mesh = Mesh::create(local_mesh.rest_positions(), local_mesh.elements());
+		mesh = Mesh::create(MeshData(local_mesh.rest_positions(), local_mesh.elements()));
 		assert(mesh->n_vertices() == local_mesh.num_vertices());
 
 		std::vector<int> boundary_ids(mesh->n_boundary_elements(), -1);

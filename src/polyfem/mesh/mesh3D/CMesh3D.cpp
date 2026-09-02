@@ -1,14 +1,11 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/MeshProcessing3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/utils/StringUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
 #include <igl/barycentric_coordinates.h>
 
-#include <geogram/mesh/mesh_io.h>
-#include <fstream>
 #include <unordered_map>
 
 using namespace polyfem::utils;
@@ -202,131 +199,8 @@ namespace polyfem
 			assert(in_ordered_faces_.size() > 0);
 		}
 
-		bool CMesh3D::load(const std::string &path)
-		{
-			edge_nodes_.clear();
-			face_nodes_.clear();
-			cell_nodes_.clear();
-
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				GEO::mesh_load(path, M);
-				return load(M);
-			}
-
-			FILE *f = fopen(path.data(), "rt");
-			if (!f)
-				return false;
-
-			int nv, np, nh;
-			auto _ = fscanf(f, "%d %d %d", &nv, &np, &nh);
-			nh /= 3;
-
-			mesh_.points.resize(3, nv);
-			mesh_.vertices.resize(nv);
-
-			for (int i = 0; i < nv; i++)
-			{
-				double x, y, z;
-				auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
-				mesh_.points(0, i) = x;
-				mesh_.points(1, i) = y;
-				mesh_.points(2, i) = z;
-				Vertex v;
-				v.id = i;
-				mesh_.vertices[i] = v;
-			}
-			mesh_.faces.resize(np);
-			for (int i = 0; i < np; i++)
-			{
-				Face &p = mesh_.faces[i];
-				p.id = i;
-				int nw;
-
-				auto _ = fscanf(f, "%d", &nw);
-				p.vs.resize(nw);
-				for (int j = 0; j < nw; j++)
-				{
-					auto _ = fscanf(f, "%u", &(p.vs[j]));
-				}
-			}
-			mesh_.elements.resize(nh);
-			for (int i = 0; i < nh; i++)
-			{
-				Element &h = mesh_.elements[i];
-				h.id = i;
-
-				int nf;
-				auto _ = fscanf(f, "%d", &nf);
-				h.fs.resize(nf);
-
-				for (int j = 0; j < nf; j++)
-				{
-					auto _ = fscanf(f, "%u", &(h.fs[j]));
-				}
-
-				for (auto fid : h.fs)
-					h.vs.insert(h.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-				sort(h.vs.begin(), h.vs.end());
-				h.vs.erase(unique(h.vs.begin(), h.vs.end()), h.vs.end());
-
-				int tmp;
-				auto __ = fscanf(f, "%d", &tmp);
-				for (int j = 0; j < nf; j++)
-				{
-					int s;
-					auto _ = fscanf(f, "%d", &s);
-					h.fs_flag.push_back(s);
-				}
-			}
-			for (int i = 0; i < nh; i++)
-			{
-				int tmp;
-				auto _ = fscanf(f, "%d", &tmp);
-				mesh_.elements[i].hex = tmp;
-			}
-
-			char s[1024], sread[1024];
-			int find = false, num = 0;
-			while (!feof(f) && !find)
-			{
-				auto _ = fgets(s, 1024, f);
-				if (sscanf(s, "%s%d", sread, &num) == 2 && (strcmp(sread, "KERNEL") == 0))
-					find = true;
-			}
-			if (find)
-			{
-				for (int i = 0; i < nh; i++)
-				{
-					double x, y, z;
-					auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
-					mesh_.elements[i].v_in_Kernel.push_back(x);
-					mesh_.elements[i].v_in_Kernel.push_back(y);
-					mesh_.elements[i].v_in_Kernel.push_back(z);
-				}
-			}
-
-			fclose(f);
-
-			// remove horrible kernels and replace with barycenters
-			for (int c = 0; c < n_cells(); ++c)
-			{
-				auto bary = cell_barycenter(c);
-				for (int d = 0; d < 3; ++d)
-					mesh_.elements[c].v_in_Kernel[d] = bary(d);
-			}
-
-			Navigation3D::prepare_mesh(mesh_);
-			// if(is_simplicial())
-			// MeshProcessing3D::orient_volume_mesh(mesh_);
-			compute_elements_tag();
-			return true;
-		}
-
-		// load from a geogram surface mesh (for debugging), or volume mesh
-		// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
-		bool CMesh3D::load(const GEO::Mesh &M)
+		// Build the internal topology from the Geogram representation created from MeshData.
+		bool CMesh3D::build_storage_from_geogram(const GEO::Mesh &M)
 		{
 			edge_nodes_.clear();
 			face_nodes_.clear();
@@ -530,65 +404,56 @@ namespace polyfem
 			return true;
 		}
 
-		bool CMesh3D::save(const std::string &path) const
+		bool CMesh3D::build_from_data(const MeshData &data)
 		{
-
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				to_geogram_mesh(*this, M);
-				GEO::mesh_save(M, path);
-				return true;
-			}
-
-			std::fstream f(path, std::ios::out);
-
-			f << mesh_.points.cols() << " " << mesh_.faces.size() << " " << 3 * mesh_.elements.size() << std::endl;
-			for (int i = 0; i < mesh_.points.cols(); i++)
-				f << mesh_.points(0, i) << " " << mesh_.points(1, i) << " " << mesh_.points(2, i) << std::endl;
-
-			for (auto f_ : mesh_.faces)
-			{
-				f << f_.vs.size() << " ";
-				for (auto vid : f_.vs)
-					f << vid << " ";
-				f << std::endl;
-			}
-
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].fs.size() << " ";
-				for (auto fid : mesh_.elements[i].fs)
-					f << fid << " ";
-				f << std::endl;
-				f << mesh_.elements[i].fs_flag.size() << " ";
-				for (auto f_flag : mesh_.elements[i].fs_flag)
-					f << f_flag << " ";
-				f << std::endl;
-			}
-
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].hex << std::endl;
-			}
-
-			f << "KERNEL"
-			  << " " << mesh_.elements.size() << std::endl;
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].v_in_Kernel[0] << " " << mesh_.elements[i].v_in_Kernel[1] << " " << mesh_.elements[i].v_in_Kernel[2] << std::endl;
-			}
-			f.close();
-
-			return true;
-		}
-
-		bool CMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
+
+			if (data.has_polyhedral_topology())
+			{
+				mesh_.points = V.transpose();
+				mesh_.vertices.resize(V.rows());
+				for (int i = 0; i < V.rows(); ++i)
+					mesh_.vertices[i].id = i;
+
+				mesh_.faces.resize(data.faces.size());
+				for (int i = 0; i < data.faces.size(); ++i)
+				{
+					mesh_.faces[i].id = i;
+					mesh_.faces[i].vs.assign(data.faces[i].begin(), data.faces[i].end());
+				}
+
+				mesh_.elements.resize(F.rows());
+				bool all_hex = true;
+				for (int i = 0; i < F.rows(); ++i)
+				{
+					auto &element = mesh_.elements[i];
+					element.id = i;
+					element.fs.assign(data.cell_faces[i].begin(), data.cell_faces[i].end());
+					element.fs_flag.assign(
+						data.cell_face_orientations[i].begin(), data.cell_face_orientations[i].end());
+					element.hex = data.cell_is_hex[i];
+					all_hex &= element.hex;
+					for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
+						element.input_vs.push_back(F(i, j));
+					for (const int face : element.fs)
+						element.vs.insert(
+							element.vs.end(), mesh_.faces[face].vs.begin(), mesh_.faces[face].vs.end());
+					std::sort(element.vs.begin(), element.vs.end());
+					element.vs.erase(std::unique(element.vs.begin(), element.vs.end()), element.vs.end());
+					element.v_in_Kernel.resize(data.cell_kernel_points.cols());
+					for (int d = 0; d < data.cell_kernel_points.cols(); ++d)
+						element.v_in_Kernel[d] = data.cell_kernel_points(i, d);
+				}
+				mesh_.type = all_hex ? MeshType::HEX : MeshType::HYB;
+				Navigation3D::prepare_mesh(mesh_);
+				compute_elements_tag();
+				return true;
+			}
+			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
 
 			GEO::Mesh M;
 			M.vertices.create_vertices((int)V.rows());
@@ -644,7 +509,7 @@ namespace polyfem
 			}
 			M.cells.connect();
 
-			return load(M);
+			return build_storage_from_geogram(M);
 		}
 
 		void CMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)

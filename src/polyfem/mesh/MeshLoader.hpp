@@ -2,20 +2,14 @@
 
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 
 namespace polyfem::mesh
 {
 	/// The canonical typed mesh schema shared by HDF5 bundles and checkpoints.
 	inline constexpr long MESH_SCHEMA_VERSION = 1;
 
-	class SurfaceMesh
-	{
-	public:
-		Eigen::MatrixXd vertices;
-		Eigen::VectorXi points;
-		Eigen::MatrixXi edges;
-		Eigen::MatrixXi faces;
-	};
+	using SurfaceMesh = SurfaceMeshData;
 
 	/// The only non-legacy decoder from a logical resource path to mesh data.
 	class MeshLoader

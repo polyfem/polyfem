@@ -98,8 +98,14 @@ namespace polyfem
 			return false;
 		}
 
-		bool NCMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		bool NCMesh3D::build_from_data(const MeshData &data)
 		{
+			if (data.has_polyhedral_topology())
+				return false;
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
+			if (F.cols() != 4 || F.minCoeff() < 0)
+				return false;
 			n_elements = 0;
 			elements.clear();
 			vertices.clear();
@@ -866,50 +872,6 @@ namespace polyfem
 		std::unique_ptr<Mesh> NCMesh3D::copy() const
 		{
 			return std::make_unique<NCMesh3D>(*this);
-		}
-
-		bool NCMesh3D::load(const std::string &path)
-		{
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				GEO::mesh_load(path, M);
-				return load(M);
-			}
-			return false;
-		}
-		bool NCMesh3D::load(const GEO::Mesh &M)
-		{
-			assert(M.vertices.dimension() == 3);
-
-			Eigen::MatrixXd V(M.vertices.nb(), 2);
-			Eigen::MatrixXi C(M.cells.nb(), 4);
-
-			for (int v = 0; v < V.rows(); v++)
-				V.row(v) << M.vertices.point(v)[0], M.vertices.point(v)[1], M.vertices.point(v)[2];
-
-			for (int c = 0; c < C.rows(); c++)
-			{
-				if (M.cells.type(c) != GEO::MESH_TET)
-					throw std::runtime_error("NCMesh3D only supports tet mesh!");
-				for (int i = 0; i < C.cols(); i++)
-					C(c, i) = M.cells.vertex(c, i);
-			}
-
-			n_elements = 0;
-			vertices.reserve(V.rows());
-			for (int i = 0; i < V.rows(); i++)
-			{
-				vertices.emplace_back(V.row(i));
-			}
-			for (int i = 0; i < C.rows(); i++)
-			{
-				add_element(C.row(i), -1);
-			}
-
-			prepare_mesh();
-
-			return true;
 		}
 
 		int NCMesh3D::find_vertex(Eigen::Vector2i v) const

@@ -83,8 +83,12 @@ namespace polyfem
 			refine(n_refinement - 1, t);
 		}
 
-		bool NCMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		bool NCMesh2D::build_from_data(const MeshData &data)
 		{
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
+			if (F.cols() != 3 || F.minCoeff() < 0)
+				return false;
 			GEO::Mesh mesh_;
 			mesh_.clear(false, false);
 			to_geogram_mesh(V, F, mesh_);
@@ -590,48 +594,6 @@ namespace polyfem
 				if (follower_id >= 0 && edges[follower_id].n_elem() > 0)
 					list.emplace_back(follower_id, p1, p2);
 			}
-		}
-
-		bool NCMesh2D::load(const std::string &path)
-		{
-			assert(false);
-			return false;
-		}
-
-		bool NCMesh2D::load(const GEO::Mesh &mesh)
-		{
-			GEO::Mesh mesh_;
-			mesh_.clear(false, false);
-			mesh_.copy(mesh);
-			orient_normals_2d(mesh_);
-
-			Eigen::MatrixXd V(mesh_.vertices.nb(), 2);
-			Eigen::MatrixXi F(mesh_.facets.nb(), 3);
-
-			for (int v = 0; v < V.rows(); v++)
-			{
-				const double *ptr = mesh_.vertices.point_ptr(v);
-				V.row(v) << ptr[0], ptr[1];
-			}
-
-			for (int f = 0; f < F.rows(); f++)
-				for (int i = 0; i < F.cols(); i++)
-					F(f, i) = mesh_.facets.vertex(f, i);
-
-			n_elements = 0;
-			vertices.reserve(V.rows());
-			for (int i = 0; i < V.rows(); i++)
-			{
-				vertices.emplace_back(V.row(i));
-			}
-			for (int i = 0; i < F.rows(); i++)
-			{
-				add_element(F.row(i), -1);
-			}
-
-			prepare_mesh();
-
-			return true;
 		}
 
 		void NCMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const

@@ -7,6 +7,7 @@
 #include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
@@ -407,7 +408,8 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading mesh...");
 
-		std::unique_ptr<Mesh> mesh = Mesh::create(meshin, non_conforming);
+		std::unique_ptr<Mesh> mesh = Mesh::create(
+			mesh::MeshReader::from_geogram(meshin), non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -500,7 +502,7 @@ namespace polyfem
 		assert(variational_formulation != nullptr);
 		igl::Timer timer;
 		timer.start();
-		auto mesh = mesh::Mesh::create(V, F, non_conforming);
+		auto mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
 		timer.stop();
 		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}

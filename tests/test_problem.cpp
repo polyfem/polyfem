@@ -58,7 +58,7 @@ namespace
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
 
-		auto mesh = Mesh::create(vertices, cells);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
 
 		std::vector<int> boundary_ids(mesh->n_boundary_elements());
 		for (int i = 0; i < mesh->n_boundary_elements(); ++i)
@@ -83,7 +83,7 @@ namespace
 		cells << 0, 1, 2,
 			1, 3, 2;
 
-		auto mesh = Mesh::create(vertices, cells);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
 		mesh->set_body_ids({5, 8});
 		return mesh;
 	}

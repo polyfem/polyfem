@@ -7,6 +7,8 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #ifdef POLYFEM_WITH_ITR
@@ -38,7 +40,7 @@ namespace
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> create_test_quad_mesh()
@@ -52,7 +54,7 @@ namespace
 		Eigen::MatrixXi cells(1, 4);
 		cells << 0, 1, 2, 3;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> create_test_tetra_mesh()
@@ -66,7 +68,7 @@ namespace
 		Eigen::MatrixXi cells(1, 4);
 		cells << 0, 1, 2, 3;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> create_test_hex_mesh()
@@ -84,7 +86,7 @@ namespace
 		Eigen::MatrixXi cells(1, 8);
 		cells << 0, 1, 2, 3, 4, 5, 6, 7;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	void require_sparse_equal(const StiffnessMatrix &actual, const Eigen::MatrixXd &expected)
@@ -214,10 +216,10 @@ TEST_CASE("expression", "[utils]")
 
 TEST_CASE("mshreader", "[utils]")
 {
-	const std::string path = POLYFEM_DATA_DIR;
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
 	Eigen::MatrixXd vertices;
 	Eigen::MatrixXi cells;
-	const auto mesh = Mesh::create(path + "/circle2.msh");
+	const auto mesh = MeshLoader(resources).load_fem("circle2.msh");
 	REQUIRE(mesh);
 }
 

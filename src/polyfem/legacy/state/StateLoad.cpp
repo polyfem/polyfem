@@ -8,6 +8,7 @@
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 
 #include <polyfem/utils/Selection.hpp>
 
@@ -46,7 +47,7 @@ namespace polyfem::legacy
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading mesh...");
-		mesh = Mesh::create(meshin, non_conforming);
+		mesh = Mesh::create(mesh::MeshReader::from_geogram(meshin), non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");

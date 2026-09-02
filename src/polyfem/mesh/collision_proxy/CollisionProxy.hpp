@@ -7,6 +7,11 @@
 
 #include <Eigen/Core>
 
+namespace polyfem::io
+{
+	class ResourceIO;
+}
+
 namespace polyfem::mesh
 {
 	enum class CollisionProxyTessellation
@@ -61,9 +66,9 @@ namespace polyfem::mesh
 		// NOTE: no need for proxy_faces
 		std::vector<Eigen::Triplet<double>> &displacement_map);
 
-	/// @brief Load a collision proxy mesh and displacement map from files.
-	/// @param[in] mesh_filename Mesh filename
-	/// @param[in] weights_filename Weights filename
+	/// @brief Load a collision proxy mesh and displacement map from resources.
+	/// @param[in] mesh_filename Mesh resource path
+	/// @param[in] weights_filename Weights resource path
 	/// @param[in] in_node_to_node Map from input node IDs to node IDs
 	/// @param[in] transformation Transformation to apply to the mesh
 	/// @param[out] vertices Output vertices of the proxy mesh
@@ -72,6 +77,7 @@ namespace polyfem::mesh
 	/// @param[out] faces Output faces of the proxy mesh
 	/// @param[out] displacement_map_entries Output displacement map entries
 	void load_collision_proxy(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
@@ -82,14 +88,15 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
-	/// @brief Load a collision proxy mesh from a file.
-	/// @param[in] mesh_filename Mesh filename
+	/// @brief Load a collision proxy mesh from a resource.
+	/// @param[in] mesh_filename Mesh resource path
 	/// @param[in] transformation Transformation to apply to the mesh
 	/// @param[out] vertices Output vertices of the proxy mesh
 	/// @param[out] codim_vertices Output codimension vertices of the proxy mesh
 	/// @param[out] edges Output edges of the proxy mesh
 	/// @param[out] faces Output faces of the proxy mesh
 	void load_collision_proxy_mesh(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const json &transformation,
 		Eigen::MatrixXd &vertices,
@@ -97,11 +104,12 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &edges,
 		Eigen::MatrixXi &faces);
 
-	/// @brief Load a collision proxy displacement map from files.
-	/// @param[in] weights_filename Weights filename
+	/// @brief Load a collision proxy displacement map from a resource.
+	/// @param[in] weights_filename Weights resource path
 	/// @param[in] in_node_to_node Map from input node IDs to node IDs
 	/// @param[out] displacement_map_entries Output displacement map entries
 	void load_collision_proxy_displacement_map(
+		const io::ResourceIO &resources,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
 		const size_t num_proxy_vertices,

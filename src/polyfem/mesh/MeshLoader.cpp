@@ -1,11 +1,9 @@
 #include "MeshLoader.hpp"
 
-#include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/utils/HashUtils.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <algorithm>
-#include <unordered_map>
 
 namespace polyfem::mesh
 {
@@ -14,19 +12,6 @@ namespace polyfem::mesh
 		std::string child_path(const std::string &group, const std::string &name)
 		{
 			return (std::filesystem::path(group) / name).lexically_normal().generic_string();
-		}
-
-		template <typename T>
-		void require_size(
-			const std::vector<T> &values,
-			const size_t size,
-			const io::ResourceIO &resources,
-			const std::string &path)
-		{
-			if (values.size() != size)
-				log_and_throw_error(
-					"Dataset {} has {} entries; expected {}.",
-					resources.describe(path), values.size(), size);
 		}
 
 		std::vector<std::vector<int>> unpack_connectivity(
@@ -87,12 +72,22 @@ namespace polyfem::mesh
 	{
 		if (!resources_.exists(path))
 			log_and_throw_error("Mesh resource {} does not exist.", resources_.describe(path));
+
+		MeshData data{Eigen::MatrixXd(), Eigen::MatrixXi()};
 		if (!resources_.is_group(path))
 		{
-			auto mesh = Mesh::create(resources_.materialize(path).string(), non_conforming);
-			if (!mesh)
-				log_and_throw_error("Unable to decode FEM mesh {}.", resources_.describe(path));
-			return mesh;
+			std::string extension = std::filesystem::path(path).extension().string();
+			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+			if (extension == ".msh")
+				data = MeshReader::read_msh(resources_.materialize(path));
+			else if (extension == ".hybrid")
+			{
+				auto input = resources_.open(path, false);
+				data = MeshReader::read_hybrid(*input, resources_.describe(path));
+			}
+			else
+				data = MeshReader::read_geogram(resources_.materialize(path));
+			return Mesh::create(std::move(data), non_conforming);
 		}
 
 		validate_group(path, "fem");
@@ -100,34 +95,24 @@ namespace polyfem::mesh
 		const std::string cells_path = child_path(path, "cells");
 		if (!resources_.exists(vertices_path) || !resources_.exists(cells_path))
 			log_and_throw_error("FEM mesh group {} requires vertices and cells.", resources_.describe(path));
-		const Eigen::MatrixXd vertices = resources_.read_matrix(vertices_path);
-		const Eigen::MatrixXi cells = resources_.read_int_matrix(cells_path);
+		Eigen::MatrixXd vertices = resources_.read_matrix(vertices_path);
+		Eigen::MatrixXi cells = resources_.read_int_matrix(cells_path);
 		const long dimension = resources_.read_integer_attribute(path, "dimension");
 		if ((dimension != 2 && dimension != 3) || vertices.cols() != dimension)
 			log_and_throw_error("Invalid dimension metadata in {}.", resources_.describe(path));
 		if (vertices.rows() == 0 || cells.rows() == 0 || cells.cols() < 3)
 			log_and_throw_error("Empty or invalid connectivity in {}.", resources_.describe(path));
-		if (cells.minCoeff() < 0 || cells.maxCoeff() >= vertices.rows())
+		if (cells.minCoeff() < -1 || cells.maxCoeff() >= vertices.rows())
 			log_and_throw_error("Connectivity in {} references an invalid vertex.", resources_.describe(path));
 
-		std::unique_ptr<Mesh> mesh = Mesh::create(vertices, cells, non_conforming);
-		if (!mesh)
-			log_and_throw_error("Unable to construct FEM mesh {}.", resources_.describe(path));
+		data = MeshData(std::move(vertices), std::move(cells));
 
 		const std::string body_ids_path = child_path(path, "body_ids");
 		if (resources_.exists(body_ids_path))
-		{
-			const std::vector<int> values = resources_.read_int_vector(body_ids_path);
-			require_size(values, mesh->n_elements(), resources_, body_ids_path);
-			mesh->set_body_ids(values);
-		}
+			data.body_ids = resources_.read_int_vector(body_ids_path);
 		const std::string geometry_ids_path = child_path(path, "geometry_ids");
 		if (resources_.exists(geometry_ids_path))
-		{
-			const std::vector<int> values = resources_.read_int_vector(geometry_ids_path);
-			require_size(values, mesh->n_elements(), resources_, geometry_ids_path);
-			mesh->set_geometry_ids(values);
-		}
+			data.geometry_ids = resources_.read_int_vector(geometry_ids_path);
 		const std::string boundary_ids_path = child_path(path, "boundary_ids");
 		if (resources_.exists(boundary_ids_path))
 		{
@@ -135,21 +120,13 @@ namespace polyfem::mesh
 			if (!resources_.exists(boundary_elements_path))
 				log_and_throw_error("{} requires boundary_elements.", resources_.describe(boundary_ids_path));
 			const Eigen::MatrixXi elements = resources_.read_int_matrix(boundary_elements_path);
-			const std::vector<int> ids = resources_.read_int_vector(boundary_ids_path);
-			require_size(ids, elements.rows(), resources_, boundary_ids_path);
-			std::unordered_map<std::vector<int>, int, utils::HashVector> labels;
+			data.boundary_ids = resources_.read_int_vector(boundary_ids_path);
+			data.boundary_elements.resize(elements.rows());
 			for (int i = 0; i < elements.rows(); ++i)
 			{
-				std::vector<int> side(elements.row(i).data(), elements.row(i).data() + elements.cols());
-				std::sort(side.begin(), side.end());
-				labels.emplace(std::move(side), ids[i]);
+				for (int j = 0; j < elements.cols() && elements(i, j) >= 0; ++j)
+					data.boundary_elements[i].push_back(elements(i, j));
 			}
-			mesh->compute_boundary_ids([&](const size_t primitive, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
-				std::vector<int> side = vertices;
-				std::sort(side.begin(), side.end());
-				const auto it = labels.find(side);
-				return it == labels.end() ? mesh->get_default_boundary_id(primitive) : it->second;
-			});
 		}
 
 		const std::string higher_nodes_path = child_path(path, "higher_order_nodes");
@@ -161,11 +138,10 @@ namespace polyfem::mesh
 		{
 			if (!resources_.exists(higher_nodes_path) || !resources_.exists(higher_connectivity_path) || !resources_.exists(higher_offsets_path))
 				log_and_throw_error("Higher-order data in {} is incomplete.", resources_.describe(path));
-			const auto connectivity = unpack_connectivity(
+			data.higher_order_connectivity = unpack_connectivity(
 				resources_.read_int_vector(higher_connectivity_path), resources_.read_long_vector(higher_offsets_path),
 				resources_, higher_offsets_path);
-			require_size(connectivity, mesh->n_elements(), resources_, higher_connectivity_path);
-			mesh->attach_higher_order_nodes(resources_.read_matrix(higher_nodes_path), connectivity);
+			data.higher_order_nodes = resources_.read_matrix(higher_nodes_path);
 		}
 
 		const std::string weights_path = child_path(path, "higher_order_weights");
@@ -174,14 +150,43 @@ namespace polyfem::mesh
 			const std::string offsets_path = child_path(path, "higher_order_weight_offsets");
 			if (!resources_.exists(offsets_path))
 				log_and_throw_error("{} requires higher_order_weight_offsets.", resources_.describe(weights_path));
-			auto values = unpack_weights(
+			data.higher_order_weights = unpack_weights(
 				resources_.read_double_vector(weights_path), resources_.read_long_vector(offsets_path),
 				resources_, offsets_path);
-			require_size(values, mesh->n_elements(), resources_, weights_path);
-			mesh->set_cell_weights(values);
-			mesh->set_is_rational(std::any_of(values.begin(), values.end(), [](const auto &entry) { return !entry.empty(); }));
 		}
-		return mesh;
+
+		const std::string faces_path = child_path(path, "faces");
+		const std::string face_offsets_path = child_path(path, "face_offsets");
+		const std::string cell_faces_path = child_path(path, "cell_faces");
+		const std::string cell_face_offsets_path = child_path(path, "cell_face_offsets");
+		const bool any_polyhedral = resources_.exists(faces_path) || resources_.exists(face_offsets_path)
+									|| resources_.exists(cell_faces_path) || resources_.exists(cell_face_offsets_path)
+									|| resources_.exists(child_path(path, "cell_face_orientations"))
+									|| resources_.exists(child_path(path, "cell_is_hex"))
+									|| resources_.exists(child_path(path, "cell_kernel_points"));
+		if (any_polyhedral)
+		{
+			for (const std::string &required : {
+					 faces_path, face_offsets_path, cell_faces_path, cell_face_offsets_path,
+					 child_path(path, "cell_face_orientations"), child_path(path, "cell_is_hex"),
+					 child_path(path, "cell_kernel_points")})
+				if (!resources_.exists(required))
+					log_and_throw_error("Polyhedral mesh group {} is missing {}.", resources_.describe(path), required);
+			data.faces = unpack_connectivity(
+				resources_.read_int_vector(faces_path), resources_.read_long_vector(face_offsets_path),
+				resources_, face_offsets_path);
+			const std::vector<long> cell_face_offsets = resources_.read_long_vector(cell_face_offsets_path);
+			data.cell_faces = unpack_connectivity(
+				resources_.read_int_vector(cell_faces_path), cell_face_offsets,
+				resources_, cell_face_offsets_path);
+			data.cell_face_orientations = unpack_connectivity(
+				resources_.read_int_vector(child_path(path, "cell_face_orientations")), cell_face_offsets,
+				resources_, cell_face_offsets_path);
+			const std::vector<int> cell_is_hex = resources_.read_int_vector(child_path(path, "cell_is_hex"));
+			data.cell_is_hex.assign(cell_is_hex.begin(), cell_is_hex.end());
+			data.cell_kernel_points = resources_.read_matrix(child_path(path, "cell_kernel_points"));
+		}
+		return Mesh::create(std::move(data), non_conforming);
 	}
 
 	SurfaceMesh MeshLoader::load_surface(const std::string &path) const
@@ -191,8 +196,15 @@ namespace polyfem::mesh
 		SurfaceMesh result;
 		if (!resources_.is_group(path))
 		{
-			if (!read_surface_mesh(resources_.materialize(path).string(), result.vertices, result.points, result.edges, result.faces))
-				log_and_throw_error("Unable to decode surface mesh {}.", resources_.describe(path));
+			const std::filesystem::path materialized = resources_.materialize(path);
+			std::string extension = std::filesystem::path(path).extension().string();
+			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+			if (extension == ".msh")
+				result = MeshReader::read_msh_surface(materialized);
+			else if (extension == ".obj")
+				result = MeshReader::read_obj_surface(materialized);
+			else if (!MeshReader::read_triangle_surface(materialized, result))
+				result = MeshReader::read_geogram_surface(materialized);
 			return result;
 		}
 

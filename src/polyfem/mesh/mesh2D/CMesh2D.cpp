@@ -168,54 +168,10 @@ namespace polyfem
 			in_ordered_faces_.resize(0, 0);
 		}
 
-		bool CMesh2D::load(const std::string &path)
+		bool CMesh2D::build_from_data(const MeshData &data)
 		{
-			// This method should be used for special loading, like hybrid in 3d
-
-			// edge_nodes_.clear();
-			// face_nodes_.clear();
-			// cell_nodes_.clear();
-			// order_ = 1;
-
-			// c2e_.reset();
-			// boundary_vertices_.reset();
-			// boundary_edges_.reset();
-
-			// mesh_.clear(false,false);
-
-			// if (!StringUtils::endswith(path, "msh"))
-			// {
-			// 	Eigen::MatrixXd vertices;
-			// 	Eigen::MatrixXi cells;
-			// 	std::vector<std::vector<int>> elements;
-			// 	std::vector<std::vector<double>> weights;
-
-			// 	if(!MshReader::load(path, vertices, cells, elements, weights))
-			// 		return false;
-
-			// 	build_from_matrices(vertices, cells);
-			// 	attach_higher_order_nodes(vertices, elements);
-			// 	cell_weights_ = weights;
-			// }
-			// else
-			// {
-			// 	if(!mesh_load(path, mesh_))
-			// 		return false;
-			// }
-
-			// orient_normals_2d(mesh_);
-			// Navigation::prepare_mesh(mesh_);
-			// c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			// boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			// boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
-
-			// compute_elements_tag();
-			assert(false);
-			return false;
-		}
-
-		bool CMesh2D::load(const GEO::Mesh &mesh)
-		{
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
@@ -225,38 +181,24 @@ namespace polyfem
 			boundary_edges_.reset();
 
 			mesh_.clear(false, false);
-			mesh_.copy(mesh);
-
-			orient_normals_2d(mesh_);
-			Navigation::prepare_mesh(mesh_);
-			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
-
-			compute_elements_tag();
-			return true;
-		}
-
-		bool CMesh2D::save(const std::string &path) const
-		{
-			if (!mesh_save(mesh_, path))
-				return false;
-
-			return true;
-		}
-
-		bool CMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			edge_nodes_.clear();
-			face_nodes_.clear();
-			cell_nodes_.clear();
-
-			c2e_.reset();
-			boundary_vertices_.reset();
-			boundary_edges_.reset();
-
-			mesh_.clear(false, false);
-			to_geogram_mesh(V, F, mesh_);
+			mesh_.vertices.create_vertices(V.rows());
+			for (int i = 0; i < V.rows(); ++i)
+			{
+				GEO::vec3 &point = mesh_.vertices.point(i);
+				point[0] = V(i, 0);
+				point[1] = V(i, 1);
+				point[2] = 0;
+			}
+			for (int i = 0; i < F.rows(); ++i)
+			{
+				std::vector<GEO::index_t> vertices;
+				vertices.reserve(F.cols());
+				for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
+					vertices.push_back(F(i, j));
+				if (vertices.size() < 3)
+					return false;
+				mesh_.facets.create_polygon(vertices.size(), vertices.data());
+			}
 
 			orient_normals_2d(mesh_);
 			Navigation::prepare_mesh(mesh_);
@@ -720,8 +662,20 @@ namespace polyfem
 
 		std::unique_ptr<Mesh> CMesh2D::copy() const
 		{
+			Eigen::MatrixXd vertices(n_vertices(), 2);
+			int max_face_size = 0;
+			for (int i = 0; i < n_vertices(); ++i)
+				vertices.row(i) = point(i);
+			for (int i = 0; i < n_faces(); ++i)
+				max_face_size = std::max(max_face_size, n_face_vertices(i));
+
+			Eigen::MatrixXi faces = Eigen::MatrixXi::Constant(n_faces(), max_face_size, -1);
+			for (int i = 0; i < n_faces(); ++i)
+				for (int j = 0; j < n_face_vertices(i); ++j)
+					faces(i, j) = face_vertex(i, j);
+
 			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
-			copy_mesh->load(this->mesh_);
+			copy_mesh->build_from_data(MeshData(std::move(vertices), std::move(faces)));
 
 			// Manually copy parent's data
 			copy_mesh->elements_tag_ = this->elements_tag_;

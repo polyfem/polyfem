@@ -7,8 +7,12 @@ set(SOURCES
 	LocalBoundary.hpp
 	Mesh.cpp
 	Mesh.hpp
+	MeshData.cpp
+	MeshData.hpp
 	MeshLoader.cpp
 	MeshLoader.hpp
+	MeshReader.cpp
+	MeshReader.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
 	MeshUtils.cpp
