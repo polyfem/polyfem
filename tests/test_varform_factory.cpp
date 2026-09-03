@@ -54,6 +54,7 @@ namespace
 TEST_CASE("varform factory supports migrated formulations", "[varform]")
 {
 	const json args = transient_args();
+	const io::FileSystemIO resources(".");
 
 	for (const std::string formulation : {
 			 "NeoHookean",
@@ -67,12 +68,12 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		 })
 	{
 		CHECK(varform::VarFormFactory::supports(formulation, args));
-		CHECK(varform::VarFormFactory::create(formulation, args) != nullptr);
+		CHECK(varform::VarFormFactory::create(formulation, args, resources) != nullptr);
 	}
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args) != nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args, resources) != nullptr);
 	CHECK_FALSE(varform::VarFormFactory::supports("UnknownFormulation", args));
-	CHECK(varform::VarFormFactory::create("UnknownFormulation", args) == nullptr);
+	CHECK(varform::VarFormFactory::create("UnknownFormulation", args, resources) == nullptr);
 
 	json contact_fsi_args = args;
 	contact_fsi_args["contact"]["enabled"] = true;
@@ -83,26 +84,26 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"displacement_space_id", 3},
 		{"solid_material", {{"type", "NeoHookean"}}}};
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) != nullptr);
-	CHECK(varform::uses_varform_state(contact_fsi_args));
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) != nullptr);
+	CHECK(varform::uses_varform_state(contact_fsi_args, resources));
 
 	contact_fsi_args["materials"].erase("solid_material");
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) == nullptr);
 
 	json static_args = args;
 	static_args["time"] = nullptr;
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", static_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", static_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", static_args, resources) == nullptr);
 
 	json boundary_pair_args = args;
 	boundary_pair_args["/boundary_conditions/periodic"_json_pointer] = {{{"boundary_ids", {1, 2}}}};
 	CHECK(varform::VarFormFactory::supports("NeoHookean", boundary_pair_args));
-	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args) != nullptr);
-	const auto scalar_with_periodic = varform::VarFormFactory::create("Laplacian", boundary_pair_args);
+	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args, resources) != nullptr);
+	const auto scalar_with_periodic = varform::VarFormFactory::create("Laplacian", boundary_pair_args, resources);
 	REQUIRE(scalar_with_periodic != nullptr);
 	CHECK(scalar_with_periodic->name() == "Scalar");
-	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args);
+	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args, resources);
 	REQUIRE(linear_with_periodic != nullptr);
 	CHECK(linear_with_periodic->name() == "NonlinearElasticTransient");
 
@@ -113,7 +114,7 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"fixed_components", {0}}};
 	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
 	const auto differentiable_periodic =
-		varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true);
+		varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, resources, true);
 	REQUIRE(differentiable_periodic != nullptr);
 	CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(differentiable_periodic) != nullptr);
 	CHECK(differentiable_periodic->name() == "NonlinearElasticStatic");
@@ -121,11 +122,11 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	periodic_homogenization_args["/contact/periodic"_json_pointer] = true;
 	periodic_homogenization_args["/contact/enabled"_json_pointer] = true;
 	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
-	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true) != nullptr);
+	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, resources, true) != nullptr);
 
 	json zero_mean_args = args;
 	zero_mean_args["/constraints/zero_mean"_json_pointer] = true;
-	const auto scalar_with_zero_mean = varform::VarFormFactory::create("Laplacian", zero_mean_args);
+	const auto scalar_with_zero_mean = varform::VarFormFactory::create("Laplacian", zero_mean_args, resources);
 	REQUIRE(scalar_with_zero_mean != nullptr);
 	CHECK(scalar_with_zero_mean->name() == "Scalar");
 }
@@ -579,7 +580,8 @@ TEST_CASE("macro displacement gradient remains on legacy state path", "[varform]
 		{"value", {{0, 0}, {0, 0}}},
 		{"fixed_components", {0}}};
 
-	CHECK_FALSE(varform::uses_varform_state(args));
+	const io::FileSystemIO resources(args["root_path"].get<std::string>());
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
 
 	legacy::State state;
 	state.init(args, false);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <map>
 
 #include <units/units.hpp>
@@ -22,10 +23,10 @@ namespace polyfem
 					expr.set_unit_type(unit_type);
 			}
 
-			void init(const json &vals, const std::string &root_path);
+			void init(const json &vals, const io::ResourceIO &resources);
 			void init(const double val);
 			void init(const Eigen::MatrixXd &val);
-			void init(const std::string &expr, const std::string &root_path);
+			void init(const std::string &expr, const io::ResourceIO &resources);
 #ifdef POLYFEM_WITH_PYTHON
 			void init_python(const std::string &path, const std::string &function_name);
 #endif

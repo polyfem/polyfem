@@ -1,10 +1,8 @@
-#include "GeometryReader.hpp"
+#include "GeometryLoader.hpp"
 
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/io/MshReader.hpp>
-#include <polyfem/utils/StringUtils.hpp>
-
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -15,17 +13,30 @@
 #include <igl/boundary_facets.h>
 
 #include <strnatcmp.h>
-#include <glob/glob.h>
-#include <filesystem>
 
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
 
-	void apply_geometry_selection(
+	LoadedGeometry GeometryLoader::load(
+		const json &geometry,
+		const std::vector<json> &obstacle_displacements,
+		const std::vector<json> &dirichlet_conditions,
+		const bool non_conforming) const
+	{
+		LoadedGeometry result;
+		result.fem = load_fem(geometry, non_conforming);
+		if (!result.fem)
+			log_and_throw_error("Configured geometry contains no enabled FEM mesh.");
+		result.obstacle = load_obstacles(
+			geometry, obstacle_displacements, dirichlet_conditions,
+			result.fem->dimension(), non_conforming);
+		return result;
+	}
+
+	void GeometryLoader::apply_geometry_selection(
 		Mesh &mesh,
-		const json &geometry_selection,
-		const std::string &root_path)
+		const json &geometry_selection) const
 	{
 		if (geometry_selection.is_object() && geometry_selection.contains("same_as_volume"))
 		{
@@ -41,7 +52,7 @@ namespace polyfem::mesh
 
 		Selection::BBox bbox;
 		mesh.bounding_box(bbox[0], bbox[1]);
-		const auto selections = Selection::build_selections(geometry_selection, bbox, root_path);
+		const auto selections = Selection::build_selections(geometry_selection, bbox, resources_);
 
 		Eigen::MatrixXd barycenters;
 		mesh.compute_element_barycenters(barycenters);
@@ -61,11 +72,9 @@ namespace polyfem::mesh
 		mesh.set_geometry_ids(geometry_ids);
 	}
 
-	std::unique_ptr<Mesh> read_fem_mesh(
-		const Units &units,
+	std::unique_ptr<Mesh> GeometryLoader::load_fem_entry(
 		const json &j_mesh,
-		const std::string &root_path,
-		const bool non_conforming)
+		const bool non_conforming) const
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
 			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh);
@@ -73,8 +82,7 @@ namespace polyfem::mesh
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
 
-		std::unique_ptr<Mesh> mesh = Mesh::create(resolve_path(j_mesh["mesh"], root_path), non_conforming);
-
+		std::unique_ptr<Mesh> mesh = MeshLoader(resources_).load_fem(j_mesh["mesh"].get<std::string>(), non_conforming);
 		// --------------------------------------------------------------------
 
 		// NOTE: Normaliziation is done before transformations are applied and/or any selection operators
@@ -89,7 +97,7 @@ namespace polyfem::mesh
 		const std::string unit = j_mesh["unit"];
 		double unit_scale = 1;
 		if (!unit.empty())
-			unit_scale = Units::convert(1, unit, units.length());
+			unit_scale = Units::convert(1, unit, units_.length());
 
 		{
 			MatrixNd A;
@@ -106,7 +114,7 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		std::vector<std::shared_ptr<Selection>> surface_selections =
-			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
+			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, resources_) : std::vector<std::shared_ptr<Selection>>();
 
 		// --------------------------------------------------------------------
 
@@ -186,7 +194,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		const std::vector<std::shared_ptr<Selection>> node_selections =
-			is_param_valid(j_mesh, "point_selection") ? Selection::build_selections(j_mesh["point_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
+			is_param_valid(j_mesh, "point_selection") ? Selection::build_selections(j_mesh["point_selection"], bbox, resources_) : std::vector<std::shared_ptr<Selection>>();
 
 		if (!node_selections.empty())
 		{
@@ -272,7 +280,7 @@ namespace polyfem::mesh
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
-				Selection::build_selections(volume_selection, bbox, root_path);
+				Selection::build_selections(volume_selection, bbox, resources_);
 
 			// Append the mesh's stored ids to the volume selection as a lowest priority selection
 			if (mesh->has_body_ids())
@@ -292,7 +300,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		if (is_param_valid(j_mesh, "geometry_selection"))
-			apply_geometry_selection(*mesh, j_mesh["geometry_selection"], root_path);
+			apply_geometry_selection(*mesh, j_mesh["geometry_selection"]);
 
 		// --------------------------------------------------------------------
 
@@ -301,37 +309,10 @@ namespace polyfem::mesh
 
 	// ========================================================================
 
-	std::unique_ptr<Mesh> read_fem_geometry(
-		const Units &units,
+	std::unique_ptr<Mesh> GeometryLoader::load_fem(
 		const json &geometry,
-		const std::string &root_path,
-		const std::vector<std::string> &_names,
-		const std::vector<Eigen::MatrixXd> &_vertices,
-		const std::vector<Eigen::MatrixXi> &_cells,
-		const bool non_conforming)
+		const bool non_conforming) const
 	{
-		// TODO: fix me for hdf5
-		// {
-		// 	int index = -1;
-		// 	for (int i = 0; i < names.size(); ++i)
-		// 	{
-		// 		if (names[i] == args["meshes"])
-		// 		{
-		// 			index = i;
-		// 			break;
-		// 		}
-		// 	}
-		// 	assert(index >= 0);
-		// 	if (vertices[index].cols() == 2)
-		// 		mesh = std::make_unique<polyfem::CMesh2D>();
-		// 	else
-		// 		mesh = std::make_unique<polyfem::Mesh3D>();
-		// 	mesh->build_from_matrices(vertices[index], cells[index]);
-		// }
-		assert(_names.empty());
-		assert(_vertices.empty());
-		assert(_cells.empty());
-
 		// --------------------------------------------------------------------
 
 		if (geometry.empty())
@@ -351,7 +332,7 @@ namespace polyfem::mesh
 			if (geometry["type"] != "mesh" && geometry["type"] != "mesh_array")
 				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
 
-			const std::unique_ptr<Mesh> tmp_mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
+			const std::unique_ptr<Mesh> tmp_mesh = load_fem_entry(geometry, non_conforming);
 
 			if (mesh == nullptr)
 				mesh = tmp_mesh->copy();
@@ -398,27 +379,18 @@ namespace polyfem::mesh
 
 	// ========================================================================
 
-	void read_obstacle_mesh(
-		const Units &units,
+	SurfaceMesh GeometryLoader::load_surface(
 		const json &j_mesh,
-		const std::string &root_path,
-		const int dim,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &codim_edges,
-		Eigen::MatrixXi &faces)
+		const int dim) const
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
 			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh);
 
-		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
-
-		bool read_success = read_surface_mesh(
-			mesh_path, vertices, codim_vertices, codim_edges, faces);
-
-		if (!read_success)
-			// error already logged in read_surface_mesh()
-			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
+		SurfaceMesh result = MeshLoader(resources_).load_surface(j_mesh["mesh"].get<std::string>());
+		auto &vertices = result.vertices;
+		auto &codim_vertices = result.points;
+		auto &codim_edges = result.edges;
+		auto &faces = result.faces;
 
 		const int prev_dim = vertices.cols();
 		vertices.conservativeResize(vertices.rows(), dim);
@@ -431,7 +403,7 @@ namespace polyfem::mesh
 			const std::string unit = j_mesh["unit"];
 			double unit_scale = 1;
 			if (!unit.empty())
-				unit_scale = Units::convert(1, unit, units.length());
+				unit_scale = Units::convert(1, unit, units_.length());
 
 			const VectorNd mesh_dimensions = (vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
 			MatrixNd A;
@@ -474,7 +446,7 @@ namespace polyfem::mesh
 			faces.resize(0, 0); // Clear faces
 		}
 		// surface (3D) -> boundary faces
-		// No need to do anything for (extract == "surface" && dim == 3) since we used read_surface_mesh
+		// Surface extraction in 3D already has the desired faces from MeshLoader.
 		else if (extract == "volume")
 		{
 			// volume -> undefined
@@ -505,44 +477,18 @@ namespace polyfem::mesh
 				}
 			}
 		}
+		return result;
 	}
 
 	// ========================================================================
 
-	Obstacle read_obstacle_geometry(
-		const Units &units,
+	Obstacle GeometryLoader::load_obstacles(
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::vector<json> &dirichlets,
-		const std::string &root_path,
 		const int dim,
-		const std::vector<std::string> &_names,
-		const std::vector<Eigen::MatrixXd> &_vertices,
-		const std::vector<Eigen::MatrixXi> &_cells,
-		const bool non_conforming)
+		const bool) const
 	{
-		// TODO: fix me for hdf5
-		// {
-		// 	int index = -1;
-		// 	for (int i = 0; i < names.size(); ++i)
-		// 	{
-		// 		if (names[i] == args["meshes"])
-		// 		{
-		// 			index = i;
-		// 			break;
-		// 		}
-		// 	}
-		// 	assert(index >= 0);
-		// 	if (vertices[index].cols() == 2)
-		// 		mesh = std::make_unique<polyfem::CMesh2D>();
-		// 	else
-		// 		mesh = std::make_unique<polyfem::Mesh3D>();
-		// 	mesh->build_from_matrices(vertices[index], cells[index]);
-		// }
-		assert(_names.empty());
-		assert(_vertices.empty());
-		assert(_cells.empty());
-
 		Obstacle obstacle;
 
 		if (geometry.empty())
@@ -561,13 +507,11 @@ namespace polyfem::mesh
 
 			if (geometry["type"] == "mesh" || geometry["type"] == "mesh_array")
 			{
-				Eigen::MatrixXd vertices;
-				Eigen::VectorXi codim_vertices;
-				Eigen::MatrixXi codim_edges;
-				Eigen::MatrixXi faces;
-				read_obstacle_mesh(units,
-								   geometry, root_path, dim, vertices, codim_vertices,
-								   codim_edges, faces);
+				SurfaceMesh loaded = load_surface(geometry, dim);
+				Eigen::MatrixXd &vertices = loaded.vertices;
+				Eigen::VectorXi &codim_vertices = loaded.points;
+				Eigen::MatrixXi &codim_edges = loaded.edges;
+				Eigen::MatrixXi &faces = loaded.faces;
 
 				if (geometry["type"] == "mesh_array")
 				{
@@ -666,7 +610,7 @@ namespace polyfem::mesh
 				}
 
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacement, root_path);
+					vertices, codim_vertices, codim_edges, faces, displacement, resources_);
 			}
 			else if (geometry["type"] == "plane")
 			{
@@ -684,32 +628,19 @@ namespace polyfem::mesh
 			}
 			else if (geometry["type"] == "mesh_sequence")
 			{
-				namespace fs = std::filesystem;
-				std::vector<fs::path> mesh_files;
+				std::vector<std::string> mesh_files;
 				if (geometry["mesh_sequence"].is_array())
 				{
-					mesh_files = geometry["mesh_sequence"].get<std::vector<fs::path>>();
+					mesh_files = geometry["mesh_sequence"].get<std::vector<std::string>>();
 				}
 				else
 				{
 					assert(geometry["mesh_sequence"].is_string());
-					const fs::path meshes(resolve_path(geometry["mesh_sequence"], root_path));
-
-					if (fs::is_directory(meshes))
-					{
-						for (const auto &entry : std::filesystem::directory_iterator(meshes))
-						{
-							if (entry.is_regular_file())
-								mesh_files.push_back(entry.path());
-						}
-					}
-					else
-					{
-						mesh_files = glob::rglob(meshes.string());
-					}
+					const std::string sequence = geometry["mesh_sequence"].get<std::string>();
+					mesh_files = resources_.is_group(sequence) ? resources_.list(sequence) : resources_.glob(sequence);
 					// Sort the file names naturally
-					std::sort(mesh_files.begin(), mesh_files.end(), [](const fs::path &p1, const fs::path &p2) {
-						return strnatcmp(p1.string().c_str(), p2.string().c_str()) < 0;
+					std::sort(mesh_files.begin(), mesh_files.end(), [](const std::string &p1, const std::string &p2) {
+						return strnatcmp(p1.c_str(), p2.c_str()) < 0;
 					});
 				}
 
@@ -724,12 +655,11 @@ namespace polyfem::mesh
 					jmesh["mesh"] = mesh_files[i];
 					jmesh["n_refs"] = 0;
 
-					Eigen::VectorXi tmp_codim_vertices;
-					Eigen::MatrixXi tmp_codim_edges;
-					Eigen::MatrixXi tmp_faces;
-					read_obstacle_mesh(units,
-									   jmesh, root_path, dim, vertices[i],
-									   tmp_codim_vertices, tmp_codim_edges, tmp_faces);
+					SurfaceMesh loaded = load_surface(jmesh, dim);
+					vertices[i] = std::move(loaded.vertices);
+					Eigen::VectorXi &tmp_codim_vertices = loaded.points;
+					Eigen::MatrixXi &tmp_codim_edges = loaded.edges;
+					Eigen::MatrixXi &tmp_faces = loaded.faces;
 					if (i == 0)
 					{
 						codim_vertices = tmp_codim_vertices;
@@ -753,13 +683,13 @@ namespace polyfem::mesh
 			}
 		}
 
-		obstacle.set_units(units);
+		obstacle.set_units(units_);
 		return obstacle;
 	}
 
 	// ========================================================================
 
-	void construct_affine_transformation(
+	void GeometryLoader::construct_affine_transformation(
 		const double unit_scale,
 		const json &transform,
 		const VectorNd &mesh_dimensions,

@@ -35,7 +35,7 @@ namespace polyfem::mesh
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_mesh");
 
-		mesh = Mesh::create(local_mesh.rest_positions(), local_mesh.elements());
+		mesh = Mesh::create(MeshData(local_mesh.rest_positions(), local_mesh.elements()));
 		assert(mesh->n_vertices() == local_mesh.num_vertices());
 
 		std::vector<int> boundary_ids(mesh->n_boundary_elements(), -1);
@@ -250,11 +250,12 @@ namespace polyfem::mesh
 		}
 
 		std::vector<std::shared_ptr<solver::Form>> forms;
+		const polyfem::io::FileSystemIO resources(state.root_path());
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				state.units, dim(), current_time, state.in_node_to_node,
+				state.units, resources, dim(), current_time, state.in_node_to_node,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],

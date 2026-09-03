@@ -6,7 +6,6 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -72,14 +71,11 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		ElasticVarForm::load_mesh(mesh, args);
+	}
 
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
-			args["geometry"],
-			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
-			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			root_path, mesh.dimension());
+	void NonlinearElasticVarForm::set_obstacle(mesh::Obstacle &&loaded_obstacle)
+	{
+		obstacle = std::move(loaded_obstacle);
 	}
 
 	io::OutputSpace NonlinearElasticVarForm::output_space() const
@@ -295,7 +291,7 @@ namespace polyfem::varform
 			*primary_assembler_, *mesh_, &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
-			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
+			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			/*fe_space_id=*/-1);
@@ -308,7 +304,7 @@ namespace polyfem::varform
 	{
 		build_collision_mesh(
 			mesh, space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), boundary_.total_local_boundary, obstacle,
-			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
+			args, resources_,
 			space_.space_in_node_to_node, collision_mesh_);
 	}
 
@@ -320,7 +316,7 @@ namespace polyfem::varform
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
 		const mesh::Obstacle &obstacle,
 		const json &args,
-		const std::function<std::string(const std::string &)> &resolve_input_path,
+		const io::ResourceIO &resources,
 		const Eigen::VectorXi &in_node_to_node,
 		ipc::CollisionMesh &collision_mesh_)
 	{
@@ -352,12 +348,12 @@ namespace polyfem::varform
 			{
 				assert(displacement_map_entries.empty());
 				assert(collision_mesh_args.contains("mesh"));
-				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
 				// TODO: handle transformation per geometry
 				const json transformation = utils::json_as_array(args["geometry"])[0]["transformation"];
 				mesh::load_collision_proxy(
-					utils::resolve_path(collision_mesh_args["mesh"], root_path),
-					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
+					resources,
+					collision_mesh_args["mesh"].get<std::string>(),
+					collision_mesh_args["linear_map"].get<std::string>(),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
@@ -770,7 +766,7 @@ namespace polyfem::varform
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
 
-			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, sol, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}
@@ -797,6 +793,7 @@ namespace polyfem::varform
 		forms = solve_data_.init_forms(
 			// General
 			units,
+			resources_,
 			dim, t, space_.space_in_node_to_node,
 			// Elastic form
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
@@ -967,6 +964,9 @@ namespace polyfem::varform
 			}
 
 			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
+			restore_checkpoint_integrator(
+				solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt,
+				"primary", space_.space_in_node_to_node, mesh_->dimension());
 			assert(solve_data_.time_integrator != nullptr && "Transient nonlinear elasticity requires an initialized time integrator");
 		}
 		else

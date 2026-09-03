@@ -40,6 +40,24 @@ namespace polyfem::varform
 		}
 	} // namespace
 
+	void ScalarVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+	}
+
+	void ScalarVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, space_.ndof());
+		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, 1, 0, solution);
+	}
+
 	void ScalarVarForm::reset()
 	{
 		VarForm::reset();
@@ -82,19 +100,18 @@ namespace polyfem::varform
 
 			json tmp;
 			tmp["is_time_dependent"] = is_time_dependent;
-			problem->set_parameters(tmp, root_path);
+			problem->set_parameters(tmp, resources_);
 
 			auto bc = args["boundary_conditions"];
-			bc["root_path"] = root_path;
-			problem->set_parameters(bc, root_path);
-			problem->set_parameters(args["initial_conditions"], root_path);
-			problem->set_parameters(args["output"], root_path);
+			problem->set_parameters(bc, resources_);
+			problem->set_parameters(args["initial_conditions"], resources_);
+			problem->set_parameters(args["output"], resources_);
 		}
 		else
 		{
 			problem = problem::ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
 			problem->clear();
-			problem->set_parameters(args["preset_problem"], root_path);
+			problem->set_parameters(args["preset_problem"], resources_);
 		}
 
 		problem->set_units(*primary_assembler_, units);
@@ -243,7 +260,7 @@ namespace polyfem::varform
 			*primary_assembler_, *mesh_, nullptr,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
-			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem,
+			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			/*fe_space_id=*/-1);
@@ -255,7 +272,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		json p_params = {};
 		p_params["formulation"] = primary_assembler_->name();
-		p_params["root_path"] = root_path;
 		{
 			RowVectorNd min, max, delta;
 			mesh.bounding_box(min, max);
@@ -265,7 +281,7 @@ namespace polyfem::varform
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params, root_path);
+		problem->set_parameters(p_params, resources_);
 
 		rhs_.resize(0, 0);
 
@@ -328,22 +344,15 @@ namespace polyfem::varform
 
 	void ScalarVarForm::prepare_initial_solution(Eigen::MatrixXd &solution) const
 	{
+		if (solution.size() > 0)
+			return;
 		assert(rhs_assembler_ != nullptr);
-
-		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "u",
-			args["input"]["data"]["reorder"], space_.space_in_node_to_node,
-			/*dim=*/1, solution);
-
-		if (!was_solution_loaded)
+		if (problem->is_time_dependent())
+			rhs_assembler_->initial_solution(solution);
+		else
 		{
-			if (problem->is_time_dependent())
-				rhs_assembler_->initial_solution(solution);
-			else
-			{
-				solution.resize(rhs_.size(), 1);
-				solution.setZero();
-			}
+			solution.resize(rhs_.size(), 1);
+			solution.setZero();
 		}
 	}
 
@@ -889,6 +898,9 @@ namespace polyfem::varform
 			args["time"]["integrator"]);
 		bdf->init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 		time_integrator = bdf;
+		restore_checkpoint_integrator(
+			time_integrator, "/checkpoint/state/primary_integrator", dt,
+			"primary", space_.space_in_node_to_node, 1);
 
 		save_timestep(t0, 0, t0, dt, sol);
 		if (post_step)
@@ -927,7 +939,7 @@ namespace polyfem::varform
 
 			bdf->update_quantities(sol);
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, time_integrator.get());
+			save_step_state(t0, dt, t, sol, time_integrator.get());
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
 			notify_time_step(t, time_steps, t0, dt);

@@ -36,6 +36,51 @@
 
 namespace polyfem::varform
 {
+	void NavierStokesFSIVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "mesh_motion", mesh_displacement_space_.space_in_node_to_node);
+		if (!mesh_displacement_time_integrator_)
+			log_and_throw_error("Cannot checkpoint NavierStokesFSI without its mesh-motion integrator.");
+		mesh_displacement_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/mesh_motion_integrator");
+		if (has_solid_)
+		{
+			if (!solid_varform_ || !solid_varform_->embedding_time_integrator())
+				log_and_throw_error("Cannot checkpoint two-mesh NavierStokesFSI without its solid integrator.");
+			const io::OutputSpace solid_output = solid_varform_->output_space();
+			if (solid_output.mesh == nullptr)
+				log_and_throw_error("Cannot checkpoint NavierStokesFSI without its solid mesh.");
+			writer.write_mesh("/checkpoint/meshes/solid", *solid_output.mesh);
+			write_checkpoint_ordering(writer, "solid", solid_varform_->space_.space_in_node_to_node);
+			solid_varform_->embedding_time_integrator()->serialize_checkpoint(writer, "/checkpoint/state/solid_integrator");
+		}
+	}
+
+	void NavierStokesFSIVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, total_ndof());
+		const int dim = mesh_->dimension();
+		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, dim, 0, solution);
+		reorder_checkpoint_block(
+			reader, "pressure", pressure_space_.space_in_node_to_node,
+			1, pressure_offset(), solution);
+		reorder_checkpoint_block(
+			reader, "mesh_motion", mesh_displacement_space_.space_in_node_to_node,
+			dim, mesh_displacement_offset(), solution);
+		if (has_solid_)
+			reorder_checkpoint_block(
+				reader, "solid", solid_varform_->space_.space_in_node_to_node,
+				dim, solid_displacement_offset(), solution);
+	}
+
 	namespace
 	{
 		json first_material(const json &materials)
@@ -423,19 +468,18 @@ namespace polyfem::varform
 
 		mesh_displacement_problem_ = std::make_shared<assembler::GenericTensorProblem>("NavierStokesFSIMeshDisplacement");
 		mesh_displacement_problem_->clear();
-		mesh_displacement_problem_->set_parameters({{"is_time_dependent", true}}, root_path);
+		mesh_displacement_problem_->set_parameters({{"is_time_dependent", true}}, resources_);
 		auto boundary_conditions = args["boundary_conditions"];
-		boundary_conditions["root_path"] = root_path;
-		mesh_displacement_problem_->set_parameters(boundary_conditions, root_path);
-		mesh_displacement_problem_->set_parameters(args["initial_conditions"], root_path);
-		mesh_displacement_problem_->set_parameters(args["output"], root_path);
+		mesh_displacement_problem_->set_parameters(boundary_conditions, resources_);
+		mesh_displacement_problem_->set_parameters(args["initial_conditions"], resources_);
+		mesh_displacement_problem_->set_parameters(args["output"], resources_);
 		mesh_displacement_problem_->set_units(*mesh_elastic_assembler_, units);
 
 		if (has_solid_)
 		{
 			solid_args_ = solid_varform_args();
-			solid_varform_ = std::make_shared<NonlinearElasticTransientVarForm>();
-			solid_varform_->init(solid_elastic_formulation_, units, solid_args_, out_path);
+			solid_varform_ = std::make_shared<NonlinearElasticTransientVarForm>(resources_);
+			init_child_varform(*solid_varform_, solid_elastic_formulation_, units, solid_args_, out_path);
 		}
 	}
 
@@ -507,19 +551,29 @@ namespace polyfem::varform
 	{
 		if (has_solid_)
 		{
-			auto pieces = mesh.split();
-			if (pieces.size() != 2)
-				log_and_throw_error("Two-mesh NavierStokesFSI expected exactly two geometry partitions, got {}.", pieces.size());
-
 			std::unique_ptr<mesh::Mesh> fluid_mesh, solid_mesh;
-			for (auto &piece : pieces)
+			if (checkpoint_reader_)
 			{
-				if (piece.id == fluid_geometry_id_)
-					fluid_mesh = std::move(piece.mesh);
-				else if (piece.id == solid_geometry_id_)
-					solid_mesh = std::move(piece.mesh);
-				else
-					log_and_throw_error("Unexpected geometry ID {} in two-mesh NavierStokesFSI.", piece.id);
+				if (!checkpoint_reader_->get().exists("/checkpoint/meshes/solid"))
+					log_and_throw_error("Two-mesh NavierStokesFSI checkpoint is missing its solid mesh.");
+				fluid_mesh = mesh.copy();
+				solid_mesh = checkpoint_reader_->get().read_mesh(
+					"/checkpoint/meshes/solid", !mesh.is_conforming());
+			}
+			else
+			{
+				auto pieces = mesh.split();
+				if (pieces.size() != 2)
+					log_and_throw_error("Two-mesh NavierStokesFSI expected exactly two geometry partitions, got {}.", pieces.size());
+				for (auto &piece : pieces)
+				{
+					if (piece.id == fluid_geometry_id_)
+						fluid_mesh = std::move(piece.mesh);
+					else if (piece.id == solid_geometry_id_)
+						solid_mesh = std::move(piece.mesh);
+					else
+						log_and_throw_error("Unexpected geometry ID {} in two-mesh NavierStokesFSI.", piece.id);
+				}
 			}
 			if (!fluid_mesh || !solid_mesh)
 				log_and_throw_error(
@@ -554,13 +608,13 @@ namespace polyfem::varform
 		for (const auto &assembler : ale_assemblers_)
 		{
 			assembler->set_size(mesh_->dimension());
-			assembler->set_materials(body_ids, this->args["materials"], units, root_path);
+			assembler->set_materials(body_ids, this->args["materials"], units, resources_);
 		}
 		const json mesh_materials = mesh_material_args();
 		mesh_elastic_assembler_->set_size(mesh_->dimension());
-		mesh_elastic_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
+		mesh_elastic_assembler_->set_materials(body_ids, mesh_materials, units, resources_);
 		mesh_mass_assembler_->set_size(mesh_->dimension());
-		mesh_mass_assembler_->set_materials(body_ids, mesh_materials, units, root_path);
+		mesh_mass_assembler_->set_materials(body_ids, mesh_materials, units, resources_);
 		mesh_pure_mass_assembler_->set_size(mesh_->dimension());
 		mesh_displacement_problem_->init(*mesh_);
 	}
@@ -689,7 +743,7 @@ namespace polyfem::varform
 			mesh_displacement_boundary_.dirichlet_nodes_position, mesh_displacement_boundary_.neumann_nodes_position,
 			mesh_displacement_space_.n_bases, mesh_->dimension(),
 			mesh_displacement_space_.basis_list(), space_.geometry_basis_list(),
-			mesh_displacement_mass_ass_vals_cache_, *mesh_displacement_problem_,
+			mesh_displacement_mass_ass_vals_cache_, *mesh_displacement_problem_, resources_,
 			args["space"]["advanced"]["bc_method"], solver_params,
 			mesh_displacement_space_id_);
 	}
@@ -747,17 +801,8 @@ namespace polyfem::varform
 		if (sol.size() == 0)
 		{
 			Eigen::MatrixXd velocity, mesh_displacement, solid_displacement;
-			const std::string state_path = resolve_input_path(args["input"]["data"]["state"]);
-			const bool loaded_velocity = read_initial_x_from_file(
-				state_path, "u", args["input"]["data"]["reorder"],
-				space_.space_in_node_to_node, mesh_->dimension(), velocity);
-			const bool loaded_mesh_displacement = read_initial_x_from_file(
-				state_path, "mesh_u", args["input"]["data"]["reorder"],
-				mesh_displacement_space_.space_in_node_to_node, mesh_->dimension(), mesh_displacement);
-			if (!loaded_velocity)
-				rhs_assembler_->initial_solution(velocity);
-			if (!loaded_mesh_displacement)
-				mesh_rhs_assembler_->initial_solution(mesh_displacement);
+			rhs_assembler_->initial_solution(velocity);
+			mesh_rhs_assembler_->initial_solution(mesh_displacement);
 			if (has_solid_)
 				solid_varform_->initial_solution_for_embedding(solid_displacement, "solid_");
 			sol.setZero(total_ndof(), 1);
@@ -808,37 +853,20 @@ namespace polyfem::varform
 		Eigen::MatrixXd mesh_history = mesh_displacement;
 		Eigen::MatrixXd mesh_history_velocity = mesh_initial_velocity;
 		Eigen::MatrixXd mesh_history_acceleration = Eigen::MatrixXd::Zero(mesh_displacement_ndof(), 1);
-		const std::string state_path = resolve_input_path(args["input"]["data"]["state"]);
-		if (read_initial_x_from_file(
-				state_path, "u", args["input"]["data"]["reorder"],
-				space_.space_in_node_to_node, dim, velocity_history))
-		{
-			if (!read_initial_x_from_file(
-					state_path, "v", args["input"]["data"]["reorder"],
-					space_.space_in_node_to_node, dim, velocity_history_velocity))
-				velocity_history_velocity.setZero(velocity_history.rows(), velocity_history.cols());
-			if (!read_initial_x_from_file(
-					state_path, "a", args["input"]["data"]["reorder"],
-					space_.space_in_node_to_node, dim, velocity_history_acceleration))
-				velocity_history_acceleration.setZero(velocity_history.rows(), velocity_history.cols());
-		}
-		if (read_initial_x_from_file(
-				state_path, "mesh_u", args["input"]["data"]["reorder"],
-				mesh_displacement_space_.space_in_node_to_node, dim, mesh_history))
-		{
-			if (!read_initial_x_from_file(
-					state_path, "mesh_v", args["input"]["data"]["reorder"],
-					mesh_displacement_space_.space_in_node_to_node, dim, mesh_history_velocity))
-				mesh_history_velocity.setZero(mesh_history.rows(), mesh_history.cols());
-			if (!read_initial_x_from_file(
-					state_path, "mesh_a", args["input"]["data"]["reorder"],
-					mesh_displacement_space_.space_in_node_to_node, dim, mesh_history_acceleration))
-				mesh_history_acceleration.setZero(mesh_history.rows(), mesh_history.cols());
-		}
 		velocity_bdf->init(velocity_history, velocity_history_velocity, velocity_history_acceleration, dt);
 		mesh_bdf->init(mesh_history, mesh_history_velocity, mesh_history_acceleration, dt);
 		time_integrator = velocity_bdf;
 		mesh_displacement_time_integrator_ = mesh_bdf;
+		restore_checkpoint_integrator(
+			time_integrator, "/checkpoint/state/primary_integrator", dt,
+			"primary", space_.space_in_node_to_node, dim);
+		restore_checkpoint_integrator(
+			mesh_displacement_time_integrator_, "/checkpoint/state/mesh_motion_integrator", dt,
+			"mesh_motion", mesh_displacement_space_.space_in_node_to_node, dim);
+		if (has_solid_ && solid_varform_->embedding_time_integrator())
+			restore_checkpoint_integrator(
+				solid_varform_->embedding_time_integrator(), "/checkpoint/state/solid_integrator", dt,
+				"solid", solid_varform_->space_.space_in_node_to_node, dim);
 
 		ale_form_ = std::make_shared<solver::NavierStokesFSIForm>(
 			total_ndof(), space_.n_bases, pressure_space_.n_bases, mesh_displacement_space_.n_bases,
@@ -1044,7 +1072,7 @@ namespace polyfem::varform
 			update_transient_form_weights();
 			fsi_problem_->update_quantities(t0 + (step + 1) * dt, sol);
 			save_fsi_timestep(time, step, sol);
-			save_step_state(t0, dt, step, time_integrator.get());
+			save_step_state(t0, dt, step, sol, time_integrator.get());
 			save_mesh_integrator_state(step);
 			if (has_solid_)
 				save_solid_integrator_state(step);

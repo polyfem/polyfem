@@ -6,12 +6,19 @@
 #include <Eigen/Core>
 #include <igl/PI.h>
 #include <filesystem>
+#include <memory>
+
+namespace polyfem::io
+{
+	class ResourceIO;
+}
 
 namespace polyfem
 {
 	namespace utils
 	{
 		void apply_common_params(json &args);
+		std::unique_ptr<const io::ResourceIO> apply_common_params(json &args, const io::ResourceIO &resources);
 
 		/// @brief Expand string entries in dirichlet_boundary that point to .json files
 		void expand_bc_sidecars(json &args, const json &rules);

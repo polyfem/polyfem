@@ -28,6 +28,12 @@ const double lambda = 0.375, mu = 0.375;
 
 namespace
 {
+	const io::ResourceIO &test_resources()
+	{
+		static const io::FileSystemIO resources(".");
+		return resources;
+	}
+
 	class GenericTensorProblemAccess : public GenericTensorProblem
 	{
 	public:
@@ -52,7 +58,7 @@ namespace
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
 
-		auto mesh = Mesh::create(vertices, cells);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
 
 		std::vector<int> boundary_ids(mesh->n_boundary_elements());
 		for (int i = 0; i < mesh->n_boundary_elements(); ++i)
@@ -77,7 +83,7 @@ namespace
 		cells << 0, 1, 2,
 			1, 3, 2;
 
-		auto mesh = Mesh::create(vertices, cells);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
 		mesh->set_body_ids({5, 8});
 		return mesh;
 	}
@@ -103,7 +109,7 @@ TEST_CASE("generic tensor problem selects finite element space data", "[problem]
 		{{"id", 1}, {"fe_space", 0}, {"value", json::array({0, 0})}, {"interpolation", json::array()}},
 		{{"id", 2}, {"fe_space", 1}, {"value", 300}, {"interpolation", json::array()}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	Eigen::MatrixXd pts(2, 2);
 	pts << 1, 2,
@@ -137,7 +143,7 @@ TEST_CASE("generic tensor problem selects body rhs data", "[problem]")
 		{{"id", 5}, {"value", json::array({"x + t", "2*y"})}},
 		{{"id", 8}, {"fe_space", 1}, {"value", json::array({7, 8})}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	Eigen::MatrixXd pts(2, 2);
 	pts << 1, 2,
@@ -173,7 +179,7 @@ TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finit
 		{{"id", 2}, {"fe_space", 0}, {"value", json::array({"x + 3", "y + 5"})}, {"interpolation", json::array()}},
 		{{"id", 3}, {"fe_space", 1}, {"value", json::array({7, 11})}, {"interpolation", json::array()}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
 	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
@@ -213,7 +219,7 @@ TEST_CASE("generic tensor problem evaluates nodal neumann matrix data", "[proble
 	json params;
 	params["root_path"] = "";
 	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	CHECK(problem.has_nodal_neumann(0));
 	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
@@ -269,7 +275,7 @@ TEST_CASE("generic tensor problem evaluates reference boundary initial and updat
 	params["acceleration"] = json::array({
 		{{"id", 5}, {"value", json::array({"x + 5", "y + 6"})}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	CHECK(problem.is_time_dependent());
 	CHECK_FALSE(problem.is_constant_in_time());
@@ -370,7 +376,7 @@ TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[proble
 	json params;
 	params["root_path"] = "";
 	params["dirichlet_boundary"] = json::array({nodal_dirichlet_path.string()});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	CHECK(problem.has_nodal_dirichlet(0));
 	CHECK(problem.is_nodal_dirichlet_boundary(1, mesh->get_node_id(1), 0));
@@ -426,7 +432,7 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 		{{"id", 2}, {"fe_space", 0}, {"value", "x + 2"}, {"interpolation", json::array()}},
 		{{"id", 3}, {"fe_space", 1}, {"value", 9}, {"interpolation", json::array()}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	Eigen::MatrixXd pts(2, 2);
 	pts << 0, 0,
@@ -477,7 +483,7 @@ TEST_CASE("generic scalar problem selects body rhs data", "[problem]")
 		{{"id", 5}, {"value", "x + y + t"}},
 		{{"id", 8}, {"fe_space", 1}, {"value", 4}},
 	});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	Eigen::MatrixXd pts(2, 2);
 	pts << 0, 1,
@@ -515,7 +521,7 @@ TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[proble
 	json params;
 	params["root_path"] = "";
 	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
-	problem.set_parameters(params, "");
+	problem.set_parameters(params, test_resources());
 
 	CHECK(problem.has_nodal_neumann(0));
 	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
@@ -614,11 +620,11 @@ TEST_CASE("franke 2d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(2);
-		helmholtz.add_multimaterial(0, params, units, "");
+		helmholtz.add_multimaterial(0, params, units, test_resources());
 
 		Laplacian laplacian;
 		laplacian.set_size(2);
-		laplacian.add_multimaterial(0, params, units, "");
+		laplacian.add_multimaterial(0, params, units, test_resources());
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -700,11 +706,11 @@ TEST_CASE("franke 3d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(3);
-		helmholtz.add_multimaterial(0, params, units, "");
+		helmholtz.add_multimaterial(0, params, units, test_resources());
 
 		Laplacian laplacian;
 		laplacian.set_size(3);
-		laplacian.add_multimaterial(0, params, units, "");
+		laplacian.add_multimaterial(0, params, units, test_resources());
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -759,11 +765,11 @@ TEST_CASE("linear", "[problem]")
 
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params, units, "");
+	helmholtz.add_multimaterial(0, params, units, test_resources());
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units, "");
+	laplacian.add_multimaterial(0, params, units, test_resources());
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -825,11 +831,11 @@ TEST_CASE("quadratic", "[problem]")
 
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params, units, "");
+	helmholtz.add_multimaterial(0, params, units, test_resources());
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units, "");
+	laplacian.add_multimaterial(0, params, units, test_resources());
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -875,7 +881,7 @@ TEST_CASE("zero bc 2d", "[problem]")
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units, "");
+	laplacian.add_multimaterial(0, params, units, test_resources());
 
 	{
 		Eigen::MatrixXd rhs = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) * (1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
@@ -911,7 +917,7 @@ TEST_CASE("zero bc 3d", "[problem]")
 
 	Laplacian laplacian;
 	laplacian.set_size(3);
-	laplacian.add_multimaterial(0, params, units, "");
+	laplacian.add_multimaterial(0, params, units, test_resources());
 
 	{
 		Eigen::MatrixXd rhs = (0.2e1 * pow(x, 0.3e1) - 0.2e1 * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * pow(y, 0.3e1) + (-0.4e1 * pow(x, 0.3e1) + 0.4e1 * x * x + (-12 * z * z + 12 * z) * x + (4 * z * z) - (4 * z)) * y * y + ((6 * z * z - 6 * z + 2) * pow(x, 0.3e1) + (-6 * z * z + 6 * z - 2) * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * y - 0.4e1 * x * x * z * (z - 1) * (x - 0.1e1);
@@ -949,19 +955,19 @@ TEST_CASE("elasticity 2d", "[problem]")
 
 	LinearElasticity le;
 	le.set_size(2);
-	le.add_multimaterial(0, params, units, "");
+	le.add_multimaterial(0, params, units, test_resources());
 
 	HookeLinearElasticity ho;
 	ho.set_size(2);
-	ho.add_multimaterial(0, params, units, "");
+	ho.add_multimaterial(0, params, units, test_resources());
 
 	SaintVenantElasticity sv;
 	sv.set_size(2);
-	sv.add_multimaterial(0, params, units, "");
+	sv.add_multimaterial(0, params, units, test_resources());
 
 	NeoHookeanElasticity nh;
 	nh.set_size(2);
-	nh.add_multimaterial(0, params, units, "");
+	nh.add_multimaterial(0, params, units, test_resources());
 
 	// rhs
 	{
@@ -1049,15 +1055,15 @@ TEST_CASE("elasticity 3d", "[problem]")
 
 	LinearElasticity le;
 	le.set_size(3);
-	le.add_multimaterial(0, params, units, "");
+	le.add_multimaterial(0, params, units, test_resources());
 
 	HookeLinearElasticity ho;
 	ho.set_size(3);
-	ho.add_multimaterial(0, params, units, "");
+	ho.add_multimaterial(0, params, units, test_resources());
 
 	SaintVenantElasticity sv;
 	sv.set_size(3);
-	sv.add_multimaterial(0, params, units, "");
+	sv.add_multimaterial(0, params, units, test_resources());
 
 	// rhs
 	{

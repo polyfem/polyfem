@@ -69,13 +69,6 @@ namespace polyfem::varform
 		return *problem;
 	}
 
-	const std::string &DifferentiableNonlinearElasticVarForm::get_root_path() const { return root_path; }
-
-	std::string DifferentiableNonlinearElasticVarForm::input_path(const std::string &path, const bool only_if_exists) const
-	{
-		return NonlinearElasticVarForm::resolve_input_path(path, only_if_exists);
-	}
-
 	std::string DifferentiableNonlinearElasticVarForm::output_file_path(const std::string &path) const
 	{
 		return NonlinearElasticVarForm::resolve_output_path(path);
@@ -212,6 +205,7 @@ namespace polyfem::varform
 
 		forms = solve_data_.init_forms(
 			units,
+			resources_,
 			dim, time, space_.space_in_node_to_node,
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			args["solver"]["advanced"]["conservative_max_iter"],
@@ -346,7 +340,7 @@ namespace polyfem::varform
 		assert(is_homogenization());
 		macro_strain_constraint_ = assembler::MacroStrainValue();
 		macro_strain_constraint_.init(
-			mesh_->dimension(), args["constraints"]["macro_displacement_gradient"], root_path);
+			mesh_->dimension(), args["constraints"]["macro_displacement_gradient"], resources_);
 		init_solve_data(solution, time, "", initial_condition_override);
 
 		for (const auto &[name, form] : solve_data_.named_forms())
@@ -620,7 +614,7 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
-			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, solution, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}

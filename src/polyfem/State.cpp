@@ -2,7 +2,11 @@
 
 #include <polyfem/Units.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/io/Checkpoint.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
@@ -65,18 +69,6 @@ namespace polyfem
 
 	namespace
 	{
-		std::string root_path(const json &args)
-		{
-			if (utils::is_param_valid(args, "root_path"))
-				return args["root_path"].get<std::string>();
-			return "";
-		}
-
-		std::string resolve_input_path(const json &args, const std::string &path, const bool only_if_exists = false)
-		{
-			return utils::resolve_path(path, root_path(args), only_if_exists);
-		}
-
 		std::string resolve_output_path(const std::string &output_dir, const std::string &path)
 		{
 			if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
@@ -246,10 +238,30 @@ namespace polyfem
 		const bool strict_validation,
 		const bool is_adjoint_optimization)
 	{
+		std::filesystem::path root = std::filesystem::current_path();
+		if (utils::is_param_valid(p_args_in, "root_path"))
+			root = p_args_in["root_path"].get<std::string>();
+		resources_ = std::make_unique<io::FileSystemIO>(root);
+		init(p_args_in, *resources_, strict_validation, is_adjoint_optimization);
+	}
+
+	void State::init(
+		const json &p_args_in,
+		const io::ResourceIO &resources,
+		const bool strict_validation,
+		const bool is_adjoint_optimization)
+	{
+		checkpoint_.reset();
 		json args_in = p_args_in;
+		const std::string resource_root = utils::is_param_valid(args_in, "root_path")
+											  ? args_in["root_path"].get<std::string>()
+											  : std::string();
+		resources_ = resources.with_root(resource_root);
+		args_in.erase("root_path");
 		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);
 
-		apply_common_params(args_in);
+		if (auto common_resources = apply_common_params(args_in, *resources_))
+			resources_ = std::move(common_resources);
 
 		json rules;
 		jse::JSE jse;
@@ -303,19 +315,20 @@ namespace polyfem
 			args["space"]["advanced"]["bc_method"] = "lsq";
 		}
 
-		const std::string output_dir = resolve_input_path(args, args["output"]["directory"].get<std::string>());
+		const std::string configured_output_dir = args["output"]["directory"].get<std::string>();
+		const std::string output_dir = configured_output_dir.empty()
+										   ? std::string()
+										   : (std::filesystem::path(configured_output_dir).is_absolute()
+												  ? std::filesystem::path(configured_output_dir)
+												  : resources_->host_directory() / configured_output_dir)
+												 .lexically_normal()
+												 .string();
 		if (!output_dir.empty())
 			std::filesystem::create_directories(output_dir);
 
 		std::string out_path_log = args["output"]["log"]["path"];
 		if (!out_path_log.empty())
 			out_path_log = resolve_output_path(output_dir, out_path_log);
-
-		for (auto &path : args["constraints"]["hard"])
-			path = resolve_input_path(args, path.get<std::string>());
-
-		for (auto &path : args["constraints"]["soft"])
-			path["data"] = resolve_input_path(args, path["data"].get<std::string>());
 
 		init_logger(
 			out_path_log,
@@ -359,7 +372,7 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args, is_adjoint_optimization);
+		variational_formulation = varform::VarFormFactory::create(formulation, args, *resources_, is_adjoint_optimization);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
@@ -369,12 +382,33 @@ namespace polyfem
 		args["contact"].erase("_dhat_was_explicit");
 	}
 
+	void State::init(const io::CheckpointReader &checkpoint, const bool strict_validation)
+	{
+		init(checkpoint.config(), checkpoint, strict_validation);
+	}
+
+	void State::init(
+		const json &continuation,
+		const io::CheckpointReader &checkpoint,
+		const bool strict_validation)
+	{
+		init(continuation, checkpoint.resources(), strict_validation, false);
+		checkpoint_ = std::cref(checkpoint);
+		variational_formulation->set_checkpoint_reader(checkpoint);
+		if (checkpoint_->get().metadata().formulation != variational_formulation->name())
+			log_and_throw_error(
+				"Checkpoint formulation '{}' is incompatible with configured formulation '{}'.",
+				checkpoint_->get().metadata().formulation, variational_formulation->name());
+		if (std::abs(args["time"]["dt"].get<double>() - checkpoint_->get().metadata().dt) > 1e-12)
+			log_and_throw_error("Checkpoint dt is incompatible with its continuation configuration.");
+	}
+
 	void State::set_max_threads(const int max_threads)
 	{
 		NThread::get().set_num_threads(max_threads);
 	}
 
-	void State::load_mesh(
+	void State::set_mesh(
 		GEO::Mesh &meshin,
 		const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker,
 		bool non_conforming,
@@ -384,7 +418,8 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading mesh...");
 
-		std::unique_ptr<Mesh> mesh = Mesh::create(meshin, non_conforming);
+		std::unique_ptr<Mesh> mesh = Mesh::create(
+			mesh::MeshReader::from_geogram(meshin), non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -406,15 +441,8 @@ namespace polyfem
 		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
-	void State::load_mesh(
-		bool non_conforming,
-		const std::vector<std::string> &names,
-		const std::vector<Eigen::MatrixXi> &cells,
-		const std::vector<Eigen::MatrixXd> &vertices)
+	void State::load_mesh(const bool non_conforming)
 	{
-		assert(names.size() == cells.size());
-		assert(vertices.size() == cells.size());
-
 		igl::Timer timer;
 		timer.start();
 
@@ -422,10 +450,21 @@ namespace polyfem
 		assert(is_param_valid(args, "geometry"));
 		Units units;
 		units.init(args["units"]);
-		std::unique_ptr<Mesh> mesh = mesh::read_fem_geometry(
-			units,
-			args["geometry"], args["root_path"],
-			names, vertices, cells, non_conforming);
+		mesh::GeometryLoader geometry_loader(units, *resources_);
+		const auto obstacle_displacements = utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]);
+		const auto dirichlet_conditions = utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]);
+		mesh::LoadedGeometry loaded_geometry;
+		if (checkpoint_)
+		{
+			loaded_geometry.fem = checkpoint_->get().read_mesh("/checkpoint/meshes/active", non_conforming);
+			loaded_geometry.obstacle = geometry_loader.load_obstacles(
+				args["geometry"], obstacle_displacements, dirichlet_conditions,
+				loaded_geometry.fem->dimension(), non_conforming);
+		}
+		else
+			loaded_geometry = geometry_loader.load(
+				args["geometry"], obstacle_displacements, dirichlet_conditions, non_conforming);
+		auto &mesh = loaded_geometry.fem;
 
 		if (mesh == nullptr)
 			log_and_throw_error("unable to load the mesh!");
@@ -455,23 +494,22 @@ namespace polyfem
 		// FIXME: this is a temporary workaround to avoid incorrect Jacobian validity results for non-simplicial meshes when using discrete inversion checking. We should instead implement proper Jacobian validity checking for non-simplicial meshes.
 		assert(variational_formulation != nullptr);
 		variational_formulation->set_args(args);
-		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
+		variational_formulation->set_geometry(std::move(loaded_geometry), timer.getElapsedTime());
 	}
 
 	void State::solve(Eigen::MatrixXd &sol)
 	{
 		assert(variational_formulation != nullptr);
-
 		variational_formulation->set_time_callback(time_callback);
 		variational_formulation->solve(sol);
 	}
 
-	void State::load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)
+	void State::set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)
 	{
 		assert(variational_formulation != nullptr);
 		igl::Timer timer;
 		timer.start();
-		auto mesh = mesh::Mesh::create(V, F, non_conforming);
+		auto mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
 		timer.stop();
 		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}

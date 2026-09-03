@@ -2,8 +2,6 @@
 
 #include <CLI/CLI.hpp>
 
-#include <h5pp/h5pp.h>
-
 #include <polyfem/State.hpp>
 #include <polyfem/legacy/State.hpp>
 #ifdef POLYFEM_WITH_OPTIMIZATION
@@ -13,7 +11,9 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/varforms/VarForm.hpp>
-#include <polyfem/io/YamlToJson.hpp>
+#include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/io/InputLoader.hpp>
+#include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 
 using namespace polyfem;
@@ -28,62 +28,56 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 	return opt->count() > 0;
 }
 
-bool load_json(const std::string &json_file, json &out)
-{
-	std::ifstream file(json_file);
-
-	if (!file.is_open())
-		return false;
-
-	file >> out;
-
-	if (!out.contains("root_path"))
-		out["root_path"] = json_file;
-
-	return true;
-}
-
-bool load_yaml(const std::string &yaml_file, json &out)
-{
-	try
-	{
-		out = io::yaml_file_to_json(yaml_file);
-		if (!out.contains("root_path"))
-			out["root_path"] = yaml_file;
-	}
-	catch (...)
-	{
-		return false;
-	}
-	return true;
-}
-
 int forward_simulation(const CLI::App &command_line,
-					   const std::string &hdf5_file,
-					   const std::string output_dir,
+					   const io::ResourceIO &resources,
+					   const std::string &output_dir,
 					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args);
 
+int forward_simulation(const CLI::App &command_line,
+					   const io::CheckpointReader &checkpoint,
+					   const std::string &output_dir,
+					   unsigned max_threads,
+					   bool is_strict,
+					   bool fallback_solver,
+					   const spdlog::level::level_enum &log_level,
+					   json &in_args);
+
 #ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
+							const io::ResourceIO &resources,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
 #endif
 
-int forward_simulation_with_varform_state(const std::vector<std::string> &names,
-										  const std::vector<Eigen::MatrixXi> &cells,
-										  const std::vector<Eigen::MatrixXd> &vertices,
+int run_forward_simulation(State &state);
+
+int forward_simulation_with_varform_state(const io::ResourceIO &resources,
 										  json &in_args,
 										  const bool is_strict)
 {
 	State state;
-	state.init(in_args, is_strict);
-	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+	state.init(in_args, resources, is_strict);
+	return run_forward_simulation(state);
+}
+
+int forward_simulation_with_varform_state(const io::CheckpointReader &checkpoint,
+										  const json &in_args,
+										  const bool is_strict)
+{
+	State state;
+	state.init(in_args, checkpoint, is_strict);
+	return run_forward_simulation(state);
+}
+
+int run_forward_simulation(State &state)
+{
+	state.load_mesh();
 
 	Eigen::MatrixXd sol;
 	state.solve(sol);
@@ -164,6 +158,14 @@ int main(int argc, char **argv)
 	std::string hdf5_file = "";
 	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
 
+	std::string checkpoint_file = "";
+	auto *checkpoint_option = input->add_option("--checkpoint", checkpoint_file, "Versioned PolyFEM checkpoint")->check(CLI::ExistingFile);
+	bool checkpoint_reorder = false;
+	command_line.add_flag(
+		"--checkpoint-reorder", checkpoint_reorder,
+		"Reorder checkpoint state from its saved input-node ordering")
+		->needs(checkpoint_option);
+
 	input->require_option(1);
 
 	std::string output_dir = "";
@@ -191,70 +193,54 @@ int main(int argc, char **argv)
 	CLI11_PARSE(command_line, argc, argv);
 
 	json in_args = json({});
-
 	if (!json_file.empty() || !yaml_file.empty())
 	{
-		const bool ok = !json_file.empty() ? load_json(json_file, in_args) : load_yaml(yaml_file, in_args);
-
-		if (!ok)
-			log_and_throw_error(fmt::format("unable to open {} file", json_file));
+		const io::LoadedInput loaded = !json_file.empty()
+										   ? io::load_json_input(json_file)
+										   : io::load_yaml_input(yaml_file);
+		in_args = loaded.config;
 
 		if (in_args.contains("states"))
 		{
 #ifndef POLYFEM_WITH_OPTIMIZATION
 			log_and_throw_error("PolyFEM was built without optimization support.");
 #else
-			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
+			return optimization_simulation(command_line, *loaded.resources, max_threads, is_strict, log_level, in_args);
 #endif
 		}
 		else
-			return forward_simulation(command_line, "", output_dir, max_threads,
+			return forward_simulation(command_line, *loaded.resources, output_dir, max_threads,
 									  is_strict, fallback_solver, log_level, in_args);
 	}
-	else
-		return forward_simulation(command_line, hdf5_file, output_dir, max_threads,
+	else if (!hdf5_file.empty())
+	{
+		const io::LoadedInput loaded = io::load_hdf5_input(hdf5_file);
+		in_args = loaded.config;
+		return forward_simulation(command_line, *loaded.resources, output_dir, max_threads,
 								  is_strict, fallback_solver, log_level, in_args);
+	}
+	else
+	{
+		io::CheckpointReader checkpoint(checkpoint_file);
+		in_args = checkpoint.config();
+		return forward_simulation(command_line, checkpoint, output_dir, max_threads,
+								  is_strict, fallback_solver, log_level, in_args);
+	}
 }
 
 int forward_simulation(const CLI::App &command_line,
-					   const std::string &hdf5_file,
-					   const std::string output_dir,
+					   const io::ResourceIO &resources,
+					   const std::string &output_dir,
 					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args)
 {
-	std::vector<std::string> names;
-	std::vector<Eigen::MatrixXi> cells;
-	std::vector<Eigen::MatrixXd> vertices;
-
-	if (in_args.empty() && hdf5_file.empty())
+	if (in_args.empty())
 	{
 		logger().error("No input file specified!");
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
-	}
-
-	if (in_args.empty() && !hdf5_file.empty())
-	{
-		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
-
-		h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
-		std::string json_string = file.readDataset<std::string>("json");
-
-		in_args = json::parse(json_string);
-		in_args["root_path"] = hdf5_file;
-
-		names = file.findGroups("", "/meshes");
-		cells.resize(names.size());
-		vertices.resize(names.size());
-
-		for (int i = 0; i < names.size(); ++i)
-		{
-			const std::string &name = names[i];
-			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
-			vertices[i] = file.readDataset<Eigen::MatrixXd>("/meshes/" + name + "/v");
-		}
 	}
 
 	json tmp = json::object();
@@ -269,14 +255,68 @@ int forward_simulation(const CLI::App &command_line,
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
-	if (varform::uses_varform_state(in_args))
-		return forward_simulation_with_varform_state(names, cells, vertices, in_args, is_strict);
+	const std::string checkpoint_path =
+		in_args.contains("/input/checkpoint/path"_json_pointer)
+			? in_args["/input/checkpoint/path"_json_pointer].get<std::string>()
+			: std::string();
+	if (!checkpoint_path.empty())
+	{
+		const std::filesystem::path path = std::filesystem::path(checkpoint_path).is_absolute()
+										   ? std::filesystem::path(checkpoint_path)
+										   : resources.host_directory() / checkpoint_path;
+		io::CheckpointReader checkpoint(path.lexically_normal());
+		json continuation = checkpoint.config();
+		continuation["input"]["checkpoint"]["path"] = "";
+		continuation["input"]["checkpoint"]["reorder"] =
+			in_args.contains("/input/checkpoint/reorder"_json_pointer)
+				? in_args["/input/checkpoint/reorder"_json_pointer].get<bool>()
+				: false;
+		return forward_simulation(
+			command_line, checkpoint, output_dir, max_threads,
+			is_strict, fallback_solver, log_level, continuation);
+	}
 
-	return forward_simulation_with_legacy_state(names, cells, vertices, in_args, is_strict);
+	if (varform::uses_varform_state(in_args, resources))
+		return forward_simulation_with_varform_state(resources, in_args, is_strict);
+
+	if (dynamic_cast<const io::HDF5IO *>(&resources) != nullptr)
+		log_and_throw_error("HDF5 resources are supported only by the non-legacy State.");
+	in_args["root_path"] = resources.describe("");
+
+	return forward_simulation_with_legacy_state({}, {}, {}, in_args, is_strict);
+}
+
+int forward_simulation(const CLI::App &command_line,
+					   const io::CheckpointReader &checkpoint,
+					   const std::string &output_dir,
+					   const unsigned max_threads,
+					   const bool is_strict,
+					   const bool fallback_solver,
+					   const spdlog::level::level_enum &log_level,
+					   json &in_args)
+{
+	if (!varform::uses_varform_state(in_args, checkpoint.resources()))
+		log_and_throw_error("Checkpoints are supported only by the non-legacy State.");
+
+	json tmp = json::object();
+	if (has_arg(command_line, "log_level"))
+		tmp["/output/log/level"_json_pointer] = int(log_level);
+	if (has_arg(command_line, "max_threads"))
+		tmp["/solver/max_threads"_json_pointer] = max_threads;
+	if (has_arg(command_line, "output_dir"))
+		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
+	if (has_arg(command_line, "enable_overwrite_solver"))
+		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	if (has_arg(command_line, "checkpoint-reorder"))
+		tmp["/input/checkpoint/reorder"_json_pointer] = true;
+	in_args.merge_patch(tmp);
+
+	return forward_simulation_with_varform_state(checkpoint, in_args, is_strict);
 }
 
 #ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
+							const io::ResourceIO &resources,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
@@ -290,6 +330,6 @@ int optimization_simulation(const CLI::App &command_line,
 	opt_args.merge_patch(tmp);
 
 	OptState opt_state;
-	return opt_state.run(opt_args, is_strict);
+	return opt_state.run(opt_args, resources, is_strict);
 }
 #endif

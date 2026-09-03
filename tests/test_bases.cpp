@@ -46,7 +46,7 @@ namespace
 			0, 1;
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> make_lagrange_quad_mesh()
@@ -58,7 +58,7 @@ namespace
 			0, 1;
 		Eigen::MatrixXi cells(1, 4);
 		cells << 0, 1, 2, 3;
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> make_lagrange_two_triangle_mesh()
@@ -71,7 +71,7 @@ namespace
 		Eigen::MatrixXi cells(2, 3);
 		cells << 0, 1, 2,
 			0, 2, 3;
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> make_lagrange_two_quad_mesh()
@@ -86,7 +86,7 @@ namespace
 		Eigen::MatrixXi cells(2, 4);
 		cells << 0, 1, 4, 3,
 			1, 2, 5, 4;
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	void require_partition_of_unity(const ElementBases &bases, const Eigen::MatrixXd &uv)

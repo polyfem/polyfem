@@ -221,13 +221,7 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
-			bool save(const std::string &path) const override
-			{
-				// TODO
-				return false;
-			}
-
-			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+			bool build_topology(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 			std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
@@ -312,8 +306,6 @@ namespace polyfem
 
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
-			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &mesh) override;
 
 			// index map from vertices to valid ones, and its inverse
 			inline int all_to_valid_vertex(const int id) const

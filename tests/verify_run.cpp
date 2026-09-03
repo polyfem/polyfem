@@ -199,7 +199,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	}
 
 	json out = json({});
-	const AuthenticateResult run_result = varform::uses_varform_state(args)
+	const io::FileSystemIO resources(json_file);
+	const AuthenticateResult run_result = varform::uses_varform_state(args, resources)
 											  ? run_varform_state(args, out)
 											  : run_legacy_state(args, out);
 	if (run_result != SUCCESS)
