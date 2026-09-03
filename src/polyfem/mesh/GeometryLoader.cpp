@@ -82,8 +82,7 @@ namespace polyfem::mesh
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
 
-		std::unique_ptr<Mesh> mesh = MeshLoader(resources_).load_fem(
-			j_mesh["mesh"].get<std::string>(), non_conforming);
+		std::unique_ptr<Mesh> mesh = MeshLoader(resources_).load_fem(j_mesh["mesh"].get<std::string>(), non_conforming);
 		// --------------------------------------------------------------------
 
 		// NOTE: Normaliziation is done before transformations are applied and/or any selection operators

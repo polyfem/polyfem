@@ -28,8 +28,7 @@ namespace polyfem::solver
 			std::shared_ptr<const DiffCache> diff_cache,
 			const json &args,
 			const io::ResourceIO &resources)
-			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args)
-			, resources_(resources)
+			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args), resources_(resources)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 

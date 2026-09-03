@@ -40,7 +40,6 @@
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
 
-
 #include <Eigen/Core>
 #include <spdlog/fmt/fmt.h>
 
@@ -567,7 +566,7 @@ namespace polyfem::from_json
 				double delta = args["delta"].get<double>();
 
 				const auto surface = mesh::MeshLoader(resources.at(args["state"].get<int>()).get())
-								 .load_surface(args["mesh_path"].get<std::string>());
+										 .load_surface(args["mesh_path"].get<std::string>());
 				tmp->set_surface_mesh_target(surface.vertices, surface.faces, delta);
 				obj = tmp;
 			}

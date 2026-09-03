@@ -317,7 +317,6 @@ namespace polyfem::varform
 
 		problem->init(mesh);
 		temperature_problem_->init(mesh);
-
 	}
 
 	void ThermoElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)

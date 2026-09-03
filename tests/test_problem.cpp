@@ -620,11 +620,11 @@ TEST_CASE("franke 2d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params, units, test_resources());
+		helmholtz.add_multimaterial(0, params, units, test_resources());
 
 		Laplacian laplacian;
 		laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units, test_resources());
+		laplacian.add_multimaterial(0, params, units, test_resources());
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -706,11 +706,11 @@ TEST_CASE("franke 3d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(3);
-	helmholtz.add_multimaterial(0, params, units, test_resources());
+		helmholtz.add_multimaterial(0, params, units, test_resources());
 
 		Laplacian laplacian;
 		laplacian.set_size(3);
-	laplacian.add_multimaterial(0, params, units, test_resources());
+		laplacian.add_multimaterial(0, params, units, test_resources());
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);

@@ -12,7 +12,7 @@ namespace polyfem::io
 {
 	class CheckpointReader;
 	class CheckpointWriter;
-}
+} // namespace polyfem::io
 
 namespace polyfem::time_integrator
 {

@@ -350,10 +350,10 @@ namespace polyfem::varform
 				assert(collision_mesh_args.contains("mesh"));
 				// TODO: handle transformation per geometry
 				const json transformation = utils::json_as_array(args["geometry"])[0]["transformation"];
-					mesh::load_collision_proxy(
-						resources,
-						collision_mesh_args["mesh"].get<std::string>(),
-						collision_mesh_args["linear_map"].get<std::string>(),
+				mesh::load_collision_proxy(
+					resources,
+					collision_mesh_args["mesh"].get<std::string>(),
+					collision_mesh_args["linear_map"].get<std::string>(),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}

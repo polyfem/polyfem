@@ -13,7 +13,7 @@ namespace polyfem::mesh
 {
 	class Mesh;
 	class MeshData;
-}
+} // namespace polyfem::mesh
 
 namespace polyfem::io
 {

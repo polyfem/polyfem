@@ -117,7 +117,7 @@ TEST_CASE("hgo-dispersion-invariants", "[assembler]")
 			"k1": 100.0, "k2": 5.0, "kappa": 0.24, "k_chi": 100.0,
 			"fiber_direction": [0.70710678, 0.70710678, 0.0]
 		})"_json;
-	mat.add_multimaterial(0, params, units, test_resources());
+		mat.add_multimaterial(0, params, units, test_resources());
 
 		const double th = 0.7;
 		Eigen::Matrix3d R;
@@ -164,7 +164,7 @@ TEST_CASE("hgo-dispersion-invariants", "[assembler]")
 				    "kappa": 0.3333333333333333, "k_chi": 100.0,
 				    "fiber_direction": )"
 				+ dirs[d] + "}");
-	mat.add_multimaterial(0, params, units, test_resources());
+			mat.add_multimaterial(0, params, units, test_resources());
 
 			const double e = mat.elastic_energy(p, 0.0, 0, F_d);
 			if (d == 0)

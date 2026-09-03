@@ -254,8 +254,8 @@ namespace polyfem
 		checkpoint_.reset();
 		json args_in = p_args_in;
 		const std::string resource_root = utils::is_param_valid(args_in, "root_path")
-									  ? args_in["root_path"].get<std::string>()
-									  : std::string();
+											  ? args_in["root_path"].get<std::string>()
+											  : std::string();
 		resources_ = resources.with_root(resource_root);
 		args_in.erase("root_path");
 		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);

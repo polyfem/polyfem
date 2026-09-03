@@ -463,8 +463,10 @@ namespace polyfem
 		if (!out_path_log.empty())
 		{
 			out_path_log = (std::filesystem::path(out_path_log).is_absolute()
-				? std::filesystem::path(out_path_log)
-				: std::filesystem::path(output_dir) / out_path_log).lexically_normal().string();
+								? std::filesystem::path(out_path_log)
+								: std::filesystem::path(output_dir) / out_path_log)
+							   .lexically_normal()
+							   .string();
 		}
 
 		init_logger(

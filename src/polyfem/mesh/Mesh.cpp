@@ -480,8 +480,8 @@ namespace polyfem::mesh
 			for (auto &element : right.second)
 				for (int &node : element)
 					node = node < other_vertices
-						? node + n_vertices
-						: node + n_vertices + left_extra;
+							   ? node + n_vertices
+							   : node + n_vertices + left_extra;
 			higher_order_nodes_ = std::move(nodes);
 			higher_order_connectivity_ = std::move(left.second);
 			higher_order_connectivity_.insert(
