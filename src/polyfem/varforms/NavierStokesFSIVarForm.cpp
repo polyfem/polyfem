@@ -42,10 +42,43 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		if (mesh_displacement_time_integrator_)
-			mesh_displacement_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/mesh_motion_integrator");
-		if (has_solid_ && solid_varform_ && solid_varform_->embedding_time_integrator())
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "mesh_motion", mesh_displacement_space_.space_in_node_to_node);
+		if (!mesh_displacement_time_integrator_)
+			log_and_throw_error("Cannot checkpoint NavierStokesFSI without its mesh-motion integrator.");
+		mesh_displacement_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/mesh_motion_integrator");
+		if (has_solid_)
+		{
+			if (!solid_varform_ || !solid_varform_->embedding_time_integrator())
+				log_and_throw_error("Cannot checkpoint two-mesh NavierStokesFSI without its solid integrator.");
+			const io::OutputSpace solid_output = solid_varform_->output_space();
+			if (solid_output.mesh == nullptr)
+				log_and_throw_error("Cannot checkpoint NavierStokesFSI without its solid mesh.");
+			writer.write_mesh("/checkpoint/meshes/solid", *solid_output.mesh);
+			write_checkpoint_ordering(writer, "solid", solid_varform_->space_.space_in_node_to_node);
 			solid_varform_->embedding_time_integrator()->serialize_checkpoint(writer, "/checkpoint/state/solid_integrator");
+		}
+	}
+
+	void NavierStokesFSIVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, total_ndof());
+		const int dim = mesh_->dimension();
+		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, dim, 0, solution);
+		reorder_checkpoint_block(
+			reader, "pressure", pressure_space_.space_in_node_to_node,
+			1, pressure_offset(), solution);
+		reorder_checkpoint_block(
+			reader, "mesh_motion", mesh_displacement_space_.space_in_node_to_node,
+			dim, mesh_displacement_offset(), solution);
+		if (has_solid_)
+			reorder_checkpoint_block(
+				reader, "solid", solid_varform_->space_.space_in_node_to_node,
+				dim, solid_displacement_offset(), solution);
 	}
 
 	namespace
@@ -518,19 +551,29 @@ namespace polyfem::varform
 	{
 		if (has_solid_)
 		{
-			auto pieces = mesh.split();
-			if (pieces.size() != 2)
-				log_and_throw_error("Two-mesh NavierStokesFSI expected exactly two geometry partitions, got {}.", pieces.size());
-
 			std::unique_ptr<mesh::Mesh> fluid_mesh, solid_mesh;
-			for (auto &piece : pieces)
+			if (checkpoint_reader_)
 			{
-				if (piece.id == fluid_geometry_id_)
-					fluid_mesh = std::move(piece.mesh);
-				else if (piece.id == solid_geometry_id_)
-					solid_mesh = std::move(piece.mesh);
-				else
-					log_and_throw_error("Unexpected geometry ID {} in two-mesh NavierStokesFSI.", piece.id);
+				if (!checkpoint_reader_->get().exists("/checkpoint/meshes/solid"))
+					log_and_throw_error("Two-mesh NavierStokesFSI checkpoint is missing its solid mesh.");
+				fluid_mesh = mesh.copy();
+				solid_mesh = checkpoint_reader_->get().read_mesh(
+					"/checkpoint/meshes/solid", !mesh.is_conforming());
+			}
+			else
+			{
+				auto pieces = mesh.split();
+				if (pieces.size() != 2)
+					log_and_throw_error("Two-mesh NavierStokesFSI expected exactly two geometry partitions, got {}.", pieces.size());
+				for (auto &piece : pieces)
+				{
+					if (piece.id == fluid_geometry_id_)
+						fluid_mesh = std::move(piece.mesh);
+					else if (piece.id == solid_geometry_id_)
+						solid_mesh = std::move(piece.mesh);
+					else
+						log_and_throw_error("Unexpected geometry ID {} in two-mesh NavierStokesFSI.", piece.id);
+				}
 			}
 			if (!fluid_mesh || !solid_mesh)
 				log_and_throw_error(
@@ -814,10 +857,16 @@ namespace polyfem::varform
 		mesh_bdf->init(mesh_history, mesh_history_velocity, mesh_history_acceleration, dt);
 		time_integrator = velocity_bdf;
 		mesh_displacement_time_integrator_ = mesh_bdf;
-		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
-		restore_checkpoint_integrator(mesh_displacement_time_integrator_, "/checkpoint/state/mesh_motion_integrator", dt);
+		restore_checkpoint_integrator(
+			time_integrator, "/checkpoint/state/primary_integrator", dt,
+			"primary", space_.space_in_node_to_node, dim);
+		restore_checkpoint_integrator(
+			mesh_displacement_time_integrator_, "/checkpoint/state/mesh_motion_integrator", dt,
+			"mesh_motion", mesh_displacement_space_.space_in_node_to_node, dim);
 		if (has_solid_ && solid_varform_->embedding_time_integrator())
-			restore_checkpoint_integrator(solid_varform_->embedding_time_integrator(), "/checkpoint/state/solid_integrator", dt);
+			restore_checkpoint_integrator(
+				solid_varform_->embedding_time_integrator(), "/checkpoint/state/solid_integrator", dt,
+				"solid", solid_varform_->space_.space_in_node_to_node, dim);
 
 		ale_form_ = std::make_shared<solver::NavierStokesFSIForm>(
 			total_ndof(), space_.n_bases, pressure_space_.n_bases, mesh_displacement_space_.n_bases,

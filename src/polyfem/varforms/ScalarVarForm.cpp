@@ -40,6 +40,24 @@ namespace polyfem::varform
 		}
 	} // namespace
 
+	void ScalarVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+	}
+
+	void ScalarVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, space_.ndof());
+		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, 1, 0, solution);
+	}
+
 	void ScalarVarForm::reset()
 	{
 		VarForm::reset();
@@ -880,7 +898,9 @@ namespace polyfem::varform
 			args["time"]["integrator"]);
 		bdf->init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 		time_integrator = bdf;
-		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
+		restore_checkpoint_integrator(
+			time_integrator, "/checkpoint/state/primary_integrator", dt,
+			"primary", space_.space_in_node_to_node, 1);
 
 		save_timestep(t0, 0, t0, dt, sol);
 		if (post_step)

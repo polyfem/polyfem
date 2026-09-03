@@ -5,6 +5,7 @@
 #include <Eigen/Core>
 
 #include <map>
+#include <functional>
 #include <vector>
 #include <deque>
 
@@ -76,7 +77,11 @@ namespace polyfem::time_integrator
 		int maximum_steps() const { return max_steps(); }
 
 		void serialize_checkpoint(io::CheckpointWriter &writer, const std::string &group) const;
-		void deserialize_checkpoint(const io::CheckpointReader &reader, const std::string &group, double expected_dt);
+		void deserialize_checkpoint(
+			const io::CheckpointReader &reader,
+			const std::string &group,
+			double expected_dt,
+			const std::function<void(Eigen::MatrixXd &)> &transform = {});
 
 		/// Legacy State persistence. Non-legacy code uses serialize_checkpoint().
 		virtual void save_state(const std::string &state_path) const;

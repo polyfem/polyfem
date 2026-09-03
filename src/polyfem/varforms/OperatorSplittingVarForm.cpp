@@ -25,10 +25,39 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(solution, velocity, pressure);
 		writer.write_matrix("/checkpoint/state/velocity", velocity);
 		writer.write_matrix("/checkpoint/state/pressure", pressure);
+	}
+
+	void OperatorSplittingVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, stacked_ndof());
+		for (const std::string &path : {
+				 "/checkpoint/state/velocity", "/checkpoint/state/pressure"})
+			if (!reader.exists(path))
+				log_and_throw_error("Operator-splitting checkpoint is missing {}.", path);
+
+		Eigen::MatrixXd velocity = reader.read_matrix("/checkpoint/state/velocity");
+		Eigen::MatrixXd pressure = reader.read_matrix("/checkpoint/state/pressure");
+		if (velocity.rows() != primary_ndof() || velocity.cols() != 1)
+			log_and_throw_error("Operator-splitting checkpoint velocity has invalid dimensions.");
+		if (pressure.rows() != pressure_space_.n_bases || pressure.cols() != 1)
+			log_and_throw_error("Operator-splitting checkpoint pressure has invalid dimensions.");
+		if (!solution.topRows(primary_ndof()).isApprox(velocity)
+			|| !solution.middleRows(primary_ndof(), pressure_space_.n_bases).isApprox(pressure))
+			log_and_throw_error("Operator-splitting checkpoint contains inconsistent solution blocks.");
+
+		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, mesh_->dimension(), 0, velocity);
+		reorder_checkpoint_block(reader, "pressure", pressure_space_.space_in_node_to_node, 1, 0, pressure);
+		solution.topRows(primary_ndof()) = velocity;
+		solution.middleRows(primary_ndof(), pressure_space_.n_bases) = pressure;
 	}
 
 	using namespace varform::internal;
@@ -798,8 +827,6 @@ namespace polyfem::varform
 		solver::OperatorSplittingSolver solver(
 			*mesh_, shape, n_el, boundary_.local_boundary, boundary_.boundary_nodes, pressure_boundary_.boundary_nodes, bnd_nodes, mass_,
 			stiffness_viscosity, pressure_stiffness, velocity_mass, dt, viscosity, args["solver"]["linear"]);
-
-		pressure = Eigen::MatrixXd::Zero(pressure_space_.n_bases, 1);
 
 		const QuadratureOrders boundary_samples = n_boundary_samples(space_.disc_orders.maxCoeff(), space_.disc_ordersq.maxCoeff(), discr_order);
 		for (int t = 1; t <= time_steps; ++t)

@@ -33,6 +33,30 @@ namespace polyfem::varform
 {
 	using namespace varform::internal;
 
+	void FluidVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
+	}
+
+	void FluidVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, stacked_ndof());
+		reorder_checkpoint_block(
+			reader, "primary", space_.space_in_node_to_node,
+			mesh_->dimension(), 0, solution);
+		reorder_checkpoint_block(
+			reader, "pressure", pressure_space_.space_in_node_to_node,
+			1, primary_ndof(), solution);
+	}
+
 	void FluidVarForm::reset()
 	{
 		VarForm::reset();
@@ -867,7 +891,9 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			dt);
 		time_integrator = bdf;
-		restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
+		restore_checkpoint_integrator(
+			time_integrator, "/checkpoint/state/primary_integrator", dt,
+			"primary", space_.space_in_node_to_node, mesh_->dimension());
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -1158,7 +1184,9 @@ namespace polyfem::varform
 				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 				Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()), dt);
 			time_integrator = bdf;
-			restore_checkpoint_integrator(time_integrator, "/checkpoint/state/primary_integrator", dt);
+			restore_checkpoint_integrator(
+				time_integrator, "/checkpoint/state/primary_integrator", dt,
+				"primary", space_.space_in_node_to_node, mesh_->dimension());
 
 			build_forms(sol, t0 + dt);
 			save_timestep(t0, 0, t0, dt, sol);

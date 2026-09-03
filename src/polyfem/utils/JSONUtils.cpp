@@ -4,6 +4,8 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <jse/jse.h>
+
 #include <Eigen/Geometry>
 
 namespace polyfem

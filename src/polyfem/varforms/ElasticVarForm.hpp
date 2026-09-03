@@ -25,6 +25,7 @@ namespace polyfem::varform
 	class ElasticVarForm : public VarForm
 	{
 		friend class polyfem::test::VarFormTestAccess;
+		friend class NavierStokesFSIVarForm;
 
 	public:
 		using VarForm::VarForm;
@@ -34,6 +35,8 @@ namespace polyfem::varform
 		void export_data(const Eigen::MatrixXd &solution) const override;
 		io::OutputSpace output_space() const override;
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
+		void serialize_checkpoint(io::CheckpointWriter &writer, const Eigen::MatrixXd &solution, const io::CheckpointMetadata &metadata) const override;
+		void deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution) override;
 
 	protected:
 		void reset() override;

@@ -154,7 +154,9 @@ namespace polyfem::varform
 			}
 
 			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
-			restore_checkpoint_integrator(solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt);
+			restore_checkpoint_integrator(
+				solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt,
+				"primary", space_.space_in_node_to_node, mesh_->dimension());
 
 			solve_data_.elastic_form->set_weight(solve_data_.time_integrator->acceleration_scaling());
 			solve_data_.body_form->set_weight(solve_data_.time_integrator->acceleration_scaling());

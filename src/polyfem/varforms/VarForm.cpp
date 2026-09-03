@@ -21,6 +21,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/Timer.h>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -641,6 +642,8 @@ namespace polyfem::varform
 	{
 		prepare();
 		resources_.freeze_dependency_manifest();
+		if (checkpoint_reader_)
+			deserialize_checkpoint(checkpoint_reader_->get(), sol);
 		solve_problem(sol, initial_condition_override, post_step);
 	}
 
@@ -977,13 +980,96 @@ namespace polyfem::varform
 	void VarForm::restore_checkpoint_integrator(
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &integrator,
 		const std::string &group,
-		const double dt) const
+		const double dt,
+		const std::string &ordering,
+		const Eigen::VectorXi &current_ordering,
+		const int block_size) const
 	{
 		if (!checkpoint_reader_)
 			return;
 		if (!integrator)
 			log_and_throw_error("Checkpoint requires integrator state at {}, but no integrator was constructed.", group);
-		integrator->deserialize_checkpoint(checkpoint_reader_->get(), group, dt);
+		const auto reorder = [this, &ordering, &current_ordering, block_size](Eigen::MatrixXd &value) {
+			if (checkpoint_reorder_enabled())
+				reorder_checkpoint_block(
+					checkpoint_reader_->get(), ordering, current_ordering,
+					block_size, 0, value);
+		};
+		integrator->deserialize_checkpoint(checkpoint_reader_->get(), group, dt, reorder);
+	}
+
+	void VarForm::write_checkpoint_ordering(
+		io::CheckpointWriter &writer,
+		const std::string &name,
+		const Eigen::VectorXi &ordering) const
+	{
+		if (ordering.size() == 0)
+			return;
+		writer.write_int_vector(
+			"/checkpoint/state/orderings/" + name,
+			std::vector<int>(ordering.data(), ordering.data() + ordering.size()));
+	}
+
+	bool VarForm::checkpoint_reorder_enabled() const
+	{
+		return args.contains("input") && args["input"].is_object()
+			   && args["input"].contains("checkpoint") && args["input"]["checkpoint"].is_object()
+			   && args["input"]["checkpoint"].value("reorder", false);
+	}
+
+	void VarForm::reorder_checkpoint_block(
+		const io::CheckpointReader &reader,
+		const std::string &name,
+		const Eigen::VectorXi &current_ordering,
+		const int block_size,
+		const int row_offset,
+		Eigen::MatrixXd &value) const
+	{
+		if (!checkpoint_reorder_enabled())
+			return;
+		const std::string path = "/checkpoint/state/orderings/" + name;
+		if (!reader.exists(path))
+			log_and_throw_error("Checkpoint reordering requires {}.", path);
+		if (block_size <= 0 || current_ordering.size() == 0)
+			log_and_throw_error("Checkpoint reordering is unavailable for the {} solution block.", name);
+
+		const std::vector<int> stored_values = reader.read_int_vector(path);
+		const Eigen::VectorXi stored_ordering = Eigen::Map<const Eigen::VectorXi>(
+			stored_values.data(), stored_values.size());
+		if (stored_ordering.size() != current_ordering.size())
+			log_and_throw_error(
+				"Checkpoint {} ordering has {} nodes; the current space has {}.",
+				name, stored_ordering.size(), current_ordering.size());
+
+		const auto validate_permutation = [&name](const Eigen::VectorXi &permutation, const std::string &source) {
+			std::vector<bool> seen(permutation.size(), false);
+			for (const int index : permutation)
+			{
+				if (index < 0 || index >= permutation.size() || seen[index])
+					log_and_throw_error("{} {} ordering is not a permutation.", source, name);
+				seen[index] = true;
+			}
+		};
+		validate_permutation(stored_ordering, "Checkpoint");
+		validate_permutation(current_ordering, "Current");
+
+		const int rows = current_ordering.size() * block_size;
+		if (row_offset < 0 || row_offset + rows > value.rows())
+			log_and_throw_error("Checkpoint {} solution block has invalid dimensions.", name);
+		const Eigen::MatrixXd input_order = utils::unreorder_matrix(
+			value.middleRows(row_offset, rows), stored_ordering, -1, block_size);
+		value.middleRows(row_offset, rows) = utils::reorder_matrix(
+			input_order, current_ordering, -1, block_size);
+	}
+
+	void VarForm::validate_checkpoint_solution(
+		const Eigen::MatrixXd &solution,
+		const int expected_rows) const
+	{
+		if (solution.rows() != expected_rows || solution.cols() != 1)
+			log_and_throw_error(
+				"Checkpoint solution for {} has dimensions {} x {}; expected {} x 1.",
+				name(), solution.rows(), solution.cols(), expected_rows);
 	}
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const

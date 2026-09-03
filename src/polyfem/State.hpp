@@ -50,6 +50,10 @@ namespace polyfem
 		void init(
 			const io::CheckpointReader &checkpoint,
 			bool strict_validation);
+		void init(
+			const json &args,
+			const io::CheckpointReader &checkpoint,
+			bool strict_validation);
 
 		void init(
 			const json &args,

@@ -964,7 +964,9 @@ namespace polyfem::varform
 			}
 
 			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
-			restore_checkpoint_integrator(solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt);
+			restore_checkpoint_integrator(
+				solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt,
+				"primary", space_.space_in_node_to_node, mesh_->dimension());
 			assert(solve_data_.time_integrator != nullptr && "Transient nonlinear elasticity requires an initialized time integrator");
 		}
 		else

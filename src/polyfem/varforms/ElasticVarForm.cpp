@@ -38,6 +38,26 @@
 
 namespace polyfem::varform
 {
+	void ElasticVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+	}
+
+	void ElasticVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, space_.ndof());
+		reorder_checkpoint_block(
+			reader, "primary", space_.space_in_node_to_node,
+			mesh_->dimension(), 0, solution);
+	}
+
 	void ElasticVarForm::reset()
 	{
 		VarForm::reset();

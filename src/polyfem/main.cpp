@@ -67,10 +67,11 @@ int forward_simulation_with_varform_state(const io::ResourceIO &resources,
 }
 
 int forward_simulation_with_varform_state(const io::CheckpointReader &checkpoint,
+										  const json &in_args,
 										  const bool is_strict)
 {
 	State state;
-	state.init(checkpoint, is_strict);
+	state.init(in_args, checkpoint, is_strict);
 	return run_forward_simulation(state);
 }
 
@@ -158,7 +159,12 @@ int main(int argc, char **argv)
 	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
 
 	std::string checkpoint_file = "";
-	input->add_option("--checkpoint", checkpoint_file, "Versioned PolyFEM checkpoint")->check(CLI::ExistingFile);
+	auto *checkpoint_option = input->add_option("--checkpoint", checkpoint_file, "Versioned PolyFEM checkpoint")->check(CLI::ExistingFile);
+	bool checkpoint_reorder = false;
+	command_line.add_flag(
+		"--checkpoint-reorder", checkpoint_reorder,
+		"Reorder checkpoint state from its saved input-node ordering")
+		->needs(checkpoint_option);
 
 	input->require_option(1);
 
@@ -249,6 +255,27 @@ int forward_simulation(const CLI::App &command_line,
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
+	const std::string checkpoint_path =
+		in_args.contains("/input/checkpoint/path"_json_pointer)
+			? in_args["/input/checkpoint/path"_json_pointer].get<std::string>()
+			: std::string();
+	if (!checkpoint_path.empty())
+	{
+		const std::filesystem::path path = std::filesystem::path(checkpoint_path).is_absolute()
+										   ? std::filesystem::path(checkpoint_path)
+										   : resources.host_directory() / checkpoint_path;
+		io::CheckpointReader checkpoint(path.lexically_normal());
+		json continuation = checkpoint.config();
+		continuation["input"]["checkpoint"]["path"] = "";
+		continuation["input"]["checkpoint"]["reorder"] =
+			in_args.contains("/input/checkpoint/reorder"_json_pointer)
+				? in_args["/input/checkpoint/reorder"_json_pointer].get<bool>()
+				: false;
+		return forward_simulation(
+			command_line, checkpoint, output_dir, max_threads,
+			is_strict, fallback_solver, log_level, continuation);
+	}
+
 	if (varform::uses_varform_state(in_args, resources))
 		return forward_simulation_with_varform_state(resources, in_args, is_strict);
 
@@ -280,9 +307,11 @@ int forward_simulation(const CLI::App &command_line,
 		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
 	if (has_arg(command_line, "enable_overwrite_solver"))
 		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	if (has_arg(command_line, "checkpoint-reorder"))
+		tmp["/input/checkpoint/reorder"_json_pointer] = true;
 	in_args.merge_patch(tmp);
 
-	return forward_simulation_with_varform_state(checkpoint, is_strict);
+	return forward_simulation_with_varform_state(checkpoint, in_args, is_strict);
 }
 
 #ifdef POLYFEM_WITH_OPTIMIZATION

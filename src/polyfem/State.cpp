@@ -384,10 +384,17 @@ namespace polyfem
 
 	void State::init(const io::CheckpointReader &checkpoint, const bool strict_validation)
 	{
-		init(checkpoint.config(), checkpoint.resources(), strict_validation, false);
+		init(checkpoint.config(), checkpoint, strict_validation);
+	}
+
+	void State::init(
+		const json &continuation,
+		const io::CheckpointReader &checkpoint,
+		const bool strict_validation)
+	{
+		init(continuation, checkpoint.resources(), strict_validation, false);
 		checkpoint_ = std::cref(checkpoint);
 		variational_formulation->set_checkpoint_reader(checkpoint);
-		const std::string formulation = varform::formulation_from_args(args);
 		if (checkpoint_->get().metadata().formulation != variational_formulation->name())
 			log_and_throw_error(
 				"Checkpoint formulation '{}' is incompatible with configured formulation '{}'.",
@@ -493,9 +500,6 @@ namespace polyfem
 	void State::solve(Eigen::MatrixXd &sol)
 	{
 		assert(variational_formulation != nullptr);
-
-		if (checkpoint_)
-			variational_formulation->deserialize_checkpoint(checkpoint_->get(), sol);
 		variational_formulation->set_time_callback(time_callback);
 		variational_formulation->solve(sol);
 	}

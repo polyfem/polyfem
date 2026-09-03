@@ -84,7 +84,8 @@ namespace polyfem
 		void ImplicitTimeIntegrator::deserialize_checkpoint(
 			const io::CheckpointReader &reader,
 			const std::string &group,
-			const double expected_dt)
+			const double expected_dt,
+			const std::function<void(Eigen::MatrixXd &)> &transform)
 		{
 			for (const std::string &key : {"x", "v", "a", "dynamic_order", "history_length", "dt"})
 				if (!reader.exists(group + "/" + key))
@@ -98,12 +99,23 @@ namespace polyfem
 			const double stored_dt = reader.read_double(group + "/dt");
 			if (std::abs(stored_dt - expected_dt) > 1e-12 * std::max({1.0, std::abs(stored_dt), std::abs(expected_dt)}))
 				log_and_throw_error("Checkpoint dt {} does not match configured dt {}.", stored_dt, expected_dt);
-			const Eigen::MatrixXd x = reader.read_matrix(group + "/x");
-			const Eigen::MatrixXd v = reader.read_matrix(group + "/v");
-			const Eigen::MatrixXd a = reader.read_matrix(group + "/a");
+			Eigen::MatrixXd x = reader.read_matrix(group + "/x");
+			Eigen::MatrixXd v = reader.read_matrix(group + "/v");
+			Eigen::MatrixXd a = reader.read_matrix(group + "/a");
 			if (x.rows() == 0 || x.cols() != history || v.rows() != x.rows() || a.rows() != x.rows()
 				|| v.cols() != history || a.cols() != history)
 				log_and_throw_error("Checkpoint integrator history dimensions are invalid in {}.", group);
+			const int expected_rows = x_prevs_.empty() ? -1 : x_prevs_.front().size();
+			if (expected_rows >= 0 && x.rows() != expected_rows)
+				log_and_throw_error(
+					"Checkpoint integrator {} has {} rows; expected {}.",
+					group, x.rows(), expected_rows);
+			if (transform)
+			{
+				transform(x);
+				transform(v);
+				transform(a);
+			}
 			init(x, v, a, stored_dt);
 		}
 
