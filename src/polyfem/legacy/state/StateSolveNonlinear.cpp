@@ -29,6 +29,7 @@
 
 #include <ipc/ipc.hpp>
 #include <ipc/distance/distance_type.hpp>
+#include <ipc/distance/distance_type_exact.hpp>
 #include <ipc/utils/profile_registry.hpp>
 
 #include <spdlog/fmt/fmt.h>
@@ -344,8 +345,8 @@ namespace polyfem::legacy
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// High Order Contact Form
-			args["contact"]["use_high_order_formulation"],
-			args["contact"]["high_order_contact_params"],
+			args["contact"]["use_esp_formulation"],
+			args["contact"]["esp_params"],
 			// Normal Adhesion Form
 			is_adhesion_enabled(),
 			args["contact"]["adhesion"]["dhat_p"],

@@ -2,9 +2,9 @@
     "contact": {
         "enabled": true,
         "dhat": 0.001,
-        "use_high_order_formulation": true,
+        "use_esp_formulation": true,
         "barrier": "normalized_log",
-        "high_order_contact_params": {
+        "esp_params": {
             "normalize_weights": false,
             "quadrature_order": 0
         }

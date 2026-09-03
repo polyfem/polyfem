@@ -1130,7 +1130,7 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_high_order_formulation",
+            "use_esp_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
@@ -1140,7 +1140,7 @@
             "barrier",
             "collision_mesh",
             "use_gcp_formulation",
-            "high_order_contact_params",
+            "esp_params",
             "alpha_n",
             "alpha_t",
             "min_distance_ratio",
@@ -1152,7 +1152,7 @@
         "doc": "Contact handling parameters."
     },
     {
-        "pointer": "/contact/high_order_contact_params",
+        "pointer": "/contact/esp_params",
         "type": "object",
         "default": null,
         "optional": [
@@ -1163,26 +1163,26 @@
         ]
     },
     {
-        "pointer": "/contact/high_order_contact_params/dbar_factor",
+        "pointer": "/contact/esp_params/dbar_factor",
         "type": "float",
         "default": 1.0,
         "doc": "Multiplied by dhat to get the activation distance of edge-edge contact points. 1.0 treats them as any other; 0.0 disables them."
     },
     {
-        "pointer": "/contact/high_order_contact_params/quadrature_order",
+        "pointer": "/contact/esp_params/quadrature_order",
         "type": "int",
         "default": 1,
         "min": 0,
         "doc": "Quadrature order for high-order contact."
     },
     {
-        "pointer": "/contact/high_order_contact_params/area_weights",
+        "pointer": "/contact/esp_params/area_weights",
         "default": true,
         "type": "bool",
         "doc": "Weigh quadrature points by area in high-order contact potential."
     },
     {
-        "pointer": "/contact/high_order_contact_params/normalize_weights",
+        "pointer": "/contact/esp_params/normalize_weights",
         "default": true,
         "type": "bool",
         "doc": "Normalize quadrature weights in high-order contact potential."
@@ -1202,7 +1202,7 @@
         "doc": "Barrier function for contact. 'default' uses the default barrier for each contact model. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (InversePowerBarrier with p=2), 'two_stage' (TwoStageBarrier)."
     },
     {
-        "pointer": "/contact/use_high_order_formulation",
+        "pointer": "/contact/use_esp_formulation",
         "default": false,
         "type": "bool"
     },

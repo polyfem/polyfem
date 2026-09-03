@@ -1,4 +1,4 @@
-#include "HighOrderContactForm.hpp"
+#include "ESPContactForm.hpp"
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -62,13 +62,13 @@ namespace polyfem::solver
 		}
 	}
 
-	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim) {
-		const int quadrature_order = high_order_contact_params["quadrature_order"];
-		const double dbar_factor = high_order_contact_params["dbar_factor"];
-		const bool area_weights = high_order_contact_params["area_weights"];
-		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
-			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
-		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, area_weights, itype);
+	ipc::ESPParameters init_params(const double dhat, const json &esp_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim) {
+		const int quadrature_order = esp_params["quadrature_order"];
+		const double dbar_factor = esp_params["dbar_factor"];
+		const bool area_weights = esp_params["area_weights"];
+		const ipc::ESPParameters::IntegrationType itype = skip_obstacles ?
+			ipc::ESPParameters::IntegrationType::NO_OBST : ipc::ESPParameters::IntegrationType::NORMAL;
+		ipc::ESPParameters params(dhat, dbar_factor, quadrature_order, area_weights, itype);
 		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
 		if (quadrature_order > 0) {
 			params.face_quad_rule = build_quad_rule(quadrature_order);
@@ -77,10 +77,10 @@ namespace polyfem::solver
 		return params;
 	}
 
-	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
+	ESPContactForm::ESPContactForm(const ipc::CollisionMesh &collision_mesh,
 											   const double dhat,
 											   const double avg_mass,
-											   const json high_order_contact_params,
+											   const json esp_params,
 											   const bool skip_obstacles,
 											   std::shared_ptr<ipc::Barrier> barrier,
 											   const bool use_adaptive_dhat,
@@ -90,31 +90,31 @@ namespace polyfem::solver
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
 											   const int ccd_max_iterations,
-											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, high_order_contact_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
-											   barrier_potential_(params, high_order_contact_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
+											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, esp_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
+											   barrier_potential_(params, esp_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
 	{
 		// Compute adaptive support at rest configuration if enabled
 		if (use_adaptive_dhat_) {
-			adaptive_support_ = ipc::HighOrderCollisions::compute_adaptive_dhat(
+			adaptive_support_ = ipc::ESPCollisions::compute_adaptive_dhat(
 				collision_mesh, collision_mesh.rest_positions(), params);
 		}
 	}
 
-	void HighOrderContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void ESPContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
 
-		log_and_throw_error("Adaptive barrier stiffness not implemented for HighOrderContactForm!");
+		log_and_throw_error("Adaptive barrier stiffness not implemented for ESPContactForm!");
 	}
 
-	void HighOrderContactForm::force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
+	void ESPContactForm::force_shape_derivative(const ipc::ESPCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
 	{
 		StiffnessMatrix hessian = barrier_potential_.hessian(collision_set, collision_mesh_, compute_displaced_surface(solution), ipc::PSDProjectionMethod::NONE);
 		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
 	}
 
-	void HighOrderContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
+	void ESPContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
@@ -125,7 +125,7 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double HighOrderContactForm::value_unweighted(const Eigen::VectorXd &x) const
+	double ESPContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
 		if (cached_displaced_surface != displaced) {
@@ -134,12 +134,12 @@ namespace polyfem::solver
 		return barrier_potential_(collision_set_, collision_mesh_, displaced);
 	}
 
-	Eigen::VectorXd HighOrderContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	Eigen::VectorXd ESPContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		log_and_throw_error("value_per_element_unweighted not implemented!");
 	}
 
-	void HighOrderContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ESPContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
 		if (cached_displaced_surface != displaced) {
@@ -150,7 +150,7 @@ namespace polyfem::solver
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
-	void HighOrderContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void ESPContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
 		// 	static int hessian_call_count = 0;
@@ -166,7 +166,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	void HighOrderContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
+	void ESPContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 

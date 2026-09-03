@@ -1,4 +1,4 @@
-#include "SmoothContactForm.hpp"
+#include "GCPContactForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -11,7 +11,7 @@
 
 namespace polyfem::solver
 {
-	SmoothContactForm::SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
+	GCPContactForm::GCPContactForm(const ipc::CollisionMesh &collision_mesh,
 										 const double dhat,
 										 const double avg_mass,
 										 const double alpha_t,
@@ -35,15 +35,15 @@ namespace polyfem::solver
 		}
 	}
 
-	void SmoothContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void GCPContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
 
-		log_and_throw_error("Adaptive barrier stiffness not implemented for SmoothContactForm!");
+		log_and_throw_error("Adaptive barrier stiffness not implemented for GCPContactForm!");
 	}
 
-	void SmoothContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
+	void GCPContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
@@ -59,23 +59,23 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double SmoothContactForm::value_unweighted(const Eigen::VectorXd &x) const
+	double GCPContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return barrier_potential_(collision_set_, collision_mesh_, compute_displaced_surface(x));
 	}
 
-	Eigen::VectorXd SmoothContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	Eigen::VectorXd GCPContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		log_and_throw_error("value_per_element_unweighted not implemented!");
 	}
 
-	void SmoothContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void GCPContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
-	void SmoothContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void GCPContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
 		// 	io::OBJWriter::write(
@@ -88,7 +88,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	void SmoothContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
+	void GCPContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 

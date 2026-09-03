@@ -20,7 +20,7 @@
 
 #include <polyfem/utils/getRSS.h>
 #include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/HighOrderContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -436,9 +436,9 @@ namespace polyfem::io
 		// `contact_forces_edge`, and in 3D `contact_forces_face`) derived by
 		// restricting the high-order collision set to one dict group at a time
 		// before evaluating the gradient.
-		void save_high_order_contact_subset_forces(
-			const solver::HighOrderContactForm &ho_form,
-			ipc::HighOrderCollisions &ho_collision_set,
+		void save_esp_subset_forces(
+			const solver::ESPContactForm &esp_form,
+			ipc::ESPCollisions &esp_collision_set,
 			const ipc::CollisionMesh &collision_mesh,
 			const Eigen::MatrixXd &displaced_surface,
 			const Eigen::MatrixXd &surface_displacements,
@@ -449,7 +449,7 @@ namespace polyfem::io
 			const bool export_face,
 			paraviewo::ParaviewWriter &writer)
 		{
-			const auto &potential = ho_form.barrier_potential();
+			const auto &potential = esp_form.barrier_potential();
 
 			auto add_force_field = [&](const std::string &name, const Eigen::VectorXd &forces) {
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
@@ -462,46 +462,46 @@ namespace polyfem::io
 			// gradient call, then restore everything afterwards. Pointer-swap move
 			// on unordered_map<..., unique_ptr<...>> is O(1) and does not deep-copy.
 			auto gradient_with_only = [&](const std::string &kind) -> Eigen::VectorXd {
-				auto v = std::move(ho_collision_set.vertex_collisions);
-				auto ee = std::move(ho_collision_set.edge_edge_collisions);
-				auto e2 = std::move(ho_collision_set.edge_collisions_2d);
-				auto f = std::move(ho_collision_set.face_collisions);
+				auto v = std::move(esp_collision_set.vertex_collisions);
+				auto ee = std::move(esp_collision_set.edge_edge_collisions);
+				auto e2 = std::move(esp_collision_set.edge_collisions_2d);
+				auto f = std::move(esp_collision_set.face_collisions);
 
 				if (kind == "vertex")
 				{
-					ho_collision_set.vertex_collisions = std::move(v);
+					esp_collision_set.vertex_collisions = std::move(v);
 				}
 				else if (kind == "edge")
 				{
-					ho_collision_set.edge_edge_collisions = std::move(ee);
-					ho_collision_set.edge_collisions_2d = std::move(e2);
+					esp_collision_set.edge_edge_collisions = std::move(ee);
+					esp_collision_set.edge_collisions_2d = std::move(e2);
 				}
 				else if (kind == "face")
 				{
-					ho_collision_set.face_collisions = std::move(f);
+					esp_collision_set.face_collisions = std::move(f);
 				}
 
 				Eigen::VectorXd g = -barrier_stiffness * potential.gradient(
-					ho_collision_set, collision_mesh, displaced_surface);
+					esp_collision_set, collision_mesh, displaced_surface);
 
 				if (kind != "vertex")
 				{
-					ho_collision_set.vertex_collisions = std::move(v);
+					esp_collision_set.vertex_collisions = std::move(v);
 				}
 				if (kind != "edge")
 				{
-					ho_collision_set.edge_edge_collisions = std::move(ee);
-					ho_collision_set.edge_collisions_2d = std::move(e2);
+					esp_collision_set.edge_edge_collisions = std::move(ee);
+					esp_collision_set.edge_collisions_2d = std::move(e2);
 				}
 				if (kind != "face")
 				{
-					ho_collision_set.face_collisions = std::move(f);
+					esp_collision_set.face_collisions = std::move(f);
 				}
 				return g;
 			};
 
 			const Eigen::VectorXd forces = -barrier_stiffness * potential.gradient(
-				ho_collision_set, collision_mesh, displaced_surface);
+				esp_collision_set, collision_mesh, displaced_surface);
 			add_force_field("contact_forces", forces);
 			if (export_vertex)
 				add_force_field("contact_forces_vertex", gradient_with_only("vertex"));

@@ -17,8 +17,8 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
-#include <polyfem/solver/forms/HighOrderContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -2381,7 +2381,7 @@ namespace polyfem::legacy::io
 
 		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
 		{
-			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
+			const auto form = std::dynamic_pointer_cast<solver::GCPContactForm>(contact_form);
 			assert(form);
 			const auto &set = form->collision_set();
 

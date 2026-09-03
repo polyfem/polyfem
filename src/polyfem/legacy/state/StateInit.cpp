@@ -323,7 +323,7 @@ namespace polyfem::legacy
 		{
 			if (is_contact_enabled())
 			{
-				if (!args["contact"]["use_high_order_formulation"] && !args["contact"]["use_gcp_formulation"] && !args["contact"]["use_convergent_formulation"])
+				if (!args["contact"]["use_esp_formulation"] && !args["contact"]["use_gcp_formulation"] && !args["contact"]["use_convergent_formulation"])
 				{
 					args["contact"]["use_convergent_formulation"] = true;
 					logger().info("Use convergent formulation for differentiable contact...");

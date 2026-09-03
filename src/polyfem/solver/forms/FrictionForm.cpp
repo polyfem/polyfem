@@ -1,14 +1,14 @@
 #include "FrictionForm.hpp"
 #include "BarrierContactForm.hpp"
-#include "SmoothContactForm.hpp"
-#include "HighOrderContactForm.hpp"
+#include "GCPContactForm.hpp"
+#include "ESPContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
-#include <ipc/smooth_contact/smooth_collisions.hpp>
+#include <ipc/gcp/gcp_collisions.hpp>
 
 #include <Eigen/Core>
 
@@ -110,29 +110,29 @@ namespace polyfem::solver
 				collision_mesh_, displaced_surface, collision_set,
 				bp, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(&contact_form_))
+		else if (const auto gcp = dynamic_cast<const GCPContactForm *>(&contact_form_))
 		{
-			ipc::SmoothCollisions collision_set;
-			if (smooth_contact->using_adaptive_dhat())
-				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase.get());
+			ipc::GCPCollisions collision_set;
+			if (gcp->using_adaptive_dhat())
+				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), gcp->get_params(), broad_phase.get());
 			collision_set.build(
-				collision_mesh_, displaced_surface, smooth_contact->get_params(),
-				smooth_contact->using_adaptive_dhat(), broad_phase.get());
+				collision_mesh_, displaced_surface, gcp->get_params(),
+				gcp->using_adaptive_dhat(), broad_phase.get());
 
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface,
-				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
+				collision_set, gcp->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto ho_contact = dynamic_cast<const HighOrderContactForm*>(&contact_form_))
+		else if (const auto esp_contact = dynamic_cast<const ESPContactForm*>(&contact_form_))
 		{
-			ipc::HighOrderCollisions collision_set;
+			ipc::ESPCollisions collision_set;
 			collision_set.build(
-				collision_mesh_, displaced_surface, ho_contact->get_params(),
-				ho_contact->get_adaptive_support().get(), broad_phase.get());
+				collision_mesh_, displaced_surface, esp_contact->get_params(),
+				esp_contact->get_adaptive_support().get(), broad_phase.get());
 
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,
-				ho_contact->get_params(), contact_form_.barrier_stiffness(),
+				esp_contact->get_params(), contact_form_.barrier_stiffness(),
 				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_,
 				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}

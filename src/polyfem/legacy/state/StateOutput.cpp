@@ -4,7 +4,7 @@
 #include <polyfem/utils/Timer.hpp>
 
 #include <polyfem/assembler/Electrostatics.hpp>
-#include <polyfem/solver/forms/HighOrderContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 
 #include <filesystem>
 
@@ -63,12 +63,12 @@ namespace polyfem::legacy
 			utils::Timer _vtu_timer("Saving VTU", timings.vtu_export_time);
 			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 
-			ipc::HighOrderContactPotential::CountMap quadrature_points_ee;
-			if (args["contact"]["use_high_order_formulation"] && is_contact_enabled() && solve_data.contact_form)
+			ipc::ESPPotential::CountMap quadrature_points_ee;
+			if (args["contact"]["use_esp_formulation"] && is_contact_enabled() && solve_data.contact_form)
 			{
-				auto ho_form = std::dynamic_pointer_cast<solver::HighOrderContactForm>(solve_data.contact_form);
-				if (ho_form)
-					quadrature_points_ee = ho_form->get_ee_qp_count();
+				auto esp_form = std::dynamic_pointer_cast<solver::ESPContactForm>(solve_data.contact_form);
+				if (esp_form)
+					quadrature_points_ee = esp_form->get_ee_qp_count();
 			}
 
 			out_geom.save_vtu(

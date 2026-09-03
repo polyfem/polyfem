@@ -34,10 +34,10 @@ set(SOURCES
 	TangentialAdhesionForm.hpp
 	BarrierContactForm.cpp
 	BarrierContactForm.hpp
-	HighOrderContactForm.cpp
-	HighOrderContactForm.hpp
-SmoothContactForm.cpp
-	SmoothContactForm.hpp
+	ESPContactForm.cpp
+	ESPContactForm.hpp
+GCPContactForm.cpp
+	GCPContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
 	QuadraticPenaltyForm.cpp

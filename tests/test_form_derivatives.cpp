@@ -7,11 +7,11 @@
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/HighOrderContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
@@ -319,7 +319,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const double a = 0;
 	const json contact_args = json::object({{"a", a}, {"alpha_t", alpha}, {"alpha_n", 0.1}, {"beta_t", 0}, {"beta_n", 0}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
 
-	SmoothContactForm form(
+	GCPContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
@@ -413,7 +413,7 @@ TEST_CASE("smooth contact friction form derivatives", "[form][form_derivatives][
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const json contact_args = json::object({{"alpha_t", 0.2}, {"alpha_n", 0.1}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
 
-	const SmoothContactForm contact_form(
+	const GCPContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
@@ -438,10 +438,10 @@ TEST_CASE("high-order contact friction form derivatives", "[form][form_derivativ
 	const bool use_adaptive_barrier_stiffness = false;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
-	const json ho_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"normalize_weights", false}, {"area_weights", true}});
+	const json esp_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"normalize_weights", false}, {"area_weights", true}});
 
-	const HighOrderContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
+	const ESPContactForm contact_form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, esp_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
 		/*use_adaptive_dhat=*/false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 

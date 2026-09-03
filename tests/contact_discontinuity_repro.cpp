@@ -1,5 +1,5 @@
-// Standalone repro for an IPC HighOrderContact gradient discontinuity.
-// Loads a dump produced by HighOrderContactForm's HO_CONTACT_DUMP_DIR
+// Standalone repro for an IPC ESP gradient discontinuity.
+// Loads a dump produced by ESPContactForm's ESP_CONTACT_DUMP_DIR
 // hook (rest_V.bin, rest_E.bin, rest_F.bin, displaced_{lo,hi}.bin,
 // params_{lo,hi}.json), rebuilds the collision set + potential at α_lo
 // and α_hi, computes value+gradient, prints diff per-collision.
@@ -9,17 +9,17 @@
 //
 // Notes:
 //   * params.json's barrier_type is informational; this binary uses
-//     ipc-toolkit's default barrier (set by HighOrderContactParameters).
+//     ipc-toolkit's default barrier (set by ESPParameters).
 //     If the discontinuity reproduces, the barrier choice is irrelevant
 //     to localization.
 
 #include <Eigen/Dense>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/high_order_contact/high_order_collisions.hpp>
-#include <ipc/high_order_contact/high_order_contact_potential.hpp>
-#include <ipc/high_order_contact/high_order_contact_parameters.hpp>
-#include <ipc/high_order_contact/collisions/high_order_collision.hpp>
-#include <ipc/high_order_contact/collisions/vertex_matrix_view.hpp>
+#include <ipc/esp/esp_collisions.hpp>
+#include <ipc/esp/esp_potential.hpp>
+#include <ipc/esp/esp_parameters.hpp>
+#include <ipc/esp/collisions/esp_collision.hpp>
+#include <ipc/esp/collisions/vertex_matrix_view.hpp>
 #include <ipc/distance/distance_type.hpp>
 #include <ipc/distance/point_triangle.hpp>
 #include <ipc/distance/point_edge.hpp>
@@ -122,12 +122,13 @@ DumpState load_state(const std::string& dir, const std::string& tag)
 	return s;
 }
 
-ipc::HighOrderContactParameters make_params(const DumpState& s)
+ipc::ESPParameters make_params(const DumpState& s)
 {
-	ipc::HighOrderContactParameters p(
-		s.dhat, s.dbar_factor, s.quad_order,
-		s.ogc_collisions, s.area_weights,
-		static_cast<ipc::HighOrderContactParameters::IntegrationType>(s.integration_type));
+	// NOTE: ogc_collisions was removed from ESPParameters upstream; the field is
+	// still parsed from the dump for format compatibility but no longer passed.
+	ipc::ESPParameters p(
+		s.dhat, s.dbar_factor, s.quad_order, s.area_weights,
+		static_cast<ipc::ESPParameters::IntegrationType>(s.integration_type));
 	p.face_quad_rule = build_quad_rule(s.quad_order);
 	// Barrier: leave default (NormalizedClampedLogBarrier per the struct).
 	// Caller can edit here to match production runs more precisely.
@@ -135,16 +136,16 @@ ipc::HighOrderContactParameters make_params(const DumpState& s)
 }
 
 struct Side {
-	ipc::HighOrderContactParameters params;
-	ipc::HighOrderCollisions collisions;
-	std::unique_ptr<ipc::HighOrderContactPotential> pot;
+	ipc::ESPParameters params;
+	ipc::ESPCollisions collisions;
+	std::unique_ptr<ipc::ESPPotential> pot;
 	double value = 0;
 	Eigen::VectorXd grad;
 	Side(const DumpState& s, const ipc::CollisionMesh& mesh)
 		: params(make_params(s))
 	{
 		collisions.build(mesh, s.displaced, params);
-		pot = std::make_unique<ipc::HighOrderContactPotential>(params, /*use_near_far=*/true);
+		pot = std::make_unique<ipc::ESPPotential>(params, /*use_near_far=*/true);
 		value = (*pot)(collisions, mesh, s.displaced);
 		grad = pot->gradient(collisions, mesh, s.displaced);
 	}
@@ -159,7 +160,7 @@ int main(int argc, char** argv)
 #endif
 	const std::string dir = (argc >= 2)
 		? std::string(argv[1])
-		: std::string(POLYFEM_TEST_DIR) + "/data/ho_contact_discontinuity";
+		: std::string(POLYFEM_TEST_DIR) + "/data/esp_contact_discontinuity";
 	std::cout << "[dump_dir] " << dir << "\n";
 
 	Eigen::MatrixXd V = read_mat_bin<double>(dir + "/rest_V.bin");
@@ -212,7 +213,7 @@ int main(int argc, char** argv)
 		if (dg_per_v(v) >= cutoff) suspect.insert(v);
 	}
 
-	// (2) Iterate dicts in HighOrderCollisions and pair lo↔hi by their key
+	// (2) Iterate dicts in ESPCollisions and pair lo↔hi by their key
 	//     (vertex id / edge-edge pair / face id+qp). For each dict that
 	//     touches a suspect vertex (via its primary_vertex_ids), report
 	//     size and per-sub-collision typed hashes + distances at lo & hi.
@@ -253,7 +254,7 @@ int main(int argc, char** argv)
 		}
 	};
 
-	// Generic dict-pair printer (works for any HighOrderCollisionDict<...>).
+	// Generic dict-pair printer (works for any ESPCollisionDict<...>).
 	auto report_dict_pair = [&](const std::string& key,
 	                            const auto* dict_lo, const auto* dict_hi) {
 		const int s_lo = dict_lo ? dict_lo->size() : 0;
@@ -316,7 +317,7 @@ int main(int argc, char** argv)
 	// for an essentially-zero displacement step.
 	std::cout << "-- face_collisions (with per-sub val/grad) --\n";
 	auto face_q_pos = [&](const Eigen::MatrixXd& X, int fi, int qi,
-	                      const ipc::HighOrderContactParameters& p) {
+	                      const ipc::ESPParameters& p) {
 		Eigen::Matrix<double, 1, 3> q = Eigen::Matrix<double, 1, 3>::Zero();
 		const auto& qp = p.face_quad_rule[qi];
 		for (int j = 0; j < 3; ++j) q += qp.lambda[j] * X.row(F(fi, j));
@@ -375,9 +376,9 @@ int main(int argc, char** argv)
 					FaceRow r;
 					r.key = "F(" + std::to_string(k) + ",qp" + std::to_string(qi) + ")[" + std::to_string(i) + "]";
 					r.touches_suspect = susp;
-					auto sample = [&](const ipc::HighOrderCollision& c,
+					auto sample = [&](const ipc::ESPCollision& c,
 					                  const Eigen::MatrixXd& X,
-					                  const ipc::HighOrderContactParameters& p,
+					                  const ipc::ESPParameters& p,
 					                  double& val, double& gnorm, int& dtype, double& d2) {
 						auto qpos = face_q_pos(X, k, qi, p);
 						ipc::VertexMatrixView<3> view(X, qpos);
@@ -482,13 +483,13 @@ int main(int argc, char** argv)
 		std::cout << "→ " << n_flipped << " sub-collision(s) flipped distance-type. The\n"
 		             "  per-region distance gradient formula switches at region\n"
 		             "  boundaries; this is the discontinuity source. Look in\n"
-		             "  HighOrderCollisionTemplate<Face3P1, Vertex3>::gradient (and\n"
+		             "  ESPCollisionTemplate<Face3P1, Vertex3>::gradient (and\n"
 		             "  ::gradient_nearfar) at high_order_collision_template.cpp:721\n"
 		             "  — point_triangle_distance_type / point_triangle_distance_gradient.\n";
 	} else if (dg.norm() > 1e-10 && max_dval < 1e-10 && max_dg < 1e-10) {
 		std::cout << "→ Per-sub stencils are STABLE and no dtype flips; check the\n"
 		             "  near/far aggregation (gradient_nearfar) inside\n"
-		             "  HighOrderContactPotential::gradient.\n";
+		             "  ESPPotential::gradient.\n";
 	} else {
 		std::cout << "→ Look at top rows above with the largest |Δval| / Δ||g||;\n"
 		             "  those sub-collisions are the discontinuity source.\n";

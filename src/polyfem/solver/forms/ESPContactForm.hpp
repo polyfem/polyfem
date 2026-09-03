@@ -1,21 +1,21 @@
 #pragma once
 
 #include "ContactForm.hpp"
-#include <ipc/high_order_contact/high_order_collisions.hpp>
-#include <ipc/high_order_contact/high_order_contact_potential.hpp>
-#include <ipc/high_order_contact/adaptive_support.hpp>
+#include <ipc/esp/esp_collisions.hpp>
+#include <ipc/esp/esp_potential.hpp>
+#include <ipc/esp/adaptive_support.hpp>
 #include <cmath>
 
 namespace polyfem::solver
 {
 
-    class HighOrderContactForm : public ContactForm
+    class ESPContactForm : public ContactForm
     {
     public:
-		HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
+		ESPContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const json high_order_contact_params,
+					const json esp_params,
 					const bool skip_obstacles,
 					std::shared_ptr<ipc::Barrier> barrier,
 					const bool use_adaptive_dhat,
@@ -31,20 +31,20 @@ namespace polyfem::solver
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
-		void force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
+		void force_shape_derivative(const ipc::ESPCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
-		const ipc::HighOrderContactParameters &get_params() const { return params; }
+		const ipc::ESPParameters &get_params() const { return params; }
 
-		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
+		const ipc::ESPCollisions &collision_set() const { return collision_set_; }
 
-		const ipc::HighOrderContactPotential &barrier_potential() const { return barrier_potential_; }
+		const ipc::ESPPotential &barrier_potential() const { return barrier_potential_; }
 
-		const ipc::HighOrderContactPotential::CountMap &get_ee_qp_count() const {
+		const ipc::ESPPotential::CountMap &get_ee_qp_count() const {
 			return barrier_potential_.get_edge_evaluation_count();
 		}
 
@@ -80,13 +80,13 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-		ipc::HighOrderContactParameters params;
+		ipc::ESPParameters params;
 
 		/// @brief Cached constraint set for the current solution
-		ipc::HighOrderCollisions collision_set_;
+		ipc::ESPCollisions collision_set_;
 
 		/// @brief Contact potential
-		ipc::HighOrderContactPotential barrier_potential_;
+		ipc::ESPPotential barrier_potential_;
 
     	Eigen::MatrixXd cached_displaced_surface;
 

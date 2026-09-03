@@ -42,7 +42,7 @@
             "enabled": true,
             "epsv": 0.001,
             "friction_coefficient": 0,
-            "high_order_contact_params": {
+            "esp_params": {
                 "alpha": 1,
                 "exponent": 0,
                 "quadrature_order": 16,
@@ -54,7 +54,7 @@
             "use_area_weighting": true,
             "use_convergent_formulation": false,
             "use_gcp_formulation": false,
-            "use_high_order_formulation": true,
+            "use_esp_formulation": true,
             "use_improved_max_operator": true,
             "use_physical_barrier": true
         },
