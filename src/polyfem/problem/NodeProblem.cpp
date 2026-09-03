@@ -40,7 +40,6 @@ namespace polyfem
 				while (input >> temp)
 					currentLine.push_back(temp);
 			}
-
 		}
 
 		void NodeValues::init(const mesh::Mesh &mesh)

@@ -1347,14 +1347,14 @@ namespace polyfem::legacy
 			{
 				assert(displacement_map_entries.empty());
 				assert(collision_mesh_args.contains("mesh"));
-					const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
-					const polyfem::io::FileSystemIO resources(root_path);
+				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
+				const polyfem::io::FileSystemIO resources(root_path);
 				// TODO: handle transformation per geometry
 				const json transformation = json_as_array(args["geometry"])[0]["transformation"];
-					mesh::load_collision_proxy(
-						resources,
-						collision_mesh_args["mesh"].get<std::string>(),
-						collision_mesh_args["linear_map"].get<std::string>(),
+				mesh::load_collision_proxy(
+					resources,
+					collision_mesh_args["mesh"].get<std::string>(),
+					collision_mesh_args["linear_map"].get<std::string>(),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
