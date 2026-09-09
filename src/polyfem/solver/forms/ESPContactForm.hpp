@@ -9,27 +9,27 @@
 namespace polyfem::solver
 {
 
-    class ESPContactForm : public ContactForm
-    {
-    public:
+	class ESPContactForm : public ContactForm
+	{
+	public:
 		ESPContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const json esp_params,
-					const bool skip_obstacles,
-					std::shared_ptr<ipc::Barrier> barrier,
-					const bool use_adaptive_dhat,
-					const bool use_adaptive_barrier_stiffness,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations,
-					const double dhat_epsilon_scale);
+					   const double dhat,
+					   const double avg_mass,
+					   const json esp_params,
+					   const bool skip_obstacles,
+					   std::shared_ptr<ipc::Barrier> barrier,
+					   const bool use_adaptive_dhat,
+					   const bool use_adaptive_barrier_stiffness,
+					   const bool is_time_dependent,
+					   const bool enable_shape_derivatives,
+					   const ipc::BroadPhaseMethod broad_phase_method,
+					   const double ccd_tolerance,
+					   const int ccd_max_iterations,
+					   const double dhat_epsilon_scale);
 
 		virtual std::string name() const override { return "high-order-contact"; }
 
-        void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
 		void force_shape_derivative(const ipc::ESPCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
@@ -44,13 +44,15 @@ namespace polyfem::solver
 
 		const ipc::ESPPotential &barrier_potential() const { return barrier_potential_; }
 
-		const ipc::ESPPotential::CountMap &get_ee_qp_count() const {
+		const ipc::ESPPotential::CountMap &get_ee_qp_count() const
+		{
 			return barrier_potential_.get_edge_evaluation_count();
 		}
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat_; }
 
-		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const {
+		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const
+		{
 			return adaptive_support_;
 		}
 
@@ -88,7 +90,7 @@ namespace polyfem::solver
 		/// @brief Contact potential
 		ipc::ESPPotential barrier_potential_;
 
-    	Eigen::MatrixXd cached_displaced_surface;
+		Eigen::MatrixXd cached_displaced_surface;
 
 		/// @brief Whether to use adaptive dhat
 		bool use_adaptive_dhat_;
@@ -96,4 +98,4 @@ namespace polyfem::solver
 		/// @brief Adaptive support for per-vertex dhat values (computed at rest config)
 		std::shared_ptr<ipc::AdaptiveSupport> adaptive_support_;
 	};
-}
+} // namespace polyfem::solver

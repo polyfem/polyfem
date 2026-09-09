@@ -481,8 +481,7 @@ namespace polyfem::io
 					esp_collision_set.face_collisions = std::move(f);
 				}
 
-				Eigen::VectorXd g = -barrier_stiffness * potential.gradient(
-					esp_collision_set, collision_mesh, displaced_surface);
+				Eigen::VectorXd g = -barrier_stiffness * potential.gradient(esp_collision_set, collision_mesh, displaced_surface);
 
 				if (kind != "vertex")
 				{
@@ -500,8 +499,7 @@ namespace polyfem::io
 				return g;
 			};
 
-			const Eigen::VectorXd forces = -barrier_stiffness * potential.gradient(
-				esp_collision_set, collision_mesh, displaced_surface);
+			const Eigen::VectorXd forces = -barrier_stiffness * potential.gradient(esp_collision_set, collision_mesh, displaced_surface);
 			add_force_field("contact_forces", forces);
 			if (export_vertex)
 				add_force_field("contact_forces_vertex", gradient_with_only("vertex"));
@@ -3436,8 +3434,8 @@ namespace polyfem::io
 		}
 
 		const double scale_factor = solve_data.time_integrator
-									? solve_data.time_integrator->acceleration_scaling()
-									: 1;
+										? solve_data.time_integrator->acceleration_scaling()
+										: 1;
 		const double physical_potential = solver_potential / scale_factor;
 
 		file << t << "," << solver_potential << "," << physical_potential << "," << scale_factor << "\n";

@@ -14,7 +14,8 @@
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		ipc::FaceQuadRule build_quad_rule(const int order)
 		{
 			polyfem::quadrature::Quadrature quad;
@@ -22,7 +23,8 @@ namespace polyfem::solver
 
 			ipc::FaceQuadRule rule;
 			rule.reserve(quad.size());
-			for (int i = 0; i < quad.size(); i++) {
+			for (int i = 0; i < quad.size(); i++)
+			{
 				const double x = quad.points(i, 0);
 				const double y = quad.points(i, 1);
 				// polyfem divides weights by 2 (reference triangle area); multiply
@@ -34,12 +36,12 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	
 	/// Check if a quadrature point is at a triangle vertex (one barycentric
 	/// coordinate ≈ 1, others ≈ 0).
-	bool is_vertex_point(const ipc::FaceQuadPoint& qp, int vertex, double tol = 1e-12)
+	bool is_vertex_point(const ipc::FaceQuadPoint &qp, int vertex, double tol = 1e-12)
 	{
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++)
+		{
 			if (std::abs(qp.lambda[i] - (i == vertex ? 1.0 : 0.0)) > tol)
 				return false;
 		}
@@ -47,12 +49,15 @@ namespace polyfem::solver
 	}
 
 	/// Verify the quadrature rule contains the 3 triangle vertices.
-	void verify_vertices_in_quad_rule(const ipc::FaceQuadRule& rule)
+	void verify_vertices_in_quad_rule(const ipc::FaceQuadRule &rule)
 	{
-		for (int v = 0; v < 3; v++) {
+		for (int v = 0; v < 3; v++)
+		{
 			bool found = false;
-			for (const auto& qp : rule) {
-				if (is_vertex_point(qp, v)) {
+			for (const auto &qp : rule)
+			{
+				if (is_vertex_point(qp, v))
+				{
 					found = true;
 					break;
 				}
@@ -62,15 +67,16 @@ namespace polyfem::solver
 		}
 	}
 
-	ipc::ESPParameters init_params(const double dhat, const json &esp_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim) {
+	ipc::ESPParameters init_params(const double dhat, const json &esp_params, const bool skip_obstacles, std::shared_ptr<ipc::Barrier> barrier, const int dim)
+	{
 		const int quadrature_order = esp_params["quadrature_order"];
 		const double dbar_factor = esp_params["dbar_factor"];
 		const bool area_weights = esp_params["area_weights"];
-		const ipc::ESPParameters::IntegrationType itype = skip_obstacles ?
-			ipc::ESPParameters::IntegrationType::NO_OBST : ipc::ESPParameters::IntegrationType::NORMAL;
+		const ipc::ESPParameters::IntegrationType itype = skip_obstacles ? ipc::ESPParameters::IntegrationType::NO_OBST : ipc::ESPParameters::IntegrationType::NORMAL;
 		ipc::ESPParameters params(dhat, dbar_factor, quadrature_order, area_weights, itype);
 		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
-		if (quadrature_order > 0) {
+		if (quadrature_order > 0)
+		{
 			params.face_quad_rule = build_quad_rule(quadrature_order);
 			verify_vertices_in_quad_rule(params.face_quad_rule);
 		}
@@ -78,23 +84,24 @@ namespace polyfem::solver
 	}
 
 	ESPContactForm::ESPContactForm(const ipc::CollisionMesh &collision_mesh,
-											   const double dhat,
-											   const double avg_mass,
-											   const json esp_params,
-											   const bool skip_obstacles,
-											   std::shared_ptr<ipc::Barrier> barrier,
-											   const bool use_adaptive_dhat,
-											   const bool use_adaptive_barrier_stiffness,
-											   const bool is_time_dependent,
-											   const bool enable_shape_derivatives,
-											   const ipc::BroadPhaseMethod broad_phase_method,
-											   const double ccd_tolerance,
-											   const int ccd_max_iterations,
-											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, esp_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
-											   barrier_potential_(params, esp_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
+								   const double dhat,
+								   const double avg_mass,
+								   const json esp_params,
+								   const bool skip_obstacles,
+								   std::shared_ptr<ipc::Barrier> barrier,
+								   const bool use_adaptive_dhat,
+								   const bool use_adaptive_barrier_stiffness,
+								   const bool is_time_dependent,
+								   const bool enable_shape_derivatives,
+								   const ipc::BroadPhaseMethod broad_phase_method,
+								   const double ccd_tolerance,
+								   const int ccd_max_iterations,
+								   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, esp_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
+																	  barrier_potential_(params, esp_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
 	{
 		// Compute adaptive support at rest configuration if enabled
-		if (use_adaptive_dhat_) {
+		if (use_adaptive_dhat_)
+		{
 			adaptive_support_ = ipc::ESPCollisions::compute_adaptive_dhat(
 				collision_mesh, collision_mesh.rest_positions(), params);
 		}
@@ -128,7 +135,8 @@ namespace polyfem::solver
 	double ESPContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
-		if (cached_displaced_surface != displaced) {
+		if (cached_displaced_surface != displaced)
+		{
 			return 0.;
 		}
 		return barrier_potential_(collision_set_, collision_mesh_, displaced);
@@ -142,7 +150,8 @@ namespace polyfem::solver
 	void ESPContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
-		if (cached_displaced_surface != displaced) {
+		if (cached_displaced_surface != displaced)
+		{
 			gradv.setZero(x.size());
 			return;
 		}
@@ -187,7 +196,7 @@ namespace polyfem::solver
 			{
 				const double ratio_fed = min_dist_fed / dhat();
 				const auto log_level_fed = (ratio_fed < 1e-6) ? spdlog::level::err
-				                         : ((ratio_fed < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
+															  : ((ratio_fed < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
 				polyfem::logger().log(log_level_fed, "Minimum distance fed to barrier: {}, dhat: {}", min_dist_fed, dhat());
 			}
 			params.reset_min_dist();

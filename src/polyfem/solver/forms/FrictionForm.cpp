@@ -123,7 +123,7 @@ namespace polyfem::solver
 				collision_mesh_, displaced_surface,
 				collision_set, gcp->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto esp_contact = dynamic_cast<const ESPContactForm*>(&contact_form_))
+		else if (const auto esp_contact = dynamic_cast<const ESPContactForm *>(&contact_form_))
 		{
 			ipc::ESPCollisions collision_set;
 			collision_set.build(
