@@ -69,6 +69,14 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     		target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
 	endif()
 
+	# This recipe can be included from a dependency's scope (e.g. ipc-toolkit
+	# does include(geogram) when IPC_TOOLKIT_WITH_GEOGRAM is ON), in which case
+	# the geogram target was created in a different directory. CMP0079 permits
+	# target_link_libraries on such a target.
+	if(POLICY CMP0079)
+		cmake_policy(SET CMP0079 NEW)
+	endif()
+
 	target_link_libraries(geogram PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
