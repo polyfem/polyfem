@@ -1,5 +1,5 @@
 #include <polyfem/State.hpp>
-#include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
@@ -45,8 +45,6 @@ namespace
 		args["/output/log/level"_json_pointer] = "error";
 		args["/output/advanced/save_time_sequence"_json_pointer] = false;
 		args["/output/paraview/file_name"_json_pointer] = "";
-		args["/output/data/state"_json_pointer] = "";
-
 		return args;
 	}
 } // namespace
@@ -151,11 +149,10 @@ TEST_CASE("state can opt into migrated varforms", "[varform][state]")
 
 TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_stokes][fsi]")
 {
-	const std::filesystem::path state_pattern =
-		std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-state-{:d}.h5";
-	const std::string state_path =
-		(std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-state-1.h5").string();
-	std::filesystem::remove(state_path);
+	const std::filesystem::path output_directory =
+		std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-checkpoint";
+	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
+	std::filesystem::remove_all(output_directory);
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/navier_stokes_transient.json");
 	args.erase("preset_problem");
 	args["geometry"] = {
@@ -176,7 +173,8 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 												{{"fe_space", 1}, {"order", 1}},
 												{{"fe_space", 2}, {"order", 1}}});
 	args["time"] = {{"t0", 0}, {"tend", 0.01}, {"time_steps", 1}};
-	args["/output/data/state"_json_pointer] = state_pattern.string();
+	args["/output/directory"_json_pointer] = output_directory.string();
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint-{:d}.h5";
 
 	State state;
 	state.init(args, true);
@@ -188,7 +186,7 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 	CHECK(state.variational_formulation->name() == "NavierStokesFSI");
 	CHECK(solution.rows() > 0);
 	CHECK(solution.allFinite());
-	REQUIRE(std::filesystem::is_regular_file(state_path));
+	REQUIRE(std::filesystem::is_regular_file(checkpoint_path));
 
 	const test::NavierStokesFSIDebugData debug =
 		test::VarFormTestAccess::navier_stokes_fsi_data(*state.variational_formulation);
@@ -286,18 +284,20 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 		CHECK(Eigen::VectorXd(gauge_jacobian.col(j)).isApprox(finite_difference, 2e-7));
 	}
 
-	json restart_args = args;
-	restart_args["/input/data/state"_json_pointer] = state_path;
-	restart_args["/output/data/state"_json_pointer] = "";
-	restart_args["time"] = {{"t0", 0.01}, {"tend", 0.02}, {"time_steps", 1}};
+	io::CheckpointReader checkpoint(checkpoint_path);
+	CHECK(checkpoint.metadata().formulation == "NavierStokesFSI");
+	CHECK(checkpoint.exists("/checkpoint/state/primary_integrator/x"));
+	CHECK(checkpoint.exists("/checkpoint/state/mesh_motion_integrator/x"));
+	json restart_args = checkpoint.config();
+	restart_args["/input/checkpoint/reorder"_json_pointer] = true;
 	State restarted_state;
-	restarted_state.init(restart_args, true);
+	restarted_state.init(restart_args, checkpoint, true);
 	restarted_state.load_mesh();
 	Eigen::MatrixXd restarted_solution;
 	restarted_state.solve(restarted_solution);
 	CHECK(restarted_solution.rows() == solution.rows());
 	CHECK(restarted_solution.allFinite());
-	std::filesystem::remove(state_path);
+	std::filesystem::remove_all(output_directory);
 }
 
 TEST_CASE("ALE Navier-Stokes FSI moving arc", "[varform][state][navier_stokes][fsi]")
@@ -395,8 +395,7 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	args["/output/advanced/save_time_sequence"_json_pointer] = true;
 	args["/output/paraview/file_name"_json_pointer] = "fsi.pvd";
 	args["/output/paraview/surface"_json_pointer] = true;
-	args["/output/data/state"_json_pointer] =
-		(output_directory / "state-{:d}.h5").string();
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint-{:d}.h5";
 
 	State state;
 	state.init(args, true);
@@ -562,11 +561,15 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	CHECK(combined_vtm.find("Fluid Surface") != std::string::npos);
 	CHECK(combined_vtm.find("Solid Volume") != std::string::npos);
 	CHECK(combined_vtm.find("Solid Surface") != std::string::npos);
-	const std::string state_path = (output_directory / "state-1.h5").string();
+	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
+	REQUIRE(std::filesystem::is_regular_file(checkpoint_path));
+	io::CheckpointReader checkpoint(checkpoint_path);
 	for (const std::string &name : {"solid_u", "solid_v", "solid_a"})
 	{
-		Eigen::MatrixXd history;
-		CHECK(io::read_matrix(state_path, name, history));
+		const std::string dataset =
+			"/checkpoint/state/solid_integrator/" + name.substr(name.size() - 1);
+		REQUIRE(checkpoint.exists(dataset));
+		const Eigen::MatrixXd history = checkpoint.read_matrix(dataset);
 		CHECK(history.rows() == debug.solid_displacement_ndof);
 		CHECK(history.allFinite());
 	}

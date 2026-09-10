@@ -524,10 +524,6 @@ namespace polyfem::varform
 		if (post_step)
 			post_step(0, solution);
 
-		const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-		if (!state_path.empty())
-			io::write_matrix(state_path, "u", solution);
-
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);

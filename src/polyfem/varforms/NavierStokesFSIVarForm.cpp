@@ -42,9 +42,9 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
-		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
-		write_checkpoint_ordering(writer, "mesh_motion", mesh_displacement_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "primary", space_);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_);
+		write_checkpoint_ordering(writer, "mesh_motion", mesh_displacement_space_);
 		if (!mesh_displacement_time_integrator_)
 			log_and_throw_error("Cannot checkpoint NavierStokesFSI without its mesh-motion integrator.");
 		mesh_displacement_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/mesh_motion_integrator");
@@ -56,7 +56,7 @@ namespace polyfem::varform
 			if (solid_output.mesh == nullptr)
 				log_and_throw_error("Cannot checkpoint NavierStokesFSI without its solid mesh.");
 			writer.write_mesh("/checkpoint/meshes/solid", *solid_output.mesh);
-			write_checkpoint_ordering(writer, "solid", solid_varform_->space_.space_in_node_to_node);
+			write_checkpoint_ordering(writer, "solid", solid_varform_->space_);
 			solid_varform_->embedding_time_integrator()->serialize_checkpoint(writer, "/checkpoint/state/solid_integrator");
 		}
 	}
@@ -68,16 +68,16 @@ namespace polyfem::varform
 		VarForm::deserialize_checkpoint(reader, solution);
 		validate_checkpoint_solution(solution, total_ndof());
 		const int dim = mesh_->dimension();
-		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, dim, 0, solution);
+		reorder_checkpoint_block(reader, "primary", space_, dim, 0, solution);
 		reorder_checkpoint_block(
-			reader, "pressure", pressure_space_.space_in_node_to_node,
+			reader, "pressure", pressure_space_,
 			1, pressure_offset(), solution);
 		reorder_checkpoint_block(
-			reader, "mesh_motion", mesh_displacement_space_.space_in_node_to_node,
+			reader, "mesh_motion", mesh_displacement_space_,
 			dim, mesh_displacement_offset(), solution);
 		if (has_solid_)
 			reorder_checkpoint_block(
-				reader, "solid", solid_varform_->space_.space_in_node_to_node,
+				reader, "solid", solid_varform_->space_,
 				dim, solid_displacement_offset(), solution);
 	}
 
@@ -859,14 +859,14 @@ namespace polyfem::varform
 		mesh_displacement_time_integrator_ = mesh_bdf;
 		restore_checkpoint_integrator(
 			time_integrator, "/checkpoint/state/primary_integrator", dt,
-			"primary", space_.space_in_node_to_node, dim);
+			"primary", space_, dim);
 		restore_checkpoint_integrator(
 			mesh_displacement_time_integrator_, "/checkpoint/state/mesh_motion_integrator", dt,
-			"mesh_motion", mesh_displacement_space_.space_in_node_to_node, dim);
+			"mesh_motion", mesh_displacement_space_, dim);
 		if (has_solid_ && solid_varform_->embedding_time_integrator())
 			restore_checkpoint_integrator(
 				solid_varform_->embedding_time_integrator(), "/checkpoint/state/solid_integrator", dt,
-				"solid", solid_varform_->space_.space_in_node_to_node, dim);
+				"solid", solid_varform_->space_, dim);
 
 		ale_form_ = std::make_shared<solver::NavierStokesFSIForm>(
 			total_ndof(), space_.n_bases, pressure_space_.n_bases, mesh_displacement_space_.n_bases,
@@ -1073,9 +1073,6 @@ namespace polyfem::varform
 			fsi_problem_->update_quantities(t0 + (step + 1) * dt, sol);
 			save_fsi_timestep(time, step, sol);
 			save_step_state(t0, dt, step, sol, time_integrator.get());
-			save_mesh_integrator_state(step);
-			if (has_solid_)
-				save_solid_integrator_state(step);
 			notify_time_step(step, time_steps, t0, dt);
 		}
 		timer.stop();
@@ -1107,45 +1104,6 @@ namespace polyfem::varform
 			resolve_output_path(args["output"]["paraview"]["file_name"]),
 			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
-	}
-
-	void NavierStokesFSIVarForm::save_mesh_integrator_state(const int step) const
-	{
-		assert(mesh_displacement_time_integrator_);
-		const std::string state_path = resolve_output_path(
-			fmt::format(args["output"]["data"]["state"].get<std::string>(), output_file_index(step)));
-		if (state_path.empty())
-			return;
-
-		const auto save_history = [&](const std::string &name, const std::deque<Eigen::VectorXd> &history) {
-			Eigen::MatrixXd values(history.front().size(), history.size());
-			for (int i = 0; i < int(history.size()); ++i)
-				values.col(i) = history[i];
-			io::write_matrix(state_path, name, values, /*replace=*/false);
-		};
-		save_history("mesh_u", mesh_displacement_time_integrator_->x_prevs());
-		save_history("mesh_v", mesh_displacement_time_integrator_->v_prevs());
-		save_history("mesh_a", mesh_displacement_time_integrator_->a_prevs());
-	}
-
-	void NavierStokesFSIVarForm::save_solid_integrator_state(const int step) const
-	{
-		assert(has_solid_ && solid_varform_->embedding_time_integrator());
-		const std::string state_path = resolve_output_path(
-			fmt::format(args["output"]["data"]["state"].get<std::string>(), output_file_index(step)));
-		if (state_path.empty())
-			return;
-
-		const auto save_history = [&](const std::string &name, const std::deque<Eigen::VectorXd> &history) {
-			Eigen::MatrixXd values(history.front().size(), history.size());
-			for (int i = 0; i < int(history.size()); ++i)
-				values.col(i) = history[i];
-			io::write_matrix(state_path, name, values, /*replace=*/false);
-		};
-		const auto &integrator = solid_varform_->embedding_time_integrator();
-		save_history("solid_u", integrator->x_prevs());
-		save_history("solid_v", integrator->v_prevs());
-		save_history("solid_a", integrator->a_prevs());
 	}
 
 	std::vector<io::OutputField> NavierStokesFSIVarForm::output_fields(

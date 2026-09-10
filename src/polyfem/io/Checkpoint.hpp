@@ -42,6 +42,7 @@ namespace polyfem::io
 
 		void write_matrix(const std::string &path, const Eigen::MatrixXd &value);
 		void write_int_matrix(const std::string &path, const Eigen::MatrixXi &value);
+		void write_bytes(const std::string &path, const std::vector<unsigned char> &value);
 		void write_vector(const std::string &path, const std::vector<double> &value);
 		void write_int_vector(const std::string &path, const std::vector<int> &value);
 		void write_long_vector(const std::string &path, const std::vector<long> &value);

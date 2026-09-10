@@ -304,7 +304,7 @@ namespace polyfem
 		args = jse.inject_defaults(args_in, rules);
 
 		expand_bc_sidecars(
-			args, jse::embed::polyfem_dirichlet_spec::polyfem_dirichlet::spec());
+			args, jse::embed::polyfem_dirichlet_spec::polyfem_dirichlet::spec(), *resources_);
 
 		Units units;
 		units.init(args["units"]);

@@ -149,6 +149,54 @@ namespace polyfem
 			bcs["dirichlet_boundary"] = expanded;
 		}
 
+		void expand_bc_sidecars(
+			json &args,
+			const json &rules,
+			const io::ResourceIO &resources)
+		{
+			if (!args.contains("boundary_conditions"))
+				return;
+
+			json &bcs = args["boundary_conditions"];
+			if (!bcs.contains("dirichlet_boundary") || !bcs["dirichlet_boundary"].is_array())
+				return;
+
+			json expanded = json::array();
+			for (const auto &entry : bcs["dirichlet_boundary"])
+			{
+				if (entry.is_string())
+				{
+					const std::string path = entry.get<std::string>();
+					if (std::filesystem::path(path).extension() == ".json")
+					{
+						json sidecar;
+						try
+						{
+							sidecar = json::parse(resources.read_string(path));
+						}
+						catch (const std::exception &e)
+						{
+							log_and_throw_error(
+								"Unable to read dirichlet_boundary resource {}: {}", path, e.what());
+						}
+
+						if (!sidecar.is_array())
+							log_and_throw_error("dirichlet_boundary resource {} must contain an array", path);
+
+						jse::JSE jse;
+						for (const auto &e : sidecar)
+						{
+							json filled = e;
+							expanded.push_back(jse.inject_defaults(filled, rules));
+						}
+						continue;
+					}
+				}
+				expanded.push_back(entry);
+			}
+			bcs["dirichlet_boundary"] = expanded;
+		}
+
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode)
 		{
 			std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);

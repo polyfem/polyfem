@@ -47,8 +47,8 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
-		write_checkpoint_ordering(writer, "temperature", temperature_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "primary", space_);
+		write_checkpoint_ordering(writer, "temperature", temperature_space_);
 		if (!temperature_time_integrator_)
 			log_and_throw_error("Cannot checkpoint thermoelastic state without its temperature integrator.");
 		temperature_time_integrator_->serialize_checkpoint(writer, "/checkpoint/state/temperature_integrator");
@@ -61,10 +61,10 @@ namespace polyfem::varform
 		VarForm::deserialize_checkpoint(reader, solution);
 		validate_checkpoint_solution(solution, total_ndof());
 		reorder_checkpoint_block(
-			reader, "primary", space_.space_in_node_to_node,
+			reader, "primary", space_,
 			mesh_->dimension(), 0, solution);
 		reorder_checkpoint_block(
-			reader, "temperature", temperature_space_.space_in_node_to_node,
+			reader, "temperature", temperature_space_,
 			1, displacement_ndof(), solution);
 	}
 
@@ -723,7 +723,7 @@ namespace polyfem::varform
 			solve_data_.time_integrator->init(displacement_solution, displacement_velocity, displacement_acceleration, dt);
 			restore_checkpoint_integrator(
 				solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt,
-				"primary", space_.space_in_node_to_node, mesh_->dimension());
+				"primary", space_, mesh_->dimension());
 		}
 		else
 		{
@@ -782,7 +782,7 @@ namespace polyfem::varform
 			temperature_time_integrator_->init(temperature_solution, temperature_velocity, temperature_acceleration, dt);
 			restore_checkpoint_integrator(
 				temperature_time_integrator_, "/checkpoint/state/temperature_integrator", dt,
-				"temperature", temperature_space_.space_in_node_to_node, 1);
+				"temperature", temperature_space_, 1);
 
 			temperature_inertia_form_ = std::make_shared<solver::InertiaForm>(temperature_mass_, *temperature_time_integrator_);
 			if (!temperature_boundary_.boundary_nodes.empty())

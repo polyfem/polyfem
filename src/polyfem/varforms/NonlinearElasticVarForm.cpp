@@ -645,12 +645,6 @@ namespace polyfem::varform
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
 
-			// FIXME
-			//  read_initial_x_from_file(
-			//  resolve_input_path(args["input"]["data"]["state"]), "u",
-			//  args["input"]["data"]["reorder"], in_node_to_node,
-			//  mesh->dimension(), solution);
-
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
 				initial_solution(sol, initial_condition_override);
 			else if (sol.size() <= 0)
@@ -666,10 +660,6 @@ namespace polyfem::varform
 		solve_tensor_nonlinear(0, sol, true);
 		if (post_step)
 			post_step(0, sol);
-
-		const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-		if (!state_path.empty())
-			io::write_matrix(state_path, "u", sol);
 
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
@@ -690,12 +680,6 @@ namespace polyfem::varform
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
-
-			// FIXME
-			//  read_initial_x_from_file(
-			//  resolve_input_path(args["input"]["data"]["state"]), "u",
-			//  args["input"]["data"]["reorder"], in_node_to_node,
-			//  mesh->dimension(), solution);
 
 			if (initial_condition_override && initial_condition_override->solution.size() != 0)
 				initial_solution(sol, initial_condition_override);
@@ -966,7 +950,7 @@ namespace polyfem::varform
 			solve_data_.time_integrator->init(solution, velocity, acceleration, dt);
 			restore_checkpoint_integrator(
 				solve_data_.time_integrator, "/checkpoint/state/primary_integrator", dt,
-				"primary", space_.space_in_node_to_node, mesh_->dimension());
+				"primary", space_, mesh_->dimension());
 			assert(solve_data_.time_integrator != nullptr && "Transient nonlinear elasticity requires an initialized time integrator");
 		}
 		else

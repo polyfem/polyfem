@@ -138,6 +138,14 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	REQUIRE(common_resources != nullptr);
 	CHECK(common_resources->read_string("local.txt") == "common-local resource");
 	CHECK(loaded.resources->read_string("assets/note.txt") == "embedded text");
+	CHECK(loaded.resources->with_root("assets")->read_string("note.txt") == "embedded text");
+	CHECK(loaded.resources->glob("assets/*.txt") == std::vector<std::string>{"assets/note.txt"});
+	{
+		auto stream = loaded.resources->open("assets/note.txt", false);
+		std::string contents;
+		std::getline(*stream, contents);
+		CHECK(contents == "embedded text");
+	}
 	CHECK(loaded.resources->materialize("assets/note.txt").extension() == ".txt");
 	assembler::FiberDirection fibers;
 	fibers.resize(3);
@@ -182,6 +190,13 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	const auto *restored_conforming_polyhedron = dynamic_cast<const mesh::CMesh3D *>(restored_polyhedron.get());
 	REQUIRE(restored_conforming_polyhedron != nullptr);
 	CHECK(restored_conforming_polyhedron->kernel(0).isApprox(Eigen::RowVector3d(0.25, 0.25, 0.25)));
+
+	const fs::path legacy_bundle = directory / "legacy-config-key.h5";
+	{
+		h5pp::File file(legacy_bundle.string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::string(R"({"geometry":[]})"), "/json");
+	}
+	CHECK(io::load_hdf5_input(legacy_bundle).config == json{{"geometry", json::array()}});
 	fs::remove_all(directory);
 }
 
@@ -246,4 +261,77 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	CHECK(restored_higher_order_data.higher_order_nodes.isApprox(higher_order_data.higher_order_nodes));
 	CHECK(restored_higher_order_data.higher_order_connectivity == higher_order_data.higher_order_connectivity);
 	fs::remove(path);
+}
+
+TEST_CASE("Checkpoint reader rejects corrupt schemas", "[hdf5][checkpoint]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-invalid-checkpoints";
+	fs::remove_all(directory);
+	fs::create_directories(directory);
+
+	const auto write_fixture = [&](
+		const fs::path &path,
+		const long checkpoint_version,
+		const long mesh_version,
+		const bool include_remaining_steps,
+		const bool include_cells) {
+		h5pp::File file(path.string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::string(R"({"time":{"dt":0.1}})"), "/config");
+		file.writeDataset(std::string("/"), "/resources/root");
+		file.writeDataset(checkpoint_version, "/checkpoint/metadata/schema_version");
+		file.writeDataset(std::string("Laplacian"), "/checkpoint/metadata/formulation");
+		file.writeDataset(long(1), "/checkpoint/metadata/step");
+		file.writeDataset(0.1, "/checkpoint/metadata/time");
+		file.writeDataset(0.1, "/checkpoint/metadata/dt");
+		if (include_remaining_steps)
+			file.writeDataset(long(1), "/checkpoint/metadata/remaining_steps");
+		file.writeDataset(long(1), "/checkpoint/metadata/output_index");
+		Eigen::MatrixXd vertices(3, 2);
+		vertices << 0, 0, 1, 0, 0, 1;
+		file.writeDataset(vertices, "/checkpoint/meshes/active/vertices");
+		if (include_cells)
+		{
+			Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic> cells(1, 3);
+			cells << 0, 1, 2;
+			file.writeDataset(cells, "/checkpoint/meshes/active/cells");
+		}
+		file.writeAttribute(mesh_version, "/checkpoint/meshes/active", "schema_version");
+		file.writeAttribute(long(2), "/checkpoint/meshes/active", "dimension");
+		file.writeAttribute(std::string("fem"), "/checkpoint/meshes/active", "mesh_type");
+		file.createGroup("/checkpoint/state");
+	};
+
+	const fs::path missing_metadata = directory / "missing-metadata.h5";
+	write_fixture(
+		missing_metadata, io::CHECKPOINT_SCHEMA_VERSION, mesh::MESH_SCHEMA_VERSION,
+		/*include_remaining_steps=*/false, /*include_cells=*/true);
+	CHECK_THROWS(io::CheckpointReader{missing_metadata});
+
+	const fs::path wrong_checkpoint_version = directory / "wrong-checkpoint-version.h5";
+	write_fixture(
+		wrong_checkpoint_version, io::CHECKPOINT_SCHEMA_VERSION + 1, mesh::MESH_SCHEMA_VERSION,
+		/*include_remaining_steps=*/true, /*include_cells=*/true);
+	CHECK_THROWS(io::CheckpointReader{wrong_checkpoint_version});
+
+	const fs::path wrong_mesh_version = directory / "wrong-mesh-version.h5";
+	write_fixture(
+		wrong_mesh_version, io::CHECKPOINT_SCHEMA_VERSION, mesh::MESH_SCHEMA_VERSION + 1,
+		/*include_remaining_steps=*/true, /*include_cells=*/true);
+	{
+		const io::CheckpointReader reader(wrong_mesh_version);
+		CHECK_THROWS(reader.read_mesh("/checkpoint/meshes/active"));
+	}
+
+	const fs::path missing_cells = directory / "missing-cells.h5";
+	write_fixture(
+		missing_cells, io::CHECKPOINT_SCHEMA_VERSION, mesh::MESH_SCHEMA_VERSION,
+		/*include_remaining_steps=*/true, /*include_cells=*/false);
+	{
+		const io::CheckpointReader reader(missing_cells);
+		CHECK_THROWS(reader.read_mesh("/checkpoint/meshes/active"));
+	}
+
+	fs::remove_all(directory);
 }

@@ -25,8 +25,8 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
-		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "primary", space_);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_);
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(solution, velocity, pressure);
 		writer.write_matrix("/checkpoint/state/velocity", velocity);
@@ -54,8 +54,8 @@ namespace polyfem::varform
 			|| !solution.middleRows(primary_ndof(), pressure_space_.n_bases).isApprox(pressure))
 			log_and_throw_error("Operator-splitting checkpoint contains inconsistent solution blocks.");
 
-		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, mesh_->dimension(), 0, velocity);
-		reorder_checkpoint_block(reader, "pressure", pressure_space_.space_in_node_to_node, 1, 0, pressure);
+		reorder_checkpoint_block(reader, "primary", space_, mesh_->dimension(), 0, velocity);
+		reorder_checkpoint_block(reader, "pressure", pressure_space_, 1, 0, pressure);
 		solution.topRows(primary_ndof()) = velocity;
 		solution.middleRows(primary_ndof(), pressure_space_.n_bases) = pressure;
 	}

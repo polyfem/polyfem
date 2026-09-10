@@ -159,19 +159,20 @@ namespace polyfem
 				const std::string &group,
 				double dt,
 				const std::string &ordering,
-				const Eigen::VectorXi &current_ordering,
+				const FESpace &space,
 				int block_size) const;
 			void write_checkpoint_ordering(
 				io::CheckpointWriter &writer,
 				const std::string &name,
-				const Eigen::VectorXi &ordering) const;
+				const FESpace &space) const;
 			void reorder_checkpoint_block(
 				const io::CheckpointReader &reader,
 				const std::string &name,
-				const Eigen::VectorXi &current_ordering,
+				const FESpace &space,
 				int block_size,
 				int row_offset,
 				Eigen::MatrixXd &value) const;
+			Eigen::VectorXi checkpoint_ordering(const FESpace &space) const;
 			void validate_checkpoint_solution(const Eigen::MatrixXd &solution, int expected_rows) const;
 			bool checkpoint_reorder_enabled() const;
 			virtual void reset() = 0;

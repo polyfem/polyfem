@@ -46,7 +46,7 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "primary", space_);
 	}
 
 	void ScalarVarForm::deserialize_checkpoint(
@@ -55,7 +55,7 @@ namespace polyfem::varform
 	{
 		VarForm::deserialize_checkpoint(reader, solution);
 		validate_checkpoint_solution(solution, space_.ndof());
-		reorder_checkpoint_block(reader, "primary", space_.space_in_node_to_node, 1, 0, solution);
+		reorder_checkpoint_block(reader, "primary", space_, 1, 0, solution);
 	}
 
 	void ScalarVarForm::reset()
@@ -900,7 +900,7 @@ namespace polyfem::varform
 		time_integrator = bdf;
 		restore_checkpoint_integrator(
 			time_integrator, "/checkpoint/state/primary_integrator", dt,
-			"primary", space_.space_in_node_to_node, 1);
+			"primary", space_, 1);
 
 		save_timestep(t0, 0, t0, dt, sol);
 		if (post_step)

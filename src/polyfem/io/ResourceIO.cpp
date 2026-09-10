@@ -240,23 +240,42 @@ namespace polyfem::io
 		mutable std::map<std::string, fs::path> materialized;
 	};
 
-	HDF5IO::HDF5IO(const fs::path &file, const std::string &root, const fs::path &host_directory)
+	HDF5IO::HDF5IO(
+		const fs::path &file,
+		const std::string &root,
+		const fs::path &host_directory,
+		const std::string &storage_root)
 		: impl_(std::make_shared<Impl>(file)),
 		  file_path_(fs::absolute(file).lexically_normal()),
 		  root_(join_logical("/", root)),
+		  storage_root_(storage_root.empty() || storage_root == "/"
+						? std::string()
+						: join_logical("/", storage_root)),
 		  host_directory_(host_directory.empty() ? file_path_.parent_path() : host_directory) {}
 
 	HDF5IO::~HDF5IO() = default;
 
 	std::unique_ptr<const ResourceIO> HDF5IO::with_root(const std::string &root) const
 	{
-		auto result = std::make_unique<HDF5IO>(file_path_, resolve(root), host_directory_);
+		auto result = std::make_unique<HDF5IO>(
+			file_path_, logical_resolve(root), host_directory_, storage_root_);
 		result->impl_ = impl_;
 		result->access_tracker_ = access_tracker_;
 		return result;
 	}
 
-	std::string HDF5IO::resolve(const std::string &path) const { return join_logical(root_, path); }
+	std::string HDF5IO::logical_resolve(const std::string &path) const
+	{
+		return join_logical(root_, path);
+	}
+
+	std::string HDF5IO::resolve(const std::string &path) const
+	{
+		const std::string logical = logical_resolve(path);
+		return storage_root_.empty()
+				   ? logical
+				   : join_logical(storage_root_, fs::path(logical).relative_path().generic_string());
+	}
 	bool HDF5IO::exists(const std::string &path) const { return impl_->file.linkExists(resolve(path)); }
 
 	bool HDF5IO::is_group(const std::string &path) const
@@ -271,6 +290,8 @@ namespace polyfem::io
 	std::vector<std::string> HDF5IO::list(const std::string &path) const
 	{
 		const std::string parent = resolve(path);
+		const std::string logical_parent = logical_resolve(path);
+		const bool absolute_input = fs::path(path).is_absolute();
 		std::set<std::string> children;
 		const auto add = [&](const std::vector<std::string> &entries) {
 			for (const std::string &entry : entries)
@@ -282,7 +303,11 @@ namespace polyfem::io
 					full = join_logical(parent, full);
 				const fs::path relative = fs::path(full).lexically_relative(parent);
 				if (!relative.empty())
-					children.insert(join_logical(parent, (*relative.begin()).string()));
+				{
+					const std::string child = join_logical(logical_parent, (*relative.begin()).string());
+					children.insert(
+						absolute_input ? child : fs::path(child).lexically_relative(root_).generic_string());
+				}
 			}
 		};
 		add(impl_->file.findGroups("", parent));
@@ -294,15 +319,14 @@ namespace polyfem::io
 	{
 		record_access(path);
 		const std::string key = resolve(path);
-		try
-		{
+		const auto type = impl_->file.getTypeInfoDataset(key);
+		if (!type.h5Type)
+			log_and_throw_error("Unable to determine the type of HDF5 resource {}", describe(path));
+		if (H5Tget_class(type.h5Type.value()) == H5T_STRING)
 			return impl_->file.readDataset<std::string>(key);
-		}
-		catch (const std::exception &)
-		{
-			const std::vector<unsigned char> bytes = impl_->file.readDataset<std::vector<unsigned char>>(key);
-			return std::string(bytes.begin(), bytes.end());
-		}
+		const std::vector<unsigned char> bytes =
+			impl_->file.readDataset<std::vector<unsigned char>>(key);
+		return std::string(bytes.begin(), bytes.end());
 	}
 
 	std::unique_ptr<std::istream> HDF5IO::open(const std::string &path, const bool) const
@@ -313,14 +337,34 @@ namespace polyfem::io
 	Eigen::MatrixXd HDF5IO::read_matrix(const std::string &path) const
 	{
 		record_access(path);
-		return impl_->file.readDataset<Eigen::MatrixXd>(resolve(path));
+		try
+		{
+			return impl_->file.readDataset<Eigen::MatrixXd>(resolve(path));
+		}
+		catch (const std::exception &)
+		{
+			Eigen::MatrixXd result;
+			if (!io::read_matrix(materialize(path).string(), result))
+				log_and_throw_error("Unable to parse matrix resource {}", describe(path));
+			return result;
+		}
 	}
 
 	Eigen::MatrixXi HDF5IO::read_int_matrix(const std::string &path) const
 	{
 		record_access(path);
 		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
-		return impl_->file.readDataset<MatrixXl>(resolve(path)).cast<int>();
+		try
+		{
+			return impl_->file.readDataset<MatrixXl>(resolve(path)).cast<int>();
+		}
+		catch (const std::exception &)
+		{
+			Eigen::MatrixXi result;
+			if (!io::read_matrix(materialize(path).string(), result))
+				log_and_throw_error("Unable to parse integer matrix resource {}", describe(path));
+			return result;
+		}
 	}
 
 	std::vector<double> HDF5IO::read_double_vector(const std::string &path) const

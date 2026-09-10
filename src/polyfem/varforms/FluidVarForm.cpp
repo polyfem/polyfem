@@ -39,8 +39,8 @@ namespace polyfem::varform
 		const io::CheckpointMetadata &metadata) const
 	{
 		VarForm::serialize_checkpoint(writer, solution, metadata);
-		write_checkpoint_ordering(writer, "primary", space_.space_in_node_to_node);
-		write_checkpoint_ordering(writer, "pressure", pressure_space_.space_in_node_to_node);
+		write_checkpoint_ordering(writer, "primary", space_);
+		write_checkpoint_ordering(writer, "pressure", pressure_space_);
 	}
 
 	void FluidVarForm::deserialize_checkpoint(
@@ -50,10 +50,10 @@ namespace polyfem::varform
 		VarForm::deserialize_checkpoint(reader, solution);
 		validate_checkpoint_solution(solution, stacked_ndof());
 		reorder_checkpoint_block(
-			reader, "primary", space_.space_in_node_to_node,
+			reader, "primary", space_,
 			mesh_->dimension(), 0, solution);
 		reorder_checkpoint_block(
-			reader, "pressure", pressure_space_.space_in_node_to_node,
+			reader, "pressure", pressure_space_,
 			1, primary_ndof(), solution);
 	}
 
@@ -893,7 +893,7 @@ namespace polyfem::varform
 		time_integrator = bdf;
 		restore_checkpoint_integrator(
 			time_integrator, "/checkpoint/state/primary_integrator", dt,
-			"primary", space_.space_in_node_to_node, mesh_->dimension());
+			"primary", space_, mesh_->dimension());
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -1186,7 +1186,7 @@ namespace polyfem::varform
 			time_integrator = bdf;
 			restore_checkpoint_integrator(
 				time_integrator, "/checkpoint/state/primary_integrator", dt,
-				"primary", space_.space_in_node_to_node, mesh_->dimension());
+				"primary", space_, mesh_->dimension());
 
 			build_forms(sol, t0 + dt);
 			save_timestep(t0, 0, t0, dt, sol);

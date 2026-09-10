@@ -36,15 +36,7 @@ namespace polyfem::io
 			path = path.lexically_normal();
 			if (path.empty() || path == ".")
 				return "/resources/tree";
-			for (const auto &part : path)
-				if (part == "..")
-					log_and_throw_error("Cannot embed resource outside its logical root: {}", logical);
 			return (fs::path("/resources/tree") / path).generic_string();
-		}
-
-		std::string embedded_lookup_destination(const std::string &logical)
-		{
-			return fs::path(logical).is_absolute() ? fs::path(logical).lexically_normal().generic_string() : resource_destination(logical);
 		}
 
 		template <typename T>
@@ -89,6 +81,7 @@ namespace polyfem::io
 		write_double("/checkpoint/metadata/dt", metadata.dt);
 		write_long("/checkpoint/metadata/remaining_steps", metadata.remaining_steps);
 		write_long("/checkpoint/metadata/output_index", metadata.output_index);
+		write_string("/resources/root", "/");
 	}
 
 	CheckpointWriter::~CheckpointWriter()
@@ -103,6 +96,7 @@ namespace polyfem::io
 
 	void CheckpointWriter::write_matrix(const std::string &path, const Eigen::MatrixXd &value) { impl_->file.writeDataset(value, path); }
 	void CheckpointWriter::write_int_matrix(const std::string &path, const Eigen::MatrixXi &value) { impl_->file.writeDataset(value.cast<int64_t>(), path); }
+	void CheckpointWriter::write_bytes(const std::string &path, const std::vector<unsigned char> &value) { impl_->file.writeDataset(value, path); }
 	void CheckpointWriter::write_vector(const std::string &path, const std::vector<double> &value) { impl_->file.writeDataset(value, path); }
 	void CheckpointWriter::write_int_vector(const std::string &path, const std::vector<int> &value) { impl_->file.writeDataset(value, path); }
 	void CheckpointWriter::write_long_vector(const std::string &path, const std::vector<long> &value) { impl_->file.writeDataset(value, path); }
@@ -170,13 +164,25 @@ namespace polyfem::io
 	{
 		const std::vector<std::string> manifest = resources.accessed_resources();
 		write_string("/resources/manifest", json(manifest).dump());
+		std::string logical_root;
+		if (const auto *hdf5 = dynamic_cast<const HDF5IO *>(&resources))
+			logical_root = hdf5->logical_root();
+		else if (const auto *filesystem = dynamic_cast<const FileSystemIO *>(&resources))
+			logical_root = filesystem->resolve("").generic_string();
+		else
+			log_and_throw_error("Cannot checkpoint an unknown ResourceIO backend.");
+		impl_->file.deleteLink("/resources/root");
+		write_string("/resources/root", logical_root);
 		for (const std::string &logical : manifest)
 		{
 			if (logical == "/config" || logical == "/json")
 				continue;
 			if (!resources.exists(logical))
 				continue;
-			const std::string destination = embedded_lookup_destination(logical);
+			const std::string canonical = dynamic_cast<const HDF5IO *>(&resources) != nullptr
+										  ? dynamic_cast<const HDF5IO &>(resources).logical_resolve(logical)
+										  : dynamic_cast<const FileSystemIO &>(resources).resolve(logical).generic_string();
+			const std::string destination = resource_destination(canonical);
 			if (resources.is_group(logical))
 			{
 				impl_->file.createGroup(destination);
@@ -193,12 +199,17 @@ namespace polyfem::io
 				std::ifstream input(physical, std::ios::binary);
 				if (!input)
 					log_and_throw_error("Unable to embed dependency {}.", resources.describe(logical));
-				write_string(destination, std::string(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()));
+				write_bytes(
+					destination,
+					std::vector<unsigned char>(
+						std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()));
 				continue;
 			}
 			try
 			{
-				write_string(destination, resources.read_string(logical));
+				const std::string contents = resources.read_string(logical);
+				write_bytes(
+					destination, std::vector<unsigned char>(contents.begin(), contents.end()));
 			}
 			catch (const std::exception &)
 			{
@@ -233,8 +244,7 @@ namespace polyfem::io
 	}
 
 	CheckpointReader::CheckpointReader(const fs::path &path)
-		: path_(fs::absolute(path).lexically_normal()), io_(std::make_unique<HDF5IO>(path_)),
-		  resources_(io_->with_root("/resources/tree"))
+		: path_(fs::absolute(path).lexically_normal()), io_(std::make_unique<HDF5IO>(path_))
 	{
 		const auto require = [&](const std::string &key) {
 			if (!io_->exists(key))
@@ -244,8 +254,10 @@ namespace polyfem::io
 				 "/config", "/checkpoint/metadata/schema_version", "/checkpoint/metadata/formulation",
 				 "/checkpoint/metadata/step", "/checkpoint/metadata/time", "/checkpoint/metadata/dt",
 				 "/checkpoint/metadata/remaining_steps", "/checkpoint/metadata/output_index",
-				 "/checkpoint/meshes/active", "/checkpoint/state"})
+				 "/checkpoint/meshes/active", "/checkpoint/state", "/resources/root"})
 			require(key);
+		resources_ = std::make_unique<HDF5IO>(
+			path_, io_->read_string("/resources/root"), path_.parent_path(), "/resources/tree");
 		config_ = json::parse(io_->read_string("/config"));
 		metadata_.schema_version = read_long("/checkpoint/metadata/schema_version");
 		metadata_.formulation = read_string("/checkpoint/metadata/formulation");

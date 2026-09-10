@@ -30,6 +30,7 @@
 
 #include <fstream>
 #include <limits>
+#include <numeric>
 #include <spdlog/fmt/fmt.h>
 #include <paraviewo/VTMWriter.hpp>
 
@@ -207,9 +208,11 @@ namespace polyfem::varform
 				timer.start();
 				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
 				{
-					std::vector<int> in_face(in_ordered_faces.cols());
-					for (int i = 0; i < in_face.size(); i++)
-						in_face[i] = in_ordered_faces(in_fi, i);
+					std::vector<int> in_face;
+					in_face.reserve(in_ordered_faces.cols());
+					for (int i = 0; i < in_ordered_faces.cols(); i++)
+						if (in_ordered_faces(in_fi, i) >= 0)
+							in_face.push_back(in_ordered_faces(in_fi, i));
 					std::sort(in_face.begin(), in_face.end());
 
 					in_primitive_to_primitive[in_offset + in_fi] =
@@ -982,17 +985,17 @@ namespace polyfem::varform
 		const std::string &group,
 		const double dt,
 		const std::string &ordering,
-		const Eigen::VectorXi &current_ordering,
+		const FESpace &space,
 		const int block_size) const
 	{
 		if (!checkpoint_reader_)
 			return;
 		if (!integrator)
 			log_and_throw_error("Checkpoint requires integrator state at {}, but no integrator was constructed.", group);
-		const auto reorder = [this, &ordering, &current_ordering, block_size](Eigen::MatrixXd &value) {
+		const auto reorder = [this, &ordering, &space, block_size](Eigen::MatrixXd &value) {
 			if (checkpoint_reorder_enabled())
 				reorder_checkpoint_block(
-					checkpoint_reader_->get(), ordering, current_ordering,
+					checkpoint_reader_->get(), ordering, space,
 					block_size, 0, value);
 		};
 		integrator->deserialize_checkpoint(checkpoint_reader_->get(), group, dt, reorder);
@@ -1001,13 +1004,37 @@ namespace polyfem::varform
 	void VarForm::write_checkpoint_ordering(
 		io::CheckpointWriter &writer,
 		const std::string &name,
-		const Eigen::VectorXi &ordering) const
+		const FESpace &space) const
 	{
+		const Eigen::VectorXi ordering = checkpoint_ordering(space);
 		if (ordering.size() == 0)
 			return;
 		writer.write_int_vector(
 			"/checkpoint/state/orderings/" + name,
 			std::vector<int>(ordering.data(), ordering.data() + ordering.size()));
+	}
+
+	Eigen::VectorXi VarForm::checkpoint_ordering(const FESpace &space) const
+	{
+		if (!space.mesh_nodes || space.mesh_nodes->n_nodes() != space.n_bases)
+			return {};
+
+		std::vector<int> nodes(space.n_bases);
+		std::iota(nodes.begin(), nodes.end(), 0);
+		std::stable_sort(nodes.begin(), nodes.end(), [&space](const int lhs, const int rhs) {
+			const RowVectorNd left = space.mesh_nodes->node_position(lhs);
+			const RowVectorNd right = space.mesh_nodes->node_position(rhs);
+			for (int d = 0; d < left.size(); ++d)
+			{
+				if (left[d] < right[d])
+					return true;
+				if (left[d] > right[d])
+					return false;
+			}
+			return lhs < rhs;
+		});
+
+		return Eigen::Map<const Eigen::VectorXi>(nodes.data(), nodes.size());
 	}
 
 	bool VarForm::checkpoint_reorder_enabled() const
@@ -1020,16 +1047,19 @@ namespace polyfem::varform
 	void VarForm::reorder_checkpoint_block(
 		const io::CheckpointReader &reader,
 		const std::string &name,
-		const Eigen::VectorXi &current_ordering,
+		const FESpace &space,
 		const int block_size,
 		const int row_offset,
 		Eigen::MatrixXd &value) const
 	{
-		if (!checkpoint_reorder_enabled())
-			return;
+		const Eigen::VectorXi current_ordering = checkpoint_ordering(space);
 		const std::string path = "/checkpoint/state/orderings/" + name;
 		if (!reader.exists(path))
-			log_and_throw_error("Checkpoint reordering requires {}.", path);
+		{
+			if (checkpoint_reorder_enabled() || current_ordering.size() != 0)
+				log_and_throw_error("Checkpoint reordering requires {}.", path);
+			return;
+		}
 		if (block_size <= 0 || current_ordering.size() == 0)
 			log_and_throw_error("Checkpoint reordering is unavailable for the {} solution block.", name);
 
@@ -1052,6 +1082,14 @@ namespace polyfem::varform
 		};
 		validate_permutation(stored_ordering, "Checkpoint");
 		validate_permutation(current_ordering, "Current");
+		if (!checkpoint_reorder_enabled())
+		{
+			if (stored_ordering != current_ordering)
+				log_and_throw_error(
+					"Checkpoint {} ordering differs from the reconstructed space; enable input.checkpoint.reorder.",
+					name);
+			return;
+		}
 
 		const int rows = current_ordering.size() * block_size;
 		if (row_offset < 0 || row_offset + rows > value.rows())

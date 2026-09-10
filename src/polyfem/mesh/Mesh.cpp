@@ -111,8 +111,33 @@ namespace polyfem::mesh
 			element_width = std::max(element_width, n_cell_vertices(e));
 		Eigen::MatrixXi elements = Eigen::MatrixXi::Constant(n_elements(), element_width, -1);
 		for (int e = 0; e < n_elements(); ++e)
+		{
 			for (int j = 0; j < n_cell_vertices(e); ++j)
 				elements(e, j) = element_vertex(e, j);
+
+			// Runtime navigation may reorder refined simplex corners. MeshData is a
+			// decoder-facing representation, so restore the canonical positive
+			// orientation before it is serialized or used to construct another mesh.
+			if (is_simplex(e))
+			{
+				if (dimension() == 2)
+				{
+					const Eigen::Vector2d a = vertices.row(elements(e, 1)) - vertices.row(elements(e, 0));
+					const Eigen::Vector2d b = vertices.row(elements(e, 2)) - vertices.row(elements(e, 0));
+					if (a.x() * b.y() - a.y() * b.x() < 0)
+						std::swap(elements(e, 1), elements(e, 2));
+				}
+				else
+				{
+					Eigen::Matrix3d jacobian;
+					jacobian.col(0) = vertices.row(elements(e, 1)) - vertices.row(elements(e, 0));
+					jacobian.col(1) = vertices.row(elements(e, 2)) - vertices.row(elements(e, 0));
+					jacobian.col(2) = vertices.row(elements(e, 3)) - vertices.row(elements(e, 0));
+					if (jacobian.determinant() < 0)
+						std::swap(elements(e, 1), elements(e, 2));
+				}
+			}
+		}
 
 		MeshData data(std::move(vertices), std::move(elements));
 		if (has_body_ids())

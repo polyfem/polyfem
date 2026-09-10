@@ -97,7 +97,8 @@ namespace polyfem::io
 		explicit HDF5IO(
 			const std::filesystem::path &file,
 			const std::string &root = "/",
-			const std::filesystem::path &host_directory = {});
+			const std::filesystem::path &host_directory = {},
+			const std::string &storage_root = "");
 		~HDF5IO() override;
 
 		std::unique_ptr<const ResourceIO> with_root(const std::string &root) const override;
@@ -121,6 +122,8 @@ namespace polyfem::io
 		std::string describe(const std::string &path) const override;
 
 		const std::filesystem::path &file_path() const { return file_path_; }
+		const std::string &logical_root() const { return root_; }
+		std::string logical_resolve(const std::string &path) const;
 		std::string resolve(const std::string &path) const;
 
 	private:
@@ -128,6 +131,7 @@ namespace polyfem::io
 		std::shared_ptr<Impl> impl_;
 		std::filesystem::path file_path_;
 		std::string root_;
+		std::string storage_root_;
 		std::filesystem::path host_directory_;
 	};
 
