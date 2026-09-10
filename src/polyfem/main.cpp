@@ -162,8 +162,8 @@ int main(int argc, char **argv)
 	auto *checkpoint_option = input->add_option("--checkpoint", checkpoint_file, "Versioned PolyFEM checkpoint")->check(CLI::ExistingFile);
 	bool checkpoint_reorder = false;
 	command_line.add_flag(
-		"--checkpoint-reorder", checkpoint_reorder,
-		"Reorder checkpoint state from its saved input-node ordering")
+					"--checkpoint-reorder", checkpoint_reorder,
+					"Reorder checkpoint state from its saved input-node ordering")
 		->needs(checkpoint_option);
 
 	input->require_option(1);
@@ -262,8 +262,8 @@ int forward_simulation(const CLI::App &command_line,
 	if (!checkpoint_path.empty())
 	{
 		const std::filesystem::path path = std::filesystem::path(checkpoint_path).is_absolute()
-										   ? std::filesystem::path(checkpoint_path)
-										   : resources.host_directory() / checkpoint_path;
+											   ? std::filesystem::path(checkpoint_path)
+											   : resources.host_directory() / checkpoint_path;
 		io::CheckpointReader checkpoint(path.lexically_normal());
 		json continuation = checkpoint.config();
 		continuation["input"]["checkpoint"]["path"] = "";

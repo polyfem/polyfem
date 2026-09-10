@@ -180,8 +180,8 @@ namespace polyfem::io
 			if (!resources.exists(logical))
 				continue;
 			const std::string canonical = dynamic_cast<const HDF5IO *>(&resources) != nullptr
-										  ? dynamic_cast<const HDF5IO &>(resources).logical_resolve(logical)
-										  : dynamic_cast<const FileSystemIO &>(resources).resolve(logical).generic_string();
+											  ? dynamic_cast<const HDF5IO &>(resources).logical_resolve(logical)
+											  : dynamic_cast<const FileSystemIO &>(resources).resolve(logical).generic_string();
 			const std::string destination = resource_destination(canonical);
 			if (resources.is_group(logical))
 			{

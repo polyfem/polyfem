@@ -249,8 +249,8 @@ namespace polyfem::io
 		  file_path_(fs::absolute(file).lexically_normal()),
 		  root_(join_logical("/", root)),
 		  storage_root_(storage_root.empty() || storage_root == "/"
-						? std::string()
-						: join_logical("/", storage_root)),
+							? std::string()
+							: join_logical("/", storage_root)),
 		  host_directory_(host_directory.empty() ? file_path_.parent_path() : host_directory) {}
 
 	HDF5IO::~HDF5IO() = default;

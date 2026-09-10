@@ -397,11 +397,11 @@ Eigen::MatrixXd canonical_checkpoint_solution(const std::filesystem::path &path)
 		return solution;
 
 	const int secondary_rows = pressure.size() + dimension * mesh_motion.size()
-							 + dimension * solid.size() + temperature.size();
+							   + dimension * solid.size() + temperature.size();
 	const int available_primary_rows = solution.rows() - secondary_rows;
 	const int primary_block_size = available_primary_rows >= dimension * primary.size()
-								   ? dimension
-								   : 1;
+									   ? dimension
+									   : 1;
 	REQUIRE(available_primary_rows >= primary_block_size * primary.size());
 
 	Eigen::MatrixXd canonical = solution;
@@ -648,8 +648,8 @@ TEST_CASE("quick filesystem scenes run from generated HDF5 bundles", "[.][hdf5_r
 	fs::create_directories(output);
 	const char *environment_python = std::getenv("POLYFEM_TEST_PYTHON");
 	const std::string python = environment_python == nullptr
-							   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
-							   : std::string(environment_python);
+								   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
+								   : std::string(environment_python);
 	const std::string command =
 		shell_quote(python) + " "
 		+ shell_quote(std::string(POLYFEM_SOURCE_DIR) + "/tools/package_json_hdf5.py")
@@ -767,8 +767,8 @@ TEST_CASE("checkpoint embeds all HDF5 input dependencies", "[.][checkpoint][hdf5
 	fs::create_directories(root);
 	const char *environment_python = std::getenv("POLYFEM_TEST_PYTHON");
 	const std::string python = environment_python == nullptr
-							   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
-							   : std::string(environment_python);
+								   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
+								   : std::string(environment_python);
 	const std::string command =
 		shell_quote(python) + " "
 		+ shell_quote(std::string(POLYFEM_SOURCE_DIR) + "/tools/package_json_hdf5.py")

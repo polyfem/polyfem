@@ -512,8 +512,8 @@ int main(int argc, char **argv)
 							if (!checkpoint_path.empty())
 							{
 								const std::filesystem::path path = std::filesystem::path(checkpoint_path).is_absolute()
-															   ? std::filesystem::path(checkpoint_path)
-															   : input_resources->host_directory() / checkpoint_path;
+																	   ? std::filesystem::path(checkpoint_path)
+																	   : input_resources->host_directory() / checkpoint_path;
 								checkpoint.emplace(path.lexically_normal());
 								json continuation = checkpoint->config();
 								continuation["input"]["checkpoint"]["path"] = "";

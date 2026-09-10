@@ -272,11 +272,11 @@ TEST_CASE("Checkpoint reader rejects corrupt schemas", "[hdf5][checkpoint]")
 	fs::create_directories(directory);
 
 	const auto write_fixture = [&](
-		const fs::path &path,
-		const long checkpoint_version,
-		const long mesh_version,
-		const bool include_remaining_steps,
-		const bool include_cells) {
+								   const fs::path &path,
+								   const long checkpoint_version,
+								   const long mesh_version,
+								   const bool include_remaining_steps,
+								   const bool include_cells) {
 		h5pp::File file(path.string(), h5pp::FileAccess::REPLACE);
 		file.writeDataset(std::string(R"({"time":{"dt":0.1}})"), "/config");
 		file.writeDataset(std::string("/"), "/resources/root");
