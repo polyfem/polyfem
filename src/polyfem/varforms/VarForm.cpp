@@ -72,53 +72,6 @@ namespace polyfem::varform
 			return args["space"]["advanced"]["isoparametric"];
 		}
 
-		/// Assumes in nodes are in order vertex, edge, face, then cell nodes.
-		void build_in_node_to_in_primitive(const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
-										   Eigen::VectorXi &in_node_to_in_primitive,
-										   Eigen::VectorXi &in_node_offset)
-		{
-			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
-			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
-			const int num_face_nodes = mesh_nodes.num_face_nodes();
-			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
-
-			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-
-			const long n_vertices = num_vertex_nodes;
-			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
-			in_node_to_in_primitive.resize(num_nodes);
-			in_node_offset.resize(num_nodes);
-
-			// Only one node per vertex, so this is an identity map.
-			in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
-			in_node_offset.head(num_vertex_nodes).setZero();
-
-			int prim_offset = n_vertices;
-			int node_offset = num_vertex_nodes;
-			auto foo = [&](const int num_prims, const int num_prim_nodes) {
-				if (num_prims <= 0 || num_prim_nodes <= 0)
-					return;
-				const Eigen::VectorXi range = Eigen::VectorXi::LinSpaced(num_prim_nodes, 0, num_prim_nodes - 1);
-				// TODO: This assumes isotropic degree of element.
-				const int node_per_prim = num_prim_nodes / num_prims;
-
-				in_node_to_in_primitive.segment(node_offset, num_prim_nodes) =
-					range.array() / node_per_prim + prim_offset;
-
-				in_node_offset.segment(node_offset, num_prim_nodes) =
-					range.unaryExpr([&](const int x) { return x % node_per_prim; });
-
-				prim_offset += num_prims;
-				node_offset += num_prim_nodes;
-			};
-
-			foo(mesh.n_edges(), num_edge_nodes);
-			foo(mesh.n_faces(), num_face_nodes);
-			foo(mesh.n_cells(), num_cell_nodes);
-		}
-
 		bool build_in_primitive_to_primitive(
 			const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
 			const Eigen::VectorXi &in_ordered_vertices,
@@ -696,25 +649,7 @@ namespace polyfem::varform
 			return;
 		}
 
-		const int num_vertex_nodes = space.mesh_nodes->num_vertex_nodes();
-		const int num_edge_nodes = space.mesh_nodes->num_edge_nodes();
-		const int num_face_nodes = space.mesh_nodes->num_face_nodes();
-		const int num_cell_nodes = space.mesh_nodes->num_cell_nodes();
-
-		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-		const long n_vertices = num_vertex_nodes;
-		const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-		const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
 		igl::Timer timer;
-
-		logger().trace("Building in-node to in-primitive mapping...");
-		timer.start();
-		Eigen::VectorXi in_node_to_in_primitive;
-		Eigen::VectorXi in_node_offset;
-		build_in_node_to_in_primitive(mesh, *space.mesh_nodes, in_node_to_in_primitive, in_node_offset);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
 		logger().trace("Building in-primitive to primitive mapping...");
 		timer.start();

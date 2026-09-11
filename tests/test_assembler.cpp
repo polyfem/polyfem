@@ -1474,7 +1474,7 @@ TEST_CASE("assembler material dispatch", "[assembler]")
 	assembler.set_materials({4, 4}, {{"value", 3}}, units, root_resources);
 	REQUIRE(assembler.indices == std::vector<int>{0});
 	REQUIRE(assembler.materials[0]["value"] == 3);
-	REQUIRE(assembler.resource_roots[0] == "/root/path");
+	REQUIRE(assembler.resource_roots[0] == root_resources.describe(""));
 
 	assembler.indices.clear();
 	assembler.materials.clear();
@@ -1487,7 +1487,7 @@ TEST_CASE("assembler material dispatch", "[assembler]")
 	REQUIRE(assembler.materials[0]["value"] == 70);
 	REQUIRE(assembler.materials[1]["value"] == 80);
 	REQUIRE(assembler.materials[2]["value"] == 70);
-	REQUIRE(assembler.resource_roots == std::vector<std::string>{"/materials", "/materials", "/materials"});
+	REQUIRE(assembler.resource_roots == std::vector<std::string>(3, material_resources.describe("")));
 }
 
 TEST_CASE("per-body material arrays use body-local element indices", "[assembler]")

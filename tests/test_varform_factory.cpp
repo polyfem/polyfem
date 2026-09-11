@@ -172,7 +172,7 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 	args["space"]["discr_order"] = json::array({{{"fe_space", 0}, {"order", 2}},
 												{{"fe_space", 1}, {"order", 1}},
 												{{"fe_space", 2}, {"order", 1}}});
-	args["time"] = {{"t0", 0}, {"tend", 0.01}, {"time_steps", 1}};
+	args["time"] = {{"t0", 0}, {"tend", 0.02}, {"time_steps", 2}};
 	args["/output/directory"_json_pointer] = output_directory.string();
 	args["/output/checkpoint/path"_json_pointer] = "checkpoint-{:d}.h5";
 

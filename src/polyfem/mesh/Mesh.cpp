@@ -637,8 +637,18 @@ namespace polyfem::mesh
 			in_ordered_faces_.resize(0, 0);
 		else
 		{
-			assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
-			utils::append_rows(in_ordered_faces_, mesh.in_ordered_faces_.array() + n_vertices);
+			Eigen::MatrixXi incoming_faces = mesh.in_ordered_faces_;
+			for (int i = 0; i < incoming_faces.size(); ++i)
+				if (incoming_faces(i) >= 0)
+					incoming_faces(i) += n_vertices;
+
+			const int old_rows = in_ordered_faces_.rows();
+			const int width = std::max(in_ordered_faces_.cols(), incoming_faces.cols());
+			Eigen::MatrixXi combined = Eigen::MatrixXi::Constant(
+				old_rows + incoming_faces.rows(), width, -1);
+			combined.topLeftCorner(old_rows, in_ordered_faces_.cols()) = in_ordered_faces_;
+			combined.bottomLeftCorner(incoming_faces.rows(), incoming_faces.cols()) = incoming_faces;
+			in_ordered_faces_ = std::move(combined);
 		}
 	}
 

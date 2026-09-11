@@ -83,8 +83,14 @@ AuthenticateResult run_legacy_state(json &args, json &out)
 	{
 		state.solve_problem(sol, pressure);
 	}
+	catch (const std::exception &e)
+	{
+		spdlog::error("Legacy simulation failed: {}", e.what());
+		return SOLVE_FAILED;
+	}
 	catch (...)
 	{
+		spdlog::error("Legacy simulation failed with an unknown exception");
 		return SOLVE_FAILED;
 	}
 
@@ -122,8 +128,14 @@ AuthenticateResult run_varform_state(json &args, json &out, const io::ResourceIO
 	{
 		solve_initialized_state(state, sol);
 	}
+	catch (const std::exception &e)
+	{
+		spdlog::error("Simulation failed: {}", e.what());
+		return SOLVE_FAILED;
+	}
 	catch (...)
 	{
+		spdlog::error("Simulation failed with an unknown exception");
 		return SOLVE_FAILED;
 	}
 
