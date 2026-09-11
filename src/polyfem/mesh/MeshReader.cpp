@@ -160,18 +160,20 @@ namespace polyfem::mesh
 				if (!(input >> kernels(i, 0) >> kernels(i, 1) >> kernels(i, 2)))
 					log_and_throw_error("HYBRID kernel data ended early in {}.", description);
 		}
-		else
+		input.clear();
+		// Preserve the established HYBRID decoder semantics: the stored kernel
+		// points are validated above, but historically they were replaced by cell
+		// barycenters before constructing the runtime mesh.
+		kernels.setZero();
+		for (int i = 0; i < cell_count; ++i)
 		{
-			input.clear();
-			for (int i = 0; i < cell_count; ++i)
-			{
-				for (const int vertex : elements[i])
-					kernels.row(i) += vertices.row(vertex);
-				kernels.row(i) /= elements[i].size();
-			}
+			for (const int vertex : elements[i])
+				kernels.row(i) += vertices.row(vertex);
+			kernels.row(i) /= elements[i].size();
 		}
 
 		MeshData data(std::move(vertices), padded_elements(elements));
+		data.elements_are_ordered = false;
 		data.faces = std::move(faces);
 		data.cell_faces = std::move(cell_faces);
 		data.cell_face_orientations = std::move(orientations);

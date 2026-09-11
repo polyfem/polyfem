@@ -20,6 +20,9 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd vertices;
 		Eigen::MatrixXi elements;
+		/// Whether each element row carries a format-defined local vertex order.
+		/// Arbitrary HYBRID polyhedra only provide an unordered vertex set.
+		bool elements_are_ordered = true;
 
 		std::vector<int> body_ids;
 		std::vector<int> geometry_ids;

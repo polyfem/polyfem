@@ -190,6 +190,21 @@ namespace polyfem::legacy
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		// Legacy State still uses the old restart fields internally. They are no
+		// longer part of the public schema, so provide their inert defaults only
+		// after validation instead of exposing them to non-legacy configurations.
+		if (!this->args.contains("/input/data/state"_json_pointer))
+			this->args["input"]["data"]["state"] = "";
+		if (!this->args.contains("/input/data/reorder"_json_pointer))
+			this->args["input"]["data"]["reorder"] = false;
+		if (!this->args.contains("/output/data/state"_json_pointer))
+			this->args["output"]["data"]["state"] = "";
+		if (!this->args.contains("/output/data/rest_mesh"_json_pointer))
+			this->args["output"]["data"]["rest_mesh"] = "";
+		if (!this->args.contains("/output/data/file_index_offset"_json_pointer))
+			this->args["output"]["data"]["file_index_offset"] = 0;
+		if (!this->args.contains("/output/restart_json"_json_pointer))
+			this->args["output"]["restart_json"] = "";
 		const polyfem::io::FileSystemIO resources(root_path());
 		units.init(this->args["units"]);
 

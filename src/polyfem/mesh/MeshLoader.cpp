@@ -110,6 +110,13 @@ namespace polyfem::mesh
 			log_and_throw_error("Connectivity in {} references an invalid vertex.", resources_.describe(path));
 
 		data = MeshData(std::move(vertices), std::move(cells));
+		if (resources_.has_attribute(path, "elements_are_ordered"))
+		{
+			const long ordered = resources_.read_integer_attribute(path, "elements_are_ordered");
+			if (ordered != 0 && ordered != 1)
+				log_and_throw_error("Mesh group {} has invalid elements_are_ordered metadata.", resources_.describe(path));
+			data.elements_are_ordered = ordered != 0;
+		}
 
 		const std::string body_ids_path = child_path(path, "body_ids");
 		if (resources_.exists(body_ids_path))

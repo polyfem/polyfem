@@ -564,10 +564,10 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
 	REQUIRE(std::filesystem::is_regular_file(checkpoint_path));
 	io::CheckpointReader checkpoint(checkpoint_path);
-	for (const std::string &name : {"solid_u", "solid_v", "solid_a"})
+	for (const std::string &name : {"x", "v", "a"})
 	{
 		const std::string dataset =
-			"/checkpoint/state/solid_integrator/" + name.substr(name.size() - 1);
+			"/checkpoint/state/solid_integrator/" + name;
 		REQUIRE(checkpoint.exists(dataset));
 		const Eigen::MatrixXd history = checkpoint.read_matrix(dataset);
 		CHECK(history.rows() == debug.solid_displacement_ndof);

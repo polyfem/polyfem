@@ -438,8 +438,9 @@ namespace polyfem
 						data.cell_face_orientations[i].begin(), data.cell_face_orientations[i].end());
 					element.hex = data.cell_is_hex[i];
 					all_hex &= element.hex;
-					for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
-						element.input_vs.push_back(F(i, j));
+					if (data.elements_are_ordered)
+						for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
+							element.input_vs.push_back(F(i, j));
 					for (const int face : element.fs)
 						element.vs.insert(
 							element.vs.end(), mesh_.faces[face].vs.begin(), mesh_.faces[face].vs.end());

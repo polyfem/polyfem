@@ -62,10 +62,18 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 		std::ofstream out(directory / "nested" / "input.yaml");
 		out << "root_path: .\nvalue: 17\n";
 	}
+	{
+		std::ofstream out(directory / "nested" / "common.json");
+		out << R"({"common_value":23})";
+	}
 	io::FileSystemIO filesystem(directory);
 	CHECK(filesystem.read_string("nested/resource.txt") == "resource contents");
 	CHECK(filesystem.with_root("nested")->exists("resource.txt"));
 	CHECK(filesystem.glob("nested/*.txt") == std::vector<std::string>{"nested/resource.txt"});
+	json filesystem_config = {{"common", "nested/common.json"}, {"local_value", 29}};
+	CHECK(utils::apply_common_params(filesystem_config, filesystem) == nullptr);
+	CHECK(filesystem_config["common_value"] == 23);
+	CHECK(filesystem_config["local_value"] == 29);
 	const io::LoadedInput yaml = io::load_yaml_input(directory / "nested" / "input.yaml");
 	CHECK(yaml.config == json{{"value", 17}});
 	CHECK(yaml.resources->read_string("resource.txt") == "resource contents");
@@ -74,7 +82,7 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	{
 		h5pp::File file(bundle.string(), h5pp::FileAccess::REPLACE);
 		file.writeDataset(std::string(R"({"common":"configs/common.json","geometry":[]})"), "/config");
-		file.writeDataset(std::string(R"({"materials":{"type":"NeoHookean"}})"), "/configs/common.json");
+		file.writeDataset(std::string(R"({"root_path":".","materials":{"type":"NeoHookean"}})"), "/configs/common.json");
 		file.writeDataset(std::string("common-local resource"), "/configs/local.txt");
 		file.writeDataset(std::string("embedded text"), "/assets/note.txt");
 		file.writeDataset(

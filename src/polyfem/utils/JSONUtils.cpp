@@ -52,7 +52,11 @@ namespace polyfem
 				common_params = common_params.patch(patch);
 			args = std::move(common_params);
 			args.erase("common");
-			return common_resources;
+			// Preserve the caller's resource root unless this common file explicitly
+			// overrides it. Historically, paths inherited from a common file were
+			// resolved against the top-level input; merely locating the common file
+			// must not silently reroot the merged simulation.
+			return has_explicit_root ? std::move(common_resources) : nullptr;
 		}
 
 		void apply_common_params(json &args)

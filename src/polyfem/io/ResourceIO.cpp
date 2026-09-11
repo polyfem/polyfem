@@ -128,7 +128,8 @@ namespace polyfem::io
 	FileSystemIO::FileSystemIO(const fs::path &root, const fs::path &host_directory)
 	{
 		fs::path candidate = root.empty() ? fs::current_path() : root;
-		if (fs::exists(candidate) && !fs::is_directory(candidate))
+		std::error_code error;
+		if (fs::exists(candidate, error) && !fs::is_directory(candidate, error))
 			candidate = candidate.parent_path();
 		root_ = fs::absolute(candidate).lexically_normal();
 		host_directory_ = host_directory.empty() ? root_ : fs::absolute(host_directory).lexically_normal();

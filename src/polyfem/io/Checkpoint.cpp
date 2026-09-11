@@ -119,6 +119,7 @@ namespace polyfem::io
 		write_attribute(group, "schema_version", mesh::MESH_SCHEMA_VERSION);
 		write_attribute(group, "dimension", data.dimension());
 		write_attribute(group, "mesh_type", "fem");
+		write_attribute(group, "elements_are_ordered", long(data.elements_are_ordered));
 		if (!data.body_ids.empty())
 			write_int_vector(group + "/body_ids", data.body_ids);
 		if (!data.geometry_ids.empty())
