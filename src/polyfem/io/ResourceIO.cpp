@@ -10,9 +10,11 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <limits>
 #include <regex>
 #include <set>
 #include <sstream>
+#include <type_traits>
 
 namespace fs = std::filesystem;
 
@@ -20,20 +22,139 @@ namespace polyfem::io
 {
 	namespace
 	{
+		// Logical paths are POSIX paths, regardless of the host operating system.
+		std::string normalize_logical(const std::string &path)
+		{
+			const bool absolute = !path.empty() && path.front() == '/';
+			std::vector<std::string> components;
+			std::istringstream input(path);
+			std::string component;
+			while (std::getline(input, component, '/'))
+			{
+				if (component.empty() || component == ".")
+					continue;
+				if (component == ".." && !components.empty() && components.back() != "..")
+					components.pop_back();
+				else if (component != ".." || !absolute)
+					components.push_back(component);
+			}
+			std::string result = absolute ? "/" : "";
+			for (const auto &part : components)
+			{
+				if (!result.empty() && result.back() != '/')
+					result += '/';
+				result += part;
+			}
+			return result.empty() ? "." : result;
+		}
+
 		std::string join_logical(const std::string &base, const std::string &path)
 		{
-			if (path.empty())
-				return base.empty() ? "/" : base;
-			fs::path p(path);
-			if (p.is_absolute())
-				return p.lexically_normal().generic_string();
-			return (fs::path(base.empty() ? "/" : base) / p).lexically_normal().generic_string();
+			return normalize_logical(!path.empty() && path.front() == '/'
+										 ? path
+										 : (base.empty() ? "/" : base) + "/" + path);
+		}
+
+		std::string relative_logical(const std::string &path, const std::string &base)
+		{
+			const auto split = [](const std::string &value) {
+				std::vector<std::string> parts;
+				std::istringstream input(value);
+				std::string part;
+				while (std::getline(input, part, '/'))
+					if (!part.empty())
+						parts.push_back(part);
+				return parts;
+			};
+			const auto target = split(path), root = split(base);
+			size_t common = 0;
+			while (common < target.size() && common < root.size() && target[common] == root[common])
+				++common;
+			std::string result;
+			for (size_t i = common; i < root.size(); ++i)
+				result += "../";
+			for (size_t i = common; i < target.size(); ++i)
+				result += target[i] + "/";
+			if (!result.empty())
+				result.pop_back();
+			return result.empty() ? "." : result;
 		}
 
 		template <typename T>
 		std::vector<T> matrix_vector(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &m)
 		{
+			if (m.size() == 0)
+				return {};
 			return std::vector<T>(m.data(), m.data() + m.size());
+		}
+
+		template <typename T>
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> read_file_matrix(const fs::path &path)
+		{
+			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> result;
+			if (!io::read_matrix(path.string(), result))
+				log_and_throw_error("Unable to parse matrix resource {}", path.string());
+			return result;
+		}
+
+		bool is_file_dataset(const h5pp::DsetInfo &info)
+		{
+			const hid_t type = info.h5Type.value();
+			// The bundle format reserves rank-one uint8 datasets for file bytes.
+			return H5Tget_class(type) == H5T_STRING
+				   || (info.dsetRank.value() == 1 && H5Tget_class(type) == H5T_INTEGER
+					   && H5Tget_size(type) == 1 && H5Tget_sign(type) == H5T_SGN_NONE);
+		}
+
+		template <typename T>
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> read_numeric_matrix(const h5pp::DsetInfo &info)
+		{
+			const std::string &path = info.dsetPath.value();
+			const auto &dims = info.dsetDims.value();
+			if (dims.size() > 2)
+				log_and_throw_error("Numeric resource {} must be a scalar, vector or matrix.", path);
+			const hsize_t rows = dims.empty() ? 1 : dims[0];
+			const hsize_t cols = dims.size() < 2 ? 1 : dims[1];
+			const hsize_t limit = std::numeric_limits<Eigen::Index>::max();
+			if (rows > limit || cols > limit || (cols && rows > limit / cols))
+				log_and_throw_error("Numeric resource {} is too large.", path);
+			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> result(rows, cols);
+			const hid_t type = info.h5Type.value();
+			const H5T_class_t kind = H5Tget_class(type);
+			const auto read = [&](auto scalar, const hid_t memory_type) {
+				using Source = decltype(scalar);
+				std::vector<Source> values(result.size());
+				if (!values.empty() && H5Dread(info.h5Dset.value(), memory_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, values.data()) < 0)
+					log_and_throw_error("Unable to read numeric resource {}.", path);
+				for (Eigen::Index r = 0; r < result.rows(); ++r)
+					for (Eigen::Index c = 0; c < result.cols(); ++c)
+					{
+						const Source value = values[r * result.cols() + c];
+						if constexpr (std::is_integral_v<T> && std::is_integral_v<Source>)
+						{
+							if constexpr (std::is_signed_v<Source>)
+							{
+								if (value < std::numeric_limits<T>::lowest() || value > std::numeric_limits<T>::max())
+									log_and_throw_error("Integer value in {} is out of range for the requested type.", path);
+							}
+							else if (value > uint64_t(std::numeric_limits<T>::max()))
+								log_and_throw_error("Integer value in {} is out of range for the requested type.", path);
+						}
+						result(r, c) = static_cast<T>(value);
+					}
+			};
+			if (kind == H5T_INTEGER && H5Tget_size(type) <= sizeof(uint64_t))
+			{
+				if (H5Tget_sign(type) == H5T_SGN_NONE)
+					read(uint64_t(0), H5T_NATIVE_UINT64);
+				else
+					read(int64_t(0), H5T_NATIVE_INT64);
+			}
+			else if (kind == H5T_FLOAT && std::is_floating_point_v<T>)
+				read(double(0), H5T_NATIVE_DOUBLE);
+			else
+				log_and_throw_error("Numeric resource {} has an incompatible datatype.", path);
+			return result;
 		}
 	} // namespace
 
@@ -59,8 +180,13 @@ namespace polyfem::io
 		return {access_tracker_->paths.begin(), access_tracker_->paths.end()};
 	}
 
-	std::vector<std::string> ResourceIO::glob(const std::string &pattern) const
+	std::vector<std::string> ResourceIO::glob(const std::string &input_pattern) const
 	{
+		const std::string pattern = normalize_logical(input_pattern);
+		if (pattern.find_first_of("*?") == std::string::npos)
+			return exists(pattern) ? std::vector<std::string>{pattern} : std::vector<std::string>{};
+		const bool recursive = pattern.find("**") != std::string::npos;
+		const auto depth = std::count(pattern.begin(), pattern.end(), '/');
 		std::string expression;
 		expression.reserve(pattern.size() * 2);
 		for (size_t i = 0; i < pattern.size(); ++i)
@@ -68,8 +194,14 @@ namespace polyfem::io
 			const char c = pattern[i];
 			if (c == '*' && i + 1 < pattern.size() && pattern[i + 1] == '*')
 			{
-				expression += ".*";
 				++i;
+				if (i + 1 < pattern.size() && pattern[i + 1] == '/')
+				{
+					expression += "(?:[^/]+/)*";
+					++i;
+				}
+				else
+					expression += ".*";
 			}
 			else if (c == '*')
 				expression += "[^/]*";
@@ -98,7 +230,7 @@ namespace polyfem::io
 			{
 				if (std::regex_match(child, matcher))
 					result.push_back(child);
-				if (is_group(child))
+				if ((recursive || std::count(child.begin(), child.end(), '/') < depth) && is_group(child))
 					pending.push_back(child);
 			}
 		}
@@ -165,27 +297,21 @@ namespace polyfem::io
 	Eigen::MatrixXd FileSystemIO::read_matrix(const std::string &path) const
 	{
 		record_access(path);
-		Eigen::MatrixXd result;
-		if (!io::read_matrix(resolve(path).string(), result))
-			log_and_throw_error("Unable to read matrix resource {}", describe(path));
-		return result;
+		return read_file_matrix<double>(resolve(path));
 	}
 
 	Eigen::MatrixXi FileSystemIO::read_int_matrix(const std::string &path) const
 	{
 		record_access(path);
-		Eigen::MatrixXi result;
-		if (!io::read_matrix(resolve(path).string(), result))
-			log_and_throw_error("Unable to read integer matrix resource {}", describe(path));
-		return result;
+		return read_file_matrix<int>(resolve(path));
 	}
 
 	std::vector<double> FileSystemIO::read_double_vector(const std::string &path) const { return matrix_vector(read_matrix(path)); }
 	std::vector<int> FileSystemIO::read_int_vector(const std::string &path) const { return matrix_vector(read_int_matrix(path)); }
 	std::vector<long> FileSystemIO::read_long_vector(const std::string &path) const
 	{
-		const Eigen::MatrixXi m = read_int_matrix(path);
-		return std::vector<long>(m.data(), m.data() + m.size());
+		record_access(path);
+		return matrix_vector(read_file_matrix<long>(resolve(path)));
 	}
 
 	bool FileSystemIO::has_attribute(const std::string &, const std::string &) const { return false; }
@@ -262,7 +388,7 @@ namespace polyfem::io
 		const std::string logical = logical_resolve(path);
 		return storage_root_.empty()
 				   ? logical
-				   : join_logical(storage_root_, fs::path(logical).relative_path().generic_string());
+				   : join_logical(storage_root_, logical.substr(1));
 	}
 	bool HDF5IO::exists(const std::string &path) const { return impl_->file.linkExists(resolve(path)); }
 
@@ -277,9 +403,11 @@ namespace polyfem::io
 
 	std::vector<std::string> HDF5IO::list(const std::string &path) const
 	{
+		if (!is_group(path))
+			return {};
 		const std::string parent = resolve(path);
 		const std::string logical_parent = logical_resolve(path);
-		const bool absolute_input = fs::path(path).is_absolute();
+		const bool absolute_input = !path.empty() && path.front() == '/';
 		std::set<std::string> children;
 		const auto add = [&](const std::vector<std::string> &entries) {
 			for (const std::string &entry : entries)
@@ -289,12 +417,12 @@ namespace polyfem::io
 					continue;
 				if (full.front() != '/')
 					full = join_logical(parent, full);
-				const fs::path relative = fs::path(full).lexically_relative(parent);
-				if (!relative.empty())
+				const std::string relative = relative_logical(normalize_logical(full), parent);
+				if (relative != "." && relative != ".." && relative.compare(0, 3, "../") != 0)
 				{
-					const std::string child = join_logical(logical_parent, (*relative.begin()).string());
+					const std::string child = join_logical(logical_parent, relative.substr(0, relative.find('/')));
 					children.insert(
-						absolute_input ? child : fs::path(child).lexically_relative(root_).generic_string());
+						absolute_input ? child : relative_logical(child, root_));
 				}
 			}
 		};
@@ -307,10 +435,10 @@ namespace polyfem::io
 	{
 		record_access(path);
 		const std::string key = resolve(path);
-		const auto type = impl_->file.getTypeInfoDataset(key);
-		if (!type.h5Type)
-			log_and_throw_error("Unable to determine the type of HDF5 resource {}", describe(path));
-		if (H5Tget_class(type.h5Type.value()) == H5T_STRING)
+		const auto info = impl_->file.getDatasetInfo(key);
+		if (!is_file_dataset(info))
+			log_and_throw_error("Resource {} is typed numeric data, not a string or byte resource.", describe(path));
+		if (H5Tget_class(info.h5Type.value()) == H5T_STRING)
 			return impl_->file.readDataset<std::string>(key);
 		const std::vector<unsigned char> bytes =
 			impl_->file.readDataset<std::vector<unsigned char>>(key);
@@ -325,74 +453,32 @@ namespace polyfem::io
 	Eigen::MatrixXd HDF5IO::read_matrix(const std::string &path) const
 	{
 		record_access(path);
-		try
-		{
-			return impl_->file.readDataset<Eigen::MatrixXd>(resolve(path));
-		}
-		catch (const std::exception &)
-		{
-			Eigen::MatrixXd result;
-			if (!io::read_matrix(materialize(path).string(), result))
-				log_and_throw_error("Unable to parse matrix resource {}", describe(path));
-			return result;
-		}
+		const auto info = impl_->file.getDatasetInfo(resolve(path));
+		return is_file_dataset(info) ? read_file_matrix<double>(materialize(path)) : read_numeric_matrix<double>(info);
 	}
 
 	Eigen::MatrixXi HDF5IO::read_int_matrix(const std::string &path) const
 	{
 		record_access(path);
-		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
-		try
-		{
-			return impl_->file.readDataset<MatrixXl>(resolve(path)).cast<int>();
-		}
-		catch (const std::exception &)
-		{
-			Eigen::MatrixXi result;
-			if (!io::read_matrix(materialize(path).string(), result))
-				log_and_throw_error("Unable to parse integer matrix resource {}", describe(path));
-			return result;
-		}
+		const auto info = impl_->file.getDatasetInfo(resolve(path));
+		return is_file_dataset(info) ? read_file_matrix<int>(materialize(path)) : read_numeric_matrix<int>(info);
 	}
 
 	std::vector<double> HDF5IO::read_double_vector(const std::string &path) const
 	{
-		record_access(path);
-		try
-		{
-			return impl_->file.readDataset<std::vector<double>>(resolve(path));
-		}
-		catch (const std::exception &)
-		{
-			return matrix_vector(read_matrix(path));
-		}
+		return matrix_vector(read_matrix(path));
 	}
 
 	std::vector<int> HDF5IO::read_int_vector(const std::string &path) const
 	{
-		record_access(path);
-		try
-		{
-			return impl_->file.readDataset<std::vector<int>>(resolve(path));
-		}
-		catch (const std::exception &)
-		{
-			return matrix_vector(read_int_matrix(path));
-		}
+		return matrix_vector(read_int_matrix(path));
 	}
 
 	std::vector<long> HDF5IO::read_long_vector(const std::string &path) const
 	{
 		record_access(path);
-		try
-		{
-			return impl_->file.readDataset<std::vector<long>>(resolve(path));
-		}
-		catch (const std::exception &)
-		{
-			const std::vector<int> values = read_int_vector(path);
-			return {values.begin(), values.end()};
-		}
+		const auto info = impl_->file.getDatasetInfo(resolve(path));
+		return matrix_vector(is_file_dataset(info) ? read_file_matrix<long>(materialize(path)) : read_numeric_matrix<long>(info));
 	}
 
 	bool HDF5IO::has_attribute(const std::string &path, const std::string &name) const

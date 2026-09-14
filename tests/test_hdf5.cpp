@@ -6,6 +6,7 @@
 
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/InputLoader.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/assembler/MatParams.hpp>
@@ -17,6 +18,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <vector>
 
 namespace
@@ -31,6 +33,147 @@ namespace
 		writer.write_matrix("/checkpoint/state/solution", Eigen::MatrixXd::Ones(3, 1));
 	}
 } // namespace
+
+TEST_CASE("Resource numeric reads distinguish file bytes and typed data", "[hdf5][resource_io]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-resource-numeric-types";
+	fs::create_directories(directory);
+	const std::string text = "1 2\n3 4\n";
+	std::ofstream(directory / "values.txt") << text;
+	std::ofstream(directory / "long.txt") << "4294967296\n";
+	std::ofstream(directory / "invalid.txt") << "1 nope\n";
+	std::ofstream(directory / "invalid.bin", std::ios::binary) << "short";
+	std::ofstream(directory / "huge.txt") << "18446744073709551616\n";
+	Eigen::MatrixXi integers(2, 2);
+	integers << 1, 2, 3, 4;
+	const Eigen::MatrixXd doubles = integers.cast<double>();
+	REQUIRE(io::write_matrix((directory / "values.bin").string(), doubles));
+	const fs::path bundle = directory / "input.h5";
+	{
+		h5pp::File file(bundle.string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::vector<unsigned char>(text.begin(), text.end()), "/values.txt");
+		const std::string binary = io::FileSystemIO(directory).read_string("values.bin");
+		file.writeDataset(std::vector<unsigned char>(binary.begin(), binary.end()), "/values.bin");
+		file.writeDataset(text, "/string.txt");
+		file.writeDataset(std::string("4294967296\n"), "/long.txt");
+		file.writeDataset(std::string("1 nope\n"), "/invalid.txt");
+		file.writeDataset(std::string("short"), "/invalid.bin");
+		file.writeDataset(std::string("18446744073709551616\n"), "/huge.txt");
+		file.writeDataset(integers, "/int32");
+		file.writeDataset(integers.cast<int64_t>(), "/int64");
+		file.writeDataset(integers.cast<float>() * 0.5f, "/float32");
+		file.writeDataset(std::vector<int64_t>{4294967296LL}, "/wide");
+		file.writeDataset(std::vector<int64_t>{(int64_t(1) << 54) + 1}, "/exact");
+		file.writeDataset(std::vector<uint64_t>{std::numeric_limits<uint64_t>::max()}, "/unsigned_overflow");
+		file.writeDataset(std::vector<int64_t>{-1, 2}, "/signed");
+		file.writeDataset(std::vector<uint16_t>{1, 65535}, "/uint16");
+		file.writeDataset(std::vector<int>{}, "/empty");
+		file.writeDataset(std::vector<int>{1, 2, 3, 4}, "/rank3", {1, 2, 2});
+	}
+	{
+		io::FileSystemIO filesystem(directory);
+		io::HDF5IO hdf5(bundle);
+		for (const io::ResourceIO &resources : {std::cref<const io::ResourceIO>(filesystem), std::cref<const io::ResourceIO>(hdf5)})
+		{
+			CAPTURE(resources.describe("values.txt"));
+			CHECK(resources.read_int_matrix("values.txt") == integers);
+			CHECK(resources.read_matrix("values.txt") == integers.cast<double>());
+			CHECK(resources.read_int_vector("values.txt") == std::vector<int>{1, 3, 2, 4});
+			CHECK(resources.read_double_vector("values.txt") == std::vector<double>{1, 3, 2, 4});
+			CHECK(resources.read_long_vector("values.txt") == std::vector<long>{1, 3, 2, 4});
+			CHECK(resources.read_matrix("values.bin") == doubles);
+			CHECK(resources.read_double_vector("values.bin") == std::vector<double>{1, 3, 2, 4});
+			if (sizeof(long) > sizeof(int))
+				CHECK(resources.read_long_vector("long.txt") == std::vector<long>{static_cast<long>(4294967296LL)});
+			else
+				CHECK_THROWS(resources.read_long_vector("long.txt"));
+			CHECK_THROWS(resources.read_int_vector("long.txt"));
+			CHECK_THROWS(resources.read_int_matrix("invalid.txt"));
+			CHECK_THROWS(resources.read_matrix("invalid.txt"));
+			CHECK_THROWS(resources.read_matrix("invalid.bin"));
+			CHECK_THROWS(resources.read_long_vector("huge.txt"));
+		}
+		CHECK(hdf5.read_int_vector("string.txt") == std::vector<int>{1, 3, 2, 4});
+		CHECK(hdf5.read_int_matrix("int32") == integers);
+		CHECK(hdf5.read_int_matrix("int64") == integers);
+		CHECK(hdf5.read_matrix("int32") == integers.cast<double>());
+		CHECK(hdf5.read_matrix("float32") == integers.cast<double>() * 0.5);
+		CHECK(hdf5.read_int_vector("int64") == std::vector<int>{1, 3, 2, 4});
+		CHECK(hdf5.read_int_vector("signed") == std::vector<int>{-1, 2});
+		CHECK(hdf5.read_int_vector("uint16") == std::vector<int>{1, 65535});
+		CHECK(hdf5.read_int_vector("empty").empty());
+		CHECK_THROWS(hdf5.read_int_vector("wide"));
+		CHECK_THROWS(hdf5.read_int_matrix("float32"));
+		CHECK_THROWS(hdf5.read_long_vector("unsigned_overflow"));
+		CHECK_THROWS(hdf5.read_string("int32"));
+		CHECK_THROWS(hdf5.materialize("int32"));
+		CHECK_THROWS(hdf5.read_matrix("rank3"));
+		if (sizeof(long) > sizeof(int))
+		{
+			CHECK(hdf5.read_long_vector("wide") == std::vector<long>{static_cast<long>(4294967296LL)});
+			CHECK(hdf5.read_long_vector("exact") == std::vector<long>{static_cast<long>((int64_t(1) << 54) + 1)});
+		}
+		else
+			CHECK_THROWS(hdf5.read_long_vector("wide"));
+	}
+	fs::remove_all(directory);
+}
+
+TEST_CASE("Resource paths and globs use normalized logical names", "[hdf5][resource_io]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-resource-globs";
+	fs::create_directories(directory / "nested/deeper");
+	const std::vector<std::string> paths{"root.txt", "nested/a.txt", "nested/deeper/b.txt"};
+	const fs::path bundle = directory / "input.h5";
+	{
+		h5pp::File file(bundle.string(), h5pp::FileAccess::REPLACE);
+		for (const auto &path : paths)
+		{
+			std::ofstream(directory / path) << path;
+			file.writeDataset(path, "/assets/" + path);
+		}
+		file.writeDataset(std::string("literal backslash"), "/assets/back\\slash.txt");
+		file.writeDataset(std::string("literal colon"), "/assets/C:/value.txt");
+	}
+	{
+		io::FileSystemIO filesystem(directory);
+		io::HDF5IO hdf5(bundle, "/assets");
+		for (const io::ResourceIO &resources : {std::cref<const io::ResourceIO>(filesystem), std::cref<const io::ResourceIO>(hdf5)})
+		{
+			CAPTURE(resources.describe(""));
+			CHECK(resources.glob("nested/*.txt") == std::vector<std::string>{"nested/a.txt"});
+			CHECK(resources.glob("./nested//*.txt") == resources.glob("nested/*.txt"));
+			CHECK(resources.glob("nested/../nested/?.txt") == std::vector<std::string>{"nested/a.txt"});
+			CHECK(resources.glob("nested/**/*.txt") == std::vector<std::string>{"nested/a.txt", "nested/deeper/b.txt"});
+			CHECK(resources.glob("./root.txt") == std::vector<std::string>{"root.txt"});
+			CHECK(resources.glob("missing/**/*.txt").empty());
+			CHECK(resources.glob("root.txt/*.txt").empty());
+			const auto recursive = resources.glob("**/*.txt");
+			for (const auto &path : paths)
+				CHECK(std::find(recursive.begin(), recursive.end(), path) != recursive.end());
+			const auto nested = resources.with_root("nested/./deeper/..");
+			const auto parent_files = nested->glob("../*.txt");
+			CHECK(std::find(parent_files.begin(), parent_files.end(), "../root.txt") != parent_files.end());
+			CHECK(nested->glob("**/a.txt") == std::vector<std::string>{"a.txt"});
+		}
+		CHECK(hdf5.canonical_path("/assets//nested/./../root.txt") == "/assets/root.txt");
+		CHECK(hdf5.canonical_path("../../root.txt") == "/root.txt");
+		CHECK(hdf5.canonical_path("C:/value.txt") == "/assets/C:/value.txt");
+		CHECK(hdf5.read_string("back\\slash.txt") == "literal backslash");
+		CHECK(hdf5.glob("/assets/nested/*.txt") == std::vector<std::string>{"/assets/nested/a.txt"});
+		CHECK(hdf5.glob("back\\*.txt") == std::vector<std::string>{"back\\slash.txt"});
+		CHECK(hdf5.list("/assets/nested") == std::vector<std::string>{"/assets/nested/a.txt", "/assets/nested/deeper"});
+		io::HDF5IO mounted(bundle, "/nested", {}, "/assets");
+		CHECK(mounted.read_string("/root.txt") == "root.txt");
+		CHECK(mounted.glob("../*.txt") == std::vector<std::string>{"../back\\slash.txt", "../root.txt"});
+		CHECK(mounted.resolve("../../root.txt") == "/assets/root.txt");
+	}
+	fs::remove_all(directory);
+}
 
 TEST_CASE("Checkpoint dependencies retain roots and later accesses", "[hdf5][resource_io][checkpoint]")
 {

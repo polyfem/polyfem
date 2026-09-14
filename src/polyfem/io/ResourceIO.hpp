@@ -28,7 +28,8 @@ namespace polyfem::io
 		virtual bool exists(const std::string &path) const = 0;
 		virtual bool is_group(const std::string &path) const = 0;
 		virtual std::vector<std::string> list(const std::string &path) const = 0;
-		/// Glob logical paths using POSIX '*' and '?' wildcards. '**' is recursive.
+		/// Glob normalized logical paths using POSIX '*' and '?' wildcards.
+		/// '**/' matches zero or more directories; returned paths omit './'.
 		std::vector<std::string> glob(const std::string &pattern) const;
 		virtual std::unique_ptr<std::istream> open(const std::string &path, bool binary) const = 0;
 		virtual std::string read_string(const std::string &path) const;
@@ -93,6 +94,10 @@ namespace polyfem::io
 		std::filesystem::path host_directory_;
 	};
 
+	/// HDF5 logical paths always use POSIX separators and roots.
+	/// Strings and rank-one uint8 datasets are file resources; other numeric
+	/// datasets are typed scalars/vectors/matrices. Integer reads reject overflow
+	/// and floating-point datasets rather than silently truncating them.
 	class HDF5IO final : public ResourceIO
 	{
 	public:
