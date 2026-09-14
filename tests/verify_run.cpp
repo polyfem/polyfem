@@ -464,6 +464,23 @@ void check_checkpoint_equivalent(
 	CHECK(uninterrupted.isApprox(resumed, margin));
 	for (int step = checkpoint_step + 1; step <= total_steps; ++step)
 		CHECK(fs::is_regular_file(output / fmt::format("checkpoint_{:d}.h5", step)));
+
+	// The final snapshot is also a valid input: restore and validate all state,
+	// but do not take an additional time step or change the solution.
+	io::CheckpointReader completed(final_checkpoint);
+	REQUIRE(completed.metadata().remaining_steps == 0);
+	json continuation = completed.config();
+	continuation["/input/checkpoint/reorder"_json_pointer] = reorder;
+	State completed_state;
+	completed_state.init(continuation, completed, true);
+	completed_state.load_mesh();
+	Eigen::MatrixXd expected, restored;
+	int steps_taken = 0;
+	completed_state.time_callback = [&](int, int, double, double) { ++steps_taken; };
+	completed_state.solve(restored);
+	completed_state.variational_formulation->deserialize_checkpoint(completed, expected);
+	CHECK(steps_taken == 0);
+	CHECK(restored.isApprox(expected, margin));
 }
 
 bool has_multiple_time_steps(const json &args)
@@ -806,6 +823,80 @@ TEST_CASE("checkpoint embeds all HDF5 input dependencies", "[.][checkpoint][hdf5
 	REQUIRE(uninterrupted.cols() == resumed.cols());
 	CAPTURE((uninterrupted - resumed).lpNorm<Eigen::Infinity>());
 	CHECK(uninterrupted.isApprox(resumed, 1e-8));
+	fs::remove_all(root);
+}
+
+TEST_CASE("checkpoint retains constraints read during solver setup", "[checkpoint][hdf5][resource_io]")
+{
+	namespace fs = std::filesystem;
+	const fs::path root = fs::temp_directory_path() / "polyfem-checkpoint-late-constraints";
+	for (const bool bundle_input : {false, true})
+	{
+		CAPTURE(bundle_input);
+		const fs::path directory = root / (bundle_input ? "bundle" : "filesystem");
+		const fs::path inputs = directory / "inputs";
+		const fs::path output = directory / "output";
+		fs::create_directories(inputs);
+		const std::string mesh_text =
+			"v 0 0 0\nv 1 0 0\nv 1 1 0\nv 0 1 0\nv 0.5 0.5 0\n"
+			"f 1 2 5\nf 2 3 5\nf 3 4 5\nf 4 1 5\n";
+		const std::string hard = bundle_input ? "hard" : "hard.h5";
+		const std::string soft = bundle_input ? "soft" : "soft.h5";
+		json config = {
+			{"geometry", {{"mesh", "mesh.obj"}, {"surface_selection", json::array({{{"id", 7}, {"box", {{-0.01, -0.01}, {0.01, 1.01}}}}})}}},
+			{"materials", {{"type", "NeoHookean"}, {"E", 100}, {"nu", 0.3}, {"rho", 1}}},
+			{"boundary_conditions", {{"rhs", {0.1, 0}}, {"dirichlet_boundary", json::array({{{"id", 7}, {"value", {0, 0}}}})}}},
+			{"constraints", {{"hard", {hard}}, {"soft", json::array({{{"data", soft}, {"weight", 2.0}}})}}},
+			{"time", {{"dt", 0.01}, {"time_steps", 2}}}};
+		config = checkpoint_config(config, output, 2);
+		const auto write_constraint = [&](h5pp::File &file, const std::string &group, const int node, const double target) {
+			file.writeDataset(std::vector<int>{node}, group + "/local2global");
+			file.writeDataset(Eigen::MatrixXd::Ones(1, 1), group + "/A");
+			Eigen::MatrixXd b(1, 2);
+			b << target, 0;
+			file.writeDataset(b, group + "/b");
+		};
+		if (bundle_input)
+		{
+			h5pp::File file((inputs / "input.h5").string(), h5pp::FileAccess::REPLACE);
+			file.writeDataset(config.dump(), "/config");
+			file.writeDataset(mesh_text, "/mesh.obj");
+			write_constraint(file, "/hard", 4, 0.001);
+			write_constraint(file, "/soft", 2, 0.002);
+		}
+		else
+		{
+			std::ofstream(inputs / "mesh.obj") << mesh_text;
+			std::ofstream(inputs / "config.json") << config;
+			h5pp::File hard_file((inputs / hard).string(), h5pp::FileAccess::REPLACE);
+			h5pp::File soft_file((inputs / soft).string(), h5pp::FileAccess::REPLACE);
+			write_constraint(hard_file, "", 4, 0.001);
+			write_constraint(soft_file, "", 2, 0.002);
+		}
+		{
+			const io::LoadedInput loaded = bundle_input
+											   ? io::load_hdf5_input(inputs / "input.h5")
+											   : io::load_json_input(inputs / "config.json");
+			const Eigen::MatrixXd solution = run_simulation(loaded.config, *loaded.resources);
+			CHECK(solution.norm() > 0);
+		}
+		const Eigen::MatrixXd expected = canonical_checkpoint_solution(output / "checkpoint_2.h5");
+		fs::remove_all(inputs);
+		REQUIRE_FALSE(fs::exists(inputs));
+		{
+			io::CheckpointReader checkpoint(output / "checkpoint_1.h5");
+			CHECK(checkpoint.resources().exists(hard));
+			CHECK(checkpoint.resources().exists(soft));
+		}
+		resume_checkpoint(output / "checkpoint_1.h5", true);
+		CHECK(canonical_checkpoint_solution(output / "checkpoint_2.h5").isApprox(expected, 1e-8));
+		// Completed snapshots still validate the integrator, even with no steps left.
+		{
+			h5pp::File corrupt((output / "checkpoint_2.h5").string(), h5pp::FileAccess::READWRITE);
+			corrupt.deleteLink("/checkpoint/state/primary_integrator/x");
+		}
+		CHECK_THROWS(resume_checkpoint(output / "checkpoint_2.h5", true));
+	}
 	fs::remove_all(root);
 }
 

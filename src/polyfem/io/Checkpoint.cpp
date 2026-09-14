@@ -7,7 +7,13 @@
 #include <h5pp/h5pp.h>
 
 #include <chrono>
-#include <fstream>
+
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -163,66 +169,39 @@ namespace polyfem::io
 
 	void CheckpointWriter::embed_resources(const ResourceIO &resources)
 	{
+		// Capture the manifest only once, after the completed step. Input reads
+		// during solver setup (e.g. constraints) must be included as well.
 		const std::vector<std::string> manifest = resources.accessed_resources();
 		write_string("/resources/manifest", json(manifest).dump());
-		std::string logical_root;
-		if (const auto *hdf5 = dynamic_cast<const HDF5IO *>(&resources))
-			logical_root = hdf5->logical_root();
-		else if (const auto *filesystem = dynamic_cast<const FileSystemIO *>(&resources))
-			logical_root = filesystem->resolve("").generic_string();
-		else
-			log_and_throw_error("Cannot checkpoint an unknown ResourceIO backend.");
 		impl_->file.deleteLink("/resources/root");
-		write_string("/resources/root", logical_root);
-		for (const std::string &logical : manifest)
+		write_string("/resources/root", resources.canonical_path(""));
+		const auto *hdf5 = dynamic_cast<const HDF5IO *>(&resources);
+		for (const std::string &canonical : manifest)
 		{
-			if (logical == "/config" || logical == "/json")
-				continue;
-			if (!resources.exists(logical))
-				continue;
-			const std::string canonical = dynamic_cast<const HDF5IO *>(&resources) != nullptr
-											  ? dynamic_cast<const HDF5IO &>(resources).logical_resolve(logical)
-											  : dynamic_cast<const FileSystemIO &>(resources).resolve(logical).generic_string();
 			const std::string destination = resource_destination(canonical);
-			if (resources.is_group(logical))
+			// A previously copied group already contains its descendants.
+			if (impl_->file.linkExists(destination))
+				continue;
+			if (!resources.exists(canonical))
+				log_and_throw_error("Checkpoint dependency {} no longer exists.", resources.describe(canonical));
+			if (hdf5)
+			{
+				// HDF5 object copying preserves datatype, dataspace, attributes and
+				// group contents without converting numeric datasets to byte arrays.
+				impl_->file.copyLinkFromFile(destination, hdf5->file_path(), hdf5->resolve(canonical));
+				continue;
+			}
+			if (resources.is_group(canonical))
 			{
 				impl_->file.createGroup(destination);
-				for (const std::string &attribute : {"schema_version", "dimension"})
-					if (resources.has_attribute(logical, attribute))
-						write_attribute(destination, attribute, resources.read_integer_attribute(logical, attribute));
-				if (resources.has_attribute(logical, "mesh_type"))
-					write_attribute(destination, "mesh_type", resources.read_string_attribute(logical, "mesh_type"));
 				continue;
 			}
-			if (dynamic_cast<const FileSystemIO *>(&resources) != nullptr)
-			{
-				const fs::path physical = resources.materialize(logical);
-				std::ifstream input(physical, std::ios::binary);
-				if (!input)
-					log_and_throw_error("Unable to embed dependency {}.", resources.describe(logical));
-				write_bytes(
-					destination,
-					std::vector<unsigned char>(
-						std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()));
-				continue;
-			}
-			try
-			{
-				const std::string contents = resources.read_string(logical);
-				write_bytes(
-					destination, std::vector<unsigned char>(contents.begin(), contents.end()));
-			}
-			catch (const std::exception &)
-			{
-				try
-				{
-					write_matrix(destination, resources.read_matrix(logical));
-				}
-				catch (const std::exception &)
-				{
-					write_int_matrix(destination, resources.read_int_matrix(logical));
-				}
-			}
+			auto input = resources.open(canonical, true);
+			const std::vector<unsigned char> contents{
+				std::istreambuf_iterator<char>(*input), std::istreambuf_iterator<char>()};
+			if (input->bad())
+				log_and_throw_error("Unable to embed dependency {}.", resources.describe(canonical));
+			write_bytes(destination, contents);
 		}
 	}
 
@@ -232,13 +211,14 @@ namespace polyfem::io
 			return;
 		impl_.reset();
 		std::error_code error;
+#ifdef _WIN32
+		// Both paths are in the same directory, so this is a rename with
+		// replacement, never a copy followed by deletion.
+		if (!MoveFileExW(temporary_path_.c_str(), path_.c_str(), MOVEFILE_REPLACE_EXISTING))
+			error = std::error_code(GetLastError(), std::system_category());
+#else
 		fs::rename(temporary_path_, path_, error);
-		if (error)
-		{
-			fs::remove(path_, error);
-			error.clear();
-			fs::rename(temporary_path_, path_, error);
-		}
+#endif
 		if (error)
 			log_and_throw_error("Unable to atomically publish checkpoint {}: {}", path_.string(), error.message());
 		finalized_ = true;

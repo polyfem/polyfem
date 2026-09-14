@@ -7,6 +7,7 @@
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/InputLoader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/State.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
@@ -17,6 +18,226 @@
 #include <filesystem>
 #include <fstream>
 #include <vector>
+
+namespace
+{
+	void write_test_checkpoint_state(polyfem::io::CheckpointWriter &writer)
+	{
+		Eigen::MatrixXd vertices(3, 2);
+		vertices << 0, 0, 1, 0, 0, 1;
+		Eigen::MatrixXi cells(1, 3);
+		cells << 0, 1, 2;
+		writer.write_mesh("/checkpoint/meshes/active", polyfem::mesh::MeshData(vertices, cells));
+		writer.write_matrix("/checkpoint/state/solution", Eigen::MatrixXd::Ones(3, 1));
+	}
+} // namespace
+
+TEST_CASE("Checkpoint dependencies retain roots and later accesses", "[hdf5][resource_io][checkpoint]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-checkpoint-rooted-resources";
+	fs::create_directories(directory / "inputs/a");
+	fs::create_directories(directory / "inputs/b");
+	std::ofstream(directory / "inputs/a/value.txt") << "first";
+	std::ofstream(directory / "inputs/b/value.txt") << "second";
+	{
+		const io::FileSystemIO resources(directory / "inputs");
+		const auto first = resources.with_root("a");
+		const auto second = resources.with_root("b");
+		CHECK(first->read_string("./value.txt") == "first");
+		const auto snapshot = resources.accessed_resources();
+		CHECK(snapshot == std::vector<std::string>{resources.canonical_path("a/value.txt")});
+		io::CheckpointMetadata metadata;
+		metadata.dt = 0.1;
+		{
+			io::CheckpointWriter writer(directory / "first.h5", json::object(), metadata);
+			write_test_checkpoint_state(writer);
+			writer.embed_resources(*first);
+			writer.finalize();
+		}
+		CHECK(second->read_string("value.txt") == "second");
+		CHECK(first->read_string("../a/value.txt") == "first");
+		CHECK(snapshot.size() == 1);
+		CHECK(resources.accessed_resources() == std::vector<std::string>{resources.canonical_path("a/value.txt"), resources.canonical_path("b/value.txt")});
+		{
+			io::CheckpointWriter writer(directory / "second.h5", json::object(), metadata);
+			write_test_checkpoint_state(writer);
+			writer.embed_resources(*first);
+			writer.finalize();
+		}
+		fs::remove_all(directory / "inputs");
+		io::CheckpointReader initial(directory / "first.h5");
+		CHECK(initial.resources().read_string("value.txt") == "first");
+		CHECK_FALSE(initial.resources().exists("../b/value.txt"));
+		io::CheckpointReader complete(directory / "second.h5");
+		CHECK(complete.resources().read_string("value.txt") == "first");
+		CHECK(complete.resources().with_root("../b")->read_string("value.txt") == "second");
+		io::CheckpointWriter missing(directory / "missing.h5", json::object(), metadata);
+		CHECK_THROWS(missing.embed_resources(*first));
+	}
+	fs::remove_all(directory);
+}
+
+TEST_CASE("Checkpoint embedding preserves typed HDF5 objects", "[hdf5][resource_io][checkpoint]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-checkpoint-typed-resources";
+	fs::create_directories(directory);
+	const fs::path input = directory / "input.h5";
+	const fs::path checkpoint = directory / "checkpoint.h5";
+	Eigen::MatrixXd matrix(2, 3);
+	matrix << -1.25, 0.5, 1024.75, 3.125, -8.5, 0.0625;
+	const std::vector<int64_t> indices{int64_t(1) << 54, -300, 512};
+	{
+		h5pp::File file(input.string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(matrix, "/data/weights/values");
+		file.writeDataset(indices, "/data/weights/indices");
+		file.writeAttribute(std::array<long, 2>{2, 3}, "/data/weights", "shape");
+		file.writeAttribute(0.125, "/data/weights/values", "scale");
+		file.writeAttribute(std::string("custom"), "/data/weights", "description");
+		file.writeAttribute(long(0), "/data/weights", "elements_are_ordered");
+		file.writeDataset(matrix, "/data/standalone");
+		file.writeAttribute(std::string("matrix"), "/data/standalone", "description");
+		file.writeDataset(std::string("first"), "/a/value.txt");
+		file.writeDataset(std::string("second"), "/b/value.txt");
+	}
+	{
+		io::HDF5IO resources(input);
+		const auto data = resources.with_root("data");
+		CHECK(data->read_matrix("weights/values") == matrix);
+		CHECK(data->read_shape_attribute("weights", "shape") == std::array<long, 2>{2, 3});
+		CHECK(data->read_matrix("standalone") == matrix);
+		CHECK(resources.with_root("a")->read_string("value.txt") == "first");
+		CHECK(resources.with_root("b")->read_string("value.txt") == "second");
+		const auto manifest = resources.accessed_resources();
+		CHECK(std::count(manifest.begin(), manifest.end(), "/a/value.txt") == 1);
+		CHECK(std::count(manifest.begin(), manifest.end(), "/b/value.txt") == 1);
+		io::CheckpointMetadata metadata;
+		metadata.dt = 0.1;
+		io::CheckpointWriter writer(checkpoint, json::object(), metadata);
+		write_test_checkpoint_state(writer);
+		writer.embed_resources(*data);
+		writer.finalize();
+	}
+	fs::remove(input);
+	{
+		io::CheckpointReader reader(checkpoint);
+		CHECK(reader.resources().read_matrix("weights/values") == matrix);
+		CHECK(reader.resources().read_matrix("standalone") == matrix);
+		CHECK(reader.resources().read_shape_attribute("weights", "shape") == std::array<long, 2>{2, 3});
+		CHECK(reader.resources().read_string_attribute("weights", "description") == "custom");
+		CHECK(reader.resources().read_integer_attribute("weights", "elements_are_ordered") == 0);
+		CHECK(reader.resources().read_string("/a/value.txt") == "first");
+		CHECK(reader.resources().read_string("/b/value.txt") == "second");
+		h5pp::File file(checkpoint.string(), h5pp::FileAccess::READONLY);
+		CHECK(file.readDataset<std::vector<int64_t>>("/resources/tree/data/weights/indices") == indices);
+		CHECK(file.readAttribute<double>("/resources/tree/data/weights/values", "scale") == 0.125);
+		CHECK(file.readAttribute<std::string>("/resources/tree/data/standalone", "description") == "matrix");
+		const auto type = file.getTypeInfoDataset("/resources/tree/data/weights/indices");
+		REQUIRE(type.h5Type.has_value());
+		CHECK(H5Tget_class(type.h5Type.value()) == H5T_INTEGER);
+		CHECK(H5Tget_size(type.h5Type.value()) == sizeof(int64_t));
+	}
+	fs::remove_all(directory);
+}
+
+TEST_CASE("Materialization keeps equal basenames distinct", "[hdf5][resource_io]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path input = fs::temp_directory_path() / "polyfem-materialize-basenames.h5";
+	{
+		h5pp::File file(input.string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::string("first"), "/a/mesh.obj");
+		file.writeDataset(std::string("second"), "/b/mesh.obj");
+	}
+	fs::path first_path, second_path;
+	{
+		io::HDF5IO resources(input);
+		const auto first = resources.with_root("a");
+		const auto second = resources.with_root("b");
+		first_path = first->materialize("mesh.obj");
+		second_path = second->materialize("mesh.obj");
+		CHECK(first_path != second_path);
+		CHECK(first_path.extension() == ".obj");
+		CHECK(second_path.extension() == ".obj");
+		CHECK(resources.materialize("/a/mesh.obj") == first_path);
+		const io::FileSystemIO filesystem(fs::temp_directory_path());
+		CHECK(filesystem.read_string(first_path.string()) == "first");
+		CHECK(filesystem.read_string(second_path.string()) == "second");
+	}
+	CHECK_FALSE(fs::exists(first_path));
+	CHECK_FALSE(fs::exists(second_path));
+	fs::remove(input);
+}
+
+TEST_CASE("Checkpoint publication preserves an existing destination on failure", "[hdf5][checkpoint]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::temp_directory_path() / "polyfem-checkpoint-publication";
+	fs::create_directories(directory);
+	const fs::path target = directory / "checkpoint.h5";
+	io::CheckpointMetadata metadata;
+	{
+		io::CheckpointWriter writer(target, json{{"generation", 1}}, metadata);
+		writer.finalize();
+	}
+	{
+		io::CheckpointWriter writer(target, json{{"generation", 2}}, metadata);
+		writer.finalize();
+		writer.finalize();
+	}
+	{
+		io::HDF5IO published(target);
+		CHECK(json::parse(published.read_string("/config"))["generation"] == 2);
+	}
+	{
+		io::CheckpointWriter writer(target, json{{"generation", 3}}, metadata);
+		// Simulate losing the unpublished temporary file before rename.
+		fs::path temporary;
+		for (const auto &entry : fs::directory_iterator(directory))
+			if (entry.path().extension() == ".tmp")
+				temporary = entry.path();
+		REQUIRE_FALSE(temporary.empty());
+		fs::rename(temporary, directory / "unpublished.h5");
+		CHECK_THROWS(writer.finalize());
+		REQUIRE(fs::is_regular_file(target));
+		io::HDF5IO published(target);
+		CHECK(json::parse(published.read_string("/config"))["generation"] == 2);
+	}
+	const fs::path occupied = directory / "occupied.h5";
+	fs::create_directory(occupied);
+	{
+		io::CheckpointWriter writer(occupied, json::object(), metadata);
+		CHECK_THROWS(writer.finalize());
+		CHECK(fs::is_directory(occupied));
+	}
+	fs::remove_all(directory);
+}
+
+TEST_CASE("State applies a relative resource root once", "[resource_io][state]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path directory = fs::current_path() / "polyfem-relative-root-test";
+	fs::create_directories(directory);
+	std::ofstream(directory / "triangle.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n";
+	json args = {
+		{"root_path", "polyfem-relative-root-test"},
+		{"geometry", {{"mesh", "triangle.obj"}}},
+		{"materials", {{"type", "Laplacian"}}},
+		{"output", {{"log", {{"quiet", true}}}}}};
+	{
+		State state;
+		state.init(args, true);
+		CHECK_NOTHROW(state.load_mesh());
+		CHECK_FALSE(state.args.contains("root_path"));
+	}
+	fs::remove_all(directory);
+}
 
 TEST_CASE("HDF5", "[hdf5]")
 {

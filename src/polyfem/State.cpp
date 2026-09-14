@@ -114,7 +114,8 @@ namespace polyfem
 					else if (is_param_valid(args["time"], "time_steps"))
 					{
 						time_steps = args["time"]["time_steps"];
-						assert(time_steps > 0);
+						if (time_steps <= 0)
+							log_and_throw_error("A positive number of time steps is required to infer dt from tend.");
 						dt = (tend - t0) / time_steps;
 						assert(dt > 0);
 					}
@@ -131,7 +132,9 @@ namespace polyfem
 					assert(dt > 0);
 
 					time_steps = args["time"]["time_steps"];
-					assert(time_steps > 0);
+					// A completed checkpoint has a known dt and zero remaining steps.
+					if (time_steps < 0)
+						log_and_throw_error("The number of time steps cannot be negative.");
 
 					tend = t0 + time_steps * dt;
 				}
@@ -238,11 +241,8 @@ namespace polyfem
 		const bool strict_validation,
 		const bool is_adjoint_optimization)
 	{
-		std::filesystem::path root = std::filesystem::current_path();
-		if (utils::is_param_valid(p_args_in, "root_path"))
-			root = p_args_in["root_path"].get<std::string>();
-		resources_ = std::make_unique<io::FileSystemIO>(root);
-		init(p_args_in, *resources_, strict_validation, is_adjoint_optimization);
+		const io::FileSystemIO resources(std::filesystem::current_path());
+		init(p_args_in, resources, strict_validation, is_adjoint_optimization);
 	}
 
 	void State::init(

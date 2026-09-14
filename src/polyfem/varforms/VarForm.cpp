@@ -597,7 +597,6 @@ namespace polyfem::varform
 		const ForwardStepCallback &post_step)
 	{
 		prepare();
-		resources_.freeze_dependency_manifest();
 		if (checkpoint_reader_)
 			deserialize_checkpoint(checkpoint_reader_->get(), sol);
 		solve_problem(sol, initial_condition_override, post_step);

@@ -22,6 +22,8 @@ namespace polyfem::io
 		virtual ~ResourceIO() = default;
 
 		virtual std::unique_ptr<const ResourceIO> with_root(const std::string &root) const = 0;
+		/// Absolute resource identity, independent of the active reader root.
+		virtual std::string canonical_path(const std::string &path) const = 0;
 
 		virtual bool exists(const std::string &path) const = 0;
 		virtual bool is_group(const std::string &path) const = 0;
@@ -46,10 +48,9 @@ namespace polyfem::io
 		virtual const std::filesystem::path &host_directory() const = 0;
 		virtual std::string describe(const std::string &path) const = 0;
 
-		/// Resources actually consumed while preparing the simulation.
+		/// A snapshot of canonical paths consumed so far, including solver setup.
+		/// Tracking remains active for subsequent solves and checkpoint writes.
 		std::vector<std::string> accessed_resources() const;
-		void freeze_dependency_manifest() const;
-		bool dependency_manifest_frozen() const;
 
 	protected:
 		class AccessTracker;
@@ -66,6 +67,7 @@ namespace polyfem::io
 			const std::filesystem::path &host_directory = {});
 
 		std::unique_ptr<const ResourceIO> with_root(const std::string &root) const override;
+		std::string canonical_path(const std::string &path) const override { return resolve(path).generic_string(); }
 		bool exists(const std::string &path) const override;
 		bool is_group(const std::string &path) const override;
 		std::vector<std::string> list(const std::string &path) const override;
@@ -102,6 +104,7 @@ namespace polyfem::io
 		~HDF5IO() override;
 
 		std::unique_ptr<const ResourceIO> with_root(const std::string &root) const override;
+		std::string canonical_path(const std::string &path) const override { return logical_resolve(path); }
 		bool exists(const std::string &path) const override;
 		bool is_group(const std::string &path) const override;
 		std::vector<std::string> list(const std::string &path) const override;

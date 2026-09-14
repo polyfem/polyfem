@@ -42,34 +42,21 @@ namespace polyfem::io
 	public:
 		mutable std::mutex mutex;
 		std::set<std::string> paths;
-		bool frozen = false;
 	};
 
 	ResourceIO::ResourceIO() : access_tracker_(std::make_shared<AccessTracker>()) {}
 
 	void ResourceIO::record_access(const std::string &path) const
 	{
+		const std::string canonical = canonical_path(path);
 		std::lock_guard<std::mutex> lock(access_tracker_->mutex);
-		if (!access_tracker_->frozen)
-			access_tracker_->paths.insert(path);
+		access_tracker_->paths.insert(canonical);
 	}
 
 	std::vector<std::string> ResourceIO::accessed_resources() const
 	{
 		std::lock_guard<std::mutex> lock(access_tracker_->mutex);
 		return {access_tracker_->paths.begin(), access_tracker_->paths.end()};
-	}
-
-	void ResourceIO::freeze_dependency_manifest() const
-	{
-		std::lock_guard<std::mutex> lock(access_tracker_->mutex);
-		access_tracker_->frozen = true;
-	}
-
-	bool ResourceIO::dependency_manifest_frozen() const
-	{
-		std::lock_guard<std::mutex> lock(access_tracker_->mutex);
-		return access_tracker_->frozen;
 	}
 
 	std::vector<std::string> ResourceIO::glob(const std::string &pattern) const
@@ -442,12 +429,22 @@ namespace polyfem::io
 		if (impl_->temporary_directory.empty())
 		{
 			const auto stamp = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-			impl_->temporary_directory = fs::temp_directory_path() / fmt::format("polyfem-resources-{}", stamp);
-			fs::create_directories(impl_->temporary_directory);
+			for (size_t attempt = 0;; ++attempt)
+			{
+				const fs::path candidate = fs::temp_directory_path() / fmt::format("polyfem-resources-{}-{}", stamp, attempt);
+				if (fs::create_directory(candidate))
+				{
+					impl_->temporary_directory = candidate;
+					break;
+				}
+			}
 		}
-		fs::path output = impl_->temporary_directory / fs::path(key).filename();
-		if (output.filename().empty())
-			output /= "resource";
+		// Separate directories preserve the original extension without aliasing
+		// resources that happen to have the same basename.
+		const fs::path directory = impl_->temporary_directory / std::to_string(impl_->materialized.size());
+		fs::create_directory(directory);
+		const fs::path filename = fs::path(key).filename();
+		const fs::path output = directory / (filename.empty() ? fs::path("resource") : filename);
 		std::ofstream file(output, std::ios::binary);
 		const std::string contents = read_string(path);
 		file.write(contents.data(), contents.size());
