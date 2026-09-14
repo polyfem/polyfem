@@ -234,7 +234,8 @@ TEST_CASE("State applies a relative resource root once", "[resource_io][state]")
 		State state;
 		state.init(args, true);
 		CHECK_NOTHROW(state.load_mesh());
-		CHECK_FALSE(state.args.contains("root_path"));
+		// Validation restores the empty default, not the consumed loader hint.
+		CHECK(state.args.at("root_path") == "");
 	}
 	fs::remove_all(directory);
 }
