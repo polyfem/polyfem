@@ -27,7 +27,7 @@
                 "max_step_size_iter": 100
             },
             "solver": "Newton",
-            "grad_norm": 1e-3,
+            "grad_norm_tol": 1e-3,
             "Newton": {
                 "use_psd_projection": true
             }
