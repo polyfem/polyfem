@@ -1567,10 +1567,10 @@
     },
     {
         "pointer": "/solver/contact/dhat_epsilon_scale",
-        "default": 1e-7,
+        "default": 1e-9,
         "min": 0,
         "type": "float",
-        "doc": "dhat_epsilon_scale passed to ipc::update_barrier_stiffness during the adaptive per-step update: the stiffness is raised only when the minimum distance drops below dhat_epsilon_scale * bbox_diagonal."
+        "doc": "Passed to ipc::update_barrier_stiffness during the adaptive per-step update: the stiffness is doubled only while the minimum distance is below dhat_epsilon_scale * bbox_diagonal and still decreasing. Only used when barrier_stiffness is 'adaptive' and the simulation is time dependent. Defaults to the ipc-toolkit default (1e-9)."
     },
     {
         "pointer": "/solver/contact/CCD",
