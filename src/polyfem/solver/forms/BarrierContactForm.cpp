@@ -36,9 +36,18 @@ namespace polyfem::solver
 	{
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
-		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
-		collision_set_.set_collision_set_type(collision_set_type);
+
+		// collision_set_type and use_improved_max_operator both write the
+		// collision set type, so only one of them may be applied. The explicit
+		// collision_set_type wins when it asks for something other than the
+		// default IPC; otherwise use_improved_max_operator decides, which is
+		// what "use_convergent_formulation" drives.
+		if (collision_set_type != ipc::NormalCollisions::CollisionSetType::IPC)
+			collision_set_.set_collision_set_type(collision_set_type);
+		else
+			collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
+
 		collision_set_.set_skip_obstacles(skip_obstacles);
 	}
 

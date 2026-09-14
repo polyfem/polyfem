@@ -98,7 +98,10 @@ namespace polyfem::solver
 		{
 			ipc::NormalCollisions collision_set;
 			collision_set.set_use_area_weighting(barrier_contact->use_area_weighting());
-			collision_set.set_use_improved_max_approximator(barrier_contact->use_improved_max_operator());
+			// Copy the collision set type directly rather than going through
+			// use_improved_max_operator(), which collapses it to a bool and so
+			// would silently downgrade OGC to IPC here.
+			collision_set.set_collision_set_type(barrier_contact->collision_set().collision_set_type());
 
 			collision_set.set_enable_shape_derivatives(barrier_contact->enable_shape_derivatives());
 			collision_set.build(
