@@ -55,6 +55,25 @@ namespace polyfem::io
 										 : (base.empty() ? "/" : base) + "/" + path);
 		}
 
+		bool is_windows_absolute(const std::string &path)
+		{
+			return path.size() >= 3
+				   && ((path[0] >= 'A' && path[0] <= 'Z') || (path[0] >= 'a' && path[0] <= 'z'))
+				   && path[1] == ':' && (path[2] == '/' || path[2] == '\\');
+		}
+
+		std::string windows_separators(std::string path)
+		{
+			std::replace(path.begin(), path.end(), '\\', '/');
+			return path;
+		}
+
+		std::string normalize_windows_absolute(const std::string &path)
+		{
+			const std::string normalized = windows_separators(path);
+			return normalized.substr(0, 2) + normalize_logical(normalized.substr(2));
+		}
+
 		std::string relative_logical(const std::string &path, const std::string &base)
 		{
 			const auto split = [](const std::string &value) {
@@ -361,7 +380,9 @@ namespace polyfem::io
 		const std::string &storage_root)
 		: impl_(std::make_shared<Impl>(file)),
 		  file_path_(fs::absolute(file).lexically_normal()),
-		  root_(join_logical("/", root)),
+		  root_(!storage_root.empty() && is_windows_absolute(root)
+					? normalize_windows_absolute(root)
+					: join_logical("/", root)),
 		  storage_root_(storage_root.empty() || storage_root == "/"
 							? std::string()
 							: join_logical("/", storage_root)),
@@ -380,6 +401,17 @@ namespace polyfem::io
 
 	std::string HDF5IO::logical_resolve(const std::string &path) const
 	{
+		// Mounted checkpoint resources retain the original filesystem namespace.
+		// Ordinary HDF5 bundles still treat 'C:' and backslashes as POSIX names.
+		if (!storage_root_.empty() && is_windows_absolute(root_))
+		{
+			const std::string normalized = windows_separators(path);
+			if (is_windows_absolute(normalized))
+				return normalize_windows_absolute(normalized);
+			if (!normalized.empty() && normalized.front() == '/')
+				return normalize_windows_absolute(root_.substr(0, 2) + normalized);
+			return normalize_windows_absolute(root_ + "/" + normalized);
+		}
 		return join_logical(root_, path);
 	}
 
@@ -388,7 +420,7 @@ namespace polyfem::io
 		const std::string logical = logical_resolve(path);
 		return storage_root_.empty()
 				   ? logical
-				   : join_logical(storage_root_, logical.substr(1));
+				   : join_logical(storage_root_, logical.front() == '/' ? logical.substr(1) : logical);
 	}
 	bool HDF5IO::exists(const std::string &path) const { return impl_->file.linkExists(resolve(path)); }
 
@@ -407,7 +439,8 @@ namespace polyfem::io
 			return {};
 		const std::string parent = resolve(path);
 		const std::string logical_parent = logical_resolve(path);
-		const bool absolute_input = !path.empty() && path.front() == '/';
+		const bool absolute_input = (!path.empty() && path.front() == '/')
+									|| (!storage_root_.empty() && is_windows_absolute(root_) && is_windows_absolute(path));
 		std::set<std::string> children;
 		const auto add = [&](const std::vector<std::string> &entries) {
 			for (const std::string &entry : entries)

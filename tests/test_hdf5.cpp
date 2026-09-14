@@ -138,6 +138,8 @@ TEST_CASE("Resource paths and globs use normalized logical names", "[hdf5][resou
 		}
 		file.writeDataset(std::string("literal backslash"), "/assets/back\\slash.txt");
 		file.writeDataset(std::string("literal colon"), "/assets/C:/value.txt");
+		file.writeDataset(std::string("drive C"), "/resources/tree/C:/inputs/value.txt");
+		file.writeDataset(std::string("drive D"), "/resources/tree/D:/inputs/value.txt");
 	}
 	{
 		io::FileSystemIO filesystem(directory);
@@ -171,6 +173,23 @@ TEST_CASE("Resource paths and globs use normalized logical names", "[hdf5][resou
 		CHECK(mounted.read_string("/root.txt") == "root.txt");
 		CHECK(mounted.glob("../*.txt") == std::vector<std::string>{"../back\\slash.txt", "../root.txt"});
 		CHECK(mounted.resolve("../../root.txt") == "/assets/root.txt");
+		io::HDF5IO windows_checkpoint(bundle, "C:/inputs", {}, "/resources/tree");
+		CHECK(windows_checkpoint.read_string("value.txt") == "drive C");
+		CHECK(windows_checkpoint.read_string("C:\\inputs\\value.txt") == "drive C");
+		CHECK(windows_checkpoint.read_string("D:/inputs/value.txt") == "drive D");
+		CHECK(windows_checkpoint.with_root("D:/inputs")->read_string("value.txt") == "drive D");
+		CHECK(windows_checkpoint.glob("C:/inputs/*.txt") == std::vector<std::string>{"C:/inputs/value.txt"});
+		io::CheckpointMetadata metadata;
+		metadata.dt = 0.1;
+		{
+			io::CheckpointWriter writer(directory / "windows-checkpoint.h5", json::object(), metadata);
+			write_test_checkpoint_state(writer);
+			writer.embed_resources(windows_checkpoint);
+			writer.finalize();
+		}
+		io::CheckpointReader checkpoint(directory / "windows-checkpoint.h5");
+		CHECK(checkpoint.resources().read_string("C:/inputs/value.txt") == "drive C");
+		CHECK(checkpoint.resources().read_string("D:/inputs/value.txt") == "drive D");
 	}
 	fs::remove_all(directory);
 }

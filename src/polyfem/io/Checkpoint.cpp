@@ -36,17 +36,12 @@ namespace polyfem::io
 
 		std::string resource_destination(const std::string &logical)
 		{
-			// HDF5 paths have POSIX roots even on Windows. Do not let a host
-			// filesystem join replace the /resources/tree prefix.
-			if (!logical.empty() && logical.front() == '/')
-				return logical == "/" ? "/resources/tree" : "/resources/tree" + logical;
-			fs::path path(logical);
-			if (path.is_absolute())
-				path = path.relative_path();
-			path = path.lexically_normal();
-			if (path.empty() || path == ".")
+			// Canonical identities are already normalized. Keep Windows drive
+			// names as components so dependencies on different drives cannot alias.
+			const size_t start = logical.find_first_not_of('/');
+			if (start == std::string::npos || logical == ".")
 				return "/resources/tree";
-			return "/resources/tree/" + path.generic_string();
+			return "/resources/tree/" + logical.substr(start);
 		}
 
 		template <typename T>
