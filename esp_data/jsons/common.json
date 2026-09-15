@@ -23,11 +23,13 @@
             "line_search": {
                 "method": "Backtracking",
                 "use_grad_norm_tol": 500,
+                "accept_energy_decrease_in_grad_mode": true,
                 "min_step_size": 1e-8,
                 "max_step_size_iter": 100
             },
             "solver": "Newton",
-            "grad_norm_tol": 1e-3,
+            "norm_type": "Euclidean",
+            "grad_norm_tol": 2.5e-5,
             "Newton": {
                 "use_psd_projection": true
             }
