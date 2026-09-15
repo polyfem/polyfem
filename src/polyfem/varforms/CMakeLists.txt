@@ -22,6 +22,8 @@ set(SOURCES
     NonlinearElasticVarForm.cpp
     ThermoElasticVarForm.hpp
     ThermoElasticVarForm.cpp
+    GrowthElasticVarForm.hpp
+    GrowthElasticVarForm.cpp
     FluidVarForm.hpp
     FluidVarForm.cpp
 	NavierStokesFSIVarForm.hpp
