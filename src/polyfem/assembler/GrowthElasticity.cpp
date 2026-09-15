@@ -266,8 +266,8 @@ namespace polyfem::assembler
 				if (nd.is_array())
 				{
 					constant_n0_ = Eigen::Vector3d(
-											nd[0].get<double>(), nd[1].get<double>(), nd[2].get<double>())
-											.normalized();
+									   nd[0].get<double>(), nd[1].get<double>(), nd[2].get<double>())
+									   .normalized();
 				}
 				else if (nd.is_object() && nd.value("type", "") == "per_element_file")
 				{
@@ -444,10 +444,10 @@ namespace polyfem::assembler
 			std::vector<std::unique_ptr<HGODispersion>> fiber_;
 			std::vector<std::unique_ptr<VolumePenalty>> vol_;
 
-			Eigen::MatrixXd normals_;                       // per-element n0, or:
-			Eigen::Vector3d constant_n0_{0.0, 0.0, 1.0};    // constant fallback (tests)
-			Eigen::MatrixXd vn_;                            // per-element vn, or:
-			double constant_vn_ = 1.0;                      // default: pure in-plane row
+			Eigen::MatrixXd normals_;                    // per-element n0, or:
+			Eigen::Vector3d constant_n0_{0.0, 0.0, 1.0}; // constant fallback (tests)
+			Eigen::MatrixXd vn_;                         // per-element vn, or:
+			double constant_vn_ = 1.0;                   // default: pure in-plane row
 		};
 	} // namespace detail
 
