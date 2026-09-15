@@ -7,7 +7,6 @@
 #include <polyfem/optimization/OptState.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/var2sims/ElasticVariableToSimulation.hpp>
-#include <polyfem/optimization/forms/SmoothingForms.hpp>
 #include <polyfem/optimization/forms/TargetForms.hpp>
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 
@@ -654,6 +653,14 @@ TEST_CASE("dirichlet-nodes-3d", "[opt_gradient]")
 	constexpr int REPEAT = 3;
 	constexpr double TOL = 1.8e-7;
 	run_test1("dirichlet-nodes-3d-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
+}
+
+TEST_CASE("elastic-material-smoothing", "[opt_gradient]")
+{
+	constexpr int REPEAT = 1;
+	constexpr double TOL = 2e-7;
+	run_test1("elastic-material-smoothing-2d-opt.json", 1e-6, TOL, -0.4, 0.6, BASE_SEED + 32, REPEAT);
+	run_test1("elastic-material-smoothing-3d-opt.json", 1e-6, TOL, -0.3, 0.2, BASE_SEED + 33, REPEAT);
 }
 
 // Only on windows debug build homogenize tests failed with:
