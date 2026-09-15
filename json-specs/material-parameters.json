@@ -12,7 +12,8 @@
             "Laplacian",
             "Helmholtz",
             "Bilaplacian",
-            "ThermoElasticity"
+            "ThermoElasticity",
+            "GrowthElasticity"
         ],
         "doc": "Type of material"
     },
@@ -221,6 +222,24 @@
         "doc": "Thermoelastic mixed material. The displacement block currently reuses the nested elastic_material and the temperature block uses a scalar Laplacian."
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "GrowthElasticity",
+        "required": [
+            "type", 
+            "displacement_space_id", 
+            "growth_space_id", 
+            "elastic_material", 
+            "normal_direction"
+        ],
+        "optional": [
+            "id", 
+            "rho", 
+            "normal_growth"
+        ],
+        "doc": "Growth mixed material: additive correction J^g psi(Fe) - psi(F) on a (displacement, growth) block pair. The displacement block reuses the nested elastic_material; the growth field theta is the second space's scalar DOF. normal_direction is the reference wall normal (constant or per-element file); normal_growth is the prescribed normal component (default 1)."
+    },
+    {
         "pointer": "/viscosity",
         "type": "include",
         "spec_file": "value-no.json",
@@ -281,6 +300,12 @@
         "doc": "FE space ID for temperature"
     },
     {
+        "pointer": "/growth_space_id",
+        "type": "int",
+        "min": 0,
+        "doc": "FE space ID for the scalar growth field"
+    },
+    {
         "pointer": "/alpha",
         "type": "include",
         "spec_file": "value-no.json",
@@ -329,5 +354,86 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "permittivity"
+    },
+    {
+        "pointer": "/normal_direction",
+        "type": "list",
+        "doc": "Reference wall normal n0 as a constant [x, y, z] (normalized on load)."
+    },
+    {
+        "pointer": "/normal_direction/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Entries of the constant wall normal",
+        "default": 0
+    },
+    {
+        "pointer": "/normal_direction",
+        "type": "object",
+        "required": [
+            "type",
+            "path"
+        ],
+        "optional": [
+            "field"
+        ],
+        "doc": "Per-element wall normal read from a file, bound by global element id"
+    },
+    {
+        "pointer": "/normal_direction/type",
+        "type": "string",
+        "options": [
+            "per_element_file"
+        ],
+        "doc": "Wall normal source"
+    },
+    {
+        "pointer": "/normal_direction/path",
+        "type": "string",
+        "doc": "Path to a legacy ASCII VTK file, resolved relative to the input JSON"
+    },
+    {
+        "pointer": "/normal_direction/field",
+        "type": "string",
+        "default": "N0",
+        "doc": "Name of the CELL_DATA array holding the per-element wall normals"
+    },
+    {
+        "pointer": "/normal_growth",
+        "type": "float",
+        "default": 1,
+        "doc": "Prescribed normal growth component vn (default 1: pure in-plane growth). The amended-map thickness field, when adopted, is supplied here per element."
+    },
+    {
+        "pointer": "/normal_growth",
+        "type": "object",
+        "required": [
+            "type",
+            "path"
+        ],
+        "optional": [
+            "field"
+        ],
+        "doc": "Per-element normal growth read from a file, bound by global element id"
+    },
+    {
+        "pointer": "/normal_growth/type",
+        "type": "string",
+        "options": [
+            "per_element_file"
+        ],
+        "doc": "Normal growth source"
+    },
+    {
+        "pointer": "/normal_growth/path",
+        "type": "string",
+        "doc": "Path to a legacy ASCII VTK file, resolved relative to the input JSON"
+    },
+    {
+        "pointer": "/normal_growth/field",
+        "type": "string",
+        "default": "VN",
+        "doc": "Name of the CELL_DATA array holding the per-element normal growth"
     }
+
 ]
