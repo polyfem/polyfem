@@ -122,7 +122,7 @@ namespace
 				 // NOTE: constant-fiber syntax; adjust to GenericFiber's
 				 // schema if the first run flags it
 				 {"fiber_direction", {1.0, 0.0, 0.0}}},
-				{{"type", "VolumePenalty"}, {"E", 2600.0}, {"nu", 0.26}}}}}}};
+				{{"type", "VolumePenalty"}, {"k", 1805.6}}}}}}};
 		if (!normal_growth.is_null())
 			m["normal_growth"] = normal_growth;
 		return m;
