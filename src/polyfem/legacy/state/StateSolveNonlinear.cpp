@@ -46,7 +46,7 @@ namespace polyfem::legacy
 
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al, const int dimension) const
 	{
-		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger(), true, args["solver"]["augmented_lagrangian"]["norm_type"], dimension);
+		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger(), true, args["solver"]["augmented_lagrangian"]["nonlinear"]["norm_type"], dimension);
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps,
@@ -348,7 +348,7 @@ namespace polyfem::legacy
 		// solvers use args["solver"]["linear"] for), so it shouldn't inherit
 		// e.g. a Hybrid/AMGF choice meant for the full-size Hessian.
 		json internal_linear_args = args["solver"]["linear"];
-		internal_linear_args["solver"] = "Eigen::SimplicialLDLT";
+		internal_linear_args["solver"] = args["solver"]["nonlinear"]["simple_linear"];
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(internal_linear_args, logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());

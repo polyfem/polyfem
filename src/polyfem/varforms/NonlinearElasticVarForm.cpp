@@ -897,9 +897,15 @@ namespace polyfem::varform
 		}
 
 		const int ndof = space_.n_bases * mesh_->dimension();
+		// NLProblem's own solver_ only factorizes the small Q2^T Q2 constraint-
+		// elimination system (unrelated to the Hessian solve the AL/Newton
+		// solvers use args["solver"]["linear"] for), so it shouldn't inherit
+		// e.g. a Hybrid/AMGF choice meant for the full-size Hessian.
+		json internal_linear_args = args["solver"]["linear"];
+		internal_linear_args["solver"] = args["solver"]["nonlinear"]["simple_linear"];
 		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
 			ndof, t, forms, solve_data_.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			polysolve::linear::Solver::create(internal_linear_args, logger()),
 			characteristic_length, characteristic_force_density, pure_mass_, mesh_->dimension());
 		solve_data_.nl_problem->init(sol);
 		solve_data_.nl_problem->update_quantities(t, sol);
@@ -1056,7 +1062,7 @@ namespace polyfem::varform
 		save_subsolve(0, step, sol);
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
-			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger(), true, args["solver"]["augmented_lagrangian"]["norm_type"], mesh_->dimension());
+			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger(), true, args["solver"]["augmented_lagrangian"]["nonlinear"]["norm_type"], mesh_->dimension());
 
 		ALSolver al_solver(
 			solve_data_.al_form,
@@ -1080,10 +1086,10 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd prev_sol = sol;
 		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), nl_solver);
 
 		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), nl_solver);
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
