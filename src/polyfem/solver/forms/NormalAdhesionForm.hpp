@@ -44,7 +44,7 @@ namespace polyfem::solver
 						   const int ccd_max_iterations);
 		virtual ~NormalAdhesionForm() = default;
 
-		std::string name() const override { return "normal adhesion"; }
+		std::string name() const override { return "normal-adhesion"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution

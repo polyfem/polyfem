@@ -872,7 +872,8 @@ namespace polyfem::varform
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(
 				nonlinear_params, args["solver"]["linear"],
-				units.characteristic_length(), logger());
+				units.characteristic_length(), logger(), true,
+				nonlinear_params["norm_type"], mesh_->dimension());
 
 		if (nl_problem.uses_lagging())
 			nl_problem.init_lagging(solution);
@@ -977,16 +978,23 @@ namespace polyfem::varform
 		else
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 
+		// NLProblem's own solver_ only factorizes the small Q2^T Q2 constraint-
+		// elimination system (unrelated to the Hessian solve the AL/Newton
+		// solvers use args["solver"]["linear"] for), so it shouldn't inherit
+		// e.g. a Hybrid/AMGF choice meant for the full-size Hessian.
+		json internal_linear_args = args["solver"]["linear"];
+		internal_linear_args["solver"] = args["solver"]["nonlinear"]["simple_linear"];
 		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
 			total_ndof(), problem->is_time_dependent() ? t0 + dt : 1.0,
 			forms, solve_data_.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			polysolve::linear::Solver::create(internal_linear_args, logger()),
 			characteristic_length, characteristic_force_density,
 			stacked_lumped_mass_.size() > 0 ? stacked_lumped_mass_ : identity_mass(total_ndof()),
 			mesh_->dimension(),
 			problem->is_time_dependent());
 		solve_data_.nl_problem->init(sol);
 		solve_data_.nl_problem->update_quantities(problem->is_time_dependent() ? t0 + dt : 1.0, sol);
+		solve_data_.nl_problem->args_ = &args;
 		stats.solver_info = json::array();
 
 		if (!problem->is_time_dependent())
