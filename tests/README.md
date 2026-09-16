@@ -20,3 +20,13 @@ entrypoints. Files under `data/old-tolerances` are archival and excluded. A new
 PolyFEM scene must be added to a run manifest; it cannot silently land without
 coverage. Temporarily prefix a manifest entry with `*` to write golden `tests`
 values into its JSON.
+
+The ResourceIO regressions use `data/io-tests/hdf5-quick.json` to package a
+fixed seeded sample of quick scenes with `tools/package_json_hdf5.py`, then run
+the bundles against the existing golden values. The Python interpreter can be
+overridden with `POLYFEM_TEST_PYTHON` (for example, the `base3` environment).
+
+Checkpoint coverage has two tiers. `data/io-tests/checkpoint-quick.json` covers
+all formulation families in normal Release CI. The hidden `[checkpoint_all]`
+test retries every classified, testable transient scene with a two-step run and
+is executed once by the nightly Linux/CPP job.

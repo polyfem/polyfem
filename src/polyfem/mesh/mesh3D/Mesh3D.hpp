@@ -30,6 +30,7 @@ namespace polyfem
 			virtual int n_cell_edges(const int c_id) const = 0;
 			virtual int n_cell_faces(const int c_id) const = 0;
 			virtual int cell_face(const int c_id, const int lf_id) const = 0;
+			virtual int cell_face_orientation(const int c_id, const int lf_id) const = 0;
 			virtual int cell_edge(const int c_id, const int le_id) const = 0;
 
 			void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;

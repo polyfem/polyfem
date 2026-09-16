@@ -5,6 +5,7 @@
 #include <polyfem/optimization/BuildFromJson.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/OptState.hpp>
+#include <polyfem/io/InputLoader.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/var2sims/ElasticVariableToSimulation.hpp>
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
@@ -418,8 +419,12 @@ TEST_CASE("node-trajectory", "[opt_gradient]")
 
 	// One state only.
 	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
-	auto varforms =
-		from_json::build_varforms(root, opt_args["states"], -1, opt_args["output"]["log"]);
+	auto loaded_state = io::load_json_input(
+		std::filesystem::path(root) / opt_args["states"][0]["path"].get<std::string>());
+	json state_args = loaded_state.config;
+	state_args["output"]["log"].merge_patch(opt_args["output"]["log"]);
+	std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms = {
+		from_json::build_differentiable_varform(state_args, *loaded_state.resources, -1)};
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	auto elastic_var2sim =

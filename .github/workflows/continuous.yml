@@ -38,6 +38,14 @@ jobs:
         with:
           fetch-depth: 10
 
+      - name: Set up Python test dependencies
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test dependencies
+        run: python -m pip install -r tests/python-requirements.txt
+
       - name: Dependencies
         run: |
           sudo apt-get update
@@ -104,6 +112,14 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 10
+
+      - name: Set up Python test dependencies
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test dependencies
+        run: python -m pip install -r tests/python-requirements.txt
 
       - name: Dependencies
         run: |

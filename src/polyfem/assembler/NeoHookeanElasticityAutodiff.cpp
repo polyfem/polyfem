@@ -8,8 +8,8 @@ namespace polyfem::assembler
 	{
 	}
 
-	void NeoHookeanAutodiff::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void NeoHookeanAutodiff::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		params_.add_multimaterial(index, params, size() == 3, units.stress(), root_path);
+		params_.add_multimaterial(index, params, size() == 3, units.stress(), resources);
 	}
 } // namespace polyfem::assembler

@@ -18,6 +18,7 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
+		using VarForm::VarForm;
 		std::string name() const override { return "Bilaplacian"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
@@ -25,6 +26,8 @@ namespace polyfem::varform
 		void export_data(const Eigen::MatrixXd &solution) const override;
 		io::OutputSpace output_space() const override;
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
+		void serialize_checkpoint(io::CheckpointWriter &writer, const Eigen::MatrixXd &solution, const io::CheckpointMetadata &metadata) const override;
+		void deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution) override;
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,

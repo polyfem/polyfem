@@ -1,5 +1,5 @@
 #include <polyfem/State.hpp>
-#include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
@@ -45,8 +45,6 @@ namespace
 		args["/output/log/level"_json_pointer] = "error";
 		args["/output/advanced/save_time_sequence"_json_pointer] = false;
 		args["/output/paraview/file_name"_json_pointer] = "";
-		args["/output/data/state"_json_pointer] = "";
-
 		return args;
 	}
 } // namespace
@@ -54,6 +52,7 @@ namespace
 TEST_CASE("varform factory supports migrated formulations", "[varform]")
 {
 	const json args = transient_args();
+	const io::FileSystemIO resources(".");
 
 	for (const std::string formulation : {
 			 "NeoHookean",
@@ -67,12 +66,12 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		 })
 	{
 		CHECK(varform::VarFormFactory::supports(formulation, args));
-		CHECK(varform::VarFormFactory::create(formulation, args) != nullptr);
+		CHECK(varform::VarFormFactory::create(formulation, args, resources) != nullptr);
 	}
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args) != nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", args, resources) != nullptr);
 	CHECK_FALSE(varform::VarFormFactory::supports("UnknownFormulation", args));
-	CHECK(varform::VarFormFactory::create("UnknownFormulation", args) == nullptr);
+	CHECK(varform::VarFormFactory::create("UnknownFormulation", args, resources) == nullptr);
 
 	json contact_fsi_args = args;
 	contact_fsi_args["contact"]["enabled"] = true;
@@ -83,26 +82,26 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"displacement_space_id", 3},
 		{"solid_material", {{"type", "NeoHookean"}}}};
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) != nullptr);
-	CHECK(varform::uses_varform_state(contact_fsi_args));
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) != nullptr);
+	CHECK(varform::uses_varform_state(contact_fsi_args, resources));
 
 	contact_fsi_args["materials"].erase("solid_material");
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) == nullptr);
 
 	json static_args = args;
 	static_args["time"] = nullptr;
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", static_args));
-	CHECK(varform::VarFormFactory::create("NavierStokesFSI", static_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("NavierStokesFSI", static_args, resources) == nullptr);
 
 	json boundary_pair_args = args;
 	boundary_pair_args["/boundary_conditions/periodic"_json_pointer] = {{{"boundary_ids", {1, 2}}}};
 	CHECK(varform::VarFormFactory::supports("NeoHookean", boundary_pair_args));
-	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args) != nullptr);
-	const auto scalar_with_periodic = varform::VarFormFactory::create("Laplacian", boundary_pair_args);
+	CHECK(varform::VarFormFactory::create("NeoHookean", boundary_pair_args, resources) != nullptr);
+	const auto scalar_with_periodic = varform::VarFormFactory::create("Laplacian", boundary_pair_args, resources);
 	REQUIRE(scalar_with_periodic != nullptr);
 	CHECK(scalar_with_periodic->name() == "Scalar");
-	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args);
+	const auto linear_with_periodic = varform::VarFormFactory::create("LinearElasticity", boundary_pair_args, resources);
 	REQUIRE(linear_with_periodic != nullptr);
 	CHECK(linear_with_periodic->name() == "NonlinearElasticTransient");
 
@@ -113,7 +112,7 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"fixed_components", {0}}};
 	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
 	const auto differentiable_periodic =
-		varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true);
+		varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, resources, true);
 	REQUIRE(differentiable_periodic != nullptr);
 	CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(differentiable_periodic) != nullptr);
 	CHECK(differentiable_periodic->name() == "NonlinearElasticStatic");
@@ -121,11 +120,11 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	periodic_homogenization_args["/contact/periodic"_json_pointer] = true;
 	periodic_homogenization_args["/contact/enabled"_json_pointer] = true;
 	CHECK(varform::VarFormFactory::supports("NeoHookean", periodic_homogenization_args, true));
-	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, true) != nullptr);
+	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_homogenization_args, resources, true) != nullptr);
 
 	json zero_mean_args = args;
 	zero_mean_args["/constraints/zero_mean"_json_pointer] = true;
-	const auto scalar_with_zero_mean = varform::VarFormFactory::create("Laplacian", zero_mean_args);
+	const auto scalar_with_zero_mean = varform::VarFormFactory::create("Laplacian", zero_mean_args, resources);
 	REQUIRE(scalar_with_zero_mean != nullptr);
 	CHECK(scalar_with_zero_mean->name() == "Scalar");
 }
@@ -150,11 +149,10 @@ TEST_CASE("state can opt into migrated varforms", "[varform][state]")
 
 TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_stokes][fsi]")
 {
-	const std::filesystem::path state_pattern =
-		std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-state-{:d}.h5";
-	const std::string state_path =
-		(std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-state-1.h5").string();
-	std::filesystem::remove(state_path);
+	const std::filesystem::path output_directory =
+		std::filesystem::temp_directory_path() / "polyfem-navier-stokes-fsi-checkpoint";
+	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
+	std::filesystem::remove_all(output_directory);
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/navier_stokes_transient.json");
 	args.erase("preset_problem");
 	args["geometry"] = {
@@ -174,8 +172,9 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 	args["space"]["discr_order"] = json::array({{{"fe_space", 0}, {"order", 2}},
 												{{"fe_space", 1}, {"order", 1}},
 												{{"fe_space", 2}, {"order", 1}}});
-	args["time"] = {{"t0", 0}, {"tend", 0.01}, {"time_steps", 1}};
-	args["/output/data/state"_json_pointer] = state_pattern.string();
+	args["time"] = {{"t0", 0}, {"tend", 0.02}, {"time_steps", 2}};
+	args["/output/directory"_json_pointer] = output_directory.string();
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint-{:d}.h5";
 
 	State state;
 	state.init(args, true);
@@ -187,7 +186,7 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 	CHECK(state.variational_formulation->name() == "NavierStokesFSI");
 	CHECK(solution.rows() > 0);
 	CHECK(solution.allFinite());
-	REQUIRE(std::filesystem::is_regular_file(state_path));
+	REQUIRE(std::filesystem::is_regular_file(checkpoint_path));
 
 	const test::NavierStokesFSIDebugData debug =
 		test::VarFormTestAccess::navier_stokes_fsi_data(*state.variational_formulation);
@@ -285,18 +284,20 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 		CHECK(Eigen::VectorXd(gauge_jacobian.col(j)).isApprox(finite_difference, 2e-7));
 	}
 
-	json restart_args = args;
-	restart_args["/input/data/state"_json_pointer] = state_path;
-	restart_args["/output/data/state"_json_pointer] = "";
-	restart_args["time"] = {{"t0", 0.01}, {"tend", 0.02}, {"time_steps", 1}};
+	io::CheckpointReader checkpoint(checkpoint_path);
+	CHECK(checkpoint.metadata().formulation == "NavierStokesFSI");
+	CHECK(checkpoint.exists("/checkpoint/state/primary_integrator/x"));
+	CHECK(checkpoint.exists("/checkpoint/state/mesh_motion_integrator/x"));
+	json restart_args = checkpoint.config();
+	restart_args["/input/checkpoint/reorder"_json_pointer] = true;
 	State restarted_state;
-	restarted_state.init(restart_args, true);
+	restarted_state.init(restart_args, checkpoint, true);
 	restarted_state.load_mesh();
 	Eigen::MatrixXd restarted_solution;
 	restarted_state.solve(restarted_solution);
 	CHECK(restarted_solution.rows() == solution.rows());
 	CHECK(restarted_solution.allFinite());
-	std::filesystem::remove(state_path);
+	std::filesystem::remove_all(output_directory);
 }
 
 TEST_CASE("ALE Navier-Stokes FSI moving arc", "[varform][state][navier_stokes][fsi]")
@@ -394,8 +395,7 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	args["/output/advanced/save_time_sequence"_json_pointer] = true;
 	args["/output/paraview/file_name"_json_pointer] = "fsi.pvd";
 	args["/output/paraview/surface"_json_pointer] = true;
-	args["/output/data/state"_json_pointer] =
-		(output_directory / "state-{:d}.h5").string();
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint-{:d}.h5";
 
 	State state;
 	state.init(args, true);
@@ -561,11 +561,15 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	CHECK(combined_vtm.find("Fluid Surface") != std::string::npos);
 	CHECK(combined_vtm.find("Solid Volume") != std::string::npos);
 	CHECK(combined_vtm.find("Solid Surface") != std::string::npos);
-	const std::string state_path = (output_directory / "state-1.h5").string();
-	for (const std::string &name : {"solid_u", "solid_v", "solid_a"})
+	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
+	REQUIRE(std::filesystem::is_regular_file(checkpoint_path));
+	io::CheckpointReader checkpoint(checkpoint_path);
+	for (const std::string &name : {"x", "v", "a"})
 	{
-		Eigen::MatrixXd history;
-		CHECK(io::read_matrix(state_path, name, history));
+		const std::string dataset =
+			"/checkpoint/state/solid_integrator/" + name;
+		REQUIRE(checkpoint.exists(dataset));
+		const Eigen::MatrixXd history = checkpoint.read_matrix(dataset);
 		CHECK(history.rows() == debug.solid_displacement_ndof);
 		CHECK(history.allFinite());
 	}
@@ -579,7 +583,8 @@ TEST_CASE("macro displacement gradient remains on legacy state path", "[varform]
 		{"value", {{0, 0}, {0, 0}}},
 		{"fixed_components", {0}}};
 
-	CHECK_FALSE(varform::uses_varform_state(args));
+	const io::FileSystemIO resources(args["root_path"].get<std::string>());
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
 
 	legacy::State state;
 	state.init(args, false);

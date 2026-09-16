@@ -23,7 +23,7 @@ namespace polyfem::solver
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const double dhat, const double dmin = 0);
+		CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const io::ResourceIO &resources, const double dhat, const double dmin = 0);
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
@@ -60,6 +60,7 @@ namespace polyfem::solver
 	public:
 		LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
 						   std::shared_ptr<const varform::DifferentiableVarForm> varform,
+						   const io::ResourceIO &resources,
 						   const std::vector<int> &boundary_ids,
 						   const double dhat,
 						   const bool use_log_barrier = false,
@@ -80,7 +81,7 @@ namespace polyfem::solver
 	class DeformedCollisionBarrierForm : public AdjointForm
 	{
 	public:
-		DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const double dhat);
+		DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const io::ResourceIO &resources, const double dhat);
 
 		std::string name() const override { return "deformed_collision_barrier"; }
 

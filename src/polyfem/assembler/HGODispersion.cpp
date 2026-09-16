@@ -7,15 +7,15 @@ namespace polyfem::assembler
 	{
 	}
 
-	void HGODispersion::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void HGODispersion::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		GenericFiber<HGODispersion>::add_multimaterial(index, params, units, root_path);
+		GenericFiber<HGODispersion>::add_multimaterial(index, params, units, resources);
 
-		k1_.add_multimaterial(index, params, units.stress(), root_path);
-		k2_.add_multimaterial(index, params, "", root_path);
-		kappa_.add_multimaterial(index, params, "", root_path); // dimensionless; absent => 0
+		k1_.add_multimaterial(index, params, units.stress(), resources);
+		k2_.add_multimaterial(index, params, "", resources);
+		kappa_.add_multimaterial(index, params, "", resources); // dimensionless; absent => 0
 		k_chi_ = params.value("k_chi", 100.0);                  // absent => 100 (manuscript)
 	}
 

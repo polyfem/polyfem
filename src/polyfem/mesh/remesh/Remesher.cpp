@@ -99,8 +99,8 @@ namespace polyfem::mesh
 		using namespace polyfem::basis;
 		using namespace polyfem::utils;
 
-		const std::unique_ptr<Mesh> from_mesh = Mesh::create(
-			global_projection_cache.rest_positions, global_projection_cache.elements);
+		const std::unique_ptr<Mesh> from_mesh = Mesh::create(MeshData(
+			global_projection_cache.rest_positions, global_projection_cache.elements));
 		std::vector<ElementBases> from_bases;
 		std::vector<LocalBoundary> _;
 		Eigen::VectorXi from_vertex_to_basis;
@@ -120,7 +120,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd rest_positions = this->rest_positions();
 		Eigen::MatrixXi elements = this->elements();
 
-		const std::unique_ptr<Mesh> to_mesh = Mesh::create(rest_positions, elements);
+		const std::unique_ptr<Mesh> to_mesh = Mesh::create(MeshData(rest_positions, elements));
 		std::vector<ElementBases> to_bases;
 		Eigen::VectorXi to_vertex_to_basis;
 		int n_to_basis = build_bases(*to_mesh, state.formulation(), to_bases, _, to_vertex_to_basis);

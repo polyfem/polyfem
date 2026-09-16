@@ -8,6 +8,7 @@
 // the non-legacy OutData carries the hybrid (prism/pyramid) collision-proxy
 // construction; the collision mesh is built through it in both architectures
 #include <polyfem/io/OutData.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -810,7 +811,10 @@ namespace polyfem::legacy
 		}
 
 		if (args["constraints"].contains("macro_displacement_gradient"))
-			macro_strain_constraint.init(dim, args["constraints"]["macro_displacement_gradient"], root_path());
+		{
+			const polyfem::io::FileSystemIO resources(root_path());
+			macro_strain_constraint.init(dim, args["constraints"]["macro_displacement_gradient"], resources);
+		}
 
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
@@ -1344,11 +1348,13 @@ namespace polyfem::legacy
 				assert(displacement_map_entries.empty());
 				assert(collision_mesh_args.contains("mesh"));
 				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
+				const polyfem::io::FileSystemIO resources(root_path);
 				// TODO: handle transformation per geometry
 				const json transformation = json_as_array(args["geometry"])[0]["transformation"];
 				mesh::load_collision_proxy(
-					utils::resolve_path(collision_mesh_args["mesh"], root_path),
-					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
+					resources,
+					collision_mesh_args["mesh"].get<std::string>(),
+					collision_mesh_args["linear_map"].get<std::string>(),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
@@ -1559,12 +1565,13 @@ namespace polyfem::legacy
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+		const polyfem::io::FileSystemIO resources(root_path());
 
 		return std::make_shared<RhsAssembler>(
 			*assembler, *mesh, &obstacle,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
+			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem, resources,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -1611,7 +1618,8 @@ namespace polyfem::legacy
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params, root_path());
+		const polyfem::io::FileSystemIO resources(root_path());
+		problem->set_parameters(p_params, resources);
 
 		rhs.resize(0, 0);
 

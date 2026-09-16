@@ -5,8 +5,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
-#include <polyfem/io/MatrixIO.hpp>
-
 #include <memory>
 
 namespace polyfem::utils
@@ -16,7 +14,7 @@ namespace polyfem::utils
 	std::shared_ptr<Selection> Selection::build(
 		const json &selection,
 		const Selection::BBox &mesh_bbox,
-		const std::string &root_path)
+		const io::ResourceIO &resources)
 	{
 		std::shared_ptr<Selection> res = nullptr;
 		if (selection.contains("box"))
@@ -33,11 +31,11 @@ namespace polyfem::utils
 			res = std::make_shared<PlaneSelection>(selection, mesh_bbox);
 		else if (selection["id"].is_string()) // assume ID is a file path
 			res = std::make_shared<FileSelection>(
-				resolve_path(selection["id"], root_path), selection.value("id_offset", 0));
+				resources, selection["id"].get<std::string>(), selection.value("id_offset", 0));
 		else if (selection["id"].is_number_integer()) // assume ID is uniform
 			res = std::make_shared<UniformSelection>(selection["id"]);
 		else if (selection.contains("file"))
-			res = std::make_shared<FileSelection>(resolve_path(selection["file"], root_path));
+			res = std::make_shared<FileSelection>(resources, selection["file"].get<std::string>());
 		else
 			log_and_throw_error("Selection not recognized: {}", selection.dump());
 
@@ -49,7 +47,7 @@ namespace polyfem::utils
 	std::vector<std::shared_ptr<Selection>> Selection::build_selections(
 		const json &j_selections,
 		const Selection::BBox &mesh_bbox,
-		const std::string &root_path)
+		const io::ResourceIO &resources)
 	{
 		std::vector<std::shared_ptr<Selection>> selections;
 		if (j_selections.is_number_integer())
@@ -58,17 +56,17 @@ namespace polyfem::utils
 		}
 		else if (j_selections.is_string())
 		{
-			selections.push_back(std::make_shared<FileSelection>(resolve_path(j_selections, root_path)));
+			selections.push_back(std::make_shared<FileSelection>(resources, j_selections.get<std::string>()));
 		}
 		else if (j_selections.is_object())
 		{
-			selections.push_back(build(j_selections, mesh_bbox, root_path));
+			selections.push_back(build(j_selections, mesh_bbox, resources));
 		}
 		else if (j_selections.is_array())
 		{
 			for (const json &s : j_selections.get<std::vector<json>>())
 			{
-				selections.push_back(build(s, mesh_bbox, root_path));
+				selections.push_back(build(s, mesh_bbox, resources));
 			}
 		}
 		else if (!j_selections.is_null())
@@ -310,15 +308,18 @@ namespace polyfem::utils
 	// ------------------------------------------------------------------------
 
 	FileSelection::FileSelection(
-		const std::string &file_path,
+		const io::ResourceIO &resources,
+		const std::string &path,
 		const int id_offset)
 	{
 		Eigen::MatrixXi mat;
-		const auto ok = io::read_matrix(file_path, mat);
-		if (!ok)
+		try
 		{
-			logger().error("Unable to open selection file \"{}\"!", file_path);
-			return;
+			mat = resources.read_int_matrix(path);
+		}
+		catch (const std::exception &)
+		{
+			log_and_throw_error("Unable to read selection resource {}.", resources.describe(path));
 		}
 
 		if (mat.cols() == 1)

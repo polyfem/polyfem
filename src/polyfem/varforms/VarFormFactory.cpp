@@ -121,9 +121,9 @@ namespace polyfem::varform
 		return args["materials"].value("type", "");
 	}
 
-	bool uses_varform_state(json args)
+	bool uses_varform_state(json args, const io::ResourceIO &resources)
 	{
-		utils::apply_common_params(args);
+		utils::apply_common_params(args, resources);
 		const std::string formulation = formulation_from_args(args);
 		return !formulation.empty() && VarFormFactory::supports(formulation, args);
 	}
@@ -201,35 +201,36 @@ namespace polyfem::varform
 	std::shared_ptr<VarForm> VarFormFactory::create(
 		const std::string &formulation,
 		const json &args,
+		const io::ResourceIO &resources,
 		const bool is_optimization)
 	{
 		if (!supports(formulation, args, is_optimization))
 			return nullptr;
 
 		if (formulation == "ThermoElasticity")
-			return std::make_shared<ThermoElasticVarForm>();
+			return std::make_shared<ThermoElasticVarForm>(resources);
 		if (formulation == "Stokes")
-			return std::make_shared<StokesVarForm>();
+			return std::make_shared<StokesVarForm>(resources);
 		if (formulation == "NavierStokes")
-			return std::make_shared<NavierStokesVarForm>();
+			return std::make_shared<NavierStokesVarForm>(resources);
 		if (formulation == "NavierStokesFSI")
-			return std::make_shared<NavierStokesFSIVarForm>();
+			return std::make_shared<NavierStokesFSIVarForm>(resources);
 		if (formulation == "OperatorSplitting")
-			return std::make_shared<OperatorSplittingVarForm>();
+			return std::make_shared<OperatorSplittingVarForm>(resources);
 		if (formulation == "IncompressibleLinearElasticity")
-			return std::make_shared<IncompressibleElasticVarForm>();
+			return std::make_shared<IncompressibleElasticVarForm>(resources);
 		if (formulation == "Bilaplacian")
-			return std::make_shared<BilaplacianVarForm>();
+			return std::make_shared<BilaplacianVarForm>(resources);
 
 		if (is_scalar_formulation(formulation))
 			return is_optimization
-					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableScalarVarForm>())
-					   : std::make_shared<ScalarVarForm>();
+					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableScalarVarForm>(resources))
+					   : std::make_shared<ScalarVarForm>(resources);
 
 		const bool homogenization = args.contains("/constraints/macro_displacement_gradient"_json_pointer);
 
 		if (homogenization)
-			return std::make_shared<DifferentiableNonlinearElasticStaticVarForm>();
+			return std::make_shared<DifferentiableNonlinearElasticStaticVarForm>(resources);
 
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
@@ -252,19 +253,19 @@ namespace polyfem::varform
 			&& !has_contact && !has_pressure && !has_constraints)
 		{
 			return is_optimization
-					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableLinearElasticVarForm>())
-					   : std::make_shared<LinearElasticVarForm>();
+					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableLinearElasticVarForm>(resources))
+					   : std::make_shared<LinearElasticVarForm>(resources);
 		}
 
 		if (args.contains("time") && !args["time"].is_null())
 		{
 			return is_optimization
-					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticTransientVarForm>())
-					   : std::make_shared<NonlinearElasticTransientVarForm>();
+					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticTransientVarForm>(resources))
+					   : std::make_shared<NonlinearElasticTransientVarForm>(resources);
 		}
 
 		return is_optimization
-				   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticStaticVarForm>())
-				   : std::make_shared<NonlinearElasticStaticVarForm>();
+				   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticStaticVarForm>(resources))
+				   : std::make_shared<NonlinearElasticStaticVarForm>(resources);
 	}
 } // namespace polyfem::varform

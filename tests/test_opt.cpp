@@ -19,6 +19,7 @@
 
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/OptState.hpp>
+#include <polyfem/io/InputLoader.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
@@ -60,6 +61,7 @@ namespace
 	public:
 		json args;
 		OptState opt;
+		std::vector<io::LoadedInput> loaded_states;
 
 		explicit TestContext(const std::string &name)
 		{
@@ -100,19 +102,21 @@ namespace
 		{
 			const int max_threads = 1;
 			opt.varforms.resize(opt.args["states"].size());
+			opt.state_resources.resize(opt.args["states"].size());
 
 			for (int i = 0; i < opt.args["states"].size(); ++i)
 			{
-				json varform_args;
 				const std::string abs_path = utils::resolve_path(opt.args["states"][i]["path"], opt.args["root_path"], false);
-				if (!load_json(abs_path, varform_args))
-					log_and_throw_adjoint_error("Failed to load optimization varform JSON file!");
+				loaded_states.push_back(io::load_json_input(abs_path));
+				json varform_args = loaded_states.back().config;
 
 				if (!opt.args["output"]["log"].empty())
 					varform_args["output"]["log"].merge_patch(opt.args["output"]["log"]);
 
 				patch(varform_args);
-				opt.varforms[i] = from_json::build_differentiable_varform(varform_args, max_threads);
+				opt.state_resources[i] = loaded_states.back().resources->with_root("");
+				opt.varforms[i] = from_json::build_differentiable_varform(
+					varform_args, *opt.state_resources[i], max_threads);
 			}
 
 			opt.diff_caches.resize(opt.varforms.size());

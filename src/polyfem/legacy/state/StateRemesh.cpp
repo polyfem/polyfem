@@ -214,7 +214,9 @@ namespace polyfem::legacy
 		// --------------------------------------------------------------------
 		// create new mesh
 
-		mesh = mesh::Mesh::create(remeshing->rest_positions(), remeshing->elements(), /*non_conforming=*/false);
+		mesh = mesh::Mesh::create(
+			mesh::MeshData(remeshing->rest_positions(), remeshing->elements()),
+			/*non_conforming=*/false);
 
 		// set body ids
 		mesh->set_body_ids(remeshing->body_ids());

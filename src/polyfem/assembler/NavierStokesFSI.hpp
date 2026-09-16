@@ -69,7 +69,7 @@ namespace polyfem::assembler
 		NavierStokesFSIVelocity();
 		std::string name() const override { return "NavierStokesFSIVelocity"; }
 		std::map<std::string, ParamFunc> parameters() const override;
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override;
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;
@@ -108,7 +108,7 @@ namespace polyfem::assembler
 	public:
 		std::string name() const override { return "NavierStokesFSIInertia"; }
 		std::map<std::string, ParamFunc> parameters() const override;
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override;
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;

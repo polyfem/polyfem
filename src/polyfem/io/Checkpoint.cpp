@@ -1,0 +1,270 @@
+#include "Checkpoint.hpp"
+
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/utils/Logger.hpp>
+
+#include <h5pp/h5pp.h>
+
+#include <chrono>
+
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
+namespace fs = std::filesystem;
+
+namespace polyfem::io
+{
+	class CheckpointWriter::Impl
+	{
+	public:
+		explicit Impl(const fs::path &path) : file(path.string(), h5pp::FileAccess::REPLACE) {}
+		h5pp::File file;
+	};
+
+	namespace
+	{
+		fs::path temporary_checkpoint_path(const fs::path &path)
+		{
+			const auto stamp = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+			return path.parent_path() / fmt::format(".{}.{}.tmp", path.filename().string(), stamp);
+		}
+
+		std::string resource_destination(const std::string &logical)
+		{
+			// Canonical identities are already normalized. Keep Windows drive
+			// names as components so dependencies on different drives cannot alias.
+			const size_t start = logical.find_first_not_of('/');
+			if (start == std::string::npos || logical == ".")
+				return "/resources/tree";
+			return "/resources/tree/" + logical.substr(start);
+		}
+
+		template <typename T>
+		std::pair<std::vector<T>, std::vector<long>> pack_ragged(const std::vector<std::vector<T>> &rows)
+		{
+			std::pair<std::vector<T>, std::vector<long>> packed;
+			packed.second.reserve(rows.size() + 1);
+			packed.second.push_back(0);
+			for (const auto &row : rows)
+			{
+				packed.first.insert(packed.first.end(), row.begin(), row.end());
+				packed.second.push_back(packed.first.size());
+			}
+			return packed;
+		}
+
+		Eigen::MatrixXi pack_padded(const std::vector<std::vector<int>> &rows)
+		{
+			int width = 0;
+			for (const auto &row : rows)
+				width = std::max(width, int(row.size()));
+			Eigen::MatrixXi packed = Eigen::MatrixXi::Constant(rows.size(), width, -1);
+			for (int i = 0; i < rows.size(); ++i)
+				for (int j = 0; j < rows[i].size(); ++j)
+					packed(i, j) = rows[i][j];
+			return packed;
+		}
+	} // namespace
+
+	CheckpointWriter::CheckpointWriter(const fs::path &path, const json &config, const CheckpointMetadata &metadata)
+		: path_(fs::absolute(path).lexically_normal()), temporary_path_(temporary_checkpoint_path(path_))
+	{
+		if (path_.empty())
+			log_and_throw_error("Checkpoint output path is empty.");
+		fs::create_directories(path_.parent_path());
+		impl_ = std::make_unique<Impl>(temporary_path_);
+		write_string("/config", config.dump());
+		write_long("/checkpoint/metadata/schema_version", metadata.schema_version);
+		write_string("/checkpoint/metadata/formulation", metadata.formulation);
+		write_long("/checkpoint/metadata/step", metadata.step);
+		write_double("/checkpoint/metadata/time", metadata.time);
+		write_double("/checkpoint/metadata/dt", metadata.dt);
+		write_long("/checkpoint/metadata/remaining_steps", metadata.remaining_steps);
+		write_long("/checkpoint/metadata/output_index", metadata.output_index);
+		write_string("/resources/root", "/");
+	}
+
+	CheckpointWriter::~CheckpointWriter()
+	{
+		impl_.reset();
+		if (!finalized_)
+		{
+			std::error_code error;
+			fs::remove(temporary_path_, error);
+		}
+	}
+
+	void CheckpointWriter::write_matrix(const std::string &path, const Eigen::MatrixXd &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_int_matrix(const std::string &path, const Eigen::MatrixXi &value) { impl_->file.writeDataset(value.cast<int64_t>(), path); }
+	void CheckpointWriter::write_bytes(const std::string &path, const std::vector<unsigned char> &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_vector(const std::string &path, const std::vector<double> &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_int_vector(const std::string &path, const std::vector<int> &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_long_vector(const std::string &path, const std::vector<long> &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_string(const std::string &path, const std::string &value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_long(const std::string &path, const long value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_double(const std::string &path, const double value) { impl_->file.writeDataset(value, path); }
+	void CheckpointWriter::write_attribute(const std::string &path, const std::string &name, const long value) { impl_->file.writeAttribute(value, path, name); }
+	void CheckpointWriter::write_attribute(const std::string &path, const std::string &name, const std::string &value) { impl_->file.writeAttribute(value, path, name); }
+
+	void CheckpointWriter::write_mesh(const std::string &group, const mesh::Mesh &mesh)
+	{
+		write_mesh(group, mesh.to_mesh_data());
+	}
+
+	void CheckpointWriter::write_mesh(const std::string &group, const mesh::MeshData &data)
+	{
+		data.validate();
+		write_matrix(group + "/vertices", data.vertices);
+		write_int_matrix(group + "/cells", data.elements);
+		write_attribute(group, "schema_version", mesh::MESH_SCHEMA_VERSION);
+		write_attribute(group, "dimension", data.dimension());
+		write_attribute(group, "mesh_type", "fem");
+		write_attribute(group, "elements_are_ordered", long(data.elements_are_ordered));
+		if (!data.body_ids.empty())
+			write_int_vector(group + "/body_ids", data.body_ids);
+		if (!data.geometry_ids.empty())
+			write_int_vector(group + "/geometry_ids", data.geometry_ids);
+		if (!data.node_ids.empty())
+			write_int_vector(group + "/node_ids", data.node_ids);
+		if (!data.boundary_ids.empty())
+		{
+			write_int_matrix(group + "/boundary_elements", pack_padded(data.boundary_elements));
+			write_int_vector(group + "/boundary_ids", data.boundary_ids);
+		}
+		if (!data.higher_order_connectivity.empty())
+		{
+			const auto packed = pack_ragged(data.higher_order_connectivity);
+			write_matrix(group + "/higher_order_nodes", data.higher_order_nodes);
+			write_int_vector(group + "/higher_order_connectivity", packed.first);
+			write_long_vector(group + "/higher_order_offsets", packed.second);
+		}
+		if (!data.higher_order_weights.empty())
+		{
+			const auto packed = pack_ragged(data.higher_order_weights);
+			write_vector(group + "/higher_order_weights", packed.first);
+			write_long_vector(group + "/higher_order_weight_offsets", packed.second);
+		}
+		if (data.has_polyhedral_topology())
+		{
+			const auto faces = pack_ragged(data.faces);
+			const auto cell_faces = pack_ragged(data.cell_faces);
+			const auto orientations = pack_ragged(data.cell_face_orientations);
+			write_int_vector(group + "/faces", faces.first);
+			write_long_vector(group + "/face_offsets", faces.second);
+			write_int_vector(group + "/cell_faces", cell_faces.first);
+			write_long_vector(group + "/cell_face_offsets", cell_faces.second);
+			write_int_vector(group + "/cell_face_orientations", orientations.first);
+			std::vector<int> is_hex(data.cell_is_hex.size());
+			std::transform(data.cell_is_hex.begin(), data.cell_is_hex.end(), is_hex.begin(), [](const bool value) { return int(value); });
+			write_int_vector(group + "/cell_is_hex", is_hex);
+			write_matrix(group + "/cell_kernel_points", data.cell_kernel_points);
+		}
+	}
+
+	void CheckpointWriter::embed_resources(const ResourceIO &resources)
+	{
+		// Capture the manifest only once, after the completed step. Input reads
+		// during solver setup (e.g. constraints) must be included as well.
+		const std::vector<std::string> manifest = resources.accessed_resources();
+		write_string("/resources/manifest", json(manifest).dump());
+		impl_->file.deleteLink("/resources/root");
+		write_string("/resources/root", resources.canonical_path(""));
+		const auto *hdf5 = dynamic_cast<const HDF5IO *>(&resources);
+		for (const std::string &canonical : manifest)
+		{
+			const std::string destination = resource_destination(canonical);
+			// A previously copied group already contains its descendants.
+			if (impl_->file.linkExists(destination))
+				continue;
+			if (!resources.exists(canonical))
+				log_and_throw_error("Checkpoint dependency {} no longer exists.", resources.describe(canonical));
+			if (hdf5)
+			{
+				// HDF5 object copying preserves datatype, dataspace, attributes and
+				// group contents without converting numeric datasets to byte arrays.
+				impl_->file.copyLinkFromFile(destination, hdf5->file_path(), hdf5->resolve(canonical));
+				continue;
+			}
+			if (resources.is_group(canonical))
+			{
+				impl_->file.createGroup(destination);
+				continue;
+			}
+			auto input = resources.open(canonical, true);
+			const std::vector<unsigned char> contents{
+				std::istreambuf_iterator<char>(*input), std::istreambuf_iterator<char>()};
+			if (input->bad())
+				log_and_throw_error("Unable to embed dependency {}.", resources.describe(canonical));
+			write_bytes(destination, contents);
+		}
+	}
+
+	void CheckpointWriter::finalize()
+	{
+		if (finalized_)
+			return;
+		impl_.reset();
+		std::error_code error;
+#ifdef _WIN32
+		// Both paths are in the same directory, so this is a rename with
+		// replacement, never a copy followed by deletion.
+		if (!MoveFileExW(temporary_path_.c_str(), path_.c_str(), MOVEFILE_REPLACE_EXISTING))
+			error = std::error_code(GetLastError(), std::system_category());
+#else
+		fs::rename(temporary_path_, path_, error);
+#endif
+		if (error)
+			log_and_throw_error("Unable to atomically publish checkpoint {}: {}", path_.string(), error.message());
+		finalized_ = true;
+	}
+
+	CheckpointReader::CheckpointReader(const fs::path &path)
+		: path_(fs::absolute(path).lexically_normal()), io_(std::make_unique<HDF5IO>(path_))
+	{
+		const auto require = [&](const std::string &key) {
+			if (!io_->exists(key))
+				log_and_throw_error("Checkpoint {} is missing {}.", path_.string(), key);
+		};
+		for (const std::string &key : {
+				 "/config", "/checkpoint/metadata/schema_version", "/checkpoint/metadata/formulation",
+				 "/checkpoint/metadata/step", "/checkpoint/metadata/time", "/checkpoint/metadata/dt",
+				 "/checkpoint/metadata/remaining_steps", "/checkpoint/metadata/output_index",
+				 "/checkpoint/meshes/active", "/checkpoint/state", "/resources/root"})
+			require(key);
+		resources_ = std::make_unique<HDF5IO>(
+			path_, io_->read_string("/resources/root"), path_.parent_path(), "/resources/tree");
+		config_ = json::parse(io_->read_string("/config"));
+		metadata_.schema_version = read_long("/checkpoint/metadata/schema_version");
+		metadata_.formulation = read_string("/checkpoint/metadata/formulation");
+		metadata_.step = read_long("/checkpoint/metadata/step");
+		metadata_.time = read_double("/checkpoint/metadata/time");
+		metadata_.dt = read_double("/checkpoint/metadata/dt");
+		metadata_.remaining_steps = read_long("/checkpoint/metadata/remaining_steps");
+		metadata_.output_index = read_long("/checkpoint/metadata/output_index");
+		if (metadata_.schema_version != CHECKPOINT_SCHEMA_VERSION)
+			log_and_throw_error(
+				"Unsupported checkpoint schema {} in {}; expected {}.",
+				metadata_.schema_version, path_.string(), CHECKPOINT_SCHEMA_VERSION);
+		if (!(metadata_.dt > 0) || metadata_.step < 0 || metadata_.remaining_steps < 0)
+			log_and_throw_error("Checkpoint {} has invalid temporal metadata.", path_.string());
+	}
+
+	Eigen::MatrixXd CheckpointReader::read_matrix(const std::string &path) const { return io_->read_matrix(path); }
+	Eigen::MatrixXi CheckpointReader::read_int_matrix(const std::string &path) const { return io_->read_int_matrix(path); }
+	std::vector<double> CheckpointReader::read_vector(const std::string &path) const { return io_->read_double_vector(path); }
+	std::vector<int> CheckpointReader::read_int_vector(const std::string &path) const { return io_->read_int_vector(path); }
+	std::vector<long> CheckpointReader::read_long_vector(const std::string &path) const { return io_->read_long_vector(path); }
+	std::string CheckpointReader::read_string(const std::string &path) const { return io_->read_string(path); }
+	long CheckpointReader::read_long(const std::string &path) const { return io_->read_long_vector(path).at(0); }
+	double CheckpointReader::read_double(const std::string &path) const { return io_->read_double_vector(path).at(0); }
+
+	std::unique_ptr<mesh::Mesh> CheckpointReader::read_mesh(const std::string &path, const bool non_conforming) const
+	{
+		return mesh::MeshLoader(*io_).load_fem(path, non_conforming);
+	}
+} // namespace polyfem::io

@@ -597,7 +597,7 @@ namespace polyfem::legacy
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
 		{
-			mesh = mesh::Mesh::create(V, F, non_conforming);
+			mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
 			load_mesh(non_conforming);
 		}
 

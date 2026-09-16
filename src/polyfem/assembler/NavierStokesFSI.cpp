@@ -193,11 +193,11 @@ namespace polyfem::assembler
 	}
 
 	void NavierStokesFSIVelocity::add_multimaterial(
-		const int index, const json &params, const Units &units, const std::string &root_path)
+		const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
-		viscosity_.add_multimaterial(index, params, units.viscosity(), root_path);
-		density_.add_multimaterial(index, params, units.density(), root_path);
+		viscosity_.add_multimaterial(index, params, units.viscosity(), resources);
+		density_.add_multimaterial(index, params, units.density(), resources);
 	}
 
 	double NavierStokesFSIVelocity::compute_energy(const MultiSpacesNLAssemblerData &) const
@@ -504,10 +504,10 @@ namespace polyfem::assembler
 	}
 
 	void NavierStokesFSIInertia::add_multimaterial(
-		const int index, const json &params, const Units &units, const std::string &root_path)
+		const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
-		density_.add_multimaterial(index, params, units.density(), root_path);
+		density_.add_multimaterial(index, params, units.density(), resources);
 	}
 
 	double NavierStokesFSIInertia::compute_energy(const MultiSpacesNLAssemblerData &) const

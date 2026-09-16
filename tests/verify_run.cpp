@@ -1,7 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <catch2/catch_test_macros.hpp>
 
+#include <h5pp/h5pp.h>
+
+#include "polyfem/io/Checkpoint.hpp"
+#include "polyfem/io/InputLoader.hpp"
 #include "polyfem/utils/JSONUtils.hpp"
+#include "polyfem/utils/MatrixUtils.hpp"
 #include "polyfem/State.hpp"
 #include "polyfem/legacy/State.hpp"
 #include "polyfem/varforms/VarForm.hpp"
@@ -9,9 +14,14 @@
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
+#include <algorithm>
+#include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <set>
+#include <utility>
+#include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -73,8 +83,14 @@ AuthenticateResult run_legacy_state(json &args, json &out)
 	{
 		state.solve_problem(sol, pressure);
 	}
+	catch (const std::exception &e)
+	{
+		spdlog::error("Legacy simulation failed: {}", e.what());
+		return SOLVE_FAILED;
+	}
 	catch (...)
 	{
+		spdlog::error("Legacy simulation failed with an unknown exception");
 		return SOLVE_FAILED;
 	}
 
@@ -93,22 +109,33 @@ AuthenticateResult run_legacy_state(json &args, json &out)
 	return SUCCESS;
 }
 
-AuthenticateResult run_varform_state(json &args, json &out)
+void solve_initialized_state(State &state, Eigen::MatrixXd &solution)
 {
-	State state;
-	args["/output/log/level"_json_pointer] = "error";
-	state.init(args, true);
 	state.set_max_threads(1);
 	spdlog::set_level(spdlog::level::info);
 	state.load_mesh();
+	state.solve(solution);
+}
+
+AuthenticateResult run_varform_state(json &args, json &out, const io::ResourceIO &resources)
+{
+	State state;
+	args["/output/log/level"_json_pointer] = "error";
+	state.init(args, resources, true);
 
 	Eigen::MatrixXd sol;
 	try
 	{
-		state.solve(sol);
+		solve_initialized_state(state, sol);
+	}
+	catch (const std::exception &e)
+	{
+		spdlog::error("Simulation failed: {}", e.what());
+		return SOLVE_FAILED;
 	}
 	catch (...)
 	{
+		spdlog::error("Simulation failed with an unknown exception");
 		return SOLVE_FAILED;
 	}
 
@@ -127,14 +154,39 @@ AuthenticateResult run_varform_state(json &args, json &out)
 	return SUCCESS;
 }
 
-AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
+void configure_time_steps(json &args, const int time_steps)
 {
-	json in_args;
-	if (!load_json(json_file, in_args))
+	REQUIRE(args.contains("time"));
+	json &time = args["time"];
+	const double t0 = time.value("t0", 0.0);
+	if (time.contains("tend") && time.contains("dt"))
 	{
-		spdlog::error("unable to open {} file", json_file);
-		return MISSING_FILE;
+		time.erase("tend");
+		time["time_steps"] = time_steps;
 	}
+	else if (time.contains("tend") && time.contains("time_steps"))
+	{
+		time["dt"] = (time["tend"].get<double>() - t0) / time["time_steps"].get<int>();
+		time["time_steps"] = time_steps;
+		time.erase("tend");
+	}
+	else if (time.contains("dt") && time.contains("time_steps"))
+	{
+		time["time_steps"] = time_steps;
+	}
+	else
+	{
+		FAIL("A transient regression requires two of time.tend, time.dt, and time.time_steps");
+	}
+}
+
+AuthenticateResult authenticate_input(
+	io::LoadedInput loaded,
+	const std::string &input_name,
+	const bool compute_validation,
+	json *computed_validation = nullptr)
+{
+	const json in_args = loaded.config;
 
 	const std::string tests_key = "tests";
 	if (missing_tests_data(in_args, tests_key) && !compute_validation)
@@ -148,8 +200,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	// ------------------------------------------------------------------------
 	// Patch the JSON file to run a single time step
 	json args = in_args;
-	args["root_path"] = json_file;
-	utils::apply_common_params(args);
+	auto common_resources = utils::apply_common_params(args, *loaded.resources);
+	const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
 
 	json time_steps;
 	if (!args.contains("time"))
@@ -163,45 +215,33 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	// args["output"]["advanced"]["save_time_sequence"] = false;
 
 	if (time_steps.is_number())
-	{
-		json t_args = args["time"];
-		if (t_args.contains("tend") && t_args.contains("dt"))
-		{
-			t_args.erase("tend");
-			t_args["time_steps"] = time_steps.get<int>();
-		}
-		else if (t_args.contains("tend") && t_args.contains("time_steps"))
-		{
-			t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
-			t_args["time_steps"] = time_steps.get<int>();
-			t_args.erase("tend");
-		}
-		else if (t_args.contains("dt") && t_args.contains("time_steps"))
-		{
-			t_args["time_steps"] = time_steps.get<int>();
-		}
-		else
-		{
-			// Required to have two of tend, dt, time_steps
-			spdlog::error("Missing time parameters");
-			REQUIRE(false);
-		}
-		args["time"] = t_args;
-	}
+		configure_time_steps(args, time_steps.get<int>());
 	// ------------------------------------------------------------------------
 
-	if (json_file.find("/standard/mooney_rivlin_p2.json") == std::string::npos)
+	if (input_name.find("/standard/mooney_rivlin_p2.json") == std::string::npos)
 	{
 		args["/solver/linear/solver"_json_pointer] =
-			(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos && json_file.find("thermoelastic") == std::string::npos)
+			(input_name.find("navier") == std::string::npos && input_name.find("bilaplace") == std::string::npos && input_name.find("thermoelastic") == std::string::npos)
 				? "Eigen::SimplicialLDLT"
 				: "Eigen::SparseLU";
 	}
 
 	json out = json({});
-	const AuthenticateResult run_result = varform::uses_varform_state(args)
-											  ? run_varform_state(args, out)
-											  : run_legacy_state(args, out);
+	AuthenticateResult run_result;
+	if (varform::uses_varform_state(args, resources))
+	{
+		run_result = run_varform_state(args, out, resources);
+	}
+	else
+	{
+		if (dynamic_cast<const io::FileSystemIO *>(&resources) == nullptr)
+		{
+			spdlog::error("Legacy State cannot read bundled input {}", input_name);
+			return SOLVE_FAILED;
+		}
+		args["root_path"] = resources.describe("");
+		run_result = run_legacy_state(args, out);
+	}
 	if (run_result != SUCCESS)
 		return run_result;
 
@@ -237,14 +277,222 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	}
 	else
 	{
-		spdlog::warn("Appending JSON...");
-
-		in_args[tests_key] = out;
-		std::ofstream file(json_file);
-		file << in_args;
+		if (computed_validation == nullptr)
+			return AUTHETICATION_FAILED;
+		*computed_validation = std::move(out);
 	}
 
 	return SUCCESS;
+}
+
+AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
+{
+	io::LoadedInput loaded;
+	try
+	{
+		loaded = io::load_json_input(json_file);
+	}
+	catch (const std::exception &e)
+	{
+		spdlog::error("unable to load {}: {}", json_file, e.what());
+		return MISSING_FILE;
+	}
+
+	json computed_validation;
+	const AuthenticateResult result = authenticate_input(
+		std::move(loaded), json_file, compute_validation,
+		compute_validation ? &computed_validation : nullptr);
+	if (result != SUCCESS || !compute_validation)
+		return result;
+
+	json original;
+	if (!load_json(json_file, original))
+		return MISSING_FILE;
+	spdlog::warn("Appending JSON...");
+	original["tests"] = computed_validation;
+	std::ofstream file(json_file);
+	file << original;
+	return file ? SUCCESS : MISSING_FILE;
+}
+
+std::string shell_quote(const std::string &value)
+{
+#ifdef WIN32
+	std::string quoted = "\"";
+	for (const char character : value)
+		quoted += character == '"' ? "\\\"" : std::string(1, character);
+	return quoted + "\"";
+#else
+	std::string quoted = "'";
+	for (const char character : value)
+		quoted += character == '\'' ? "'\\''" : std::string(1, character);
+	return quoted + "'";
+#endif
+}
+
+std::string hdf5_bundle_name(const std::string &scene)
+{
+	std::string name;
+	name.reserve(scene.size());
+	for (const char character : scene)
+		name += character == '/' || character == '\\' ? "__" : std::string(1, character);
+	if (name.size() >= 5 && name.substr(name.size() - 5) == ".json")
+		name.resize(name.size() - 5);
+	return name + ".h5";
+}
+
+void disable_regression_outputs(json &args)
+{
+	if (!args.contains("output") || !args["output"].is_object())
+		args["output"] = json::object();
+	args["/output/directory"_json_pointer] = "";
+	args["/output/json"_json_pointer] = "";
+	args["/output/paraview/file_name"_json_pointer] = "";
+	args["/output/advanced/save_time_sequence"_json_pointer] = false;
+}
+
+json checkpoint_config(json args, const std::filesystem::path &output, const int time_steps)
+{
+	configure_time_steps(args, time_steps);
+	args["output"] = json::object();
+	args["/output/directory"_json_pointer] = output.string();
+	args["/output/checkpoint/path"_json_pointer] = "checkpoint_{:d}.h5";
+	args["/output/advanced/save_time_sequence"_json_pointer] = false;
+	args["/output/log/level"_json_pointer] = "error";
+	args["/solver/max_threads"_json_pointer] = 1;
+	args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+	args["/solver/adjoint_linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+	return args;
+}
+
+Eigen::MatrixXd run_simulation(const json &args, const io::ResourceIO &resources)
+{
+	State state;
+	state.init(args, resources, true);
+	Eigen::MatrixXd solution;
+	solve_initialized_state(state, solution);
+	return solution;
+}
+
+Eigen::MatrixXd resume_checkpoint(const std::filesystem::path &path, const bool reorder)
+{
+	io::CheckpointReader checkpoint(path);
+	json continuation = checkpoint.config();
+	continuation["/input/checkpoint/reorder"_json_pointer] = reorder;
+	State state;
+	state.init(continuation, checkpoint, true);
+	Eigen::MatrixXd solution;
+	solve_initialized_state(state, solution);
+	return solution;
+}
+
+Eigen::MatrixXd canonical_checkpoint_solution(const std::filesystem::path &path)
+{
+	io::CheckpointReader checkpoint(path);
+	Eigen::MatrixXd solution = checkpoint.read_matrix("/checkpoint/state/solution");
+	const int dimension = checkpoint.read_mesh("/checkpoint/meshes/active")->dimension();
+
+	const auto ordering = [&checkpoint](const std::string &name) {
+		const std::string path = "/checkpoint/state/orderings/" + name;
+		if (!checkpoint.exists(path))
+			return Eigen::VectorXi();
+		const std::vector<int> values = checkpoint.read_int_vector(path);
+		return Eigen::VectorXi(Eigen::Map<const Eigen::VectorXi>(values.data(), values.size()));
+	};
+
+	const Eigen::VectorXi primary = ordering("primary");
+	const Eigen::VectorXi pressure = ordering("pressure");
+	const Eigen::VectorXi mesh_motion = ordering("mesh_motion");
+	const Eigen::VectorXi solid = ordering("solid");
+	const Eigen::VectorXi temperature = ordering("temperature");
+	if (primary.size() == 0)
+		return solution;
+
+	const int secondary_rows = pressure.size() + dimension * mesh_motion.size()
+							   + dimension * solid.size() + temperature.size();
+	const int available_primary_rows = solution.rows() - secondary_rows;
+	const int primary_block_size = available_primary_rows >= dimension * primary.size()
+									   ? dimension
+									   : 1;
+	REQUIRE(available_primary_rows >= primary_block_size * primary.size());
+
+	Eigen::MatrixXd canonical = solution;
+	int offset = 0;
+	const auto convert = [&](const Eigen::VectorXi &map, const int block_size) {
+		if (map.size() == 0)
+			return;
+		const int rows = map.size() * block_size;
+		canonical.middleRows(offset, rows) = utils::unreorder_matrix(
+			solution.middleRows(offset, rows), map, -1, block_size);
+		offset += rows;
+	};
+	convert(primary, primary_block_size);
+	convert(pressure, 1);
+	convert(mesh_motion, dimension);
+	convert(solid, dimension);
+	convert(temperature, 1);
+	REQUIRE(offset <= solution.rows());
+	return canonical;
+}
+
+void check_checkpoint_equivalent(
+	const json &config,
+	const io::ResourceIO &resources,
+	const std::filesystem::path &output,
+	const int total_steps,
+	const int checkpoint_step,
+	const bool reorder,
+	const double margin)
+{
+	namespace fs = std::filesystem;
+	REQUIRE(checkpoint_step > 0);
+	REQUIRE(checkpoint_step < total_steps);
+	const json args = checkpoint_config(config, output, total_steps);
+	run_simulation(args, resources);
+	const fs::path checkpoint_path = output / fmt::format("checkpoint_{:d}.h5", checkpoint_step);
+	const fs::path final_checkpoint = output / fmt::format("checkpoint_{:d}.h5", total_steps);
+	const fs::path uninterrupted_checkpoint = output / "uninterrupted.h5";
+	REQUIRE(fs::is_regular_file(checkpoint_path));
+	REQUIRE(fs::is_regular_file(final_checkpoint));
+	fs::copy_file(final_checkpoint, uninterrupted_checkpoint, fs::copy_options::overwrite_existing);
+	resume_checkpoint(checkpoint_path, reorder);
+	const Eigen::MatrixXd uninterrupted = canonical_checkpoint_solution(uninterrupted_checkpoint);
+	const Eigen::MatrixXd resumed = canonical_checkpoint_solution(final_checkpoint);
+	REQUIRE(uninterrupted.rows() == resumed.rows());
+	REQUIRE(uninterrupted.cols() == resumed.cols());
+	CAPTURE((uninterrupted - resumed).lpNorm<Eigen::Infinity>(), margin, reorder);
+	CHECK(uninterrupted.isApprox(resumed, margin));
+	for (int step = checkpoint_step + 1; step <= total_steps; ++step)
+		CHECK(fs::is_regular_file(output / fmt::format("checkpoint_{:d}.h5", step)));
+
+	// The final snapshot is also a valid input: restore and validate all state,
+	// but do not take an additional time step or change the solution.
+	io::CheckpointReader completed(final_checkpoint);
+	REQUIRE(completed.metadata().remaining_steps == 0);
+	json continuation = completed.config();
+	continuation["/input/checkpoint/reorder"_json_pointer] = reorder;
+	State completed_state;
+	completed_state.init(continuation, completed, true);
+	completed_state.load_mesh();
+	Eigen::MatrixXd expected, restored;
+	int steps_taken = 0;
+	completed_state.time_callback = [&](int, int, double, double) { ++steps_taken; };
+	completed_state.solve(restored);
+	completed_state.variational_formulation->deserialize_checkpoint(completed, expected);
+	CHECK(steps_taken == 0);
+	CHECK(restored.isApprox(expected, margin));
+}
+
+bool has_multiple_time_steps(const json &args)
+{
+	if (!args.contains("time") || !args["time"].is_object())
+		return false;
+	const json &time = args["time"];
+	if (time.contains("time_steps"))
+		return time["time_steps"].is_number_integer() && time["time_steps"].get<int>() > 1;
+	if (time.contains("tend") && time.contains("dt"))
+		return time["tend"].get<double>() - time.value("t0", 0.0) > time["dt"].get<double>();
+	return false;
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
@@ -258,6 +506,8 @@ void run_data(const std::string &test_file, const std::string &dir)
 	// Disabled on Windows CI, due to the requirement for Pardiso.
 	std::ifstream file(POLYFEM_TEST_DIR "/" + test_file + ".txt");
 	std::vector<std::string> failing_tests;
+	const char *scene_filter = std::getenv("POLYFEM_VERIFY_SCENE");
+	int processed_scenes = 0;
 	std::string line;
 	while (std::getline(file, line))
 	{
@@ -272,6 +522,9 @@ void run_data(const std::string &test_file, const std::string &dir)
 			compute_validation = true;
 			line = line.substr(1);
 		}
+		if (scene_filter != nullptr && line != scene_filter)
+			continue;
+		++processed_scenes;
 		spdlog::info("Processing {}", line);
 		AuthenticateResult result = authenticate_json(dir + "/" + line, compute_validation);
 		CAPTURE(line);
@@ -288,6 +541,8 @@ void run_data(const std::string &test_file, const std::string &dir)
 
 		logger().error(ss.str());
 	}
+	if (scene_filter != nullptr)
+		CHECK(processed_scenes == 1);
 }
 
 TEST_CASE("all PolyFEM data JSON files are classified", "[data]")
@@ -403,6 +658,323 @@ TEST_CASE("hybrid", tagsrun)
 TEST_CASE("time_int", tagsrun)
 {
 	run_data("time_int", POLYFEM_DATA_DIR);
+}
+
+#if defined(NDEBUG) && !defined(WIN32)
+TEST_CASE("quick filesystem scenes run from generated HDF5 bundles", "[hdf5_regression]")
+#else
+TEST_CASE("quick filesystem scenes run from generated HDF5 bundles", "[.][hdf5_regression]")
+#endif
+{
+	namespace fs = std::filesystem;
+	const fs::path manifest_path = fs::path(POLYFEM_DATA_DIR) / "io-tests/hdf5-quick.json";
+	json manifest;
+	REQUIRE(load_json(manifest_path.string(), manifest));
+	REQUIRE(manifest["scenes"].size() >= 20);
+
+	const fs::path output = fs::temp_directory_path() / "polyfem-hdf5-regression";
+	fs::remove_all(output);
+	fs::create_directories(output);
+	const char *environment_python = std::getenv("POLYFEM_TEST_PYTHON");
+	const std::string python = environment_python == nullptr
+								   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
+								   : std::string(environment_python);
+	const std::string command =
+		shell_quote(python) + " "
+		+ shell_quote(std::string(POLYFEM_SOURCE_DIR) + "/tools/package_json_hdf5.py")
+		+ " --manifest " + shell_quote(manifest_path.string())
+		+ " --data-root " + shell_quote(POLYFEM_DATA_DIR)
+		+ " --output-dir " + shell_quote(output.string());
+	REQUIRE(std::system(command.c_str()) == 0);
+
+	const char *scene_filter = std::getenv("POLYFEM_HDF5_SCENE");
+	int tested_scenes = 0;
+	for (const json &entry : manifest["scenes"])
+	{
+		const std::string scene = entry["path"];
+		if (scene_filter != nullptr && scene != scene_filter)
+			continue;
+		CAPTURE(scene, entry["category"]);
+		++tested_scenes;
+
+		io::LoadedInput loaded = io::load_hdf5_input(output / hdf5_bundle_name(scene));
+		disable_regression_outputs(loaded.config);
+		CHECK(authenticate_input(std::move(loaded), scene, false) == SUCCESS);
+	}
+	CHECK(tested_scenes == (scene_filter == nullptr ? int(manifest["scenes"].size()) : 1));
+	fs::remove_all(output);
+}
+
+#if defined(NDEBUG) && !defined(WIN32)
+TEST_CASE("checkpoint resume matches uninterrupted transient simulations", "[checkpoint]")
+#else
+TEST_CASE("checkpoint resume matches uninterrupted transient simulations", "[.][checkpoint]")
+#endif
+{
+	namespace fs = std::filesystem;
+	const fs::path manifest_path = fs::path(POLYFEM_DATA_DIR) / "io-tests/checkpoint-quick.json";
+	json manifest;
+	REQUIRE(load_json(manifest_path.string(), manifest));
+	REQUIRE(manifest["scenes"].size() >= 6);
+	const fs::path root = fs::temp_directory_path() / "polyfem-checkpoint-regression";
+	fs::remove_all(root);
+
+	int index = 0;
+	const char *family_filter = std::getenv("POLYFEM_CHECKPOINT_FAMILY");
+	for (const json &entry : manifest["scenes"])
+	{
+		if (family_filter != nullptr && entry["family"] != family_filter)
+			continue;
+		const std::string scene = entry["path"];
+		CAPTURE(scene, entry["family"]);
+		io::LoadedInput loaded = io::load_json_input(fs::path(POLYFEM_DATA_DIR) / scene);
+		json scene_config = loaded.config;
+		auto common_resources = utils::apply_common_params(scene_config, *loaded.resources);
+		const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+		const json overrides = entry.value("overrides", json::object());
+		for (const auto &[pointer, value] : overrides.items())
+			scene_config[json::json_pointer(pointer)] = value;
+		check_checkpoint_equivalent(
+			scene_config, resources, root / std::to_string(index),
+			entry["steps"], entry["checkpoint_step"],
+			/*reorder=*/true, entry.value("margin", 1e-8));
+		++index;
+	}
+	fs::remove_all(root);
+}
+
+TEST_CASE("all testable transient scenes support checkpoint continuation", "[.][checkpoint_all]")
+{
+	namespace fs = std::filesystem;
+	const std::vector<std::string> manifests = {
+		"contact_2d", "contact_3d", "adhesion", "selection", "thermo",
+		"standard", "hybrid", "time_int", "slow"};
+	const fs::path root = fs::temp_directory_path() / "polyfem-checkpoint-all";
+	fs::remove_all(root);
+	int scene_index = 0;
+	for (const std::string &manifest : manifests)
+	{
+		std::ifstream stream(std::filesystem::path(POLYFEM_TEST_DIR) / (manifest + ".txt"));
+		REQUIRE(stream.good());
+		std::string scene;
+		while (std::getline(stream, scene))
+		{
+			if (scene.empty() || scene.front() == '#')
+				continue;
+			if (scene.front() == '*')
+				scene.erase(scene.begin());
+			io::LoadedInput loaded = io::load_json_input(fs::path(POLYFEM_DATA_DIR) / scene);
+			json effective = loaded.config;
+			auto common_resources = utils::apply_common_params(effective, *loaded.resources);
+			const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+			if (!has_multiple_time_steps(effective) || !varform::uses_varform_state(effective, resources))
+				continue;
+
+			CAPTURE(scene, manifest);
+			check_checkpoint_equivalent(
+				effective, resources, root / std::to_string(scene_index),
+				/*total_steps=*/2, /*checkpoint_step=*/1,
+				/*reorder=*/true, /*margin=*/1e-7);
+			++scene_index;
+		}
+	}
+	CHECK(scene_index >= 20);
+	fs::remove_all(root);
+}
+
+#if defined(NDEBUG) && !defined(WIN32)
+TEST_CASE("checkpoint embeds all HDF5 input dependencies", "[checkpoint][hdf5]")
+#else
+TEST_CASE("checkpoint embeds all HDF5 input dependencies", "[.][checkpoint][hdf5]")
+#endif
+{
+	namespace fs = std::filesystem;
+	const fs::path root = fs::temp_directory_path() / "polyfem-checkpoint-self-contained";
+	const fs::path bundle = root / "input.h5";
+	const fs::path output = root / "output";
+	fs::remove_all(root);
+	fs::create_directories(root);
+	const char *environment_python = std::getenv("POLYFEM_TEST_PYTHON");
+	const std::string python = environment_python == nullptr
+								   ? std::string(POLYFEM_TEST_PYTHON_EXECUTABLE)
+								   : std::string(environment_python);
+	const std::string command =
+		shell_quote(python) + " "
+		+ shell_quote(std::string(POLYFEM_SOURCE_DIR) + "/tools/package_json_hdf5.py")
+		+ " --input " + shell_quote(std::string(POLYFEM_DATA_DIR) + "/time-int/bdf1.json")
+		+ " --output " + shell_quote(bundle.string());
+	REQUIRE(std::system(command.c_str()) == 0);
+
+	io::LoadedInput loaded = io::load_hdf5_input(bundle);
+	const json args = checkpoint_config(loaded.config, output, 4);
+	run_simulation(args, *loaded.resources);
+	fs::copy_file(output / "checkpoint_4.h5", root / "uninterrupted.h5", fs::copy_options::overwrite_existing);
+	loaded.resources.reset();
+	fs::remove(bundle);
+	REQUIRE_FALSE(fs::exists(bundle));
+
+	const fs::path checkpoint_path = output / "checkpoint_2.h5";
+	REQUIRE(fs::is_regular_file(checkpoint_path));
+	CHECK_THROWS(resume_checkpoint(checkpoint_path, false));
+	resume_checkpoint(checkpoint_path, true);
+	const Eigen::MatrixXd uninterrupted = canonical_checkpoint_solution(root / "uninterrupted.h5");
+	const Eigen::MatrixXd resumed = canonical_checkpoint_solution(output / "checkpoint_4.h5");
+	REQUIRE(uninterrupted.rows() == resumed.rows());
+	REQUIRE(uninterrupted.cols() == resumed.cols());
+	CAPTURE((uninterrupted - resumed).lpNorm<Eigen::Infinity>());
+	CHECK(uninterrupted.isApprox(resumed, 1e-8));
+	fs::remove_all(root);
+}
+
+TEST_CASE("checkpoint retains constraints read during solver setup", "[checkpoint][hdf5][resource_io]")
+{
+	namespace fs = std::filesystem;
+	const fs::path root = fs::temp_directory_path() / "polyfem-checkpoint-late-constraints";
+	for (const bool bundle_input : {false, true})
+	{
+		CAPTURE(bundle_input);
+		const fs::path directory = root / (bundle_input ? "bundle" : "filesystem");
+		const fs::path inputs = directory / "inputs";
+		const fs::path output = directory / "output";
+		fs::create_directories(inputs);
+		const std::string mesh_text =
+			"v 0 0 0\nv 1 0 0\nv 1 1 0\nv 0 1 0\nv 0.5 0.5 0\n"
+			"f 1 2 5\nf 2 3 5\nf 3 4 5\nf 4 1 5\n";
+		const std::string hard = bundle_input ? "hard" : "hard.h5";
+		const std::string soft = bundle_input ? "soft" : "soft.h5";
+		json config = {
+			{"geometry", {{"mesh", "mesh.obj"}, {"surface_selection", json::array({{{"id", 7}, {"box", {{-0.01, -0.01}, {0.01, 1.01}}}}})}}},
+			{"materials", {{"type", "NeoHookean"}, {"E", 100}, {"nu", 0.3}, {"rho", 1}}},
+			{"boundary_conditions", {{"rhs", {0.1, 0}}, {"dirichlet_boundary", json::array({{{"id", 7}, {"value", {0, 0}}}})}}},
+			{"constraints", {{"hard", {hard}}, {"soft", json::array({{{"data", soft}, {"weight", 2.0}}})}}},
+			{"time", {{"dt", 0.01}, {"time_steps", 2}}}};
+		config = checkpoint_config(config, output, 2);
+		const auto write_constraint = [&](h5pp::File &file, const std::string &group, const int node, const double target) {
+			file.writeDataset(std::vector<int>{node}, group + "/local2global");
+			file.writeDataset(Eigen::MatrixXd::Ones(1, 1), group + "/A");
+			Eigen::MatrixXd b(1, 2);
+			b << target, 0;
+			file.writeDataset(b, group + "/b");
+		};
+		if (bundle_input)
+		{
+			h5pp::File file((inputs / "input.h5").string(), h5pp::FileAccess::REPLACE);
+			file.writeDataset(config.dump(), "/config");
+			file.writeDataset(mesh_text, "/mesh.obj");
+			write_constraint(file, "/hard", 4, 0.001);
+			write_constraint(file, "/soft", 2, 0.002);
+		}
+		else
+		{
+			std::ofstream(inputs / "mesh.obj") << mesh_text;
+			std::ofstream(inputs / "config.json") << config;
+			h5pp::File hard_file((inputs / hard).string(), h5pp::FileAccess::REPLACE);
+			h5pp::File soft_file((inputs / soft).string(), h5pp::FileAccess::REPLACE);
+			write_constraint(hard_file, "", 4, 0.001);
+			write_constraint(soft_file, "", 2, 0.002);
+		}
+		{
+			const io::LoadedInput loaded = bundle_input
+											   ? io::load_hdf5_input(inputs / "input.h5")
+											   : io::load_json_input(inputs / "config.json");
+			const Eigen::MatrixXd solution = run_simulation(loaded.config, *loaded.resources);
+			CHECK(solution.norm() > 0);
+		}
+		const Eigen::MatrixXd expected = canonical_checkpoint_solution(output / "checkpoint_2.h5");
+		fs::remove_all(inputs);
+		REQUIRE_FALSE(fs::exists(inputs));
+		{
+			io::CheckpointReader checkpoint(output / "checkpoint_1.h5");
+			CHECK(checkpoint.resources().exists(hard));
+			CHECK(checkpoint.resources().exists(soft));
+		}
+		resume_checkpoint(output / "checkpoint_1.h5", true);
+		CHECK(canonical_checkpoint_solution(output / "checkpoint_2.h5").isApprox(expected, 1e-8));
+		// Completed snapshots still validate the integrator, even with no steps left.
+		{
+			h5pp::File corrupt((output / "checkpoint_2.h5").string(), h5pp::FileAccess::READWRITE);
+			corrupt.deleteLink("/checkpoint/state/primary_integrator/x");
+		}
+		CHECK_THROWS(resume_checkpoint(output / "checkpoint_2.h5", true));
+	}
+	fs::remove_all(root);
+}
+
+TEST_CASE("checkpoint continuation rejects incompatible runtime state", "[.][checkpoint][checkpoint_negative]")
+{
+	namespace fs = std::filesystem;
+	const fs::path root = fs::temp_directory_path() / "polyfem-invalid-checkpoint-state";
+	const fs::path output = root / "output";
+	fs::remove_all(root);
+	io::LoadedInput loaded = io::load_json_input(fs::path(POLYFEM_DATA_DIR) / "time-int/bdf1.json");
+	json quick_config = loaded.config;
+	auto common_resources = utils::apply_common_params(quick_config, *loaded.resources);
+	const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+	quick_config["/geometry/n_refs"_json_pointer] = 1;
+	const json args = checkpoint_config(quick_config, output, 2);
+	run_simulation(args, resources);
+	const fs::path valid = output / "checkpoint_1.h5";
+	REQUIRE(fs::is_regular_file(valid));
+
+	const fs::path wrong_formulation = root / "wrong-formulation.h5";
+	fs::copy_file(valid, wrong_formulation);
+	{
+		h5pp::File file(wrong_formulation.string(), h5pp::FileAccess::READWRITE);
+		file.deleteLink("/checkpoint/metadata/formulation");
+		file.writeDataset(std::string("WrongFormulation"), "/checkpoint/metadata/formulation");
+	}
+	CHECK_THROWS([&] {
+		io::CheckpointReader checkpoint(wrong_formulation);
+		State state;
+		state.init(checkpoint, true);
+	}());
+
+	CHECK_THROWS([&] {
+		io::CheckpointReader checkpoint(valid);
+		json continuation = checkpoint.config();
+		continuation["time"]["dt"] = 2 * continuation["time"]["dt"].get<double>();
+		State state;
+		state.init(continuation, checkpoint, true);
+	}());
+
+	const fs::path wrong_solution = root / "wrong-solution.h5";
+	fs::copy_file(valid, wrong_solution);
+	{
+		h5pp::File file(wrong_solution.string(), h5pp::FileAccess::READWRITE);
+		file.deleteLink("/checkpoint/state/solution");
+		file.writeDataset(Eigen::MatrixXd::Zero(1, 1), "/checkpoint/state/solution");
+	}
+	CHECK_THROWS(resume_checkpoint(wrong_solution, true));
+
+	const fs::path missing_history = root / "missing-history.h5";
+	fs::copy_file(valid, missing_history);
+	{
+		h5pp::File file(missing_history.string(), h5pp::FileAccess::READWRITE);
+		file.deleteLink("/checkpoint/state/primary_integrator/x");
+	}
+	CHECK_THROWS(resume_checkpoint(missing_history, true));
+
+	const fs::path wrong_dynamic_order = root / "wrong-dynamic-order.h5";
+	fs::copy_file(valid, wrong_dynamic_order);
+	{
+		h5pp::File file(wrong_dynamic_order.string(), h5pp::FileAccess::READWRITE);
+		const long stored_order = file.readDataset<long>("/checkpoint/state/primary_integrator/dynamic_order");
+		file.deleteLink("/checkpoint/state/primary_integrator/dynamic_order");
+		file.writeDataset(
+			stored_order == 1 ? long(2) : long(1),
+			"/checkpoint/state/primary_integrator/dynamic_order");
+	}
+	CHECK_THROWS(resume_checkpoint(wrong_dynamic_order, true));
+
+	const fs::path wrong_history_dimensions = root / "wrong-history-dimensions.h5";
+	fs::copy_file(valid, wrong_history_dimensions);
+	{
+		h5pp::File file(wrong_history_dimensions.string(), h5pp::FileAccess::READWRITE);
+		file.deleteLink("/checkpoint/state/primary_integrator/x");
+		file.writeDataset(Eigen::MatrixXd::Zero(1, 1), "/checkpoint/state/primary_integrator/x");
+	}
+	CHECK_THROWS(resume_checkpoint(wrong_history_dimensions, true));
+	fs::remove_all(root);
 }
 
 #ifdef POLYFEM_WITH_TRIANGLE

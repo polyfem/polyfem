@@ -2,7 +2,9 @@
 
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
@@ -313,6 +315,7 @@ namespace polyfem::mesh
 	// ========================================================================
 
 	void load_collision_proxy(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
@@ -323,11 +326,12 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
-		load_collision_proxy_mesh(mesh_filename, transformation, vertices, codim_vertices, edges, faces);
-		load_collision_proxy_displacement_map(weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);
+		load_collision_proxy_mesh(resources, mesh_filename, transformation, vertices, codim_vertices, edges, faces);
+		load_collision_proxy_displacement_map(resources, weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);
 	}
 
 	void load_collision_proxy_mesh(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const json &transformation,
 		Eigen::MatrixXd &vertices,
@@ -335,8 +339,11 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &edges,
 		Eigen::MatrixXi &faces)
 	{
-		Eigen::MatrixXi codim_edges;
-		read_surface_mesh(mesh_filename, vertices, codim_vertices, codim_edges, faces);
+		SurfaceMesh surface = MeshLoader(resources).load_surface(mesh_filename);
+		vertices = std::move(surface.vertices);
+		codim_vertices = std::move(surface.points);
+		Eigen::MatrixXi codim_edges = std::move(surface.edges);
+		faces = std::move(surface.faces);
 
 		if (faces.size())
 			igl::edges(faces, edges);
@@ -358,7 +365,7 @@ namespace polyfem::mesh
 		MatrixNd A;
 		VectorNd b;
 		// TODO: pass correct unit scale
-		construct_affine_transformation(
+		GeometryLoader::construct_affine_transformation(
 			/*unit_scale=*/1, transformation,
 			(bbox[1] - bbox[0]).cwiseAbs().transpose(),
 			A, b);
@@ -366,6 +373,7 @@ namespace polyfem::mesh
 	}
 
 	void load_collision_proxy_displacement_map(
+		const io::ResourceIO &resources,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
 		const size_t num_proxy_vertices,
@@ -374,28 +382,40 @@ namespace polyfem::mesh
 #ifndef NDEBUG
 		const size_t num_fe_nodes = in_node_to_node.size();
 #endif
-		h5pp::File file(weights_filename, h5pp::FileAccess::READONLY);
-		const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
-		assert(shape[0] == num_proxy_vertices && shape[1] == num_fe_nodes);
-		Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
-		Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
-		Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
-		assert(rows.maxCoeff() < num_proxy_vertices);
-		assert(cols.maxCoeff() < num_fe_nodes);
+		auto read_group = [&](const io::ResourceIO &reader, const std::string &root) {
+			const auto child = [&](const std::string &path) {
+				return (std::filesystem::path(root) / path).lexically_normal().generic_string();
+			};
+			const std::array<long, 2> shape = reader.read_shape_attribute(child("weight_triplets"), "shape");
+			assert(shape[0] == num_proxy_vertices && shape[1] == num_fe_nodes);
+			const std::vector<double> value_data = reader.read_double_vector(child("weight_triplets/values"));
+			const std::vector<int> row_data = reader.read_int_vector(child("weight_triplets/rows"));
+			const std::vector<int> col_data = reader.read_int_vector(child("weight_triplets/cols"));
+			Eigen::Map<const Eigen::VectorXd> values(value_data.data(), value_data.size());
+			Eigen::Map<const Eigen::VectorXi> rows(row_data.data(), row_data.size());
+			Eigen::Map<const Eigen::VectorXi> cols(col_data.data(), col_data.size());
+			assert(rows.maxCoeff() < num_proxy_vertices);
+			assert(cols.maxCoeff() < num_fe_nodes);
 
-		// TODO: use these to build the in_node_to_node map
-		// const Eigen::VectorXi in_ordered_vertices = file.exist("ordered_vertices") ? H5Easy::load<Eigen::VectorXi>(file, "ordered_vertices") : mesh->in_ordered_vertices();
-		// const Eigen::MatrixXi in_ordered_edges = file.exist("ordered_edges") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_edges") : mesh->in_ordered_edges();
-		// const Eigen::MatrixXi in_ordered_faces = file.exist("ordered_faces") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_faces") : mesh->in_ordered_faces();
+			// TODO: use these to build the in_node_to_node map
 
-		displacement_map_entries.clear();
-		displacement_map_entries.reserve(values.size());
+			displacement_map_entries.clear();
+			displacement_map_entries.reserve(values.size());
 
-		assert(in_node_to_node.size() == num_fe_nodes);
-		for (int i = 0; i < values.size(); i++)
+			assert(in_node_to_node.size() == num_fe_nodes);
+			for (int i = 0; i < values.size(); i++)
+			{
+				// Rearrange the columns based on the FEM mesh node order
+				displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
+			}
+		};
+
+		if (resources.is_group(weights_filename))
+			read_group(resources, weights_filename);
+		else
 		{
-			// Rearrange the columns based on the FEM mesh node order
-			displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
+			const io::HDF5IO weights(resources.materialize(weights_filename));
+			read_group(weights, "");
 		}
 	}
 } // namespace polyfem::mesh

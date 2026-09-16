@@ -190,6 +190,22 @@ namespace polyfem::legacy
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		// Legacy State still uses the old restart fields internally. They are no
+		// longer part of the public schema, so provide their inert defaults only
+		// after validation instead of exposing them to non-legacy configurations.
+		if (!this->args.contains("/input/data/state"_json_pointer))
+			this->args["input"]["data"]["state"] = "";
+		if (!this->args.contains("/input/data/reorder"_json_pointer))
+			this->args["input"]["data"]["reorder"] = false;
+		if (!this->args.contains("/output/data/state"_json_pointer))
+			this->args["output"]["data"]["state"] = "";
+		if (!this->args.contains("/output/data/rest_mesh"_json_pointer))
+			this->args["output"]["data"]["rest_mesh"] = "";
+		if (!this->args.contains("/output/data/file_index_offset"_json_pointer))
+			this->args["output"]["data"]["file_index_offset"] = 0;
+		if (!this->args.contains("/output/restart_json"_json_pointer))
+			this->args["output"]["restart_json"] = "";
+		const polyfem::io::FileSystemIO resources(root_path());
 		units.init(this->args["units"]);
 
 		if (!args_in.contains("/space/advanced/bc_method"_json_pointer) && this->args["space"]["basis_type"] != "Lagrange")
@@ -289,16 +305,15 @@ namespace polyfem::legacy
 			if (!args["time"].is_null())
 			{
 				const auto tmp = R"({"is_time_dependent": true})"_json;
-				problem->set_parameters(tmp, root_path());
+				problem->set_parameters(tmp, resources);
 			}
 			// important for the BC
 
 			auto bc = args["boundary_conditions"];
-			bc["root_path"] = root_path();
-			problem->set_parameters(bc, root_path());
-			problem->set_parameters(args["initial_conditions"], root_path());
+			problem->set_parameters(bc, resources);
+			problem->set_parameters(args["initial_conditions"], resources);
 
-			problem->set_parameters(args["output"], root_path());
+			problem->set_parameters(args["output"], resources);
 		}
 		else
 		{
@@ -314,7 +329,7 @@ namespace polyfem::legacy
 				problem->clear();
 			}
 			// important for the BC
-			problem->set_parameters(args["preset_problem"], root_path());
+			problem->set_parameters(args["preset_problem"], resources);
 		}
 
 		problem->set_units(*assembler, units);
@@ -422,8 +437,9 @@ namespace polyfem::legacy
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
+		const polyfem::io::FileSystemIO resources(root_path());
 		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"], units, root_path());
+			a->set_materials(body_ids, args["materials"], units, resources);
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
@@ -438,7 +454,8 @@ namespace polyfem::legacy
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"], units, root_path());
+		const polyfem::io::FileSystemIO resources(root_path());
+		assembler.set_materials(body_ids, args["materials"], units, resources);
 	}
 
 } // namespace polyfem::legacy
