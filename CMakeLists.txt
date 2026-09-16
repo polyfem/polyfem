@@ -67,6 +67,7 @@ set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
+option(POLYFEM_WITH_MPI "Enable MPI support"                OFF)
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
 option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
@@ -145,6 +146,10 @@ endif()
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
 
+if(POLYFEM_WITH_CUDA)
+    set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+endif()
+
 target_link_libraries(polyfem PUBLIC polyfem_coverage_config)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
@@ -208,6 +213,17 @@ endif()
 ################################################################################
 # Required libraries
 ################################################################################
+
+# Handle MPI for PolyFEM and force the choice onto PolySolve
+if(POLYFEM_WITH_MPI)
+    find_package(MPI REQUIRED)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MPI)
+    # Note: We don't need to explicitly link MPI::MPI_CXX to polyfem here 
+    # because polysolve links it PUBLICly and will pass it up to us automatically.
+endif()
+
+# FORCE PolySolve to match PolyFEM's MPI setting
+set(POLYSOLVE_WITH_MPI ${POLYFEM_WITH_MPI} CACHE BOOL "Forced by PolyFEM" FORCE)
 
 # polysolve
 include(polysolve)
@@ -422,6 +438,14 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         else (DOXYGEN_FOUND)
             message("Doxygen need to be installed to generate the doxygen documentation")
         endif (DOXYGEN_FOUND)
+    endif()
+
+    if(POLYFEM_WITH_CUDA)
+        set_target_properties(${PROJECT_NAME}_bin PROPERTIES 
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_RESOLVE_DEVICE_SYMBOLS ON
+            LINKER_LANGUAGE CUDA
+        )
     endif()
 endif()
 
