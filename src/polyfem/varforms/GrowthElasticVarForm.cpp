@@ -170,6 +170,7 @@ namespace polyfem::varform
 		growth_coupling_form_ = nullptr;
 		stacked_form_ = nullptr;
 		converged_solution_.resize(0, 0);
+		prescribed_growth_.resize(0, 0);
 		displacement_space_id_ = -1;
 		growth_space_id_ = -1;
 		elastic_formulation_ = "MaterialSum";
@@ -634,8 +635,66 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
+	const Eigen::MatrixXd &GrowthElasticVarForm::prescribed_growth_field() const
+	{
+		if (prescribed_growth_.size() > 0)
+			return prescribed_growth_;
+
+		const std::string path = args["boundary_conditions"]["growth_nodal_field"];
+		if (path.empty())
+			return prescribed_growth_; // empty: no whole-field prescription
+
+		std::ifstream in(resolve_input_path(path));
+		if (!in)
+			log_and_throw_error("GrowthElasticity: cannot open growth_nodal_field '{}'.", path);
+
+		std::vector<double> values;
+		values.reserve(growth_ndof());
+		double v;
+		while (in >> v)
+			values.push_back(v);
+
+		if (int(values.size()) != growth_ndof())
+			log_and_throw_error(
+				"GrowthElasticity: growth_nodal_field '{}' has {} values, expected {} (one per growth node, mesh-vertex order).",
+				path, values.size(), growth_ndof());
+
+		Eigen::MatrixXd field = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
+
+		// Mesh-vertex -> internal node order, same remap the nodal machinery
+		// uses (identity for P1 on an unreordered mesh). If the direction is
+		// ever wrong for a mesh, it is loudly visible: the AL initial error is
+		// large instead of ~0 (initial == target below) and the exported
+		// growth field disagrees with the input in ParaView.
+		const auto &map = growth_space_.space_in_node_to_node;
+		if (map.size() > 0)
+		{
+			Eigen::MatrixXd remapped(field.rows(), 1);
+			for (int i = 0; i < map.size(); ++i)
+				remapped(map(i)) = field(i);
+			field = remapped;
+		}
+
+		if ((field.array() <= 0).any())
+			log_and_throw_error(
+				"GrowthElasticity: growth_nodal_field '{}' contains non-positive theta (min {}).",
+				path, field.minCoeff());
+
+		prescribed_growth_ = field;
+		return prescribed_growth_;
+	}
+
 	void GrowthElasticVarForm::initial_growth_solution(Eigen::MatrixXd &solution) const
 	{
+		// A whole-field prescription is also the initial solution: initial ==
+		// target makes the AL start error ~0 and the first iterate consistent.
+		const Eigen::MatrixXd &prescribed = prescribed_growth_field();
+		if (prescribed.size() > 0)
+		{
+			solution = prescribed;
+			return;
+		}
+
 		assert(growth_rhs_assembler_ != nullptr);
 
 		const bool was_solution_loaded = read_initial_x_from_file(
@@ -723,7 +782,8 @@ namespace polyfem::varform
 			form->set_output_dir(output_path);
 
 		solve_data_.al_form.clear();
-		if (!boundary_.boundary_nodes.empty() || !growth_boundary_.boundary_nodes.empty())
+		if (!boundary_.boundary_nodes.empty() || !growth_boundary_.boundary_nodes.empty()
+			|| prescribed_growth_field().size() > 0)
 		{
 			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
 			const auto displacement_al_block = stacked_al->add_block(displacement_block.size());
@@ -740,7 +800,27 @@ namespace polyfem::varform
 						obstacle.n_vertices() * mesh_->dimension(), /*is_time_dependent=*/false, t));
 			}
 
-			if (!growth_boundary_.boundary_nodes.empty())
+			const Eigen::MatrixXd &prescribed = prescribed_growth_field();
+			if (prescribed.size() > 0)
+			{
+				// Whole-field prescription: every growth DOF is Dirichlet with
+				// tabulated targets (BCLagrangianForm's target constructor; no
+				// RhsAssembler involved). Supersedes any growth-space surface
+				// Dirichlet entries.
+				if (!growth_boundary_.boundary_nodes.empty())
+					logger().warn("growth_nodal_field supersedes {} growth-space dirichlet_boundary node(s).", growth_boundary_.boundary_nodes.size());
+
+				std::vector<int> all_growth_nodes(growth_ndof());
+				for (int i = 0; i < growth_ndof(); ++i)
+					all_growth_nodes[i] = i;
+
+				stacked_al->add(
+					growth_al_block,
+					std::make_shared<solver::BCLagrangianForm>(
+						growth_block.size(), all_growth_nodes, growth_mass_,
+						/*obstacle_ndof=*/0, prescribed));
+			}
+			else if (!growth_boundary_.boundary_nodes.empty())
 			{
 				assert(growth_space_.disc_orders.size() > 0 && "Growth boundary quadrature requires initialized FE orders");
 				const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();

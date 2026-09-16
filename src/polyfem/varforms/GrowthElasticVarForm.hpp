@@ -84,6 +84,7 @@ namespace polyfem::varform
 		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution);
 
 		void initial_growth_solution(Eigen::MatrixXd &solution) const;
+		const Eigen::MatrixXd &prescribed_growth_field() const;
 		void split_solution(
 			const Eigen::MatrixXd &solution,
 			Eigen::MatrixXd &displacement,
@@ -123,6 +124,12 @@ namespace polyfem::varform
 		/// authoritative copy whenever the passed solution is not
 		/// total_ndof-sized.
 		Eigen::MatrixXd converged_solution_;
+
+		/// Whole-field growth prescription (boundary_conditions.growth_nodal_field):
+		/// nodal theta values loaded lazily from file; when set, EVERY growth DOF
+		/// is Dirichlet with these targets (via BCLagrangianForm's tabulated-target
+		/// constructor) and the same field is the growth initial solution.
+		mutable Eigen::MatrixXd prescribed_growth_;
 
 		int displacement_space_id_ = -1;
 		int growth_space_id_ = -1;
