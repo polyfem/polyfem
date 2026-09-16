@@ -16,6 +16,7 @@
 #include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <algorithm>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -252,11 +253,12 @@ TEST_CASE("Checkpoint embedding preserves typed HDF5 objects", "[hdf5][resource_
 	Eigen::MatrixXd matrix(2, 3);
 	matrix << -1.25, 0.5, 1024.75, 3.125, -8.5, 0.0625;
 	const std::vector<int64_t> indices{int64_t(1) << 54, -300, 512};
+	const std::array<long, 2> shape{{2, 3}};
 	{
 		h5pp::File file(input.string(), h5pp::FileAccess::REPLACE);
 		file.writeDataset(matrix, "/data/weights/values");
 		file.writeDataset(indices, "/data/weights/indices");
-		file.writeAttribute(std::array<long, 2>{2, 3}, "/data/weights", "shape");
+		file.writeAttribute(shape, "/data/weights", "shape");
 		file.writeAttribute(0.125, "/data/weights/values", "scale");
 		file.writeAttribute(std::string("custom"), "/data/weights", "description");
 		file.writeAttribute(long(0), "/data/weights", "elements_are_ordered");
@@ -269,7 +271,7 @@ TEST_CASE("Checkpoint embedding preserves typed HDF5 objects", "[hdf5][resource_
 		io::HDF5IO resources(input);
 		const auto data = resources.with_root("data");
 		CHECK(data->read_matrix("weights/values") == matrix);
-		CHECK(data->read_shape_attribute("weights", "shape") == std::array<long, 2>{2, 3});
+		CHECK(data->read_shape_attribute("weights", "shape") == shape);
 		CHECK(data->read_matrix("standalone") == matrix);
 		CHECK(resources.with_root("a")->read_string("value.txt") == "first");
 		CHECK(resources.with_root("b")->read_string("value.txt") == "second");
@@ -288,7 +290,7 @@ TEST_CASE("Checkpoint embedding preserves typed HDF5 objects", "[hdf5][resource_
 		io::CheckpointReader reader(checkpoint);
 		CHECK(reader.resources().read_matrix("weights/values") == matrix);
 		CHECK(reader.resources().read_matrix("standalone") == matrix);
-		CHECK(reader.resources().read_shape_attribute("weights", "shape") == std::array<long, 2>{2, 3});
+		CHECK(reader.resources().read_shape_attribute("weights", "shape") == shape);
 		CHECK(reader.resources().read_string_attribute("weights", "description") == "custom");
 		CHECK(reader.resources().read_integer_attribute("weights", "elements_are_ordered") == 0);
 		CHECK(reader.resources().read_string("/a/value.txt") == "first");
