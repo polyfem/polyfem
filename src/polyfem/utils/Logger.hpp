@@ -45,13 +45,15 @@ namespace polyfem
 	template <typename... Args>
 	[[noreturn]] void log_and_throw_error(const std::string &msg, const Args &...args)
 	{
-		log_and_throw_error(fmt::format(msg, args...));
+		// fmt::runtime: the format string is a runtime std::string, which fmt >= 11 (spdlog >= 1.15)
+		// otherwise rejects at compile time; fmt 8 to 10 accept the wrapper too.
+		log_and_throw_error(fmt::format(fmt::runtime(msg), args...));
 	}
 
 	template <typename... Args>
 	[[noreturn]] void log_and_throw_adjoint_error(const std::string &msg, const Args &...args)
 	{
-		log_and_throw_error(fmt::format(msg, args...));
+		log_and_throw_error(fmt::format(fmt::runtime(msg), args...));
 	}
 } // namespace polyfem
 

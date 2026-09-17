@@ -69,7 +69,7 @@ namespace polyfem::utils
 		}
 		else if (!j_selections.is_null())
 		{
-			log_and_throw_error("Invalid selections: {}", j_selections);
+			log_and_throw_error("Invalid selections: {}", j_selections.dump());
 		}
 		return selections;
 	}

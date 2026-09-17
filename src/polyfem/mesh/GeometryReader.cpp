@@ -29,7 +29,7 @@ namespace polyfem::mesh
 		const bool non_conforming)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh);
+			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh.dump());
 
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
@@ -275,7 +275,7 @@ namespace polyfem::mesh
 				continue;
 
 			if (geometry["type"] != "mesh" && geometry["type"] != "mesh_array")
-				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
+				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"].dump());
 
 			const std::unique_ptr<Mesh> tmp_mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
 
@@ -335,7 +335,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh);
+			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh.dump());
 
 		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
 
@@ -675,7 +675,7 @@ namespace polyfem::mesh
 			}
 			else
 			{
-				log_and_throw_error("Invalid geometry type \"{}\" for obstacle!", geometry["type"]);
+				log_and_throw_error("Invalid geometry type \"{}\" for obstacle!", geometry["type"].dump());
 			}
 		}
 
