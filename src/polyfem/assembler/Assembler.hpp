@@ -319,32 +319,34 @@ namespace polyfem::assembler
 
 		// computes tensor, assembler is the name of the formulation
 		void compute_tensor_value(
-			const OutputData &data,
-			std::vector<NamedMatrix> &result) const override
-		{
-			result.clear();
-			Eigen::MatrixXd cauchy, pk1, pk2, F;
+    const OutputData &data,
+    std::vector<NamedMatrix> &result) const override
+	{
+    	result.clear();
+    	Eigen::MatrixXd cauchy, pk1, pk2, F, energy;
 
-			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
-			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
-			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
-			compute_stress_tensor(data, ElasticityTensorType::F, F);
+	    compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy, &energy);
+    	compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
+    	compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
+    	compute_stress_tensor(data, ElasticityTensorType::F, F);
 
-			result.emplace_back("cauchy_stess", cauchy);
-			result.emplace_back("pk1_stess", pk1);
-			result.emplace_back("pk2_stess", pk2);
-			result.emplace_back("F", F);
-		}
+	    result.emplace_back("cauchy_stess", cauchy);
+    	result.emplace_back("pk1_stess", pk1);
+    	result.emplace_back("pk2_stess", pk2);
+    	result.emplace_back("F", F);
+    	result.emplace_back("energy", energy);
+	}
 
 		void compute_stress_tensor(const OutputData &data,
-								   const ElasticityTensorType &type,
-								   Eigen::MatrixXd &stresses) const
+                           const ElasticityTensorType &type,
+                           Eigen::MatrixXd &stresses,
+                           Eigen::MatrixXd *energy_out = nullptr) const
 		{
-			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-				Eigen::MatrixXd tmp = stress;
-				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-				return Eigen::MatrixXd(a);
-			});
+    		assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
+        		Eigen::MatrixXd tmp = stress;
+        		auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
+        		return Eigen::MatrixXd(a);
+    		}, energy_out);
 		}
 
 		void compute_von_mises_stresses(const OutputData &data,
@@ -361,12 +363,23 @@ namespace polyfem::assembler
 		bool is_tensor() const override { return true; }
 		virtual bool allow_inversion() const = 0;
 
+		/*
 		virtual void assign_stress_tensor(const OutputData &data,
 										  const int all_size,
 										  const ElasticityTensorType &type,
 										  Eigen::MatrixXd &all,
 										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
+		*/
 
+		virtual void assign_stress_tensor(const OutputData &data,
+                                  const int all_size,
+                                  const ElasticityTensorType &type,
+                                  Eigen::MatrixXd &all,
+                                  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
+                                  Eigen::MatrixXd *energy_out = nullptr) const = 0;
+
+
+		
 	protected:
 		bool use_robust_jacobian = false;
 	};

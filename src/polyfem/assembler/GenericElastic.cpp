@@ -37,11 +37,12 @@ namespace polyfem::assembler
 
 	template <typename Derived>
 	void GenericElastic<Derived>::assign_stress_tensor(
-		const OutputData &data,
-		const int all_size,
-		const ElasticityTensorType &type,
-		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+    const OutputData &data,
+    const int all_size,
+    const ElasticityTensorType &type,
+    Eigen::MatrixXd &all,
+    const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
+    Eigen::MatrixXd *energy_out) const
 	{
 		Eigen::MatrixXd deformation_grad(size(), size());
 		Eigen::MatrixXd stress_tensor(size(), size());
@@ -57,6 +58,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+    	if (energy_out)
+        	energy_out->resize(local_pts.rows(), 1);
 		DiffScalarBase::setVariableCount(deformation_grad.size());
 
 		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
@@ -85,6 +88,9 @@ namespace polyfem::assembler
 			}
 
 			const auto val = derived().elastic_energy(local_pts.row(p), data.t, vals.element_id, def_grad);
+			
+			if (energy_out)                      
+        		(*energy_out)(p, 0) = val.getValue();  
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{

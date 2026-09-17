@@ -1733,6 +1733,7 @@ namespace polyfem::io
 				}
 			}
 
+			/*
 			if (opts.tensor_values)
 			{
 				Evaluator::compute_tensor_value(
@@ -1760,6 +1761,41 @@ namespace polyfem::io
 						writer.add_field(fmt::format("{:s}_{:d}", name, ii), tmp);
 					}
 				}
+			}*/
+
+			if (opts.tensor_values)
+			{
+    			Evaluator::compute_tensor_value(
+        		mesh, problem.is_scalar(), bases, gbases, disc_orders, disc_ordersq,
+        		state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
+        		points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
+
+		    	for (auto &[_, v] : tvals)
+        		utils::append_rows_of_zeros(v, obstacle.n_vertices());
+
+			    for (const auto &[name, v] : tvals)
+    			{
+        			if (!opts.export_field(name))
+            			continue;
+
+			        if (name == "energy")
+        			{
+            			writer.add_field(name, v);
+            			continue;
+        			}
+
+			        const int stride = mesh.dimension();
+        			assert(v.cols() % stride == 0);
+
+			        for (int i = 0; i < v.cols(); i += stride)
+        			{
+            			const Eigen::MatrixXd tmp = v.middleCols(i, stride);
+            			assert(tmp.cols() == stride);
+
+			            const int ii = (i / stride) + 1;
+            			writer.add_field(fmt::format("{:s}_{:d}", name, ii), tmp);
+        			}
+    			}
 			}
 
 			if (!opts.use_spline && (opts.scalar_values || opts.tensor_values))
@@ -1787,6 +1823,10 @@ namespace polyfem::io
 							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
 					}
 				}
+
+
+
+				/*
 				if (opts.tensor_values)
 				{
 					for (const auto &v : tvals)
@@ -1808,6 +1848,38 @@ namespace polyfem::io
 						}
 					}
 				}
+				*/
+
+				if (opts.tensor_values)
+				{
+    				for (const auto &v : tvals)
+    				{
+        				if (!opts.export_field(fmt::format("{:s}_avg", v.first)))
+            				continue;
+
+				        if (v.first == "energy")
+        				{
+            				writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+            				continue;
+        				}
+
+			        const int stride = mesh.dimension();
+        			assert(v.second.cols() % stride == 0);
+
+			        for (int i = 0; i < v.second.cols(); i += stride)
+        			{	
+            			const Eigen::MatrixXd tmp = v.second.middleCols(i, stride);
+            			assert(tmp.cols() == stride);
+
+			            const int ii = (i / stride) + 1;
+            			writer.add_field(fmt::format("{:s}_avg_{:d}", v.first, ii), tmp);
+        			}
+			    }
+			}
+
+
+
+
 			}
 		}
 
@@ -1942,6 +2014,7 @@ namespace polyfem::io
 			writer.add_field("body_ids", ids);
 		}
 
+		/*
 		const assembler::ElasticityNLAssembler *generic_energy_assembler = dynamic_cast<const assembler::ElasticityNLAssembler *>(&assembler);
 		if (generic_energy_assembler)
 		{
@@ -1987,6 +2060,7 @@ namespace polyfem::io
 			writer.add_field("energy", energies);
 			writer.add_field("energy_avg", energies_avg_pts);
 		}
+		*/
 
 
 
