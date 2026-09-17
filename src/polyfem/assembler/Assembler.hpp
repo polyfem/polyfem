@@ -334,6 +334,10 @@ namespace polyfem::assembler
     	result.emplace_back("pk1_stess", pk1);
     	result.emplace_back("pk2_stess", pk2);
     	result.emplace_back("F", F);
+    	// Materials that don't compute energy leave it empty; keep the entry so
+    	// every element returns the same list of fields.
+    	if (energy.rows() != data.local_pts.rows())
+    		energy.setZero(data.local_pts.rows(), 1);
     	result.emplace_back("energy", energy);
 	}
 

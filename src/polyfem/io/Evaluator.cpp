@@ -271,11 +271,8 @@ namespace polyfem::io
 			if (avg_tensor.empty())
 			{
 				avg_tensor.resize(tmp_t.size());
-				for (auto &m : avg_tensor)
-				{
-					m.resize(n_bases, actual_dim * actual_dim);
-					m.setZero();
-				}
+				for (int k = 0; k < tmp_t.size(); ++k)
+					avg_tensor[k].setZero(n_bases, tmp_t[k].second.cols());
 			}
 
 			for (int k = 0; k < tmp_s.size(); ++k)
@@ -334,7 +331,7 @@ namespace polyfem::io
 		for (int k = 0; k < tmp_t.size(); ++k)
 		{
 			result_tensor[k].first = tmp_t[k].first;
-			interpolate_function(mesh, actual_dim * actual_dim, bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
+			interpolate_function(mesh, static_cast<int>(avg_tensor[k].cols()), bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
 								 utils::flatten(avg_tensor[k]), result_tensor[k].second, use_sampler, boundary_only);
 		}
 	}
@@ -1065,7 +1062,7 @@ namespace polyfem::io
 				for (int k = 0; k < tmp_t.size(); ++k)
 				{
 					result[k].first = tmp_t[k].first;
-					result[k].second.resize(n_points, actual_dim * actual_dim);
+					result[k].second.setZero(n_points, tmp_t[k].second.cols());
 				}
 			}
 

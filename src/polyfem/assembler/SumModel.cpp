@@ -94,10 +94,16 @@ namespace polyfem::assembler
 			return;
 		}
 
+		if (energy_out)
+			energy_out->setZero(data.local_pts.rows(), 1);
+
 		for (const auto &assembler : assemblers_)
 		{
-			std::dynamic_pointer_cast<assembler::ElasticityNLAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun, energy_out);
+			Eigen::MatrixXd e_tmp;
+			std::dynamic_pointer_cast<assembler::ElasticityNLAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun, energy_out ? &e_tmp : nullptr);
 			all += tmp;
+			if (energy_out && e_tmp.rows() == energy_out->rows())
+				*energy_out += e_tmp;
 		}
 	}
 

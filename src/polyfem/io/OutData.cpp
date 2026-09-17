@@ -1,7 +1,6 @@
 #include "OutData.hpp"
 
 #include "Evaluator.hpp"
-#include "polyfem/assembler/AMIPSEnergy.hpp"
 
 #include <polyfem/State.hpp>
 
@@ -1749,7 +1748,7 @@ namespace polyfem::io
 					const int stride = mesh.dimension();
 					assert(v.cols() % stride == 0);
 
-					if (!opts.export_field(name))
+					if (name != "energy" && !opts.export_field(name))
 						continue;
 
 					for (int i = 0; i < v.cols(); i += stride)
@@ -1775,12 +1774,30 @@ namespace polyfem::io
 
 			    for (const auto &[name, v] : tvals)
     			{
-        			if (!opts.export_field(name))
+        			if (name != "energy" && !opts.export_field(name))
             			continue;
 
 			        if (name == "energy")
         			{
-            			writer.add_field(name, v);
+            if (opts.export_field("energy"))
+                writer.add_field(name, v);
+
+            if (opts.export_field("energy_avg"))
+            {
+                // Per-element mean of the energy already computed at the vis points
+                const int n_el = int(bases.size());
+                Eigen::VectorXd sum = Eigen::VectorXd::Zero(n_el);
+                Eigen::VectorXi cnt = Eigen::VectorXi::Zero(n_el);
+                for (int i = 0; i < points.rows(); ++i)
+                {
+                    sum(el_id(i)) += v(i, 0);
+                    cnt(el_id(i))++;
+                }
+                Eigen::MatrixXd energy_avg = Eigen::MatrixXd::Zero(v.rows(), 1);
+                for (int i = 0; i < points.rows(); ++i)
+                    energy_avg(i) = sum(el_id(i)) / cnt(el_id(i));
+                writer.add_field("energy_avg", energy_avg);
+            }
             			continue;
         			}
 
@@ -1850,6 +1867,7 @@ namespace polyfem::io
 				}
 				*/
 
+				/*
 				if (opts.tensor_values)
 				{
     				for (const auto &v : tvals)
@@ -1874,13 +1892,17 @@ namespace polyfem::io
 			            const int ii = (i / stride) + 1;
             			writer.add_field(fmt::format("{:s}_avg_{:d}", v.first, ii), tmp);
         			}
-			    }
+			    }*/
+					
+
+
+
 			}
 
 
 
 
-			}
+			
 		}
 
 		if (opts.material_params)
@@ -2013,6 +2035,7 @@ namespace polyfem::io
 
 			writer.add_field("body_ids", ids);
 		}
+
 
 		/*
 		const assembler::ElasticityNLAssembler *generic_energy_assembler = dynamic_cast<const assembler::ElasticityNLAssembler *>(&assembler);

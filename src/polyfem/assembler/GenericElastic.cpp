@@ -87,10 +87,24 @@ namespace polyfem::assembler
 					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
 			}
 
+			if (energy_out || type == ElasticityTensorType::ENERGY)
+			{
+				// Use the same deformation gradient as the solver (see GenericElastic.hpp)
+				DefGradMatrix<double> Fe = deformation_grad;
+				if (!derived().real_def_grad())
+					Fe = Fe * vals.jac_it[p].inverse();
+				const double e = derived().template elastic_energy<double>(local_pts.row(p), data.t, vals.element_id, Fe);
+
+				if (energy_out)
+					(*energy_out)(p, 0) = e;
+				if (type == ElasticityTensorType::ENERGY)
+				{
+					all(p, 0) = e;
+					continue;
+				}
+			}
+
 			const auto val = derived().elastic_energy(local_pts.row(p), data.t, vals.element_id, def_grad);
-			
-			if (energy_out)                      
-        		(*energy_out)(p, 0) = val.getValue();  
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
@@ -104,12 +118,7 @@ namespace polyfem::assembler
 				stress_tensor = pk1_from_cauchy(stress_tensor, deformation_grad);
 			else if (type == ElasticityTensorType::PK2)
 				stress_tensor = pk2_from_cauchy(stress_tensor, deformation_grad);
-				
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = val.getValue();
-				continue;
-			}
+
 
 			all.row(p) = fun(stress_tensor);
 		}
