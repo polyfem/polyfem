@@ -8,11 +8,30 @@
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
 #include <cmath>
+#include <type_traits>
+#include <utility>
 
 namespace polyfem::solver
 {
 	namespace
 	{
+		// The rest-shape measure exists only in the udaykusupati/ipc-toolkit fork; when polyfem is
+		// built against another ipc-toolkit (the wildmeshing-toolkit links it against its own fork)
+		// the field is absent. Detect the field instead of the fork, and refuse a request for it
+		// rather than silently ignoring the flag.
+		template <typename T>
+		auto set_use_rest_shape_measure(T &params, const bool value, int)
+			-> decltype(params.use_rest_shape_measure, void())
+		{
+			params.use_rest_shape_measure = value;
+		}
+		template <typename T>
+		void set_use_rest_shape_measure(T &, const bool value, long)
+		{
+			if (value)
+				log_and_throw_error("use_rest_shape_measure needs an ipc-toolkit with the rest-shape measure (udaykusupati/ipc-toolkit); this build's ipc-toolkit has no such field");
+		}
+
 		ipc::SmoothContactParameters make_smooth_contact_params(
 			const double dhat,
 			const double alpha_t,
@@ -21,7 +40,7 @@ namespace polyfem::solver
 			const bool use_rest_shape_measure)
 		{
 			ipc::SmoothContactParameters out(dhat, alpha_t, 0, alpha_n, 0, dim - 1);
-			out.use_rest_shape_measure = use_rest_shape_measure;
+			set_use_rest_shape_measure(out, use_rest_shape_measure, 0);
 			return out;
 		}
 	} // namespace
