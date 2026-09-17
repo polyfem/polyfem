@@ -38,7 +38,7 @@ namespace polyfem::assembler
 								  const int all_size,
 								  const ElasticityTensorType &type,
 								  Eigen::MatrixXd &all,
-								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun, Eigen::MatrixXd *energy_out = nullptr) const override;
 
 	private:
 		ElasticityTensor elasticity_tensor_;

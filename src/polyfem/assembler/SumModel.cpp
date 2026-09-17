@@ -80,7 +80,7 @@ namespace polyfem::assembler
 		const int all_size,
 		const ElasticityTensorType &type,
 		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun, Eigen::MatrixXd *energy_out) const
 	{
 		all.resize(data.local_pts.rows(), all_size);
 		all.setZero();
@@ -90,13 +90,13 @@ namespace polyfem::assembler
 		if (type == ElasticityTensorType::F)
 		{
 			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assemblers_.front())
-				->assign_stress_tensor(data, all_size, type, all, fun);
+				->assign_stress_tensor(data, all_size, type, all, fun, energy_out);
 			return;
 		}
 
 		for (const auto &assembler : assemblers_)
 		{
-			std::dynamic_pointer_cast<assembler::ElasticityNLAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun);
+			std::dynamic_pointer_cast<assembler::ElasticityNLAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun, energy_out);
 			all += tmp;
 		}
 	}

@@ -55,7 +55,7 @@ namespace polyfem::assembler
 																		 const int all_size,
 																		 const ElasticityTensorType &type,
 																		 Eigen::MatrixXd &all,
-																		 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+																		 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun, Eigen::MatrixXd *energy_out) const
 	{
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
