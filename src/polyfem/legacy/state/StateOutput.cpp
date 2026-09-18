@@ -4,6 +4,7 @@
 #include <polyfem/utils/Timer.hpp>
 
 #include <polyfem/assembler/Electrostatics.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 
 #include <filesystem>
 
@@ -47,11 +48,28 @@ namespace polyfem::legacy
 
 	void State::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
+		{
+			const std::string grad_norm_path = args["output"].value("gradient_norm", std::string(""));
+			if (!grad_norm_path.empty() && !gradient_norm_csv && solve_data.nl_problem)
+				gradient_norm_csv = std::make_unique<io::GradientNormCSVWriter>(
+					resolve_output_path(grad_norm_path), solve_data, collision_mesh, static_cast<int>(obstacle.n_vertices()));
+			if (gradient_norm_csv)
+				gradient_norm_csv->write(t, sol);
+		}
+
 		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
 		{
 			logger().trace("Saving VTU...");
-			POLYFEM_SCOPED_TIMER("Saving VTU");
+			utils::Timer _vtu_timer("Saving VTU", timings.vtu_export_time);
 			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+
+			ipc::ESPPotential::CountMap quadrature_points_ee;
+			if (args["contact"]["use_esp_formulation"] && is_contact_enabled() && solve_data.contact_form)
+			{
+				auto esp_form = std::dynamic_pointer_cast<solver::ESPContactForm>(solve_data.contact_form);
+				if (esp_form)
+					quadrature_points_ee = esp_form->get_ee_qp_count();
+			}
 
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
@@ -60,7 +78,8 @@ namespace polyfem::legacy
 												   mesh->is_linear(),
 												   mesh->has_prism(),
 												   problem->is_scalar()),
-				is_contact_enabled());
+				is_contact_enabled(),
+				quadrature_points_ee);
 
 			out_geom.save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
@@ -118,6 +137,7 @@ namespace polyfem::legacy
 		if (!args["time"].is_null())
 			dt = args["time"]["dt"];
 
+		utils::Timer _vtu_timer("Saving VTU", timings.vtu_export_time);
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, sol, pressure, t, dt,

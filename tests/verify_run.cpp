@@ -427,6 +427,11 @@ TEST_CASE("runners-polyspline", tagsrun)
 	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
 }
 
+TEST_CASE("esp", tagsrun)
+{
+	run_data("esp", POLYFEM_DATA_DIR "/../esp_data/");
+}
+
 #ifdef POLYFEM_WITH_MISO
 TEST_CASE("miso", tagsrun)
 {

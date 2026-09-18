@@ -9,8 +9,8 @@ set(SOURCES
     InertiaForceDerivative.cpp
     BarrierContactForceDerivative.hpp
     BarrierContactForceDerivative.cpp
-    SmoothContactForceDerivative.hpp
-    SmoothContactForceDerivative.cpp
+    GCPContactForceDerivative.hpp
+    GCPContactForceDerivative.cpp
     NormalAdhesionForceDerivative.hpp
     NormalAdhesionForceDerivative.cpp
     PeriodicContactForceDerivative.hpp

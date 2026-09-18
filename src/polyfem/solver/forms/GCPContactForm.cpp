@@ -1,4 +1,4 @@
-#include "SmoothContactForm.hpp"
+#include "GCPContactForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -11,19 +11,20 @@
 
 namespace polyfem::solver
 {
-	SmoothContactForm::SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
-										 const double dhat,
-										 const double avg_mass,
-										 const double alpha_t,
-										 const double alpha_n,
-										 const bool use_adaptive_dhat,
-										 const double min_distance_ratio,
-										 const bool use_adaptive_barrier_stiffness,
-										 const bool is_time_dependent,
-										 const bool enable_shape_derivatives,
-										 const ipc::BroadPhaseMethod broad_phase_method,
-										 const double ccd_tolerance,
-										 const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
+	GCPContactForm::GCPContactForm(const ipc::CollisionMesh &collision_mesh,
+								   const double dhat,
+								   const double avg_mass,
+								   const double alpha_t,
+								   const double alpha_n,
+								   const bool use_adaptive_dhat,
+								   const double min_distance_ratio,
+								   const bool use_adaptive_barrier_stiffness,
+								   const bool is_time_dependent,
+								   const bool enable_shape_derivatives,
+								   const ipc::BroadPhaseMethod broad_phase_method,
+								   const double ccd_tolerance,
+								   const int ccd_max_iterations,
+								   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
 	{
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
 		if (use_adaptive_dhat)
@@ -34,15 +35,15 @@ namespace polyfem::solver
 		}
 	}
 
-	void SmoothContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void GCPContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
 
-		log_and_throw_error("Adaptive barrier stiffness not implemented for SmoothContactForm!");
+		log_and_throw_error("Adaptive barrier stiffness not implemented for GCPContactForm!");
 	}
 
-	void SmoothContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
+	void GCPContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
@@ -58,23 +59,23 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double SmoothContactForm::value_unweighted(const Eigen::VectorXd &x) const
+	double GCPContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return barrier_potential_(collision_set_, collision_mesh_, compute_displaced_surface(x));
 	}
 
-	Eigen::VectorXd SmoothContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	Eigen::VectorXd GCPContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		log_and_throw_error("value_per_element_unweighted not implemented!");
 	}
 
-	void SmoothContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void GCPContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
-	void SmoothContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void GCPContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
 		// 	io::OBJWriter::write(
@@ -87,7 +88,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	void SmoothContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
+	void GCPContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
@@ -111,7 +112,8 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface), 1e-7);
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface),
+					dhat_epsilon_scale_);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{

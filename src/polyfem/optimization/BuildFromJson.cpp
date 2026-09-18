@@ -665,10 +665,12 @@ namespace polyfem::from_json
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
 			}
-			else if (type == "smooth_contact_force_norm")
+			// "smooth_contact_force_norm" is the pre-GCP-rename spelling, kept
+			// so existing objective JSONs keep working.
+			else if (type == "gcp_force_norm" || type == "smooth_contact_force_norm")
 			{
 				// assert(varforms[args["state"]]->args["contact"]["use_gcp_formulation"]);
-				obj = std::make_shared<SmoothContactForceForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
+				obj = std::make_shared<GCPContactForceForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
 			}
 			else if (type == "volume")
 			{
