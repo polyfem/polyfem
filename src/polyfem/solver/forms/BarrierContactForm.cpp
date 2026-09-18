@@ -93,8 +93,7 @@ namespace polyfem::solver
 	void BarrierContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
-		static Eigen::MatrixXd cached_displaced_surface;
-		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
+		if (cached_displaced_surface_.size() == displaced_surface.size() && cached_displaced_surface_ == displaced_surface)
 			return;
 
 		if (use_cached_candidates_)
@@ -103,7 +102,7 @@ namespace polyfem::solver
 		else
 			collision_set_.build(
 				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_.get());
-		cached_displaced_surface = displaced_surface;
+		cached_displaced_surface_ = displaced_surface;
 	}
 
 	double BarrierContactForm::value_unweighted(const Eigen::VectorXd &x) const

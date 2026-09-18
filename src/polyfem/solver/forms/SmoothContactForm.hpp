@@ -75,6 +75,11 @@ namespace polyfem::solver
 
 		/// @brief Cached constraint set for the current solution
 		ipc::SmoothCollisions collision_set_;
+		/// @brief Displaced surface that collision_set_ was last built from; a rebuild is skipped when
+		/// the next one is identical. A member, not a function-local static: a static is shared by every
+		/// form in the process and outlives the State, so a second solve starting where the previous one
+		/// ended matched the stale entry and ran with an empty collision set.
+		Eigen::MatrixXd cached_displaced_surface_;
 
 		/// @brief Contact potential
 		ipc::SmoothContactPotential barrier_potential_;
