@@ -52,6 +52,11 @@ namespace polyfem::solver
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
+		/// @brief info() of the nonlinear solver behind the latest subsolve, including its termination
+		/// "status"; set just before each post_subsolve call. When no solver is passed in, every
+		/// subsolve creates its own and discards it, so this is the only record of the solver that ran.
+		const json &last_solver_info() const { return nl_solver_info; }
+
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
 		const double initial_al_weight;
@@ -61,5 +66,8 @@ namespace polyfem::solver
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
+
+		void record_solver_info(const std::shared_ptr<polysolve::nonlinear::Solver> &nl_solver);
+		json nl_solver_info;
 	};
 } // namespace polyfem::solver

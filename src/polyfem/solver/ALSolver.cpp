@@ -66,12 +66,13 @@ namespace polyfem::solver
 			update_barrier_stiffness(sol);
 			tmp_sol = sol;
 
+			std::shared_ptr<polysolve::nonlinear::Solver> nl_solver;
 			try
 			{
 				const auto scale = nl_problem.normalize_forms();
-				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
-															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
-														: nl_solverin;
+				nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+														 nl_solver_params, linear_solver, characteristic_length * scale, logger())
+												   : nl_solverin;
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -84,6 +85,7 @@ namespace polyfem::solver
 				if (err_msg.find("Reached iteration limit") != std::string::npos)
 					log_and_throw_error("Reached iteration limit in AL");
 			}
+			record_solver_info(nl_solver);
 
 			sol = tmp_sol;
 
@@ -141,12 +143,13 @@ namespace polyfem::solver
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver;
 		try
 		{
 			const auto scale = nl_problem.normalize_forms();
-			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
-														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
-													: nl_solverin;
+			nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+													 nl_solver_params, linear_solver, characteristic_length * scale, logger())
+											   : nl_solverin;
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}
@@ -157,7 +160,23 @@ namespace polyfem::solver
 		}
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
+		record_solver_info(nl_solver);
 		post_subsolve(0);
+	}
+
+	void ALSolver::record_solver_info(const std::shared_ptr<polysolve::nonlinear::Solver> &nl_solver)
+	{
+		// Null only when normalizing the forms or creating the solver threw, i.e. no solver ran.
+		if (nl_solver == nullptr)
+		{
+			nl_solver_info = json();
+			return;
+		}
+		nl_solver_info = nl_solver->info();
+		// minimize() refreshes info()["status"] only when it returns; when it throws (line search
+		// failed, ...) and solve_al carries on, info() still holds a stale "NotStarted" or "Continue",
+		// while status() holds the reason it stopped.
+		nl_solver_info["status"] = nl_solver->status();
 	}
 
 } // namespace polyfem::solver
