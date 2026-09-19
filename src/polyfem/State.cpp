@@ -1020,7 +1020,7 @@ namespace polyfem
 				logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
 			else
 			{
-				if (args["constraints"]["hard"].empty())
+				if (args["constraints"]["hard"].empty() && in_memory_hard_constraints.empty())
 					log_and_throw_error("Static problem need to have some Dirichlet nodes!");
 				else
 					logger().warn("Relying on hard constraints to avoid infinite solutions");
@@ -1330,7 +1330,8 @@ namespace polyfem
 		build_collision_mesh(
 			*mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return resolve_input_path(p); },
-			in_node_to_node, collision_mesh);
+			in_node_to_node, in_memory_collision_proxy ? &*in_memory_collision_proxy : nullptr,
+			collision_mesh);
 	}
 
 	void State::build_collision_mesh(
@@ -1343,6 +1344,7 @@ namespace polyfem
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
+		const mesh::CollisionProxyData *in_memory_collision_proxy,
 		ipc::CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd collision_vertices;
@@ -1351,11 +1353,41 @@ namespace polyfem
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 		std::vector<std::set<int>> collision_body_ids; // empty = no body-pair filtering
 
+		// An in-memory proxy replaces the files of /contact/collision_mesh. A proxy that is set but
+		// would be ignored (collision mesh absent or disabled), or a second source next to it, is a
+		// caller bug, so both are errors.
+		if (in_memory_collision_proxy != nullptr)
+		{
+			if (!args.contains("/contact/collision_mesh"_json_pointer)
+				|| !args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
+				log_and_throw_error("An in-memory collision proxy is set, but /contact/collision_mesh is absent or not enabled!");
+			for (const std::string key : {"mesh", "linear_map", "collision_body_ids", "max_edge_length"})
+				if (args.at("/contact/collision_mesh"_json_pointer).contains(key))
+					log_and_throw_error("An in-memory collision proxy is set, and so is /contact/collision_mesh/{}!", key);
+		}
+
 		if (args.contains("/contact/collision_mesh"_json_pointer)
 			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
 		{
 			const json collision_mesh_args = args.at("/contact/collision_mesh"_json_pointer);
-			if (collision_mesh_args.contains("linear_map"))
+			if (in_memory_collision_proxy != nullptr)
+			{
+				// Same as the file route below, from the loaded arrays on.
+				// TODO: handle transformation per geometry
+				const json transformation = json_as_array(args["geometry"])[0]["transformation"];
+				mesh::load_collision_proxy(
+					*in_memory_collision_proxy, in_node_to_node, transformation, collision_vertices,
+					collision_codim_vids, collision_edges, collision_triangles, displacement_map_entries);
+
+				if (!in_memory_collision_proxy->collision_body_ids.empty())
+				{
+					const Eigen::MatrixXi &primitives =
+						collision_triangles.rows() > 0 ? collision_triangles : collision_edges;
+					collision_body_ids = mesh::load_collision_proxy_collision_body_ids(
+						in_memory_collision_proxy->collision_body_ids, primitives, collision_vertices.rows());
+				}
+			}
+			else if (collision_mesh_args.contains("linear_map"))
 			{
 				assert(displacement_map_entries.empty());
 				assert(collision_mesh_args.contains("mesh"));

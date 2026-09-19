@@ -20,6 +20,7 @@
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
 
@@ -53,6 +54,7 @@
 #include <utility>
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 
 // Forward declaration
 namespace polysolve::nonlinear
@@ -381,6 +383,12 @@ namespace polyfem
 		/// timedependent stuff cached
 		solver::SolveData solve_data;
 
+		/// Hard and soft constraints held in memory, for a caller that runs polyfem in its own
+		/// process. They are applied after the JSON's constraints.hard / constraints.soft files, in
+		/// list order, and count as hard constraints wherever those files do. Set before build_basis.
+		std::vector<solver::ConstraintData> in_memory_hard_constraints;
+		std::vector<solver::ConstraintData> in_memory_soft_constraints;
+
 		/// @brief Linear solver instance from the most recent static linear solve.
 		///
 		/// This cache is meant for library user to resue the factorization. Polyfem
@@ -671,12 +679,18 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
+		/// @brief Collision proxy held in memory, used in place of the files of /contact/collision_mesh.
+		/// When set, /contact/collision_mesh must be present with "enabled": true and none of "mesh",
+		/// "linear_map", "collision_body_ids", "max_edge_length". Set before build_basis.
+		std::optional<mesh::CollisionProxyData> in_memory_collision_proxy;
+
 		/// @brief IPC collision mesh under periodic BC
 		ipc::CollisionMesh periodic_collision_mesh;
 		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
 		Eigen::VectorXi periodic_collision_mesh_to_basis;
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
+		/// @param in_memory_collision_proxy proxy used in place of /contact/collision_mesh's files, or nullptr
 		static void build_collision_mesh(
 			const mesh::Mesh &mesh,
 			const int n_bases,
@@ -687,6 +701,7 @@ namespace polyfem
 			const json &args,
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
+			const mesh::CollisionProxyData *in_memory_collision_proxy,
 			ipc::CollisionMesh &collision_mesh);
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis

@@ -14,8 +14,10 @@
 #include <Eigen/Core>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 
@@ -53,6 +55,36 @@ namespace polyfem::solver
 	class PressureForm;
 	class NormalAdhesionForm;
 	class TangentialAdhesionForm;
+
+	/// @brief The contents of one constraint file (an entry of constraints.hard or constraints.soft),
+	/// held in memory. The fields mirror the file's datasets, and SolveData::init_forms turns both
+	/// into forms through the same code, so a file and its contents here give the same form.
+	struct ConstraintData
+	{
+		/// @brief A matrix in either layout a constraint file can hold: dense (dataset "A"), or
+		/// triplets (group "A_triplets" with rows, cols, values and shape [n_rows, n_cols]).
+		/// The triplet layout is used iff shape is non-empty.
+		struct Matrix
+		{
+			Eigen::MatrixXd dense;
+			std::vector<int> rows;
+			std::vector<int> cols;
+			std::vector<double> values;
+			std::vector<long> shape;
+		};
+
+		/// The nodes A's columns refer to: local node i is input node local2global[i]; empty means
+		/// local node i is input node i. Mapped through in_node_to_node, as in the file route.
+		std::vector<int> local2global;
+		Matrix A;
+		Eigen::MatrixXd b;
+		/// Hard constraints only: the optional projection A_proj (with b_proj), as the file's
+		/// "A_proj" or "A_proj_triplets". Ignored for soft constraints, as in the file.
+		std::optional<Matrix> A_proj;
+		Eigen::MatrixXd b_proj;
+		/// Soft constraints only: the penalty weight (the file route takes it from the JSON entry).
+		double weight = 0;
+	};
 
 	/// class to store time stepping data
 	class SolveData
@@ -101,10 +133,12 @@ namespace polyfem::solver
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
 
-			// Constraint forms
+			// Constraint forms: the files first, then the in-memory constraints, each in list order
 			const size_t obstacle_ndof,
 			const std::vector<std::string> &hard_constraint_files,
 			const std::vector<json> &soft_constraint_files,
+			const std::vector<ConstraintData> &hard_constraints,
+			const std::vector<ConstraintData> &soft_constraints,
 
 			// Contact form
 			const bool contact_enabled,

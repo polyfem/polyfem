@@ -33,6 +33,129 @@ namespace polyfem::solver
 {
 	using namespace polyfem::time_integrator;
 
+	namespace
+	{
+		/// Reads a constraint file into memory. Only hard constraints read the projection, as
+		/// only they use it.
+		ConstraintData read_constraint_file(const std::string &path, const bool is_hard)
+		{
+			h5pp::File file(path, h5pp::FileAccess::READONLY);
+			ConstraintData data;
+			if (!file.findDatasets("local2global").empty())
+				data.local2global = file.readDataset<std::vector<int>>("local2global");
+
+			data.b = file.readDataset<Eigen::MatrixXd>("b");
+
+			if (!file.findDatasets("A").empty())
+			{
+				data.A.dense = file.readDataset<Eigen::MatrixXd>("A");
+
+				if (is_hard && !file.findDatasets("A_proj").empty())
+				{
+					data.A_proj.emplace();
+					data.A_proj->dense = file.readDataset<Eigen::MatrixXd>("A_proj");
+					if (file.findDatasets("b_proj").empty())
+						log_and_throw_error("Missing b_proj in hard constraint file");
+
+					data.b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
+				}
+			}
+			else
+			{
+				data.A.values = file.readDataset<std::vector<double>>("A_triplets/values");
+				data.A.rows = file.readDataset<std::vector<int>>("A_triplets/rows");
+				data.A.cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+				data.A.shape = file.readDataset<std::vector<long>>("A_triplets/shape");
+
+				if (is_hard && !file.findGroups("A_proj_triplets").empty())
+				{
+					if (file.findDatasets("b_proj").empty())
+						log_and_throw_error("Missing b_proj in hard constraint file");
+					if (file.findDatasets("rows", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/rows in hard constraint file");
+					if (file.findDatasets("cols", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/cols in hard constraint file");
+					if (file.findDatasets("values", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/values in hard constraint file");
+
+					data.A_proj.emplace();
+					data.A_proj->values = file.readDataset<std::vector<double>>("A_proj_triplets/values");
+					data.A_proj->rows = file.readDataset<std::vector<int>>("A_proj_triplets/rows");
+					data.A_proj->cols = file.readDataset<std::vector<int>>("A_proj_triplets/cols");
+					data.b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
+					data.A_proj->shape = file.readDataset<std::vector<long>>("A_proj_triplets/shape");
+				}
+			}
+
+			return data;
+		}
+
+		/// local2global mapped to FE nodes: an empty map is the identity on input nodes.
+		std::vector<int> constraint_local2global(const ConstraintData &data, const Eigen::VectorXi &in_node_to_node)
+		{
+			std::vector<int> local2global = data.local2global;
+			if (local2global.empty())
+			{
+				local2global.resize(in_node_to_node.size());
+
+				for (int i = 0; i < local2global.size(); ++i)
+					local2global[i] = in_node_to_node[i];
+			}
+			else
+			{
+				for (auto &v : local2global)
+					v = in_node_to_node[v];
+			}
+			return local2global;
+		}
+
+		/// Scatters the constraint rows A x = b into the full dof space, in A's layout.
+		void scatter_constraint(
+			const int ndof, const int dim, const ConstraintData &data, const std::vector<int> &local2global,
+			StiffnessMatrix &A, Eigen::MatrixXd &b)
+		{
+			if (data.A.shape.empty())
+				utils::scatter_matrix(ndof, dim, data.A.dense, data.b, local2global, A, b);
+			else
+				utils::scatter_matrix(ndof, dim, data.A.shape, data.A.rows, data.A.cols, data.A.values, data.b, local2global, A, b);
+		}
+
+		/// The form of a hard constraint, the same for a file and for its contents in memory.
+		std::shared_ptr<MatrixLagrangianForm> build_hard_constraint(
+			const int ndof, const int dim, const Eigen::VectorXi &in_node_to_node, const ConstraintData &data)
+		{
+			const std::vector<int> local2global = constraint_local2global(data, in_node_to_node);
+
+			StiffnessMatrix A, A_proj;
+			Eigen::MatrixXd b, b_proj;
+			scatter_constraint(ndof, dim, data, local2global, A, b);
+
+			if (data.A_proj.has_value())
+			{
+				const ConstraintData::Matrix &P = *data.A_proj;
+				if (P.shape.empty())
+					utils::scatter_matrix_col(ndof, dim, P.dense, data.b_proj, local2global, A_proj, b_proj);
+				else
+					utils::scatter_matrix_col(ndof, dim, P.shape, P.rows, P.cols, P.values, data.b_proj, local2global, A_proj, b_proj);
+			}
+
+			return std::make_shared<MatrixLagrangianForm>(A, b, A_proj, b_proj);
+		}
+
+		/// The form of a soft constraint, the same for a file and for its contents in memory.
+		std::shared_ptr<QuadraticPenaltyForm> build_soft_constraint(
+			const int ndof, const int dim, const Eigen::VectorXi &in_node_to_node, const ConstraintData &data)
+		{
+			const std::vector<int> local2global = constraint_local2global(data, in_node_to_node);
+
+			StiffnessMatrix A;
+			Eigen::MatrixXd b;
+			scatter_constraint(ndof, dim, data, local2global, A, b);
+
+			return std::make_shared<QuadraticPenaltyForm>(A, b, data.weight);
+		}
+	} // namespace
+
 	std::vector<std::shared_ptr<Form>> SolveData::init_forms(
 		// General
 		const Units &units,
@@ -78,6 +201,8 @@ namespace polyfem::solver
 		const size_t obstacle_ndof,
 		const std::vector<std::string> &hard_constraint_files,
 		const std::vector<json> &soft_constraint_files,
+		const std::vector<ConstraintData> &hard_constraints,
+		const std::vector<ConstraintData> &soft_constraints,
 
 		// Contact form
 		const bool contact_enabled,
@@ -219,75 +344,14 @@ namespace polyfem::solver
 		for (const auto &path : hard_constraint_files)
 		{
 			logger().debug("Setting up hard constraints for {}", path);
-			h5pp::File file(path, h5pp::FileAccess::READONLY);
-			std::vector<int> local2global;
-			if (!file.findDatasets("local2global").empty())
-				local2global = file.readDataset<std::vector<int>>("local2global");
-
-			if (local2global.empty())
-			{
-				local2global.resize(in_node_to_node.size());
-
-				for (int i = 0; i < local2global.size(); ++i)
-					local2global[i] = in_node_to_node[i];
-			}
-			else
-			{
-				for (auto &v : local2global)
-					v = in_node_to_node[v];
-			}
-
-			Eigen::MatrixXd bin = file.readDataset<Eigen::MatrixXd>("b");
-
-			StiffnessMatrix A, A_proj;
-			Eigen::MatrixXd b, b_proj;
-
-			if (!file.findDatasets("A").empty())
-			{
-				Eigen::MatrixXd Ain = file.readDataset<Eigen::MatrixXd>("A");
-				utils::scatter_matrix(ndof, dim, Ain, bin, local2global, A, b);
-
-				if (!file.findDatasets("A_proj").empty())
-				{
-					Eigen::MatrixXd A_proj_in = file.readDataset<Eigen::MatrixXd>("A_proj");
-					if (file.findDatasets("b_proj").empty())
-						log_and_throw_error("Missing b_proj in hard constraint file");
-
-					Eigen::MatrixXd b_proj_in = file.readDataset<Eigen::MatrixXd>("b_proj");
-					utils::scatter_matrix_col(ndof, dim, A_proj_in, b_proj_in, local2global, A_proj, b_proj);
-				}
-			}
-			else
-			{
-				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
-				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
-				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
-				std::vector<long> shape = file.readDataset<std::vector<long>>("A_triplets/shape");
-				utils::scatter_matrix(ndof, dim, shape, rows, cols, values, bin, local2global, A, b);
-
-				if (!file.findGroups("A_proj_triplets").empty())
-				{
-					if (file.findDatasets("b_proj").empty())
-						log_and_throw_error("Missing b_proj in hard constraint file");
-					if (file.findDatasets("rows", "/A_proj_triplets").empty())
-						log_and_throw_error("Missing A_proj_triplets/rows in hard constraint file");
-					if (file.findDatasets("cols", "/A_proj_triplets").empty())
-						log_and_throw_error("Missing A_proj_triplets/cols in hard constraint file");
-					if (file.findDatasets("values", "/A_proj_triplets").empty())
-						log_and_throw_error("Missing A_proj_triplets/values in hard constraint file");
-
-					std::vector<double> values_proj = file.readDataset<std::vector<double>>("A_proj_triplets/values");
-					std::vector<int> rows_proj = file.readDataset<std::vector<int>>("A_proj_triplets/rows");
-					std::vector<int> cols_proj = file.readDataset<std::vector<int>>("A_proj_triplets/cols");
-					Eigen::MatrixXd b_projin = file.readDataset<Eigen::MatrixXd>("b_proj");
-					std::vector<long> shape_proj = file.readDataset<std::vector<long>>("A_proj_triplets/shape");
-
-					utils::scatter_matrix_col(ndof, dim, shape_proj, rows_proj, cols_proj, values_proj, b_projin, local2global, A_proj, b_proj);
-				}
-			}
-
-			al_form.push_back(std::make_shared<MatrixLagrangianForm>(A, b, A_proj, b_proj));
+			al_form.push_back(build_hard_constraint(ndof, dim, in_node_to_node, read_constraint_file(path, /*is_hard=*/true)));
 			// forms.push_back(al_form.back());
+		}
+
+		for (int i = 0; i < hard_constraints.size(); ++i)
+		{
+			logger().debug("Setting up in-memory hard constraints {}", i);
+			al_form.push_back(build_hard_constraint(ndof, dim, in_node_to_node, hard_constraints[i]));
 		}
 
 		for (const auto &j : soft_constraint_files)
@@ -296,45 +360,15 @@ namespace polyfem::solver
 			double weight = j["weight"];
 
 			logger().debug("Setting up soft constraints for {}", path);
-			h5pp::File file(path, h5pp::FileAccess::READONLY);
-			std::vector<int> local2global;
-			if (!file.findDatasets("local2global").empty())
-				local2global = file.readDataset<std::vector<int>>("local2global");
+			ConstraintData data = read_constraint_file(path, /*is_hard=*/false);
+			data.weight = weight;
+			forms.push_back(build_soft_constraint(ndof, dim, in_node_to_node, data));
+		}
 
-			if (local2global.empty())
-			{
-				local2global.resize(in_node_to_node.size());
-
-				for (int i = 0; i < local2global.size(); ++i)
-					local2global[i] = in_node_to_node[i];
-			}
-			else
-			{
-				for (auto &v : local2global)
-					v = in_node_to_node[v];
-			}
-
-			Eigen::MatrixXd bin = file.readDataset<Eigen::MatrixXd>("b");
-
-			StiffnessMatrix A;
-			Eigen::MatrixXd b;
-
-			if (!file.findDatasets("A").empty())
-			{
-				Eigen::MatrixXd Ain = file.readDataset<Eigen::MatrixXd>("A");
-				utils::scatter_matrix(ndof, dim, Ain, bin, local2global, A, b);
-			}
-			else
-			{
-				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
-				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
-				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
-				std::vector<long> shape = file.readDataset<std::vector<long>>("A_triplets/shape");
-
-				utils::scatter_matrix(ndof, dim, shape, rows, cols, values, bin, local2global, A, b);
-			}
-
-			forms.push_back(std::make_shared<QuadraticPenaltyForm>(A, b, weight));
+		for (int i = 0; i < soft_constraints.size(); ++i)
+		{
+			logger().debug("Setting up in-memory soft constraints {}", i);
+			forms.push_back(build_soft_constraint(ndof, dim, in_node_to_node, soft_constraints[i]));
 		}
 
 		if (macro_strain_constraint.is_active())

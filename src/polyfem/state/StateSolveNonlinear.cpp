@@ -284,6 +284,7 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
+			in_memory_hard_constraints, in_memory_soft_constraints,
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,

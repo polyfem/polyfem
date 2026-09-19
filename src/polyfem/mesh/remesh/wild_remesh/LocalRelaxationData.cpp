@@ -274,6 +274,8 @@ namespace polyfem::mesh
 				/*obstacle_ndof=*/0,
 				/*hard_constraint_files=*/std::vector<std::string>(),
 				/*soft_constraint_files=*/std::vector<json>(),
+				/*hard_constraints=*/std::vector<solver::ConstraintData>(),
+				/*soft_constraints=*/std::vector<solver::ConstraintData>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
