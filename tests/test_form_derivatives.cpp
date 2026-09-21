@@ -302,6 +302,38 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 	test_form(form, *state_ptr);
 }
 
+TEST_CASE("ESP contact form derivatives", "[form][form_derivatives][contact_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+
+	const double dhat = 1e-3;
+	const double barrier_stiffness = 1e7;
+	const bool is_time_dependent = GENERATE(true, false);
+	const bool use_adaptive_barrier_stiffness = false;
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+	// Order 1 is vertex quadrature; a higher order exercises the fixed rule on
+	// the reference element, which is the part that differs from IPC.
+	const int quadrature_order = GENERATE(1, 5);
+	const bool area_weights = GENERATE(true, false);
+	const json esp_params = json::object(
+		{{"quadrature_order", quadrature_order},
+		 {"dbar_factor", 1.0},
+		 {"normalize_weights", false},
+		 {"area_weights", area_weights}});
+
+	ESPContactForm form(
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, esp_params,
+		/*skip_obstacles=*/false, /*barrier=*/nullptr, /*use_adaptive_dhat=*/false,
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
+	form.set_barrier_stiffness(barrier_stiffness);
+
+	test_form(form, *state_ptr);
+}
+
 TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
