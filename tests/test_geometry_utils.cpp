@@ -71,6 +71,57 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("read_surface_mesh preserves tets for a 3D msh", "[geometry][mesh_utils]")
+{
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/bar/bar-6.msh";
+
+	Eigen::MatrixXd vertices;
+	Eigen::VectorXi codim_vertices;
+	Eigen::MatrixXi codim_edges, faces, tets;
+	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
+
+	REQUIRE(vertices.cols() == 3);
+	REQUIRE(tets.cols() == 4);
+	REQUIRE(tets.rows() > 0);
+	REQUIRE(faces.cols() == 3);
+	REQUIRE(faces.rows() > 0);
+
+	// Interior vertices are referenced by tets, not faces, but are not
+	// codimensional, so the overload must leave codim_vertices empty.
+	CHECK(codim_vertices.size() == 0);
+	CHECK(codim_edges.rows() == 0);
+
+	// Both index into the full vertex set: no remapping.
+	CHECK(tets.minCoeff() >= 0);
+	CHECK(tets.maxCoeff() < vertices.rows());
+	CHECK(faces.minCoeff() >= 0);
+	CHECK(faces.maxCoeff() < vertices.rows());
+
+	// The surface is a strict subset of the volume.
+	CHECK(faces.rows() < 4 * tets.rows());
+
+	// The 5-argument overload sees the same vertices and faces.
+	Eigen::MatrixXd surf_vertices;
+	Eigen::VectorXi surf_codim_vertices;
+	Eigen::MatrixXi surf_codim_edges, surf_faces;
+	REQUIRE(polyfem::mesh::read_surface_mesh(
+		path, surf_vertices, surf_codim_vertices, surf_codim_edges, surf_faces));
+	CHECK(surf_faces.rows() == faces.rows());
+}
+
+TEST_CASE("read_surface_mesh returns no tets for a surface mesh", "[geometry][mesh_utils]")
+{
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/obstacles/funnel.obj";
+
+	Eigen::MatrixXd vertices;
+	Eigen::VectorXi codim_vertices;
+	Eigen::MatrixXi codim_edges, faces, tets;
+	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
+
+	CHECK(tets.rows() == 0);
+	CHECK(faces.rows() > 0);
+}
+
 TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][gmsh]")
 {
 	using namespace polyfem;
