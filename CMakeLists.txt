@@ -282,9 +282,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # Jacobian
 if(POLYFEM_WITH_MISO)
-    # Must precede hocgv_miso: this only exists to patch tight before misolib
-    # pulls it in. See cmake/recipes/tight.cmake.
-    include(tight)
     include(hocgv_miso)
     target_link_libraries(polyfem PRIVATE miso)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
