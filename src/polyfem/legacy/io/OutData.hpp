@@ -145,7 +145,8 @@ namespace polyfem::legacy::io
 			const std::string &solution_path,
 			const std::string &stress_path,
 			const std::string &mises_path,
-			const bool is_contact_enabled) const;
+			const bool is_contact_enabled,
+			const std::map<ipc::index_t, unsigned> &quadrature_points_ee = std::map<ipc::index_t, unsigned>()) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
@@ -163,7 +164,8 @@ namespace polyfem::legacy::io
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts,
-					  const bool is_contact_enabled) const;
+					  const bool is_contact_enabled,
+					  const std::map<ipc::index_t, unsigned> &quadrature_points_ee = std::map<ipc::index_t, unsigned>()) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
@@ -197,7 +199,8 @@ namespace polyfem::legacy::io
 						  const double t,
 						  const double dt_in,
 						  const ExportOptions &opts,
-						  const bool is_contact_enabled) const;
+						  const bool is_contact_enabled,
+						  const std::map<ipc::index_t, unsigned> &quadrature_points_ee = std::map<ipc::index_t, unsigned>()) const;
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
@@ -358,6 +361,21 @@ namespace polyfem::legacy::io
 	protected:
 		std::ofstream file;
 		const solver::SolveData &solve_data;
+	};
+
+	class GradientNormCSVWriter
+	{
+	public:
+		GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices);
+		~GradientNormCSVWriter();
+
+		void write(const int i, const Eigen::MatrixXd &sol);
+
+	protected:
+		std::ofstream file;
+		const solver::SolveData &solve_data;
+		const ipc::CollisionMesh &collision_mesh_;
+		const int n_obstacle_vertices_;
 	};
 
 	class RuntimeStatsCSVWriter

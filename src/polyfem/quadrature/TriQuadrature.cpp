@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 
 namespace polyfem
 {
@@ -20,7 +21,7 @@ namespace polyfem
 #include <polyfem/autogen/auto_triangle_corner.ipp>
 
 					default:
-						assert(false);
+						throw std::runtime_error("TriQuadrature: unsupported corner quadrature order " + std::to_string(order));
 					};
 				}
 				else
@@ -30,7 +31,7 @@ namespace polyfem
 #include <polyfem/autogen/auto_triangle.ipp>
 
 					default:
-						assert(false);
+						throw std::runtime_error("TriQuadrature: unsupported quadrature order " + std::to_string(order));
 					};
 				}
 			}

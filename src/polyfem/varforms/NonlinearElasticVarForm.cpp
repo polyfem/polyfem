@@ -23,7 +23,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
@@ -191,10 +191,10 @@ namespace polyfem::varform
 			&& args["contact"]["use_gcp_formulation"]
 			&& args["contact"]["use_adaptive_dhat"])
 		{
-			const auto smooth_contact = std::dynamic_pointer_cast<solver::SmoothContactForm>(solve_data_.contact_form);
-			if (smooth_contact)
+			const auto gcp = std::dynamic_pointer_cast<solver::GCPContactForm>(solve_data_.contact_form);
+			if (gcp)
 			{
-				const auto &set = smooth_contact->collision_set();
+				const auto &set = gcp->collision_set();
 				if (actual_dim == 2)
 				{
 					Eigen::VectorXd dhats(collision_mesh_.num_edges());
@@ -820,8 +820,12 @@ namespace polyfem::varform
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
+			args["contact"]["collision_set_type"].get<std::string>(),
+			args["contact"]["skip_obstacles"].get<bool>(),
+			args["contact"]["barrier"].get<std::string>(),
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
+			args["solver"]["contact"]["dhat_epsilon_scale"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -832,6 +836,9 @@ namespace polyfem::varform
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
+			// High Order Contact Form
+			args["contact"]["use_esp_formulation"],
+			args["contact"]["esp_params"],
 			// Normal Adhesion Form
 			args["contact"]["adhesion"]["adhesion_enabled"],
 			args["contact"]["adhesion"]["dhat_p"],

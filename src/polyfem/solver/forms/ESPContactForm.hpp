@@ -1,0 +1,101 @@
+#pragma once
+
+#include "ContactForm.hpp"
+#include <ipc/esp/esp_collisions.hpp>
+#include <ipc/esp/esp_potential.hpp>
+#include <ipc/esp/adaptive_support.hpp>
+#include <cmath>
+
+namespace polyfem::solver
+{
+
+	class ESPContactForm : public ContactForm
+	{
+	public:
+		ESPContactForm(const ipc::CollisionMesh &collision_mesh,
+					   const double dhat,
+					   const double avg_mass,
+					   const json esp_params,
+					   const bool skip_obstacles,
+					   std::shared_ptr<ipc::Barrier> barrier,
+					   const bool use_adaptive_dhat,
+					   const bool use_adaptive_barrier_stiffness,
+					   const bool is_time_dependent,
+					   const bool enable_shape_derivatives,
+					   const ipc::BroadPhaseMethod broad_phase_method,
+					   const double ccd_tolerance,
+					   const int ccd_max_iterations,
+					   const double dhat_epsilon_scale);
+
+		virtual std::string name() const override { return "high-order-contact"; }
+
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
+
+		void force_shape_derivative(const ipc::ESPCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
+
+		/// @brief Update fields after a step in the optimization
+		/// @param iter_num Optimization iteration number
+		/// @param x Current solution
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
+
+		const ipc::ESPParameters &get_params() const { return params; }
+
+		const ipc::ESPCollisions &collision_set() const { return collision_set_; }
+
+		const ipc::ESPPotential &barrier_potential() const { return barrier_potential_; }
+
+		const ipc::ESPPotential::CountMap &get_ee_qp_count() const
+		{
+			return barrier_potential_.get_edge_evaluation_count();
+		}
+
+		bool using_adaptive_dhat() const { return use_adaptive_dhat_; }
+
+		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const
+		{
+			return adaptive_support_;
+		}
+
+	protected:
+		/// @brief Compute the contact barrier potential value
+		/// @param x Current solution
+		/// @return Value of the contact barrier potential
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param x Current solution
+		/// @param hessian Output Hessian of the value wrt x
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+
+		double barrier_support_size() const override { return dhat_; }
+
+		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
+
+	private:
+		ipc::ESPParameters params;
+
+		/// @brief Cached constraint set for the current solution
+		ipc::ESPCollisions collision_set_;
+
+		/// @brief Contact potential
+		ipc::ESPPotential barrier_potential_;
+
+		Eigen::MatrixXd cached_displaced_surface;
+
+		/// @brief Whether to use adaptive dhat
+		bool use_adaptive_dhat_;
+
+		/// @brief Adaptive support for per-vertex dhat values (computed at rest config)
+		std::shared_ptr<ipc::AdaptiveSupport> adaptive_support_;
+	};
+} // namespace polyfem::solver

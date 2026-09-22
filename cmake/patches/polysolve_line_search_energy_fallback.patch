@@ -1,0 +1,72 @@
+diff --git a/nonlinear-solver-spec.json b/nonlinear-solver-spec.json
+index 8981fea..b2cb8cb 100644
+--- a/nonlinear-solver-spec.json
++++ b/nonlinear-solver-spec.json
+@@ -588,6 +588,7 @@
+         "optional": [
+             "method",
+             "use_grad_norm_tol",
++            "accept_energy_decrease_in_grad_mode",
+             "min_step_size",
+             "max_step_size_iter",
+             "min_step_size_final",
+@@ -618,6 +619,12 @@
+         "type": "float",
+         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
+     },
++    {
++        "pointer": "/line_search/accept_energy_decrease_in_grad_mode",
++        "default": false,
++        "type": "bool",
++        "doc": "When line-search is using the norm of the gradient, also accept a step that decreases the energy. The gradient-only test can fail to accept any step near convergence, where the gradient plateaus while the energy is still descending."
++    },
+     {
+         "pointer": "/line_search/min_step_size",
+         "default": 1e-10,
+diff --git a/src/polysolve/nonlinear/line_search/Backtracking.cpp b/src/polysolve/nonlinear/line_search/Backtracking.cpp
+index 70f480c..574b9b5 100644
+--- a/src/polysolve/nonlinear/line_search/Backtracking.cpp
++++ b/src/polysolve/nonlinear/line_search/Backtracking.cpp
+@@ -77,7 +77,14 @@ namespace polysolve::nonlinear::line_search
+         {
+             TVector new_grad;
+             objFunc.gradient(new_x, new_grad);
+-            return objFunc.grad_norm(new_grad, norm_type) < objFunc.grad_norm(old_grad, norm_type); // TODO cache old grad norm
++            // TODO cache old grad norm
++            if (objFunc.grad_norm(new_grad, norm_type)
++                < objFunc.grad_norm(old_grad, norm_type))
++                return true;
++            // Optionally also accept a step that decreases the energy: the
++            // gradient-only test can stall near convergence, where the
++            // gradient plateaus but the energy is still descending.
++            return accept_energy_decrease_in_grad_mode && new_energy < old_energy;
+         }
+         return new_energy < old_energy;
+     }
+diff --git a/src/polysolve/nonlinear/line_search/LineSearch.cpp b/src/polysolve/nonlinear/line_search/LineSearch.cpp
+index 515a44f..de8caa4 100644
+--- a/src/polysolve/nonlinear/line_search/LineSearch.cpp
++++ b/src/polysolve/nonlinear/line_search/LineSearch.cpp
+@@ -68,6 +68,9 @@ namespace polysolve::nonlinear::line_search
+ 
+         default_init_step_size = params["line_search"]["default_init_step_size"];
+         step_ratio = params["line_search"]["step_ratio"];
++
++        accept_energy_decrease_in_grad_mode =
++            params["line_search"]["accept_energy_decrease_in_grad_mode"];
+     }
+ 
+     double LineSearch::line_search(
+diff --git a/src/polysolve/nonlinear/line_search/LineSearch.hpp b/src/polysolve/nonlinear/line_search/LineSearch.hpp
+index ad9ebbd..4a49b1e 100644
+--- a/src/polysolve/nonlinear/line_search/LineSearch.hpp
++++ b/src/polysolve/nonlinear/line_search/LineSearch.hpp
+@@ -74,6 +74,8 @@ namespace polysolve::nonlinear::line_search
+         double classical_line_search_time;
+ 
+         double use_grad_norm_tol = -1;
++        /// In gradient-norm mode, also accept a step that decreases the energy.
++        bool accept_energy_decrease_in_grad_mode = false;
+         NormType norm_type = NormType::EUCLIDEAN;
+ 
+     protected:

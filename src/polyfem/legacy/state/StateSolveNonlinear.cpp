@@ -28,6 +28,9 @@
 #include <Eigen/Core>
 
 #include <ipc/ipc.hpp>
+#include <ipc/distance/distance_type.hpp>
+#include <ipc/distance/distance_type_exact.hpp>
+#include <ipc/utils/profile_registry.hpp>
 
 #include <spdlog/fmt/fmt.h>
 
@@ -43,6 +46,34 @@ namespace polyfem::legacy
 	using namespace time_integrator;
 	using namespace io;
 	using namespace utils;
+
+	namespace
+	{
+		void record_nl_solver_stats(const polysolve::nonlinear::Solver &nl_solver)
+		{
+			const json info = nl_solver.info();
+			auto &reg = ipc::ProfileRegistry::instance();
+			const auto pull = [&](const char *key, const char *out) {
+				auto it = info.find(key);
+				if (it != info.end() && it->is_number())
+					reg.add_value(out, it->get<double>());
+			};
+			const int iters =
+				(info.contains("iterations") && info["iterations"].is_number())
+					? info["iterations"].get<int>()
+					: 0;
+			pull("iterations", "polyfem.newton.iters");
+			pull("total_time", "polyfem.newton.total_time");
+			const auto pull_per_iter = [&](const char *key, const char *out) {
+				auto it = info.find(key);
+				if (it != info.end() && it->is_number())
+					reg.add_value(out, it->get<double>() * iters);
+			};
+			pull_per_iter("time_assembly", "polyfem.newton.time_assembly");
+			pull_per_iter("time_inverting", "polyfem.newton.time_inverting");
+			pull_per_iter("time_line_search", "polyfem.newton.time_line_search");
+		}
+	} // namespace
 
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
@@ -136,7 +167,10 @@ namespace polyfem::legacy
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			{
+				POLYFEM_SCOPED_TIMER("Save timestep");
+				save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			}
 			save_i++;
 
 			if (user_post_step)
@@ -156,6 +190,13 @@ namespace polyfem::legacy
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			// Flush the ipc-toolkit profiling registry to disk. The file is
+			// overwritten after every time step so the latest cumulative
+			// timings/counters are always available for inspection.
+			ipc::ProfileRegistry::instance().dump_json(
+				resolve_output_path("ipc_profile.json"));
+
 			if (time_callback)
 				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 
@@ -257,6 +298,9 @@ namespace polyfem::legacy
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
+		ipc::DistanceTypeConfig::instance().set_use_standard(
+			args["contact"]["use_standard_distance_type"].get<bool>());
+
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
@@ -284,8 +328,12 @@ namespace polyfem::legacy
 			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
+			args["contact"]["collision_set_type"].get<std::string>(),
+			args["contact"]["skip_obstacles"].get<bool>(),
+			args["contact"]["barrier"].get<std::string>(),
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
+			args["solver"]["contact"]["dhat_epsilon_scale"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -296,6 +344,9 @@ namespace polyfem::legacy
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
+			// High Order Contact Form
+			args["contact"]["use_esp_formulation"],
+			args["contact"]["esp_params"],
 			// Normal Adhesion Form
 			is_adhesion_enabled(),
 			args["contact"]["adhesion"]["dhat_p"],
@@ -397,15 +448,22 @@ namespace polyfem::legacy
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			record_nl_solver_stats(*nl_solver);
 			save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		{
+			POLYFEM_SCOPED_TIMER("AL solve");
+			al_solver.solve_al(nl_problem, sol,
+							   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		}
 
-		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		{
+			POLYFEM_SCOPED_TIMER("Reduced solve");
+			al_solver.solve_reduced(nl_problem, sol,
+									args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		}
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -420,6 +478,7 @@ namespace polyfem::legacy
 
 		if (!optimization_enabled)
 		{
+			POLYFEM_SCOPED_TIMER("Lagging loop");
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
 			for (int lag_i = 1; !lagging_converged; lag_i++)
@@ -478,6 +537,7 @@ namespace polyfem::legacy
 					 {"t", step}, // TODO: null if static?
 					 {"lag_i", lag_i},
 					 {"info", nl_solver->info()}});
+				record_nl_solver_stats(*nl_solver);
 				save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

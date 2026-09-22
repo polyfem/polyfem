@@ -1392,6 +1392,50 @@ bool polyfem::mesh::read_surface_mesh(
 	return true;
 }
 
+bool polyfem::mesh::read_surface_mesh(
+	const std::string &mesh_path,
+	Eigen::MatrixXd &vertices,
+	Eigen::VectorXi &codim_vertices,
+	Eigen::MatrixXi &codim_edges,
+	Eigen::MatrixXi &faces,
+	Eigen::MatrixXi &tets)
+{
+	vertices.resize(0, 0);
+	codim_vertices.resize(0);
+	codim_edges.resize(0, 0);
+	faces.resize(0, 0);
+	tets.resize(0, 0);
+
+	std::string lowername = mesh_path;
+	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+
+	if (StringUtils::endswith(lowername, ".msh"))
+	{
+		Eigen::MatrixXi cells;
+		std::vector<std::vector<int>> elements;
+		std::vector<std::vector<double>> weights;
+		std::vector<int> body_ids;
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights, body_ids))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return false;
+		}
+
+		if (cells.cols() == 4 && vertices.cols() == 3)
+		{
+			// 3D tet mesh: preserve tets and compute surface faces on the full vertex set.
+			// Do NOT populate codim_vertices: interior vertices are referenced by tets,
+			// not faces, but they are not codimensional.
+			tets = cells;
+			find_triangle_surface_from_tets(tets, faces);
+			return true;
+		}
+	}
+
+	// Fall back to the surface-only reader for all other cases.
+	return read_surface_mesh(mesh_path, vertices, codim_vertices, codim_edges, faces);
+}
+
 int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 {
 	std::unordered_set<std::vector<int>, HashVector> boundaries;

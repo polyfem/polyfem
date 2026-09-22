@@ -11,6 +11,7 @@
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <ipc/barrier/adaptive_stiffness.hpp>
+#include <ipc/utils/profile_registry.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
 #include <igl/writePLY.h>
@@ -25,11 +26,13 @@ namespace polyfem::solver
 							 const bool enable_shape_derivatives,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
-							 const int ccd_max_iterations)
+							 const int ccd_max_iterations,
+							 const double dhat_epsilon_scale)
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
 		  barrier_stiffness_(1.0),
+		  dhat_epsilon_scale_(dhat_epsilon_scale),
 		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
@@ -78,12 +81,15 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
-			max_step = candidates_.compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
-		else
-			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, broad_phase_.get(), tight_inclusion_ccd_);
+		{
+			IPC_PROFILE_SCOPE("ccd.max_step_size");
+			if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
+				max_step = candidates_.compute_collision_free_stepsize(
+					collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
+			else
+				max_step = ipc::compute_collision_free_stepsize(
+					collision_mesh_, V0, V1, dmin_, broad_phase_.get(), tight_inclusion_ccd_);
+		}
 
 		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_.get()))
 		{

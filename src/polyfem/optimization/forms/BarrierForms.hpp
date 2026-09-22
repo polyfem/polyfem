@@ -1,7 +1,8 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
@@ -9,8 +10,8 @@
 
 #include <Eigen/Core>
 #include <ipc/potentials/barrier_potential.hpp>
-#include <ipc/smooth_contact/smooth_collisions.hpp>
-#include <ipc/smooth_contact/smooth_contact_potential.hpp>
+#include <ipc/gcp/gcp_collisions.hpp>
+#include <ipc/gcp/gcp_potential.hpp>
 
 #include <memory>
 #include <map>
@@ -112,15 +113,15 @@ namespace polyfem::solver
 		const ipc::BarrierPotential barrier_potential_;
 	};
 
-	class SmoothContactForceForm : public StaticForm
+	class GCPContactForceForm : public StaticForm
 	{
 	public:
-		SmoothContactForceForm(
+		GCPContactForceForm(
 			const VariableToSimulationGroup &variable_to_simulations,
 			std::shared_ptr<const varform::DifferentiableVarForm> varform,
 			std::shared_ptr<const DiffCache> diff_cache,
 			const json &args);
-		~SmoothContactForceForm() = default;
+		~GCPContactForceForm() = default;
 
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const override;
@@ -129,7 +130,7 @@ namespace polyfem::solver
 
 	protected:
 		void build_collision_mesh();
-		ipc::SmoothCollisions get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
+		ipc::GCPCollisions get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		std::shared_ptr<const varform::DifferentiableVarForm> varform_;
 		std::shared_ptr<const DiffCache> diff_cache_;
@@ -137,10 +138,10 @@ namespace polyfem::solver
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::SmoothCollisions collisions_;
-		const ipc::SmoothContactParameters params_;
+		ipc::GCPCollisions collisions_;
+		const ipc::GCPParameters params_;
 		const double dmin_ = 0;
 
-		ipc::SmoothContactPotential potential_;
+		ipc::GCPPotential potential_;
 	};
 } // namespace polyfem::solver

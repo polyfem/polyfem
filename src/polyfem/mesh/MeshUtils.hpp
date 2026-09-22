@@ -199,6 +199,15 @@ namespace polyfem
 		///
 		bool read_surface_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::VectorXi &codim_vertices, Eigen::MatrixXi &codim_edges, Eigen::MatrixXi &faces);
 
+		///
+		/// @brief Variant of read_surface_mesh that also preserves the volumetric
+		/// (tetrahedral) connectivity when the input is a 3D tet mesh (.msh).
+		/// Vertex indices are NOT remapped: both `faces` and `tets` index into the
+		/// full returned `vertices`. For non-tet inputs, `tets` is returned empty
+		/// and behavior matches read_surface_mesh.
+		///
+		bool read_surface_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::VectorXi &codim_vertices, Eigen::MatrixXi &codim_edges, Eigen::MatrixXi &faces, Eigen::MatrixXi &tets);
+
 		/// Determine if the given mesh is planar (2D or tiny z-range).
 		bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
 

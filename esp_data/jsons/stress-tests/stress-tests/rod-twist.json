@@ -1,0 +1,93 @@
+{
+    "common": "../../common.json",
+    "tests": {
+        "err_h1": 0.0019142529727130245,
+        "err_h1_semi": 0.001913065557068242,
+        "err_l2": 6.741378123075572e-05,
+        "err_linf": 0.004575490288277755,
+        "err_linf_grad": 0.07528336072870886,
+        "err_lp": 0.0013493640751869665
+    },
+    "geometry": [{
+        "mesh": "../../../meshes/3D/simple/rod/rod.msh",
+        "transformation": {
+            "translation": [0, -0.1, -0.1]
+        },
+        "volume_selection": 1,
+        "surface_selection": [{
+            "id": 1,
+            "axis": 1,
+            "position": 0.4999
+        }, {
+            "id": 3,
+            "axis": -1,
+            "position": -0.5
+        }]
+    }, {
+        "mesh": "../../../meshes/3D/simple/rod/rod.msh",
+        "transformation": {
+            "translation": [0, -0.1, 0.1]
+        },
+        "volume_selection": 1,
+        "surface_selection": [{
+            "id": 1,
+            "axis": 1,
+            "position": 0.4999
+        }, {
+            "id": 3,
+            "axis": -1,
+            "position": -0.5
+        }]
+    }, {
+        "mesh": "../../../meshes/3D/simple/rod/rod.msh",
+        "transformation": {
+            "translation": [0, 0.1, -0.1]
+        },
+        "volume_selection": 1,
+        "surface_selection": [{
+            "id": 1,
+            "axis": 1,
+            "position": 0.4999
+        }, {
+            "id": 3,
+            "axis": -1,
+            "position": -0.5
+        }]
+    }, {
+        "mesh": "../../../meshes/3D/simple/rod/rod.msh",
+        "transformation": {
+            "translation": [0, 0.1, 0.1]
+        },
+        "volume_selection": 1,
+        "surface_selection": [{
+            "id": 1,
+            "axis": 1,
+            "position": 0.4999
+        }, {
+            "id": 3,
+            "axis": -1,
+            "position": -0.5
+        }]
+    }],
+    "time": {
+        "tend": 100,
+        "dt": 0.025
+    },
+    "boundary_conditions": {
+        "rhs": [0, 0, 0],
+        "dirichlet_boundary": [{
+            "id": 1,
+            "value": [0, "y*cos((-0.4*pi)*t)-z*sin((-0.4*pi)*t)-y", "y*sin((-0.4*pi)*t)+z*cos((-0.4*pi)*t)-z"]
+        }, {
+            "id": 3,
+            "value": [0, "y*cos((0.4*pi)*t)-z*sin((0.4*pi)*t)-y", "y*sin((0.4*pi)*t)+z*cos((0.4*pi)*t)-z"]
+        }]
+    },
+    "materials": [{
+        "id": 1,
+        "E": 10000,
+        "nu": 0.4,
+        "rho": 1000,
+        "type": "NeoHookean"
+    }]
+}

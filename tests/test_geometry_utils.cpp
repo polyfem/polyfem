@@ -71,6 +71,57 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("read_surface_mesh preserves tets for a 3D msh", "[geometry][mesh_utils]")
+{
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/bar/bar-6.msh";
+
+	Eigen::MatrixXd vertices;
+	Eigen::VectorXi codim_vertices;
+	Eigen::MatrixXi codim_edges, faces, tets;
+	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
+
+	REQUIRE(vertices.cols() == 3);
+	REQUIRE(tets.cols() == 4);
+	REQUIRE(tets.rows() > 0);
+	REQUIRE(faces.cols() == 3);
+	REQUIRE(faces.rows() > 0);
+
+	// Interior vertices are referenced by tets, not faces, but are not
+	// codimensional, so the overload must leave codim_vertices empty.
+	CHECK(codim_vertices.size() == 0);
+	CHECK(codim_edges.rows() == 0);
+
+	// Both index into the full vertex set: no remapping.
+	CHECK(tets.minCoeff() >= 0);
+	CHECK(tets.maxCoeff() < vertices.rows());
+	CHECK(faces.minCoeff() >= 0);
+	CHECK(faces.maxCoeff() < vertices.rows());
+
+	// The surface is a strict subset of the volume.
+	CHECK(faces.rows() < 4 * tets.rows());
+
+	// The 5-argument overload sees the same vertices and faces.
+	Eigen::MatrixXd surf_vertices;
+	Eigen::VectorXi surf_codim_vertices;
+	Eigen::MatrixXi surf_codim_edges, surf_faces;
+	REQUIRE(polyfem::mesh::read_surface_mesh(
+		path, surf_vertices, surf_codim_vertices, surf_codim_edges, surf_faces));
+	CHECK(surf_faces.rows() == faces.rows());
+}
+
+TEST_CASE("read_surface_mesh returns no tets for a surface mesh", "[geometry][mesh_utils]")
+{
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/obstacles/funnel.obj";
+
+	Eigen::MatrixXd vertices;
+	Eigen::VectorXi codim_vertices;
+	Eigen::MatrixXi codim_edges, faces, tets;
+	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
+
+	CHECK(tets.rows() == 0);
+	CHECK(faces.rows() > 0);
+}
+
 TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][gmsh]")
 {
 	using namespace polyfem;
@@ -466,9 +517,10 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	Eigen::VectorXi codim_vertices;
 	Eigen::MatrixXi codim_edges;
 	Eigen::MatrixXi faces;
+	Eigen::MatrixXi tets;
 
 	json points_mesh = obstacle_mesh_json(line_path, "points");
-	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	REQUIRE(vertices.rows() == 2);
 	REQUIRE(vertices.cols() == 2);
 	CHECK(codim_vertices.size() == 2);
@@ -480,7 +532,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	refined_edges_mesh["advanced"]["refinement_location"] = 0.25;
 	refined_edges_mesh["transformation"]["scale"] = 2.0;
 	refined_edges_mesh["transformation"]["translation"] = json::array({1.0, 0.0});
-	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	REQUIRE(vertices.rows() == 3);
 	REQUIRE(codim_edges.rows() == 2);
 	CHECK(faces.size() == 0);
@@ -491,17 +543,17 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	CHECK(codim_edges.row(1).isApprox(Eigen::RowVector2i(2, 1)));
 
 	json edge_from_surface_mesh = obstacle_mesh_json(tri_path, "edges");
-	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json surface_in_2d_mesh = obstacle_mesh_json(tri_path, "surface");
-	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json volume_obstacle = obstacle_mesh_json(line_path, "volume");
-	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces);
+	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
 	CHECK(codim_edges.rows() == 1);
 	CHECK(faces.size() == 0);
 }
