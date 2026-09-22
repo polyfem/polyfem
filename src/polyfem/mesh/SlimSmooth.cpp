@@ -4,6 +4,14 @@
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+// igl/slim.h reaches libigl's Singular_Value_Decomposition_Preamble.hpp, which uses __m128 and the
+// _mm_* intrinsics whenever __SSE__ is defined but includes only <mmintrin.h>; they are declared in
+// <xmmintrin.h>. Eigen usually includes that header first, but not under EIGEN_DONT_VECTORIZE,
+// which ipc-toolkit's SIMD build exports to everything that links it, and then every x86-64 build
+// of this file fails to compile (arm64 never defines __SSE__).
+#ifdef __SSE__
+#include <xmmintrin.h>
+#endif
 #include <igl/slim.h>
 
 namespace polyfem::mesh
