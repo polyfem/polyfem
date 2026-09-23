@@ -847,56 +847,62 @@ $(document).ready(function(){initNavTree('_build_from_json_8cpp_source.html','')
 <div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>                        args[<span class="stringliteral">&quot;dimensions&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;());</div>
 <div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>                }</div>
 <div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>            }</div>
-<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;collision_barrier&quot;</span>)</div>
+<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;elastic_material_smoothing&quot;</span>)</div>
 <div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>            {</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                obj = std::make_shared&lt;CollisionBarrierForm&gt;(</div>
-<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]], args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
-<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>            }</div>
-<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;layer_thickness&quot;</span>)</div>
-<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>            {</div>
-<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>                obj = std::make_shared&lt;LayerThicknessForm&gt;(</div>
-<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]],</div>
-<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>                    args[<span class="stringliteral">&quot;boundary_ids&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;(), args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                obj = std::make_shared&lt;ElasticMaterialSmoothingForm&gt;(</div>
+<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]],</div>
+<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>                    args[<span class="stringliteral">&quot;volume_selection&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;());</div>
+<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>            }</div>
+<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;collision_barrier&quot;</span>)</div>
+<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>            {</div>
+<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>                obj = std::make_shared&lt;CollisionBarrierForm&gt;(</div>
+<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]], args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
 <div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span>            }</div>
-<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;layer_thickness_log&quot;</span>)</div>
+<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;layer_thickness&quot;</span>)</div>
 <div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span>            {</div>
 <div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>                obj = std::make_shared&lt;LayerThicknessForm&gt;(</div>
 <div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]],</div>
-<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>                    args[<span class="stringliteral">&quot;boundary_ids&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;(), args[<span class="stringliteral">&quot;dhat&quot;</span>], <span class="keyword">true</span>,</div>
-<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>                    args[<span class="stringliteral">&quot;dmin&quot;</span>]);</div>
-<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>            }</div>
-<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;deformed_collision_barrier&quot;</span>)</div>
-<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>            {</div>
-<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>                obj = std::make_shared&lt;DeformedCollisionBarrierForm&gt;(</div>
-<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]], diff_caches[args[<span class="stringliteral">&quot;state&quot;</span>]], args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
-<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>            }</div>
-<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;parametrized_product&quot;</span>)</div>
-<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>            {</div>
-<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>                std::vector&lt;std::shared_ptr&lt;Parametrization&gt;&gt; map_list;</div>
-<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : args[<span class="stringliteral">&quot;parametrization&quot;</span>])</div>
-<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>                {</div>
-<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>                    map_list.push_back(<a class="code hl_function" href="namespacepolyfem_1_1from__json.html#a79de28d137863135077f23f38a8011bf">build_parametrization</a>(arg, varforms, {}));</div>
-<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>                }</div>
-<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>                obj = std::make_shared&lt;ParametrizedProductForm&gt;(</div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>                    <a class="code hl_class" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>(std::move(map_list)));</div>
-<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>            }</div>
-<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>            {</div>
-<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>                <a class="code hl_function" href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777">log_and_throw_adjoint_error</a>(<span class="stringliteral">&quot;Objective not implemented!&quot;</span>);</div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>            }</div>
-<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span> </div>
-<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>            obj-&gt;set_weight(args[<span class="stringliteral">&quot;weight&quot;</span>]);</div>
-<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>            <span class="keywordflow">if</span> (args[<span class="stringliteral">&quot;print_energy&quot;</span>].get&lt;std::string&gt;() != <span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>                    args[<span class="stringliteral">&quot;boundary_ids&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;(), args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
+<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>            }</div>
+<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;layer_thickness_log&quot;</span>)</div>
+<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>            {</div>
+<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>                obj = std::make_shared&lt;LayerThicknessForm&gt;(</div>
+<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]],</div>
+<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>                    args[<span class="stringliteral">&quot;boundary_ids&quot;</span>].get&lt;std::vector&lt;int&gt;&gt;(), args[<span class="stringliteral">&quot;dhat&quot;</span>], <span class="keyword">true</span>,</div>
+<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>                    args[<span class="stringliteral">&quot;dmin&quot;</span>]);</div>
+<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>            }</div>
+<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;deformed_collision_barrier&quot;</span>)</div>
+<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>            {</div>
+<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>                obj = std::make_shared&lt;DeformedCollisionBarrierForm&gt;(</div>
+<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>                    var2sim, varforms[args[<span class="stringliteral">&quot;state&quot;</span>]], diff_caches[args[<span class="stringliteral">&quot;state&quot;</span>]], args[<span class="stringliteral">&quot;dhat&quot;</span>]);</div>
+<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>            }</div>
+<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;parametrized_product&quot;</span>)</div>
+<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>            {</div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>                std::vector&lt;std::shared_ptr&lt;Parametrization&gt;&gt; map_list;</div>
+<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : args[<span class="stringliteral">&quot;parametrization&quot;</span>])</div>
+<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>                {</div>
+<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>                    map_list.push_back(<a class="code hl_function" href="namespacepolyfem_1_1from__json.html#a79de28d137863135077f23f38a8011bf">build_parametrization</a>(arg, varforms, {}));</div>
+<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>                }</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>                obj = std::make_shared&lt;ParametrizedProductForm&gt;(</div>
+<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>                    <a class="code hl_class" href="classpolyfem_1_1solver_1_1_composite_parametrization.html">CompositeParametrization</a>(std::move(map_list)));</div>
+<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>            }</div>
+<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>            {</div>
-<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>                obj-&gt;enable_energy_print(args[<span class="stringliteral">&quot;print_energy&quot;</span>]);</div>
+<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>                <a class="code hl_function" href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777">log_and_throw_adjoint_error</a>(<span class="stringliteral">&quot;Objective not implemented!&quot;</span>);</div>
 <div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>            }</div>
-<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>        }</div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span> </div>
-<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>        <span class="keywordflow">return</span> obj;</div>
-<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>    }</div>
+<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span> </div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>            obj-&gt;set_weight(args[<span class="stringliteral">&quot;weight&quot;</span>]);</div>
+<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>            <span class="keywordflow">if</span> (args[<span class="stringliteral">&quot;print_energy&quot;</span>].get&lt;std::string&gt;() != <span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>            {</div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>                obj-&gt;enable_energy_print(args[<span class="stringliteral">&quot;print_energy&quot;</span>]);</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            }</div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>        }</div>
+<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span> </div>
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>        <span class="keywordflow">return</span> obj;</div>
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>    }</div>
 </div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span> </div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>} <span class="comment">// namespace polyfem::from_json</span></div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span> </div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>} <span class="comment">// namespace polyfem::from_json</span></div>
 </div>
 <div class="ttc" id="a_a_m_i_p_s_form_8hpp_html"><div class="ttname"><a href="_a_m_i_p_s_form_8hpp.html">AMIPSForm.hpp</a></div></div>
 <div class="ttc" id="a_adjoint_form_8hpp_html"><div class="ttname"><a href="_adjoint_form_8hpp.html">AdjointForm.hpp</a></div></div>

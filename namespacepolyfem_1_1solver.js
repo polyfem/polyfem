@@ -55,6 +55,7 @@ var namespacepolyfem_1_1solver =
     [ "DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", "classpolyfem_1_1solver_1_1_divide_form" ],
     [ "ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],
     [ "ElasticForceDerivative", "classpolyfem_1_1solver_1_1_elastic_force_derivative.html", null ],
+    [ "ElasticMaterialSmoothingForm", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form" ],
     [ "ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation" ],
     [ "ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu" ],
     [ "ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", "classpolyfem_1_1solver_1_1_exponential_map" ],

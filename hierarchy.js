@@ -180,6 +180,7 @@ var hierarchy =
           [ "polyfem::solver::SumCompositeForm", "classpolyfem_1_1solver_1_1_sum_composite_form.html", null ]
         ] ],
         [ "polyfem::solver::DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html", null ],
+        [ "polyfem::solver::ElasticMaterialSmoothingForm", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html", null ],
         [ "polyfem::solver::MinJacobianForm", "classpolyfem_1_1solver_1_1_min_jacobian_form.html", null ],
         [ "polyfem::solver::MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html", null ],
         [ "polyfem::solver::ParametrizationForm", "classpolyfem_1_1solver_1_1_parametrization_form.html", [
