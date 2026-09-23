@@ -1079,13 +1079,20 @@ namespace polyfem::varform
 		}
 
 		const StiffnessMatrix residual_mass = append_identity_mass(pure_mass_, pressure_block_size());
+		// NLProblem's own solver_ only factorizes the small Q2^T Q2 constraint-
+		// elimination system (unrelated to the Hessian solve the AL/Newton
+		// solvers use args["solver"]["linear"] for), so it shouldn't inherit
+		// e.g. a Hybrid/AMGF choice meant for the full-size Hessian.
+		json internal_linear_args = args["solver"]["linear"];
+		internal_linear_args["solver"] = args["solver"]["nonlinear"]["simple_linear"];
 		nl_problem_ = std::make_shared<solver::NLProblem>(
 			stacked_ndof(), t, forms_, al_forms_,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			polysolve::linear::Solver::create(internal_linear_args, logger()),
 			units.characteristic_length(), /*characteristic_force=*/1,
 			residual_mass, mesh_->dimension(), /*is_residual=*/true);
 		nl_problem_->init(sol);
 		nl_problem_->update_quantities(t, sol);
+		nl_problem_->args_ = &args;
 		stats.solver_info = json::array();
 	}
 
@@ -1107,7 +1114,8 @@ namespace polyfem::varform
 		const json al_nonlinear_params = residual_solver_params(args["solver"]["augmented_lagrangian"]["nonlinear"]);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(
-				nonlinear_params, args["solver"]["linear"], units.characteristic_length(), logger());
+				nonlinear_params, args["solver"]["linear"], units.characteristic_length(), logger(), true,
+				nonlinear_params["norm_type"], mesh_->dimension());
 
 		solver::ALSolver al_solver(
 			al_forms_, args["solver"]["augmented_lagrangian"]["initial_weight"],

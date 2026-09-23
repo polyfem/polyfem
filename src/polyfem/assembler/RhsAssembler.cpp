@@ -220,7 +220,7 @@ namespace polyfem
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - (obstacle_ ? obstacle_->ndof() : 0) && mass.cols() == n_basis_ * size_ - (obstacle_ ? obstacle_->ndof() : 0));
 
-					auto solver = linear::Solver::create(solver_params_, logger());
+					auto solver = linear::Solver::create(solver_params_, logger(), true, size_);
 					logger().info("Solve RHS using {} linear solver", solver->name());
 					solver->analyze_pattern(mass, mass.rows());
 					solver->factorize(mass);

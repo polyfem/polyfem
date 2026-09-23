@@ -1385,7 +1385,11 @@
             "augmented_lagrangian",
             "contact",
             "rayleigh_damping",
-            "advanced"
+            "advanced",
+            "precondition_order_threshold",
+            "precondition_quality_threshold",
+            "precondition_von_mises_threshold",
+            "precondition_contact"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
@@ -1395,6 +1399,30 @@
         "type": "int",
         "min": 0,
         "doc": "Maximum number of threads used; 0 is unlimited."
+    },
+    {
+        "pointer": "/solver/precondition_order_threshold",
+        "default": 0,
+        "type": "int",
+        "doc": "Threshold for which to include higher-order elements in the problematic subdomain (see linear/Hybrid's select_bad_dofs_from_l1_norm/AMGF mode). 0 disables this criterion."
+    },
+    {
+        "pointer": "/solver/precondition_quality_threshold",
+        "default": 0.0,
+        "type": "float",
+        "doc": "Threshold for which to include badly shaped elements (shape quality ≤ threshold) in the problematic subdomain."
+    },
+    {
+        "pointer": "/solver/precondition_von_mises_threshold",
+        "default": 0.0,
+        "type": "float",
+        "doc": "Threshold for which to include highly stressed elements (von Mises stress > threshold) in the problematic subdomain. 0 disables this criterion."
+    },
+    {
+        "pointer": "/solver/precondition_contact",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to make the problematic subdomain include all DOFs currently in contact."
     },
     {
         "pointer": "/solver/linear/adjoint_solver",

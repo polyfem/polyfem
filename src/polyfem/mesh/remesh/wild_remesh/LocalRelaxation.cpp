@@ -65,7 +65,7 @@ namespace polyfem::mesh
 		this->num_solves++;
 
 		// Nonlinear solver
-		auto nl_solver = state.make_nl_solver(/*for_al=*/false); // TODO: Use Eigen::LLT
+		auto nl_solver = state.make_nl_solver(/*for_al=*/false, this->dim()); // TODO: Use Eigen::LLT
 		nl_solver->stop_criteria().iterations = args["local_relaxation"]["max_nl_iterations"];
 		if (this->is_boundary_op())
 			nl_solver->stop_criteria().iterations = std::max(nl_solver->stop_criteria().iterations, size_t(5));
