@@ -27,6 +27,7 @@
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ThermoElasticity.hpp>
+#include <polyfem/assembler/GrowthElasticity.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/FixedCorotational.hpp>
 
@@ -146,6 +147,8 @@ namespace polyfem
 		{
 			if (formulation == "ThermoElasticity")
 				return std::make_shared<ThermoElasticity>();
+			else if (formulation == "GrowthElasticity")
+				return std::make_shared<GrowthElasticity>();
 
 			log_and_throw_error("Inavalid mixed nonlinear assembler name {}", formulation);
 		}
