@@ -474,6 +474,36 @@ namespace polyfem::varform
 			growth_boundary_,
 			space_.geometry);
 
+		// build_fe_space builds the input->internal node map only for spaces that
+		// own their geometry; the growth space shares the displacement geometry,
+		// so it must build its own (else growth_nodal_field and "growth" state
+		// restarts are placed in internal order -- caught by C2b).
+		build_node_mapping(mesh, args["space"]["basis_type"], growth_space_,
+						   growth_space_.space_in_node_to_node,
+						   growth_space_.space_in_primitive_to_primitive);
+
+		// PolyFEM computes no input orderings for this mesh path, so the call
+		// above returns an empty map. For P1 each growth node lies on one mesh
+		// vertex, and the loader keeps mesh vertices in file order, so the
+		// vertex -> node table of the growth space IS the input -> node map.
+		if (growth_space_.space_in_node_to_node.size() == 0 && growth_space_.mesh_nodes
+			&& growth_space_.disc_orders.size() > 0
+			&& growth_space_.disc_orders.minCoeff() == 1 && growth_space_.disc_orders.maxCoeff() == 1)
+		{
+			const auto &p2n = growth_space_.mesh_nodes->primitive_to_node();
+			const int nv = mesh.n_vertices();
+			Eigen::VectorXi vmap(nv);
+			for (int v = 0; v < nv; ++v)
+			{
+				const int n = p2n[growth_space_.mesh_nodes->primitive_from_vertex(v)];
+				if (n < 0 || n >= growth_space_.n_bases)
+					log_and_throw_error("GrowthElasticity: mesh vertex {} has no P1 growth node ({}).", v, n);
+				vmap(v) = n;
+			}
+			growth_space_.space_in_node_to_node = vmap;
+			logger().info("GrowthElasticity: growth node map built from mesh vertices ({} nodes).", nv);
+		}
+
 		logger().info("n growth bases: {}", growth_space_.n_bases);
 	}
 
@@ -661,19 +691,20 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd field = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
 
-		// Mesh-vertex -> internal node order, same remap the nodal machinery
-		// uses (identity for P1 on an unreordered mesh). If the direction is
-		// ever wrong for a mesh, it is loudly visible: the AL initial error is
-		// large instead of ~0 (initial == target below) and the exported
-		// growth field disagrees with the input in ParaView.
+		// Mesh-vertex (input) -> internal node order. The internal order is NOT
+		// the file order in general (C2b: 57% of the quarter-tube vertices
+		// differ). No AL diagnostic can catch a wrong map here: initial and
+		// target both come from this function. C2b (c2b_ordering.py) is the check.
 		const auto &map = growth_space_.space_in_node_to_node;
-		if (map.size() > 0)
-		{
-			Eigen::MatrixXd remapped(field.rows(), 1);
-			for (int i = 0; i < map.size(); ++i)
-				remapped(map(i)) = field(i);
-			field = remapped;
-		}
+		if (map.size() != field.rows())
+			log_and_throw_error(
+				"GrowthElasticity: growth-space node map has {} entries for {} values; "
+				"growth_nodal_field cannot be placed on the right nodes.",
+				map.size(), field.rows());
+		Eigen::MatrixXd remapped(field.rows(), 1);
+		for (int i = 0; i < map.size(); ++i)
+			remapped(map(i)) = field(i);
+		field = remapped;
 
 		if ((field.array() <= 0).any())
 			log_and_throw_error(
