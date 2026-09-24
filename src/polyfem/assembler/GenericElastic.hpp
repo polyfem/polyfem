@@ -67,8 +67,7 @@ namespace polyfem::assembler
 		virtual bool real_def_grad() const { return true; }
 
 	protected:
-
-	    AutodiffType autodiff_type_ = AutodiffType::STRESS;
+		AutodiffType autodiff_type_ = AutodiffType::STRESS;
 
 		virtual Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradient(
 			const RowVectorNd &p,
