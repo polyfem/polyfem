@@ -351,14 +351,12 @@ TEST_CASE("amips_power_squared", "[assembler]")
 	base_amips.add_multimaterial(0, params_base, units, "");
 	power2_amips.add_multimaterial(0, params_power2, units, "");
 
-
-
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
 	F.setIdentity();
-	F(0, 0) = 1.1; F(0, 1) = 0.1;
-	F(1, 0) = 0.0; F(1, 1) = 0.9;
-
-
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
 
 	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
 
@@ -368,4 +366,38 @@ TEST_CASE("amips_power_squared", "[assembler]")
 	const double e2 = power2_amips.elastic_energy<double>(p, 0, 0, F2);
 
 	REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
+}
+
+TEST_CASE("amips_power_multi_element", "[assembler]")
+{
+	AMIPSEnergy amips;
+	amips.set_size(2);
+
+	json params0 = {{"type", "AMIPS"}};
+	json params1 = {{"type", "AMIPS"}, {"power", 1.0}};
+	json params2 = {{"type", "AMIPS"}, {"power", 2.0}};
+
+	Units units;
+	amips.add_multimaterial(0, params0, units, "");
+	amips.add_multimaterial(1, params1, units, "");
+	amips.add_multimaterial(2, params2, units, "");
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
+	F.setIdentity();
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
+
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
+
+	auto F0 = F, F1 = F, F2 = F;
+	const double e0 = amips.elastic_energy<double>(p, 0, 0, F0);
+	const double e1 = amips.elastic_energy<double>(p, 0, 1, F1);
+	const double e2 = amips.elastic_energy<double>(p, 0, 2, F2);
+
+	REQUIRE(e0 == Catch::Approx(e1).margin(1e-12));
+	REQUIRE(e0 != Catch::Approx(1.0).margin(1e-8));
+
+	REQUIRE(e2 == Catch::Approx(e1 * e1).margin(1e-12));
 }
