@@ -368,6 +368,72 @@ TEST_CASE("amips_power_squared", "[assembler]")
 	REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
 }
 
+TEST_CASE("amips_power_cubed_gradient_hessian_fd", "[assembler]")
+{
+	AMIPSEnergy amips;
+	amips.set_size(2);
+
+	json params_power3 = {{"type", "AMIPS"}, {"power", 3.0}};
+	Units units;
+	amips.add_multimaterial(0, params_power3, units, "");
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
+	F.setIdentity();
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
+
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
+
+	auto F0 = F;
+	const double e0 = amips.elastic_energy<double>(p, 0, 0, F0);
+	REQUIRE_FALSE(std::isnan(e0));
+
+	const auto grad = amips.gradient(p, 0, 0, F);
+	const auto hess = amips.hessian(p, 0, 0, F);
+
+	const double h = 1e-6;
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> fd_grad(2, 2);
+	for (int i = 0; i < 2; ++i)
+	{
+		for (int j = 0; j < 2; ++j)
+		{
+			auto Fp = F, Fm = F;
+			Fp(i, j) += h;
+			Fm(i, j) -= h;
+			const double ep = amips.elastic_energy<double>(p, 0, 0, Fp);
+			const double em = amips.elastic_energy<double>(p, 0, 0, Fm);
+			fd_grad(i, j) = (ep - em) / (2 * h);
+		}
+	}
+
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			REQUIRE(grad(i, j) == Catch::Approx(fd_grad(i, j)).margin(1e-6).epsilon(1e-4));
+
+	Eigen::MatrixXd fd_hess(4, 4);
+	for (int i = 0; i < 2; ++i)
+	{
+		for (int j = 0; j < 2; ++j)
+		{
+			auto Fp = F, Fm = F;
+			Fp(i, j) += h;
+			Fm(i, j) -= h;
+			const auto gp = amips.gradient(p, 0, 0, Fp);
+			const auto gm = amips.gradient(p, 0, 0, Fm);
+			const auto col = (gp - gm) / (2 * h);
+			for (int a = 0; a < 2; ++a)
+				for (int b = 0; b < 2; ++b)
+					fd_hess(a * 2 + b, i * 2 + j) = col(a, b);
+		}
+	}
+
+	for (int r = 0; r < 4; ++r)
+		for (int c = 0; c < 4; ++c)
+			REQUIRE(hess(r, c) == Catch::Approx(fd_hess(r, c)).margin(1e-4).epsilon(1e-3));
+}
+
 TEST_CASE("amips_power_multi_element", "[assembler]")
 {
 	AMIPSEnergy amips;
