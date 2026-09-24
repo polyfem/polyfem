@@ -133,6 +133,10 @@ namespace polyfem::assembler
 					return weight * autogen::AMIPS3d_gradient(p, t, el_id, F);
 			}
 		}
+		else if(power == 2.0)
+		{
+			//TODO: add autogen for amips squared gradient
+		}
 		return autodiff_gradient(*this, p, t, el_id, F);
 	}
 
@@ -169,6 +173,10 @@ namespace polyfem::assembler
 				else
 					return weight * autogen::AMIPS3d_hessian(p, t, el_id, F);
 			}
+		}
+		else if(power == 2.0)
+		{
+			//TODO: add autogen for amips squared hessian
 		}
 
 		return autodiff_hessian(*this, p, t, el_id, F);
