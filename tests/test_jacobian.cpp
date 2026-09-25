@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/par_for.hpp>
+#include <polysolve/Utils.hpp>
 #include "EigenAdapters.hpp"
 #include <polyfem/autogen/auto_p_bases.hpp>
 
@@ -567,6 +568,192 @@ TEST_CASE("jacobian-is-valid-witness-tree", "[jacobian]")
 			CHECK(min_j <= 1e-10 * scale);
 		}
 	}
+}
+
+namespace
+{
+	// Exact sign of a sum of doubles: Shewchuk's grow-expansion keeps the sum
+	// as a non-overlapping expansion, whose largest component has its sign.
+	int exact_sign(const std::vector<double> &terms)
+	{
+		std::vector<double> e;
+		for (const double b : terms)
+		{
+			std::vector<double> h;
+			double q = b;
+			for (const double ei : e)
+			{
+				const double sum = q + ei;
+				const double bv = sum - q;
+				const double err = (q - (sum - bv)) + (ei - bv);
+				if (err != 0)
+					h.push_back(err);
+				q = sum;
+			}
+			h.push_back(q);
+			e = std::move(h);
+		}
+		for (auto it = e.rbegin(); it != e.rend(); ++it)
+			if (*it != 0)
+				return *it > 0 ? 1 : -1;
+		return 0;
+	}
+
+	// Exactly: with t = s / T (T > 0), does c lie in
+	// [(1-t) lo0 + t lo1, (1-t) hi0 + t hi1]? Multiplied through by T, so no
+	// division is needed: compare c T with (T - s) v0 + s v1.
+	bool in_segment_box(const double c, const double s, const double T, const double lo0, const double hi0, const double lo1, const double hi1)
+	{
+		// T - s = a + b exactly (TwoSum), then every product exactly (TwoProd).
+		const double a = T - s, bv = a - T, b = (T - (a - bv)) + (-s - bv);
+		const auto two_prod = [](std::vector<double> &terms, const double x, const double y, const double sign) {
+			const double p = x * y;
+			terms.push_back(sign * p);
+			terms.push_back(sign * std::fma(x, y, -p));
+		};
+		const auto sign_of_cT_minus = [&](const double v0, const double v1) {
+			std::vector<double> terms;
+			two_prod(terms, c, T, 1);
+			two_prod(terms, a, v0, -1);
+			two_prod(terms, b, v0, -1);
+			two_prod(terms, s, v1, -1);
+			return exact_sign(terms);
+		};
+		return sign_of_cT_minus(lo0, lo1) >= 0 && sign_of_cT_minus(hi0, hi1) <= 0;
+	}
+} // namespace
+
+// hocgv-miso fix.pdf: the continuous check certifies every segment between
+// the endpoint displacements widened by one representable value (x0) and two
+// (x1), with the rest positions added inside miso's interval arithmetic; the
+// solver then takes x = fl(x0 + s dx) with s = T t* rounded down, which is not
+// on the segment between the rounded endpoints. The erratum states the
+// widening covers it but leaves the proof open, so check it exactly on the
+// displacements the check actually receives -- and, as a control, that
+// without widening the taken step is missed.
+TEST_CASE("jacobian-fattening-covers-taken-step", "[jacobian]")
+{
+	std::mt19937 rng(7);
+	std::uniform_real_distribution<double> unit(-1, 1), frac(0, 1);
+
+	for (const int dim : {2, 3})
+		for (const int discr_order : {2, 3})
+		{
+			auto state = get_state(dim, "NeoHookean", discr_order);
+			const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+			const auto &bases = *debug.bases;
+			const auto &gbases = *debug.geometry_bases;
+			const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+			const int ndof = debug.n_bases * dim;
+			const Eigen::VectorXd zero = Eigen::VectorXd::Zero(ndof);
+
+			const Eigen::MatrixXd rest = extract_nodes(dim, bases, gbases, zero, order);
+
+			// Rest position of each node, to build cancelling displacements.
+			Eigen::VectorXd rest_dof = zero;
+			const int n_per = rest.rows() / bases.size();
+			for (int e = 0; e < (int)bases.size(); ++e)
+				for (int k = 0; k < n_per; ++k)
+					rest_dof.segment(bases[e].bases[k].global()[0].index * dim, dim) = rest.row(e * n_per + k).transpose();
+
+			long covered = 0, missed_unfattened = 0, total = 0;
+			for (int trial = 0; trial < 20; ++trial)
+			{
+				Eigen::VectorXd x0(ndof), dx(ndof);
+				for (int i = 0; i < ndof; ++i)
+				{
+					x0[i] = 0.01 * unit(rng);
+					dx[i] = 0.3 * unit(rng);
+					// Sometimes send a node to (almost) the origin: rest + x
+					// then cancels, the worst case for rounding.
+					if (trial % 2 && i % 7 == 0)
+						dx[i] = -(rest_dof[i] + x0[i]) * (1 + 1e-9 * unit(rng));
+				}
+				const double T = trial % 3 ? 1.0 : 0.6180339887498949;
+				const double t = trial % 4 ? frac(rng) : 1 - 1e-12 * frac(rng);
+
+				// Exactly what polysolve does: endpoint, capped step, taken step.
+				const Eigen::VectorXd x1 = polysolve::step_along(x0, T, dx);
+				const double s = polysolve::product_rounded_down(T, t);
+				const Eigen::VectorXd xs = polysolve::step_along(x0, s, dx);
+
+				// Same-order conforming elements: each displacement the check
+				// receives is an entry of the solver's vector, not computed.
+				bool exact = false;
+				const Eigen::MatrixXd cp0 = displacement_nodes(dim, bases, gbases, x0, &exact);
+				REQUIRE(exact);
+				const Eigen::MatrixXd cp1 = displacement_nodes(dim, bases, gbases, x1);
+				const Eigen::MatrixXd cps = displacement_nodes(dim, bases, gbases, xs);
+				const auto [lo0, hi0] = fatten(cp0, 1);
+				const auto [lo1, hi1] = fatten(cp1, 2);
+
+				// The taken point is at parameter s / T of the certified segment.
+				for (Eigen::Index i = 0; i < cps.size(); ++i)
+				{
+					++total;
+					covered += in_segment_box(cps(i), s, T, lo0(i), hi0(i), lo1(i), hi1(i));
+					missed_unfattened += !in_segment_box(cps(i), s, T, cp0(i), cp0(i), cp1(i), cp1(i));
+				}
+			}
+			CAPTURE(dim, discr_order, total, covered, missed_unfattened);
+			// Every coordinate of the taken step is covered once widened...
+			CHECK(covered == total);
+			// ...and the widening is not decorative: the rounded endpoints
+			// alone miss the taken step.
+			CHECK(missed_unfattened > 0);
+		}
+}
+
+// End to end: the continuous check caps a step toward inversion, polysolve
+// takes the capped step (rounded down, one rounding per coordinate), and the
+// static check -- which certifies the configuration itself, no widening --
+// accepts what was taken (the property fix.pdf is after).
+TEST_CASE("jacobian-continuous-certifies-taken-step", "[jacobian]")
+{
+	std::mt19937 rng(11);
+	std::uniform_real_distribution<double> unit(-1, 1);
+	for (const int dim : {2, 3})
+		for (const int discr_order : {2, 3})
+		{
+			auto state = get_state(dim, "NeoHookean", discr_order);
+			const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+			const auto &bases = *debug.bases;
+			const auto &gbases = *debug.geometry_bases;
+			const int ndof = debug.n_bases * dim;
+			const Eigen::VectorXd x0 = Eigen::VectorXd::Zero(ndof);
+
+			std::vector<Eigen::VectorXd> directions{make_x_flip(debug, dim)};
+			for (int k = 0; k < 3; ++k)
+			{
+				Eigen::VectorXd d(ndof);
+				for (int i = 0; i < ndof; ++i)
+					d[i] = unit(rng);
+				directions.push_back(d);
+			}
+
+			int capped = 0;
+			for (const auto &dir : directions)
+			{
+				// Scale up until the full step inverts something.
+				double scale = 0.1;
+				while (std::get<0>(is_valid(dim, bases, gbases, polysolve::step_along(x0, scale, dir))) && scale < 1e4)
+					scale *= 2;
+				const Eigen::VectorXd dx = scale * dir;
+
+				const double T = 0.6180339887498949;
+				const Eigen::VectorXd x1 = polysolve::step_along(x0, T, dx);
+				const auto [t, id, inv_t, tree] = max_time_step(dim, bases, gbases, x0, x1);
+				CAPTURE(dim, discr_order, scale, t);
+				REQUIRE(t >= 0);
+				if (t >= 1)
+					continue;
+				++capped;
+
+				const Eigen::VectorXd xs = polysolve::step_along(x0, polysolve::product_rounded_down(T, t), dx);
+				CHECK(std::get<0>(is_valid(dim, bases, gbases, xs)));
+			}
+			CHECK(capped > 0);
+		}
 }
 
 // is_valid()/max_time_step() flip the FPU into round-up mode for interval

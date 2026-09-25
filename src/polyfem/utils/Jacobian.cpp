@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <limits>
+#include <mutex>
 #include <numeric>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -280,6 +282,19 @@ namespace polyfem::utils
 			levels.insert(levels.end(), L.begin(), L.end());
 		}
 		return {out, levels};
+	}
+
+	std::pair<Eigen::MatrixXd, Eigen::MatrixXd> fatten(const Eigen::MatrixXd &x, const int n)
+	{
+		constexpr double inf = std::numeric_limits<double>::infinity();
+		Eigen::MatrixXd lo = x, hi = x;
+		for (Eigen::Index i = 0; i < x.size(); ++i)
+			for (int k = 0; k < n; ++k)
+			{
+				lo(i) = std::nextafter(lo(i), -inf);
+				hi(i) = std::nextafter(hi(i), inf);
+			}
+		return {lo, hi};
 	}
 
 	Eigen::VectorXd robust_evaluate_jacobian(
@@ -589,8 +604,32 @@ namespace polyfem::utils
 		// As in is_valid(): rest and displacement separately, before the guard.
 		const Eigen::MatrixXd rest_here = rest ? Eigen::MatrixXd() : rest_nodes(dim, bases, gbases);
 		const Eigen::MatrixXd &r = rest ? *rest : rest_here;
-		const Eigen::MatrixXd d1 = displacement_nodes(dim, bases, gbases, u1);
-		const Eigen::MatrixXd d2 = displacement_nodes(dim, bases, gbases, u2);
+		bool exact = true;
+		const Eigen::MatrixXd d1_pt = displacement_nodes(dim, bases, gbases, u1, &exact);
+		const Eigen::MatrixXd d2_pt = displacement_nodes(dim, bases, gbases, u2);
+		if (!exact)
+		{
+			static std::once_flag warned;
+			std::call_once(warned, [] {
+				logger().warn("Continuous Jacobian check: the displacement is evaluated at the control points rather than "
+							  "read from the solver's vector (geometry of higher order than the displacement, or a "
+							  "non-conforming basis), so the certificate does not strictly cover the rounding of the step");
+			});
+		}
+
+#ifndef MISO_FP_ARITHMETIC
+		// Erratum (hocgv-miso fix.pdf), steps 2-3, on the solver's own vector:
+		// u2 = u1 + T dx was computed with one rounding (step_along in
+		// polysolve), so one representable value on each side contains the
+		// exact endpoint, and one more on both endpoints covers any correctly
+		// rounded point in between, which is what the solver takes once the
+		// step is capped. The rest positions are exact data for the problem.
+		const auto [d1_lo, d1_hi] = fatten(d1_pt, 1);
+		const auto [d2_lo, d2_hi] = fatten(d2_pt, 2);
+		const Box d1{d1_lo, d1_hi}, d2{d2_lo, d2_hi};
+#else
+		const Eigen::MatrixXd &d1 = d1_pt, &d2 = d2_pt;
+#endif
 		const FPUGuard fpu_guard;
 
 		double step = 1.0;

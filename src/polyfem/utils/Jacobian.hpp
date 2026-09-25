@@ -151,8 +151,15 @@ namespace polyfem::utils
 	/// evaluated there, which rounds. @p exact reports which.
 	Eigen::MatrixXd displacement_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, bool *exact = nullptr);
 
+	/// @brief [lo, hi] with each entry of @p x widened by @p n representable
+	/// values on each side (hocgv-miso fix.pdf, steps 2-3).
+	std::pair<Eigen::MatrixXd, Eigen::MatrixXd> fatten(const Eigen::MatrixXd &x, const int n);
+
 	/// @brief Largest fraction of the step u1 -> u2 over which no element
-	/// inverts.
+	/// inverts. The displacements are widened as in hocgv-miso fix.pdf (u1 by
+	/// one representable value, u2 by two), so the certificate also covers the
+	/// correctly rounded configuration the solver takes after capping the
+	/// step, not just the exact segment.
 	/// @param rest Rest positions from rest_nodes(); computed here if null.
 	std::tuple<double, int, double, Tree> max_time_step(
 		const int dim,

@@ -36,6 +36,29 @@ inline RealVector<N> rv(const Eigen::MatrixXd &m, int offset, int col, const int
 	return v;
 }
 
+#ifndef MISO_FP_ARITHMETIC
+// Displacements given as boxes [lo, hi] rather than points: the continuous
+// check certifies every segment between the two boxes, which is how it covers
+// the rounding of the step the solver finally takes (see max_time_step).
+struct Box
+{
+	const Eigen::MatrixXd &lo;
+	const Eigen::MatrixXd &hi;
+};
+
+template<int N>
+inline RealVector<N> rv(const Box &m, int offset, int col, const int *perm = nullptr)
+{
+	RealVector<N> v;
+	for (int i = 0; i < N; ++i)
+	{
+		const int r = offset + (perm ? perm[i] : i);
+		v[i] = Real(m.lo(r, col), m.hi(r, col));
+	}
+	return v;
+}
+#endif
+
 // Node-order permutations: polyfem's p_nodes ordering -> miso's eval_points ordering.
 // perm[i] = polyfem row index that feeds miso node i.
 static constexpr int tri1_perm[3] = {0, 2, 1};
