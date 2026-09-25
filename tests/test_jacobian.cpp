@@ -31,7 +31,7 @@ using namespace polyfem::utils;
 using namespace polyfem::autogen;
 namespace
 {
-	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean", const int discr_order = 1)
+	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean", const int discr_order = 1, const std::string &check_inversion = "Discrete")
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 
@@ -64,6 +64,7 @@ namespace
 		in_args["materials"] = material;
 		if (discr_order != 1)
 			in_args["space"]["discr_order"] = discr_order;
+		in_args["solver"]["advanced"]["check_inversion"] = check_inversion;
 		if (dim == 2)
 		{
 			in_args["geometry"] = R"([{
@@ -647,6 +648,10 @@ TEST_CASE("jacobian-is-valid-thread-independent", "[jacobian]")
 // on the order-6 rule (negative at the corners) diverged on the first time
 // step, and P3 tets on the order-4 rule (negative at the centroid) stalled on
 // twist-bar. Every corner must be present, and every weight positive.
+//
+// At P1 the Jacobian is constant per element, so the check never refines and
+// the standard one-point rule must be kept: the corner rule costs 3-4x the
+// assembly for the same energy.
 TEST_CASE("jacobian-conservative-quadrature", "[jacobian]")
 {
 	for (const auto [dim, max_order] : {std::pair{2, 4}, std::pair{3, 3}})
@@ -654,8 +659,9 @@ TEST_CASE("jacobian-conservative-quadrature", "[jacobian]")
 		for (int order = 1; order <= max_order; ++order)
 		{
 			CAPTURE(dim, order);
-			auto state = get_state(dim, "NeoHookean", order);
+			auto state = get_state(dim, "NeoHookean", order, "ConservativeStatic");
 			const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+			CHECK(state->args["space"]["advanced"]["use_corner_quadrature"] == (order > 1));
 
 			std::vector<basis::ElementBases> bases = *debug.bases;
 			assembler::AssemblyValsCache cache;
@@ -670,6 +676,12 @@ TEST_CASE("jacobian-conservative-quadrature", "[jacobian]")
 				quadrature::Quadrature quad;
 				b.compute_quadrature(quad);
 				REQUIRE(quad.weights.sum() == Catch::Approx(volume).epsilon(1e-12));
+				if (order == 1)
+				{
+					// Constant Jacobian: one sample, no corner rule.
+					REQUIRE(quad.size() == 1);
+					continue;
+				}
 				REQUIRE(quad.weights.minCoeff() > 0);
 				int n_corners = 0;
 				for (Eigen::Index i = 0; i < quad.points.rows(); ++i)

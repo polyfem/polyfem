@@ -36,6 +36,7 @@
 
 #include <igl/Timer.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <filesystem>
@@ -508,7 +509,17 @@ namespace polyfem
 		}
 		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
 		{
-			args["space"]["advanced"]["use_corner_quadrature"] = true;
+			// With linear displacement and geometry the Jacobian is constant per
+			// element: the check still runs, but it never refines, and every rule
+			// gives the same elastic energy, so keep the cheaper standard one.
+			// Orders read from a file are not resolved yet; assume high order.
+			const json &order = args["space"]["discr_order"];
+			const bool linear_order =
+				order.is_number_integer()
+					? order.get<int>() == 1
+					: order.is_array() && std::all_of(order.begin(), order.end(), [](const json &body) { return body["order"] == 1; });
+			if (!(linear_order && mesh->is_linear() && !args["space"]["use_p_ref"]))
+				args["space"]["advanced"]["use_corner_quadrature"] = true;
 		}
 		// FIXME: this is a temporary workaround to avoid incorrect Jacobian validity results for non-simplicial meshes when using discrete inversion checking. We should instead implement proper Jacobian validity checking for non-simplicial meshes.
 		assert(variational_formulation != nullptr);

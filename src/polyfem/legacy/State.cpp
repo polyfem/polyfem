@@ -650,7 +650,11 @@ namespace polyfem::legacy
 		}
 		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
 		{
-			args["space"]["advanced"]["use_corner_quadrature"] = true;
+			// With linear displacement and geometry the Jacobian is constant per
+			// element: the check still runs, but it never refines, and every rule
+			// gives the same elastic energy, so keep the cheaper standard one.
+			if (!(disc_orders.maxCoeff() == 1 && mesh->is_linear() && !args["space"]["use_p_ref"]))
+				args["space"]["advanced"]["use_corner_quadrature"] = true;
 		}
 
 		Eigen::MatrixXi geom_disc_orders;

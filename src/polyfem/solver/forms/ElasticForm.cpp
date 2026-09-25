@@ -168,13 +168,16 @@ namespace polyfem::solver
 					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
 
+			refines_quadrature_ = basis_order > 1 || gbasis_order > 1;
+
 			// Replace the corner quadrature set by LagrangeBasis for every element.
 			// Some default corner rules have negative weights (see
 			// corner_quadrature); override them here so the base quadrature is
 			// also safe before any adaptive refinement occurs.
 			const int dim = is_volume_ ? 3 : 2;
-			for (int e = 0; e < (int)bases_.size(); e++)
-				update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
+			if (refines_quadrature_)
+				for (int e = 0; e < (int)bases_.size(); e++)
+					update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
 		}
 	}
 
@@ -390,6 +393,9 @@ namespace polyfem::solver
 
 	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree, const int max_depth) const
 	{
+		if (!refines_quadrature_)
+			return;
+
 		const int dim = is_volume_ ? 3 : 2;
 
 		// Merge into quadrature_hierarchy_ and rebuild the live quadrature for

@@ -166,6 +166,13 @@ namespace polyfem::solver
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
 
+		/// @brief False when displacement and geometry are both linear. The
+		/// Jacobian is then constant per element, so the conservative check
+		/// still runs but there is nothing between quadrature points to refine
+		/// towards: commit_refinement() is a no-op and the quadrature is left as
+		/// the bases built it.
+		bool refines_quadrature_ = false;
+
 		/// @brief Pending (element id, subdivision tree) candidate from the
 		/// last max_step_size() call; replaced (not accumulated) each call,
 		/// committed in post_step() once a step is accepted.
