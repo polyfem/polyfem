@@ -208,9 +208,6 @@ namespace polyfem
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 			else {
-				OBJWriter::write(
-					resolve_output_path("no_intersection.obj"), displaced,
-					collision_mesh.edges(), collision_mesh.faces());
 				logger().info("No initial intersections detected.");
 			}
 		}
