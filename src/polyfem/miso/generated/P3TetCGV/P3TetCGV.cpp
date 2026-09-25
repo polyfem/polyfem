@@ -15,14 +15,17 @@ namespace miso {
 	{ inherit(parent, q); }
 
 	P3TetCGV::P3TetCGV(
-		const RealVector<20> &p0x,
-		const RealVector<20> &p0y,
-		const RealVector<20> &p0z,
-		const RealVector<20> &p1x,
-		const RealVector<20> &p1y,
-		const RealVector<20> &p1z
+		const RealVector<20> &rx,
+		const RealVector<20> &ry,
+		const RealVector<20> &rz,
+		const RealVector<20> &u0x,
+		const RealVector<20> &u0y,
+		const RealVector<20> &u0z,
+		const RealVector<20> &u1x,
+		const RealVector<20> &u1y,
+		const RealVector<20> &u1z
 	) :
-	m0(LB_3p6_1p3(CL_m0(p0x, p0y, p0z, p1x, p1y, p1z))),
+	m0(LB_3p6_1p3(CL_m0(rx, ry, rz, u0x, u0y, u0z, u1x, u1y, u1z))),
 	x0{0, 0, 0, 0, 0, 0, 1, 1},
 	x1{0, 0, 0, 0, 1, 1, 0, 0},
 	x2{0, 0, 1, 1, 0, 0, 0, 0},

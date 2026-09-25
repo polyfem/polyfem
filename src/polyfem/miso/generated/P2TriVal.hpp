@@ -14,8 +14,10 @@ namespace miso {
 		std::shared_ptr<const SubdivHistory> history;
 
 		P2TriVal(
-			const RealVector<6> &px,
-			const RealVector<6> &py
+			const RealVector<6> &rx,
+			const RealVector<6> &ry,
+			const RealVector<6> &ux,
+			const RealVector<6> &uy
 		);
 
 		P2TriVal() = default;
@@ -61,7 +63,7 @@ namespace miso {
 			const RealVector<3> &x1
 		);
 
-		static RealVector<6> CL_m0(const RealVector<6> &px, const RealVector<6> &py);
+		static RealVector<6> CL_m0(const RealVector<6> &rx, const RealVector<6> &ry, const RealVector<6> &ux, const RealVector<6> &uy);
 		static RealVector<6> LB_2p2(const RealVector<6> &_l);
 		static std::array<RealVector<3>, 4> subdiv_0_2p1(const RealVector<3> &_b);
 		static std::array<RealVector<6>, 4> subdiv_0_2p2(const RealVector<6> &_b);

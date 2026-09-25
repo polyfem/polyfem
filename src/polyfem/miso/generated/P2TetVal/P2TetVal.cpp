@@ -13,11 +13,14 @@ namespace miso {
 	{ inherit(parent, q); }
 
 	P2TetVal::P2TetVal(
-		const RealVector<10> &px,
-		const RealVector<10> &py,
-		const RealVector<10> &pz
+		const RealVector<10> &rx,
+		const RealVector<10> &ry,
+		const RealVector<10> &rz,
+		const RealVector<10> &ux,
+		const RealVector<10> &uy,
+		const RealVector<10> &uz
 	) :
-	m0(LB_3p3(CL_m0(px, py, pz))),
+	m0(LB_3p3(CL_m0(rx, ry, rz, ux, uy, uz))),
 	x0{0, 0, 0, 1},
 	x1{0, 0, 1, 0},
 	x2{0, 1, 0, 0}

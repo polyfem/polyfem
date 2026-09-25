@@ -5,8 +5,8 @@
 namespace miso {
 	class P1TetCGV {
 		public:
-		static constexpr unsigned dimension = 4;
-		static constexpr unsigned numVertices = 8;
+		static constexpr unsigned dimension = 1;
+		static constexpr unsigned numVertices = 2;
 		static constexpr unsigned numConstraints = 1;
 		static constexpr bool hasObjective = true;
 		unsigned scheme = 0;
@@ -14,12 +14,15 @@ namespace miso {
 		std::shared_ptr<const SubdivHistory> history;
 
 		P1TetCGV(
-			const RealVector<4> &p0x,
-			const RealVector<4> &p0y,
-			const RealVector<4> &p0z,
-			const RealVector<4> &p1x,
-			const RealVector<4> &p1y,
-			const RealVector<4> &p1z
+			const RealVector<4> &rx,
+			const RealVector<4> &ry,
+			const RealVector<4> &rz,
+			const RealVector<4> &u0x,
+			const RealVector<4> &u0y,
+			const RealVector<4> &u0z,
+			const RealVector<4> &u1x,
+			const RealVector<4> &u1y,
+			const RealVector<4> &u1z
 		);
 
 		P1TetCGV() = default;
@@ -31,29 +34,22 @@ namespace miso {
 
 		const Real width() const {
 			return std::max({
-				x0.inclusion().width(),
-				x1.inclusion().width(),
-				x2.inclusion().width(),
-				x3.inclusion().width()
+				x0.inclusion().width()
 			});
 		}
 
 		RealVector<dimension> getVertex(unsigned i) const {
 			return {
-				x0[i],
-				x1[i],
-				x2[i],
-				x3[i]
+				x0[i]
 			};
 		}
 
-		static constexpr std::array<unsigned, 2> schemes = {16, 2};
+		static constexpr std::array<unsigned, 1> schemes = {2};
 
 		RealInterval inclusion(unsigned i) const;
 		RealVector<numVertices> sample(unsigned i) const;
 		template<typename F> void split(unsigned scheme, F &&f) const {
-			if (scheme == 1) { for (auto &&_c : split_impl<1>()) f(std::move(_c)); }
-			else { for (auto &&_c : split_impl<0>()) f(std::move(_c)); }
+			for (auto &&_c : split_impl<0>()) f(std::move(_c));
 		}
 		void inherit(const P1TetCGV &parent, unsigned q);
 		friend std::ostream &operator<<(std::ostream &out, const P1TetCGV &s);
@@ -61,28 +57,19 @@ namespace miso {
 		private:
 
 		RealVector<4> m0;
-		RealVector<8> x0;
-		RealVector<8> x1;
-		RealVector<8> x2;
-		RealVector<8> x3;
+		RealVector<2> x0;
 
 		P1TetCGV(const P1TetCGV &parent, unsigned q,
 			const RealVector<4> &m0,
-			const RealVector<8> &x0,
-			const RealVector<8> &x1,
-			const RealVector<8> &x2,
-			const RealVector<8> &x3
+			const RealVector<2> &x0
 		);
 
-		static RealVector<4> CL_m0(const RealVector<4> &p0x, const RealVector<4> &p0y, const RealVector<4> &p0z, const RealVector<4> &p1x, const RealVector<4> &p1y, const RealVector<4> &p1z);
+		static RealVector<4> CL_m0(const RealVector<4> &rx, const RealVector<4> &ry, const RealVector<4> &rz, const RealVector<4> &u0x, const RealVector<4> &u0y, const RealVector<4> &u0z, const RealVector<4> &u1x, const RealVector<4> &u1y, const RealVector<4> &u1z);
 		static RealVector<4> LB_1p3(const RealVector<4> &_l);
+		static std::array<RealVector<2>, 2> subdiv_0_1p1(const RealVector<2> &_b);
 		static std::array<RealVector<4>, 2> subdiv_0_1p3(const RealVector<4> &_b);
-		static std::array<RealVector<4>, 2> subdiv_1_1p3(const RealVector<4> &_b);
-		static std::array<RealVector<8>, 16> subdiv_0_3p1_1p1(const RealVector<8> &_b);
-		static std::array<RealVector<8>, 2> subdiv_1_3p1_1p1(const RealVector<8> &_b);
 		template<unsigned SI=0> std::array<P1TetCGV, schemes[SI]> split_impl() const;
 	};
 
 	template<> std::array<P1TetCGV, P1TetCGV::schemes[0]> P1TetCGV::split_impl<0>() const;
-	template<> std::array<P1TetCGV, P1TetCGV::schemes[1]> P1TetCGV::split_impl<1>() const;
 }

@@ -444,15 +444,17 @@ TEST_CASE("jacobian-subdivision-matches-miso", "[jacobian]")
 	const IntervalGuard guard;
 
 	// The coordinate functions do not depend on the element's nodes, so any
-	// node matrix of the right size will do.
+	// node matrix of the right size will do; here the nodes at rest.
 	Eigen::MatrixXd tri, tet;
 	p_nodes_2d(2, tri);
 	p_nodes_3d(2, tet);
+	const Eigen::MatrixXd tri0 = Eigen::MatrixXd::Zero(tri.rows(), tri.cols());
+	const Eigen::MatrixXd tet0 = Eigen::MatrixXd::Zero(tet.rows(), tet.cols());
 
-	SECTION("static triangle") { check_child_numbering(miso::make_p2tri_val(tri, 0), 2, miso::tri1_perm, false); }
-	SECTION("static tetrahedron") { check_child_numbering(miso::make_p2tet_val(tet, 0), 3, miso::tet1_perm, false); }
-	SECTION("continuous triangle") { check_child_numbering(miso::make_p2tri_cgv(tri, tri, 0), 2, miso::tri1_perm, true); }
-	SECTION("continuous tetrahedron") { check_child_numbering(miso::make_p2tet_cgv(tet, tet, 0), 3, miso::tet1_perm, true); }
+	SECTION("static triangle") { check_child_numbering(miso::make_p2tri_val(tri, tri0, 0), 2, miso::tri1_perm, false); }
+	SECTION("static tetrahedron") { check_child_numbering(miso::make_p2tet_val(tet, tet0, 0), 3, miso::tet1_perm, false); }
+	SECTION("continuous triangle") { check_child_numbering(miso::make_p2tri_cgv(tri, tri0, tri0, 0), 2, miso::tri1_perm, true); }
+	SECTION("continuous tetrahedron") { check_child_numbering(miso::make_p2tet_cgv(tet, tet0, tet0, 0), 3, miso::tet1_perm, true); }
 }
 
 // is_valid() reports *where* inside the element it found the violation, as a

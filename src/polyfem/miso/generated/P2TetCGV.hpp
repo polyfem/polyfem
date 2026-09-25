@@ -14,12 +14,15 @@ namespace miso {
 		std::shared_ptr<const SubdivHistory> history;
 
 		P2TetCGV(
-			const RealVector<10> &p0x,
-			const RealVector<10> &p0y,
-			const RealVector<10> &p0z,
-			const RealVector<10> &p1x,
-			const RealVector<10> &p1y,
-			const RealVector<10> &p1z
+			const RealVector<10> &rx,
+			const RealVector<10> &ry,
+			const RealVector<10> &rz,
+			const RealVector<10> &u0x,
+			const RealVector<10> &u0y,
+			const RealVector<10> &u0z,
+			const RealVector<10> &u1x,
+			const RealVector<10> &u1y,
+			const RealVector<10> &u1z
 		);
 
 		P2TetCGV() = default;
@@ -74,7 +77,7 @@ namespace miso {
 			const RealVector<8> &x3
 		);
 
-		static RealVector<80> CL_m0(const RealVector<10> &p0x, const RealVector<10> &p0y, const RealVector<10> &p0z, const RealVector<10> &p1x, const RealVector<10> &p1y, const RealVector<10> &p1z);
+		static RealVector<80> CL_m0(const RealVector<10> &rx, const RealVector<10> &ry, const RealVector<10> &rz, const RealVector<10> &u0x, const RealVector<10> &u0y, const RealVector<10> &u0z, const RealVector<10> &u1x, const RealVector<10> &u1y, const RealVector<10> &u1z);
 		static RealVector<80> LB_3p3_1p3(const RealVector<80> &_l);
 		static std::array<RealVector<8>, 16> subdiv_0_3p1_1p1(const RealVector<8> &_b);
 		static std::array<RealVector<8>, 2> subdiv_1_3p1_1p1(const RealVector<8> &_b);

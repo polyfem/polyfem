@@ -11,10 +11,12 @@ namespace miso {
 	{ inherit(parent, q); }
 
 	P2TriVal::P2TriVal(
-		const RealVector<6> &px,
-		const RealVector<6> &py
+		const RealVector<6> &rx,
+		const RealVector<6> &ry,
+		const RealVector<6> &ux,
+		const RealVector<6> &uy
 	) :
-	m0(LB_2p2(CL_m0(px, py))),
+	m0(LB_2p2(CL_m0(rx, ry, ux, uy))),
 	x0{0, 0, 1},
 	x1{0, 1, 0}
 	{

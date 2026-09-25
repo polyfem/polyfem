@@ -13,11 +13,14 @@ namespace miso {
 	{ inherit(parent, q); }
 
 	P3TetVal::P3TetVal(
-		const RealVector<20> &px,
-		const RealVector<20> &py,
-		const RealVector<20> &pz
+		const RealVector<20> &rx,
+		const RealVector<20> &ry,
+		const RealVector<20> &rz,
+		const RealVector<20> &ux,
+		const RealVector<20> &uy,
+		const RealVector<20> &uz
 	) :
-	m0(LB_3p6(CL_m0(px, py, pz))),
+	m0(LB_3p6(CL_m0(rx, ry, rz, ux, uy, uz))),
 	x0{0, 0, 0, 1},
 	x1{0, 0, 1, 0},
 	x2{0, 1, 0, 0}

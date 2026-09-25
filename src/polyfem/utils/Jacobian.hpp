@@ -3,6 +3,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <sstream>
 #include <tuple>
+#include <utility>
 #include <vector>
 #include <spdlog/fmt/fmt.h>
 
@@ -112,12 +113,14 @@ namespace polyfem::utils
 		const Eigen::MatrixXd &cp,
 		const Eigen::MatrixXd &uv);
 
+	/// @param rest Rest positions from rest_nodes(); computed here if null.
 	std::vector<int> count_invalid(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
-		const unsigned max_iter = 1'000'000);
+		const unsigned max_iter = 1'000'000,
+		const Eigen::MatrixXd *rest = nullptr);
 
 	/// @brief Certify that no element of configuration @p u is inverted.
 	/// @return (valid, id of the first invalid element or -1, witness tree).
@@ -126,14 +129,31 @@ namespace polyfem::utils
 	///         quadrature refinement; it is empty for P1 (constant Jacobian,
 	///         nothing to localize), when the violation is already visible at
 	///         the element's corners, or when the solver gave up.
+	/// @param rest Rest positions from rest_nodes(); computed here if null.
 	std::tuple<bool, int, Tree> is_valid(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
 		const double threshold = 0,
-		const unsigned max_iter = 1'000'000);
+		const unsigned max_iter = 1'000'000,
+		const Eigen::MatrixXd *rest = nullptr);
 
+	/// @brief Rest positions of every element's control points: the nodes of
+	/// order max(displacement, geometry), mapped by the geometry. Compute it
+	/// once (in round-to-nearest) and pass it to the checks below, so they all
+	/// see the same numbers.
+	Eigen::MatrixXd rest_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases);
+
+	/// @brief Displacement of every element's control points. When the
+	/// displacement basis is nodal at those points (conforming, of the
+	/// control-point order) each is an entry of @p u, copied; otherwise it is
+	/// evaluated there, which rounds. @p exact reports which.
+	Eigen::MatrixXd displacement_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, bool *exact = nullptr);
+
+	/// @brief Largest fraction of the step u1 -> u2 over which no element
+	/// inverts.
+	/// @param rest Rest positions from rest_nodes(); computed here if null.
 	std::tuple<double, int, double, Tree> max_time_step(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
@@ -142,7 +162,8 @@ namespace polyfem::utils
 		const Eigen::VectorXd &u2,
 		double precision = .25,
 		double threshold = 0,
-		const unsigned max_iter = 1'000'000);
+		const unsigned max_iter = 1'000'000,
+		const Eigen::MatrixXd *rest = nullptr);
 
 	Eigen::MatrixXd extract_nodes(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::VectorXd &u, int order);
 	Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem = -1);

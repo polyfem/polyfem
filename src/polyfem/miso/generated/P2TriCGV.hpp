@@ -14,10 +14,12 @@ namespace miso {
 		std::shared_ptr<const SubdivHistory> history;
 
 		P2TriCGV(
-			const RealVector<6> &p0x,
-			const RealVector<6> &p0y,
-			const RealVector<6> &p1x,
-			const RealVector<6> &p1y
+			const RealVector<6> &rx,
+			const RealVector<6> &ry,
+			const RealVector<6> &u0x,
+			const RealVector<6> &u0y,
+			const RealVector<6> &u1x,
+			const RealVector<6> &u1y
 		);
 
 		P2TriCGV() = default;
@@ -68,7 +70,7 @@ namespace miso {
 			const RealVector<6> &x2
 		);
 
-		static RealVector<18> CL_m0(const RealVector<6> &p0x, const RealVector<6> &p0y, const RealVector<6> &p1x, const RealVector<6> &p1y);
+		static RealVector<18> CL_m0(const RealVector<6> &rx, const RealVector<6> &ry, const RealVector<6> &u0x, const RealVector<6> &u0y, const RealVector<6> &u1x, const RealVector<6> &u1y);
 		static RealVector<18> LB_2p2_1p2(const RealVector<18> &_l);
 		static std::array<RealVector<6>, 8> subdiv_0_2p1_1p1(const RealVector<6> &_b);
 		static std::array<RealVector<6>, 2> subdiv_1_2p1_1p1(const RealVector<6> &_b);

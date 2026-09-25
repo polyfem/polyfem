@@ -14,9 +14,12 @@ namespace miso {
 		std::shared_ptr<const SubdivHistory> history;
 
 		P2TetVal(
-			const RealVector<10> &px,
-			const RealVector<10> &py,
-			const RealVector<10> &pz
+			const RealVector<10> &rx,
+			const RealVector<10> &ry,
+			const RealVector<10> &rz,
+			const RealVector<10> &ux,
+			const RealVector<10> &uy,
+			const RealVector<10> &uz
 		);
 
 		P2TetVal() = default;
@@ -66,7 +69,7 @@ namespace miso {
 			const RealVector<4> &x2
 		);
 
-		static RealVector<20> CL_m0(const RealVector<10> &px, const RealVector<10> &py, const RealVector<10> &pz);
+		static RealVector<20> CL_m0(const RealVector<10> &rx, const RealVector<10> &ry, const RealVector<10> &rz, const RealVector<10> &ux, const RealVector<10> &uy, const RealVector<10> &uz);
 		static RealVector<20> LB_3p3(const RealVector<20> &_l);
 		static std::array<RealVector<4>, 8> subdiv_0_3p1(const RealVector<4> &_b);
 		static std::array<RealVector<20>, 8> subdiv_0_3p3(const RealVector<20> &_b);

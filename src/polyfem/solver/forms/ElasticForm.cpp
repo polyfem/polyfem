@@ -149,8 +149,9 @@ namespace polyfem::solver
 			// step hooks: which of those actually certifies depends on the
 			// mode, but the rest quadrature setup below assumes a valid rest
 			// state either way.
+			rest_nodes_ = utils::rest_nodes(is_volume_ ? 3 : 2, bases_, geom_bases_);
 			const auto [isvalid, id, tree] = is_valid(
-				is_volume_ ? 3 : 2, bases_, geom_bases_, x0, jacobian_threshold_, conservative_max_iter_);
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x0, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 			if (!isvalid)
 				log_and_throw_error("Initial state has inverted elements (element {})!", id);
 
@@ -269,7 +270,7 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, jacobian_threshold_, conservative_max_iter_);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 			}
 
 			continuous_check_time_ += transient_check_time;
@@ -313,7 +314,7 @@ namespace polyfem::solver
 		if (!is_conservative(check_inversion_))
 			return true;
 
-		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 		return isvalid;
 	}
 
@@ -354,7 +355,7 @@ namespace polyfem::solver
 		{
 			POLYFEM_SCOPED_TIMER("Static Jacobian Check", check_time);
 			std::tie(isvalid, id, witness) = is_valid(
-				is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_);
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 		}
 		static_check_time_ += check_time;
 		++static_check_calls_;

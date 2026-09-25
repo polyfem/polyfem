@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <numeric>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -43,6 +45,98 @@ namespace polyfem::utils
 			cp.middleRows(e * n_basis_per_cell, n_basis_per_cell) += mapped;
 		}
 		return cp;
+	}
+
+	namespace
+	{
+		int control_point_order(const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases)
+		{
+			return std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		}
+
+		Eigen::MatrixXd control_point_nodes(const int dim, const int order)
+		{
+			Eigen::MatrixXd local_pts;
+			if (dim == 3)
+				autogen::p_nodes_3d(order, local_pts);
+			else
+				autogen::p_nodes_2d(order, local_pts);
+			return local_pts;
+		}
+	} // namespace
+
+	Eigen::MatrixXd rest_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases)
+	{
+		const Eigen::MatrixXd local_pts = control_point_nodes(dim, control_point_order(bases, gbases));
+		const int n_per = local_pts.rows();
+		Eigen::MatrixXd rest(bases.size() * n_per, dim);
+		for (int e = 0; e < (int)bases.size(); ++e)
+		{
+			Eigen::MatrixXd mapped;
+			gbases[e].eval_geom_mapping(local_pts, mapped);
+			rest.middleRows(e * n_per, n_per) = mapped;
+		}
+		return rest;
+	}
+
+	Eigen::MatrixXd displacement_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, bool *exact)
+	{
+		const Eigen::MatrixXd local_pts = control_point_nodes(dim, control_point_order(bases, gbases));
+		const int n_per = local_pts.rows();
+		constexpr double tol = 1e-10;
+
+		Eigen::MatrixXd disp = Eigen::MatrixXd::Zero(bases.size() * n_per, dim);
+		bool all_exact = true;
+		for (int e = 0; e < (int)bases.size(); ++e)
+		{
+			ElementAssemblyValues vals;
+			vals.compute(e, dim == 3, local_pts, bases[e], gbases[e]);
+
+			// A conforming Lagrange basis of the control-point order is 1 at
+			// its own node and 0 at the others (up to the rounding of nodes
+			// like 1/3), with a single global of weight 1: each control point
+			// is then one entry of u, copied rather than computed.
+			std::vector<int> owner(n_per, -1);
+			bool nodal = true;
+			for (int j = 0; j < (int)vals.basis_values.size(); ++j)
+			{
+				const auto &global = vals.basis_values[j].global;
+				if (global.size() != 1 || global.front().val != 1)
+					nodal = false;
+				const Eigen::VectorXd &val = vals.basis_values[j].val;
+				for (int k = 0; k < n_per; ++k)
+				{
+					if (std::abs(val(k) - 1) <= tol)
+					{
+						nodal = nodal && owner[k] < 0;
+						owner[k] = j;
+					}
+					else if (std::abs(val(k)) > tol)
+						nodal = false;
+				}
+			}
+			nodal = nodal && std::find(owner.begin(), owner.end(), -1) == owner.end();
+
+			if (nodal)
+			{
+				for (int k = 0; k < n_per; ++k)
+				{
+					const int g = vals.basis_values[owner[k]].global.front().index;
+					disp.row(e * n_per + k) = u.segment(g * dim, dim).transpose();
+				}
+				continue;
+			}
+
+			// Geometry of higher order than the displacement, or a
+			// non-conforming basis: evaluate, which rounds.
+			all_exact = false;
+			for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+				for (const auto &g : vals.basis_values[j].global)
+					disp.middleRows(e * n_per, n_per) += g.val * vals.basis_values[j].val * u.segment(g.index * dim, dim).transpose();
+		}
+		if (exact)
+			*exact = all_exact;
+		return disp;
 	}
 
 	Eigen::MatrixXd extract_nodes(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::VectorXd &u, int order)
@@ -296,15 +390,21 @@ namespace polyfem::utils
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
-		const unsigned max_iter)
+		const unsigned max_iter,
+		const Eigen::MatrixXd *rest)
 	{
 		std::vector<int> invalidList;
 #ifdef POLYFEM_WITH_MISO
-		const FPUGuard fpu_guard;
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		const int order = control_point_order(bases, gbases);
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
+		// Rest and displacement go to miso separately, and are read before
+		// the interval guard switches the FPU to round-up, so a rest computed
+		// here matches the cached one.
+		const Eigen::MatrixXd rest_here = rest ? Eigen::MatrixXd() : rest_nodes(dim, bases, gbases);
+		const Eigen::MatrixXd &r = rest ? *rest : rest_here;
+		const Eigen::MatrixXd d = displacement_nodes(dim, bases, gbases, u);
+		const FPUGuard fpu_guard;
 
 		auto run_solve = [&](auto problem, int e) {
 			Parameters params;
@@ -327,16 +427,16 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1:
-					invalid = JacEval_P1Tri(rv<3>(cp, o, 0, tri1_perm), rv<3>(cp, o, 1, tri1_perm)) <= 0;
+					invalid = eval_p1tri_jac(r, d, o) <= 0;
 					break;
 				case 2:
-					invalid = run_solve(make_p2tri_val(cp, o), e);
+					invalid = run_solve(make_p2tri_val(r, d, o), e);
 					break;
 				case 3:
-					invalid = run_solve(make_p3tri_val(cp, o), e);
+					invalid = run_solve(make_p3tri_val(r, d, o), e);
 					break;
 				case 4:
-					invalid = run_solve(make_p4tri_val(cp, o), e);
+					invalid = run_solve(make_p4tri_val(r, d, o), e);
 					break;
 				default:
 					throw_unsupported(dim, order);
@@ -347,13 +447,13 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1:
-					invalid = JacEval_P1Tet(rv<4>(cp, o, 0, tet1_perm), rv<4>(cp, o, 1, tet1_perm), rv<4>(cp, o, 2, tet1_perm)) <= 0;
+					invalid = eval_p1tet_jac(r, d, o) <= 0;
 					break;
 				case 2:
-					invalid = run_solve(make_p2tet_val(cp, o), e);
+					invalid = run_solve(make_p2tet_val(r, d, o), e);
 					break;
 				case 3:
-					invalid = run_solve(make_p3tet_val(cp, o), e);
+					invalid = run_solve(make_p3tet_val(r, d, o), e);
 					break;
 				default:
 					throw_unsupported(dim, order);
@@ -375,14 +475,20 @@ namespace polyfem::utils
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXd &u,
 		const double threshold,
-		const unsigned max_iter)
+		const unsigned max_iter,
+		const Eigen::MatrixXd *rest)
 	{
 #ifdef POLYFEM_WITH_MISO
-		const FPUGuard fpu_guard;
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		const int order = control_point_order(bases, gbases);
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
+		// Rest and displacement go to miso separately, and are read before
+		// the interval guard switches the FPU to round-up, so a rest computed
+		// here matches the cached one.
+		const Eigen::MatrixXd rest_here = rest ? Eigen::MatrixXd() : rest_nodes(dim, bases, gbases);
+		const Eigen::MatrixXd &r = rest ? *rest : rest_here;
+		const Eigen::MatrixXd d = displacement_nodes(dim, bases, gbases, u);
+		const FPUGuard fpu_guard;
 
 		// Spatial split: 2^dim children per level.
 		const unsigned n_children = (dim == 2) ? 4u : 8u;
@@ -421,16 +527,16 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1:
-					invalid = JacEval_P1Tri(rv<3>(cp, o, 0, tri1_perm), rv<3>(cp, o, 1, tri1_perm)) <= 0;
+					invalid = eval_p1tri_jac(r, d, o) <= 0;
 					break;
 				case 2:
-					invalid = run_solve(make_p2tri_val(cp, o), e);
+					invalid = run_solve(make_p2tri_val(r, d, o), e);
 					break;
 				case 3:
-					invalid = run_solve(make_p3tri_val(cp, o), e);
+					invalid = run_solve(make_p3tri_val(r, d, o), e);
 					break;
 				case 4:
-					invalid = run_solve(make_p4tri_val(cp, o), e);
+					invalid = run_solve(make_p4tri_val(r, d, o), e);
 					break;
 				default:
 					throw_unsupported(dim, order);
@@ -441,13 +547,13 @@ namespace polyfem::utils
 				switch (order)
 				{
 				case 1:
-					invalid = JacEval_P1Tet(rv<4>(cp, o, 0, tet1_perm), rv<4>(cp, o, 1, tet1_perm), rv<4>(cp, o, 2, tet1_perm)) <= 0;
+					invalid = eval_p1tet_jac(r, d, o) <= 0;
 					break;
 				case 2:
-					invalid = run_solve(make_p2tet_val(cp, o), e);
+					invalid = run_solve(make_p2tet_val(r, d, o), e);
 					break;
 				case 3:
-					invalid = run_solve(make_p3tet_val(cp, o), e);
+					invalid = run_solve(make_p3tet_val(r, d, o), e);
 					break;
 				default:
 					throw_unsupported(dim, order);
@@ -473,15 +579,19 @@ namespace polyfem::utils
 		const Eigen::VectorXd &u2,
 		double precision,
 		double threshold,
-		const unsigned max_iter)
+		const unsigned max_iter,
+		const Eigen::MatrixXd *rest)
 	{
 #ifdef POLYFEM_WITH_MISO
-		const FPUGuard fpu_guard;
-		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		const int order = control_point_order(bases, gbases);
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
-		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-		const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 		const int n_elem = static_cast<int>(bases.size());
+		// As in is_valid(): rest and displacement separately, before the guard.
+		const Eigen::MatrixXd rest_here = rest ? Eigen::MatrixXd() : rest_nodes(dim, bases, gbases);
+		const Eigen::MatrixXd &r = rest ? *rest : rest_here;
+		const Eigen::MatrixXd d1 = displacement_nodes(dim, bases, gbases, u1);
+		const Eigen::MatrixXd d2 = displacement_nodes(dim, bases, gbases, u2);
+		const FPUGuard fpu_guard;
 
 		double step = 1.0;
 		int invalid_id = -1;
@@ -522,7 +632,10 @@ namespace polyfem::utils
 				invalid_id = info.pathToFeasibleId ? static_cast<int>(*info.pathToFeasibleId) : -1;
 				invalid_step = upper(result);
 				tree = Tree{};
-				build_tree(tree, info.pathToFeasible, n_children);
+				// P1 is a problem in t only: its subdivisions carry no
+				// spatial location to refine towards.
+				if (order > 1)
+					build_tree(tree, info.pathToFeasible, n_children);
 			}
 		};
 
@@ -531,16 +644,16 @@ namespace polyfem::utils
 			switch (order)
 			{
 			case 1:
-				run_batch([&](int o) { return make_p1tri_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p1tri_cgv(r, d1, d2, o); });
 				break;
 			case 2:
-				run_batch([&](int o) { return make_p2tri_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p2tri_cgv(r, d1, d2, o); });
 				break;
 			case 3:
-				run_batch([&](int o) { return make_p3tri_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p3tri_cgv(r, d1, d2, o); });
 				break;
 			case 4:
-				run_batch([&](int o) { return make_p4tri_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p4tri_cgv(r, d1, d2, o); });
 				break;
 			default:
 				throw_unsupported(dim, order);
@@ -551,13 +664,13 @@ namespace polyfem::utils
 			switch (order)
 			{
 			case 1:
-				run_batch([&](int o) { return make_p1tet_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p1tet_cgv(r, d1, d2, o); });
 				break;
 			case 2:
-				run_batch([&](int o) { return make_p2tet_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p2tet_cgv(r, d1, d2, o); });
 				break;
 			case 3:
-				run_batch([&](int o) { return make_p3tet_cgv(cp1, cp2, o); });
+				run_batch([&](int o) { return make_p3tet_cgv(r, d1, d2, o); });
 				break;
 			default:
 				throw_unsupported(dim, order);

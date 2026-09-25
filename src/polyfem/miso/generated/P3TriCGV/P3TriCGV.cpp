@@ -13,12 +13,14 @@ namespace miso {
 	{ inherit(parent, q); }
 
 	P3TriCGV::P3TriCGV(
-		const RealVector<10> &p0x,
-		const RealVector<10> &p0y,
-		const RealVector<10> &p1x,
-		const RealVector<10> &p1y
+		const RealVector<10> &rx,
+		const RealVector<10> &ry,
+		const RealVector<10> &u0x,
+		const RealVector<10> &u0y,
+		const RealVector<10> &u1x,
+		const RealVector<10> &u1y
 	) :
-	m0(LB_2p4_1p2(CL_m0(p0x, p0y, p1x, p1y))),
+	m0(LB_2p4_1p2(CL_m0(rx, ry, u0x, u0y, u1x, u1y))),
 	x0{0, 0, 0, 0, 1, 1},
 	x1{0, 0, 1, 1, 0, 0},
 	x2{0, 1, 0, 1, 0, 1}

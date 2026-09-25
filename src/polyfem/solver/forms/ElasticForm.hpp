@@ -163,6 +163,10 @@ namespace polyfem::solver
 
 		Eigen::VectorXd x_prev_;
 
+		/// @brief Rest positions of the control points (utils::rest_nodes),
+		/// computed once so every conservative check sees the same numbers.
+		Eigen::MatrixXd rest_nodes_;
+
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
 

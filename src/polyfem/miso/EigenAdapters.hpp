@@ -46,47 +46,64 @@ static constexpr int tet1_perm[4] = {0, 3, 2, 1};
 static constexpr int tet2_perm[10] = {0, 7, 3, 6, 9, 2, 4, 8, 5, 1};
 static constexpr int tet3_perm[20] = {0, 10, 11, 3, 9, 19, 15, 8, 14, 2, 4, 17, 13, 16, 18, 7, 5, 12, 6, 1};
 
+// Control points enter as rest positions r and displacements u, separately:
+// the generated code forms r + u in interval arithmetic, so the displacement
+// reaches it exactly as the solver computed it.
+
 // ---- Val (static validity) factories ----
 
-inline P2TriVal make_p2tri_val(const Eigen::MatrixXd &cp, int o)
-{ return {rv<6>(cp,o,0,tri2_perm), rv<6>(cp,o,1,tri2_perm)}; }
+// P1: the Jacobian is constant, so the static check is one evaluation.
+inline Real eval_p1tri_jac(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return JacEval_P1Tri(rv<3>(r,o,0,tri1_perm), rv<3>(r,o,1,tri1_perm), rv<3>(u,o,0,tri1_perm), rv<3>(u,o,1,tri1_perm)); }
 
-inline P3TriVal make_p3tri_val(const Eigen::MatrixXd &cp, int o)
-{ return {rv<10>(cp,o,0,tri3_perm), rv<10>(cp,o,1,tri3_perm)}; }
+inline Real eval_p1tet_jac(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return JacEval_P1Tet(rv<4>(r,o,0,tet1_perm), rv<4>(r,o,1,tet1_perm), rv<4>(r,o,2,tet1_perm), rv<4>(u,o,0,tet1_perm), rv<4>(u,o,1,tet1_perm), rv<4>(u,o,2,tet1_perm)); }
 
-inline P4TriVal make_p4tri_val(const Eigen::MatrixXd &cp, int o)
-{ return {rv<15>(cp,o,0,tri4_perm), rv<15>(cp,o,1,tri4_perm)}; }
+inline P2TriVal make_p2tri_val(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return {rv<6>(r,o,0,tri2_perm), rv<6>(r,o,1,tri2_perm), rv<6>(u,o,0,tri2_perm), rv<6>(u,o,1,tri2_perm)}; }
 
-inline P2TetVal make_p2tet_val(const Eigen::MatrixXd &cp, int o)
-{ return {rv<10>(cp,o,0,tet2_perm), rv<10>(cp,o,1,tet2_perm), rv<10>(cp,o,2,tet2_perm)}; }
+inline P3TriVal make_p3tri_val(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return {rv<10>(r,o,0,tri3_perm), rv<10>(r,o,1,tri3_perm), rv<10>(u,o,0,tri3_perm), rv<10>(u,o,1,tri3_perm)}; }
 
-inline P3TetVal make_p3tet_val(const Eigen::MatrixXd &cp, int o)
-{ return {rv<20>(cp,o,0,tet3_perm), rv<20>(cp,o,1,tet3_perm), rv<20>(cp,o,2,tet3_perm)}; }
+inline P4TriVal make_p4tri_val(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return {rv<15>(r,o,0,tri4_perm), rv<15>(r,o,1,tri4_perm), rv<15>(u,o,0,tri4_perm), rv<15>(u,o,1,tri4_perm)}; }
+
+inline P2TetVal make_p2tet_val(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return {rv<10>(r,o,0,tet2_perm), rv<10>(r,o,1,tet2_perm), rv<10>(r,o,2,tet2_perm), rv<10>(u,o,0,tet2_perm), rv<10>(u,o,1,tet2_perm), rv<10>(u,o,2,tet2_perm)}; }
+
+inline P3TetVal make_p3tet_val(const Eigen::MatrixXd &r, const Eigen::MatrixXd &u, int o)
+{ return {rv<20>(r,o,0,tet3_perm), rv<20>(r,o,1,tet3_perm), rv<20>(r,o,2,tet3_perm), rv<20>(u,o,0,tet3_perm), rv<20>(u,o,1,tet3_perm), rv<20>(u,o,2,tet3_perm)}; }
 
 // ---- CGV (continuous geometric validity) factories ----
 
-inline P1TriCGV make_p1tri_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<3>(cp1,o,0,tri1_perm), rv<3>(cp1,o,1,tri1_perm), rv<3>(cp2,o,0,tri1_perm), rv<3>(cp2,o,1,tri1_perm)}; }
+// P1 is a one-variable problem in t: the Jacobian is constant in space.
 
-inline P2TriCGV make_p2tri_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<6>(cp1,o,0,tri2_perm), rv<6>(cp1,o,1,tri2_perm), rv<6>(cp2,o,0,tri2_perm), rv<6>(cp2,o,1,tri2_perm)}; }
+template<typename U>
+inline P1TriCGV make_p1tri_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<3>(r,o,0,tri1_perm), rv<3>(r,o,1,tri1_perm), rv<3>(u0,o,0,tri1_perm), rv<3>(u0,o,1,tri1_perm), rv<3>(u1,o,0,tri1_perm), rv<3>(u1,o,1,tri1_perm)}; }
 
-inline P3TriCGV make_p3tri_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<10>(cp1,o,0,tri3_perm), rv<10>(cp1,o,1,tri3_perm), rv<10>(cp2,o,0,tri3_perm), rv<10>(cp2,o,1,tri3_perm)}; }
+template<typename U>
+inline P2TriCGV make_p2tri_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<6>(r,o,0,tri2_perm), rv<6>(r,o,1,tri2_perm), rv<6>(u0,o,0,tri2_perm), rv<6>(u0,o,1,tri2_perm), rv<6>(u1,o,0,tri2_perm), rv<6>(u1,o,1,tri2_perm)}; }
 
-inline P4TriCGV make_p4tri_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<15>(cp1,o,0,tri4_perm), rv<15>(cp1,o,1,tri4_perm), rv<15>(cp2,o,0,tri4_perm), rv<15>(cp2,o,1,tri4_perm)}; }
+template<typename U>
+inline P3TriCGV make_p3tri_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<10>(r,o,0,tri3_perm), rv<10>(r,o,1,tri3_perm), rv<10>(u0,o,0,tri3_perm), rv<10>(u0,o,1,tri3_perm), rv<10>(u1,o,0,tri3_perm), rv<10>(u1,o,1,tri3_perm)}; }
 
-inline P1TetCGV make_p1tet_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<4>(cp1,o,0,tet1_perm), rv<4>(cp1,o,1,tet1_perm), rv<4>(cp1,o,2,tet1_perm),
-          rv<4>(cp2,o,0,tet1_perm), rv<4>(cp2,o,1,tet1_perm), rv<4>(cp2,o,2,tet1_perm)}; }
+template<typename U>
+inline P4TriCGV make_p4tri_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<15>(r,o,0,tri4_perm), rv<15>(r,o,1,tri4_perm), rv<15>(u0,o,0,tri4_perm), rv<15>(u0,o,1,tri4_perm), rv<15>(u1,o,0,tri4_perm), rv<15>(u1,o,1,tri4_perm)}; }
 
-inline P2TetCGV make_p2tet_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<10>(cp1,o,0,tet2_perm), rv<10>(cp1,o,1,tet2_perm), rv<10>(cp1,o,2,tet2_perm),
-          rv<10>(cp2,o,0,tet2_perm), rv<10>(cp2,o,1,tet2_perm), rv<10>(cp2,o,2,tet2_perm)}; }
+template<typename U>
+inline P1TetCGV make_p1tet_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<4>(r,o,0,tet1_perm), rv<4>(r,o,1,tet1_perm), rv<4>(r,o,2,tet1_perm), rv<4>(u0,o,0,tet1_perm), rv<4>(u0,o,1,tet1_perm), rv<4>(u0,o,2,tet1_perm), rv<4>(u1,o,0,tet1_perm), rv<4>(u1,o,1,tet1_perm), rv<4>(u1,o,2,tet1_perm)}; }
 
-inline P3TetCGV make_p3tet_cgv(const Eigen::MatrixXd &cp1, const Eigen::MatrixXd &cp2, int o)
-{ return {rv<20>(cp1,o,0,tet3_perm), rv<20>(cp1,o,1,tet3_perm), rv<20>(cp1,o,2,tet3_perm),
-          rv<20>(cp2,o,0,tet3_perm), rv<20>(cp2,o,1,tet3_perm), rv<20>(cp2,o,2,tet3_perm)}; }
+template<typename U>
+inline P2TetCGV make_p2tet_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<10>(r,o,0,tet2_perm), rv<10>(r,o,1,tet2_perm), rv<10>(r,o,2,tet2_perm), rv<10>(u0,o,0,tet2_perm), rv<10>(u0,o,1,tet2_perm), rv<10>(u0,o,2,tet2_perm), rv<10>(u1,o,0,tet2_perm), rv<10>(u1,o,1,tet2_perm), rv<10>(u1,o,2,tet2_perm)}; }
+
+template<typename U>
+inline P3TetCGV make_p3tet_cgv(const Eigen::MatrixXd &r, const U &u0, const U &u1, int o)
+{ return {rv<20>(r,o,0,tet3_perm), rv<20>(r,o,1,tet3_perm), rv<20>(r,o,2,tet3_perm), rv<20>(u0,o,0,tet3_perm), rv<20>(u0,o,1,tet3_perm), rv<20>(u0,o,2,tet3_perm), rv<20>(u1,o,0,tet3_perm), rv<20>(u1,o,1,tet3_perm), rv<20>(u1,o,2,tet3_perm)}; }
 
 } // namespace miso
