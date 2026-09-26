@@ -473,7 +473,22 @@ TEST_CASE("shape-transient-friction", "[opt_gradient]")
 	constexpr uint64_t SEED = BASE_SEED + 15;
 	constexpr int REPEAT = 3;
 	constexpr double TOL = 1.1e-5;
-	run_test1("shape-transient-friction-opt.json", 1e-6, TOL, 0.0, 1.0, SEED, REPEAT);
+	TestContext ctx{"shape-transient-friction-opt.json"};
+
+	// The FD step of 1e-6 amplifies forward-solve error by 5e5, and the
+	// scene's grad_norm_tol of 2.5e-10 leaves enough of it to exceed TOL.
+	for (auto &varform : ctx.opt.varforms)
+		varform->get_args()["solver"]["nonlinear"]["grad_norm_tol"] = 1e-11;
+
+	Eigen::VectorXd x;
+	ctx.opt.initial_guess(x);
+
+	std::mt19937_64 rng(SEED);
+	for (int i = 0; i < REPEAT; ++i)
+	{
+		Eigen::MatrixXd velocity = uniform_random_matrix(x.size(), 1, rng, 0.0, 1.0);
+		verify_adjoint(*ctx.opt.nl_problem, x, velocity, 1e-6f, TOL, "shape-transient-friction", i, SEED);
+	}
 }
 
 TEST_CASE("shape-transient-friction-sdf", "[opt_gradient]")
