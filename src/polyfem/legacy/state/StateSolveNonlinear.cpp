@@ -28,9 +28,7 @@
 #include <Eigen/Core>
 
 #include <ipc/ipc.hpp>
-#include <ipc/distance/distance_type.hpp>
 #include <ipc/distance/distance_type_exact.hpp>
-#include <ipc/utils/profile_registry.hpp>
 
 #include <spdlog/fmt/fmt.h>
 
@@ -46,34 +44,6 @@ namespace polyfem::legacy
 	using namespace time_integrator;
 	using namespace io;
 	using namespace utils;
-
-	namespace
-	{
-		void record_nl_solver_stats(const polysolve::nonlinear::Solver &nl_solver)
-		{
-			const json info = nl_solver.info();
-			auto &reg = ipc::ProfileRegistry::instance();
-			const auto pull = [&](const char *key, const char *out) {
-				auto it = info.find(key);
-				if (it != info.end() && it->is_number())
-					reg.add_value(out, it->get<double>());
-			};
-			const int iters =
-				(info.contains("iterations") && info["iterations"].is_number())
-					? info["iterations"].get<int>()
-					: 0;
-			pull("iterations", "polyfem.newton.iters");
-			pull("total_time", "polyfem.newton.total_time");
-			const auto pull_per_iter = [&](const char *key, const char *out) {
-				auto it = info.find(key);
-				if (it != info.end() && it->is_number())
-					reg.add_value(out, it->get<double>() * iters);
-			};
-			pull_per_iter("time_assembly", "polyfem.newton.time_assembly");
-			pull_per_iter("time_inverting", "polyfem.newton.time_inverting");
-			pull_per_iter("time_line_search", "polyfem.newton.time_line_search");
-		}
-	} // namespace
 
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
@@ -167,10 +137,7 @@ namespace polyfem::legacy
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			{
-				POLYFEM_SCOPED_TIMER("Save timestep");
-				save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
-			}
+			save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
 
 			if (user_post_step)
@@ -190,13 +157,6 @@ namespace polyfem::legacy
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-
-			// Flush the ipc-toolkit profiling registry to disk. The file is
-			// overwritten after every time step so the latest cumulative
-			// timings/counters are always available for inspection.
-			ipc::ProfileRegistry::instance().dump_json(
-				resolve_output_path("ipc_profile.json"));
-
 			if (time_callback)
 				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 
@@ -448,22 +408,15 @@ namespace polyfem::legacy
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			record_nl_solver_stats(*nl_solver);
 			save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		{
-			POLYFEM_SCOPED_TIMER("AL solve");
-			al_solver.solve_al(nl_problem, sol,
-							   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
-		}
+		al_solver.solve_al(nl_problem, sol,
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
-		{
-			POLYFEM_SCOPED_TIMER("Reduced solve");
-			al_solver.solve_reduced(nl_problem, sol,
-									args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
-		}
+		al_solver.solve_reduced(nl_problem, sol,
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -478,7 +431,6 @@ namespace polyfem::legacy
 
 		if (!optimization_enabled)
 		{
-			POLYFEM_SCOPED_TIMER("Lagging loop");
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
 			for (int lag_i = 1; !lagging_converged; lag_i++)
@@ -537,7 +489,6 @@ namespace polyfem::legacy
 					 {"t", step}, // TODO: null if static?
 					 {"lag_i", lag_i},
 					 {"info", nl_solver->info()}});
-				record_nl_solver_stats(*nl_solver);
 				save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

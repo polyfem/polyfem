@@ -18,7 +18,6 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/GCPContactForm.hpp>
-#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -1216,8 +1215,7 @@ namespace polyfem::legacy::io
 		const std::string &solution_path,
 		const std::string &stress_path,
 		const std::string &mises_path,
-		const bool is_contact_enabled,
-		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
+		const bool is_contact_enabled) const
 	{
 		if (!state.mesh)
 		{
@@ -1298,7 +1296,7 @@ namespace polyfem::legacy::io
 			save_vtu(
 				vis_mesh_path, state, sol, pressure,
 				tend, dt, opts,
-				is_contact_enabled, quadrature_points_ee);
+				is_contact_enabled);
 		}
 		if (!nodes_path.empty())
 		{
@@ -1397,8 +1395,7 @@ namespace polyfem::legacy::io
 		const double t,
 		const double dt,
 		const ExportOptions &opts,
-		const bool is_contact_enabled,
-		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
+		const bool is_contact_enabled) const
 	{
 		if (!state.mesh)
 		{
@@ -1441,7 +1438,7 @@ namespace polyfem::legacy::io
 		if (opts.surface)
 		{
 			save_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
-						 is_contact_enabled, quadrature_points_ee);
+						 is_contact_enabled);
 		}
 
 		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
@@ -2110,8 +2107,7 @@ namespace polyfem::legacy::io
 		const double t,
 		const double dt_in,
 		const ExportOptions &opts,
-		const bool is_contact_enabled,
-		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
+		const bool is_contact_enabled) const
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
@@ -2245,18 +2241,6 @@ namespace polyfem::legacy::io
 			writer.add_field("discr", discr);
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
-
-		if (!quadrature_points_ee.empty())
-		{
-			Eigen::MatrixXd field(boundary_vis_primitive_ids.rows(), 1);
-			field.setZero();
-			for (int i = 0; i < boundary_vis_primitive_ids.rows(); ++i)
-			{
-				if (quadrature_points_ee.count(boundary_vis_primitive_ids(i)))
-					field(i) = quadrature_points_ee.at(boundary_vis_primitive_ids(i));
-			}
-			writer.add_field("quadrature_points_ee", field);
-		}
 
 		if (actual_dim == 1 && opts.export_field("solution_grad"))
 			writer.add_field("solution_grad", vect);

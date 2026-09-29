@@ -44,11 +44,6 @@ namespace polyfem::solver
 
 		const ipc::ESPPotential &barrier_potential() const { return barrier_potential_; }
 
-		const ipc::ESPPotential::CountMap &get_ee_qp_count() const
-		{
-			return barrier_potential_.get_edge_evaluation_count();
-		}
-
 		bool using_adaptive_dhat() const { return use_adaptive_dhat_; }
 
 		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const
