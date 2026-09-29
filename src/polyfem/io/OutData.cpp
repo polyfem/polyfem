@@ -2366,6 +2366,55 @@ namespace polyfem::io
 			}
 		}
 
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = points;
+		sample.local_points = local_points;
+		sample.element_ids = el_id.col(0);
+		sample.domain = OutputSample::Domain::Volume;
+		sample.cell_count = elements.empty() ? tets.rows() : static_cast<int>(elements.size());
+		sample.time = t;
+		sample.dt = dt;
+		add_output_fields(writer, sample, output_fields);
+
+		if (opts.sol_on_grid && output_fields && grid_points.rows() > 0)
+		{
+			OutputSample grid_sample;
+			grid_sample.points = grid_points;
+			grid_sample.element_ids = grid_points_to_elements.col(0);
+			grid_sample.domain = OutputSample::Domain::Grid;
+			grid_sample.local_points.resize(grid_points.rows(), mesh.dimension());
+			grid_sample.local_points.setZero();
+			for (int i = 0; i < grid_points.rows(); ++i)
+			{
+				if (grid_sample.element_ids(i) >= 0)
+					grid_sample.local_points.row(i) = grid_points_bc.row(i).rightCols(mesh.dimension());
+			}
+			grid_sample.time = t;
+			grid_sample.dt = dt;
+			grid_sample.requested_fields = {
+				"solution",
+				"solution_gradient",
+				"pressure",
+				"pressure_gradient",
+			};
+
+			io::write_matrix(path + "_grid.txt", grid_points);
+			for (const OutputField &field : output_fields(grid_sample))
+			{
+				if (field.association != OutputField::Association::Point || field.values.rows() != grid_points.rows())
+					continue;
+				if (field.name == "solution")
+					io::write_matrix(path + "_sol.txt", field.values);
+				else if (field.name == "solution_gradient")
+					io::write_matrix(path + "_grad.txt", field.values);
+				else if (field.name == "pressure")
+					io::write_matrix(path + "_p_sol.txt", field.values);
+				else if (field.name == "pressure_gradient")
+					io::write_matrix(path + "_p_grad.txt", field.values);
+			}
+		}
+
 		if (elements.empty())
 			writer.write_mesh(path, points, tets, mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle);
 		else
