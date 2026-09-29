@@ -19,9 +19,6 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
 #include <polyfem/utils/getRSS.h>
-#include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/ESPContactForm.hpp>
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -432,82 +429,6 @@ namespace polyfem::io
 			}
 		}
 
-		// Write `contact_forces` plus per-subset variants (`contact_forces_vertex`,
-		// `contact_forces_edge`, and in 3D `contact_forces_face`) derived by
-		// restricting the high-order collision set to one dict group at a time
-		// before evaluating the gradient.
-		void save_esp_subset_forces(
-			const solver::ESPContactForm &esp_form,
-			ipc::ESPCollisions &esp_collision_set,
-			const ipc::CollisionMesh &collision_mesh,
-			const Eigen::MatrixXd &displaced_surface,
-			const Eigen::MatrixXd &surface_displacements,
-			const double barrier_stiffness,
-			const int problem_dim,
-			const bool export_vertex,
-			const bool export_edge,
-			const bool export_face,
-			paraviewo::ParaviewWriter &writer)
-		{
-			const auto &potential = esp_form.barrier_potential();
-
-			auto add_force_field = [&](const std::string &name, const Eigen::VectorXd &forces) {
-				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-				assert(forces_reshaped.rows() == surface_displacements.rows());
-				assert(forces_reshaped.cols() == surface_displacements.cols());
-				writer.add_field(name, forces_reshaped);
-			};
-
-			// Stash all five dict groups; restore only the requested kind for the
-			// gradient call, then restore everything afterwards. Pointer-swap move
-			// on unordered_map<..., unique_ptr<...>> is O(1) and does not deep-copy.
-			auto gradient_with_only = [&](const std::string &kind) -> Eigen::VectorXd {
-				auto v = std::move(esp_collision_set.vertex_collisions);
-				auto ee = std::move(esp_collision_set.edge_edge_collisions);
-				auto e2 = std::move(esp_collision_set.edge_collisions_2d);
-				auto f = std::move(esp_collision_set.face_collisions);
-
-				if (kind == "vertex")
-				{
-					esp_collision_set.vertex_collisions = std::move(v);
-				}
-				else if (kind == "edge")
-				{
-					esp_collision_set.edge_edge_collisions = std::move(ee);
-					esp_collision_set.edge_collisions_2d = std::move(e2);
-				}
-				else if (kind == "face")
-				{
-					esp_collision_set.face_collisions = std::move(f);
-				}
-
-				Eigen::VectorXd g = -barrier_stiffness * potential.gradient(esp_collision_set, collision_mesh, displaced_surface);
-
-				if (kind != "vertex")
-				{
-					esp_collision_set.vertex_collisions = std::move(v);
-				}
-				if (kind != "edge")
-				{
-					esp_collision_set.edge_edge_collisions = std::move(ee);
-					esp_collision_set.edge_collisions_2d = std::move(e2);
-				}
-				if (kind != "face")
-				{
-					esp_collision_set.face_collisions = std::move(f);
-				}
-				return g;
-			};
-
-			const Eigen::VectorXd forces = -barrier_stiffness * potential.gradient(esp_collision_set, collision_mesh, displaced_surface);
-			add_force_field("contact_forces", forces);
-			if (export_vertex)
-				add_force_field("contact_forces_vertex", gradient_with_only("vertex"));
-			if (export_edge)
-				add_force_field("contact_forces_edge", gradient_with_only("edge"));
-			if (export_face && problem_dim == 3)
-				add_force_field("contact_forces_face", gradient_with_only("face"));
-		}
 	} // namespace
 
 	void OutGeometryData::extract_boundary_mesh_sampled(
@@ -2220,12 +2141,8 @@ namespace polyfem::io
 		wire = args["output"]["paraview"]["wireframe"];
 		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
-		contact_forces_vertex = args["output"]["paraview"]["options"]["contact_forces_vertex"] && !is_problem_scalar;
-		contact_forces_edge = args["output"]["paraview"]["options"]["contact_forces_edge"] && !is_problem_scalar;
-		contact_forces_face = args["output"]["paraview"]["options"]["contact_forces_face"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
-		contact_potential = args["output"]["advanced"]["contact_potential"];
 		tangential_adhesion_forces = args["output"]["paraview"]["options"]["tangential_adhesion_forces"] && !is_problem_scalar;
 
 		if (args["output"]["paraview"]["options"]["force_high_order"])
@@ -3292,154 +3209,6 @@ namespace polyfem::io
 		j["formulation"] = formulation;
 
 		logger().info("done");
-	}
-
-	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices)
-		: file(path), solve_data(solve_data), collision_mesh_(collision_mesh), n_obstacle_vertices_(n_obstacle_vertices)
-	{
-		file << "i";
-		for (const auto &[name, _] : solve_data.named_forms())
-		{
-			file << "," << name;
-		}
-		const int problem_dim = collision_mesh_.dim();
-		file << ",total_contact";
-		if (problem_dim >= 1)
-			file << ",total_contact_x";
-		if (problem_dim >= 2)
-			file << ",total_contact_y";
-		if (problem_dim >= 3)
-			file << ",total_contact_z";
-		if (problem_dim >= 2)
-			file << ",total_contact_radial,total_contact_tangential";
-
-		file << ",total" << std::endl;
-	}
-
-	GradientNormCSVWriter::~GradientNormCSVWriter()
-	{
-		file.close();
-	}
-
-	void GradientNormCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
-	{
-		const Eigen::VectorXd x = sol.col(0);
-		Eigen::VectorXd grad, total = Eigen::VectorXd::Zero(x.size());
-		file << i;
-		for (const auto &[_, form] : solve_data.named_forms())
-		{
-			double n = 0;
-			if (form && form->enabled())
-			{
-				form->solution_changed(x);
-				form->first_derivative(x, grad);
-				n = grad.norm();
-				total += grad;
-			}
-			file << "," << n;
-		}
-		const int problem_dim = collision_mesh_.dim();
-		const int num_collision_vertices = collision_mesh_.num_vertices();
-
-		// Contact force statistics (on collision-mesh DOFs)
-		Eigen::VectorXd contact_grad = Eigen::VectorXd::Zero(problem_dim * num_collision_vertices);
-		double contact_norm = 0;
-		if (solve_data.contact_form && solve_data.contact_form->enabled())
-		{
-			Eigen::VectorXd contact_grad_full;
-			solve_data.contact_form->first_derivative(x, contact_grad_full);
-
-			// Revert collision_mesh_.to_full_dof: select collision DOFs from the full-DOF gradient.
-			// Obstacle vertices live at the tail of the full-DOF vertex list; zero them out so they
-			// do not contribute to the norm, component sums, or radial/tangential projections.
-			const Eigen::VectorXi &v2f = collision_mesh_.to_full_vertex_id();
-			const int obstacle_full_cutoff =
-				static_cast<int>(collision_mesh_.full_num_vertices()) - n_obstacle_vertices_;
-			for (int i = 0; i < num_collision_vertices; ++i)
-			{
-				if (v2f[i] >= obstacle_full_cutoff)
-					continue; // leave as zero
-				contact_grad.segment(problem_dim * i, problem_dim) =
-					contact_grad_full.segment(problem_dim * v2f[i], problem_dim);
-			}
-
-			contact_norm = contact_grad.norm();
-		}
-		file << "," << contact_norm;
-
-		if (problem_dim >= 2)
-		{
-			Eigen::VectorXd contact_grad_components = Eigen::VectorXd::Zero(problem_dim);
-			for (int k = 0; k < contact_grad.size(); k += problem_dim)
-			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					contact_grad_components(d) += contact_grad(k + d);
-				}
-			}
-
-			if (problem_dim >= 1)
-				file << "," << contact_grad_components(0);
-			if (problem_dim >= 2)
-				file << "," << contact_grad_components(1);
-			if (problem_dim >= 3)
-				file << "," << contact_grad_components(2);
-
-			const Eigen::MatrixXd &rest_positions = collision_mesh_.rest_positions();
-			double contact_radial = 0, contact_tangential = 0;
-			for (int k = 0; k < contact_grad.size(); k += problem_dim)
-			{
-				const int i = k / problem_dim;
-				const double x_pos = rest_positions(i, 0);
-				const double y_pos = rest_positions(i, 1);
-				const double r = std::sqrt(x_pos * x_pos + y_pos * y_pos);
-
-				if (r > 1e-14)
-				{
-					const double grad_x = contact_grad(k);
-					const double grad_y = contact_grad(k + 1);
-
-					const double radial = (grad_x * x_pos + grad_y * y_pos) / r;
-					const double tangential = (grad_x * (-y_pos) + grad_y * x_pos) / r;
-
-					contact_radial += radial;
-					contact_tangential += tangential;
-				}
-			}
-
-			file << "," << contact_radial << "," << contact_tangential;
-		}
-
-		file << "," << total.norm() << "\n";
-		file.flush();
-	}
-
-	ContactPotentialCSVWriter::ContactPotentialCSVWriter(const std::string &path, const solver::SolveData &solve_data)
-		: file(path), solve_data(solve_data)
-	{
-		file << "time,solver_potential,physical_potential,scale_factor" << std::endl;
-	}
-
-	ContactPotentialCSVWriter::~ContactPotentialCSVWriter()
-	{
-		file.close();
-	}
-
-	void ContactPotentialCSVWriter::write(const double t, const Eigen::MatrixXd &sol)
-	{
-		double solver_potential = 0;
-		if (solve_data.contact_form && solve_data.contact_form->enabled())
-		{
-			solver_potential = solve_data.contact_form->value(sol);
-		}
-
-		const double scale_factor = solve_data.time_integrator
-										? solve_data.time_integrator->acceleration_scaling()
-										: 1;
-		const double physical_potential = solver_potential / scale_factor;
-
-		file << t << "," << solver_potential << "," << physical_potential << "," << scale_factor << "\n";
-		file.flush();
 	}
 
 } // namespace polyfem::io

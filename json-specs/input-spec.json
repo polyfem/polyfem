@@ -2444,8 +2444,7 @@
             "data",
             "advanced",
             "reference",
-            "stats",
-            "gradient_norm"
+            "stats"
         ],
         "doc": "output settings"
     },
@@ -2472,12 +2471,6 @@
         "default": "",
         "type": "string",
         "doc": "File name for JSON output statistics on time/error/etc."
-    },
-    {
-        "pointer": "/output/gradient_norm",
-        "default": "",
-        "type": "string",
-        "doc": "If non-empty, path to a CSV that receives the L2 norm of each Form's gradient at every saved timestep."
     },
     {
         "pointer": "/output/restart_json",
@@ -2572,9 +2565,6 @@
             "material",
             "body_ids",
             "contact_forces",
-            "contact_forces_vertex",
-            "contact_forces_edge",
-            "contact_forces_face",
             "friction_forces",
             "normal_adhesion_forces",
             "tangential_adhesion_forces",
@@ -2620,24 +2610,6 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out contact forces for surface"
-    },
-    {
-        "pointer": "/output/paraview/options/contact_forces_vertex",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out the vertex-subset contact forces (high-order contact only)"
-    },
-    {
-        "pointer": "/output/paraview/options/contact_forces_edge",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out the edge-subset contact forces (high-order contact only)"
-    },
-    {
-        "pointer": "/output/paraview/options/contact_forces_face",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out the face-subset contact forces (high-order contact, 3D only)"
     },
     {
         "pointer": "/output/paraview/options/friction_forces",
@@ -2847,8 +2819,7 @@
             "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
-            "spectrum",
-            "contact_potential"
+            "spectrum"
         ],
         "doc": "Additional output options"
     },
@@ -2917,12 +2888,6 @@
         "default": false,
         "type": "bool",
         "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
-    },
-    {
-        "pointer": "/output/advanced/contact_potential",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out contact potential to a csv file."
     },
     {
         "pointer": "/input",

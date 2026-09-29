@@ -8,7 +8,6 @@
 
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
-#include <polyfem/solver/SolveData.hpp>
 
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
@@ -44,12 +43,8 @@ namespace polyfem::io
 			bool wire;
 			bool points;
 			bool contact_forces;
-			bool contact_forces_vertex;
-			bool contact_forces_edge;
-			bool contact_forces_face;
 			bool friction_forces;
 			bool normal_adhesion_forces;
-			bool contact_potential;
 			bool tangential_adhesion_forces;
 
 			bool use_sampler;
@@ -337,31 +332,4 @@ namespace polyfem::io
 			paraviewo::ParaviewWriter &writer) const;
 	};
 
-	class GradientNormCSVWriter
-	{
-	public:
-		GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices);
-		~GradientNormCSVWriter();
-
-		void write(const int i, const Eigen::MatrixXd &sol);
-
-	protected:
-		std::ofstream file;
-		const solver::SolveData &solve_data;
-		const ipc::CollisionMesh &collision_mesh_;
-		const int n_obstacle_vertices_;
-	};
-
-	class ContactPotentialCSVWriter
-	{
-	public:
-		ContactPotentialCSVWriter(const std::string &path, const solver::SolveData &solve_data);
-		~ContactPotentialCSVWriter();
-
-		void write(const double t, const Eigen::MatrixXd &sol);
-
-	protected:
-		std::ofstream file;
-		const solver::SolveData &solve_data;
-	};
 } // namespace polyfem::io
