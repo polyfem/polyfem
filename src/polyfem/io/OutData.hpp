@@ -22,11 +22,6 @@ namespace paraviewo
 	class VTMWriter;
 }
 
-namespace polyfem::legacy
-{
-	class State;
-}
-
 namespace polyfem::io
 {
 	/// Utilies related to export of geometry
@@ -322,14 +317,6 @@ namespace polyfem::io
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr,
 			Eigen::MatrixXd &local_points) const;
-
-		void save_volume_vector_field(
-			const legacy::State &state,
-			const Eigen::MatrixXd &points,
-			const ExportOptions &opts,
-			const std::string &name,
-			const Eigen::VectorXd &field,
-			paraviewo::ParaviewWriter &writer) const;
 	};
 
 } // namespace polyfem::io
