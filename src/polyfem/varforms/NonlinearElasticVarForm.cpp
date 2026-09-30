@@ -905,6 +905,8 @@ namespace polyfem::varform
 			}
 		}
 
+		// See chap 3.4 of https://dl.acm.org/doi/10.1145/3687765.
+		// Since rotation does not affect elastic behavior, enforce symmetry of macro strain tensor G.
 		bool solve_symmetric_macro_strain = false;
 		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
 		const int dim = mesh_->dimension();
