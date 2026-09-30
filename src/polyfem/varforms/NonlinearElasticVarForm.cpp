@@ -959,6 +959,13 @@ namespace polyfem::varform
 		Eigen::MatrixXd &solution,
 		const ForwardStepCallback &post_step)
 	{
+
+		// See https://dl.acm.org/doi/10.1145/3687765.
+		// The paper claims enforcing the constraint using penalty method with increasing weight
+		// leads to more stable simulation. I guess that's why we employ a two-phase strategy here.
+		// First use augmented lagrangian to solve the constrained system, then switch to reduced space
+		// to enforce constraint exactly.
+
 		auto homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data_.nl_problem);
 		assert(homo_problem && solve_data_.strain_al_lagr_form);
 
