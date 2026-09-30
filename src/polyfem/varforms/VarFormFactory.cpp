@@ -151,8 +151,9 @@ namespace polyfem::varform
 				return false;
 		}
 
-		if (homogenization && !is_optimization)
+		if (homogenization && !is_elastic_formulation(formulation))
 			return false;
+		// Macro strain with incremental load is not ported to varform yet.
 		if (homogenization && args.contains("time") && !args["time"].is_null())
 			return false;
 
@@ -229,7 +230,9 @@ namespace polyfem::varform
 		const bool homogenization = args.contains("/constraints/macro_displacement_gradient"_json_pointer);
 
 		if (homogenization)
-			return std::make_shared<DifferentiableNonlinearElasticStaticVarForm>();
+			return is_optimization
+					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticStaticVarForm>())
+					   : std::make_shared<NonlinearElasticStaticVarForm>();
 
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
