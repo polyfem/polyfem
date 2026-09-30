@@ -2,7 +2,6 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/solver/forms/GCPContactForm.hpp>
-#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
