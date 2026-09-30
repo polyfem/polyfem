@@ -678,7 +678,8 @@ namespace polyfem::varform
 		if (has_macro_strain())
 		{
 			init_homogenization_solve(sol, 0.0, initial_condition_override);
-			solve_homogenization_step(sol, post_step);
+			Eigen::VectorXd extended_solution;
+			solve_homogenization_step(0, 0.0, extended_solution, sol, post_step);
 		}
 		else
 		{
@@ -725,6 +726,25 @@ namespace polyfem::varform
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
+		}
+		if (has_macro_strain())
+		{
+			init_homogenization_solve(sol, t0, initial_condition_override);
+			Eigen::VectorXd extended_solution;
+			for (int step = 0; step <= time_steps; ++step)
+			{
+				const double time = t0 + step * dt;
+				solve_homogenization_step(step, time, extended_solution, sol, post_step);
+				save_timestep(time, step, t0, dt, sol);
+				solve_data_.update_barrier_stiffness(sol);
+				logger().info("{}/{}  t={}", step, time_steps, time);
+				notify_time_step(step, time_steps, t0, dt);
+				save_elastic_step_state(t0, dt, step, nullptr);
+			}
+			timer.stop();
+			timings.solving_time = timer.getElapsedTime();
+			logger().info(" took {}s", timings.solving_time);
+			return;
 		}
 		init_solve(sol, t0 + dt, initial_condition_override);
 		if (post_step)
@@ -956,6 +976,9 @@ namespace polyfem::varform
 	}
 
 	void NonlinearElasticVarForm::solve_homogenization_step(
+		const int step,
+		const double time,
+		Eigen::VectorXd &extended_solution,
 		Eigen::MatrixXd &solution,
 		const ForwardStepCallback &post_step)
 	{
@@ -970,17 +993,21 @@ namespace polyfem::varform
 		assert(homo_problem && solve_data_.strain_al_lagr_form);
 
 		const int dim = mesh_->dimension();
-		Eigen::VectorXd extended_solution = Eigen::VectorXd::Zero(homo_problem->full_size() + dim * dim);
+		if (extended_solution.size() == 0)
+			extended_solution.setZero(homo_problem->full_size() + dim * dim);
+		assert(extended_solution.size() == homo_problem->full_size() + dim * dim);
 		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
 		homo_problem->set_fixed_entry({});
 
 		auto lagrangian_form = solve_data_.strain_al_lagr_form;
 		lagrangian_form->enable();
 		Eigen::VectorXd reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->update_quantities(time, reduced_solution);
+		reduced_solution = homo_problem->extended_to_reduced(extended_solution);
 		const Eigen::VectorXd initial_solution = reduced_solution;
 		const Eigen::VectorXi fixed_indices = fixed_entries.array() + homo_problem->full_size();
 		const Eigen::VectorXd fixed_values =
-			utils::flatten(macro_strain_constraint_.eval(/*time=*/0))(fixed_entries);
+			utils::flatten(macro_strain_constraint_.eval(time))(fixed_entries);
 		const double initial_error = lagrangian_form->compute_error(extended_solution);
 		extended_solution(fixed_indices) = fixed_values;
 		Eigen::VectorXd constrained_solution = homo_problem->extended_to_reduced(extended_solution);
@@ -1033,10 +1060,11 @@ namespace polyfem::varform
 		homo_problem->normalize_forms();
 		nonlinear_solver->minimize(*homo_problem, reduced_solution);
 
+		extended_solution = homo_problem->reduced_to_extended(reduced_solution);
 		displacement_gradient_ = homo_problem->reduced_to_disp_grad(reduced_solution);
 		solution = homo_problem->reduced_to_full(reduced_solution);
 		if (post_step)
-			post_step(0, solution);
+			post_step(step, solution);
 	}
 	void NonlinearElasticVarForm::init_solve(
 		Eigen::MatrixXd &sol,
@@ -1117,7 +1145,7 @@ namespace polyfem::varform
 
 		// --------------------------------------------------------------------
 
-		if (problem->is_time_dependent())
+		if (problem->is_time_dependent() && !has_macro_strain())
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 			solve_data_.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);

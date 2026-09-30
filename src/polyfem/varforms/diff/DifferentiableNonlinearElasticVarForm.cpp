@@ -368,7 +368,8 @@ namespace polyfem::varform
 		if (is_homogenization())
 		{
 			init_homogenization_solve(solution, /*time=*/0, initial_condition_override);
-			solve_homogenization_step(solution, post_step);
+			Eigen::VectorXd extended_solution;
+			solve_homogenization_step(0, 0.0, extended_solution, solution, post_step);
 			timer.stop();
 			timings.solving_time = timer.getElapsedTime();
 			logger().info(" took {}s", timings.solving_time);

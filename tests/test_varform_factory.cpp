@@ -589,7 +589,7 @@ TEST_CASE("static macro displacement gradient uses forward varform", "[varform][
 	CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation) == nullptr);
 }
 
-TEST_CASE("incremental load macro strain remains on legacy state path", "[varform][state][macro_strain]")
+TEST_CASE("incremental load macro strain uses forward varform", "[varform][state][macro_strain]")
 {
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/neohookean.json");
 	args["/constraints/macro_displacement_gradient"_json_pointer] = {
@@ -599,12 +599,33 @@ TEST_CASE("incremental load macro strain remains on legacy state path", "[varfor
 	{
 		CAPTURE(quasistatic);
 		args["time"] = {{"quasistatic", quasistatic}, {"dt", 1}, {"time_steps", 2}};
-		CHECK_FALSE(varform::uses_varform_state(args));
+		CHECK(varform::uses_varform_state(args) == quasistatic);
+		CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args, true));
+		CHECK(varform::VarFormFactory::create("NeoHookean", args, true) == nullptr);
+		if (quasistatic)
+		{
+			State state;
+			state.init(args, true);
+			CHECK(std::dynamic_pointer_cast<varform::NonlinearElasticTransientVarForm>(state.variational_formulation) != nullptr);
+			CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation) == nullptr);
+		}
+		else
+			CHECK(varform::VarFormFactory::create("NeoHookean", args) == nullptr);
 
 		json ordinary_args = args;
 		ordinary_args["constraints"].erase("macro_displacement_gradient");
 		CHECK(varform::uses_varform_state(ordinary_args));
 	}
+	args["time"].erase("quasistatic");
+	CHECK_FALSE(varform::uses_varform_state(args));
+	args["time"]["quasistatic"] = true;
+	args["contact"] = {{"enabled", true}, {"periodic", true}};
+	CHECK_FALSE(varform::uses_varform_state(args));
+	args["boundary_conditions"]["periodic"] = {{{"boundary_ids", {1, 2}}}};
+	CHECK(varform::uses_varform_state(args));
+	args["contact"]["enabled"] = false;
+	CHECK_FALSE(varform::uses_varform_state(args));
+	args.erase("contact");
 	for (const bool null_time : {false, true})
 	{
 		CAPTURE(null_time);

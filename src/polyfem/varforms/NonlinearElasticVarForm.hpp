@@ -79,7 +79,9 @@ namespace polyfem::varform
 			Eigen::MatrixXd &solution,
 			double time,
 			const InitialConditionOverride *initial_condition_override);
-		void solve_homogenization_step(Eigen::MatrixXd &solution, const ForwardStepCallback &post_step);
+		void solve_homogenization_step(
+			int step, double time, Eigen::VectorXd &extended_solution,
+			Eigen::MatrixXd &solution, const ForwardStepCallback &post_step);
 		virtual void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool init_lagging = true);
 
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
