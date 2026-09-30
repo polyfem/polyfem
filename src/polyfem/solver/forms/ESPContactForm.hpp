@@ -3,7 +3,6 @@
 #include "ContactForm.hpp"
 #include <ipc/esp/esp_collisions.hpp>
 #include <ipc/esp/esp_potential.hpp>
-#include <ipc/esp/adaptive_support.hpp>
 #include <cmath>
 
 namespace polyfem::solver
@@ -44,13 +43,6 @@ namespace polyfem::solver
 
 		const ipc::ESPPotential &barrier_potential() const { return barrier_potential_; }
 
-		bool using_adaptive_dhat() const { return use_adaptive_dhat_; }
-
-		const std::shared_ptr<ipc::AdaptiveSupport> &get_adaptive_support() const
-		{
-			return adaptive_support_;
-		}
-
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
@@ -86,11 +78,5 @@ namespace polyfem::solver
 		ipc::ESPPotential barrier_potential_;
 
 		Eigen::MatrixXd cached_displaced_surface;
-
-		/// @brief Whether to use adaptive dhat
-		bool use_adaptive_dhat_;
-
-		/// @brief Adaptive support for per-vertex dhat values (computed at rest config)
-		std::shared_ptr<ipc::AdaptiveSupport> adaptive_support_;
 	};
 } // namespace polyfem::solver

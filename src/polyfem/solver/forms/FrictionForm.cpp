@@ -131,7 +131,7 @@ namespace polyfem::solver
 			ipc::ESPCollisions collision_set;
 			collision_set.build(
 				collision_mesh_, displaced_surface, esp_contact->get_params(),
-				esp_contact->get_adaptive_support().get(), broad_phase.get());
+				broad_phase.get());
 
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,

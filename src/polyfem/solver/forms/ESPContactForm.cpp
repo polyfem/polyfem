@@ -97,14 +97,10 @@ namespace polyfem::solver
 								   const double ccd_tolerance,
 								   const int ccd_max_iterations,
 								   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, esp_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
-																	  barrier_potential_(params, esp_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
+																	  barrier_potential_(params, esp_params["normalize_weights"])
 	{
-		// Compute adaptive support at rest configuration if enabled
-		if (use_adaptive_dhat_)
-		{
-			adaptive_support_ = ipc::ESPCollisions::compute_adaptive_dhat(
-				collision_mesh, collision_mesh.rest_positions(), params);
-		}
+		if (use_adaptive_dhat)
+			log_and_throw_error("Adaptive dhat is not implemented for ESPContactForm!");
 	}
 
 	void ESPContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
@@ -128,7 +124,7 @@ namespace polyfem::solver
 			return;
 
 		collision_set_.build(
-			collision_mesh_, displaced_surface, params, adaptive_support_.get(), broad_phase_.get());
+			collision_mesh_, displaced_surface, params, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 
