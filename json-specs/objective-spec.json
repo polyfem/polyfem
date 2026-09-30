@@ -33,7 +33,7 @@
             "collision_barrier",
             "deformed_collision_barrier",
             "control_smoothing",
-            "material_smoothing",
+            "elastic_material_smoothing",
             "volume",
             "soft_constraint",
             "layer_thickness",
@@ -837,16 +837,17 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "material_smoothing",
+        "type_name": "elastic_material_smoothing",
         "required": [
-            "type"
+            "type",
+            "state"
         ],
         "optional": [
             "weight",
             "print_energy",
             "volume_selection"
         ],
-        "doc": "TODO"
+        "doc": "Penalize relative jumps in per-element Lamé parameters across adjacent selected elements."
     },
     {
         "pointer": "/",
