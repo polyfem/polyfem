@@ -212,6 +212,13 @@ namespace polyfem::mesh
 				elements[i].resize(mesh.cells.nb_vertices(i));
 				for (int j = 0; j < elements[i].size(); ++j)
 					elements[i][j] = mesh.cells.vertex(i, j);
+				if (mesh.cells.type(i) == GEO::MESH_HEX)
+				{
+					// MeshData uses Gmsh hex ordering; build_topology converts it
+					// back to Geogram ordering when constructing the runtime mesh.
+					std::swap(elements[i][0], elements[i][1]);
+					std::swap(elements[i][4], elements[i][5]);
+				}
 			}
 			return MeshData(geogram_vertices(mesh, 3), padded_elements(elements));
 		}

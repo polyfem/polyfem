@@ -401,6 +401,8 @@ namespace polyfem
 				checkpoint_->get().metadata().formulation, variational_formulation->name());
 		if (std::abs(args["time"]["dt"].get<double>() - checkpoint_->get().metadata().dt) > 1e-12)
 			log_and_throw_error("Checkpoint dt is incompatible with its continuation configuration.");
+		if (std::abs(args["time"]["t0"].get<double>() - checkpoint_->get().metadata().time) > 1e-12)
+			log_and_throw_error("Checkpoint time is incompatible with its continuation configuration.");
 	}
 
 	void State::set_max_threads(const int max_threads)

@@ -2,6 +2,7 @@
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
@@ -84,6 +85,35 @@ namespace
 		return 0.5 * area;
 	}
 } // namespace
+
+TEST_CASE("Geogram hex import preserves cube edges", "[mesh_test][mesh_data]")
+{
+	State state; // Initialize Geogram.
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+	GEO::Mesh geogram;
+	geogram.vertices.create_vertices(8);
+	for (int i = 0; i < 8; ++i)
+		for (int d = 0; d < 3; ++d)
+			geogram.vertices.point(i)[d] = vertices(i, d);
+	const GEO::index_t cell = geogram.cells.create_cells(1, GEO::MESH_HEX);
+	const std::vector<int> native_corners{1, 0, 2, 3, 5, 4, 6, 7};
+	for (int i = 0; i < 8; ++i)
+		geogram.cells.set_vertex(cell, i, native_corners[i]);
+	geogram.cells.connect();
+
+	const auto mesh = Mesh::create(MeshReader::from_geogram(geogram));
+	REQUIRE(mesh != nullptr);
+	CHECK(mesh->n_elements() == 1);
+	CHECK(mesh->n_faces() == 6);
+	REQUIRE(mesh->n_edges() == 12);
+	for (int e = 0; e < mesh->n_edges(); ++e)
+	{
+		const RowVectorNd edge = mesh->point(mesh->edge_vertex(e, 0)) - mesh->point(mesh->edge_vertex(e, 1));
+		CHECK(edge.norm() == Catch::Approx(1.0));
+	}
+}
 
 TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]")
 {

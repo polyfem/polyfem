@@ -657,6 +657,77 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	fs::remove(path);
 }
 
+TEST_CASE("Checkpoint round trip preserves 2D polygon meshes", "[hdf5][checkpoint][mesh_data]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	State state; // Initialize Geogram.
+	const fs::path path = fs::temp_directory_path() / "polyfem-polygon-checkpoint.h5";
+	Eigen::MatrixXd vertices(5, 2);
+	vertices << 0, 0, 2, 0, 3, 1, 1, 2, 0, 1;
+	Eigen::MatrixXi cells(1, 5);
+	cells << 0, 1, 2, 3, 4;
+	mesh::MeshData data(vertices, cells);
+	data.body_ids = {7};
+	const auto mesh = mesh::Mesh::create(data);
+	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh->has_poly());
+	io::CheckpointMetadata metadata;
+	metadata.dt = 0.1;
+	{
+		io::CheckpointWriter writer(path, json::object(), metadata);
+		writer.write_mesh("/checkpoint/meshes/active", *mesh);
+		writer.write_matrix("/checkpoint/state/solution", Eigen::MatrixXd::Zero(5, 1));
+		writer.finalize();
+	}
+	{
+		io::CheckpointReader reader(path);
+		const auto restored = reader.read_mesh("/checkpoint/meshes/active");
+		REQUIRE(restored != nullptr);
+		CHECK(restored->dimension() == 2);
+		CHECK(restored->has_poly());
+		CHECK(restored->n_edges() == 5);
+		CHECK(restored->get_body_id(0) == 7);
+		CHECK(restored->to_mesh_data().vertices.isApprox(vertices));
+		CHECK(restored->to_mesh_data().elements == mesh->to_mesh_data().elements);
+	}
+	fs::remove(path);
+}
+
+TEST_CASE("Checkpoint continuation validates its start time", "[hdf5][checkpoint][state]")
+{
+	namespace fs = std::filesystem;
+	using namespace polyfem;
+	const fs::path path = fs::temp_directory_path() / "polyfem-checkpoint-start-time.h5";
+	io::CheckpointMetadata metadata;
+	metadata.formulation = "Scalar";
+	metadata.time = 1.0;
+	metadata.dt = 0.1;
+	metadata.step = 10;
+	metadata.remaining_steps = 2;
+	const json config = {
+		{"geometry", {{"mesh", "triangle.obj"}}},
+		{"materials", {{"type", "Laplacian"}}},
+		{"time", {{"t0", metadata.time}, {"dt", metadata.dt}, {"time_steps", 2}}},
+		{"output", {{"log", {{"quiet", true}}}}}};
+	{
+		io::CheckpointWriter writer(path, config, metadata);
+		write_test_checkpoint_state(writer);
+		writer.write_string("/resources/tree/triangle.obj", "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n");
+		writer.finalize();
+	}
+	{
+		io::CheckpointReader checkpoint(path);
+		State matching;
+		CHECK_NOTHROW(matching.init(checkpoint, true));
+		json continuation = checkpoint.config();
+		continuation["time"]["t0"] = 0.0;
+		State mismatching;
+		CHECK_THROWS_WITH(mismatching.init(continuation, checkpoint, true), "Checkpoint time is incompatible with its continuation configuration.");
+	}
+	fs::remove(path);
+}
+
 TEST_CASE("Checkpoint reader rejects corrupt schemas", "[hdf5][checkpoint]")
 {
 	namespace fs = std::filesystem;

@@ -151,7 +151,12 @@ class DependencyCollector:
         effective = merge_patch(common, child)
         if config.get("patch"):
             effective = apply_json_patch(effective, config["patch"])
-        return effective, common_physical_root, common_logical_root
+        # Nested common files are located relative to their parent, but the
+        # merged simulation keeps the caller's root unless this common file
+        # explicitly overrides it, matching apply_common_params().
+        if explicit_root:
+            return effective, common_physical_root, common_logical_root
+        return effective, physical_root, logical_root
 
     def scan_json(self, value: Any, physical_root: Path, logical_root: str) -> None:
         if isinstance(value, dict):

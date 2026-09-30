@@ -171,7 +171,7 @@ namespace polyfem::mesh
 			data.higher_order_weights = cell_weights_;
 		}
 
-		if (has_explicit_polyhedral_topology_ || has_poly())
+		if (dimension() == 3 && (has_explicit_polyhedral_topology_ || has_poly()))
 		{
 			const auto *mesh3d = dynamic_cast<const Mesh3D *>(this);
 			if (mesh3d == nullptr)
