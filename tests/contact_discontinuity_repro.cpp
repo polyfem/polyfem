@@ -15,6 +15,7 @@
 
 #include <Eigen/Dense>
 #include <ipc/collision_mesh.hpp>
+#include <ipc/esp/esp_collision_maps.hpp>
 #include <ipc/esp/esp_collisions.hpp>
 #include <ipc/esp/esp_potential.hpp>
 #include <ipc/esp/esp_parameters.hpp>
@@ -300,16 +301,16 @@ int main(int argc, char **argv)
 	std::cout << "-- vertex_collisions --\n";
 	{
 		std::set<ipc::index_t> keys;
-		for (auto &[k, _] : L.collisions.vertex_collisions)
+		for (auto &[k, _] : L.collisions.maps().vertex_collisions)
 			keys.insert(k);
-		for (auto &[k, _] : H.collisions.vertex_collisions)
+		for (auto &[k, _] : H.collisions.maps().vertex_collisions)
 			keys.insert(k);
 		for (auto k : keys)
 		{
-			auto it_l = L.collisions.vertex_collisions.find(k);
-			auto it_h = H.collisions.vertex_collisions.find(k);
-			const auto *dl = it_l != L.collisions.vertex_collisions.end() ? it_l->second.get() : nullptr;
-			const auto *dh = it_h != H.collisions.vertex_collisions.end() ? it_h->second.get() : nullptr;
+			auto it_l = L.collisions.maps().vertex_collisions.find(k);
+			auto it_h = H.collisions.maps().vertex_collisions.find(k);
+			const auto *dl = it_l != L.collisions.maps().vertex_collisions.end() ? it_l->second.get() : nullptr;
+			const auto *dh = it_h != H.collisions.maps().vertex_collisions.end() ? it_h->second.get() : nullptr;
 			if (!((dl && touches_suspect_dict(*dl)) || (dh && touches_suspect_dict(*dh))))
 				continue;
 			report_dict_pair("V(" + std::to_string(k) + ")", dl, dh);
@@ -320,16 +321,16 @@ int main(int argc, char **argv)
 	std::cout << "-- edge_edge_collisions --\n";
 	{
 		std::set<std::pair<ipc::index_t, ipc::index_t>> keys;
-		for (auto &[k, _] : L.collisions.edge_edge_collisions)
+		for (auto &[k, _] : L.collisions.maps().edge_edge_collisions)
 			keys.insert(k);
-		for (auto &[k, _] : H.collisions.edge_edge_collisions)
+		for (auto &[k, _] : H.collisions.maps().edge_edge_collisions)
 			keys.insert(k);
 		for (auto k : keys)
 		{
-			auto it_l = L.collisions.edge_edge_collisions.find(k);
-			auto it_h = H.collisions.edge_edge_collisions.find(k);
-			const auto *dl = it_l != L.collisions.edge_edge_collisions.end() ? it_l->second.get() : nullptr;
-			const auto *dh = it_h != H.collisions.edge_edge_collisions.end() ? it_h->second.get() : nullptr;
+			auto it_l = L.collisions.maps().edge_edge_collisions.find(k);
+			auto it_h = H.collisions.maps().edge_edge_collisions.find(k);
+			const auto *dl = it_l != L.collisions.maps().edge_edge_collisions.end() ? it_l->second.get() : nullptr;
+			const auto *dh = it_h != H.collisions.maps().edge_edge_collisions.end() ? it_h->second.get() : nullptr;
 			if (!((dl && touches_suspect_dict(*dl)) || (dh && touches_suspect_dict(*dh))))
 				continue;
 			report_dict_pair("EE(" + std::to_string(k.first) + "," + std::to_string(k.second) + ")", dl, dh);
@@ -398,16 +399,16 @@ int main(int argc, char **argv)
 	std::vector<FaceRow> frows;
 	{
 		std::set<ipc::index_t> keys;
-		for (auto &[k, _] : L.collisions.face_collisions)
+		for (auto &[k, _] : L.collisions.maps().face_collisions)
 			keys.insert(k);
-		for (auto &[k, _] : H.collisions.face_collisions)
+		for (auto &[k, _] : H.collisions.maps().face_collisions)
 			keys.insert(k);
 		for (auto k : keys)
 		{
-			auto it_l = L.collisions.face_collisions.find(k);
-			auto it_h = H.collisions.face_collisions.find(k);
-			size_t n_lo_qp = it_l != L.collisions.face_collisions.end() ? it_l->second.size() : 0;
-			size_t n_hi_qp = it_h != H.collisions.face_collisions.end() ? it_h->second.size() : 0;
+			auto it_l = L.collisions.maps().face_collisions.find(k);
+			auto it_h = H.collisions.maps().face_collisions.find(k);
+			size_t n_lo_qp = it_l != L.collisions.maps().face_collisions.end() ? it_l->second.size() : 0;
+			size_t n_hi_qp = it_h != H.collisions.maps().face_collisions.end() ? it_h->second.size() : 0;
 			size_t nq = std::max(n_lo_qp, n_hi_qp);
 			for (size_t qi = 0; qi < nq; ++qi)
 			{
