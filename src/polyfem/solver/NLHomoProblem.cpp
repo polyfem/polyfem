@@ -331,7 +331,12 @@ namespace polyfem::solver
 		TVector reduced;
 		reduced.setZero(dof1 + dof2);
 
+		// displacement u = periodic fluctuation ũ + macro strain GX.
+		// Maps full unknown u to reduced unknow [ unknown of ũ | unknown component of G ].
+
+		// To get ũ, first compute u - GX then enforce periodic constraint (model via linear constraint) via QR decomposition.
 		reduced.head(dof1) = NLProblem::full_to_reduced(full - io::Evaluator::generate_linear_field(n_bases_, mesh_nodes_, disp_grad));
+		// get unknown component of G.
 		reduced.tail(dof2) = macro_full_to_reduced(utils::flatten(disp_grad));
 
 		return reduced;

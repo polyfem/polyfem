@@ -3,6 +3,7 @@
 #include <polyfem/varforms/ElasticVarForm.hpp>
 
 #include <polyfem/assembler/PressureAssembler.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/SolveData.hpp>
 
@@ -73,6 +74,14 @@ namespace polyfem::varform
 			const std::string &state_prefix,
 			const InitialConditionOverride *initial_condition_override = nullptr);
 		virtual void init_forms(const json &args, int dim, Eigen::MatrixXd &sol, double t);
+		bool has_macro_strain() const;
+		void init_homogenization_solve(
+			Eigen::MatrixXd &solution,
+			double time,
+			const InitialConditionOverride *initial_condition_override);
+		void solve_homogenization_step(
+			int step, double time, Eigen::VectorXd &extended_solution,
+			Eigen::MatrixXd &solution, const ForwardStepCallback &post_step);
 		virtual void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool init_lagging = true);
 
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
@@ -89,6 +98,11 @@ namespace polyfem::varform
 
 		mesh::Obstacle obstacle;
 
+		/// Prescribed macro displacement-gradient values and fixed components.
+		assembler::MacroStrainValue macro_strain_constraint_;
+		/// For periodic structure, displacement u = periodic fluctuation ũ + macro strain GX.
+		/// displacement_gradient_ := G.
+		Eigen::MatrixXd displacement_gradient_;
 		solver::SolveData solve_data_;
 		std::vector<std::shared_ptr<solver::Form>> forms;
 		bool contact_dhat_was_explicit_ = false;

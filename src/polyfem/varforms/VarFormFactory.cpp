@@ -151,10 +151,13 @@ namespace polyfem::varform
 				return false;
 		}
 
-		if (homogenization && !is_optimization)
+		if (homogenization && !is_elastic_formulation(formulation))
 			return false;
 		if (homogenization && args.contains("time") && !args["time"].is_null())
-			return false;
+		{
+			if (is_optimization || !args.value("/time/quasistatic"_json_pointer, false))
+				return false;
+		}
 
 		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
 								  || has_non_empty_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
@@ -229,7 +232,13 @@ namespace polyfem::varform
 		const bool homogenization = args.contains("/constraints/macro_displacement_gradient"_json_pointer);
 
 		if (homogenization)
-			return std::make_shared<DifferentiableNonlinearElasticStaticVarForm>();
+		{
+			if (args.contains("time") && !args["time"].is_null())
+				return std::make_shared<NonlinearElasticTransientVarForm>();
+			return is_optimization
+					   ? std::static_pointer_cast<VarForm>(std::make_shared<DifferentiableNonlinearElasticStaticVarForm>())
+					   : std::make_shared<NonlinearElasticStaticVarForm>();
+		}
 
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
 		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
