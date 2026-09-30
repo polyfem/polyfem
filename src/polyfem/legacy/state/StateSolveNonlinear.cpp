@@ -28,7 +28,6 @@
 #include <Eigen/Core>
 
 #include <ipc/ipc.hpp>
-#include <ipc/distance/distance_type_exact.hpp>
 
 #include <spdlog/fmt/fmt.h>
 
@@ -257,9 +256,6 @@ namespace polyfem::legacy
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
-
-		ipc::DistanceTypeConfig::instance().set_use_standard(
-			args["contact"]["use_standard_distance_type"].get<bool>());
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
