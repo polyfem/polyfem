@@ -63,22 +63,24 @@ namespace polyfem
 			write_matrix(state_path, "a", tmp, /*replace=*/false);
 		}
 
-		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)
+		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(
+			const json &params,
+			const DynamicOrder dynamic_order)
 		{
 			const std::string type = params.is_object() ? params["type"] : params;
 
 			std::shared_ptr<ImplicitTimeIntegrator> integrator;
 			if (type == "implict_euler" || type == "ImplicitEuler")
 			{
-				integrator = std::make_shared<ImplicitEuler>();
+				integrator = std::make_shared<ImplicitEuler>(dynamic_order);
 			}
 			else if (type == "implict_newmark" || type == "ImplicitNewmark")
 			{
-				integrator = std::make_shared<ImplicitNewmark>();
+				integrator = std::make_shared<ImplicitNewmark>(dynamic_order);
 			}
 			else if (utils::StringUtils::startswith(type, "BDF"))
 			{
-				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)));
+				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)), dynamic_order);
 			}
 			else
 			{
@@ -89,6 +91,29 @@ namespace polyfem
 			if (params.is_object())
 				integrator->set_parameters(params);
 
+			return integrator;
+		}
+
+		std::shared_ptr<BDF> ImplicitTimeIntegrator::construct_bdf_integrator(
+			const json &params,
+			const DynamicOrder dynamic_order)
+		{
+			const std::string type = params.is_object() ? params["type"] : params;
+			if (type != "implict_euler" && type != "ImplicitEuler"
+				&& !utils::StringUtils::startswith(type, "BDF"))
+			{
+				log_and_throw_error(
+					"BDF-specific transient formulations require ImplicitEuler or BDF, got {}.",
+					type);
+			}
+
+			auto integrator = std::make_shared<BDF>(
+				utils::StringUtils::startswith(type, "BDF") && type != "BDF"
+					? std::stoi(type.substr(3))
+					: 1,
+				dynamic_order);
+			if (params.is_object() && params.contains("steps"))
+				integrator->set_parameters(params);
 			return integrator;
 		}
 

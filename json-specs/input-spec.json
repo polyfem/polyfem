@@ -47,6 +47,7 @@
             "length",
             "mass",
             "time",
+            "temperature",
             "characteristic_length"
         ],
         "doc": "Basic units used in the code."
@@ -68,6 +69,12 @@
         "default": "s",
         "type": "string",
         "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/temperature",
+        "default": "K",
+        "type": "string",
+        "doc": "Temperature unit."
     },
     {
         "pointer": "/units/characteristic_length",
@@ -166,6 +173,7 @@
             "extract",
             "unit",
             "transformation",
+            "geometry_selection",
             "volume_selection",
             "surface_selection",
             "curve_selection",
@@ -190,6 +198,7 @@
             "extract",
             "unit",
             "transformation",
+            "geometry_selection",
             "volume_selection",
             "surface_selection",
             "curve_selection",
@@ -361,6 +370,31 @@
         "pointer": "/geometry/*/transformation/scale/*",
         "default": 0,
         "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of top-dimensional elements into separate geometry IDs."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "Geometry partition operations applied to this FEM mesh."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection",
+        "type": "object",
+        "required": [
+            "same_as_volume"
+        ],
+        "doc": "Copy this mesh's final volume/body IDs into its geometry IDs."
+    },
+    {
+        "pointer": "/geometry/*/geometry_selection/same_as_volume",
+        "type": "bool",
+        "doc": "If true, copy this mesh's final volume/body IDs into its geometry IDs."
     },
     {
         "pointer": "/geometry/*/volume_selection",
@@ -602,7 +636,6 @@
         "optional": [
             "discr_order",
             "discr_orderq",
-            "pressure_discr_order",
             "basis_type",
             "poly_basis_type",
             "use_p_ref",
@@ -613,64 +646,15 @@
     },
     {
         "pointer": "/space/discr_orderq",
-        "default": 1,
-        "type": "int",
+        "type": "include",
+        "spec_file": "discr_order.json",
         "doc": "Lagrange element order at height dimension for the space for the main unknown, for prism."
     },
     {
         "pointer": "/space/discr_order",
-        "default": 1,
-        "type": "int",
+        "type": "include",
+        "spec_file": "discr_order.json",
         "doc": "Lagrange element order for the space for the main unknown, for all elements."
-    },
-    {
-        "pointer": "/space/discr_order",
-        "type": "file",
-        "extensions": [
-            ".txt",
-            ".bin"
-        ],
-        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
-    },
-    {
-        "pointer": "/space/discr_order",
-        "type": "list",
-        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
-    },
-    {
-        "pointer": "/space/discr_order/*",
-        "type": "object",
-        "required": [
-            "id",
-            "order"
-        ],
-        "doc": "Lagrange element order for the a space tagged with volume ID for the main unknown."
-    },
-    {
-        "pointer": "/space/discr_order/*/id",
-        "type": "int",
-        "doc": "Volume selection ID to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/id",
-        "type": "list",
-        "doc": "List of volume selection IDs to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/id/*",
-        "type": "int",
-        "doc": "Volume selection ID to apply the discr_order to."
-    },
-    {
-        "pointer": "/space/discr_order/*/order",
-        "type": "int",
-        "doc": "Lagrange element order for the space for the main unknown, for all elements."
-    },
-    {
-        "pointer": "/space/pressure_discr_order",
-        "default": 1,
-        "type": "int",
-        "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
     },
     {
         "pointer": "/space/basis_type",
@@ -1114,87 +1098,21 @@
     },
     {
         "pointer": "/time/integrator",
-        "type": "string",
+        "type": "include",
+        "spec_file": "time-integrator.json",
         "default": "ImplicitEuler",
-        "options": [
-            "ImplicitEuler",
-            "BDF1",
-            "BDF2",
-            "BDF3",
-            "BDF4",
-            "BDF5",
-            "BDF6",
-            "ImplicitNewmark"
-        ],
         "doc": "Time integrator"
     },
     {
         "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "ImplicitEuler",
-        "required": [
-            "type"
-        ],
-        "doc": "Implicit Euler time integration"
+        "type": "list",
+        "doc": "One time integrator per finite element space."
     },
     {
-        "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "BDF",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "steps"
-        ],
-        "doc": "Backwards differentiation formula time integration"
-    },
-    {
-        "pointer": "/time/integrator",
-        "type": "object",
-        "type_name": "ImplicitNewmark",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "gamma",
-            "beta"
-        ],
-        "doc": "Implicit Newmark time integration"
-    },
-    {
-        "pointer": "/time/integrator/type",
-        "type": "string",
-        "options": [
-            "ImplicitEuler",
-            "BDF",
-            "ImplicitNewmark"
-        ],
-        "doc": "Type of time integrator to use"
-    },
-    {
-        "pointer": "/time/integrator/gamma",
-        "type": "float",
-        "default": 0.5,
-        "min": 0,
-        "max": 1,
-        "doc": "Newmark gamma"
-    },
-    {
-        "pointer": "/time/integrator/beta",
-        "type": "float",
-        "default": 0.25,
-        "min": 0,
-        "max": 0.5,
-        "doc": "Newmark beta"
-    },
-    {
-        "pointer": "/time/integrator/steps",
-        "type": "int",
-        "default": 1,
-        "min": 1,
-        "max": 6,
-        "doc": "BDF order"
+        "pointer": "/time/integrator/*",
+        "type": "include",
+        "spec_file": "time-integrator.json",
+        "doc": "Time integrator for a finite element space."
     },
     {
         "pointer": "/time/quasistatic",
@@ -1347,7 +1265,9 @@
         "pointer": "/contact/collision_mesh",
         "type": "object",
         "optional": [
-            "enabled"
+            "enabled",
+            "tessellation_type",
+            "sampling_order"
         ],
         "doc": "Construct a collision mesh."
     },
@@ -1371,10 +1291,18 @@
         "type": "string",
         "options": [
             "regular",
-            "irregular"
+            "irregular",
+            "max_order"
         ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/sampling_order",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Lattice order for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
     },
     {
         "pointer": "/contact/collision_mesh/enabled",
@@ -1482,6 +1410,7 @@
             "scaling",
             "max_weight",
             "eta",
+            "lumping",
             "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
@@ -1491,6 +1420,16 @@
         "type": "include",
         "spec_file": "nonlinear-solver-spec.json",
         "doc": "Settings for nonlinear solver in augmented lagrangian."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/lumping",
+        "type": "string",
+        "options": [
+            "row_sum",
+            "hrz"
+        ],
+        "default": "row_sum",
+        "doc": "Lumping used for the mass metric weighting the AL penalty. row_sum is the classic lumping (falls back to hrz automatically when invalid, i.e. for bases of order >= 2); hrz forces HRZ-style diagonal-scaling lumping, which is positive at any order."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -1687,13 +1626,19 @@
             "Discrete",
             "Conservative"
         ],
-        "doc": "The method for checking if any element is flipped."
+        "doc": "The method for checking if any element is flipped. \"Discrete\" skips the check; \"Conservative\" uses continuous CCD (max_time_step) to guarantee no inversion along the step."
     },
     {
         "pointer": "/solver/advanced/jacobian_threshold",
         "type": "float",
         "default": 0,
         "doc": "."
+    },
+    {
+        "pointer": "/solver/advanced/conservative_max_iter",
+        "type": "int",
+        "default": 100000,
+        "doc": "Maximum number of subdivision iterations for the conservative (robust) Jacobian inversion check."
     },
     {
         "pointer": "/solver/advanced",
@@ -1706,6 +1651,7 @@
             "lagged_regularization_iterations",
             "check_inversion",
             "jacobian_threshold",
+            "conservative_max_iter",
             "characteristic_length",
             "characteristic_force_density"
         ],
@@ -1769,6 +1715,28 @@
         "spec_file": "material-parameters.json"
     },
     {
+        "pointer": "/materials/*/mesh_material/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of elastic models used by an ALE mesh MaterialSum"
+    },
+    {
+        "pointer": "/materials/*/mesh_material/models/*",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json"
+    },
+    {
+        "pointer": "/materials/*/solid_material/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of elastic models used by an embedded solid MaterialSum"
+    },
+    {
+        "pointer": "/materials/*/solid_material/models/*",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json"
+    },
+    {
         "pointer": "/boundary_conditions",
         "default": null,
         "type": "object",
@@ -1776,94 +1744,60 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
+            "nodal_neumann_boundary",
             "normal_aligned_neumann_boundary",
             "pressure_boundary",
             "pressure_cavity",
             "obstacle_displacements",
-            "periodic_boundary"
+            "periodic"
         ],
         "doc": "The settings for boundary conditions."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary",
+        "pointer": "/boundary_conditions/periodic",
+        "type": "list",
+        "default": [],
+        "doc": "Pairs of boundary IDs whose corresponding degrees of freedom are constrained to be equal."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic/*",
         "type": "object",
         "default": null,
-        "optional": [
-            "enabled",
-            "tolerance",
-            "correspondence",
-            "linear_displacement_offset",
-            "fixed_macro_strain",
-            "force_zero_mean"
+        "required": [
+            "boundary_ids"
         ],
-        "doc": "Options for periodic boundary conditions."
+        "optional": [
+            "fe_space",
+            "tolerance"
+        ],
+        "doc": "A pair of periodic boundaries."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/force_zero_mean",
-        "type": "bool",
-        "default": false,
-        "doc": "The periodic solution is not unique, set to true to find the solution with zero mean."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/enabled",
-        "type": "bool",
-        "default": false,
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/tolerance",
-        "type": "float",
-        "default": 1e-5,
-        "doc": "Relative tolerance of deciding periodic correspondence"
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence",
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids",
         "type": "list",
-        "default": [],
-        "doc": "Periodic directions for periodic boundary conditions. If not specified, default to axis-aligned directions."
+        "min": 2,
+        "max": 2,
+        "doc": "Exactly two boundary IDs to couple."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*",
-        "type": "list",
-        "default": [],
-        "doc": "One periodic direction."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*/*",
-        "type": "float",
-        "doc": "One entry of a periodic direction."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain/*",
+        "pointer": "/boundary_conditions/periodic/*/boundary_ids/*",
         "type": "int",
-        "doc": ""
+        "min": 0,
+        "doc": "Boundary ID."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset",
-        "type": "list",
-        "default": [],
-        "doc": ""
+        "pointer": "/boundary_conditions/periodic/*/fe_space",
+        "type": "int",
+        "min": -1,
+        "default": -1,
+        "doc": "Finite element space ID. -1 applies to every applicable space."
     },
     {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*",
-        "type": "list",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "pointer": "/boundary_conditions/periodic/*/tolerance",
         "type": "float",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
-        "type": "string",
-        "doc": ""
+        "min": 1e-16,
+        "default": 1e-5,
+        "doc": "Relative tolerance used to match translated boundary nodes."
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -1885,68 +1819,57 @@
         "doc": "Right-hand side of the system being solved, value."
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary",
+        "pointer": "/boundary_conditions/rhs/*",
+        "type": "object",
+        "required": [
+            "value"
+        ],
+        "optional": [
+            "id",
+            "fe_space"
+        ],
+        "doc": "Right-hand side associated with a body ID and/or finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/id",
+        "type": "int",
+        "default": -1,
+        "doc": "Body ID for the right-hand side."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the right-hand side."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/value",
+        "type": "list",
+        "doc": "Right-hand side value for a vector-valued finite element space."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*/value/*",
         "type": "include",
-        "spec_file": "boundary-condition.json",
+        "spec_file": "value0.json",
+        "default": 0,
+        "doc": "Right-hand side component."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary",
+        "type": "list",
+        "default": [],
         "doc": "Dirichlet boundary conditions."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
-        "type": "object",
-        "default": null,
-        "required": [
-            "id",
-            "value"
-        ],
-        "optional": [
-            "time_reference",
-            "interpolation",
-            "dimension"
-        ],
+        "type": "include",
+        "spec_file": "dirichlet-boundary-condition.json",
         "doc": "Dirichlet boundary condition."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
-        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
-        "type": "list",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Dirichlet boundary condition specified per timestep."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
-        "default": [],
-        "type": "list",
-        "doc": "List of times when the Dirichlet boundary condition is specified"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for timestep"
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension. If the file has a .json extension, it is instead read as an array of Dirichlet boundary condition objects and expanded inline."
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
@@ -1963,9 +1886,47 @@
             "value"
         ],
         "optional": [
+            "fe_space",
             "interpolation"
         ],
         "doc": "Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the Neumann boundary condition. If not specified, default to the all finite element spaces."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Nodal Neumann boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "fe_space",
+            "interpolation"
+        ],
+        "doc": "Nodal Neumann boundary condition."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*",
+        "type": "string",
+        "doc": "Nodal Neumann boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/nodal_neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the nodal Neumann boundary condition. If not specified, default to all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
@@ -1982,6 +1943,7 @@
             "value"
         ],
         "optional": [
+            "fe_space",
             "interpolation"
         ],
         "doc": "pressure BC entry"
@@ -1998,6 +1960,12 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the normal aligned Neumann boundary condition. If not specified, default to the all finite element spaces."
     },
     {
         "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/interpolation",
@@ -2132,12 +2100,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial solution. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/solution/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial solution."
     },
     {
         "pointer": "/initial_conditions/solution/*/value",
@@ -2164,12 +2147,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial velocity. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/velocity/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial velocity."
     },
     {
         "pointer": "/initial_conditions/velocity/*/value",
@@ -2198,12 +2196,27 @@
             "id",
             "value"
         ],
+        "optional": [
+            "fe_space"
+        ],
         "doc": "entries"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the initial acceleration. If not specified, defaults to all finite element spaces."
     },
     {
         "pointer": "/initial_conditions/acceleration/*/id",
         "type": "int",
         "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scalar value of the initial acceleration."
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value",
@@ -2224,9 +2237,72 @@
         "type": "object",
         "optional": [
             "soft",
-            "hard"
+            "hard",
+            "zero_mean",
+            "macro_displacement_gradient"
         ],
-        "doc": "soft and hard constraints"
+        "doc": "Linear and macro-kinematic constraints."
+    },
+    {
+        "pointer": "/constraints/zero_mean",
+        "default": false,
+        "type": "bool",
+        "doc": "Constrain every applicable FE space to have zero integral."
+    },
+    {
+        "pointer": "/constraints/zero_mean",
+        "type": "list",
+        "doc": "FE-space IDs whose fields are constrained to have zero integral."
+    },
+    {
+        "pointer": "/constraints/zero_mean/*",
+        "type": "int",
+        "min": 0,
+        "doc": "Finite element space ID."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient",
+        "type": "object",
+        "default": "skip",
+        "required": [
+            "value"
+        ],
+        "optional": [
+            "fixed_components"
+        ],
+        "doc": "Macro displacement-gradient variables and prescribed components."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value",
+        "type": "list",
+        "doc": "Macro displacement-gradient matrix."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*",
+        "type": "list",
+        "doc": "One row of the macro displacement-gradient matrix."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*/*",
+        "type": "float",
+        "doc": "A macro displacement-gradient entry."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/value/*/*",
+        "type": "string",
+        "doc": "A time-dependent macro displacement-gradient expression."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/fixed_components",
+        "type": "list",
+        "default": [],
+        "doc": "Flattened macro displacement-gradient components held at their prescribed values."
+    },
+    {
+        "pointer": "/constraints/macro_displacement_gradient/fixed_components/*",
+        "type": "int",
+        "min": 0,
+        "doc": "Flattened macro displacement-gradient component."
     },
     {
         "pointer": "/constraints/hard",

@@ -10,6 +10,8 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <functional>
+
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
 namespace polyfem::assembler
@@ -201,6 +203,117 @@ namespace polyfem::assembler
 
 	protected:
 		int size_ = -1;
+	};
+
+	class MixedNLAssembler : virtual public Assembler
+	{
+	public:
+		using SolutionSplitter = std::function<void(
+			const Eigen::MatrixXd &x,
+			Eigen::MatrixXd &x_phi,
+			Eigen::MatrixXd &x_psi)>;
+
+		using Assembler::assemble_energy;
+		using Assembler::assemble_energy_per_element;
+		using Assembler::assemble_gradient;
+		using Assembler::assemble_hessian;
+
+		virtual ~MixedNLAssembler() = default;
+
+		double assemble_energy(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution) const;
+
+		Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution) const;
+
+		void assemble_gradient(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution,
+			Eigen::MatrixXd &grad) const;
+
+		void assemble_hessian(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const bool project_to_psd,
+			const std::vector<basis::ElementBases> &psi_bases,
+			const std::vector<basis::ElementBases> &phi_bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
+			const SolutionSplitter &split_solution,
+			utils::MatrixCache &mat_cache,
+			StiffnessMatrix &hessian) const;
+
+		bool is_linear() const override { return false; }
+
+	protected:
+		virtual int rows() const = 0;
+		virtual int cols() const = 0;
+
+		virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+	};
+
+	/// Local nonlinear assembler for an arbitrary number of FE spaces. Unlike
+	/// NLAssembler and MixedNLAssembler, this class never performs global assembly.
+	/// The owning form is responsible for element traversal and gather/scatter.
+	class MultiSpacesNLAssembler : virtual public Assembler
+	{
+	public:
+		using Assembler::assemble_gradient;
+		using Assembler::assemble_hessian;
+
+		virtual ~MultiSpacesNLAssembler() = default;
+
+		virtual double compute_energy(const MultiSpacesNLAssemblerData &data) const = 0;
+		virtual Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const = 0;
+		virtual Eigen::MatrixXd assemble_hessian(
+			const MultiSpacesNLAssemblerData &data,
+			int row_space,
+			int col_space) const = 0;
+
+		bool is_linear() const override { return false; }
 	};
 
 	/// assemble matrix based on the local assembler

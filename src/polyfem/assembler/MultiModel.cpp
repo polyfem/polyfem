@@ -1,5 +1,8 @@
 #include "MultiModel.hpp"
 
+#include <cstddef>
+#include <set>
+
 // #include <polyfem/basis/Basis.hpp>
 // #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
@@ -73,6 +76,24 @@ namespace polyfem::assembler
 
 	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const
 	{
-		return all_elastic_materials_.parameters();
+		std::map<std::string, Assembler::ParamFunc> params;
+		const std::set<std::string> active_models(multi_material_models_.begin(), multi_material_models_.end());
+
+		for (const std::string &model : active_models)
+		{
+			const auto assembler = all_elastic_materials_.get_assembler(model);
+			for (const auto &entry : assembler->parameters())
+			{
+				const std::string name = entry.first;
+				const ParamFunc func = entry.second;
+				params[model + "/" + name] = [this, model, func](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+					if (e < 0 || std::size_t(e) >= multi_material_models_.size() || multi_material_models_[e] != model)
+						return 0.0;
+					return func(uv, p, t, e);
+				};
+			}
+		}
+
+		return params;
 	}
 } // namespace polyfem::assembler

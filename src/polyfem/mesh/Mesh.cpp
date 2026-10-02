@@ -23,12 +23,67 @@
 
 #include <filesystem>
 #include <unordered_set>
+#include <set>
+#include <type_traits>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace polyfem::mesh
 {
 	using namespace polyfem::io;
 	using namespace polyfem::utils;
+
+	std::vector<MeshWithID> Mesh::split() const
+	{
+		std::set<int> ids;
+		for (int e = 0; e < n_elements(); ++e)
+			ids.insert(get_geometry_id(e));
+
+		std::vector<MeshWithID> result;
+		result.reserve(ids.size());
+		for (const int id : ids)
+		{
+			auto child = copy();
+			std::vector<bool> keep(n_elements(), false);
+			for (int e = 0; e < n_elements(); ++e)
+				keep[e] = get_geometry_id(e) == id;
+			child->remove_elements(keep);
+			result.push_back({id, std::move(child)});
+		}
+		return result;
+	}
+
+	void Mesh::filter_element_data(const std::vector<bool> &keep)
+	{
+		const int kept = std::count(keep.begin(), keep.end(), true);
+
+		auto filter_vector = [&keep, kept](auto &values) {
+			if (values.empty())
+				return;
+			assert(values.size() == keep.size());
+			using Value = typename std::decay_t<decltype(values)>::value_type;
+			std::vector<Value> filtered;
+			filtered.reserve(kept);
+			for (int i = 0; i < keep.size(); ++i)
+				if (keep[i])
+					filtered.push_back(values[i]);
+			values = std::move(filtered);
+		};
+
+		filter_vector(elements_tag_);
+		filter_vector(body_ids_);
+		filter_vector(geometry_ids_);
+		filter_vector(cell_weights_);
+
+		if (orders_.size() > 0)
+		{
+			assert(orders_.rows() == keep.size());
+			Eigen::MatrixXi filtered(kept, orders_.cols());
+			for (int i = 0, j = 0; i < keep.size(); ++i)
+				if (keep[i])
+					filtered.row(j++) = orders_.row(i);
+			orders_ = std::move(filtered);
+		}
+	}
 
 	namespace
 	{
@@ -197,8 +252,10 @@ namespace polyfem::mesh
 			std::vector<std::vector<int>> elements;
 			std::vector<std::vector<double>> weights;
 			std::vector<int> body_ids;
+			std::vector<std::vector<int>> boundary_elements;
+			std::vector<int> boundary_ids;
 
-			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
+			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids))
 			{
 				logger().error("Failed to load MSH mesh: {}", path);
 				return nullptr;
@@ -225,6 +282,34 @@ namespace polyfem::mesh
 			}
 
 			mesh->set_body_ids(body_ids);
+
+			if (!boundary_ids.empty())
+			{
+				std::unordered_map<std::vector<int>, int, HashVector> boundary_element_to_id;
+				for (int i = 0; i < boundary_elements.size(); ++i)
+				{
+					std::sort(boundary_elements[i].begin(), boundary_elements[i].end());
+					const auto [it, inserted] = boundary_element_to_id.emplace(boundary_elements[i], boundary_ids[i]);
+					if (!inserted && it->second != boundary_ids[i])
+						logger().warn("Gmsh side has multiple physical tags; using tag {}.", it->second);
+				}
+
+				int matched_boundaries = 0;
+				mesh->compute_boundary_ids([&](const size_t primitive_id, const std::vector<int> &vertices, const RowVectorNd &, const bool) {
+					std::vector<int> sorted_vertices = vertices;
+					std::sort(sorted_vertices.begin(), sorted_vertices.end());
+					const auto it = boundary_element_to_id.find(sorted_vertices);
+					if (it == boundary_element_to_id.end())
+						return mesh->get_default_boundary_id(primitive_id);
+					++matched_boundaries;
+					return it->second;
+				});
+
+				if (matched_boundaries != boundary_element_to_id.size())
+					logger().warn(
+						"Unable to match {} of {} tagged Gmsh sides to mesh primitives.",
+						boundary_element_to_id.size() - matched_boundaries, boundary_element_to_id.size());
+			}
 
 			return mesh;
 		}
@@ -561,6 +646,16 @@ namespace polyfem::mesh
 			body_ids_.insert(body_ids_.end(), mesh.body_ids_.begin(), mesh.body_ids_.end());
 		else if (has_body_ids())                                   // && !mesh.has_body_ids()
 			body_ids_.resize(n_elements() + mesh.n_elements(), 0); // 0 is the default body_id
+
+		// --------------------------------------------------------------------
+		// Initialize geometry_ids_ if it is not initialized yet.
+		if (!has_geometry_ids() && mesh.has_geometry_ids())
+			geometry_ids_ = std::vector<int>(n_elements(), 0);
+
+		if (mesh.has_geometry_ids())
+			geometry_ids_.insert(geometry_ids_.end(), mesh.geometry_ids_.begin(), mesh.geometry_ids_.end());
+		else if (has_geometry_ids())
+			geometry_ids_.resize(n_elements() + mesh.n_elements(), 0);
 
 		// --------------------------------------------------------------------
 

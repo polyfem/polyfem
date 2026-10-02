@@ -25,10 +25,10 @@ namespace polyfem
 			void init(const int dim, const json &param, const std::string &root_path)
 			{
 				_dim = dim;
-				fixed_entry = param["fixed_macro_strain"];
-				if (utils::is_param_valid(param, "linear_displacement_offset") && param["linear_displacement_offset"].size() > 0)
+				fixed_entry = param["fixed_components"];
+				if (utils::is_param_valid(param, "value") && param["value"].size() > 0)
 				{
-					json arg = param["linear_displacement_offset"];
+					json arg = param["value"];
 					assert(arg.is_array());
 #ifndef NDEBUG
 					for (const auto &a : arg)

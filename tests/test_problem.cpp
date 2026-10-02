@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/Helmholtz.hpp>
 #include <polyfem/assembler/LinearElasticity.hpp>
@@ -11,6 +12,8 @@
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,12 +26,512 @@ using namespace polyfem::mesh;
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;
 
+namespace
+{
+	class GenericTensorProblemAccess : public GenericTensorProblem
+	{
+	public:
+		using GenericTensorProblem::GenericTensorProblem;
+		using GenericTensorProblem::has_boundary;
+	};
+
+	class GenericScalarProblemAccess : public GenericScalarProblem
+	{
+	public:
+		using GenericScalarProblem::GenericScalarProblem;
+		using GenericScalarProblem::has_boundary;
+	};
+
+	std::unique_ptr<Mesh> tagged_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(3, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1;
+
+		Eigen::MatrixXi cells(1, 3);
+		cells << 0, 1, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+
+		std::vector<int> boundary_ids(mesh->n_boundary_elements());
+		for (int i = 0; i < mesh->n_boundary_elements(); ++i)
+			boundary_ids[i] = i + 1;
+		mesh->set_boundary_ids(boundary_ids);
+		mesh->compute_node_ids([](const size_t node_id, const RowVectorNd &, const bool) {
+			return int(node_id) + 1;
+		});
+
+		return mesh;
+	}
+
+	std::unique_ptr<Mesh> two_body_triangle_mesh()
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			1, 0,
+			0, 1,
+			1, 1;
+
+		Eigen::MatrixXi cells(2, 3);
+		cells << 0, 1, 2,
+			1, 3, 2;
+
+		auto mesh = Mesh::create(vertices, cells);
+		mesh->set_body_ids({5, 8});
+		return mesh;
+	}
+} // namespace
+
 json get_params()
 {
 	return {
 		{"k", k},
 		{"lambda", lambda},
 		{"mu", mu}};
+}
+
+TEST_CASE("generic tensor problem selects finite element space data", "[problem]")
+{
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", -1}, {"fe_space", 0}, {"value", json::array({"x + 1", 2})}},
+		{{"fe_space", 1}, {"value", 300}},
+	});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", json::array({0, 0})}, {"interpolation", json::array()}},
+		{{"id", 2}, {"fe_space", 1}, {"value", 300}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 1, 2,
+		3, 4;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, pts, 0, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2, 2)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(4, 2)));
+
+	problem.rhs(assembler, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values.array().isApproxToConstant(300));
+
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, 1));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 2, 0));
+}
+
+TEST_CASE("generic tensor problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + t", "2*y"})}},
+		{{"id", 8}, {"fe_space", 1}, {"value", json::array({7, 8})}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 1, 2,
+		3, 4;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.5, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(1.5, 4)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(3.5, 8)));
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 8)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(7, 8)));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
+}
+
+TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finite element space", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", json::array({100, 200})}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", json::array({"x + 3", "y + 5"})}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", json::array({7, 11})}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(4, 5)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 11)));
+}
+
+TEST_CASE("generic tensor problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_tensor_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12 13\n"
+			 << "2 14 15\n";
+	}
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(14, 15)));
+
+	std::filesystem::remove(nodal_neumann_path);
+}
+
+TEST_CASE("generic tensor problem evaluates reference boundary initial and update paths", "[problem]")
+{
+	auto mesh = tagged_triangle_mesh();
+	mesh->set_body_ids({5});
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["is_time_dependent"] = true;
+	params["reference"]["solution"] = json::array({"x + t", "y + 2*t"});
+	params["reference"]["gradient"] = json::array({"1", "0", "0", "1"});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", json::array({1, 2})},
+		 {"value", json::array({"x + t", "y + 2*t"})},
+		 {"dimension", json::array({true, false})},
+		 {"interpolation", json::array({json{{"type", "none"}}, json{{"type", "none"}}})}},
+	});
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"value", json::array({"x + 10", "y + 20"})}, {"interpolation", json::array()}},
+	});
+	params["normal_aligned_neumann_boundary"] = json::array({
+		{{"id", 3}, {"value", 4}},
+	});
+	params["pressure_boundary"] = json::array({
+		{{"id", 2}, {"value", "x + t"}},
+	});
+	params["pressure_cavity"] = json::array({
+		{{"id", 9}, {"value", "t + 4"}},
+	});
+	params["solution"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 1", "y + 2"})}},
+	});
+	params["velocity"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 3", "y + 4"})}},
+	});
+	params["acceleration"] = json::array({
+		{{"id", 5}, {"value", json::array({"x + 5", "y + 6"})}},
+	});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.is_time_dependent());
+	CHECK_FALSE(problem.is_constant_in_time());
+	CHECK(problem.has_exact_sol());
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 2, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, -1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 3, -1));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, -1));
+	CHECK_FALSE(problem.all_dimensions_dirichlet(-1));
+	CHECK(problem.is_dimension_dirichet(1, 0, -1));
+	CHECK_FALSE(problem.is_dimension_dirichet(1, 1, -1));
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0.25, 0.5,
+		0.75, 0.125;
+	Eigen::MatrixXd values;
+	problem.exact(pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2.25, 4.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(2.75, 4.125)));
+
+	problem.exact_grad(pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 4);
+	CHECK(values.row(0).isApprox(Eigen::RowVector4d(1, 0, 0, 1)));
+
+	Eigen::MatrixXi boundary_ids(3, 1);
+	boundary_ids << 0, 1, 2;
+	problem.dirichlet_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(2.25, 4.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(2.75, 4.125)));
+
+	Eigen::MatrixXd normals(3, 2);
+	normals << 1, 0,
+		0, 1,
+		0.6, 0.8;
+	problem.neumann_bc(*mesh, boundary_ids, Eigen::MatrixXd(), pts.colwise().homogeneous(), normals, 1.0, values);
+	REQUIRE(values.rows() == 3);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(10.25, 20.5)));
+	CHECK(values.row(1).isZero(1e-12));
+	CHECK(values.row(2).isApprox(Eigen::RowVector2d(2.4, 3.2)));
+
+	problem.pressure_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, normals.topRows(2), 2.0, values);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0, 0) == 0.0);
+	CHECK(values(1, 0) == 2.75);
+	CHECK(problem.pressure_cavity_bc(9, 3.0) == 7.0);
+
+	Eigen::MatrixXi element_ids(2, 1);
+	element_ids << 0, 0;
+	problem.initial_solution(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(1.25, 2.5)));
+	CHECK(values.row(1).isApprox(Eigen::RowVector2d(1.75, 2.125)));
+	problem.initial_velocity(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(3.25, 4.5)));
+	problem.initial_acceleration(*mesh, element_ids, pts, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(5.25, 6.5)));
+
+	problem.update_pressure_boundary(2, 0, 8.5);
+	problem.pressure_bc(*mesh, boundary_ids.topRows(2), Eigen::MatrixXd(), pts, normals.topRows(2), 2.0, values);
+	CHECK(values(1, 0) == 8.5);
+
+	Eigen::Vector2d updated_dirichlet;
+	updated_dirichlet << 9.0, 10.0;
+	problem.update_dirichlet_boundary(1, 0, updated_dirichlet);
+	problem.dirichlet_bc(*mesh, boundary_ids.topRows(1), Eigen::MatrixXd(), pts.topRows(1), 2.0, values);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(9.0, 10.0)));
+	REQUIRE_THROWS(problem.update_pressure_boundary(99, 0, 1.0));
+	REQUIRE_THROWS(problem.update_dirichlet_boundary(99, 0, updated_dirichlet));
+
+	problem.clear();
+	CHECK_FALSE(problem.has_exact_sol());
+	CHECK_FALSE(problem.is_time_dependent());
+	CHECK(problem.might_have_no_dirichlet());
+	Laplacian assembler;
+	problem.rhs(assembler, pts, 0, values);
+	CHECK(values.isZero(1e-12));
+}
+
+TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_dirichlet_path = std::filesystem::temp_directory_path() / "polyfem_tensor_nodal_dirichlet.txt";
+	{
+		std::ofstream file(nodal_dirichlet_path);
+		REQUIRE(file.is_open());
+		file << "1 12 13\n"
+			 << "2 14 15\n";
+	}
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	json params;
+	params["root_path"] = "";
+	params["dirichlet_boundary"] = json::array({nodal_dirichlet_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_dirichlet(0));
+	CHECK(problem.is_nodal_dirichlet_boundary(1, mesh->get_node_id(1), 0));
+	CHECK(problem.is_nodal_dimension_dirichlet(1, mesh->get_node_id(1), 0, 0));
+
+	Eigen::MatrixXd values;
+	problem.dirichlet_nodal_value(*mesh, 1, mesh->point(1), 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 2);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	Eigen::VectorXi node_map(3);
+	node_map << 0, 2, 1;
+	problem.update_nodes(node_map);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
+
+	Eigen::VectorXi node_ids(1);
+	node_ids << 1;
+	Eigen::MatrixXd updated(1, 2);
+	updated << 21, 22;
+	problem.update_dirichlet_nodes(node_map, node_ids, updated);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
+
+	// Second update_nodes call is intentionally a no-op after the first remapping.
+	Eigen::VectorXi second_map(3);
+	second_map << 2, 1, 0;
+	problem.update_nodes(second_map);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
+
+	std::filesystem::remove(nodal_dirichlet_path);
+}
+
+TEST_CASE("generic scalar problem selects finite element space nodal data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", -1}, {"fe_space", 0}, {"value", "x + y + 1"}},
+		{{"fe_space", 1}, {"value", 4}},
+	});
+	params["dirichlet_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", "x"}, {"interpolation", json::array()}},
+		{{"id", 2}, {"fe_space", 1}, {"value", 8}, {"interpolation", json::array()}},
+	});
+	params["neumann_boundary"] = json::array({
+		{{"id", 1}, {"fe_space", 0}, {"value", 42}, {"interpolation", json::array()}},
+	});
+	params["nodal_neumann_boundary"] = json::array({
+		{{"id", 2}, {"fe_space", 0}, {"value", "x + 2"}, {"interpolation", json::array()}},
+		{{"id", 3}, {"fe_space", 1}, {"value", 9}, {"interpolation", json::array()}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 0,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, pts, 0, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1);
+	CHECK(values(1) == 6);
+
+	problem.rhs(assembler, pts, 0, values, 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK(problem.has_boundary(BoundaryKind::Dirichlet, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Dirichlet, 1, 1));
+	CHECK(problem.has_boundary(BoundaryKind::Neumann, 1, 0));
+	CHECK_FALSE(problem.has_boundary(BoundaryKind::Neumann, 2, 0));
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.has_nodal_neumann(1));
+	CHECK_FALSE(problem.has_nodal_neumann(2));
+
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(0, mesh->get_node_id(0), 0));
+	const int tagged_node = 1;
+	CHECK(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 0));
+	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
+
+	Eigen::MatrixXd normal;
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 3);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 9);
+}
+
+TEST_CASE("generic scalar problem selects body rhs data", "[problem]")
+{
+	const auto mesh = two_body_triangle_mesh();
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["rhs"] = json::array({
+		{{"id", 5}, {"value", "x + y + t"}},
+		{{"id", 8}, {"fe_space", 1}, {"value", 4}},
+	});
+	problem.set_parameters(params, "");
+
+	Eigen::MatrixXd pts(2, 2);
+	pts << 0, 1,
+		2, 3;
+	Eigen::MatrixXd values;
+	Laplacian assembler;
+
+	problem.rhs(assembler, *mesh, 0, pts, 0.25, values, 0);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 1.25);
+	CHECK(values(1) == 5.25);
+
+	problem.rhs(assembler, *mesh, 1, pts, 0, values, 1);
+	REQUIRE(values.rows() == 2);
+	REQUIRE(values.cols() == 1);
+	CHECK(values.array().isApproxToConstant(4));
+
+	CHECK_FALSE(problem.is_rhs_zero(0));
+	CHECK_FALSE(problem.is_rhs_zero(1));
+}
+
+TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[problem]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	const std::filesystem::path nodal_neumann_path = std::filesystem::temp_directory_path() / "polyfem_scalar_nodal_neumann.txt";
+	{
+		std::ofstream file(nodal_neumann_path);
+		REQUIRE(file.is_open());
+		file << "1 12\n"
+			 << "2 14\n";
+	}
+
+	GenericScalarProblemAccess problem("GenericScalar");
+	json params;
+	params["root_path"] = "";
+	params["nodal_neumann_boundary"] = json::array({nodal_neumann_path.string()});
+	problem.set_parameters(params, "");
+
+	CHECK(problem.has_nodal_neumann(0));
+	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
+
+	Eigen::MatrixXd values, normal;
+	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 12);
+
+	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	REQUIRE(values.rows() == 1);
+	REQUIRE(values.cols() == 1);
+	CHECK(values(0) == 14);
+
+	std::filesystem::remove(nodal_neumann_path);
 }
 
 TEST_CASE("franke 2d", "[problem]")
@@ -480,8 +983,15 @@ TEST_CASE("elasticity 2d", "[problem]")
 	// rhs
 	{
 		Eigen::MatrixXd rhs(pts.rows(), pts.cols());
-		rhs.col(0) = (432 * lambda * y + 1008 * lambda + 2016 * mu) * pow(x, 0.6e1) / 0.125000e6 + ((864 * mu + 432 * lambda) * y + 43248 * mu + 21600 * lambda) * pow(x, 0.5e1) / 0.125000e6 + ((24 * lambda + 168 * mu) * y + 1200 * mu) * pow(x, 0.4e1) / 0.125000e6 + ((144 * lambda + 288 * mu) * pow(y, 3) + (192 * mu + 96 * lambda) * y * y + (76 * lambda + 8 * mu) * y + 3192 * mu + 96 * lambda) * pow(x, 0.3e1) / 0.125000e6 + ((120 * mu + 60 * lambda) * pow(y, 3) + (9012 * mu + 1812 * lambda) * y * y + (114 * mu + 57 * lambda) * y + 3838 * mu + 1917 * lambda) * x * x / 0.125000e6 + ((120 * mu + 60 * lambda) * pow(y, 3) + (1130 * lambda + 2160 * mu) * y * y + (1436 * mu + 1016 * lambda) * y + 1500 * mu + 700 * lambda) * x / 0.125000e6 + ((90 * lambda + 168 * mu) * pow(y, 5)) / 0.125000e6 + ((20 * mu + 10 * lambda) * pow(y, 4)) / 0.125000e6 + ((24 * mu + 21 * lambda) * pow(y, 3)) / 0.125000e6 + ((1410 * mu + 705 * lambda) * y * y) / 0.125000e6 + ((20600 * mu + 5303 * lambda) * y) / 0.125000e6 + 0.5051e4 / 0.62500e5 * mu + 0.5001e4 / 0.125000e6 * lambda;
-		rhs.col(1) = (15552 * mu + 7776 * lambda) * pow(x, 0.8e1) / 0.125000e6 + (144 * lambda + 288 * mu) * pow(x, 0.7e1) / 0.125000e6 + 0.324e3 / 0.15625e5 * (y * y + 1) * (mu + lambda / 0.2e1) * pow(x, 0.5e1) + ((192 * lambda + 384 * mu) * y * y + 144 * mu * y + 300 * mu + 174 * lambda) * pow(x, 0.4e1) / 0.125000e6 + ((156 * lambda + 132 * mu) * y * y + (15792 * mu + 6096 * lambda) * y + 9602 * mu + 4805 * lambda) * pow(x, 0.3e1) / 0.125000e6 + ((108 * mu + 216 * lambda) * pow(y, 4) + (144 * lambda + 288 * mu) * y * y + (4816 * mu + 2408 * lambda) * y + 90108 * mu + 254 * lambda) * x * x / 0.125000e6 + ((54 * lambda + 108 * mu) * pow(y, 4) + 48 * mu * pow(y, 3) + (35 * mu + 18 * lambda) * y * y + (500 * lambda + 912 * mu) * y + 10211 * mu + 5106 * lambda) * x / 0.125000e6 + ((3 * lambda + 21 * mu) * pow(y, 4)) / 0.125000e6 + ((3104 * mu + 1102 * lambda) * pow(y, 3)) / 0.125000e6 + ((509 * mu + 103 * lambda) * y * y) / 0.125000e6 + ((754 * mu + 252 * lambda) * y) / 0.125000e6 + 0.27e2 / 0.1250e4 * mu + 0.13e2 / 0.625e3 * lambda;
+		// Evaluate the generated formulas pointwise. Vectorizing these expressions
+		// creates expression trees large enough to exhaust MSVC's Release optimizer.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			const double x = pts(i, 0);
+			const double y = pts(i, 1);
+			rhs(i, 0) = (432 * lambda * y + 1008 * lambda + 2016 * mu) * pow(x, 0.6e1) / 0.125000e6 + ((864 * mu + 432 * lambda) * y + 43248 * mu + 21600 * lambda) * pow(x, 0.5e1) / 0.125000e6 + ((24 * lambda + 168 * mu) * y + 1200 * mu) * pow(x, 0.4e1) / 0.125000e6 + ((144 * lambda + 288 * mu) * pow(y, 3) + (192 * mu + 96 * lambda) * y * y + (76 * lambda + 8 * mu) * y + 3192 * mu + 96 * lambda) * pow(x, 0.3e1) / 0.125000e6 + ((120 * mu + 60 * lambda) * pow(y, 3) + (9012 * mu + 1812 * lambda) * y * y + (114 * mu + 57 * lambda) * y + 3838 * mu + 1917 * lambda) * x * x / 0.125000e6 + ((120 * mu + 60 * lambda) * pow(y, 3) + (1130 * lambda + 2160 * mu) * y * y + (1436 * mu + 1016 * lambda) * y + 1500 * mu + 700 * lambda) * x / 0.125000e6 + ((90 * lambda + 168 * mu) * pow(y, 5)) / 0.125000e6 + ((20 * mu + 10 * lambda) * pow(y, 4)) / 0.125000e6 + ((24 * mu + 21 * lambda) * pow(y, 3)) / 0.125000e6 + ((1410 * mu + 705 * lambda) * y * y) / 0.125000e6 + ((20600 * mu + 5303 * lambda) * y) / 0.125000e6 + 0.5051e4 / 0.62500e5 * mu + 0.5001e4 / 0.125000e6 * lambda;
+			rhs(i, 1) = (15552 * mu + 7776 * lambda) * pow(x, 0.8e1) / 0.125000e6 + (144 * lambda + 288 * mu) * pow(x, 0.7e1) / 0.125000e6 + 0.324e3 / 0.15625e5 * (y * y + 1) * (mu + lambda / 0.2e1) * pow(x, 0.5e1) + ((192 * lambda + 384 * mu) * y * y + 144 * mu * y + 300 * mu + 174 * lambda) * pow(x, 0.4e1) / 0.125000e6 + ((156 * lambda + 132 * mu) * y * y + (15792 * mu + 6096 * lambda) * y + 9602 * mu + 4805 * lambda) * pow(x, 0.3e1) / 0.125000e6 + ((108 * mu + 216 * lambda) * pow(y, 4) + (144 * lambda + 288 * mu) * y * y + (4816 * mu + 2408 * lambda) * y + 90108 * mu + 254 * lambda) * x * x / 0.125000e6 + ((54 * lambda + 108 * mu) * pow(y, 4) + 48 * mu * pow(y, 3) + (35 * mu + 18 * lambda) * y * y + (500 * lambda + 912 * mu) * y + 10211 * mu + 5106 * lambda) * x / 0.125000e6 + ((3 * lambda + 21 * mu) * pow(y, 4)) / 0.125000e6 + ((3104 * mu + 1102 * lambda) * pow(y, 3)) / 0.125000e6 + ((509 * mu + 103 * lambda) * y * y) / 0.125000e6 + ((754 * mu + 252 * lambda) * y) / 0.125000e6 + 0.27e2 / 0.1250e4 * mu + 0.13e2 / 0.625e3 * lambda;
+		}
 
 		probl->rhs(sv, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -492,8 +1002,15 @@ TEST_CASE("elasticity 2d", "[problem]")
 	// rhs
 	{
 		Eigen::MatrixXd rhs(pts.rows(), pts.cols());
-		rhs.col(0) = (-0.43200e5 * lambda * (pow(x, 0.6e1) * y - pow(x, 0.5e1) / 0.18e2 - 0.5e1 / 0.36e2 * pow(x, 0.4e1) * y - 0.25e2 / 0.18e2 * pow(x, 0.4e1) + pow(x, 0.3e1) * y / 0.6e1 - 0.125e3 / 0.36e2 * pow(x, 0.3e1) - 0.449e3 / 0.72e2 * x * x * y * y - x * x / 0.216e3 + 0.25e2 / 0.216e3 * x * y * y + 0.149e3 / 0.216e3 * x * y - 0.25e2 / 0.216e3 * x + pow(y, 0.5e1) / 0.72e2 + pow(y, 0.3e1) / 0.48e2 + 0.2503e4 / 0.432e3 * y + 0.1225e4 / 0.216e3) * log(-0.3e1 * pow(y, 0.4e1) + (-0.36e2 * pow(x, 0.3e1) + x - 0.3e1) * y * y + (0.4e1 * x * x + 0.100e3 * x + 0.50e2) * y - 0.12e2 * pow(x, 0.4e1) + 0.99e2 * x + 0.2500e4) + 0.86400e5 * lambda * (pow(x, 0.6e1) * y - pow(x, 0.5e1) / 0.18e2 - 0.5e1 / 0.36e2 * pow(x, 0.4e1) * y - 0.25e2 / 0.18e2 * pow(x, 0.4e1) + pow(x, 0.3e1) * y / 0.6e1 - 0.125e3 / 0.36e2 * pow(x, 0.3e1) - 0.449e3 / 0.72e2 * x * x * y * y - x * x / 0.216e3 + 0.25e2 / 0.216e3 * x * y * y + 0.149e3 / 0.216e3 * x * y - 0.25e2 / 0.216e3 * x + pow(y, 0.5e1) / 0.72e2 + pow(y, 0.3e1) / 0.48e2 + 0.2503e4 / 0.432e3 * y + 0.1225e4 / 0.216e3) * (log(0.2e1) + 0.2e1 * log(0.5e1)) + 0.144e3 / 0.25e2 * mu * (0.3e1 * y + 0.1e1) * pow(x, 0.8e1) + 0.864e3 / 0.25e2 * y * y * mu * (0.3e1 * y + 0.1e1) * pow(x, 0.7e1) + 0.48e2 / 0.25e2 * y * (0.81e2 * mu * pow(y, 0.4e1) + 0.27e2 * mu * pow(y, 0.3e1) - 0.6e1 * mu * y + 0.22500e5 * lambda + 0.22498e5 * mu) * pow(x, 0.6e1) - 0.24e2 / 0.25e2 * (0.36e2 * mu * pow(y, 0.4e1) + 0.15e2 * mu * pow(y, 0.3e1) + 0.301e3 * mu * y * y + 0.397e3 * mu * y + 0.2500e4 * lambda + 0.2599e4 * mu) * pow(x, 0.5e1) - 0.16e2 / 0.5e1 * (0.270e3 * mu * pow(y, 0.4e1) + 0.354e3 * mu * pow(y, 0.3e1) + 0.133e3 * mu * y * y + 0.1875e4 * lambda * y + 0.4140e4 * mu * y + 0.18750e5 * lambda + 0.19500e5 * mu) * pow(x, 0.4e1) + 0.8e1 / 0.25e2 * (0.81e2 * mu * pow(y, 0.7e1) + 0.27e2 * mu * pow(y, 0.6e1) + 0.81e2 * mu * pow(y, 0.5e1) - 0.1320e4 * mu * pow(y, 0.4e1) - 0.67649e5 * mu * pow(y, 0.3e1) - 0.22103e5 * mu * y * y + 0.22500e5 * lambda * y + 0.22599e5 * mu * y - 0.468750e6 * lambda - 0.468750e6 * mu) * pow(x, 0.3e1) - (0.72e2 * mu * pow(y, 0.6e1) + 0.21e2 * mu * pow(y, 0.5e1) - 0.529e3 * mu * pow(y, 0.4e1) - 0.31970e5 * mu * pow(y, 0.3e1) + 0.6735000e7 * lambda * y * y + 0.6605002e7 * mu * y * y - 0.69203e5 * mu * y + 0.5000e4 * lambda - 0.4801e4 * mu) * x * x / 0.25e2 + 0.2e1 / 0.25e2 * (-0.9e1 * mu * pow(y, 0.7e1) - 0.903e3 * mu * pow(y, 0.6e1) - 0.1200e4 * mu * pow(y, 0.5e1) - 0.1050e4 * mu * pow(y, 0.4e1) + 0.21359e5 * mu * pow(y, 0.3e1) + 0.62500e5 * lambda * y * y + 0.834553e6 * mu * y * y + 0.372500e6 * lambda * y + 0.1369950e7 * mu * y - 0.62500e5 * lambda + 0.185000e6 * mu) * x + 0.27e2 / 0.25e2 * mu * pow(y, 0.9e1) + 0.9e1 / 0.25e2 * mu * pow(y, 0.8e1) + 0.54e2 / 0.25e2 * mu * pow(y, 0.7e1) - 0.882e3 / 0.25e2 * mu * pow(y, 0.6e1) + 0.3e1 / 0.25e2 * (-0.10091e5 * mu + 0.5000e4 * lambda) * pow(y, 0.5e1) - 0.15891e5 / 0.25e2 * mu * pow(y, 0.4e1) + 0.36e2 * (-0.17e2 * mu + 0.25e2 * lambda) * pow(y, 0.3e1) + 0.29500e5 * mu * y * y + 0.100e3 * (0.10103e5 * mu + 0.2503e4 * lambda) * y + 0.495000e6 * mu + 0.245000e6 * lambda) * pow(0.36e2 * pow(x, 0.3e1) * y * y + 0.12e2 * pow(x, 0.4e1) + 0.3e1 * pow(y, 0.4e1) - 0.4e1 * x * x * y - x * y * y - 0.100e3 * x * y + 0.3e1 * y * y - 0.99e2 * x - 0.50e2 * y - 0.2500e4, -0.2e1);
-		rhs.col(1) = (0.7200e4 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * log(-0.3e1 * pow(y, 0.4e1) + (-0.36e2 * pow(x, 0.3e1) + x - 0.3e1) * y * y + (0.4e1 * x * x + 0.100e3 * x + 0.50e2) * y - 0.12e2 * pow(x, 0.4e1) + 0.99e2 * x + 0.2500e4) - 0.14400e5 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * (log(0.2e1) + 0.2e1 * log(0.5e1)) + 0.2592e4 / 0.25e2 * mu * pow(x, 0.10e2) + 0.144e3 / 0.25e2 * mu * (0.108e3 * y * y + 0.1e1) * pow(x, 0.9e1) + 0.864e3 / 0.25e2 * (0.27e2 * pow(y, 0.3e1) + y - 0.2e1) * y * mu * pow(x, 0.8e1) + 0.48e2 / 0.25e2 * (0.27e2 * pow(y, 0.4e1) - 0.108e3 * pow(y, 0.3e1) - 0.9e1 * y * y - 0.902e3 * y - 0.891e3) * mu * pow(x, 0.7e1) - 0.24e2 / 0.25e2 * (0.5412e4 * pow(y, 0.3e1) + 0.5281e4 * y * y + 0.1000e4 * y + 0.45099e5) * mu * pow(x, 0.6e1) + 0.16e2 / 0.25e2 * (0.243e3 * pow(y, 0.6e1) + 0.243e3 * pow(y, 0.4e1) - 0.4491e4 * pow(y, 0.3e1) - 0.202040e6 * y * y + 0.816e3 * y - 0.3750e4) * mu * pow(x, 0.5e1) - 0.2e1 / 0.25e2 * (-0.108e3 * mu * pow(y, 0.6e1) + 0.216e3 * mu * pow(y, 0.5e1) - 0.117e3 * mu * pow(y, 0.4e1) + 0.212e3 * mu * pow(y, 0.3e1) - 0.5782e4 * mu * y * y + 0.90000e5 * lambda * y - 0.268596e6 * mu * y - 0.30000e5 * lambda - 0.118209e6 * mu) * pow(x, 0.4e1) + (-0.108e3 * mu * pow(y, 0.6e1) - 0.10824e5 * mu * pow(y, 0.5e1) - 0.10799e5 * mu * pow(y, 0.4e1) - 0.8824e4 * mu * pow(y, 0.3e1) + 0.225000e6 * lambda * y * y + 0.494906e6 * mu * y * y - 0.4500000e7 * lambda * y + 0.4718000e7 * mu * y + 0.10000e5 * lambda + 0.8929801e7 * mu) * pow(x, 0.3e1) / 0.25e2 + 0.2e1 / 0.25e2 * (0.81e2 * mu * pow(y, 0.8e1) + 0.159e3 * mu * pow(y, 0.6e1) - 0.3000e4 * mu * pow(y, 0.5e1) + 0.202500e6 * lambda * pow(y, 0.4e1) + 0.67281e5 * mu * pow(y, 0.4e1) - 0.2950e4 * mu * pow(y, 0.3e1) - 0.105297e6 * mu * y * y + 0.2504950e7 * mu * y + 0.250000e6 * lambda + 0.56747500e8 * mu) * x * x - (-0.9e1 * mu * pow(y, 0.8e1) - 0.18e2 * mu * pow(y, 0.6e1) + 0.300e3 * mu * pow(y, 0.5e1) + 0.14991e5 * mu * pow(y, 0.4e1) + 0.60000e5 * lambda * pow(y, 0.3e1) + 0.60300e5 * mu * pow(y, 0.3e1) - 0.1250e4 * lambda * y * y + 0.11250e5 * mu * y * y - 0.110000e6 * lambda * y - 0.360000e6 * mu * y - 0.6251250e7 * lambda - 0.12501250e8 * mu) * x / 0.25e2 - 0.50e2 * (0.15e2 * pow(y, 0.4e1) + 0.900e3 * pow(y, 0.3e1) + 0.303e3 * y * y + 0.250e3 * y - 0.2500e4) * (mu + lambda)) * pow(0.36e2 * pow(x, 0.3e1) * y * y + 0.12e2 * pow(x, 0.4e1) + 0.3e1 * pow(y, 0.4e1) - 0.4e1 * x * x * y - x * y * y - 0.100e3 * x * y + 0.3e1 * y * y - 0.99e2 * x - 0.50e2 * y - 0.2500e4, -0.2e1);
+		// Evaluate the generated formulas pointwise. Vectorizing these expressions
+		// creates expression trees large enough to exhaust MSVC's Release optimizer.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			const double x = pts(i, 0);
+			const double y = pts(i, 1);
+			rhs(i, 0) = (-0.43200e5 * lambda * (pow(x, 0.6e1) * y - pow(x, 0.5e1) / 0.18e2 - 0.5e1 / 0.36e2 * pow(x, 0.4e1) * y - 0.25e2 / 0.18e2 * pow(x, 0.4e1) + pow(x, 0.3e1) * y / 0.6e1 - 0.125e3 / 0.36e2 * pow(x, 0.3e1) - 0.449e3 / 0.72e2 * x * x * y * y - x * x / 0.216e3 + 0.25e2 / 0.216e3 * x * y * y + 0.149e3 / 0.216e3 * x * y - 0.25e2 / 0.216e3 * x + pow(y, 0.5e1) / 0.72e2 + pow(y, 0.3e1) / 0.48e2 + 0.2503e4 / 0.432e3 * y + 0.1225e4 / 0.216e3) * log(-0.3e1 * pow(y, 0.4e1) + (-0.36e2 * pow(x, 0.3e1) + x - 0.3e1) * y * y + (0.4e1 * x * x + 0.100e3 * x + 0.50e2) * y - 0.12e2 * pow(x, 0.4e1) + 0.99e2 * x + 0.2500e4) + 0.86400e5 * lambda * (pow(x, 0.6e1) * y - pow(x, 0.5e1) / 0.18e2 - 0.5e1 / 0.36e2 * pow(x, 0.4e1) * y - 0.25e2 / 0.18e2 * pow(x, 0.4e1) + pow(x, 0.3e1) * y / 0.6e1 - 0.125e3 / 0.36e2 * pow(x, 0.3e1) - 0.449e3 / 0.72e2 * x * x * y * y - x * x / 0.216e3 + 0.25e2 / 0.216e3 * x * y * y + 0.149e3 / 0.216e3 * x * y - 0.25e2 / 0.216e3 * x + pow(y, 0.5e1) / 0.72e2 + pow(y, 0.3e1) / 0.48e2 + 0.2503e4 / 0.432e3 * y + 0.1225e4 / 0.216e3) * (log(0.2e1) + 0.2e1 * log(0.5e1)) + 0.144e3 / 0.25e2 * mu * (0.3e1 * y + 0.1e1) * pow(x, 0.8e1) + 0.864e3 / 0.25e2 * y * y * mu * (0.3e1 * y + 0.1e1) * pow(x, 0.7e1) + 0.48e2 / 0.25e2 * y * (0.81e2 * mu * pow(y, 0.4e1) + 0.27e2 * mu * pow(y, 0.3e1) - 0.6e1 * mu * y + 0.22500e5 * lambda + 0.22498e5 * mu) * pow(x, 0.6e1) - 0.24e2 / 0.25e2 * (0.36e2 * mu * pow(y, 0.4e1) + 0.15e2 * mu * pow(y, 0.3e1) + 0.301e3 * mu * y * y + 0.397e3 * mu * y + 0.2500e4 * lambda + 0.2599e4 * mu) * pow(x, 0.5e1) - 0.16e2 / 0.5e1 * (0.270e3 * mu * pow(y, 0.4e1) + 0.354e3 * mu * pow(y, 0.3e1) + 0.133e3 * mu * y * y + 0.1875e4 * lambda * y + 0.4140e4 * mu * y + 0.18750e5 * lambda + 0.19500e5 * mu) * pow(x, 0.4e1) + 0.8e1 / 0.25e2 * (0.81e2 * mu * pow(y, 0.7e1) + 0.27e2 * mu * pow(y, 0.6e1) + 0.81e2 * mu * pow(y, 0.5e1) - 0.1320e4 * mu * pow(y, 0.4e1) - 0.67649e5 * mu * pow(y, 0.3e1) - 0.22103e5 * mu * y * y + 0.22500e5 * lambda * y + 0.22599e5 * mu * y - 0.468750e6 * lambda - 0.468750e6 * mu) * pow(x, 0.3e1) - (0.72e2 * mu * pow(y, 0.6e1) + 0.21e2 * mu * pow(y, 0.5e1) - 0.529e3 * mu * pow(y, 0.4e1) - 0.31970e5 * mu * pow(y, 0.3e1) + 0.6735000e7 * lambda * y * y + 0.6605002e7 * mu * y * y - 0.69203e5 * mu * y + 0.5000e4 * lambda - 0.4801e4 * mu) * x * x / 0.25e2 + 0.2e1 / 0.25e2 * (-0.9e1 * mu * pow(y, 0.7e1) - 0.903e3 * mu * pow(y, 0.6e1) - 0.1200e4 * mu * pow(y, 0.5e1) - 0.1050e4 * mu * pow(y, 0.4e1) + 0.21359e5 * mu * pow(y, 0.3e1) + 0.62500e5 * lambda * y * y + 0.834553e6 * mu * y * y + 0.372500e6 * lambda * y + 0.1369950e7 * mu * y - 0.62500e5 * lambda + 0.185000e6 * mu) * x + 0.27e2 / 0.25e2 * mu * pow(y, 0.9e1) + 0.9e1 / 0.25e2 * mu * pow(y, 0.8e1) + 0.54e2 / 0.25e2 * mu * pow(y, 0.7e1) - 0.882e3 / 0.25e2 * mu * pow(y, 0.6e1) + 0.3e1 / 0.25e2 * (-0.10091e5 * mu + 0.5000e4 * lambda) * pow(y, 0.5e1) - 0.15891e5 / 0.25e2 * mu * pow(y, 0.4e1) + 0.36e2 * (-0.17e2 * mu + 0.25e2 * lambda) * pow(y, 0.3e1) + 0.29500e5 * mu * y * y + 0.100e3 * (0.10103e5 * mu + 0.2503e4 * lambda) * y + 0.495000e6 * mu + 0.245000e6 * lambda) * pow(0.36e2 * pow(x, 0.3e1) * y * y + 0.12e2 * pow(x, 0.4e1) + 0.3e1 * pow(y, 0.4e1) - 0.4e1 * x * x * y - x * y * y - 0.100e3 * x * y + 0.3e1 * y * y - 0.99e2 * x - 0.50e2 * y - 0.2500e4, -0.2e1);
+			rhs(i, 1) = (0.7200e4 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * log(-0.3e1 * pow(y, 0.4e1) + (-0.36e2 * pow(x, 0.3e1) + x - 0.3e1) * y * y + (0.4e1 * x * x + 0.100e3 * x + 0.50e2) * y - 0.12e2 * pow(x, 0.4e1) + 0.99e2 * x + 0.2500e4) - 0.14400e5 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * (log(0.2e1) + 0.2e1 * log(0.5e1)) + 0.2592e4 / 0.25e2 * mu * pow(x, 0.10e2) + 0.144e3 / 0.25e2 * mu * (0.108e3 * y * y + 0.1e1) * pow(x, 0.9e1) + 0.864e3 / 0.25e2 * (0.27e2 * pow(y, 0.3e1) + y - 0.2e1) * y * mu * pow(x, 0.8e1) + 0.48e2 / 0.25e2 * (0.27e2 * pow(y, 0.4e1) - 0.108e3 * pow(y, 0.3e1) - 0.9e1 * y * y - 0.902e3 * y - 0.891e3) * mu * pow(x, 0.7e1) - 0.24e2 / 0.25e2 * (0.5412e4 * pow(y, 0.3e1) + 0.5281e4 * y * y + 0.1000e4 * y + 0.45099e5) * mu * pow(x, 0.6e1) + 0.16e2 / 0.25e2 * (0.243e3 * pow(y, 0.6e1) + 0.243e3 * pow(y, 0.4e1) - 0.4491e4 * pow(y, 0.3e1) - 0.202040e6 * y * y + 0.816e3 * y - 0.3750e4) * mu * pow(x, 0.5e1) - 0.2e1 / 0.25e2 * (-0.108e3 * mu * pow(y, 0.6e1) + 0.216e3 * mu * pow(y, 0.5e1) - 0.117e3 * mu * pow(y, 0.4e1) + 0.212e3 * mu * pow(y, 0.3e1) - 0.5782e4 * mu * y * y + 0.90000e5 * lambda * y - 0.268596e6 * mu * y - 0.30000e5 * lambda - 0.118209e6 * mu) * pow(x, 0.4e1) + (-0.108e3 * mu * pow(y, 0.6e1) - 0.10824e5 * mu * pow(y, 0.5e1) - 0.10799e5 * mu * pow(y, 0.4e1) - 0.8824e4 * mu * pow(y, 0.3e1) + 0.225000e6 * lambda * y * y + 0.494906e6 * mu * y * y - 0.4500000e7 * lambda * y + 0.4718000e7 * mu * y + 0.10000e5 * lambda + 0.8929801e7 * mu) * pow(x, 0.3e1) / 0.25e2 + 0.2e1 / 0.25e2 * (0.81e2 * mu * pow(y, 0.8e1) + 0.159e3 * mu * pow(y, 0.6e1) - 0.3000e4 * mu * pow(y, 0.5e1) + 0.202500e6 * lambda * pow(y, 0.4e1) + 0.67281e5 * mu * pow(y, 0.4e1) - 0.2950e4 * mu * pow(y, 0.3e1) - 0.105297e6 * mu * y * y + 0.2504950e7 * mu * y + 0.250000e6 * lambda + 0.56747500e8 * mu) * x * x - (-0.9e1 * mu * pow(y, 0.8e1) - 0.18e2 * mu * pow(y, 0.6e1) + 0.300e3 * mu * pow(y, 0.5e1) + 0.14991e5 * mu * pow(y, 0.4e1) + 0.60000e5 * lambda * pow(y, 0.3e1) + 0.60300e5 * mu * pow(y, 0.3e1) - 0.1250e4 * lambda * y * y + 0.11250e5 * mu * y * y - 0.110000e6 * lambda * y - 0.360000e6 * mu * y - 0.6251250e7 * lambda - 0.12501250e8 * mu) * x / 0.25e2 - 0.50e2 * (0.15e2 * pow(y, 0.4e1) + 0.900e3 * pow(y, 0.3e1) + 0.303e3 * y * y + 0.250e3 * y - 0.2500e4) * (mu + lambda)) * pow(0.36e2 * pow(x, 0.3e1) * y * y + 0.12e2 * pow(x, 0.4e1) + 0.3e1 * pow(y, 0.4e1) - 0.4e1 * x * x * y - x * y * y - 0.100e3 * x * y + 0.3e1 * y * y - 0.99e2 * x - 0.50e2 * y - 0.2500e4, -0.2e1);
+		}
 
 		probl->rhs(nh, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -563,9 +1080,17 @@ TEST_CASE("elasticity 3d", "[problem]")
 	// rhs
 	{
 		Eigen::MatrixXd rhs(pts.rows(), pts.cols());
-		rhs.col(0) = ((36 * lambda + 36 * mu) * z * z + 168 * mu + 90 * lambda) * pow(y, 0.5e1) / 0.512000e6 + (0.24e2 * (mu + 0.5e1 / 0.4e1 * lambda) * z * x + (4 * lambda * z * z) + ((52 * mu + 26 * lambda) * z) + (20 * mu) + (10 * lambda)) * pow(y, 0.4e1) / 0.512000e6 + ((144 * lambda + 288 * mu) * pow(x, 0.3e1) + (123 * mu + 66 * lambda) * x * x + ((8 * lambda + 12 * mu) * z * z + (-28 * mu + 8 * lambda) * z + 145 * mu + 73 * lambda) * x + ((48 * mu + 24 * lambda) * pow(z, 4)) + ((3 * mu + 6 * lambda) * z * z) + ((2092 * lambda + 1280 * mu) * z) + (14 * mu) + (9 * lambda)) * pow(y, 0.3e1) / 0.512000e6 + ((192 * mu + 96 * lambda) * pow(x, 0.3e1) + ((6 * lambda + 8 * mu) * z + 14414 * mu + 2895 * lambda) * x * x + ((36 * mu + 18 * lambda) * pow(z, 3) - 12 * mu * z + 3732 * mu + 2590 * lambda) * x + (4 * lambda * pow(z, 4)) + ((80 * mu + 50 * lambda) * pow(z, 3)) + ((2 * mu + lambda) * z * z) + ((310 * lambda - 1916 * mu) * z) + (3932 * mu) + (2169 * lambda)) * y * y / 0.512000e6 + (0.432e3 * lambda * pow(x, 0.6e1) + (864 * mu + 432 * lambda) * pow(x, 0.5e1) + (24 * lambda + 168 * mu) * pow(x, 0.4e1) + ((-72 * mu + 72 * lambda) * z + 9 * mu + 5 * lambda) * pow(x, 0.3e1) + ((6 * mu + 3 * lambda) * z * z + (60 * mu + 36 * lambda) * z + 42 * mu + 24 * lambda) * x * x + ((8 * mu + 4 * lambda) * pow(z, 4) + (8 * lambda + 8 * mu) * pow(z, 3) + (20 * lambda + 52 * mu) * z * z + (322 * lambda + 328 * mu) * z + 2429 * mu + 1935 * lambda) * x + (27 * lambda * pow(z, 4)) + ((320 * mu + 160 * lambda) * pow(z, 3)) - (21 * mu * z * z) + ((-8 * mu - 4 * lambda) * z) + (58764 * mu) + (19788 * lambda)) * y / 0.512000e6 + (2016 * mu + 1008 * lambda) * pow(x, 0.6e1) / 0.512000e6 + (69168 * mu + 34560 * lambda) * pow(x, 0.5e1) / 0.512000e6 + (-144 * mu * z + 1920 * mu) * pow(x, 0.4e1) / 0.512000e6 + ((-5568 * mu + 96 * lambda) * z + 5088 * mu + 72 * lambda) * pow(x, 0.3e1) / 0.512000e6 + ((4 * mu + 2 * lambda) * pow(z, 3) + (-646 * mu + 3 * lambda) * z * z + (2886 * lambda + 5770 * mu) * z + 448 * mu + 260 * lambda) * x * x / 0.512000e6 + ((18 * mu + 68 * lambda) * z * z + (-398 * mu - 38 * lambda) * z + 2320 * mu + 1200 * lambda) * x / 0.512000e6 + 0.9e1 / 0.512000e6 * lambda * pow(z, 4) + ((216 * mu + 108 * lambda) * pow(z, 3)) / 0.512000e6 + ((-78 * mu - 239 * lambda) * z * z) / 0.512000e6 + ((166 * mu + 6 * lambda) * z) / 0.512000e6 + 0.321e3 / 0.6400e4 * mu + 0.321e3 / 0.12800e5 * lambda;
-		rhs.col(1) = (15552 * mu + 7776 * lambda) * pow(x, 0.8e1) / 0.512000e6 + (144 * lambda + 288 * mu) * pow(x, 0.7e1) / 0.512000e6 - 0.27e2 / 0.16000e5 * (mu + lambda / 0.2e1) * z * pow(x, 0.6e1) + 0.81e2 / 0.16000e5 * (mu + lambda / 0.2e1) * (y * y + z) * pow(x, 0.5e1) + ((12 * mu + 30 * lambda) * z * z + (48 * mu + 24 * lambda) * z + (396 * mu + 222 * lambda) * y * y + 0.144e3 * mu * y + (336 * mu) + (192 * lambda)) * pow(x, 0.4e1) / 0.512000e6 + (0.48e2 * y * (mu + 2 * lambda) * pow(z, 0.3e1) + (-550 * mu - 251 * lambda) * z * z + ((48 * mu + 96 * lambda) * pow(y, 0.3e1) + (-144 * mu - 72 * lambda) * y * y + mu + lambda) * z + (86 * mu + 159 * lambda) * y * y + (26112 * mu + 13536 * lambda) * y + (15364 * mu) + (7686 * lambda)) * pow(x, 0.3e1) / 0.512000e6 + ((0.72e2 * lambda * y * y + (162 * lambda) + (324 * mu)) * pow(z, 0.4e1) + ((16 * mu + 8 * lambda) * y - (3 * mu) - (6 * lambda)) * pow(z, 0.3e1) + (0.72e2 * lambda * pow(y, 0.4e1) + (36 * mu + 18 * lambda) * y * y + (6 * lambda + 8 * mu) * y + (96 * mu) + (48 * lambda)) * z * z + ((16 * lambda + 16 * mu) * pow(y, 0.3e1) + (5853 * lambda + 186 * mu) * y * y + (-144 * mu - 72 * lambda) * y - (18 * mu) - (24 * lambda)) * z + (108 * mu + 216 * lambda) * pow(y, 0.4e1) + (4 * mu + 2 * lambda) * pow(y, 0.3e1) + (72 * mu + 36 * lambda) * y * y + (7936 * mu + 4248 * lambda) * y + (230544 * mu) + (1040 * lambda)) * x * x / 0.512000e6 + (((24 * mu + 12 * lambda) * y * y + (-24 * mu - 30 * lambda) * y + (18 * mu) + (9 * lambda)) * pow(z, 0.4e1) + ((8 * lambda + 12 * mu) * y * y + (429 * mu) + (215 * lambda)) * pow(z, 0.3e1) + ((20 * lambda + 24 * mu) * pow(y, 0.4e1) + (-36 * mu - 18 * lambda) * pow(y, 0.3e1) + (4 * lambda + 7 * mu) * y * y + (162 * mu) + lambda) * z * z + ((8 * mu + 4 * lambda) * pow(y, 0.4e1) + (1434 * lambda + 1304 * mu) * y * y + (-1460 * lambda - 2880 * mu) * y + (13 * mu) - (953 * lambda)) * z + (109 * mu + 55 * lambda) * pow(y, 0.4e1) + 0.48e2 * mu * pow(y, 0.3e1) + (339 * mu + 170 * lambda) * y * y + (1470 * mu + 798 * lambda) * y + (32356 * mu) + (19400 * lambda)) * x / 0.512000e6 + ((-36 * mu - 36 * lambda) * y * y - (162 * mu) - (81 * lambda)) * pow(z, 0.5e1) / 0.512000e6 + ((644 * mu + 322 * lambda) * y - (480 * mu)) * pow(z, 0.4e1) / 0.512000e6 + ((-48 * mu - 24 * lambda) * pow(y, 0.4e1) + (12 * mu + 2 * lambda) * pow(y, 0.3e1) + (-3 * mu - 6 * lambda) * y * y - (22 * mu) - (9 * lambda)) * pow(z, 0.3e1) / 0.512000e6 + ((642 * lambda + 968 * mu) * pow(y, 0.3e1) + (-2924 * mu - 1452 * lambda) * y * y + (98 * lambda - 22 * mu) * y - (36 * mu)) * z * z / 0.512000e6 + ((4 * mu + 2 * lambda) * pow(y, 0.5e1) + (-30 * lambda - 6 * mu) * pow(y, 0.4e1) - 0.3e1 * mu * y * y + (25522 * lambda + 26964 * mu) * y - (38456 * mu) - (120 * lambda)) * z / 0.512000e6 + (17 * mu + 3 * lambda) * pow(y, 0.4e1) / 0.512000e6 + (5044 * mu + 1842 * lambda) * pow(y, 0.3e1) / 0.512000e6 + (800 * mu + 160 * lambda) * y * y / 0.512000e6 + (92 * mu + 80 * lambda) * y / 0.512000e6 + 0.11e2 / 0.800e3 * mu + lambda / 0.80e2;
-		rhs.col(2) = ((24 * mu + 12 * lambda) * z * z + 10 * lambda) * pow(y, 0.6e1) / 0.512000e6 + 0.3e1 / 0.64000e5 * (mu + lambda / 0.2e1) * z * x * pow(y, 0.5e1) + (((80 * mu + 40 * lambda) * pow(z, 4)) + ((55 * lambda + 104 * mu) * z * z) + ((1922 * mu + 964 * lambda) * z) + 0.24e2 * lambda * pow(x, 0.3e1) + (7 * lambda + 6 * mu) * x * x + 0.6e1 * lambda * x + lambda) * pow(y, 0.4e1) / 0.512000e6 + (0.96e2 * (mu + lambda / 0.2e1) * x * pow(z, 3) + ((72 * mu + 36 * lambda) * x * x + (52 * mu + 26 * lambda) * x + (207 * mu) - (9 * lambda)) * z + (805 * lambda + 963 * mu) * x + (160 * lambda)) * pow(y, 0.3e1) / 0.512000e6 + (((24 * mu + 12 * lambda) * pow(z, 6)) + ((50 * lambda + 100 * mu) * pow(z, 4)) + (-0.216e3 * mu * x * x - 0.84e2 * mu * x + (1606 * lambda) + (3204 * mu)) * pow(z, 3) + ((192 * mu + 72 * lambda) * pow(x, 0.3e1) + (60 * mu + 30 * lambda) * x * x + (4 * mu) + (6 * lambda)) * (z * z) + ((48 * lambda + 96 * mu) * pow(x, 0.3e1) + 0.20e2 * mu * x * x + 0.30e2 * mu * x + (1640 * mu) + (322 * lambda)) * z + 0.144e3 * lambda * pow(x, 0.6e1) + (-66 * lambda - 142 * mu) * x * x + (52 * mu + 308 * lambda) * x + (25754 * mu) + (12914 * lambda)) * y * y / 0.512000e6 + (0.24e2 * (mu + lambda / 0.2e1) * x * pow(z, 5) + ((40 * mu + 20 * lambda) * x - (2919 * mu) - (15 * lambda)) * pow(z, 3) + (-0.252e3 * mu * pow(x, 0.3e1) + (5802 * mu + 36 * lambda) * x * x + (3536 * mu + 1770 * lambda) * x + (160 * mu) + (320 * lambda)) * (z * z) + ((864 * mu + 432 * lambda) * pow(x, 0.5e1) + (24 * lambda + 168 * mu) * pow(x, 0.4e1) + (12 * mu + 6 * lambda) * pow(x, 0.3e1) + (704 * mu + 8 * lambda) * x + (320 * mu) + (160 * lambda)) * z + (72 * mu + 12 * lambda) * pow(x, 0.4e1) + 0.6e1 * mu * pow(x, 0.3e1) + 0.12e2 * mu * x + (1912 * mu) - (644 * lambda)) * y / 0.512000e6 + 0.9e1 / 0.512000e6 * pow(z, 6) * lambda + ((6 * mu + 3 * lambda) * x * x - 0.6e1 * lambda * x + lambda) * pow(z, 4) / 0.512000e6 + (0.24e2 * lambda * pow(x, 0.3e1) + (1440 * lambda) + (2880 * mu)) * pow(z, 3) / 0.512000e6 + (0.144e3 * lambda * pow(x, 0.6e1) + (-8638 * mu + 6 * lambda) * x * x + (-1448 * mu + 316 * lambda) * x + (46 * lambda) + (12986 * mu)) * (z * z) / 0.512000e6 + (0.4944e4 * mu * pow(x, 0.3e1) + (504 * mu + 250 * lambda) * x * x + (-724 * mu - 400 * lambda) * x + (80 * lambda) + (80 * mu)) * z / 0.512000e6 + (-1728 * mu - 864 * lambda) * pow(x, 0.5e1) / 0.512000e6 - 0.3e1 / 0.32000e5 * mu * pow(x, 0.4e1) + (3840 * mu + 960 * lambda) * pow(x, 0.3e1) / 0.512000e6 + 0.83e2 / 0.128000e6 * mu * x * x + (-20 * mu - 12 * lambda) * x / 0.512000e6 + mu / 0.1600e4 - lambda / 0.1600e4;
+		// Evaluate the generated formulas pointwise. Vectorizing these expressions
+		// creates expression trees large enough to exhaust MSVC's Release optimizer.
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			const double x = pts(i, 0);
+			const double y = pts(i, 1);
+			const double z = pts(i, 2);
+			rhs(i, 0) = ((36 * lambda + 36 * mu) * z * z + 168 * mu + 90 * lambda) * pow(y, 0.5e1) / 0.512000e6 + (0.24e2 * (mu + 0.5e1 / 0.4e1 * lambda) * z * x + (4 * lambda * z * z) + ((52 * mu + 26 * lambda) * z) + (20 * mu) + (10 * lambda)) * pow(y, 0.4e1) / 0.512000e6 + ((144 * lambda + 288 * mu) * pow(x, 0.3e1) + (123 * mu + 66 * lambda) * x * x + ((8 * lambda + 12 * mu) * z * z + (-28 * mu + 8 * lambda) * z + 145 * mu + 73 * lambda) * x + ((48 * mu + 24 * lambda) * pow(z, 4)) + ((3 * mu + 6 * lambda) * z * z) + ((2092 * lambda + 1280 * mu) * z) + (14 * mu) + (9 * lambda)) * pow(y, 0.3e1) / 0.512000e6 + ((192 * mu + 96 * lambda) * pow(x, 0.3e1) + ((6 * lambda + 8 * mu) * z + 14414 * mu + 2895 * lambda) * x * x + ((36 * mu + 18 * lambda) * pow(z, 3) - 12 * mu * z + 3732 * mu + 2590 * lambda) * x + (4 * lambda * pow(z, 4)) + ((80 * mu + 50 * lambda) * pow(z, 3)) + ((2 * mu + lambda) * z * z) + ((310 * lambda - 1916 * mu) * z) + (3932 * mu) + (2169 * lambda)) * y * y / 0.512000e6 + (0.432e3 * lambda * pow(x, 0.6e1) + (864 * mu + 432 * lambda) * pow(x, 0.5e1) + (24 * lambda + 168 * mu) * pow(x, 0.4e1) + ((-72 * mu + 72 * lambda) * z + 9 * mu + 5 * lambda) * pow(x, 0.3e1) + ((6 * mu + 3 * lambda) * z * z + (60 * mu + 36 * lambda) * z + 42 * mu + 24 * lambda) * x * x + ((8 * mu + 4 * lambda) * pow(z, 4) + (8 * lambda + 8 * mu) * pow(z, 3) + (20 * lambda + 52 * mu) * z * z + (322 * lambda + 328 * mu) * z + 2429 * mu + 1935 * lambda) * x + (27 * lambda * pow(z, 4)) + ((320 * mu + 160 * lambda) * pow(z, 3)) - (21 * mu * z * z) + ((-8 * mu - 4 * lambda) * z) + (58764 * mu) + (19788 * lambda)) * y / 0.512000e6 + (2016 * mu + 1008 * lambda) * pow(x, 0.6e1) / 0.512000e6 + (69168 * mu + 34560 * lambda) * pow(x, 0.5e1) / 0.512000e6 + (-144 * mu * z + 1920 * mu) * pow(x, 0.4e1) / 0.512000e6 + ((-5568 * mu + 96 * lambda) * z + 5088 * mu + 72 * lambda) * pow(x, 0.3e1) / 0.512000e6 + ((4 * mu + 2 * lambda) * pow(z, 3) + (-646 * mu + 3 * lambda) * z * z + (2886 * lambda + 5770 * mu) * z + 448 * mu + 260 * lambda) * x * x / 0.512000e6 + ((18 * mu + 68 * lambda) * z * z + (-398 * mu - 38 * lambda) * z + 2320 * mu + 1200 * lambda) * x / 0.512000e6 + 0.9e1 / 0.512000e6 * lambda * pow(z, 4) + ((216 * mu + 108 * lambda) * pow(z, 3)) / 0.512000e6 + ((-78 * mu - 239 * lambda) * z * z) / 0.512000e6 + ((166 * mu + 6 * lambda) * z) / 0.512000e6 + 0.321e3 / 0.6400e4 * mu + 0.321e3 / 0.12800e5 * lambda;
+			rhs(i, 1) = (15552 * mu + 7776 * lambda) * pow(x, 0.8e1) / 0.512000e6 + (144 * lambda + 288 * mu) * pow(x, 0.7e1) / 0.512000e6 - 0.27e2 / 0.16000e5 * (mu + lambda / 0.2e1) * z * pow(x, 0.6e1) + 0.81e2 / 0.16000e5 * (mu + lambda / 0.2e1) * (y * y + z) * pow(x, 0.5e1) + ((12 * mu + 30 * lambda) * z * z + (48 * mu + 24 * lambda) * z + (396 * mu + 222 * lambda) * y * y + 0.144e3 * mu * y + (336 * mu) + (192 * lambda)) * pow(x, 0.4e1) / 0.512000e6 + (0.48e2 * y * (mu + 2 * lambda) * pow(z, 0.3e1) + (-550 * mu - 251 * lambda) * z * z + ((48 * mu + 96 * lambda) * pow(y, 0.3e1) + (-144 * mu - 72 * lambda) * y * y + mu + lambda) * z + (86 * mu + 159 * lambda) * y * y + (26112 * mu + 13536 * lambda) * y + (15364 * mu) + (7686 * lambda)) * pow(x, 0.3e1) / 0.512000e6 + ((0.72e2 * lambda * y * y + (162 * lambda) + (324 * mu)) * pow(z, 0.4e1) + ((16 * mu + 8 * lambda) * y - (3 * mu) - (6 * lambda)) * pow(z, 0.3e1) + (0.72e2 * lambda * pow(y, 0.4e1) + (36 * mu + 18 * lambda) * y * y + (6 * lambda + 8 * mu) * y + (96 * mu) + (48 * lambda)) * z * z + ((16 * lambda + 16 * mu) * pow(y, 0.3e1) + (5853 * lambda + 186 * mu) * y * y + (-144 * mu - 72 * lambda) * y - (18 * mu) - (24 * lambda)) * z + (108 * mu + 216 * lambda) * pow(y, 0.4e1) + (4 * mu + 2 * lambda) * pow(y, 0.3e1) + (72 * mu + 36 * lambda) * y * y + (7936 * mu + 4248 * lambda) * y + (230544 * mu) + (1040 * lambda)) * x * x / 0.512000e6 + (((24 * mu + 12 * lambda) * y * y + (-24 * mu - 30 * lambda) * y + (18 * mu) + (9 * lambda)) * pow(z, 0.4e1) + ((8 * lambda + 12 * mu) * y * y + (429 * mu) + (215 * lambda)) * pow(z, 0.3e1) + ((20 * lambda + 24 * mu) * pow(y, 0.4e1) + (-36 * mu - 18 * lambda) * pow(y, 0.3e1) + (4 * lambda + 7 * mu) * y * y + (162 * mu) + lambda) * z * z + ((8 * mu + 4 * lambda) * pow(y, 0.4e1) + (1434 * lambda + 1304 * mu) * y * y + (-1460 * lambda - 2880 * mu) * y + (13 * mu) - (953 * lambda)) * z + (109 * mu + 55 * lambda) * pow(y, 0.4e1) + 0.48e2 * mu * pow(y, 0.3e1) + (339 * mu + 170 * lambda) * y * y + (1470 * mu + 798 * lambda) * y + (32356 * mu) + (19400 * lambda)) * x / 0.512000e6 + ((-36 * mu - 36 * lambda) * y * y - (162 * mu) - (81 * lambda)) * pow(z, 0.5e1) / 0.512000e6 + ((644 * mu + 322 * lambda) * y - (480 * mu)) * pow(z, 0.4e1) / 0.512000e6 + ((-48 * mu - 24 * lambda) * pow(y, 0.4e1) + (12 * mu + 2 * lambda) * pow(y, 0.3e1) + (-3 * mu - 6 * lambda) * y * y - (22 * mu) - (9 * lambda)) * pow(z, 0.3e1) / 0.512000e6 + ((642 * lambda + 968 * mu) * pow(y, 0.3e1) + (-2924 * mu - 1452 * lambda) * y * y + (98 * lambda - 22 * mu) * y - (36 * mu)) * z * z / 0.512000e6 + ((4 * mu + 2 * lambda) * pow(y, 0.5e1) + (-30 * lambda - 6 * mu) * pow(y, 0.4e1) - 0.3e1 * mu * y * y + (25522 * lambda + 26964 * mu) * y - (38456 * mu) - (120 * lambda)) * z / 0.512000e6 + (17 * mu + 3 * lambda) * pow(y, 0.4e1) / 0.512000e6 + (5044 * mu + 1842 * lambda) * pow(y, 0.3e1) / 0.512000e6 + (800 * mu + 160 * lambda) * y * y / 0.512000e6 + (92 * mu + 80 * lambda) * y / 0.512000e6 + 0.11e2 / 0.800e3 * mu + lambda / 0.80e2;
+			rhs(i, 2) = ((24 * mu + 12 * lambda) * z * z + 10 * lambda) * pow(y, 0.6e1) / 0.512000e6 + 0.3e1 / 0.64000e5 * (mu + lambda / 0.2e1) * z * x * pow(y, 0.5e1) + (((80 * mu + 40 * lambda) * pow(z, 4)) + ((55 * lambda + 104 * mu) * z * z) + ((1922 * mu + 964 * lambda) * z) + 0.24e2 * lambda * pow(x, 0.3e1) + (7 * lambda + 6 * mu) * x * x + 0.6e1 * lambda * x + lambda) * pow(y, 0.4e1) / 0.512000e6 + (0.96e2 * (mu + lambda / 0.2e1) * x * pow(z, 3) + ((72 * mu + 36 * lambda) * x * x + (52 * mu + 26 * lambda) * x + (207 * mu) - (9 * lambda)) * z + (805 * lambda + 963 * mu) * x + (160 * lambda)) * pow(y, 0.3e1) / 0.512000e6 + (((24 * mu + 12 * lambda) * pow(z, 6)) + ((50 * lambda + 100 * mu) * pow(z, 4)) + (-0.216e3 * mu * x * x - 0.84e2 * mu * x + (1606 * lambda) + (3204 * mu)) * pow(z, 3) + ((192 * mu + 72 * lambda) * pow(x, 0.3e1) + (60 * mu + 30 * lambda) * x * x + (4 * mu) + (6 * lambda)) * (z * z) + ((48 * lambda + 96 * mu) * pow(x, 0.3e1) + 0.20e2 * mu * x * x + 0.30e2 * mu * x + (1640 * mu) + (322 * lambda)) * z + 0.144e3 * lambda * pow(x, 0.6e1) + (-66 * lambda - 142 * mu) * x * x + (52 * mu + 308 * lambda) * x + (25754 * mu) + (12914 * lambda)) * y * y / 0.512000e6 + (0.24e2 * (mu + lambda / 0.2e1) * x * pow(z, 5) + ((40 * mu + 20 * lambda) * x - (2919 * mu) - (15 * lambda)) * pow(z, 3) + (-0.252e3 * mu * pow(x, 0.3e1) + (5802 * mu + 36 * lambda) * x * x + (3536 * mu + 1770 * lambda) * x + (160 * mu) + (320 * lambda)) * (z * z) + ((864 * mu + 432 * lambda) * pow(x, 0.5e1) + (24 * lambda + 168 * mu) * pow(x, 0.4e1) + (12 * mu + 6 * lambda) * pow(x, 0.3e1) + (704 * mu + 8 * lambda) * x + (320 * mu) + (160 * lambda)) * z + (72 * mu + 12 * lambda) * pow(x, 0.4e1) + 0.6e1 * mu * pow(x, 0.3e1) + 0.12e2 * mu * x + (1912 * mu) - (644 * lambda)) * y / 0.512000e6 + 0.9e1 / 0.512000e6 * pow(z, 6) * lambda + ((6 * mu + 3 * lambda) * x * x - 0.6e1 * lambda * x + lambda) * pow(z, 4) / 0.512000e6 + (0.24e2 * lambda * pow(x, 0.3e1) + (1440 * lambda) + (2880 * mu)) * pow(z, 3) / 0.512000e6 + (0.144e3 * lambda * pow(x, 0.6e1) + (-8638 * mu + 6 * lambda) * x * x + (-1448 * mu + 316 * lambda) * x + (46 * lambda) + (12986 * mu)) * (z * z) / 0.512000e6 + (0.4944e4 * mu * pow(x, 0.3e1) + (504 * mu + 250 * lambda) * x * x + (-724 * mu - 400 * lambda) * x + (80 * lambda) + (80 * mu)) * z / 0.512000e6 + (-1728 * mu - 864 * lambda) * pow(x, 0.5e1) / 0.512000e6 - 0.3e1 / 0.32000e5 * mu * pow(x, 0.4e1) + (3840 * mu + 960 * lambda) * pow(x, 0.3e1) / 0.512000e6 + 0.83e2 / 0.128000e6 * mu * x * x + (-20 * mu - 12 * lambda) * x / 0.512000e6 + mu / 0.1600e4 - lambda / 0.1600e4;
+		}
 
 		probl->rhs(sv, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);

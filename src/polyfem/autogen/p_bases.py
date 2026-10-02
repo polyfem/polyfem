@@ -196,6 +196,7 @@ if __name__ == "__main__":
     hpp = hpp + "\nnamespace polyfem {\nnamespace autogen " + "{\n"
 
     for dim in dims:
+        assert dim in (2, 3), "P simplex autogen supports only triangles and tetrahedra"
         print(str(dim) + "D " + bletter)
         suffix = "2d" if dim == 2 else "3d"
 
@@ -407,10 +408,18 @@ if __name__ == "__main__":
             nodes = nodes + ";\n}"
 
             # bases code gen
+            # Generate two functions:
+            # - "func" to eval basis value
+            # - "dfunc" to eval basis gradient.
+            # Both function evaluates quadrature points in batch by dispatching the "xxx_single" basis
+            # kernel inside a for loop. In this script the single kernel related codegen variable
+            # is denoted with scalar_ prefix.
             func = f"void {bletter}_{order}_basis_value_{suffix}" + \
                 "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
             dfunc = f"void {bletter}_{order}_basis_grad_value_{suffix}" + \
                 "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            scalar_func_name = f"{bletter}_{order}_basis_value_{suffix}_single"
+            scalar_dfunc_name = f"{bletter}_{order}_basis_grad_value_{suffix}_single"
 
             unique_fun = unique_fun + \
                 f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, uv, val); break;\n"
@@ -425,45 +434,37 @@ if __name__ == "__main__":
                 default_dbase = "p_n_basis_grad_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_grad_value_2d(p, local_index, uv, val);"
                 default_nodes = "p_n_nodes_3d(p, val);" if dim == 3 else "p_n_nodes_2d(p, val);"
 
-            base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();"
-            if dim == 3:
-                base = base + "\nauto z=uv.col(2).array();"
-            base = base + "\n\n"
-            dbase = base
-
-            if order == 0:
-                base = base + "result_0.resize(x.size(),1);\n"
-
-            base = base + "switch(local_index){\n"
-            dbase = dbase + \
-                "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + \
-                "switch(local_index){\n"
+            # Single basis kernel.
+            base = ""
+            dbase = ""
+            # Batch basis kernel. Basically a switch dispatch + for loop.
+            base_cases = "switch(local_index){\n"
+            dbase_cases = "switch(local_index){\n"
 
             for i in range(0, fe.nbf()):
                 real_index = indices[i]
-                # real_index = i
+                value_name = f"{scalar_func_name}_{i}"
+                grad_name = f"{scalar_dfunc_name}_{i}"
+                basis = simplify(fe.N[real_index])
 
-                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
-                    simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
-                dbase = dbase + "\tcase " + str(i) + ": {" + \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(
-                        " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+                base = base + pretty_print.C99_print_scalar_value_function(value_name, basis, dim)
+                dbase = dbase + pretty_print.C99_print_scalar_gradient_function(grad_name, basis, dim)
+                base_cases = base_cases + pretty_print.C99_print_scalar_value_case(i, value_name, dim)
+                dbase_cases = dbase_cases + pretty_print.C99_print_scalar_gradient_case(i, grad_name, dim)
 
-                if dim == 3:
-                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(
-                        " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+            base_cases = base_cases + "\tdefault: assert(false);\n}"
+            dbase_cases = dbase_cases + "\tdefault: assert(false);\n}"
 
-                dbase = dbase + "} break;\n"
+            cpp = cpp + base + "\n\n"
+            cpp = cpp + func + "{\n"
+            cpp = cpp + "result_0.resize(uv.rows(), 1);\n"
+            cpp = cpp + base_cases + "\n}\n"
 
-            base = base + "\tdefault: assert(false);\n}"
-            dbase = dbase + "\tdefault: assert(false);\n}"
-
-            cpp = cpp + func + "{\n\n"
-            cpp = cpp + base + "}\n"
-
-            cpp = cpp + dfunc + "{\n\n"
-            cpp = cpp + dbase + "}\n\n\n"
+            cpp = cpp + dbase + "\n\n"
+            cpp = cpp + dfunc + "{\n"
+            cpp = cpp + f"val.resize(uv.rows(), {dim});\n"
+            cpp = cpp + f"double gradient[{dim}];\n"
+            cpp = cpp + dbase_cases + "\n}\n\n\n"
 
             if not args.bernstein:
                 cpp = cpp + nodes + "\n\n\n"

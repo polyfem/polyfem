@@ -41,14 +41,14 @@ namespace polyfem::solver
 	namespace
 	{
 #ifdef POLYSOLVE_WITH_SPQR
-		void fill_cholmod(Eigen::SparseMatrix<double, Eigen::ColMajor, long> &mat, cholmod_sparse &cmat)
-		{
-			long *p = mat.outerIndexPtr();
+		using SuiteSparseMatrix = Eigen::SparseMatrix<double, Eigen::ColMajor, SuiteSparse_long>;
 
+		void fill_cholmod(SuiteSparseMatrix &mat, cholmod_sparse &cmat)
+		{
 			cmat.nzmax = mat.nonZeros();
 			cmat.nrow = mat.rows();
 			cmat.ncol = mat.cols();
-			cmat.p = p;
+			cmat.p = mat.outerIndexPtr();
 			cmat.i = mat.innerIndexPtr();
 			cmat.x = mat.valuePtr();
 			cmat.z = 0;
@@ -97,8 +97,9 @@ namespace polyfem::solver
 		const int full_size,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-		const std::shared_ptr<polysolve::linear::Solver> &solver)
-		: FullNLProblem(forms),
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const bool is_residual)
+		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(0),
 		  penalty_forms_(penalty_forms),
@@ -110,7 +111,6 @@ namespace polyfem::solver
 
 	NLProblem::NLProblem(
 		const int full_size,
-		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
@@ -118,16 +118,17 @@ namespace polyfem::solver
 		const double char_length,
 		const double char_force,
 		StiffnessMatrix lumped_mass,
-		const int dimension)
-		: FullNLProblem(forms),
+		const int dimension,
+		const bool is_residual)
+		: FullNLProblem(forms, is_residual),
 		  full_size_(full_size),
 		  t_(t),
-		  penalty_forms_(penalty_forms),
-		  solver_(solver),
-		  L(char_length),
 		  F0(char_force),
+		  L(char_length),
+		  dim(dimension),
 		  lumped_mass_(lumped_mass.diagonal().asDiagonal()),
-		  dim(dimension)
+		  penalty_forms_(penalty_forms),
+		  solver_(solver)
 	{
 		setup_constraints();
 		use_reduced_size();
@@ -177,6 +178,9 @@ namespace polyfem::solver
 
 	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
+		if (is_residual())
+			return 1;
+
 		switch (norm_type)
 		{
 		case polysolve::nonlinear::NormType::EUCLIDEAN:
@@ -185,6 +189,8 @@ namespace polyfem::solver
 			return F0 * (dim == 2 ? L : std::pow(L, 1.5));
 		case polysolve::nonlinear::NormType::Linf:
 			return F0;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -199,12 +205,17 @@ namespace polyfem::solver
 			return dim == 2 ? L * L : std::pow(L, 2.5);
 		case polysolve::nonlinear::NormType::Linf:
 			return L;
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
 
 	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
+		if (is_residual())
+			return 1;
+
 		const double density_scale = dim == 2 ? L * L : L * L * L;
 		return F0 * density_scale * L;
 	}
@@ -219,6 +230,8 @@ namespace polyfem::solver
 			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
 		case polysolve::nonlinear::NormType::Linf:
 			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -233,6 +246,8 @@ namespace polyfem::solver
 			return sqrt(x.transpose() * current_lumped_mass() * x);
 		case polysolve::nonlinear::NormType::Linf:
 			return x.cwiseAbs().maxCoeff();
+		default:
+			break;
 		}
 		log_and_throw_error("Unrecognized norm type!");
 	}
@@ -242,6 +257,7 @@ namespace polyfem::solver
 		if (penalty_forms_.empty())
 		{
 			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
 			return;
 		}
 		igl::Timer timer;
@@ -290,9 +306,20 @@ namespace polyfem::solver
 		A.setFromTriplets(Ae.begin(), Ae.end());
 		A.makeCompressed();
 
+		if (A.rows() == 0)
+		{
+			reduced_size_ = full_size_;
+			num_penalty_constraints_ = 0;
+			return;
+		}
+
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
-		Eigen::SparseMatrix<double, Eigen::ColMajor, long> At = A.transpose();
+#ifdef POLYSOLVE_WITH_SPQR
+		SuiteSparseMatrix At = A.transpose();
+#else
+		StiffnessMatrix At = A.transpose();
+#endif
 		At.makeCompressed();
 
 		logger().debug("Constraint size: {} x {}", A.rows(), A.cols());
@@ -333,13 +360,13 @@ namespace polyfem::solver
 		if (Qc->stype != 0 || Qc->sorted != 1 || Qc->packed != 1 || Rc->stype != 0 || Rc->sorted != 1 || Rc->packed != 1)
 			log_and_throw_error("Q and R must be unsymmetric sorted and packed");
 
-		const StiffnessMatrix Q = Eigen::Map<Eigen::SparseMatrix<double, Eigen::ColMajor, long>>(
+		const SuiteSparseMatrix Q = Eigen::Map<SuiteSparseMatrix>(
 			Qc->nrow, Qc->ncol, Qc->nzmax,
-			static_cast<long *>(Qc->p), static_cast<long *>(Qc->i), static_cast<double *>(Qc->x));
+			static_cast<SuiteSparse_long *>(Qc->p), static_cast<SuiteSparse_long *>(Qc->i), static_cast<double *>(Qc->x));
 
-		const StiffnessMatrix R = Eigen::Map<Eigen::SparseMatrix<double, Eigen::ColMajor, long>>(
+		const SuiteSparseMatrix R = Eigen::Map<SuiteSparseMatrix>(
 			Rc->nrow, Rc->ncol, Rc->nzmax,
-			static_cast<long *>(Rc->p), static_cast<long *>(Rc->i), static_cast<double *>(Rc->x));
+			static_cast<SuiteSparse_long *>(Rc->p), static_cast<SuiteSparse_long *>(Rc->i), static_cast<double *>(Rc->x));
 
 		cholmod_l_free_sparse(&Qc, &cc);
 		cholmod_l_free_sparse(&Rc, &cc);
@@ -371,14 +398,12 @@ namespace polyfem::solver
 		P_ = QR.colsPermutation();
 #endif
 
-		for (; constraint_size >= 0; --constraint_size)
+		while (constraint_size > 0)
 		{
-			const StiffnessMatrix tmp = R.row(constraint_size);
+			const StiffnessMatrix tmp = R.row(constraint_size - 1);
 			if (tmp.nonZeros() != 0)
-			{
-				constraint_size++;
 				break;
-			}
+			--constraint_size;
 		}
 		if (constraint_size != num_penalty_constraints_)
 			logger().warn("Matrix A is not full rank, constraint size: {} instead of {}", constraint_size, num_penalty_constraints_);
@@ -440,6 +465,14 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		if (penalty_forms_.empty())
+		{
+			assert(num_penalty_constraints_ == 0);
+			return;
+		}
+		if (num_penalty_constraints_ == 0)
+			return;
+
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
@@ -468,7 +501,7 @@ namespace polyfem::solver
 		{
 
 #ifdef POLYSOLVE_WITH_SPQR
-			Eigen::SparseMatrix<double, Eigen::ColMajor, long> R1t = R1_.transpose();
+			SuiteSparseMatrix R1t = R1_.transpose();
 			cholmod_common cc;
 			cholmod_l_start(&cc); // start CHOLMOD
 			cholmod_sparse R1tc;
@@ -539,7 +572,8 @@ namespace polyfem::solver
 		for (auto &f : penalty_forms_)
 			f->update_quantities(t, x);
 
-		update_constraint_values();
+		if (!penalty_forms_.empty())
+			update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -582,6 +616,13 @@ namespace polyfem::solver
 
 	double NLProblem::value(const TVector &x)
 	{
+		if (is_residual())
+		{
+			TVector residual;
+			gradient(x, residual);
+			return residual.squaredNorm();
+		}
+
 		// TODO: removed fearure const bool only_elastic
 		double res = FullNLProblem::value(reduced_to_full(x));
 

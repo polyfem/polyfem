@@ -10,6 +10,53 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void NCMesh2D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_faces());
+
+			std::vector<int> old_node_ids(vertices.size(), -1);
+			if (has_node_ids())
+				for (int v = 0; v < n_vertices(); ++v)
+					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
+			std::vector<int> old_boundary_ids(edges.size(), -1);
+			if (has_boundary_ids())
+				for (int e = 0; e < n_edges(); ++e)
+					old_boundary_ids[valid_to_all_edge(e)] = boundary_ids_[e];
+
+			for (int e = 0; e < keep.size(); ++e)
+			{
+				if (keep[e])
+					continue;
+				const int full_id = valid_to_all_elem(e);
+				auto &element = elements[full_id];
+				element.is_ghost = true;
+				for (const int edge : element.edges)
+					edges[edge].remove_element(full_id);
+				for (const int vertex : element.vertices)
+					--vertices[vertex].n_elem;
+				--n_elements;
+			}
+			filter_element_data(keep);
+			prepare_mesh();
+
+			if (has_node_ids())
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = old_node_ids[valid_to_all_vertex(v)];
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const int old_id = old_boundary_ids[valid_to_all_edge(e)];
+					boundary_ids_[e] = old_id < 0 ? get_default_boundary_id(e) : old_id;
+					edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+				}
+			}
+		}
+
 		bool NCMesh2D::is_boundary_element(const int element_global_id) const
 		{
 			assert(index_prepared);
@@ -341,7 +388,7 @@ namespace polyfem
 
 			for (auto &edge : edges)
 			{
-				if (edge.leader >= 0)
+				if (edge.leader >= 0 && edge.n_elem() > 0 && edges[edge.leader].n_elem() > 0)
 				{
 					edge.isboundary = false;
 					edges[edge.leader].isboundary = false;
@@ -649,12 +696,13 @@ namespace polyfem
 			idx2.face = idx.face;
 			idx2.vertex = idx.vertex;
 			idx2.face_corner = -1;
+			const int full_vertex_id = valid_to_all_vertex(idx.vertex);
 
 			for (int i = 0; i < elem.edges.size(); i++)
 			{
 				const auto &edge = edges[elem.edges(i)];
 				const int valid_edge_id = all_to_valid_edge(elem.edges(i));
-				if (valid_edge_id != idx.edge && find(edge.vertices, idx.vertex) >= 0)
+				if (valid_edge_id != idx.edge && find(edge.vertices, full_vertex_id) >= 0)
 				{
 					idx2.edge = valid_edge_id;
 					break;

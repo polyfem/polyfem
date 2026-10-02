@@ -21,7 +21,7 @@ namespace polyfem
 			RhsAssembler(
 				const Assembler &assembler,
 				const mesh::Mesh &mesh,
-				const mesh::Obstacle &obstacle,
+				const mesh::Obstacle *obstacle,
 				const std::vector<int> &dirichlet_nodes,
 				const std::vector<int> &neumann_nodes,
 				const std::vector<RowVectorNd> &dirichlet_nodes_position,
@@ -33,7 +33,8 @@ namespace polyfem
 				const AssemblyValsCache &ass_vals_cache,
 				const Problem &problem,
 				const std::string bc_method,
-				const json &solver_params);
+				const json &solver_params,
+				const int fe_space_id = -1);
 
 			// computes the rhs of a problem by \int \phi rho rhs
 			void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
@@ -128,7 +129,7 @@ namespace polyfem
 
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
-			const mesh::Obstacle &obstacle_;
+			const mesh::Obstacle *obstacle_;
 			const int n_basis_;
 			const int size_;                                 ///< dimension of problem
 			const std::vector<basis::ElementBases> &bases_;  ///< basis functions associated with solution
@@ -137,6 +138,7 @@ namespace polyfem
 			const Problem &problem_;
 			const std::string bc_method_;
 			const json solver_params_;
+			const int fe_space_id_;
 			const std::vector<int> &dirichlet_nodes_;
 			const std::vector<RowVectorNd> &dirichlet_nodes_position_;
 			const std::vector<int> &neumann_nodes_;

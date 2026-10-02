@@ -1,8 +1,10 @@
 #include "OutData.hpp"
 
-#include "Evaluator.hpp"
+#include <array>
+#include <map>
 
-#include <polyfem/State.hpp>
+#include "Evaluator.hpp"
+#include "MatrixIO.hpp"
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValues.hpp>
@@ -11,32 +13,18 @@
 
 #include <polyfem/basis/ElementBases.hpp>
 
+#include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/RayleighDampingForm.hpp>
-#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
-
+#include <polyfem/utils/getRSS.h>
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/getRSS.h>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -45,6 +33,9 @@
 
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
+
+#include <ipc/potentials/normal_adhesion_potential.hpp>
+#include <ipc/potentials/tangential_adhesion_potential.hpp>
 
 #include <SimpleBVH/BVH.hpp>
 
@@ -55,97 +46,693 @@
 
 #include <ipc/ipc.hpp>
 
+#include <algorithm>
+#include <cmath>
+
 #include <filesystem>
 
 namespace polyfem::io
 {
+	bool OutputFieldOptions::export_field(const std::string &field) const
+	{
+		return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
+	}
+
 	using CellType = paraviewo::CellType;
 	using CellElement = paraviewo::CellElement;
 
 	namespace
 	{
-		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		void add_output_fields(
+			paraviewo::ParaviewWriter &writer,
+			const OutputSample &sample,
+			const OutputFieldFunction &output_fields)
 		{
-			int actual_dim = 1;
-			if (!state.problem->is_scalar())
-				actual_dim = state.mesh->dimension();
-			else
+			if (!output_fields)
 				return;
 
-			const std::vector<basis::ElementBases> &bases = state.bases;
-			const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd points, normals;
-			Eigen::VectorXd weights;
-			polyfem::assembler::ElementAssemblyValues vals;
-
-			traction_forces.setZero(state.n_bases * actual_dim, 1);
-
-			for (const auto &lb : state.total_local_boundary)
+			for (const OutputField &field : output_fields(sample))
 			{
-				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
+				if (field.values.rows() <= 0)
 					continue;
 
-				const basis::ElementBases &gbs = gbases[e];
-				const basis::ElementBases &bs = bases[e];
-
-				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
-
-				for (int n = 0; n < normals.rows(); ++n)
+				const int expected_rows =
+					field.association == OutputField::Association::Cell
+						? sample.cell_count
+						: sample.points.rows();
+				if (field.values.rows() != expected_rows)
 				{
-					trafo = vals.jac_it[n].inverse();
-
-					if (solution.size() > 0)
-					{
-						assert(actual_dim == 2 || actual_dim == 3);
-						deform_mat.resize(actual_dim, actual_dim);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
-						{
-							for (const auto &g : b.global)
-							{
-								for (int d = 0; d < actual_dim; ++d)
-								{
-									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
-								}
-							}
-						}
-
-						trafo += deform_mat;
-					}
-
-					normals.row(n) = normals.row(n) * trafo.inverse();
-					normals.row(n).normalize();
+					logger().warn(
+						"Skipping output field '{}' with {} rows; expected {} {} rows",
+						field.name, field.values.rows(), expected_rows,
+						field.association == OutputField::Association::Cell ? "cell" : "point");
+					continue;
 				}
 
-				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
+				if (field.association == OutputField::Association::Cell)
+					writer.add_cell_field(field.name, field.values);
+				else
+					writer.add_field(field.name, field.values);
+			}
+		}
 
-				for (long n = 0; n < vals.basis_values.size(); ++n)
+		void avoid_pyramid_apex(Eigen::MatrixXd &points)
+		{
+			assert(points.cols() == 3);
+			constexpr double eps = 1e-8;
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				if (std::abs(points(i, 2) - 1.0) < eps)
+					points(i, 2) = 1.0 - eps;
+			}
+		}
+
+		void pyramid_nodes_for_output(const int order, Eigen::MatrixXd &points)
+		{
+			autogen::pyramid_nodes_3d(order, points);
+			avoid_pyramid_apex(points);
+		}
+
+		// ------------------------------------------------------------------
+		// helpers for the hybrid (prism/pyramid) collision-proxy paths
+		// ------------------------------------------------------------------
+
+		// face/edge parameters are fractions k/n with n <= 8, so coordinates
+		// in units of 1/PROXY_PARAM_SCALE are exact integers (lcm of 1..8)
+		constexpr long PROXY_PARAM_SCALE = 840;
+
+		int prism_q_order(const basis::ElementBases &b)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			const int n_tri = (p + 1) * (p + 2) / 2;
+			const int q = (n_tri > 0 && b.bases.size() % n_tri == 0) ? int(b.bases.size()) / n_tri - 1 : p;
+			return std::max(1, q);
+		}
+
+		// reference-node layout of an element (vertices first); false if unsupported
+		bool element_ref_nodes(const mesh::Mesh &mesh, const int el, const basis::ElementBases &b, Eigen::MatrixXd &ref_nodes)
+		{
+			const int p = b.bases.empty() ? 1 : b.bases.front().order();
+			if (mesh.is_simplex(el))
+				autogen::p_nodes_3d(p, ref_nodes);
+			else if (mesh.is_cube(el))
+				autogen::q_nodes_3d(p, ref_nodes);
+			else if (mesh.is_prism(el))
+				autogen::prism_nodes_3d(p, prism_q_order(b), ref_nodes);
+			else if (mesh.is_pyramid(el))
+				autogen::pyramid_nodes_3d(p, ref_nodes);
+			else
+				return false;
+			return ref_nodes.rows() == long(b.bases.size());
+		}
+
+		int element_n_vertices(const mesh::Mesh &mesh, const int el)
+		{
+			if (mesh.is_simplex(el))
+				return 4;
+			if (mesh.is_pyramid(el))
+				return 5;
+			if (mesh.is_prism(el))
+				return 6;
+			assert(mesh.is_cube(el));
+			return 8;
+		}
+
+		// local vertex pairs forming the element's edges, derived from the
+		// reference vertex coordinates (no vertex-ordering assumptions)
+		std::vector<std::pair<int, int>> element_ref_edges(const mesh::Mesh &mesh, const int el, const Eigen::MatrixXd &ref_nodes)
+		{
+			const int nv = element_n_vertices(mesh, el);
+			const auto n_coord_diffs = [&](int a, int b) {
+				int d = 0;
+				for (int c = 0; c < 3; ++c)
+					if (std::abs(ref_nodes(a, c) - ref_nodes(b, c)) > 1e-12)
+						++d;
+				return d;
+			};
+			int apex = -1;
+			if (mesh.is_pyramid(el))
+				for (int a = 0; a < nv; ++a)
+					if (std::abs(ref_nodes(a, 2) - 1.0) < 1e-12)
+						apex = a;
+
+			std::vector<std::pair<int, int>> edges;
+			for (int a = 0; a < nv; ++a)
+			{
+				for (int b = a + 1; b < nv; ++b)
 				{
-					const polyfem::assembler::AssemblyValues &v = vals.basis_values[n];
+					bool is_edge;
+					if (mesh.is_simplex(el)) // every vertex pair
+						is_edge = true;
+					else if (mesh.is_prism(el)) // triangle x [0,1]
+						is_edge = std::abs(ref_nodes(a, 2) - ref_nodes(b, 2)) < 1e-12
+								  || (std::abs(ref_nodes(a, 0) - ref_nodes(b, 0)) < 1e-12
+									  && std::abs(ref_nodes(a, 1) - ref_nodes(b, 1)) < 1e-12);
+					else if (mesh.is_pyramid(el)) // base square + base-to-apex
+						is_edge = (a == apex || b == apex) || n_coord_diffs(a, b) == 1;
+					else // hex
+						is_edge = n_coord_diffs(a, b) == 1;
+					if (is_edge)
+						edges.emplace_back(a, b);
+				}
+			}
+			return edges;
+		}
 
-					const int g_index = v.global[0].index * actual_dim;
+		// For every mesh edge, keyed by its endpoint DOFs (smaller first): the
+		// owned edge-interior DOFs located on it as (parameter from the
+		// smaller-DOF endpoint in units of 1/PROXY_PARAM_SCALE, dof, node
+		// position), sorted by parameter.  Built from ALL elements: an edge on
+		// the domain boundary can get its DOFs from an interior element (e.g. a
+		// prism wedged between two promoted tets).  Stitched nodes
+		// (glob.size() != 1, no DOF of their own) are not registered.
+		using EdgeDofs = std::vector<std::tuple<long, int, Eigen::Vector3d>>;
+		std::map<std::pair<int, int>, EdgeDofs> build_edge_dofs(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases)
+		{
+			std::map<std::pair<int, int>, EdgeDofs> edge_dofs;
+			Eigen::MatrixXd ref_nodes;
+			for (int el = 0; el < int(bases.size()); ++el)
+			{
+				const basis::ElementBases &b = bases[el];
+				if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+					continue;
 
-					for (int q = 0; q < points.rows(); ++q)
+				const int nv = element_n_vertices(mesh, el);
+				std::vector<int> vd(nv, -1);
+				bool ok = true;
+				for (int i = 0; i < nv; ++i)
+				{
+					const auto &glob = b.bases[i].global();
+					assert(glob.size() == 1); // vertices always own their DOF
+					if (glob.size() != 1)
 					{
-						// TF computed only from cauchy stress
-						assert(tensor_flat[0].first == "cauchy_stess");
-						assert(tensor_flat[0].second.row(q).size() == actual_dim * actual_dim);
+						ok = false;
+						break;
+					}
+					vd[i] = glob.front().index;
+				}
+				if (!ok)
+					continue;
 
-						Eigen::MatrixXd stress_tensor = utils::unflatten(tensor_flat[0].second.row(q), actual_dim);
-
-						traction_forces.block(g_index, 0, actual_dim, 1) += stress_tensor * normals.row(q).transpose() * v.val(q) * weights(q);
+				const auto edges = element_ref_edges(mesh, el, ref_nodes);
+				for (int j = nv; j < int(b.bases.size()); ++j)
+				{
+					const auto &glob = b.bases[j].global();
+					if (glob.size() != 1)
+						continue;
+					const Eigen::RowVector3d r = ref_nodes.row(j);
+					for (const auto &e : edges)
+					{
+						const Eigen::RowVector3d pa = ref_nodes.row(e.first);
+						const Eigen::RowVector3d d = ref_nodes.row(e.second) - pa;
+						const double t = (r - pa).dot(d) / d.squaredNorm();
+						if (t < 1e-9 || t > 1 - 1e-9 || ((r - pa) - t * d).norm() > 1e-9)
+							continue; // not on this edge
+						long tl = std::lround(t * PROXY_PARAM_SCALE);
+						assert(std::abs(t * PROXY_PARAM_SCALE - tl) < 1e-6);
+						int va = vd[e.first], vb = vd[e.second];
+						if (va > vb)
+						{
+							std::swap(va, vb);
+							tl = PROXY_PARAM_SCALE - tl;
+						}
+						EdgeDofs &ed = edge_dofs[{va, vb}];
+						const int dof = glob.front().index;
+						bool present = false;
+						for (const auto &existing : ed)
+							if (std::get<1>(existing) == dof)
+							{
+								assert(std::get<0>(existing) == tl);
+								present = true;
+								break;
+							}
+						if (!present)
+							ed.emplace_back(tl, dof, glob.front().node.transpose());
+						break;
 					}
 				}
 			}
+			for (auto &kv : edge_dofs)
+				std::sort(kv.second.begin(), kv.second.end(),
+						  [](const EdgeDofs::value_type &x, const EdgeDofs::value_type &y) { return std::get<0>(x) < std::get<0>(y); });
+			return edge_dofs;
 		}
+
+		// Structured triangulation for faces whose points form a complete
+		// regular lattice (all faces away from mixed-order interfaces).  The
+		// row-wise patterns keep vertex valence balanced -- the lexicographic
+		// sweep below concentrates fan triangles on lex-extreme corners, which
+		// at order 3+ can push one-ring sizes past the smooth-contact
+		// N_VERT_NEIGHBORS_3D cap.  Returns false if the points are not a
+		// complete lattice (caller falls back to the sweep).
+		bool triangulate_lattice(const std::vector<std::array<long, 2>> &pts, const int nfv, std::vector<std::array<int, 3>> &tris)
+		{
+			constexpr long S = PROXY_PARAM_SCALE;
+			const int n = int(pts.size());
+			std::map<std::array<long, 2>, int> id;
+			for (int i = 0; i < n; ++i)
+				if (!id.emplace(pts[i], i).second)
+					return false;
+			tris.clear();
+
+			if (nfv == 3)
+			{
+				// n == (k+1)(k+2)/2 for a complete triangular lattice of order k
+				const int k = int(std::lround((std::sqrt(8.0 * n + 1.0) - 3.0) / 2.0));
+				if ((k + 1) * (k + 2) / 2 != n || k < 1 || S % k != 0)
+					return false;
+				const long h = S / k;
+				const auto at = [&](int i, int j) -> int {
+					const auto it = id.find({{i * h, j * h}});
+					return it == id.end() ? -1 : it->second;
+				};
+				for (int j = 0; j <= k; ++j)
+					for (int i = 0; i <= k - j; ++i)
+						if (at(i, j) < 0)
+							return false;
+				for (int j = 0; j < k; ++j)
+				{
+					for (int i = 0; i < k - j; ++i)
+					{
+						tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+						if (i + j < k - 1)
+							tris.push_back({{at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)}});
+					}
+				}
+				return true;
+			}
+
+			// quad: complete (k1+1) x (k2+1) tensor grid, possibly anisotropic
+			std::set<long> us, vs;
+			for (const auto &p : pts)
+			{
+				us.insert(p[0]);
+				vs.insert(p[1]);
+			}
+			const int k1 = int(us.size()) - 1, k2 = int(vs.size()) - 1;
+			if (k1 < 1 || k2 < 1 || (k1 + 1) * (k2 + 1) != n || S % k1 != 0 || S % k2 != 0)
+				return false;
+			const long h1 = S / k1, h2 = S / k2;
+			const auto at = [&](int i, int j) -> int {
+				const auto it = id.find({{i * h1, j * h2}});
+				return it == id.end() ? -1 : it->second;
+			};
+			for (int j = 0; j <= k2; ++j)
+				for (int i = 0; i <= k1; ++i)
+					if (at(i, j) < 0)
+						return false;
+			for (int j = 0; j < k2; ++j)
+			{
+				for (int i = 0; i < k1; ++i)
+				{
+					tris.push_back({{at(i, j), at(i + 1, j), at(i, j + 1)}});
+					tris.push_back({{at(i + 1, j + 1), at(i, j + 1), at(i + 1, j)}});
+				}
+			}
+			return true;
+		}
+
+		// Triangulate a 2D point set in convex position (boundary points lie on
+		// the convex hull, possibly collinear; interior points allowed) into
+		// strictly positive-area CCW triangles via an incremental lexicographic
+		// sweep.  Collinear boundary chains are preserved -- no triangle edge
+		// ever spans a boundary point -- which is what keeps neighboring faces
+		// of the proxy conforming.  Coordinates must be exact integers.
+		void triangulate_convex_pointset(const std::vector<std::array<long, 2>> &pts, std::vector<std::array<int, 3>> &tris)
+		{
+			const int n = int(pts.size());
+			tris.clear();
+			std::vector<int> order(n);
+			for (int i = 0; i < n; ++i)
+				order[i] = i;
+			std::sort(order.begin(), order.end(), [&](int a, int b) { return pts[a] < pts[b]; });
+			const auto orient = [&](int a, int b, int c) -> long long {
+				return (long long)(pts[b][0] - pts[a][0]) * (pts[c][1] - pts[a][1])
+					   - (long long)(pts[b][1] - pts[a][1]) * (pts[c][0] - pts[a][0]);
+			};
+
+			// initial (possibly collinear) chain
+			std::vector<int> hull;
+			int k = 0;
+			for (; k < n; ++k)
+			{
+				if (hull.size() >= 2 && orient(hull[0], hull[1], order[k]) != 0)
+					break;
+				hull.push_back(order[k]);
+			}
+			if (k == n)
+				return; // all points collinear: nothing to emit
+
+			// attach the first off-line point: fan over the chain, make hull CCW
+			{
+				const int p = order[k];
+				const bool left = orient(hull[0], hull[1], p) > 0;
+				for (int i = 0; i + 1 < int(hull.size()); ++i)
+				{
+					if (left)
+						tris.push_back({{hull[i], hull[i + 1], p}});
+					else
+						tris.push_back({{hull[i + 1], hull[i], p}});
+				}
+				if (!left)
+					std::reverse(hull.begin(), hull.end());
+				hull.push_back(p);
+				++k;
+			}
+
+			for (; k < n; ++k)
+			{
+				const int p = order[k];
+				const int m = int(hull.size());
+				// visible hull edges: p strictly right of a->b on the CCW cycle
+				std::vector<bool> vis(m);
+				for (int i = 0; i < m; ++i)
+					vis[i] = orient(hull[i], hull[(i + 1) % m], p) < 0;
+				int s = 0;
+				while (s < m && !(vis[s] && !vis[(s + m - 1) % m]))
+					++s;
+				assert(s < m); // p is outside the hull (lexicographic order)
+				int e = s;
+				while (vis[e % m])
+				{
+					// orient(a, b, p) < 0  =>  (a, p, b) is CCW
+					tris.push_back({{hull[e % m], p, hull[(e + 1) % m]}});
+					++e;
+				}
+				// replace the strictly-visible part of the hull with p
+				std::vector<int> new_hull;
+				new_hull.push_back(p);
+				for (int i = e % m; i != s; i = (i + 1) % m)
+					new_hull.push_back(hull[i]);
+				new_hull.push_back(hull[s]);
+				hull.swap(new_hull);
+			}
+		}
+
 	} // namespace
+
+	void OutGeometryData::extract_boundary_mesh_sampled(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &node_positions,
+		Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+		const int sampling_order)
+	{
+		using namespace polyfem::mesh;
+
+		// Sample every boundary face on a uniform lattice of the globally
+		// maximal order M through the element bases: the proxy is conforming
+		// and watertight regardless of order mismatches across interfaces
+		// (every shared edge is split into M chords on both sides), stitched
+		// interface nodes are handled intrinsically by the basis evaluation,
+		// and the displacement map carries each proxy vertex's (possibly
+		// weighted) dependence on the real DOFs.
+		if (!mesh.is_volume() || mesh.has_poly()
+			|| !dynamic_cast<const Mesh3D &>(mesh).is_conforming())
+		{
+			logger().warn("max_order collision-proxy sampling requires a conforming volume mesh without polytopes; falling back to the standard boundary extraction");
+			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+								  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			return;
+		}
+
+		displacement_map_entries.clear();
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+
+		int M = 1;
+		if (sampling_order > 0)
+			M = sampling_order; // explicit lattice order (finer OR coarser than the elements)
+		else
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				const basis::ElementBases &b = bases[lb.element_id()];
+				if (b.bases.empty())
+					continue;
+				int o = b.bases.front().order();
+				if (mesh.is_prism(lb.element_id()))
+					o = std::max(o, prism_q_order(b));
+				M = std::max(M, o);
+			}
+
+		// samples shared between neighboring faces merge combinatorially, by
+		// the mesh primitive they lie on -- {0, vertex_id} for face corners,
+		// {1, vmin, vmax, step-from-vmin} for edge samples (every face uses
+		// the same global lattice order M, so steps coincide exactly), and
+		// {2, face_id, i, r} for face-interior samples (a boundary face
+		// belongs to exactly one element) -- no floating-point tolerance
+		std::map<std::array<int, 4>, int> vertex_id;
+		std::vector<Eigen::Vector3d> vertices;
+		std::vector<std::tuple<int, int, int>> proxy_tris;
+
+		for (const LocalBoundary &lb : total_local_boundary)
+		{
+			const int el = lb.element_id();
+			const basis::ElementBases &b = bases[el];
+			Eigen::MatrixXd ref_nodes;
+			if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+				continue;
+
+			// the rational pyramid bases are 0/0 at the apex (z=1), which is a
+			// corner of every triangular pyramid face; apex samples are instead
+			// evaluated below via the nodal limit (apex basis 1, all others 0)
+			int apex_node = -1;
+			if (mesh.is_pyramid(el))
+				for (int i = 0; i < ref_nodes.rows(); ++i)
+					if (std::abs(ref_nodes(i, 2) - 1.0) < 1e-12)
+					{
+						apex_node = i;
+						break;
+					}
+
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const int nfv = mesh3d.n_face_vertices(eid);
+				assert(nfv == 3 || nfv == 4);
+
+				Navigation3D::Index nav;
+				for (int lf = 0; lf < mesh3d.n_cell_faces(el); ++lf)
+				{
+					nav = mesh3d.get_index_from_element(el, lf, 0);
+					if (nav.face == eid)
+						break;
+				}
+				assert(nav.face == eid);
+				std::vector<int> gv(nfv);
+				{
+					Navigation3D::Index cur = nav;
+					for (int k = 0; k < nfv; ++k)
+					{
+						gv[k] = cur.vertex;
+						cur = mesh3d.next_around_face(cur);
+					}
+				}
+
+				// Map the global face vertices to canonical element-reference
+				// vertices. This cannot use the first entries of `nodes`: nodal
+				// Lagrange faces store corners first, but spline faces use tensor-grid
+				// ordering (where the first four entries are generally not corners).
+				Eigen::MatrixXd ref_vertices;
+				std::vector<int> local_to_global;
+				if (mesh.is_simplex(el))
+				{
+					autogen::p_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_tet(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else if (mesh.is_cube(el))
+				{
+					autogen::q_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_hex(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else if (mesh.is_prism(el))
+				{
+					autogen::prism_nodes_3d(1, 1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_prism(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+				else
+				{
+					assert(mesh.is_pyramid(el));
+					autogen::pyramid_nodes_3d(1, ref_vertices);
+					const auto vertices = mesh3d.get_ordered_vertices_from_pyramid(el);
+					local_to_global.assign(vertices.begin(), vertices.end());
+				}
+
+				std::vector<Eigen::RowVector3d> c(nfv);
+				for (int k = 0; k < nfv; ++k)
+				{
+					const auto it = std::find(local_to_global.begin(), local_to_global.end(), gv[k]);
+					assert(it != local_to_global.end());
+					c[k] = ref_vertices.row(std::distance(local_to_global.begin(), it));
+				}
+
+				Eigen::MatrixXd pts;
+				std::vector<std::array<int, 2>> coords;
+				std::vector<std::tuple<int, int, int>> local_tris;
+				if (nfv == 3)
+				{
+					pts.resize((M + 1) * (M + 2) / 2, 3);
+					coords.resize(pts.rows());
+					std::vector<int> off(M + 2, 0);
+					for (int r = 0; r <= M; ++r)
+						off[r + 1] = off[r] + (M + 1 - r);
+					for (int r = 0; r <= M; ++r)
+						for (int i = 0; i <= M - r; ++i)
+						{
+							pts.row(off[r] + i) = c[0] + (double(i) / M) * (c[1] - c[0]) + (double(r) / M) * (c[2] - c[0]);
+							coords[off[r] + i] = {{i, r}};
+						}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M - r; ++i)
+						{
+							local_tris.emplace_back(off[r] + i, off[r] + i + 1, off[r + 1] + i);
+							if (i + r < M - 1)
+								local_tris.emplace_back(off[r] + i + 1, off[r + 1] + i + 1, off[r + 1] + i);
+						}
+					}
+				}
+				else
+				{
+					pts.resize((M + 1) * (M + 1), 3);
+					coords.resize(pts.rows());
+					const auto gid = [M](const int i, const int r) { return r * (M + 1) + i; };
+					for (int r = 0; r <= M; ++r)
+					{
+						for (int i = 0; i <= M; ++i)
+						{
+							const double u = double(i) / M, v = double(r) / M;
+							pts.row(gid(i, r)) = (1 - u) * (1 - v) * c[0] + u * (1 - v) * c[1] + u * v * c[2] + (1 - u) * v * c[3];
+							coords[gid(i, r)] = {{i, r}};
+						}
+					}
+					for (int r = 0; r < M; ++r)
+					{
+						for (int i = 0; i < M; ++i)
+						{
+							local_tris.emplace_back(gid(i, r), gid(i + 1, r), gid(i, r + 1));
+							local_tris.emplace_back(gid(i + 1, r + 1), gid(i, r + 1), gid(i + 1, r));
+						}
+					}
+				}
+
+				std::vector<polyfem::assembler::AssemblyValues> vals;
+				b.evaluate_bases(pts, vals);
+
+				const auto edge_key = [M](const int va, const int vb, const int step) {
+					return va < vb ? std::array<int, 4>{{1, va, vb, step}}
+								   : std::array<int, 4>{{1, vb, va, M - step}};
+				};
+
+				std::vector<int> ids(pts.rows());
+				for (int s = 0; s < pts.rows(); ++s)
+				{
+					const int i = coords[s][0], r = coords[s][1];
+					std::array<int, 4> key;
+					if (nfv == 3)
+					{
+						if (r == 0 && i == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (r == 0 && i == M)
+							key = {{0, gv[1], 0, 0}};
+						else if (r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[2], r);
+						else if (i + r == M)
+							key = edge_key(gv[1], gv[2], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+					else
+					{
+						if (i == 0 && r == 0)
+							key = {{0, gv[0], 0, 0}};
+						else if (i == M && r == 0)
+							key = {{0, gv[1], 0, 0}};
+						else if (i == M && r == M)
+							key = {{0, gv[2], 0, 0}};
+						else if (i == 0 && r == M)
+							key = {{0, gv[3], 0, 0}};
+						else if (r == 0)
+							key = edge_key(gv[0], gv[1], i);
+						else if (i == M)
+							key = edge_key(gv[1], gv[2], r);
+						else if (r == M)
+							key = edge_key(gv[3], gv[2], i);
+						else if (i == 0)
+							key = edge_key(gv[0], gv[3], r);
+						else
+							key = {{2, eid, i, r}};
+					}
+
+					const auto it = vertex_id.find(key);
+					if (it != vertex_id.end())
+					{
+						ids[s] = it->second;
+						continue;
+					}
+
+					Eigen::Vector3d pos = Eigen::Vector3d::Zero();
+					std::map<int, double> weights;
+					if (apex_node >= 0 && std::abs(pts(s, 2) - 1.0) < 1e-12)
+					{
+						for (const auto &g : b.bases[apex_node].global())
+						{
+							pos += g.val * g.node.transpose();
+							weights[g.index] += g.val;
+						}
+					}
+					else
+						for (size_t i2 = 0; i2 < vals.size(); ++i2)
+						{
+							const double Ni = vals[i2].val(s);
+							if (std::abs(Ni) < 1e-12)
+								continue;
+							for (const auto &g : b.bases[i2].global())
+							{
+								pos += Ni * g.val * g.node.transpose();
+								weights[g.index] += Ni * g.val;
+							}
+						}
+					assert(pos.allFinite());
+
+					const int vid = int(vertices.size());
+					vertex_id[key] = vid;
+					vertices.push_back(pos);
+					for (const auto &kv : weights)
+						if (std::abs(kv.second) > 1e-10)
+							displacement_map_entries.emplace_back(vid, kv.first, kv.second);
+					ids[s] = vid;
+				}
+
+				for (const auto &t : local_tris)
+					proxy_tris.emplace_back(ids[std::get<0>(t)], ids[std::get<1>(t)], ids[std::get<2>(t)]);
+			}
+		}
+
+		node_positions.resize(vertices.size(), 3);
+		for (int i = 0; i < int(vertices.size()); ++i)
+			node_positions.row(i) = vertices[i];
+
+		boundary_triangles.resize(proxy_tris.size(), 3);
+		for (int i = 0; i < int(proxy_tris.size()); ++i)
+			boundary_triangles.row(i) << std::get<0>(proxy_tris[i]), std::get<2>(proxy_tris[i]), std::get<1>(proxy_tris[i]);
+
+		if (boundary_triangles.rows() > 0)
+			igl::edges(boundary_triangles, boundary_edges);
+
+		if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+			igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
+	}
 
 	void OutGeometryData::extract_boundary_mesh(
 		const mesh::Mesh &mesh,
@@ -171,8 +758,11 @@ namespace polyfem::io
 
 			const bool is_simplicial = mesh.is_simplicial();
 
-			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
-			node_positions.setZero();
+			std::vector<Eigen::Vector3d> node_positions_vec;
+			node_positions_vec.reserve(n_bases + (is_simplicial ? 0 : mesh.n_faces()));
+
+			// node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
+			// node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -180,6 +770,164 @@ namespace polyfem::io
 			std::vector<bool> visited_node(n_bases, false);
 
 			std::stringstream print_warning;
+
+			// Hybrid (prism/pyramid) meshes: element orders can differ across an
+			// interface (anisotropic prisms promote their tet/pyramid neighbors),
+			// so tessellating each boundary face at its own order produces
+			// T-junctions along shared edges, and stitched interface nodes have
+			// no DOF of their own.  Build the proxy from the DOFs on the
+			// boundary instead: every proxy vertex IS a global DOF (weight-1
+			// displacement map), each face edge is subdivided by the DOFs
+			// located on it -- a property of the edge, not of the element
+			// looking at it, so neighboring faces conform by construction --
+			// and face interiors by the element's own owned face nodes.
+			// Stitched nodes are skipped; the DOFs they depend on subdivide the
+			// edge instead.
+			bool has_prism_or_pyramid = false;
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				if (mesh.is_prism(lb.element_id()) || mesh.is_pyramid(lb.element_id()))
+				{
+					has_prism_or_pyramid = true;
+					break;
+				}
+			}
+
+			if (has_prism_or_pyramid && mesh3d.is_conforming())
+			{
+				const auto edge_dofs = build_edge_dofs(mesh, bases);
+				constexpr long S = PROXY_PARAM_SCALE;
+
+				const auto emit_dof = [&](const int gindex, const Eigen::Vector3d &pos) {
+					if (gindex >= int(node_positions_vec.size()))
+						node_positions_vec.resize(gindex + 1, Eigen::Vector3d::Zero());
+					node_positions_vec[gindex] = pos;
+					if (!visited_node[gindex])
+						displacement_map_entries.emplace_back(gindex, gindex, 1);
+					visited_node[gindex] = true;
+				};
+
+				Eigen::MatrixXd ref_nodes;
+				for (const LocalBoundary &lb : total_local_boundary)
+				{
+					const int el = lb.element_id();
+					const basis::ElementBases &b = bases[el];
+					if (b.bases.empty() || !element_ref_nodes(mesh, el, b, ref_nodes))
+						continue;
+
+					for (int j = 0; j < lb.size(); ++j)
+					{
+						const int eid = lb.global_primitive_id(j);
+						const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
+						const int nfv = mesh3d.n_face_vertices(eid);
+						assert(nfv == 3 || nfv == 4);
+						assert(nodes.size() >= nfv);
+
+						// exact face parameters (units of 1/S) and the DOF of each point
+						std::vector<std::array<long, 2>> pts;
+						std::vector<int> dof;
+
+						// face corners come first in the local ordering (cyclic for quads)
+						std::array<std::array<long, 2>, 4> cp;
+						if (nfv == 3)
+							cp = {{{{0, 0}}, {{S, 0}}, {{0, S}}, {{0, 0}}}};
+						else
+							cp = {{{{0, 0}}, {{S, 0}}, {{S, S}}, {{0, S}}}};
+						std::array<int, 4> cd{{-1, -1, -1, -1}};
+						bool ok = true;
+						for (int k = 0; k < nfv; ++k)
+						{
+							const auto &glob = b.bases[nodes(k)].global();
+							assert(glob.size() == 1); // face corners always own their DOF
+							if (glob.size() != 1)
+							{
+								ok = false;
+								break;
+							}
+							cd[k] = glob.front().index;
+							pts.push_back(cp[k]);
+							dof.push_back(cd[k]);
+							emit_dof(cd[k], glob.front().node.transpose());
+						}
+						if (!ok)
+							continue;
+
+						// edge subdivision: the DOFs located on each face edge
+						for (int k = 0; k < nfv; ++k)
+						{
+							const int va = cd[k], vb = cd[(k + 1) % nfv];
+							const auto it = edge_dofs.find({std::min(va, vb), std::max(va, vb)});
+							if (it == edge_dofs.end())
+								continue;
+							for (const auto &ed : it->second)
+							{
+								const long s = va < vb ? std::get<0>(ed) : S - std::get<0>(ed);
+								const auto &A = cp[k];
+								const auto &B = cp[(k + 1) % nfv];
+								pts.push_back({{(A[0] * (S - s) + B[0] * s) / S, (A[1] * (S - s) + B[1] * s) / S}});
+								dof.push_back(std::get<1>(ed));
+								emit_dof(std::get<1>(ed), std::get<2>(ed));
+							}
+						}
+
+						// owned face-interior nodes at the element's own resolution
+						// (reference faces are planar parallelograms -> affine map)
+						const Eigen::RowVector3d c0 = ref_nodes.row(nodes(0));
+						const Eigen::RowVector3d A3 = ref_nodes.row(nodes(1)) - c0;
+						const Eigen::RowVector3d B3 = ref_nodes.row(nodes(nfv - 1)) - c0;
+						const double aa = A3.squaredNorm(), bb = B3.squaredNorm(), ab = A3.dot(B3);
+						const double det = aa * bb - ab * ab;
+						for (long n = nfv; n < nodes.size(); ++n)
+						{
+							const auto &glob = b.bases[nodes(n)].global();
+							if (glob.size() != 1)
+								continue; // stitched interface node
+							const Eigen::RowVector3d d3 = ref_nodes.row(nodes(n)) - c0;
+							const double du = d3.dot(A3), dv = d3.dot(B3);
+							const double u = (du * bb - dv * ab) / det;
+							const double v = (dv * aa - du * ab) / det;
+							const long lu = std::lround(u * S), lv = std::lround(v * S);
+							assert(std::abs(u * S - lu) < 1e-6 && std::abs(v * S - lv) < 1e-6);
+							// nodes on a face edge already subdivide the edge above
+							const bool on_edge = nfv == 3
+													 ? (lu == 0 || lv == 0 || lu + lv == S)
+													 : (lu == 0 || lu == S || lv == 0 || lv == S);
+							if (on_edge)
+								continue;
+							pts.push_back({{lu, lv}});
+							dof.push_back(glob.front().index);
+							emit_dof(glob.front().index, glob.front().node.transpose());
+						}
+
+						std::vector<std::array<int, 3>> local_tris;
+						if (!triangulate_lattice(pts, nfv, local_tris))
+							triangulate_convex_pointset(pts, local_tris);
+						for (const auto &t : local_tris)
+							tris.emplace_back(dof[t[0]], dof[t[1]], dof[t[2]]);
+					}
+				}
+
+				// downstream consumers (e.g. the shape-derivative code) expect every
+				// FE node to have a row, as the pre-split extraction guaranteed
+				node_positions_vec.resize(
+					std::max(node_positions_vec.size(), size_t(n_bases)), Eigen::Vector3d::Zero());
+
+				node_positions.resize(node_positions_vec.size(), 3);
+				for (int i = 0; i < int(node_positions_vec.size()); ++i)
+					node_positions.row(i) = node_positions_vec[i];
+
+				boundary_triangles.resize(tris.size(), 3);
+				for (int i = 0; i < int(tris.size()); ++i)
+					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+
+				if (boundary_triangles.rows() > 0)
+					igl::edges(boundary_triangles, boundary_edges);
+
+				if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+					igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
+
+				return;
+			}
 
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
@@ -206,7 +954,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -220,7 +969,8 @@ namespace polyfem::io
 						bary /= 4;
 
 						const int new_node = n_bases + eid;
-						node_positions.row(new_node) = bary;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), new_node + 1));
+						node_positions_vec[new_node] = bary;
 						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
 						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
 						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
@@ -242,7 +992,7 @@ namespace polyfem::io
 						assert(!is_simplicial);
 						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
-						RowVectorNd bary = RowVectorNd::Zero(3);
+						std::vector<int> loc_local_nodes;
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -252,9 +1002,10 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							bary += glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
 						}
 
 						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
@@ -267,10 +1018,215 @@ namespace polyfem::io
 							}
 						};
 
-						if (loc_nodes.size() == 3)
+						// tri face
+						if (lid < 2)
+						{
+							if (loc_nodes.size() == 3)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 6)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 10)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+								tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+								update_mapping(loc_nodes);
+							}
+							else
+							{
+								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							}
+						}
+						else
+						{
+							if (loc_nodes.size() < 4 || loc_local_nodes.size() < 4)
+							{
+								logger().trace("skipping prism quad face {} since it has only {} complete nodes", eid, loc_nodes.size());
+								continue;
+							}
+
+							const int p = b.bases.empty() ? -1 : b.bases.front().order();
+							const int n_tri_nodes = (p + 1) * (p + 2) / 2;
+							const int q = n_tri_nodes > 0 && b.bases.size() % n_tri_nodes == 0 ? int(b.bases.size()) / n_tri_nodes - 1 : -1;
+
+							if (p < 1 || p > 3 || q < 1 || q > 3 || (p == 3 && q == 3))
+							{
+								logger().trace("skipping prism quad face {} with unsupported p={}, q={}", eid, p, q);
+								continue;
+							}
+
+							auto is_vertical_prism_edge = [](const int a, const int b) {
+								return (a >= 0 && a < 3 && b == a + 3) || (b >= 0 && b < 3 && a == b + 3);
+							};
+
+							std::vector<int> edge_orders(4);
+							for (int k = 0; k < 4; ++k)
+								edge_orders[k] = is_vertical_prism_edge(loc_local_nodes[k], loc_local_nodes[(k + 1) % 4]) ? q : p;
+
+							const int u_order = edge_orders[0];
+							const int v_order = edge_orders[1];
+							const int expected_nodes = (u_order + 1) * (v_order + 1);
+							if (loc_nodes.size() != expected_nodes || edge_orders[0] != edge_orders[2] || edge_orders[1] != edge_orders[3])
+							{
+								logger().trace("skipping prism quad face {} with p={}, q={} and {} nodes", eid, p, q, loc_nodes.size());
+								continue;
+							}
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [u_order](const int i, const int j) {
+								return j * (u_order + 1) + i;
+							};
+
+							grid[grid_index(0, 0)] = loc_nodes[0];
+							grid[grid_index(u_order, 0)] = loc_nodes[1];
+							grid[grid_index(u_order, v_order)] = loc_nodes[2];
+							grid[grid_index(0, v_order)] = loc_nodes[3];
+
+							int node_index = 4;
+							for (int i = 1; i < u_order; ++i)
+								grid[grid_index(i, 0)] = loc_nodes[node_index++];
+							for (int j = 1; j < v_order; ++j)
+								grid[grid_index(u_order, j)] = loc_nodes[node_index++];
+							for (int i = u_order - 1; i > 0; --i)
+								grid[grid_index(i, v_order)] = loc_nodes[node_index++];
+							for (int j = v_order - 1; j > 0; --j)
+								grid[grid_index(0, j)] = loc_nodes[node_index++];
+
+							for (int j = 1; j < v_order; ++j)
+								for (int i = 1; i < u_order; ++i)
+									grid[grid_index(i, j)] = loc_nodes[node_index++];
+
+							assert(node_index == loc_nodes.size());
+							assert(std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }));
+
+							for (int j = 0; j < v_order; ++j)
+							{
+								for (int i = 0; i < u_order; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+
+						continue;
+					}
+					else if (mesh.is_pyramid(lb.element_id()))
+					{
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						std::vector<int> loc_local_nodes;
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
+							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
+						}
+
+						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
+							for (int k = 0; k < loc_nodes.size(); ++k)
+							{
+								if (!visited_node[loc_nodes[k]])
+									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+								visited_node[loc_nodes[k]] = true;
+							}
+						};
+
+						const int p = b.bases.empty() ? -1 : b.bases.front().order();
+						if (p < 1 || p > 3)
+						{
+							logger().trace("skipping pyramid face {} with unsupported p={}", eid, p);
+							continue;
+						}
+
+						if (lid == 0)
+						{
+							const int expected_nodes = (p + 1) * (p + 1);
+							if (loc_nodes.size() != expected_nodes || loc_local_nodes.size() != expected_nodes)
+							{
+								logger().trace("skipping pyramid quad face {} with p={} and {} nodes", eid, p, loc_nodes.size());
+								continue;
+							}
+
+							Eigen::MatrixXd pyramid_nodes;
+							autogen::pyramid_nodes_3d(p, pyramid_nodes);
+
+							const Eigen::RowVector3d origin = pyramid_nodes.row(loc_local_nodes[0]);
+							const Eigen::RowVector3d u_axis = pyramid_nodes.row(loc_local_nodes[1]) - origin;
+							const Eigen::RowVector3d v_axis = pyramid_nodes.row(loc_local_nodes[3]) - origin;
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [p](const int i, const int j) {
+								return j * (p + 1) + i;
+							};
+
+							bool valid_grid = true;
+							for (int n = 0; n < loc_nodes.size(); ++n)
+							{
+								const Eigen::RowVector3d rel = pyramid_nodes.row(loc_local_nodes[n]) - origin;
+								const int i = int(std::lround(p * rel.dot(u_axis) / u_axis.squaredNorm()));
+								const int j = int(std::lround(p * rel.dot(v_axis) / v_axis.squaredNorm()));
+								if (i < 0 || i > p || j < 0 || j > p)
+								{
+									logger().trace("skipping pyramid quad face {} with invalid local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								if (grid[grid_index(i, j)] >= 0)
+								{
+									logger().trace("skipping pyramid quad face {} with duplicate local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								grid[grid_index(i, j)] = loc_nodes[n];
+							}
+
+							if (!valid_grid || !std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }))
+								continue;
+
+							for (int j = 0; j < p; ++j)
+							{
+								for (int i = 0; i < p; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 3)
 						{
 							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 6)
@@ -279,7 +1235,6 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
 							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
 							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 10)
@@ -295,90 +1250,9 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
 							update_mapping(loc_nodes);
 						}
-						else if (loc_nodes.size() == 15)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							bary /= 4;
-
-							const int new_node = n_bases + eid;
-							node_positions.row(new_node) = bary;
-							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
-							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
-							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
-
-							update_mapping(loc_nodes);
-						}
 						else
 						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
-							continue;
-						}
-
-						continue;
-					}
-
-					else if (mesh.is_pyramid(lb.element_id()))
-					{
-						assert(!is_simplicial);
-						assert(!mesh.has_poly());
-						std::vector<int> loc_nodes;
-
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							auto &bs = b.bases[nodes(n)];
-							const auto &glob = bs.global();
-							if (glob.size() != 1)
-								continue;
-
-							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							loc_nodes.push_back(gindex);
-						}
-
-						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
-							for (int k = 0; k < loc_nodes.size(); ++k)
-							{
-								if (!visited_node[loc_nodes[k]])
-									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
-
-								visited_node[loc_nodes[k]] = true;
-							}
-						};
-
-						if (loc_nodes.size() == 3)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[3]);
-							update_mapping(loc_nodes);
-						}
-						else
-						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							logger().trace("skipping pyramid tri face {} with p={} and {} nodes", eid, p, loc_nodes.size());
 							continue;
 						}
 
@@ -421,7 +1295,8 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) = glob.front().node;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+						node_positions_vec[gindex] = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -489,6 +1364,16 @@ namespace polyfem::io
 			if (print_warning.str().size() > 0)
 				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
 
+			// downstream consumers (e.g. the shape-derivative code) expect every
+			// FE node to have a row, as the pre-split extraction guaranteed
+			node_positions_vec.resize(
+				std::max(node_positions_vec.size(), size_t(n_bases + (is_simplicial ? 0 : mesh.n_faces()))),
+				Eigen::Vector3d::Zero());
+
+			node_positions.resize(node_positions_vec.size(), 3);
+			for (int i = 0; i < node_positions_vec.size(); ++i)
+				node_positions.row(i) = node_positions_vec[i];
+
 			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
@@ -499,6 +1384,9 @@ namespace polyfem::io
 			{
 				igl::edges(boundary_triangles, boundary_edges);
 			}
+
+			if (const char *dump = getenv("POLYFEM_DUMP_COLLISION_PROXY"))
+				igl::write_triangle_mesh(dump, node_positions, boundary_triangles);
 		}
 		else
 		{
@@ -549,24 +1437,20 @@ namespace polyfem::io
 
 	void OutGeometryData::build_vis_boundary_mesh(
 		const mesh::Mesh &mesh,
-		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
-		const Eigen::MatrixXd &solution,
-		const int problem_dim,
 		Eigen::MatrixXd &boundary_vis_vertices,
 		Eigen::MatrixXd &boundary_vis_local_vertices,
 		Eigen::MatrixXi &boundary_vis_elements,
 		Eigen::MatrixXi &boundary_vis_elements_ids,
 		Eigen::MatrixXi &boundary_vis_primitive_ids,
-		Eigen::MatrixXd &boundary_vis_normals,
-		Eigen::MatrixXd &displaced_boundary_vis_normals) const
+		Eigen::MatrixXd &boundary_vis_normals) const
 	{
 		using namespace polyfem::mesh;
 
-		std::vector<Eigen::MatrixXd> lv, vertices, allnormals, displaced_allnormals;
+		std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
 		std::vector<int> el_ids, global_primitive_ids;
-		Eigen::MatrixXd uv, local_pts, tmp_n, normals, displaced_normals, trafo, deform_mat;
+		Eigen::MatrixXd uv, local_pts, tmp_n, normals;
 		assembler::ElementAssemblyValues vals;
 		const auto &sampler = ref_element_sampler;
 		const int n_samples = sampler.num_samples();
@@ -579,7 +1463,6 @@ namespace polyfem::io
 		{
 			const auto &lb = *it;
 			const auto &gbs = gbases[lb.element_id()];
-			const auto &bs = bases[lb.element_id()];
 
 			for (int k = 0; k < lb.size(); ++k)
 			{
@@ -628,7 +1511,7 @@ namespace polyfem::io
 				el_ids.push_back(lb.element_id());
 				global_primitive_ids.push_back(lb.global_primitive_id(k));
 				gbs.eval_geom_mapping(local_pts, vertices.back());
-				vals.compute(lb.element_id(), mesh.is_volume(), local_pts, bs, gbs);
+				vals.compute(lb.element_id(), mesh.is_volume(), local_pts, gbs, gbs);
 				const int tris_start = tris.size();
 
 				if (mesh.is_volume())
@@ -694,37 +1577,14 @@ namespace polyfem::io
 				}
 
 				normals.resize(vals.jac_it.size(), tmp_n.cols());
-				displaced_normals.resize(vals.jac_it.size(), tmp_n.cols());
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					trafo = vals.jac_it[n].inverse();
-
-					if (problem_dim == 2 || problem_dim == 3)
-					{
-
-						if (solution.size() > 0)
-						{
-							deform_mat.resize(problem_dim, problem_dim);
-							deform_mat.setZero();
-							for (const auto &b : vals.basis_values)
-								for (const auto &g : b.global)
-									for (int d = 0; d < problem_dim; ++d)
-										deform_mat.row(d) += solution(g.index * problem_dim + d) * b.grad.row(n);
-
-							trafo += deform_mat;
-						}
-					}
-
 					normals.row(n) = tmp_n * vals.jac_it[n];
 					normals.row(n).normalize();
-
-					displaced_normals.row(n) = tmp_n * trafo.inverse();
-					displaced_normals.row(n).normalize();
 				}
 
 				allnormals.push_back(normals);
-				displaced_allnormals.push_back(displaced_normals);
 
 				tmp_n.setZero();
 				for (int n = 0; n < vals.jac_it.size(); ++n)
@@ -758,7 +1618,6 @@ namespace polyfem::io
 		boundary_vis_elements_ids.resize(size, 1);
 		boundary_vis_primitive_ids.resize(size, 1);
 		boundary_vis_normals.resize(size, vertices.front().cols());
-		displaced_boundary_vis_normals.resize(size, vertices.front().cols());
 
 		if (mesh.is_volume())
 			boundary_vis_elements.resize(tris.size(), 3);
@@ -780,13 +1639,6 @@ namespace polyfem::io
 		for (const auto &n : allnormals)
 		{
 			boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
-			index += n.rows();
-		}
-
-		index = 0;
-		for (const auto &n : displaced_allnormals)
-		{
-			displaced_boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
 			index += n.rows();
 		}
 
@@ -819,7 +1671,8 @@ namespace polyfem::io
 		Eigen::MatrixXd &points,
 		Eigen::MatrixXi &tets,
 		Eigen::MatrixXi &el_id,
-		Eigen::MatrixXd &discr) const
+		Eigen::MatrixXd &discr,
+		Eigen::MatrixXd &local_points) const
 	{
 		const auto &sampler = ref_element_sampler;
 
@@ -877,6 +1730,8 @@ namespace polyfem::io
 		}
 
 		points.resize(pts_total_size, mesh.dimension());
+		local_points.resize(pts_total_size, mesh.dimension());
+		local_points.setZero();
 		tets.resize(tet_total_size, mesh.is_volume() ? 4 : 3);
 
 		el_id.resize(pts_total_size, 1);
@@ -900,6 +1755,7 @@ namespace polyfem::io
 				tet_index += sampler.simplex_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				local_points.block(pts_index, 0, sampler.simplex_points().rows(), sampler.simplex_points().cols()) = sampler.simplex_points();
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
@@ -912,6 +1768,7 @@ namespace polyfem::io
 				tet_index += sampler.cube_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				local_points.block(pts_index, 0, sampler.cube_points().rows(), sampler.cube_points().cols()) = sampler.cube_points();
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
@@ -924,6 +1781,7 @@ namespace polyfem::io
 				tet_index += sampler.prism_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				local_points.block(pts_index, 0, sampler.prism_points().rows(), sampler.prism_points().cols()) = sampler.prism_points();
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
@@ -936,6 +1794,7 @@ namespace polyfem::io
 				tet_index += sampler.pyramid_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				local_points.block(pts_index, 0, sampler.pyramid_points().rows(), sampler.pyramid_points().cols()) = sampler.pyramid_points();
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
@@ -951,6 +1810,7 @@ namespace polyfem::io
 					tet_index += vis_faces_poly.rows();
 
 					points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+					local_points.block(pts_index, 0, vis_pts_poly.rows(), vis_pts_poly.cols()) = vis_pts_poly;
 					discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
 					el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 					pts_index += mapped.rows();
@@ -964,6 +1824,7 @@ namespace polyfem::io
 					tet_index += vis_faces_poly.rows();
 
 					points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+					local_points.block(pts_index, 0, vis_pts_poly.rows(), vis_pts_poly.cols()) = vis_pts_poly;
 					discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
 					el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 					pts_index += mapped.rows();
@@ -977,13 +1838,13 @@ namespace polyfem::io
 
 	void OutGeometryData::build_high_order_vis_mesh(
 		const mesh::Mesh &mesh,
-		const Eigen::VectorXi &disc_orders,
-		const Eigen::VectorXi &disc_ordersq,
+		const Eigen::VectorXi &output_orders,
 		const std::vector<basis::ElementBases> &bases,
 		Eigen::MatrixXd &points,
 		std::vector<CellElement> &elements,
 		Eigen::MatrixXi &el_id,
-		Eigen::MatrixXd &discr) const
+		Eigen::MatrixXd &discr,
+		Eigen::MatrixXd &local_points) const
 	{
 		// if (!mesh)
 		// {
@@ -1008,17 +1869,19 @@ namespace polyfem::io
 			if (mesh.is_volume())
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+					autogen::p_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+					autogen::q_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
 				{
-					int max_order = std::max(disc_orders(i), disc_ordersq(i));
-					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+					autogen::prism_nodes_3d(output_orders(i), output_orders(i), ref_pts);
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					if (output_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1026,9 +1889,9 @@ namespace polyfem::io
 			else
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+					autogen::p_nodes_2d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+					autogen::q_nodes_2d(output_orders(i), ref_pts);
 				else
 				{
 					const int n_v = static_cast<const mesh::Mesh2D &>(mesh).n_face_vertices(i);
@@ -1040,6 +1903,8 @@ namespace polyfem::io
 		}
 
 		points.resize(pts_total_size, mesh.dimension());
+		local_points.resize(pts_total_size, mesh.dimension());
+		local_points.setZero();
 
 		el_id.resize(pts_total_size, 1);
 		discr.resize(pts_total_size, 1);
@@ -1055,17 +1920,19 @@ namespace polyfem::io
 			if (mesh.is_volume())
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+					autogen::p_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+					autogen::q_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
 				{
-					int max_order = std::max(disc_orders(i), disc_ordersq(i));
-					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+					autogen::prism_nodes_3d(output_orders(i), output_orders(i), ref_pts);
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					if (output_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1073,9 +1940,9 @@ namespace polyfem::io
 			else
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+					autogen::p_nodes_2d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+					autogen::q_nodes_2d(output_orders(i), ref_pts);
 				else
 					continue;
 			}
@@ -1085,8 +1952,9 @@ namespace polyfem::io
 			for (int j = 0; j < mapped.rows(); ++j)
 			{
 				points.row(pts_index) = mapped.row(j);
+				local_points.row(pts_index).leftCols(ref_pts.cols()) = ref_pts.row(j);
 				el_id(pts_index) = i;
-				discr(pts_index) = disc_orders(i);
+				discr(pts_index) = output_orders(i);
 				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
@@ -1097,30 +1965,30 @@ namespace polyfem::io
 				if (mesh.is_volume())
 				{
 					const int n_nodes = elements[i].vertices.size();
-					if (disc_orders(i) >= 3)
+					if (output_orders(i) >= 3)
 					{
 						std::swap(elements[i].vertices[16], elements[i].vertices[17]);
 						std::swap(elements[i].vertices[17], elements[i].vertices[18]);
 						std::swap(elements[i].vertices[18], elements[i].vertices[19]);
 					}
-					if (disc_orders(i) > 4)
+					if (output_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 				else
 				{
-					if (disc_orders(i) == 4)
+					if (output_orders(i) == 4)
 					{
 						const int n_nodes = elements[i].vertices.size();
 						std::swap(elements[i].vertices[n_nodes - 1], elements[i].vertices[n_nodes - 2]);
 					}
-					if (disc_orders(i) > 4)
+					if (output_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 			}
 			else if (mesh.is_cube(i) && mesh.is_volume())
 			{
 				const int n_nodes = elements[i].vertices.size();
-				if (disc_orders(i) == 2) // Lagrange hex, order=2
+				if (output_orders(i) == 2) // Lagrange hex, order=2
 				{
 					std::swap(elements[i].vertices[12], elements[i].vertices[16]);
 					std::swap(elements[i].vertices[13], elements[i].vertices[17]);
@@ -1141,11 +2009,14 @@ namespace polyfem::io
 				// 	std::swap(elements[i].vertices[28], elements[i].vertices[30]);  // hack
 				// 	std::swap(elements[i].vertices[29], elements[i].vertices[31]);  // hack
 				// }
-				if (disc_orders(i) > 2)
-					error_msg = "Saving high-order meshes not implemented for P2+ elements!";
+				if (output_orders(i) > 2)
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 			}
-			else if (disc_orders(i) > 1)
-				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			else if (output_orders(i) > 1)
+			{
+				if (mesh.is_cube(i))
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			}
 		}
 
 		if (!error_msg.empty())
@@ -1162,8 +2033,9 @@ namespace polyfem::io
 			for (int j = 0; j < n_v; ++j)
 			{
 				points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
+				local_points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
 				el_id(pts_index) = i;
-				discr(pts_index) = disc_orders(i);
+				discr(pts_index) = output_orders(i);
 				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
@@ -1198,92 +2070,49 @@ namespace polyfem::io
 			}
 		}
 
+		if (mesh.is_volume())
+		{
+			// ParaView does not reliably render high-order Lagrange pyramids;
+			// tessellate only those cells while keeping linear pyramids and the
+			// other element types in their native representation.
+			std::vector<CellElement> expanded_elements;
+			expanded_elements.reserve(elements.size());
+			for (size_t i = 0; i < bases.size(); ++i)
+			{
+				if (!mesh.is_pyramid(i) || output_orders(i) == 1)
+				{
+					expanded_elements.push_back(std::move(elements[i]));
+					continue;
+				}
+
+				for (int t = 0; t < ref_element_sampler.pyramid_volume().rows(); ++t)
+				{
+					CellElement tet;
+					tet.ctype = CellType::Tetrahedron;
+					for (int j = 0; j < ref_element_sampler.pyramid_volume().cols(); ++j)
+						tet.vertices.push_back(elements[i].vertices[ref_element_sampler.pyramid_volume()(t, j)]);
+					expanded_elements.push_back(std::move(tet));
+				}
+			}
+			elements.swap(expanded_elements);
+		}
+
 		assert(pts_index == points.rows());
 	}
 
 	void OutGeometryData::export_data(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const bool is_time_dependent,
 		const double tend_in,
 		const double dt,
 		const ExportOptions &opts,
-		const std::string &vis_mesh_path,
-		const std::string &nodes_path,
-		const std::string &solution_path,
-		const std::string &stress_path,
-		const std::string &mises_path,
-		const bool is_contact_enabled) const
+		const std::string &vis_mesh_path) const
 	{
-		if (!state.mesh)
+		if (!space.mesh)
 		{
 			logger().error("Load the mesh first!");
 			return;
-		}
-		const int n_bases = state.n_bases;
-		const std::vector<basis::ElementBases> &bases = state.bases;
-		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
-		const Eigen::MatrixXd &rhs = state.rhs;
-		const assembler::Problem &problem = *state.problem;
-
-		if (n_bases <= 0)
-		{
-			logger().error("Build the bases first!");
-			return;
-		}
-		// if (rhs.size() <= 0)
-		// {
-		// 	logger().error("Assemble the rhs first!");
-		// 	return;
-		// }
-		if (sol.size() <= 0)
-		{
-			logger().error("Solve the problem first!");
-			return;
-		}
-
-		if (!solution_path.empty())
-		{
-			logger().info("Saving solution to {}", solution_path);
-
-			std::ofstream out(solution_path);
-			out.precision(100);
-			out << std::scientific;
-			if (opts.reorder_output)
-			{
-				int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
-				Eigen::VectorXi reordering(n_bases);
-				reordering.setConstant(-1);
-
-				for (int i = 0; i < in_node_to_node.size(); ++i)
-				{
-					reordering[in_node_to_node[i]] = i;
-				}
-				Eigen::MatrixXd tmp_sol = utils::unflatten(sol, problem_dim);
-				Eigen::MatrixXd tmp(tmp_sol.rows(), tmp_sol.cols());
-
-				for (int i = 0; i < reordering.size(); ++i)
-				{
-					if (reordering[i] < 0)
-						continue;
-
-					tmp.row(reordering[i]) = tmp_sol.row(i);
-				}
-
-				for (int i = 0; i < tmp.rows(); ++i)
-				{
-					for (int j = 0; j < tmp.cols(); ++j)
-						out << tmp(i, j) << " ";
-
-					out << std::endl;
-				}
-			}
-			else
-				out << sol << std::endl;
-			out.close();
 		}
 
 		double tend = tend_in;
@@ -1293,53 +2122,8 @@ namespace polyfem::io
 		if (!vis_mesh_path.empty() && !is_time_dependent)
 		{
 			save_vtu(
-				vis_mesh_path, state, sol, pressure,
-				tend, dt, opts,
-				is_contact_enabled);
-		}
-		if (!nodes_path.empty())
-		{
-			Eigen::MatrixXd nodes(n_bases, mesh.dimension());
-			for (const basis::ElementBases &eb : bases)
-			{
-				for (const basis::Basis &b : eb.bases)
-				{
-					// for(const auto &lg : b.global())
-					for (size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						const auto &lg = b.global()[ii];
-						nodes.row(lg.index) = lg.node;
-					}
-				}
-			}
-			std::ofstream out(nodes_path);
-			out.precision(100);
-			out << nodes;
-			out.close();
-		}
-		if (!stress_path.empty())
-		{
-			Eigen::MatrixXd result;
-			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(
-				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, state.disc_ordersq, *state.assembler,
-				sol, tend, result, mises);
-			std::ofstream out(stress_path);
-			out.precision(20);
-			out << result;
-		}
-		if (!mises_path.empty())
-		{
-			Eigen::MatrixXd result;
-			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(
-				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, state.disc_ordersq, *state.assembler,
-				sol, tend, result, mises);
-			std::ofstream out(mises_path);
-			out.precision(20);
-			out << mises;
+				vis_mesh_path, space, output_fields,
+				tend, dt, opts);
 		}
 	}
 
@@ -1366,20 +2150,9 @@ namespace polyfem::io
 		else
 			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
-		material_params = args["output"]["paraview"]["options"]["material"];
-		body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
-		velocity = args["output"]["paraview"]["options"]["velocity"];
-		acceleration = args["output"]["paraview"]["options"]["acceleration"];
-		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
-		jacobian_validity = args["output"]["paraview"]["options"]["jacobian_validity"] && !is_problem_scalar;
 
-		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
-		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
 		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
-		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
-
-		use_spline = args["space"]["basis_type"] == "Spline";
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
@@ -1388,39 +2161,46 @@ namespace polyfem::io
 
 	void OutGeometryData::save_vtu(
 		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
-		if (!state.mesh)
+		if (!space.mesh)
 		{
 			logger().error("Load the mesh first!");
 			return;
 		}
-		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::MatrixXd &rhs = state.rhs;
 
-		if (state.n_bases <= 0)
+		const std::filesystem::path fs_path(path);
+		const std::string path_stem = fs_path.stem().string();
+		const std::string base_path = (fs_path.parent_path() / path_stem).string();
+		paraviewo::VTMWriter vtm(t);
+		save_vtu(path, space, output_fields, t, dt, opts, vtm, "");
+		vtm.save(base_path + ".vtm");
+	}
+
+	void OutGeometryData::save_vtu(
+		const std::string &path,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
+		const double t,
+		const double dt,
+		const ExportOptions &opts,
+		paraviewo::VTMWriter &vtm,
+		const std::string &block_prefix) const
+	{
+		if (!space.mesh)
 		{
-			logger().error("Build the bases first!");
+			logger().error("Load the mesh first!");
 			return;
 		}
-		// if (rhs.size() <= 0)
-		// {
-		// 	logger().error("Assemble the rhs first!");
-		// 	return;
-		// }
-		if (sol.size() <= 0)
-		{
-			logger().error("Solve the problem first!");
-			return;
-		}
 
-		const bool save_contact = is_contact_enabled && (opts.contact_forces || opts.friction_forces);
+		const bool save_contact =
+			space.collision_mesh
+			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces
+				|| (!opts.fields.empty() && opts.export_field("adaptive_dhat")));
 
 		logger().info("Saving vtu to {}; volume={}, surface={}, contact={}, points={}, wireframe={}",
 					  path, opts.volume, opts.surface, save_contact, opts.points, opts.wire);
@@ -1431,190 +2211,83 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(base_path + opts.file_extension(), state, sol, pressure, t, dt, opts);
+			save_volume(base_path + opts.file_extension(), space, output_fields, t, dt, opts);
 		}
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
-						 is_contact_enabled);
+			save_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
 		}
 
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
+		if (save_contact)
 		{
-			save_contact_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
-								 is_contact_enabled);
+			save_contact_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
 		}
 
 		if (opts.wire)
 		{
-			save_wire(base_path + "_wire" + opts.file_extension(), state, sol, t, opts);
+			save_wire(base_path + "_wire" + opts.file_extension(), space, output_fields, t, opts);
 		}
 
 		if (opts.points)
 		{
-			save_points(base_path + "_points" + opts.file_extension(), state, sol, opts);
+			save_points(base_path + "_points" + opts.file_extension(), space, output_fields, opts);
 		}
 
-		paraviewo::VTMWriter vtm(t);
+		const auto block_name = [&block_prefix](const std::string &name) {
+			return block_prefix.empty() ? name : block_prefix + " " + name;
+		};
 		if (opts.volume)
-			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
+			vtm.add_dataset(block_name("Volume"), "data", path_stem + opts.file_extension());
 		if (opts.surface)
-			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
-			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
+			vtm.add_dataset(block_name("Surface"), "data", path_stem + "_surf" + opts.file_extension());
+		if (save_contact)
+			vtm.add_dataset(block_name("Contact"), "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
-			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
+			vtm.add_dataset(block_name("Wireframe"), "data", path_stem + "_wire" + opts.file_extension());
 		if (opts.points)
-			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
-		vtm.save(base_path + ".vtm");
+			vtm.add_dataset(block_name("Points"), "data", path_stem + "_points" + opts.file_extension());
 	}
 
 	void OutGeometryData::save_volume(
 		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt,
 		const ExportOptions &opts) const
 	{
-		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Eigen::VectorXi &disc_ordersq = state.disc_ordersq;
-		const auto &density = state.mass_matrix_assembler->density();
-		const std::vector<basis::ElementBases> &bases = state.bases;
-		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
-		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-		const std::map<int, Eigen::MatrixXd> &polys = state.polys;
-		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = state.polys_3d;
-		const assembler::Assembler &assembler = *state.assembler;
-		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = state.solve_data.time_integrator;
-		const mesh::Mesh &mesh = *state.mesh;
-		const mesh::Obstacle &obstacle = state.obstacle;
-		const assembler::Problem &problem = *state.problem;
+		if (!space.mesh || !space.geometry_bases)
+			return;
+
+		static const std::map<int, Eigen::MatrixXd> empty_polys;
+		static const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> empty_polys_3d;
+
+		const mesh::Mesh &mesh = *space.mesh;
+		const std::vector<basis::ElementBases> &gbases = *space.geometry_bases;
+		const std::map<int, Eigen::MatrixXd> &polys = space.polys ? *space.polys : empty_polys;
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = space.polys_3d ? *space.polys_3d : empty_polys_3d;
+		const Eigen::VectorXi output_orders =
+			space.output_orders.size() == mesh.n_elements()
+				? space.output_orders
+				: Eigen::VectorXi::Ones(mesh.n_elements());
+		const mesh::Obstacle *obstacle = space.obstacle;
 
 		Eigen::MatrixXd points;
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
 		Eigen::MatrixXd discr;
+		Eigen::MatrixXd local_points;
 		std::vector<CellElement> elements;
 
 		if (opts.use_sampler)
-			build_vis_mesh(mesh, disc_orders, gbases,
-						   state.polys, state.polys_3d, opts.boundary_only,
-						   points, tets, el_id, discr);
+			build_vis_mesh(mesh, output_orders, gbases,
+						   polys, polys_3d, opts.boundary_only,
+						   points, tets, el_id, discr, local_points);
 		else
-			build_high_order_vis_mesh(mesh, disc_orders, disc_ordersq, bases,
-									  points, elements, el_id, discr);
-
-		Eigen::MatrixXd fun, exact_fun, err, node_fun;
-
-		if (opts.sol_on_grid)
 		{
-			const int problem_dim = problem.is_scalar() ? 1 : mesh.dimension();
-			Eigen::MatrixXd tmp, tmp_grad;
-			Eigen::MatrixXd tmp_p, tmp_grad_p;
-			Eigen::MatrixXd res(grid_points_to_elements.size(), problem_dim);
-			res.setConstant(std::numeric_limits<double>::quiet_NaN());
-			Eigen::MatrixXd res_grad(grid_points_to_elements.size(), problem_dim * problem_dim);
-			res_grad.setConstant(std::numeric_limits<double>::quiet_NaN());
-
-			Eigen::MatrixXd res_p(grid_points_to_elements.size(), 1);
-			res_p.setConstant(std::numeric_limits<double>::quiet_NaN());
-			Eigen::MatrixXd res_grad_p(grid_points_to_elements.size(), problem_dim);
-			res_grad_p.setConstant(std::numeric_limits<double>::quiet_NaN());
-
-			for (int i = 0; i < grid_points_to_elements.size(); ++i)
-			{
-				const int el_id = grid_points_to_elements(i);
-				if (el_id < 0)
-					continue;
-				assert(mesh.is_simplex(el_id));
-				const Eigen::MatrixXd bc = grid_points_bc.row(i);
-				Eigen::MatrixXd pt(1, bc.cols() - 1);
-				for (int d = 1; d < bc.cols(); ++d)
-					pt(d - 1) = bc(d);
-				Evaluator::interpolate_at_local_vals(
-					mesh, problem.is_scalar(), bases, gbases,
-					el_id, pt, sol, tmp, tmp_grad);
-
-				res.row(i) = tmp;
-				res_grad.row(i) = tmp_grad;
-
-				if (state.mixed_assembler != nullptr)
-				{
-					Evaluator::interpolate_at_local_vals(
-						mesh, 1, pressure_bases, gbases,
-						el_id, pt, pressure, tmp_p, tmp_grad_p);
-					res_p.row(i) = tmp_p;
-					res_grad_p.row(i) = tmp_grad_p;
-				}
-			}
-
-			std::ofstream os(path + "_sol.txt");
-			os << res;
-
-			std::ofstream osg(path + "_grad.txt");
-			osg << res_grad;
-
-			std::ofstream osgg(path + "_grid.txt");
-			osgg << grid_points;
-
-			if (state.mixed_assembler != nullptr)
-			{
-				std::ofstream osp(path + "_p_sol.txt");
-				osp << res_p;
-
-				std::ofstream osgp(path + "_p_grad.txt");
-				osgp << res_grad_p;
-			}
-		}
-
-		Eigen::Vector<bool, -1> validity;
-		if (opts.jacobian_validity)
-			Evaluator::mark_flipped_cells(
-				mesh, gbases, bases, state.disc_orders,
-				state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
-
-		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
-			state.polys, state.polys_3d, ref_element_sampler,
-			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
-
-		{
-			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size() - 1);
-
-			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
-				state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), tmp, node_fun, opts.use_sampler, opts.boundary_only);
-		}
-
-		if (obstacle.n_vertices() > 0)
-		{
-			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
-			node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
-			node_fun.bottomRows(obstacle.n_vertices()).setZero();
-			// obstacle.update_displacement(t, fun);
-			// NOTE: Assuming the obstacle displacement is the last part of the solution
-			fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
-		}
-
-		if (problem.has_exact_sol())
-		{
-			problem.exact(points, t, exact_fun);
-			err = (fun - exact_fun).eval().rowwise().norm();
-
-			if (obstacle.n_vertices() > 0)
-			{
-				exact_fun.conservativeResize(exact_fun.rows() + obstacle.n_vertices(), exact_fun.cols());
-				// obstacle.update_displacement(t, exact_fun);
-				exact_fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
-
-				err.conservativeResize(err.rows() + obstacle.n_vertices(), 1);
-				err.bottomRows(obstacle.n_vertices()).setZero();
-			}
+			build_high_order_vis_mesh(mesh, output_orders, gbases,
+									  points, elements, el_id, discr, local_points);
 		}
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
@@ -1624,446 +2297,102 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		if (validity.size() && opts.export_field("validity"))
-			writer.add_field("validity", validity.cast<double>());
-
-		if (opts.nodes && opts.export_field("nodes"))
-			writer.add_field("nodes", node_fun);
-
-		if (problem.is_time_dependent())
+		if (obstacle && obstacle->n_vertices() > 0)
 		{
-			bool is_time_integrator_valid = time_integrator != nullptr;
-
-			if (opts.velocity || opts.export_field("velocity"))
-			{
-				const Eigen::VectorXd velocity =
-					is_time_integrator_valid ? (time_integrator->v_prev()) : Eigen::VectorXd::Zero(sol.size());
-				save_volume_vector_field(state, points, opts, "velocity", velocity, writer);
-			}
-
-			if (opts.acceleration || opts.export_field("acceleration"))
-			{
-				const Eigen::VectorXd acceleration =
-					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
-				save_volume_vector_field(state, points, opts, "acceleration", acceleration, writer);
-			}
-		}
-
-		if (opts.forces)
-		{
-			const double s = state.solve_data.time_integrator
-								 ? state.solve_data.time_integrator->acceleration_scaling()
-								 : 1;
-
-			for (const auto &[name, form] : state.solve_data.named_forms())
-			{
-				// NOTE: Assumes this form will be null for the entire sim
-				if (form == nullptr)
-					continue;
-
-				Eigen::VectorXd force;
-				if (form->enabled())
-				{
-					form->first_derivative(sol, force);
-					force *= -1.0 / s; // Divide by acceleration scaling to get units of force
-				}
-				else
-				{
-					force.setZero(sol.size());
-				}
-				if (opts.export_field(name + "_forces"))
-					save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
-			}
-		}
-
-		// if(problem->is_mixed())
-		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
-		{
-			Eigen::MatrixXd interp_p;
-			Evaluator::interpolate_function(
-				mesh, 1, // FIXME: disc_orders should use pressure discr orders, works only with sampler
-				pressure_bases, disc_orders, disc_ordersq, state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), pressure, interp_p, opts.use_sampler, opts.boundary_only);
-
-			if (obstacle.n_vertices() > 0)
-			{
-				interp_p.conservativeResize(interp_p.size() + obstacle.n_vertices(), 1);
-				interp_p.bottomRows(obstacle.n_vertices()).setZero();
-			}
-
-			writer.add_field("pressure", interp_p);
-		}
-
-		if (obstacle.n_vertices() > 0)
-		{
-			discr.conservativeResize(discr.size() + obstacle.n_vertices(), 1);
-			discr.bottomRows(obstacle.n_vertices()).setZero();
+			discr.conservativeResize(discr.size() + obstacle->n_vertices(), 1);
+			discr.bottomRows(obstacle->n_vertices()).setZero();
 		}
 
 		if (opts.discretization_order && opts.export_field("discr"))
 			writer.add_field("discr", discr);
 
-		if (problem.has_exact_sol())
-		{
-			if (opts.export_field("exact"))
-				writer.add_field("exact", exact_fun);
-			if (opts.export_field("error"))
-				writer.add_field("error", err);
-		}
-
-		if (fun.cols() != 1 && (opts.scalar_values || opts.tensor_values || (!opts.use_spline && (opts.scalar_values || opts.tensor_values))))
-		{
-			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
-			Evaluator::compute_scalar_value(
-				mesh, problem.is_scalar(), bases, gbases,
-				disc_orders, disc_ordersq, state.polys, state.polys_3d,
-				*state.assembler,
-				ref_element_sampler, points.rows(), sol, t, vals, opts.use_sampler, opts.boundary_only);
-
-			for (auto &[_, v] : vals)
-				utils::append_rows_of_zeros(v, obstacle.n_vertices());
-
-			if (opts.scalar_values)
-			{
-				for (const auto &[name, v] : vals)
-				{
-					if (opts.export_field(name))
-						writer.add_field(name, v);
-				}
-			}
-
-			if (opts.tensor_values)
-			{
-				Evaluator::compute_tensor_value(
-					mesh, problem.is_scalar(), bases, gbases, disc_orders, disc_ordersq,
-					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
-					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
-
-				for (auto &[_, v] : tvals)
-					utils::append_rows_of_zeros(v, obstacle.n_vertices());
-
-				for (const auto &[name, v] : tvals)
-				{
-					const int stride = mesh.dimension();
-					assert(v.cols() % stride == 0);
-
-					if (!opts.export_field(name))
-						continue;
-
-					for (int i = 0; i < v.cols(); i += stride)
-					{
-						const Eigen::MatrixXd tmp = v.middleCols(i, stride);
-						assert(tmp.cols() == stride);
-
-						const int ii = (i / stride) + 1;
-						writer.add_field(fmt::format("{:s}_{:d}", name, ii), tmp);
-					}
-				}
-			}
-
-			if (!opts.use_spline && (opts.scalar_values || opts.tensor_values))
-			{
-				Evaluator::average_grad_based_function(
-					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
-					disc_orders, disc_ordersq, state.polys, state.polys_3d, *state.assembler,
-					ref_element_sampler, t, points.rows(), sol, vals, tvals,
-					opts.use_sampler, opts.boundary_only);
-
-				if (obstacle.n_vertices() > 0)
-				{
-					for (auto &v : vals)
-					{
-						v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
-						v.second.bottomRows(obstacle.n_vertices()).setZero();
-					}
-				}
-
-				if (opts.scalar_values)
-				{
-					for (const auto &v : vals)
-					{
-						if (opts.export_field(fmt::format("{:s}_avg", v.first)))
-							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
-					}
-				}
-				if (opts.tensor_values)
-				{
-					for (const auto &v : tvals)
-					{
-						const int stride = mesh.dimension();
-						assert(v.second.cols() % stride == 0);
-
-						if (!opts.export_field(fmt::format("{:s}_avg", v.first)))
-							continue;
-
-						for (int i = 0; i < v.second.cols(); i += stride)
-						{
-							const Eigen::MatrixXd tmp = v.second.middleCols(i, stride);
-							assert(tmp.cols() == stride);
-
-							const int ii = (i / stride) + 1;
-							writer.add_field(
-								fmt::format("{:s}_avg_{:d}", v.first, ii), tmp);
-						}
-					}
-				}
-			}
-		}
-
-		if (opts.material_params)
-		{
-			const auto &params = assembler.parameters();
-
-			std::map<std::string, Eigen::MatrixXd> param_val;
-			for (const auto &[p, _] : params)
-				param_val[p] = Eigen::MatrixXd(points.rows(), 1);
-			Eigen::MatrixXd rhos(points.rows(), 1);
-
-			Eigen::MatrixXd local_pts;
-			Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
-
-			int index = 0;
-			const auto &sampler = ref_element_sampler;
-			for (int e = 0; e < int(bases.size()); ++e)
-			{
-				const basis::ElementBases &gbs = gbases[e];
-				const basis::ElementBases &bs = bases[e];
-
-				if (opts.use_sampler)
-				{
-					if (mesh.is_simplex(e))
-						local_pts = sampler.simplex_points();
-					else if (mesh.is_cube(e))
-						local_pts = sampler.cube_points();
-					else if (mesh.is_prism(e))
-						local_pts = sampler.prism_points();
-					else if (mesh.is_pyramid(e))
-						local_pts = sampler.pyramid_points();
-					else
-					{
-						if (mesh.is_volume())
-							sampler.sample_polyhedron(polys_3d.at(e).first, polys_3d.at(e).second, local_pts, vis_faces_poly, vis_edges_poly);
-						else
-							sampler.sample_polygon(polys.at(e), local_pts, vis_faces_poly, vis_edges_poly);
-					}
-				}
-				else
-				{
-					if (mesh.is_volume())
-					{
-						if (mesh.is_simplex(e))
-							autogen::p_nodes_3d(disc_orders(e), local_pts);
-						else if (mesh.is_cube(e))
-							autogen::q_nodes_3d(disc_orders(e), local_pts);
-						else if (mesh.is_prism(e))
-						{
-							const auto o = std::max(disc_orders(e), disc_ordersq(e));
-							autogen::prism_nodes_3d(o, o, local_pts);
-						}
-						else if (mesh.is_pyramid(e))
-							autogen::pyramid_nodes_3d(disc_orders(e) == 2 ? -1 : disc_orders(e), local_pts);
-
-						else
-							continue;
-					}
-					else
-					{
-						if (mesh.is_simplex(e))
-							autogen::p_nodes_2d(disc_orders(e), local_pts);
-						else if (mesh.is_cube(e))
-							autogen::q_nodes_2d(disc_orders(e), local_pts);
-						else
-						{
-							const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
-							const int n_v = mesh2d.n_face_vertices(e);
-							local_pts.resize(n_v, 2);
-
-							for (int j = 0; j < n_v; ++j)
-							{
-								local_pts.row(j) = mesh2d.point(mesh2d.face_vertex(e, j));
-							}
-						}
-					}
-				}
-
-				assembler::ElementAssemblyValues vals;
-				vals.compute(e, mesh.is_volume(), local_pts, bs, gbs);
-
-				for (int j = 0; j < vals.val.rows(); ++j)
-				{
-					for (const auto &[p, func] : params)
-						param_val.at(p)(index) = func(local_pts.row(j), vals.val.row(j), t, e);
-
-					rhos(index) = density(local_pts.row(j), vals.val.row(j), t, e);
-
-					++index;
-				}
-			}
-
-			assert(index == points.rows());
-
-			if (obstacle.n_vertices() > 0)
-			{
-				for (auto &[_, tmp] : param_val)
-				{
-					tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
-					tmp.bottomRows(obstacle.n_vertices()).setZero();
-				}
-
-				rhos.conservativeResize(rhos.size() + obstacle.n_vertices(), 1);
-				rhos.bottomRows(obstacle.n_vertices()).setZero();
-			}
-			for (const auto &[p, tmp] : param_val)
-			{
-				if (opts.export_field(p))
-					writer.add_field(p, tmp);
-			}
-			if (opts.export_field("rho"))
-				writer.add_field("rho", rhos);
-		}
-
-		if (opts.body_ids || opts.export_field("body_ids"))
-		{
-
-			Eigen::MatrixXd ids(points.rows(), 1);
-
-			for (int i = 0; i < points.rows(); ++i)
-			{
-				ids(i) = mesh.get_body_id(el_id(i));
-			}
-
-			if (obstacle.n_vertices() > 0)
-			{
-				ids.conservativeResize(ids.size() + obstacle.n_vertices(), 1);
-				ids.bottomRows(obstacle.n_vertices()).setZero();
-			}
-
-			writer.add_field("body_ids", ids);
-		}
-
-		// if (opts.export_field("rhs"))
-		// {
-		// 	interpolate_function(pts_index, rhs, fun, opts.boundary_only);
-		// 	writer.add_field("rhs", fun);
-		// }
-
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("traction_force"))
-		{
-			Eigen::MatrixXd traction_forces, traction_forces_fun;
-			compute_traction_forces(state, sol, t, traction_forces, false);
-
-			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
-				state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), traction_forces, traction_forces_fun, opts.use_sampler, opts.boundary_only);
-
-			if (obstacle.n_vertices() > 0)
-			{
-				traction_forces_fun.conservativeResize(traction_forces_fun.rows() + obstacle.n_vertices(), traction_forces_fun.cols());
-				traction_forces_fun.bottomRows(obstacle.n_vertices()).setZero();
-			}
-
-			writer.add_field("traction_force", traction_forces_fun);
-		}
-
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
-		{
-			try
-			{
-				Eigen::VectorXd potential_grad;
-				Eigen::MatrixXd potential_grad_fun;
-				if (state.solve_data.elastic_form)
-					state.solve_data.elastic_form->first_derivative(sol, potential_grad);
-
-				Evaluator::interpolate_function(
-					mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
-					state.polys, state.polys_3d, ref_element_sampler,
-					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
-
-				if (obstacle.n_vertices() > 0)
-				{
-					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
-				}
-
-				writer.add_field("gradient_of_elastic_potential", potential_grad_fun);
-			}
-			catch (std::exception &)
-			{
-			}
-		}
-
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
-		{
-			try
-			{
-				Eigen::VectorXd potential_grad;
-				Eigen::MatrixXd potential_grad_fun;
-				if (state.solve_data.contact_form && state.solve_data.contact_form->weight() > 0)
-				{
-					state.solve_data.contact_form->first_derivative(sol, potential_grad);
-					potential_grad *= -state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
-
-					Evaluator::interpolate_function(
-						mesh, problem.is_scalar(), bases, state.disc_orders, state.disc_ordersq,
-						state.polys, state.polys_3d, ref_element_sampler,
-						points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
-
-					if (obstacle.n_vertices() > 0)
-					{
-						potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-						potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
-					}
-
-					writer.add_field("gradient_of_contact_potential", potential_grad_fun);
-				}
-			}
-			catch (std::exception &)
-			{
-			}
-		}
-
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
-
-		if (obstacle.n_vertices() > 0)
+		if (obstacle && obstacle->n_vertices() > 0)
 		{
 			const int orig_p = points.rows();
-			points.conservativeResize(points.rows() + obstacle.n_vertices(), points.cols());
-			points.bottomRows(obstacle.n_vertices()) = obstacle.v();
+			points.conservativeResize(points.rows() + obstacle->n_vertices(), points.cols());
+			points.bottomRows(obstacle->n_vertices()) = obstacle->v();
 
 			if (elements.empty())
 			{
 				for (int i = 0; i < tets.rows(); ++i)
 				{
 					elements.emplace_back();
-					elements.back().ctype = CellType::Tetrahedron;
+					elements.back().ctype = mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle;
 					for (int j = 0; j < tets.cols(); ++j)
 						elements.back().vertices.push_back(tets(i, j));
 				}
 			}
 
-			for (int i = 0; i < obstacle.get_face_connectivity().rows(); ++i)
+			for (int i = 0; i < obstacle->get_face_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
 				elements.back().ctype = CellType::Triangle;
-				for (int j = 0; j < obstacle.get_face_connectivity().cols(); ++j)
-					elements.back().vertices.push_back(obstacle.get_face_connectivity()(i, j) + orig_p);
+				for (int j = 0; j < obstacle->get_face_connectivity().cols(); ++j)
+					elements.back().vertices.push_back(obstacle->get_face_connectivity()(i, j) + orig_p);
 			}
 
-			for (int i = 0; i < obstacle.get_edge_connectivity().rows(); ++i)
+			for (int i = 0; i < obstacle->get_edge_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
 				elements.back().ctype = CellType::Line;
-				for (int j = 0; j < obstacle.get_edge_connectivity().cols(); ++j)
-					elements.back().vertices.push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
+				for (int j = 0; j < obstacle->get_edge_connectivity().cols(); ++j)
+					elements.back().vertices.push_back(obstacle->get_edge_connectivity()(i, j) + orig_p);
 			}
 
-			for (int i = 0; i < obstacle.get_vertex_connectivity().size(); ++i)
+			for (int i = 0; i < obstacle->get_vertex_connectivity().size(); ++i)
 			{
 				elements.emplace_back();
 				elements.back().ctype = CellType::Vertex;
-				elements.back().vertices.push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
+				elements.back().vertices.push_back(obstacle->get_vertex_connectivity()(i) + orig_p);
+			}
+		}
+
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = points;
+		sample.local_points = local_points;
+		sample.element_ids = el_id.col(0);
+		sample.domain = OutputSample::Domain::Volume;
+		sample.cell_count = elements.empty() ? tets.rows() : static_cast<int>(elements.size());
+		sample.time = t;
+		sample.dt = dt;
+		add_output_fields(writer, sample, output_fields);
+
+		if (opts.sol_on_grid && output_fields && grid_points.rows() > 0)
+		{
+			OutputSample grid_sample;
+			grid_sample.points = grid_points;
+			grid_sample.element_ids = grid_points_to_elements.col(0);
+			grid_sample.domain = OutputSample::Domain::Grid;
+			grid_sample.local_points.resize(grid_points.rows(), mesh.dimension());
+			grid_sample.local_points.setZero();
+			for (int i = 0; i < grid_points.rows(); ++i)
+			{
+				if (grid_sample.element_ids(i) >= 0)
+					grid_sample.local_points.row(i) = grid_points_bc.row(i).rightCols(mesh.dimension());
+			}
+			grid_sample.time = t;
+			grid_sample.dt = dt;
+			grid_sample.requested_fields = {
+				"solution",
+				"solution_gradient",
+				"pressure",
+				"pressure_gradient",
+			};
+
+			io::write_matrix(path + "_grid.txt", grid_points);
+			for (const OutputField &field : output_fields(grid_sample))
+			{
+				if (field.association != OutputField::Association::Point || field.values.rows() != grid_points.rows())
+					continue;
+				if (field.name == "solution")
+					io::write_matrix(path + "_sol.txt", field.values);
+				else if (field.name == "solution_gradient")
+					io::write_matrix(path + "_grad.txt", field.values);
+				else if (field.name == "pressure")
+					io::write_matrix(path + "_p_sol.txt", field.values);
+				else if (field.name == "pressure_gradient")
+					io::write_matrix(path + "_p_grad.txt", field.values);
 			}
 		}
 
@@ -2073,51 +2402,19 @@ namespace polyfem::io
 			writer.write_mesh(path, points, elements);
 	}
 
-	void OutGeometryData::save_volume_vector_field(
-		const State &state,
-		const Eigen::MatrixXd &points,
-		const ExportOptions &opts,
-		const std::string &name,
-		const Eigen::VectorXd &field,
-		paraviewo::ParaviewWriter &writer) const
-	{
-		Eigen::MatrixXd inerpolated_field;
-		Evaluator::interpolate_function(
-			*state.mesh, state.problem->is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
-			state.polys, state.polys_3d, ref_element_sampler,
-			points.rows(), field, inerpolated_field, opts.use_sampler, opts.boundary_only);
-
-		if (state.obstacle.n_vertices() > 0)
-		{
-			inerpolated_field.conservativeResize(
-				inerpolated_field.rows() + state.obstacle.n_vertices(), inerpolated_field.cols());
-			inerpolated_field.bottomRows(state.obstacle.n_vertices()) =
-				utils::unflatten(field.tail(state.obstacle.ndof()), inerpolated_field.cols());
-		}
-		if (opts.export_field(name))
-			writer.add_field(name, inerpolated_field);
-	}
-
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
+		if (!space.mesh || !space.geometry_bases || !space.total_local_boundary)
+			return;
 
-		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const auto &density = state.mass_matrix_assembler->density();
-		const std::vector<basis::ElementBases> &bases = state.bases;
-		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
-		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-		const assembler::Assembler &assembler = *state.assembler;
-		const assembler::Problem &problem = *state.problem;
-		const mesh::Mesh &mesh = *state.mesh;
-		int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
+		const mesh::Mesh &mesh = *space.mesh;
+		const std::vector<basis::ElementBases> &gbases = *space.geometry_bases;
 
 		Eigen::MatrixXd boundary_vis_vertices;
 		Eigen::MatrixXd boundary_vis_local_vertices;
@@ -2125,26 +2422,13 @@ namespace polyfem::io
 		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXi boundary_vis_primitive_ids;
 		Eigen::MatrixXd boundary_vis_normals;
-		Eigen::MatrixXd displaced_boundary_vis_normals;
 
-		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary, sol, problem_dim,
+		build_vis_boundary_mesh(mesh, gbases, *space.total_local_boundary,
 								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
-								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals,
-								displaced_boundary_vis_normals);
+								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals);
 
-		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
-
-		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
-
-		int actual_dim = 1;
-		if (!problem.is_scalar())
-			actual_dim = mesh.dimension();
-
+		Eigen::MatrixXd discr, b_sidesets;
 		discr.resize(boundary_vis_vertices.rows(), 1);
-		fun.resize(boundary_vis_vertices.rows(), actual_dim);
-		interp_p.resize(boundary_vis_vertices.rows(), 1);
-		vect.resize(boundary_vis_vertices.rows(), mesh.dimension());
-
 		b_sidesets.resize(boundary_vis_vertices.rows(), 1);
 		b_sidesets.setZero();
 
@@ -2157,70 +2441,7 @@ namespace polyfem::io
 			}
 
 			const int el_index = boundary_vis_elements_ids(i);
-			Evaluator::interpolate_at_local_vals(
-				mesh, problem.is_scalar(), bases, gbases,
-				el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
-			assert(lsol.size() == actual_dim);
-			if (state.mixed_assembler != nullptr)
-			{
-				Evaluator::interpolate_at_local_vals(
-					mesh, 1, pressure_bases, gbases,
-					el_index, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
-				assert(lp.size() == 1);
-				interp_p(i) = lp(0);
-			}
-
-			discr(i) = disc_orders(el_index);
-			for (int j = 0; j < actual_dim; ++j)
-			{
-				fun(i, j) = lsol(j);
-			}
-
-			if (actual_dim == 1)
-			{
-				assert(lgrad.size() == mesh.dimension());
-				for (int j = 0; j < mesh.dimension(); ++j)
-				{
-					vect(i, j) = lgrad(j);
-				}
-			}
-			else
-			{
-				assert(lgrad.size() == actual_dim * actual_dim);
-				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				const basis::ElementBases &gbs = gbases[el_index];
-				const basis::ElementBases &bs = bases[el_index];
-				assembler.compute_tensor_value(assembler::OutputData(t, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol), tensor_flat);
-				// TF computed only from cauchy stress
-				assert(tensor_flat[0].first == "cauchy_stess");
-				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
-
-				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
-				vect.row(i) = displaced_boundary_vis_normals.row(i) * tensor;
-
-				double area = 0;
-				if (mesh.is_volume())
-				{
-					if (mesh.is_simplex(el_index))
-						area = mesh.tri_area(boundary_vis_primitive_ids(i));
-					else if (mesh.is_cube(el_index))
-						area = mesh.quad_area(boundary_vis_primitive_ids(i));
-					else if (mesh.is_prism(el_index))
-					{
-						const int tmp = boundary_vis_primitive_ids(i);
-						area = mesh.n_face_vertices(tmp) == 4 ? mesh.quad_area(tmp) : mesh.tri_area(tmp);
-					}
-					else if (mesh.is_pyramid(el_index))
-					{
-						const int tmp = boundary_vis_primitive_ids(i);
-						area = mesh.n_face_vertices(tmp) == 4 ? mesh.quad_area(tmp) : mesh.tri_area(tmp);
-					}
-				}
-				else
-					area = mesh.edge_length(boundary_vis_primitive_ids(i));
-
-				vect.row(i) *= area;
-			}
+			discr(i) = space.output_orders.size() == mesh.n_elements() ? space.output_orders(el_index) : 1;
 		}
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
@@ -2232,92 +2453,38 @@ namespace polyfem::io
 
 		if (opts.export_field("normals"))
 			writer.add_field("normals", boundary_vis_normals);
-		if (opts.export_field("displaced_normals"))
-			writer.add_field("displaced_normals", displaced_boundary_vis_normals);
-		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
-			writer.add_field("pressure", interp_p);
 		if (opts.export_field("discr"))
 			writer.add_field("discr", discr);
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
 
-		if (actual_dim == 1 && opts.export_field("solution_grad"))
-			writer.add_field("solution_grad", vect);
-		else if (opts.export_field("traction_force"))
-		{
-			writer.add_field("traction_force", vect);
-		}
-
-		if (opts.material_params)
-		{
-			const auto &params = assembler.parameters();
-
-			std::map<std::string, Eigen::MatrixXd> param_val;
-			for (const auto &[p, _] : params)
-				param_val[p] = Eigen::MatrixXd(boundary_vis_vertices.rows(), 1);
-			Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
-
-			for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-			{
-				double lambda, mu;
-
-				for (const auto &[p, func] : params)
-					param_val.at(p)(i) = func(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
-
-				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
-			}
-
-			for (const auto &[p, tmp] : param_val)
-			{
-				if (opts.export_field(p))
-					writer.add_field(p, tmp);
-			}
-			if (opts.export_field("rho"))
-				writer.add_field("rho", rhos);
-		}
-
-		if (opts.body_ids || opts.export_field("body_ids"))
-		{
-
-			Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
-
-			for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-			{
-				ids(i) = mesh.get_body_id(boundary_vis_elements_ids(i));
-			}
-
-			writer.add_field("body_ids", ids);
-		}
-
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = boundary_vis_vertices;
+		sample.local_points = boundary_vis_local_vertices;
+		sample.element_ids = boundary_vis_elements_ids.col(0);
+		sample.primitive_ids = boundary_vis_primitive_ids;
+		sample.normals = boundary_vis_normals;
+		sample.domain = OutputSample::Domain::Surface;
+		sample.cell_count = boundary_vis_elements.rows();
+		sample.time = t;
+		sample.dt = dt_in;
+		add_output_fields(writer, sample, output_fields);
 		writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements, mesh.is_volume() ? CellType::Triangle : CellType::Line);
 	}
 
 	void OutGeometryData::save_contact_surface(
 		const std::string &export_surface,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
-		const mesh::Mesh &mesh = *state.mesh;
-		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
-		const double dhat = state.args["contact"]["dhat"];
-		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
-		const double epsv = state.args["contact"]["epsv"];
-		const double dhat_a = state.args["contact"]["adhesion"]["dhat_a"];
-		const double dhat_p = state.args["contact"]["adhesion"]["dhat_p"];
-		const double Y = state.args["contact"]["adhesion"]["adhesion_strength"];
-		const double epsa = state.args["contact"]["adhesion"]["epsa"];
-		const double tangential_adhesion_coefficient = state.args["contact"]["adhesion"]["tangential_adhesion_coefficient"];
-		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
-		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
-		const std::shared_ptr<solver::NormalAdhesionForm> &normal_adhesion_form = state.solve_data.normal_adhesion_form;
-		const std::shared_ptr<solver::TangentialAdhesionForm> &tangential_adhesion_form = state.solve_data.tangential_adhesion_form;
+		if (!space.collision_mesh)
+			return;
+
+		const ipc::CollisionMesh &collision_mesh = *space.collision_mesh;
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
 		if (opts.use_hdf5)
@@ -2326,355 +2493,55 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		const int problem_dim = mesh.dimension();
-		const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
-		const Eigen::MatrixXd surface_displacements = collision_mesh.map_displacements(full_displacements);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = collision_mesh.rest_positions();
+		sample.domain = OutputSample::Domain::Contact;
+		sample.cell_count = static_cast<int>(
+			collision_mesh.dim() == 3 ? collision_mesh.num_faces() : collision_mesh.num_edges());
+		sample.time = t;
+		sample.dt = dt_in;
+		add_output_fields(writer, sample, output_fields);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
-
-		ipc::NormalCollisions collision_set;
-		// collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
-		if (state.args["contact"]["use_convergent_formulation"])
-		{
-			collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
-			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
-		}
-
-		collision_set.build(
-			collision_mesh, displaced_surface, dhat,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
-
-		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
-		ipc::BarrierPotential barrier_potential(dhat, barrier_stiffness);
-		if (state.args["contact"]["use_convergent_formulation"])
-		{
-			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
-		}
-
-		if (opts.contact_forces || opts.export_field("contact_forces"))
-		{
-			Eigen::MatrixXd forces = -barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
-
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("contact_forces", forces_reshaped);
-		}
-
-		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
-		{
-			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
-			assert(form);
-			const auto &set = form->collision_set();
-
-			if (problem_dim == 2)
-			{
-				Eigen::VectorXd dhats(collision_mesh.num_edges());
-				dhats.setConstant(dhat);
-				for (int e = 0; e < dhats.size(); e++)
-					dhats(e) = set.get_edge_dhat(e);
-
-				writer.add_cell_field("dhat", dhats);
-			}
-			else
-			{
-				Eigen::VectorXd fdhats(collision_mesh.num_faces());
-				fdhats.setConstant(dhat);
-				for (int e = 0; e < fdhats.size(); e++)
-					fdhats(e) = set.get_face_dhat(e);
-
-				writer.add_cell_field("dhat_face", fdhats);
-
-				Eigen::VectorXd vdhats(collision_mesh.num_vertices());
-				vdhats.setConstant(dhat);
-				for (int i = 0; i < vdhats.size(); i++)
-					vdhats(i) = set.get_vert_dhat(i);
-
-				writer.add_field("dhat_vert", vdhats);
-			}
-		}
-
-		if (opts.friction_forces || opts.export_field("friction_forces"))
-		{
-			ipc::TangentialCollisions friction_collision_set;
-			friction_collision_set.build(
-				collision_mesh, displaced_surface, collision_set,
-				barrier_potential, friction_coefficient);
-
-			ipc::FrictionPotential friction_potential(epsv);
-
-			Eigen::MatrixXd velocities;
-			if (state.solve_data.time_integrator != nullptr)
-				velocities = state.solve_data.time_integrator->v_prev();
-			else
-				velocities = sol;
-			velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
-
-			Eigen::MatrixXd forces = -friction_potential.gradient(
-				friction_collision_set, collision_mesh, velocities);
-
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("friction_forces", forces_reshaped);
-		}
-
-		const bool adhesion_enabled = state.is_adhesion_enabled();
-		const bool need_normal_adhesion = adhesion_enabled && (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"));
-		const bool need_tangential_adhesion = adhesion_enabled && (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"));
-
-		ipc::NormalCollisions adhesion_collision_set;
-		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
-
-		if (need_normal_adhesion || need_tangential_adhesion)
-		{
-			adhesion_collision_set.build(
-				collision_mesh, displaced_surface, dhat_a,
-				/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
-		}
-
-		if (need_normal_adhesion)
-		{
-			Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
-
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("normal_adhesion_forces", forces_reshaped);
-		}
-
-		if (need_tangential_adhesion)
-		{
-			ipc::TangentialCollisions tangential_collision_set;
-			tangential_collision_set.build(
-				collision_mesh, displaced_surface, adhesion_collision_set,
-				normal_adhesion_potential, tangential_adhesion_coefficient);
-
-			ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
-
-			Eigen::MatrixXd velocities;
-			if (state.solve_data.time_integrator != nullptr)
-				velocities = state.solve_data.time_integrator->v_prev();
-			else
-				velocities = sol;
-			velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
-
-			Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
-				tangential_collision_set, collision_mesh, velocities);
-
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("tangential_adhesion_forces", forces_reshaped);
-		}
-
-		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());
-		assert(collision_mesh.rest_positions().cols() == surface_displacements.cols());
-
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", surface_displacements);
-
+		const std::filesystem::path surface_path(export_surface);
+		const std::string contact_path =
+			(surface_path.parent_path() / (surface_path.stem().string() + "_contact" + surface_path.extension().string())).string();
 		writer.write_mesh(
-			export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
+			contact_path,
 			collision_mesh.rest_positions(),
-			problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges(),
-			problem_dim == 3 ? CellType::Triangle : CellType::Line);
+			collision_mesh.dim() == 3 ? collision_mesh.faces() : collision_mesh.edges(),
+			collision_mesh.dim() == 3 ? CellType::Triangle : CellType::Line);
 	}
 
 	void OutGeometryData::save_wire(
 		const std::string &name,
-		const State &state,
-		const Eigen::MatrixXd &sol,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const double t,
 		const ExportOptions &opts) const
 	{
-		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-		const mesh::Mesh &mesh = *state.mesh;
-		const assembler::Problem &problem = *state.problem;
+		if (!space.mesh || !space.geometry_bases)
+			return;
 
-		const auto &sampler = ref_element_sampler;
+		static const std::map<int, Eigen::MatrixXd> empty_polys;
+		static const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> empty_polys_3d;
 
-		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
-		Eigen::MatrixXd vis_pts_poly;
+		const std::vector<basis::ElementBases> &gbases = *space.geometry_bases;
+		const mesh::Mesh &mesh = *space.mesh;
+		const std::map<int, Eigen::MatrixXd> &polys = space.polys ? *space.polys : empty_polys;
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = space.polys_3d ? *space.polys_3d : empty_polys_3d;
+		const Eigen::VectorXi output_orders =
+			space.output_orders.size() == mesh.n_elements()
+				? space.output_orders
+				: Eigen::VectorXi::Ones(mesh.n_elements());
 
-		const auto &current_bases = gbases;
-		int seg_total_size = 0;
-		int pts_total_size = 0;
-		int faces_total_size = 0;
-
-		for (size_t i = 0; i < current_bases.size(); ++i)
-		{
-			const auto &bs = current_bases[i];
-
-			if (mesh.is_simplex(i))
-			{
-				pts_total_size += sampler.simplex_points().rows();
-				seg_total_size += sampler.simplex_edges().rows();
-				faces_total_size += sampler.simplex_faces().rows();
-			}
-			else if (mesh.is_cube(i))
-			{
-				pts_total_size += sampler.cube_points().rows();
-				seg_total_size += sampler.cube_edges().rows();
-				faces_total_size += sampler.cube_faces().rows();
-			}
-			else if (mesh.is_prism(i))
-			{
-				pts_total_size += sampler.prism_points().rows();
-				seg_total_size += sampler.prism_edges().rows();
-				faces_total_size += sampler.prism_faces().rows();
-			}
-			else if (mesh.is_pyramid(i))
-			{
-				pts_total_size += sampler.pyramid_points().rows();
-				seg_total_size += sampler.pyramid_edges().rows();
-				faces_total_size += sampler.pyramid_faces().rows();
-			}
-			else
-			{
-				if (mesh.is_volume())
-					sampler.sample_polyhedron(state.polys_3d.at(i).first, state.polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
-				else
-					sampler.sample_polygon(state.polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
-
-				pts_total_size += vis_pts_poly.rows();
-				seg_total_size += vis_edges_poly.rows();
-				faces_total_size += vis_faces_poly.rows();
-			}
-		}
-
-		Eigen::MatrixXd points(pts_total_size, mesh.dimension());
-		Eigen::MatrixXi edges(seg_total_size, 2);
-		Eigen::MatrixXi faces(faces_total_size, 3);
-		points.setZero();
-
-		Eigen::MatrixXd mapped, tmp;
-		int seg_index = 0, pts_index = 0, face_index = 0;
-		for (size_t i = 0; i < current_bases.size(); ++i)
-		{
-			const auto &bs = current_bases[i];
-
-			if (mesh.is_simplex(i))
-			{
-				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
-				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
-				seg_index += sampler.simplex_edges().rows();
-
-				faces.block(face_index, 0, sampler.simplex_faces().rows(), 3) = sampler.simplex_faces().array() + pts_index;
-				face_index += sampler.simplex_faces().rows();
-
-				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
-				pts_index += mapped.rows();
-			}
-			else if (mesh.is_cube(i))
-			{
-				bs.eval_geom_mapping(sampler.cube_points(), mapped);
-				edges.block(seg_index, 0, sampler.cube_edges().rows(), edges.cols()) = sampler.cube_edges().array() + pts_index;
-				seg_index += sampler.cube_edges().rows();
-
-				faces.block(face_index, 0, sampler.cube_faces().rows(), 3) = sampler.cube_faces().array() + pts_index;
-				face_index += sampler.cube_faces().rows();
-
-				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
-				pts_index += mapped.rows();
-			}
-			else if (mesh.is_prism(i))
-			{
-				bs.eval_geom_mapping(sampler.prism_points(), mapped);
-				edges.block(seg_index, 0, sampler.prism_edges().rows(), edges.cols()) = sampler.prism_edges().array() + pts_index;
-				seg_index += sampler.prism_edges().rows();
-
-				faces.block(face_index, 0, sampler.prism_faces().rows(), 3) = sampler.prism_faces().array() + pts_index;
-				face_index += sampler.prism_faces().rows();
-
-				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
-				pts_index += mapped.rows();
-			}
-			else if (mesh.is_pyramid(i))
-			{
-				bs.eval_geom_mapping(sampler.pyramid_points(), mapped);
-				edges.block(seg_index, 0, sampler.pyramid_edges().rows(), edges.cols()) = sampler.pyramid_edges().array() + pts_index;
-				seg_index += sampler.pyramid_edges().rows();
-
-				faces.block(face_index, 0, sampler.pyramid_faces().rows(), 3) = sampler.pyramid_faces().array() + pts_index;
-				face_index += sampler.pyramid_faces().rows();
-
-				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
-				pts_index += mapped.rows();
-			}
-			else
-			{
-				if (mesh.is_volume())
-					sampler.sample_polyhedron(state.polys_3d.at(i).first, state.polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
-				else
-					sampler.sample_polygon(state.polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
-
-				edges.block(seg_index, 0, vis_edges_poly.rows(), edges.cols()) = vis_edges_poly.array() + pts_index;
-				seg_index += vis_edges_poly.rows();
-
-				faces.block(face_index, 0, vis_faces_poly.rows(), 3) = vis_faces_poly.array() + pts_index;
-				face_index += vis_faces_poly.rows();
-
-				points.block(pts_index, 0, vis_pts_poly.rows(), points.cols()) = vis_pts_poly;
-				pts_index += vis_pts_poly.rows();
-			}
-		}
-
-		assert(pts_index == points.rows());
-		assert(face_index == faces.rows());
-
-		if (mesh.is_volume())
-		{
-			// reverse all faces
-			for (long i = 0; i < faces.rows(); ++i)
-			{
-				const int v0 = faces(i, 0);
-				const int v1 = faces(i, 1);
-				const int v2 = faces(i, 2);
-
-				int tmpc = faces(i, 2);
-				faces(i, 2) = faces(i, 1);
-				faces(i, 1) = tmpc;
-			}
-		}
+		Eigen::MatrixXd points, discr, local_points;
+		Eigen::MatrixXi cells, element_ids, edges;
+		build_vis_mesh(mesh, output_orders, gbases, polys, polys_3d, /*boundary_only=*/false, points, cells, element_ids, discr, local_points);
+		if (cells.size() > 0)
+			igl::edges(cells, edges);
 		else
-		{
-			Eigen::Matrix2d mmat;
-			for (long i = 0; i < faces.rows(); ++i)
-			{
-				const int v0 = faces(i, 0);
-				const int v1 = faces(i, 1);
-				const int v2 = faces(i, 2);
-
-				mmat.row(0) = points.row(v2) - points.row(v0);
-				mmat.row(1) = points.row(v1) - points.row(v0);
-
-				if (mmat.determinant() > 0)
-				{
-					int tmpc = faces(i, 2);
-					faces(i, 2) = faces(i, 1);
-					faces(i, 1) = tmpc;
-				}
-			}
-		}
-
-		Eigen::MatrixXd fun;
-		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
-			state.polys, state.polys_3d, ref_element_sampler,
-			pts_index, sol, fun, /*use_sampler*/ true, false);
-
-		Eigen::MatrixXd exact_fun, err;
-
-		if (problem.has_exact_sol())
-		{
-			problem.exact(points, t, exact_fun);
-			err = (fun - exact_fun).eval().rowwise().norm();
-		}
+			edges.resize(0, 2);
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
 		if (opts.use_hdf5)
@@ -2683,50 +2550,33 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		if (problem.has_exact_sol())
-		{
-			if (opts.export_field("exact"))
-				writer.add_field("exact", exact_fun);
-			if (opts.export_field("error"))
-				writer.add_field("error", err);
-		}
-
-		if (fun.cols() != 1)
-		{
-			std::vector<assembler::Assembler::NamedMatrix> scalar_val;
-			Evaluator::compute_scalar_value(
-				mesh, problem.is_scalar(), state.bases, gbases,
-				state.disc_orders, state.disc_ordersq, state.polys, state.polys_3d,
-				*state.assembler,
-				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
-			for (const auto &v : scalar_val)
-			{
-				if (opts.export_field(v.first))
-					writer.add_field(v.first, v.second);
-			}
-		}
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = points;
+		sample.local_points = local_points;
+		if (element_ids.cols() > 0)
+			sample.element_ids = element_ids.col(0);
+		sample.domain = OutputSample::Domain::Wire;
+		sample.cell_count = edges.rows();
+		sample.time = t;
+		add_output_fields(writer, sample, output_fields);
 
 		writer.write_mesh(name, points, edges, CellType::Line);
 	}
 
 	void OutGeometryData::save_points(
 		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
+		const OutputSpace &space,
+		const OutputFieldFunction &output_fields,
 		const ExportOptions &opts) const
 	{
-		const auto &dirichlet_nodes = state.dirichlet_nodes;
-		const auto &dirichlet_nodes_position = state.dirichlet_nodes_position;
-		const mesh::Mesh &mesh = *state.mesh;
-		const assembler::Problem &problem = *state.problem;
+		if (!space.mesh || !space.dirichlet_nodes || !space.dirichlet_nodes_position)
+			return;
 
-		int actual_dim = 1;
-		if (!problem.is_scalar())
-			actual_dim = mesh.dimension();
+		const auto &dirichlet_nodes = *space.dirichlet_nodes;
+		const auto &dirichlet_nodes_position = *space.dirichlet_nodes_position;
+		const mesh::Mesh &mesh = *space.mesh;
 
-		Eigen::MatrixXd fun(dirichlet_nodes_position.size(), actual_dim);
 		Eigen::MatrixXd b_sidesets(dirichlet_nodes_position.size(), 1);
 		b_sidesets.setZero();
 		Eigen::MatrixXd points(dirichlet_nodes_position.size(), mesh.dimension());
@@ -2739,11 +2589,6 @@ namespace polyfem::io
 			if (s_id > 0)
 			{
 				b_sidesets(i) = s_id;
-			}
-
-			for (int j = 0; j < actual_dim; ++j)
-			{
-				fun(i, j) = sol(n_id * actual_dim + j);
 			}
 
 			points.row(i) = dirichlet_nodes_position[i];
@@ -2760,8 +2605,16 @@ namespace polyfem::io
 
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+
+		// Write the solution alias last so it is the default for warp-by-vector.
+		OutputSample sample;
+		sample.points = points;
+		sample.node_ids.resize(dirichlet_nodes.size());
+		for (int i = 0; i < dirichlet_nodes.size(); ++i)
+			sample.node_ids(i) = dirichlet_nodes[i];
+		sample.domain = OutputSample::Domain::Points;
+		sample.cell_count = static_cast<int>(cells.size());
+		add_output_fields(writer, sample, output_fields);
 		writer.write_mesh(path, points, cells);
 	}
 
@@ -2956,11 +2809,7 @@ namespace polyfem::io
 
 	void OutStatsData::reset()
 	{
-		sigma_avg = 0;
-		sigma_max = 0;
-		sigma_min = 0;
-
-		n_flipped = 0;
+		*this = OutStatsData();
 	}
 
 	void OutStatsData::count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases)
@@ -3263,7 +3112,7 @@ namespace polyfem::io
 		const std::string &formulation,
 		const bool isoparametric,
 		const int sol_at_node_id,
-		nlohmann::json &j)
+		nlohmann::json &j) const
 	{
 
 		j["args"] = args;
@@ -3388,74 +3237,6 @@ namespace polyfem::io
 		j["formulation"] = formulation;
 
 		logger().info("done");
-	}
-
-	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
-		: file(path), solve_data(solve_data)
-	{
-		file << "i,";
-		for (const auto &[name, _] : solve_data.named_forms())
-		{
-			file << name << ",";
-		}
-		file << "total_energy" << std::endl;
-	}
-
-	EnergyCSVWriter::~EnergyCSVWriter()
-	{
-		file.close();
-	}
-
-	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
-	{
-		const double s = solve_data.time_integrator
-							 ? solve_data.time_integrator->acceleration_scaling()
-							 : 1;
-		file << i << ",";
-		for (const auto &[_, form] : solve_data.named_forms())
-		{
-			// Divide by acceleration scaling to get the energy (units of J)
-			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
-		}
-		file << solve_data.nl_problem->value(sol) / s << "\n";
-		file.flush();
-	}
-
-	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt)
-		: file(path), state(state), t0(t0), dt(dt)
-	{
-		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
-	}
-
-	RuntimeStatsCSVWriter::~RuntimeStatsCSVWriter()
-	{
-		file.close();
-	}
-
-	void RuntimeStatsCSVWriter::write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol)
-	{
-		total_forward_solve_time += forward;
-		total_remeshing_time += remeshing;
-		total_global_relaxation_time += global_relaxation;
-
-		// logger().debug(
-		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
-		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
-		// logger().debug(
-		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
-		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
-		// logger().debug(
-		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
-
-		const double peak_mem = getPeakRSS() / double(1 << 30);
-		// logger().debug("Peak mem: {} GiB", peak_mem);
-
-		file << fmt::format(
-			"{},{},{},{},{},{},{},{}\n",
-			t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
-			state.n_bases, state.mesh->n_elements());
-		file.flush();
 	}
 
 } // namespace polyfem::io

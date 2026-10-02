@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 #include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>
@@ -12,6 +12,9 @@ namespace polyfem
 
 	namespace mesh
 	{
+		class Mesh2D;
+		class Mesh3D;
+
 		///
 		/// Retrieve a 3D vector with the position of a given vertex. Contrary to
 		/// geogram's version, this function works with both single and double precision
@@ -138,6 +141,14 @@ namespace polyfem
 		/// @param[out] polys   Extracted polyhedral surfaces
 		///
 		void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated = false);
+
+		/// Pair coincident boundary edges, including nonconforming leader/follower edges.
+		std::vector<std::pair<Navigation::Index, Navigation::Index>> compute_mesh_interface(
+			const Mesh2D &first, const Mesh2D &second);
+
+		/// Pair coincident boundary faces, including nonconforming leader/follower faces.
+		std::vector<std::pair<Navigation3D::Index, Navigation3D::Index>> compute_mesh_interface(
+			const Mesh3D &first, const Mesh3D &second);
 
 		///
 		/// @brief      Samples points on a surface

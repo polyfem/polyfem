@@ -20,9 +20,12 @@ namespace polyfem
 #if defined(POLYFEM_WITH_CPP_THREADS)
 			par_for(size, partial_for);
 #elif defined(POLYFEM_WITH_TBB)
-			tbb::parallel_for(tbb::blocked_range<int>(0, size), [&](const tbb::blocked_range<int> &r) {
-				partial_for(r.begin(), r.end(), tbb::this_task_arena::current_thread_index());
-			});
+			if (get_n_threads() == 1)
+				partial_for(0, size, /*thread_id=*/0);
+			else
+				tbb::parallel_for(tbb::blocked_range<int>(0, size), [&](const tbb::blocked_range<int> &r) {
+					partial_for(r.begin(), r.end(), tbb::this_task_arena::current_thread_index());
+				});
 #else
 			partial_for(0, size, /*thread_id=*/0); // actually the full for loop
 #endif
@@ -34,7 +37,13 @@ namespace polyfem
 			for (int i = 0; i < size; ++i)
 				body(i);
 #elif defined(POLYFEM_WITH_TBB)
-			tbb::parallel_for(0, size, body);
+			if (get_n_threads() == 1)
+			{
+				for (int i = 0; i < size; ++i)
+					body(i);
+			}
+			else
+				tbb::parallel_for(0, size, body);
 #else
 			for (int i = 0; i < size; ++i)
 				body(i);

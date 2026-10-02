@@ -5,7 +5,7 @@
 
 #include <Eigen/Core>
 
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_TBB) || defined(POLYFEM_WITH_CPP_THREADS)
 #include <tbb/global_control.h>
 #endif
 
@@ -30,7 +30,7 @@ namespace polyfem
 				const unsigned int num_threads = std::min(tmp, std::thread::hardware_concurrency());
 
 				num_threads_ = num_threads;
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_TBB) || defined(POLYFEM_WITH_CPP_THREADS)
 				thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
 #endif
 				Eigen::setNbThreads(num_threads);
@@ -41,7 +41,7 @@ namespace polyfem
 
 			size_t num_threads_;
 
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_TBB) || defined(POLYFEM_WITH_CPP_THREADS)
 			/// limits the number of used threads
 			std::shared_ptr<tbb::global_control> thread_limiter;
 #endif

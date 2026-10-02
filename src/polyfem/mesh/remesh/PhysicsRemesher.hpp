@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/mesh/remesh/WildRemesher.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>

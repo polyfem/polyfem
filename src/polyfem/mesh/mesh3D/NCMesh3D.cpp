@@ -15,6 +15,55 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void NCMesh3D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_cells());
+
+			std::vector<int> old_node_ids(vertices.size(), -1);
+			if (has_node_ids())
+				for (int v = 0; v < n_vertices(); ++v)
+					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
+			std::vector<int> old_boundary_ids(faces.size(), -1);
+			if (has_boundary_ids())
+				for (int f = 0; f < n_faces(); ++f)
+					old_boundary_ids[valid_to_all_face(f)] = boundary_ids_[f];
+
+			for (int e = 0; e < keep.size(); ++e)
+			{
+				if (keep[e])
+					continue;
+				const int full_id = valid_to_all_elem(e);
+				auto &element = elements[full_id];
+				element.is_ghost = true;
+				for (const int face : element.faces)
+					faces[face].remove_element(full_id);
+				for (const int edge : element.edges)
+					edges[edge].remove_element(full_id);
+				for (const int vertex : element.vertices)
+					vertices[vertex].remove_element(full_id);
+				--n_elements;
+			}
+			filter_element_data(keep);
+			prepare_mesh();
+
+			if (has_node_ids())
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = old_node_ids[valid_to_all_vertex(v)];
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const int old_id = old_boundary_ids[valid_to_all_face(f)];
+					boundary_ids_[f] = old_id < 0 ? get_default_boundary_id(f) : old_id;
+					faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
+				}
+			}
+		}
+
 		int NCMesh3D::face_edge(const int f_id, const int le_id) const
 		{
 			const int v0 = faces[valid_to_all_face(f_id)].vertices(le_id);
@@ -708,7 +757,7 @@ namespace polyfem
 
 			for (auto &face : faces)
 			{
-				if (face.leader >= 0)
+				if (face.leader >= 0 && face.n_elem() > 0 && faces[face.leader].n_elem() > 0)
 				{
 					face.isboundary = false;
 					faces[face.leader].isboundary = false;

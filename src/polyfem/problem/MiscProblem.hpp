@@ -74,10 +74,10 @@ namespace polyfem
 		public:
 			MinSurfProblem(const std::string &name);
 
-			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			bool is_rhs_zero() const override { return false; }
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			bool is_rhs_zero(const int fe_space_id = -1) const override { return false; }
 
-			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 			bool is_scalar() const override { return true; }
 			bool has_exact_sol() const override { return false; }
@@ -88,11 +88,11 @@ namespace polyfem
 		public:
 			TimeDependentProblem(const std::string &name);
 
-			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			bool is_rhs_zero() const override { return false; }
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			bool is_rhs_zero(const int fe_space_id = -1) const override { return false; }
 
-			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return true; }
@@ -108,7 +108,7 @@ namespace polyfem
 			bool is_time_dependent() const override { return func_ <= 1; }
 			bool is_constant_in_time() const override { return false; }
 
-			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 			void set_parameters(const json &params, const std::string &root_path) override;
 
@@ -116,7 +116,7 @@ namespace polyfem
 			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, double t) const override;
 			AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, double t) const override;
 
-			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 		private:
 			int func_;

@@ -15,6 +15,7 @@
 #endif
 
 #include <cassert>
+#include <cmath>
 
 namespace polyfem
 {
@@ -81,6 +82,17 @@ namespace polyfem
 
 		namespace
 		{
+			constexpr double PYRAMID_APEX_EPS = 1e-8;
+
+			void avoid_pyramid_apex(Eigen::MatrixXd &V)
+			{
+				assert(V.cols() == 3);
+				for (int i = 0; i < V.rows(); ++i)
+				{
+					if (std::abs(V(i, 2) - 1.0) < PYRAMID_APEX_EPS)
+						V(i, 2) = 1.0 - PYRAMID_APEX_EPS;
+				}
+			}
 
 			void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index, Eigen::MatrixXi &T)
 			{
@@ -90,6 +102,8 @@ namespace polyfem
 					const Eigen::Vector3d e1 = V.row(tmp[2]) - V.row(tmp[0]);
 					const Eigen::Vector3d e2 = V.row(tmp[3]) - V.row(tmp[0]);
 					double vol = (e0.cross(e1)).dot(e2);
+					if (std::abs(vol) < 1e-14)
+						return;
 					if (vol < 0)
 						T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
 					else
@@ -127,6 +141,107 @@ namespace polyfem
 		{
 			const int n = nn;
 			const double delta = 1. / (n - 1.);
+
+			if (pyramid)
+			{
+				T.resize((n - 1) * (n - 1) * (n - 1) * 6, 4);
+				V.resize(n * n * (n - 1) + 1, 3);
+				std::vector<int> map(n * n * n, -1);
+
+				int index = 0;
+				int apex_index = -1;
+				for (int i = 0; i < n; ++i)
+				{
+					for (int j = 0; j < n; ++j)
+					{
+						for (int k = 0; k < n; ++k)
+						{
+							const int grid_index = (i + j * n) * n + k;
+							if (k == n - 1)
+							{
+								if (apex_index < 0)
+								{
+									apex_index = index++;
+									V.row(apex_index) << 0, 0, 1;
+								}
+								map[grid_index] = apex_index;
+								continue;
+							}
+
+							const double z = k * delta;
+							const double scale = 1.0 - z;
+							map[grid_index] = index;
+							V.row(index) << i * delta * scale, j * delta * scale, z;
+							++index;
+						}
+					}
+				}
+				V.conservativeResize(index, 3);
+				avoid_pyramid_apex(V);
+
+				std::array<int, 8> indices;
+				std::array<int, 4> tmp;
+				index = 0;
+				for (int i = 0; i < n - 1; ++i)
+				{
+					for (int j = 0; j < n - 1; ++j)
+					{
+						for (int k = 0; k < n - 1; ++k)
+						{
+							indices = {{(i + j * n) * n + k,
+										(i + 1 + j * n) * n + k,
+										(i + 1 + (j + 1) * n) * n + k,
+										(i + (j + 1) * n) * n + k,
+
+										(i + j * n) * n + k + 1,
+										(i + 1 + j * n) * n + k + 1,
+										(i + 1 + (j + 1) * n) * n + k + 1,
+										(i + (j + 1) * n) * n + k + 1}};
+
+							tmp = {{map[indices[1 - 1]], map[indices[2 - 1]], map[indices[4 - 1]], map[indices[5 - 1]]}};
+							add_tet(tmp, V, index, T);
+
+							tmp = {{map[indices[6 - 1]], map[indices[3 - 1]], map[indices[7 - 1]], map[indices[8 - 1]]}};
+							add_tet(tmp, V, index, T);
+
+							tmp = {{map[indices[5 - 1]], map[indices[2 - 1]], map[indices[6 - 1]], map[indices[4 - 1]]}};
+							add_tet(tmp, V, index, T);
+
+							tmp = {{map[indices[5 - 1]], map[indices[4 - 1]], map[indices[8 - 1]], map[indices[6 - 1]]}};
+							add_tet(tmp, V, index, T);
+
+							tmp = {{map[indices[4 - 1]], map[indices[2 - 1]], map[indices[6 - 1]], map[indices[3 - 1]]}};
+							add_tet(tmp, V, index, T);
+
+							tmp = {{map[indices[3 - 1]], map[indices[4 - 1]], map[indices[8 - 1]], map[indices[6 - 1]]}};
+							add_tet(tmp, V, index, T);
+						}
+					}
+				}
+
+				T.conservativeResize(index, 4);
+
+				F.resize(4 * index, 3);
+
+				F.block(0, 0, index, 1) = T.col(1);
+				F.block(0, 1, index, 1) = T.col(0);
+				F.block(0, 2, index, 1) = T.col(2);
+
+				F.block(index, 0, index, 1) = T.col(0);
+				F.block(index, 1, index, 1) = T.col(1);
+				F.block(index, 2, index, 1) = T.col(3);
+
+				F.block(2 * index, 0, index, 1) = T.col(1);
+				F.block(2 * index, 1, index, 1) = T.col(2);
+				F.block(2 * index, 2, index, 1) = T.col(3);
+
+				F.block(3 * index, 0, index, 1) = T.col(2);
+				F.block(3 * index, 1, index, 1) = T.col(0);
+				F.block(3 * index, 2, index, 1) = T.col(3);
+
+				return;
+			}
+
 			T.resize((n - 1) * (n - 1) * (n - 1) * 6, 4);
 			V.resize(n * n * n, 3);
 			std::vector<int> map(n * n * n, -1);
@@ -141,8 +256,6 @@ namespace polyfem
 						if (tet && i + j + k >= n)
 							continue;
 						if (prism && i + j >= n)
-							continue;
-						if (pyramid && (i + k >= n || j + k >= n))
 							continue;
 						// TODO
 						map[(i + j * n) * n + k] = index;
@@ -373,10 +486,10 @@ namespace polyfem
 				{
 					MatrixXd pts(5, 3);
 					pts << 0, 0, 0,
-						0, 1, 0,
+						1, 0, 0,
 						1, 1, 0,
 						0, 1, 0,
-						1, 1, 1;
+						0, 0, 1;
 
 					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.),
 									false, false, true, pyramid_points_, pyramid_faces_, pyramid_tets_);
@@ -393,15 +506,17 @@ namespace polyfem
 						3, 4;
 
 					igl::edges(pyramid_faces_, pyramid_edges_);
-					extract_parent_edges(pyramid_points_, pyramid_edges_, pts, edges, pyramid_edges_);
+					Eigen::MatrixXd edge_pts = pts;
+					avoid_pyramid_apex(edge_pts);
+					extract_parent_edges(pyramid_points_, pyramid_edges_, edge_pts, edges, pyramid_edges_);
 
 					// Same local order as in FEMBasis3d
 					pyramid_corners_.resize(5, 3);
 					pyramid_corners_ << 0, 0, 0,
-						0, 1, 0,
+						1, 0, 0,
 						1, 1, 0,
 						0, 1, 0,
-						1, 1, 1;
+						0, 0, 1;
 				}
 			}
 			else

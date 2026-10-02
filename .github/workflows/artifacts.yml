@@ -3,6 +3,7 @@ name: Artifacts
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,7 +31,7 @@ jobs:
             name: Linux
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -44,13 +45,19 @@ jobs:
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
+      - name: Compute CPU cache key
+        run: |
+          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
+          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
+          echo "CPU flags hash: $CPU_HASH"
+
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
         run: |
@@ -64,16 +71,22 @@ jobs:
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
-            -DPOLYFEM_WITH_BEZIER=OFF
+            -DPOLYFEM_WITH_TESTS=OFF \
+            -DPOLYFEM_WITH_PYTHON=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
 
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Linux
-          path: build/polyfem_app
+          path: build/packages/PolyFEM-Linux-*.tar.gz
+          if-no-files-found: error
+          archive: false
 
   ####################
   # MacOS
@@ -89,11 +102,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        config: [DebugNoSymbols, Release]
+        config: [Release]
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -104,7 +117,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -123,22 +136,22 @@ jobs:
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }} \
             -DPOLYFEM_WITH_APP=ON \
-            -DPOLYFEM_WITH_BEZIER=OFF
+            -DPOLYFEM_WITH_TESTS=OFF \
+            -DPOLYFEM_WITH_PYTHON=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
 
-      - name: Copy App
-        run: |
-          cd build
-          mkdir polyfem
-          cp -R polyfem_app.app polyfem/polyfem_app.app
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-${{ matrix.os }}
-          path: build/polyfem
+          path: build/packages/PolyFEM-macOS-*.dmg
+          if-no-files-found: error
+          archive: false
 
   ####################
   # Windows
@@ -152,21 +165,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # You might be wondering why it's MinSizeRel instead of Release here.
-        # The reason is that release build on windows is very buggy. Takes 2.5 
-        # hours and cause 2 unit tests to segfault. 
-        #
-        # Track this bug at https://github.com/polyfem/polyfem/issues/467
-        config: [MinSizeRel]
+        config: [Release]
         threading: [CPP]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
-
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Dependencies
         run: |
@@ -175,7 +180,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.SCCACHE_DIR }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -183,7 +188,6 @@ jobs:
 
       - name: Prepare sccache
         run: |
-          sccache --max-size=1.0G
           sccache -V && sccache --show-stats && sccache --zero-stats
 
       - name: Configure
@@ -193,10 +197,15 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_STANDARD=17 ^
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON ^
+            -DCMAKE_CXX_EXTENSIONS=OFF ^
+            -DCMAKE_CXX_FLAGS="/std:c++17 /DWIN32 /D_WINDOWS /EHsc" ^
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
-            -DPOLYFEM_WITH_BEZIER=OFF ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_WITH_APP=ON ^
+            -DPOLYFEM_WITH_TESTS=OFF ^
+            -DPOLYFEM_WITH_PYTHON=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
             -DPOLYSOLVE_WITH_AMGCL=OFF ^
@@ -210,8 +219,16 @@ jobs:
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake --build build && sccache --show-stats
 
+      - name: Package
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cpack --config build\CPackConfig.cmake -B build\packages --verbose
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Windows
-          path: build/polyfem_app.exe
+          path: build/packages/PolyFEM-Windows-*.zip
+          if-no-files-found: error
+          archive: false

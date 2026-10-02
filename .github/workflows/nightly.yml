@@ -3,6 +3,7 @@ name: Nightly
 on:
   schedule:
     - cron: "0 4 * * *"
+  workflow_dispatch:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
@@ -18,6 +19,9 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
+      # Match continuous.yml so Release results do not depend on runner CPU or
+      # implicit OpenMP thread counts.
+      OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -29,7 +33,7 @@ jobs:
             name: Linux
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -44,13 +48,19 @@ jobs:
           ninja-build
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
+      - name: Compute CPU cache key
+        run: |
+          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
+          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
+          echo "CPU flags hash: $CPU_HASH"
+
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
         run: |
@@ -63,13 +73,20 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_TRIANGLE=ON \
+            -DPOLYFEM_PORTABLE_BUILD=ON
 
       - name: Build
+        id: build
         run: cmake --build build && ccache --show-stats
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
+
+      - name: Slow integration tests
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && (matrix.threading == 'TBB' || matrix.threading == 'CPP') }}
+        run: ./build/tests/unit_tests "[slow]" --rng-seed 1
 
   ####################
   # MacOS
@@ -90,7 +107,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -101,7 +118,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -118,7 +135,8 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_TRIANGLE=ON
 
       - name: Build
         run: cmake --build build && ccache --show-stats
@@ -139,16 +157,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [DebugNoSymbols, MinSizeRel]
+        config: [DebugNoSymbols, Release]
         threading: [CPP, NONE]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
-
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Dependencies
         run: |
@@ -158,7 +173,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.SCCACHE_DIR }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -176,8 +191,11 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_STANDARD=17 ^
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON ^
+            -DCMAKE_CXX_EXTENSIONS=OFF ^
+            -DCMAKE_CXX_FLAGS="/std:c++17 /DWIN32 /D_WINDOWS /EHsc" ^
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
-            -DPOLYFEM_WITH_BEZIER=OFF ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^

@@ -10,6 +10,7 @@
 
 #include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/ActiveFiber.hpp>
+#include <polyfem/assembler/HGODispersion.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -614,7 +615,7 @@ namespace polyfem::assembler
 				result.row(i) = vect * hess.row(i).reshaped(size(), size());
 			else
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
-				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
+				result.row(i) = (hess.row(i).reshaped(size(), size()) * vect).transpose();
 	}
 
 	template class GenericElastic<MooneyRivlinElasticity>;
@@ -628,5 +629,6 @@ namespace polyfem::assembler
 
 	template class GenericElastic<HGOFiber>;
 	template class GenericElastic<ActiveFiber>;
+	template class GenericElastic<HGODispersion>;
 
 } // namespace polyfem::assembler

@@ -236,6 +236,7 @@ namespace polyfem
 			sfunc_ = nullptr;
 			tfunc_ = nullptr;
 			value_ = 0;
+			index_ = -1;
 		}
 
 		void ExpressionValue::init(const double val)
@@ -467,7 +468,7 @@ namespace polyfem
 				}
 
 				if (mat_.size() > 0)
-					result = mat_(index);
+					result = mat_(index_ >= 0 ? index_ : index);
 				else if (sfunc_)
 					result = sfunc_(x, y, z, t, index);
 				else if (tfunc_)

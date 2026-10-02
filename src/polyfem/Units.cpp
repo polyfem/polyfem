@@ -20,6 +20,10 @@ namespace polyfem
 		if (!json_time.empty())
 			time_ = json_time;
 
+		const std::string json_temperature = json["temperature"];
+		if (!json_temperature.empty())
+			temperature_ = json_temperature;
+
 		if (json["characteristic_length"].is_number())
 		{
 			const double cl = json["characteristic_length"];

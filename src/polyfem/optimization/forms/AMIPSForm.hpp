@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/basis/ElementBases.hpp>
@@ -9,7 +9,6 @@
 
 namespace polyfem
 {
-	class State;
 	namespace assembler
 	{
 		class Assembler;
@@ -23,9 +22,9 @@ namespace polyfem::solver
 	class MinJacobianForm : public AdjointForm
 	{
 	public:
-		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state)
+		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform)
 			: AdjointForm(variable_to_simulation),
-			  state_(std::move(state))
+			  varform_(std::move(varform))
 		{
 		}
 
@@ -35,13 +34,13 @@ namespace polyfem::solver
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
-		std::shared_ptr<const State> state_;
+		std::shared_ptr<const varform::DifferentiableVarForm> varform_;
 	};
 
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state);
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform);
 
 		virtual std::string name() const override { return "AMIPS"; }
 
@@ -53,11 +52,11 @@ namespace polyfem::solver
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
 			Eigen::VectorXd X = X_rest;
-			variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
+			variable_to_simulations_.compute_state_variable(ParameterType::Shape, *varform_, x, X);
 			return X;
 		}
 
-		std::shared_ptr<const State> state_;
+		std::shared_ptr<const varform::DifferentiableVarForm> varform_;
 
 		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;

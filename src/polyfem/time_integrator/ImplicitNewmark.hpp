@@ -13,7 +13,7 @@ namespace polyfem::time_integrator
 	class ImplicitNewmark : public ImplicitTimeIntegrator
 	{
 	public:
-		ImplicitNewmark() {}
+		ImplicitNewmark(const DynamicOrder dynamic_order = DynamicOrder::Second);
 
 		/// @brief Set the `gamma` and `beta` parameters from a json object.
 		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`

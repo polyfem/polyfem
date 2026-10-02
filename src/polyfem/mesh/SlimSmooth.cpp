@@ -73,11 +73,19 @@ namespace polyfem::mesh
 		V_smooth(boundary_indices, Eigen::all) = boundary_constraints;
 		logger().debug("SLIM finished in {} iterations", it);
 
-		if (good_enough)
-			logger().debug("SLIM succeeded.");
-		else
+		if (!good_enough)
+		{
 			logger().warn("SLIM cannot smooth correctly. Error: {}", error);
+			return false;
+		}
 
-		return good_enough;
+		if (!V_smooth.allFinite() || utils::is_flipped(V_smooth, F))
+		{
+			logger().warn("SLIM produced an invalid or flipped mesh.");
+			return false;
+		}
+
+		logger().debug("SLIM succeeded.");
+		return true;
 	}
 } // namespace polyfem::mesh

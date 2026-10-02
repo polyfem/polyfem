@@ -15,7 +15,9 @@ set(test_sources
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_navier_stokes_forms.cpp
   test_output.cpp
+  test_periodic_boundary.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp
@@ -23,7 +25,9 @@ set(test_sources
   test_tbb.cpp
   test_time_integrators.cpp
   test_utils.cpp
+  test_varform_factory.cpp
   verify_run.cpp
+  test_hgo_dispersion.cpp
 )
 
 if(POLYFEM_WITH_OPTIMIZATION)
@@ -32,7 +36,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     test_opt.cpp
     test_form_derivatives.cpp
     test_parametrizations.cpp
-    test_periodic.cpp
   )
 endif()
 
@@ -84,4 +87,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests)
+catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS EXTRA_ARGS --rng-seed 1)

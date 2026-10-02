@@ -74,7 +74,7 @@ option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
-option(POLYFEM_WITH_BEZIER   "Use bezier, for Jacobian positivity check"    ON)
+option(POLYFEM_WITH_MISO "Use miso-generated code for Jacobian check"       ON)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
@@ -82,6 +82,24 @@ set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
 option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
 option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
+option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
+option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
+
+if(POLYFEM_WITH_OPTIMIZATION AND NOT POLYFEM_WITH_MMG)
+    message(STATUS "Enabling MMG because optimization support requires remeshing")
+    set(POLYFEM_WITH_MMG ON CACHE BOOL "Build MMG utils for remeshing" FORCE)
+endif()
+
+if(POLYFEM_PORTABLE_BUILD)
+    set(CMAKE_DISABLE_FIND_PACKAGE_AVX ON CACHE BOOL "Disable AVX autodetection for portable builds" FORCE)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
+        set(SIMD_C_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C programs with SIMD support" FORCE)
+        set(SIMD_CXX_FLAGS "-msse4.2" CACHE STRING "Flags used for compiling C++ programs with SIMD support" FORCE)
+    else()
+        set(IPC_TOOLKIT_WITH_SIMD OFF CACHE BOOL "Enable SIMD" FORCE)
+    endif()
+endif()
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -95,9 +113,9 @@ endif()
 
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to use" FORCE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require the selected C++ standard" FORCE)
+    set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler-specific C++ extensions" FORCE)
 endif()
 
 ### Configuration
@@ -114,6 +132,10 @@ include(polyfem_use_colors)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (POLYFEM_SILENCE_DEP_WARNINGS)
+  include(polyfem_silence_dep_warnings)
+endif()
 
 ################################################################################
 # Polyfem library
@@ -154,12 +176,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
 endif()
 
-set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -193,12 +209,6 @@ endif()
 # Required libraries
 ################################################################################
 
-if(WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
-
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
@@ -207,11 +217,6 @@ target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 
-if(NOT WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -219,6 +224,8 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
+    # IPC Toolkit uses TBB internally even when PolyFEM uses C++ threads.
+    target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
     # These definitions help avoid problems with GCC using TBB backend
     target_compile_definitions(polyfem PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
@@ -266,10 +273,10 @@ include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # Jacobian
-if(POLYFEM_WITH_BEZIER)
-    include(bezier)
-    target_link_libraries(polyfem PRIVATE bezier)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_BEZIER)
+if(POLYFEM_WITH_MISO)
+    include(hocgv_miso)
+    target_link_libraries(polyfem PRIVATE miso)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
 endif()
 
 # spdlog
@@ -300,6 +307,47 @@ target_link_libraries(polyfem PUBLIC units::units)
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
+
+
+################################################################################
+# JSON specifications
+################################################################################
+
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+set(POLYFEM_GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated")
+set(POLYFEM_EMBEDDED_SPEC_DIR "${POLYFEM_GENERATED_INCLUDE_DIR}/polyfem/embedded_spec")
+
+jse_add_spec(polyfem_spec
+	ALIAS polyfem::spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_opt_spec
+	ALIAS polyfem::opt_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_opt.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_objective_spec
+	ALIAS polyfem::objective_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_objective.hpp"
+	LINK_SPECS polysolve::linear::spec polysolve::polysolve::spec
+)
+
+jse_add_spec(polyfem_dirichlet_spec
+	ALIAS polyfem::dirichlet_spec
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/dirichlet-boundary-condition.json"
+	OUTPUT "${POLYFEM_EMBEDDED_SPEC_DIR}/polyfem_dirichlet.hpp"
+)
+
+target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATED_INCLUDE_DIR}>")
+add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec polyfem_dirichlet_spec)
+target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec polyfem::dirichlet_spec)
+
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -314,7 +362,7 @@ endif()
 
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
-    include(mmg)
+    include(mmg_remesh)
     target_link_libraries(polyfem PUBLIC mmg::mmg)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()

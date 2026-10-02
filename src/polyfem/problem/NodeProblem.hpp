@@ -45,19 +45,23 @@ namespace polyfem
 			NodeProblem(const std::string &name);
 			void init(const mesh::Mesh &mesh) override;
 
-			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			bool is_rhs_zero(const int fe_space_id = -1) const override { return abs(rhs_) < 1e-10; }
 
-			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return true; }
 
 			void set_parameters(const json &params, const std::string &root_path) override;
 
-			bool is_dimension_dirichet(const int tag, const int dim) const override;
-			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
+			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
+			bool all_dimensions_dirichlet(const int fe_space_id) const override
+			{
+				(void)fe_space_id;
+				return all_dimensions_dirichlet_;
+			}
 
 		private:
 			bool all_dimensions_dirichlet_ = true;

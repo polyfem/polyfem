@@ -6,6 +6,8 @@
 
 namespace polyfem::assembler
 {
+	inline constexpr const char *MATERIAL_ELEMENT_INDEX = "__polyfem_material_element_index";
+
 	class GenericMatParam
 	{
 	public:
@@ -128,6 +130,8 @@ namespace polyfem::assembler
 	class NoDensity : public Density
 	{
 	public:
+		using Density::operator();
+
 		NoDensity() {}
 
 		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override
@@ -139,6 +143,25 @@ namespace polyfem::assembler
 		{
 			return 1.0;
 		}
+	};
+
+	class ThermalMassDensity : public Density
+	{
+	public:
+		using Density::operator();
+
+		ThermalMassDensity();
+
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path);
+
+		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const override;
+		double rho(const RowVectorNd &p, double t, int el_id) const;
+		double heat_capacity(const RowVectorNd &p, double t, int el_id) const;
+
+	private:
+		GenericMatParam rho_;
+		GenericMatParam heat_capacity_;
 	};
 
 	class FiberDirection
@@ -179,6 +202,13 @@ namespace polyfem::assembler
 		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3>> dir_;
 		int size_;
 		bool has_rotation_;
+
+		// Per-element fiber file branch: global el_id -> unit a0.
+		// Populated only when "fiber_direction" uses the per_element_file object
+		// form; operator() then short-circuits to per_el_fibers_[el_id] and dir_
+		// is left empty. See FiberDirection::add_multimaterial in MatParams.cpp.
+		std::vector<Eigen::Vector3d> per_el_fibers_;
+		bool use_per_element_file_ = false;
 	};
 
 } // namespace polyfem::assembler

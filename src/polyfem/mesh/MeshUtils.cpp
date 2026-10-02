@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "MeshUtils.hpp"
 
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/io/OBJReader.hpp>
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
@@ -9,6 +11,8 @@
 #include <polyfem/utils/HashUtils.hpp>
 
 #include <unordered_set>
+#include <set>
+#include <tuple>
 
 #include <igl/PI.h>
 #include <igl/read_triangle_mesh.h>
@@ -710,6 +714,219 @@ void polyfem::mesh::orient_closed_surface(const Eigen::MatrixXd &V, Eigen::Matri
 }
 
 // -----------------------------------------------------------------------------
+
+namespace
+{
+	struct EdgeInterfacePrimitive
+	{
+		polyfem::mesh::Navigation::Index index;
+		Eigen::Vector2d from;
+		Eigen::Vector2d to;
+	};
+
+	struct FaceInterfacePrimitive
+	{
+		polyfem::mesh::Navigation3D::Index index;
+		std::vector<Eigen::Vector3d> vertices;
+	};
+
+	bool same_point(const polyfem::RowVectorNd &a, const polyfem::RowVectorNd &b)
+	{
+		return a.size() == b.size() && (a - b).squaredNorm() <= 1e-24;
+	}
+
+	bool overlapping_segments(const EdgeInterfacePrimitive &first, const EdgeInterfacePrimitive &second)
+	{
+		const Eigen::Vector2d direction = first.to - first.from;
+		const double length = direction.norm();
+		const double second_length = (second.to - second.from).norm();
+		const double scale = std::max({1.0, length, second_length});
+		const double tolerance = 1e-12 * scale;
+		if (length <= tolerance || second_length <= tolerance)
+			return false;
+
+		auto cross = [](const Eigen::Vector2d &a, const Eigen::Vector2d &b) {
+			return a.x() * b.y() - a.y() * b.x();
+		};
+		if (std::abs(cross(direction, second.from - first.from)) > tolerance * length
+			|| std::abs(cross(direction, second.to - first.from)) > tolerance * length)
+			return false;
+
+		const Eigen::Vector2d tangent = direction / length;
+		const double second_from = (second.from - first.from).dot(tangent);
+		const double second_to = (second.to - first.from).dot(tangent);
+		const double overlap_begin = std::max(0.0, std::min(second_from, second_to));
+		const double overlap_end = std::min(length, std::max(second_from, second_to));
+		return overlap_end - overlap_begin > tolerance;
+	}
+
+	Eigen::Vector3d face_normal(const FaceInterfacePrimitive &face)
+	{
+		Eigen::Vector3d normal = Eigen::Vector3d::Zero();
+		for (int i = 0; i < face.vertices.size(); ++i)
+			normal += face.vertices[i].cross(face.vertices[(i + 1) % face.vertices.size()]);
+		return normal;
+	}
+
+	Eigen::Vector2d project_point(const Eigen::Vector3d &point, const int dropped_axis)
+	{
+		if (dropped_axis == 0)
+			return {point.y(), point.z()};
+		if (dropped_axis == 1)
+			return {point.x(), point.z()};
+		return {point.x(), point.y()};
+	}
+
+	bool point_in_convex_polygon(
+		const Eigen::Vector2d &point,
+		const std::vector<Eigen::Vector2d> &polygon,
+		const double tolerance)
+	{
+		double sign = 0;
+		for (int i = 0; i < polygon.size(); ++i)
+		{
+			const Eigen::Vector2d edge = polygon[(i + 1) % polygon.size()] - polygon[i];
+			const Eigen::Vector2d offset = point - polygon[i];
+			const double cross = edge.x() * offset.y() - edge.y() * offset.x();
+			if (std::abs(cross) <= tolerance)
+				continue;
+			if (sign == 0)
+				sign = cross;
+			else if (sign * cross < 0)
+				return false;
+		}
+		return true;
+	}
+
+	bool overlapping_faces(const FaceInterfacePrimitive &first, const FaceInterfacePrimitive &second)
+	{
+		const Eigen::Vector3d first_normal = face_normal(first);
+		const Eigen::Vector3d second_normal = face_normal(second);
+		const double first_area_scale = first_normal.norm();
+		const double second_area_scale = second_normal.norm();
+		const double coordinate_scale = std::max({1.0,
+												  first.vertices.front().norm(),
+												  second.vertices.front().norm()});
+		const double tolerance = 1e-12 * coordinate_scale;
+		if (first_area_scale <= tolerance * tolerance || second_area_scale <= tolerance * tolerance)
+			return false;
+
+		const Eigen::Vector3d unit_normal = first_normal / first_area_scale;
+		if (unit_normal.cross(second_normal / second_area_scale).norm() > 1e-10)
+			return false;
+		for (const auto &point : second.vertices)
+			if (std::abs(unit_normal.dot(point - first.vertices.front())) > tolerance)
+				return false;
+
+		Eigen::Index dropped_axis;
+		unit_normal.cwiseAbs().maxCoeff(&dropped_axis);
+		std::vector<Eigen::Vector2d> first_polygon, second_polygon;
+		first_polygon.reserve(first.vertices.size());
+		second_polygon.reserve(second.vertices.size());
+		for (const auto &point : first.vertices)
+			first_polygon.push_back(project_point(point, dropped_axis));
+		for (const auto &point : second.vertices)
+			second_polygon.push_back(project_point(point, dropped_axis));
+
+		auto contains = [tolerance](const auto &container, const auto &contained) {
+			return std::all_of(contained.begin(), contained.end(), [&](const Eigen::Vector2d &point) {
+				return point_in_convex_polygon(point, container, tolerance);
+			});
+		};
+		return contains(first_polygon, second_polygon) || contains(second_polygon, first_polygon);
+	}
+} // namespace
+
+std::vector<std::pair<polyfem::mesh::Navigation::Index, polyfem::mesh::Navigation::Index>>
+polyfem::mesh::compute_mesh_interface(const Mesh2D &first, const Mesh2D &second)
+{
+	using Index = Navigation::Index;
+	std::vector<EdgeInterfacePrimitive> first_edges, second_edges;
+	auto collect = [](const Mesh2D &mesh, auto &edges) {
+		for (int f = 0; f < mesh.n_faces(); ++f)
+		{
+			auto index = mesh.get_index_from_face(f);
+			for (int le = 0; le < mesh.n_face_vertices(f); ++le)
+			{
+				if (mesh.is_boundary_edge(index.edge))
+				{
+					const auto opposite = mesh.switch_vertex(index);
+					edges.push_back({index,
+									 mesh.point(index.vertex).head<2>(),
+									 mesh.point(opposite.vertex).head<2>()});
+				}
+				index = mesh.next_around_face(index);
+			}
+		}
+	};
+	collect(first, first_edges);
+	collect(second, second_edges);
+
+	std::vector<std::pair<Index, Index>> result;
+	std::set<std::tuple<int, int, int, int, int, int>> visited_pairs;
+	for (const auto &lhs : first_edges)
+	{
+		for (const auto &rhs : second_edges)
+		{
+			if (!overlapping_segments(lhs, rhs))
+				continue;
+			Index second_index = rhs.index;
+			if ((lhs.to - lhs.from).dot(rhs.to - rhs.from) > 0)
+				second_index = second.switch_vertex(second_index);
+			const auto key = std::make_tuple(
+				lhs.index.face, lhs.index.edge, lhs.index.vertex,
+				second_index.face, second_index.edge, second_index.vertex);
+			if (visited_pairs.insert(key).second)
+				result.emplace_back(lhs.index, second_index);
+		}
+	}
+	return result;
+}
+
+std::vector<std::pair<polyfem::mesh::Navigation3D::Index, polyfem::mesh::Navigation3D::Index>>
+polyfem::mesh::compute_mesh_interface(const Mesh3D &first, const Mesh3D &second)
+{
+	using Index = Navigation3D::Index;
+	std::vector<FaceInterfacePrimitive> first_faces, second_faces;
+	auto collect = [](const Mesh3D &mesh, auto &faces) {
+		std::unordered_set<int> visited_faces;
+		for (int c = 0; c < mesh.n_cells(); ++c)
+		{
+			for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf)
+			{
+				const int face = mesh.cell_face(c, lf);
+				if (!mesh.is_boundary_face(face) || !visited_faces.insert(face).second)
+					continue;
+				auto index = mesh.get_index_from_element(c, lf, 0);
+				std::vector<Eigen::Vector3d> vertices(mesh.n_face_vertices(face));
+				for (int lv = 0; lv < vertices.size(); ++lv)
+					vertices[lv] = mesh.point(mesh.face_vertex(face, lv)).head<3>();
+				faces.push_back({index, std::move(vertices)});
+			}
+		}
+	};
+	collect(first, first_faces);
+	collect(second, second_faces);
+
+	std::vector<std::pair<Index, Index>> result;
+	for (const auto &lhs : first_faces)
+	{
+		for (const auto &rhs : second_faces)
+		{
+			if (!overlapping_faces(lhs, rhs))
+				continue;
+			Index second_index = rhs.index;
+			for (int lv = 0; lv < second.n_face_vertices(second_index.face); ++lv)
+			{
+				if (same_point(first.point(lhs.index.vertex), second.point(second_index.vertex)))
+					break;
+				second_index = second.next_around_face(second_index);
+			}
+			result.emplace_back(lhs.index, second_index);
+		}
+	}
+	return result;
+}
 
 void polyfem::mesh::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated)
 {
