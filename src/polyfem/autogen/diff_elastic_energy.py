@@ -29,7 +29,7 @@ class AMIPSEnergy:
                 [1, 0, 0],
                 [sp.Rational(1, 2), sp.sqrt(3) / 2, 0],
                 [sp.Rational(1, 2),
-                 sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(3) / 2]
+                 sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(sp.Rational(2, 3))]
             ])
         standard = standard.inv().T
 
