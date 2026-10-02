@@ -38,8 +38,6 @@ namespace polyfem::varform
 		virtual const mesh::Mesh &get_mesh() const = 0;
 		virtual assembler::Problem &get_problem() = 0;
 		virtual const assembler::Problem &get_problem() const = 0;
-		virtual const std::string &get_root_path() const = 0;
-		virtual std::string input_path(const std::string &path, bool only_if_exists = false) const = 0;
 		virtual std::string output_file_path(const std::string &path) const = 0;
 		virtual const Units &get_units() const = 0;
 		virtual bool is_contact_enabled() const = 0;

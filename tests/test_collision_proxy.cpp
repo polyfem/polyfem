@@ -1,6 +1,9 @@
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
@@ -262,10 +265,10 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	REQUIRE(debug.geometry_bases != nullptr);
 	REQUIRE(debug.total_local_boundary != nullptr);
 
-	Eigen::MatrixXd vertices;
-	Eigen::VectorXi _;
-	Eigen::MatrixXi __, faces;
-	polyfem::mesh::read_surface_mesh(proxy_mesh_path, vertices, _, __, faces);
+	const polyfem::io::FileSystemIO resources(".");
+	const polyfem::mesh::SurfaceMesh surface =
+		polyfem::mesh::MeshLoader(resources).load_surface(proxy_mesh_path);
+	const Eigen::MatrixXd &vertices = surface.vertices;
 
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	polyfem::mesh::build_collision_proxy_displacement_map(

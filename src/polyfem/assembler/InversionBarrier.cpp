@@ -94,22 +94,22 @@ namespace polyfem::assembler
 	{
 	}
 
-	void InversionBarrier::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void InversionBarrier::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, size() == 3, units.stress(), root_path);
+		params_.add_multimaterial(index, params, size() == 3, units.stress(), resources);
 
 		// Default activation threshold matches the original hardcoded barrier (J >= 0.5 is inactive).
 		if (params.count("JBarrierThreshold"))
 		{
-			JBarrierThreshold_.add_multimaterial(index, params, "", root_path);
+			JBarrierThreshold_.add_multimaterial(index, params, "", resources);
 		}
 		else
 		{
 			json params_with_default = params;
 			params_with_default["JBarrierThreshold"] = 0.5;
-			JBarrierThreshold_.add_multimaterial(index, params_with_default, "", root_path);
+			JBarrierThreshold_.add_multimaterial(index, params_with_default, "", resources);
 		}
 	}
 

@@ -58,13 +58,12 @@ namespace polyfem::solver
 
 	} // namespace
 
-	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const double dhat, const double dmin)
+	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, const io::ResourceIO &resources, const double dhat, const double dmin)
 		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
 	{
 		varform::NonlinearElasticVarForm::build_collision_mesh(
 			varform_->get_mesh(), varform_->primary_space().geometry->n_bases, varform_->primary_space().geometry_basis_list(), varform_->primary_space().geometry_basis_list(),
-			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(),
-			[this](const std::string &p) { return this->varform_->input_path(p); },
+			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(), resources,
 			varform_->primary_space().space_in_node_to_node, collision_mesh_);
 
 		Eigen::MatrixXd V;
@@ -157,11 +156,12 @@ namespace polyfem::solver
 
 	LayerThicknessForm::LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
 										   std::shared_ptr<const varform::DifferentiableVarForm> varform,
+										   const io::ResourceIO &resources,
 										   const std::vector<int> &boundary_ids,
 										   const double dhat,
 										   const bool use_log_barrier,
 										   const double dmin)
-		: CollisionBarrierForm(variable_to_simulations, std::move(varform), dhat, dmin),
+		: CollisionBarrierForm(variable_to_simulations, std::move(varform), resources, dhat, dmin),
 		  boundary_ids_(boundary_ids)
 	{
 		for (const auto &id : boundary_ids_)
@@ -293,7 +293,7 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const io::ResourceIO &resources, const double dhat)
 		: AdjointForm(variable_to_simulation), varform_(std::move(varform)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
 	{
 		if (varform_->primary_space().n_bases != varform_->primary_space().geometry->n_bases)
@@ -301,8 +301,7 @@ namespace polyfem::solver
 
 		varform::NonlinearElasticVarForm::build_collision_mesh(
 			varform_->get_mesh(), varform_->primary_space().geometry->n_bases, varform_->primary_space().geometry_basis_list(), varform_->primary_space().geometry_basis_list(),
-			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(),
-			[this](const std::string &p) { return this->varform_->input_path(p); },
+			varform_->boundary_state().total_local_boundary, varform_->get_obstacle(), varform_->get_args(), resources,
 			varform_->primary_space().space_in_node_to_node, collision_mesh_);
 
 		Eigen::MatrixXd V;

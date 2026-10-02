@@ -37,6 +37,7 @@ namespace polyfem
 								   const int n_basis, const int size,
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const Problem &problem,
+								   const io::ResourceIO &resources,
 								   const std::string bc_method,
 								   const json &solver_params,
 								   const int fe_space_id)
@@ -49,6 +50,7 @@ namespace polyfem
 			  gbases_(gbases),
 			  ass_vals_cache_(ass_vals_cache),
 			  problem_(problem),
+			  resources_(resources),
 			  bc_method_(bc_method),
 			  solver_params_(solver_params),
 			  fe_space_id_(fe_space_id),
@@ -214,7 +216,7 @@ namespace polyfem
 				{
 					assembler::Mass mass_mat_assembler;
 					mass_mat_assembler.set_size(assembler_.size());
-					mass_mat_assembler.add_multimaterial(0, json({}), Units(), "");
+					mass_mat_assembler.add_multimaterial(0, json({}), Units(), resources_);
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - (obstacle_ ? obstacle_->n_vertices() : 0);
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);

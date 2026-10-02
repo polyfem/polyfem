@@ -43,14 +43,14 @@ namespace polyfem::assembler
 		return result;
 	}
 
-	void Mass::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void Mass::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 1 || size_ == 2 || size_ == 3);
 
 		if (auto thermal_density = std::dynamic_pointer_cast<ThermalMassDensity>(density_))
-			thermal_density->add_multimaterial(index, params, units.density(), units.specific_heat_capacity(), root_path);
+			thermal_density->add_multimaterial(index, params, units.density(), units.specific_heat_capacity(), resources);
 		else
-			density_->add_multimaterial(index, params, units.density(), root_path);
+			density_->add_multimaterial(index, params, units.density(), resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> Mass::parameters() const
