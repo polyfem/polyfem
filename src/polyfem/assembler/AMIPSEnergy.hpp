@@ -42,11 +42,7 @@ namespace polyfem::assembler
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-			double power = -1;
-			if (use_rest_pose_)
-				power = size() == 2 ? 1. : (2. / 3.);
-			else
-				power = size() == 2 ? 2. : 5. / 3.;
+			const double power = 2. / size();
 
 			AutoDiffGradMat standard;
 
