@@ -64,7 +64,7 @@ namespace polyfem::assembler
 
 		bool allow_inversion() const override { return true; }
 
-		virtual bool real_def_grad() const { return true; }
+		virtual bool real_def_grad(const int el_id) const { return true; }
 
 	protected:
 		AutodiffType autodiff_type_ = AutodiffType::STRESS;
@@ -112,7 +112,7 @@ namespace polyfem::assembler
 				for (int d = 0; d < size(); ++d)
 					def_grad(d, d) += T(1);
 
-				if (!derived().real_def_grad())
+				if (!derived().real_def_grad(data.vals.element_id))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -185,7 +185,7 @@ namespace polyfem::assembler
 					for (int d2 = 0; d2 < size(); ++d2)
 						def_grad_ad(d1, d2) = Diff(d1 * size() + d2, def_grad(d1, d2));
 
-				if (!derived().real_def_grad())
+				if (!derived().real_def_grad(data.vals.element_id))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -248,7 +248,7 @@ namespace polyfem::assembler
 				Eigen::Matrix<double, n_basis, dim> G = grad * jac_it;
 				def_grad = local_disp.transpose() * G + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-				if (!derived().real_def_grad())
+				if (!derived().real_def_grad(data.vals.element_id))
 				{
 					DoubleGradMat jac_it = data.vals.jac_it[p];
 					jac_it = jac_it.inverse();
@@ -257,7 +257,7 @@ namespace polyfem::assembler
 				}
 
 				const Eigen::Matrix<double, dim, dim> P = derived().gradient(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
-				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad() ? G : grad;
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad(data.vals.element_id) ? G : grad;
 				const Eigen::Matrix<double, n_basis, dim> Rloc = Bgrad * P.transpose() * data.da(p);
 
 				for (int a = 0; a < data.vals.basis_values.size(); ++a)
@@ -311,7 +311,7 @@ namespace polyfem::assembler
 					for (int j = 0; j < d; ++j)
 						def_grad_ad(i, j) = Diff2(i * d + j, def_grad(i, j));
 
-				if (!derived().real_def_grad())
+				if (!derived().real_def_grad(data.vals.element_id))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -388,7 +388,7 @@ namespace polyfem::assembler
 
 				def_grad = local_disp.transpose() * G + Eigen::Matrix<double, dim, dim>::Identity();
 
-				if (!derived().real_def_grad())
+				if (!derived().real_def_grad(data.vals.element_id))
 				{
 					DoubleGradMat jac_it = data.vals.jac_it[p];
 					jac_it = jac_it.inverse();
@@ -400,7 +400,7 @@ namespace polyfem::assembler
 				// Since P = dW/dF, A is just the Hessian of W wrt vec(F).
 				Eigen::Matrix<double, dim * dim, dim * dim> A = derived().hessian(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
-				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad() ? G : grad_ref;
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad(data.vals.element_id) ? G : grad_ref;
 
 				for (int a = 0; a < nb; ++a)
 				{
