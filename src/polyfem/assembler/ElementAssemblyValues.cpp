@@ -177,6 +177,7 @@ namespace polyfem
 
 			const int n_local_bases = int(basis.bases.size());
 			const int n_local_g_bases = int(gbasis.bases.size());
+			n_geometric_bases = n_local_g_bases;
 
 			// evaluate on reference element
 			basis.evaluate_bases(pts, basis_values);
