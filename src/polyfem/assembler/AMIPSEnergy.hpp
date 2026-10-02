@@ -86,7 +86,7 @@ namespace polyfem::assembler
 				else
 					standard << 1, 0, 0,
 						0.5, std::sqrt(3) / 2., 0,
-						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+						0.5, 0.5 / std::sqrt(3), std::sqrt(2. / 3.);
 				standard = standard.inverse().transpose().eval();
 			}
 
