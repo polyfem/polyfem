@@ -9,11 +9,13 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +87,32 @@ namespace
 		return 0.5 * area;
 	}
 } // namespace
+
+TEST_CASE("HYBRID reader validates face vertex indices", "[mesh_test][mesh_data]")
+{
+	for (const int vertex : {-1, 0, 4, 100})
+	{
+		CAPTURE(vertex);
+		std::istringstream input(
+			"4 4 3\n"
+			"0 0 0\n1 0 0\n0 1 0\n0 0 1\n"
+			"3 "
+			+ std::to_string(vertex) + " 1 2\n"
+									   "3 0 1 3\n3 0 2 3\n3 1 2 3\n"
+									   "4 0 1 2 3\n4 1 1 1 1\n0\n");
+		if (vertex == 0)
+		{
+			const auto data = MeshReader::read_hybrid(input, "test.hybrid");
+			CHECK(data.vertices.rows() == 4);
+			CHECK(data.cell_kernel_points.isApprox(Eigen::MatrixXd::Constant(1, 3, 0.25)));
+		}
+		else
+		{
+			CHECK_THROWS_WITH(MeshReader::read_hybrid(input, "test.hybrid"),
+							  "Invalid HYBRID face vertex " + std::to_string(vertex) + " in test.hybrid: expected an index in [0, 4).");
+		}
+	}
+}
 
 TEST_CASE("Geogram hex import preserves cube edges", "[mesh_test][mesh_data]")
 {

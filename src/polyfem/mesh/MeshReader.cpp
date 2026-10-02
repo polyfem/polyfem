@@ -108,8 +108,12 @@ namespace polyfem::mesh
 				log_and_throw_error("Invalid HYBRID face in {}.", description);
 			face.resize(size);
 			for (int &vertex : face)
+			{
 				if (!(input >> vertex))
 					log_and_throw_error("HYBRID face data ended early in {}.", description);
+				if (vertex < 0 || vertex >= vertex_count)
+					log_and_throw_error("Invalid HYBRID face vertex {} in {}: expected an index in [0, {}).", vertex, description, vertex_count);
+			}
 		}
 
 		std::vector<std::vector<int>> cell_faces(cell_count);

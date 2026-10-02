@@ -576,6 +576,36 @@ TEST_CASE("coupled two-mesh Navier-Stokes FSI", "[varform][state][navier_stokes]
 	std::filesystem::remove_all(output_directory);
 }
 
+TEST_CASE("legacy RHS assembler projects initial conditions after construction", "[legacy][state][rhs]")
+{
+	json args;
+	args["geometry"] = {{{"mesh", "unused.obj"}, {"enabled", false}}};
+	args["materials"] = {{"type", "Laplacian"}};
+	args["time"] = {{"dt", 0.1}, {"time_steps", 2}};
+	args["/space/advanced/bc_method"_json_pointer] = "lsq";
+	args["/initial_conditions/solution"_json_pointer] = {{{"id", 0}, {"value", 2.0}}};
+	args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+	args["/output/log/level"_json_pointer] = "error";
+	legacy::State state;
+	state.init(args, true);
+	state.set_max_threads(1);
+
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi cells(1, 3);
+	cells << 0, 1, 2;
+	state.load_mesh(vertices, cells);
+	state.mesh->set_body_ids({0});
+	state.build_basis();
+
+	const auto rhs = state.build_rhs_assembler();
+	Eigen::MatrixXd solution;
+	// The factory's local variables are gone; projection still borrows State's reader.
+	rhs->initial_solution(solution);
+	REQUIRE(solution.rows() == state.n_bases);
+	CHECK(solution.isApprox(Eigen::MatrixXd::Constant(state.n_bases, 1, 2.0), 1e-10));
+}
+
 TEST_CASE("macro displacement gradient remains on legacy state path", "[varform][state]")
 {
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/neohookean.json");

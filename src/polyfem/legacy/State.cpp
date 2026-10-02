@@ -1565,13 +1565,12 @@ namespace polyfem::legacy
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		const polyfem::io::FileSystemIO resources(root_path());
 
 		return std::make_shared<RhsAssembler>(
 			*assembler, *mesh, &obstacle,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem, resources,
+			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem, rhs_resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}

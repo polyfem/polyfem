@@ -3,6 +3,7 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/Units.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
@@ -111,6 +112,10 @@ namespace polyfem::legacy
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
+	private:
+		// Own the reader borrowed by RHS assemblers, outliving the solver state.
+		polyfem::io::FileSystemIO rhs_resources_{"."};
+
 	public:
 		//---------------------------------------------------
 		//-----------------initialization--------------------

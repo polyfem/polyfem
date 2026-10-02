@@ -190,6 +190,7 @@ namespace polyfem::legacy
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		rhs_resources_ = polyfem::io::FileSystemIO(root_path());
 		// Legacy State still uses the old restart fields internally. They are no
 		// longer part of the public schema, so provide their inert defaults only
 		// after validation instead of exposing them to non-legacy configurations.
