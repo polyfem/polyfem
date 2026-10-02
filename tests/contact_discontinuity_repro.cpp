@@ -433,8 +433,8 @@ int main(int argc, char **argv)
 						auto qpos = face_q_pos(X, k, qi, p);
 						ipc::VertexMatrixView<3> view(X, qpos);
 						Eigen::VectorXd pos = c.dof(view);
-						val = c(pos, p, nullptr);
-						Eigen::VectorXd g = c.gradient(pos, p, nullptr);
+						val = c(pos, p);
+						Eigen::VectorXd g = c.gradient(pos, p);
 						gnorm = g.norm();
 						const std::string nm = c.name();
 						if (nm == "fv_3d" && pos.size() == 12)
