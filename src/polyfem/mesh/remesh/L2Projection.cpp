@@ -116,7 +116,7 @@ namespace polyfem::mesh
 				collision_mesh, dhat, /*avg_mass=*/1.0, use_area_weighting, use_improved_max_operator,
 				use_physical_barrier, /*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
 				/*enable_shape_derivatives=*/false, broad_phase_method, ccd_tolerance,
-				ccd_max_iterations));
+				ccd_max_iterations, /*dhat_epsilon_scale=*/1e-9));
 			forms.back()->set_weight(barrier_stiffness);
 			assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(x0, dim))));
 		}

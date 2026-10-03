@@ -64,7 +64,8 @@ namespace polyfem::mesh
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &codim_edges,
-		Eigen::MatrixXi &faces);
+		Eigen::MatrixXi &faces,
+		Eigen::MatrixXi &tets);
 
 	///
 	/// @brief      read a FEM mesh from a geometry JSON

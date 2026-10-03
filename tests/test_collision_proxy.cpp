@@ -3,6 +3,7 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
@@ -307,4 +308,62 @@ TEST_CASE("spline contact builds a displacement map", "[build_collision_proxy]")
 	const Eigen::MatrixXd mapped_displacements = output_space.collision_mesh->map_displacements(
 		Eigen::MatrixXd::Zero(debug.n_bases, debug.mesh->dimension()));
 	CHECK(mapped_displacements.rows() == output_space.collision_mesh->rest_positions().rows());
+}
+
+TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]")
+{
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D";
+	polyfem::json in_args;
+	in_args["geometry"] = polyfem::json::array({
+		{{"mesh", path + "/simple/triangle/right.obj"},
+		 {"transformation", {{"translation", {0, 0.6}}}}},
+		{{"mesh", path + "/obstacles/line.obj"},
+		 {"is_obstacle", true},
+		 {"transformation", {{"translation", {0.5, -0.5}}}}},
+	});
+	in_args["/materials/type"_json_pointer] = "NeoHookean";
+	in_args["/materials/E"_json_pointer] = 1e5;
+	in_args["/materials/nu"_json_pointer] = 0.3;
+	in_args["/materials/rho"_json_pointer] = 1e3;
+	in_args["/contact/enabled"_json_pointer] = true;
+	in_args["/time/time_steps"_json_pointer] = 1;
+	in_args["/time/tend"_json_pointer] = 1;
+	in_args["/output/log/level"_json_pointer] = "warning";
+
+	// The obstacle's vertices are appended after the FE vertices.
+	const auto check_obstacle_flags = [](const ipc::CollisionMesh &mesh, const int n_obstacle_vertices) {
+		REQUIRE(n_obstacle_vertices > 0);
+		int n_marked = 0;
+		for (int i = 0; i < mesh.num_vertices(); i++)
+		{
+			const bool is_obstacle = mesh.to_full_vertex_id(i) >= mesh.full_num_vertices() - n_obstacle_vertices;
+			CHECK(mesh.is_obstacle_vertex(i) == is_obstacle);
+			n_marked += mesh.is_obstacle_vertex(i);
+		}
+		CHECK(n_marked == n_obstacle_vertices);
+	};
+
+	SECTION("VarForm")
+	{
+		polyfem::State state;
+		state.init(in_args, true);
+		state.set_max_threads(1);
+		state.load_mesh();
+		polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+
+		const polyfem::io::OutputSpace output_space = state.variational_formulation->output_space();
+		REQUIRE(output_space.collision_mesh != nullptr);
+		REQUIRE(output_space.obstacle != nullptr);
+		check_obstacle_flags(*output_space.collision_mesh, output_space.obstacle->n_vertices());
+	}
+
+	SECTION("legacy State")
+	{
+		polyfem::legacy::State state;
+		state.init(in_args, true);
+		state.set_max_threads(1);
+		state.load_mesh();
+		state.build_basis();
+		check_obstacle_flags(state.collision_mesh, state.obstacle.n_vertices());
+	}
 }

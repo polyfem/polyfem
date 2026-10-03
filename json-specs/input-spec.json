@@ -1130,12 +1130,17 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
+            "use_esp_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
             "use_physical_barrier",
+            "collision_set_type",
+            "skip_obstacles",
+            "barrier",
             "collision_mesh",
             "use_gcp_formulation",
+            "esp_params",
             "alpha_n",
             "alpha_t",
             "min_distance_ratio",
@@ -1144,6 +1149,61 @@
             "adhesion"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/esp_params",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "dbar_factor",
+            "quadrature_order",
+            "area_weights",
+            "normalize_weights"
+        ]
+    },
+    {
+        "pointer": "/contact/esp_params/dbar_factor",
+        "type": "float",
+        "default": 1.0,
+        "doc": "Multiplied by dhat to get the activation distance of edge-edge contact points. 1.0 treats them as any other; 0.0 disables them."
+    },
+    {
+        "pointer": "/contact/esp_params/quadrature_order",
+        "type": "int",
+        "default": 1,
+        "min": 0,
+        "doc": "Quadrature order for high-order contact."
+    },
+    {
+        "pointer": "/contact/esp_params/area_weights",
+        "default": true,
+        "type": "bool",
+        "doc": "Weigh quadrature points by area in high-order contact potential."
+    },
+    {
+        "pointer": "/contact/esp_params/normalize_weights",
+        "default": true,
+        "type": "bool",
+        "doc": "Normalize quadrature weights in high-order contact potential."
+    },
+    {
+        "pointer": "/contact/barrier",
+        "default": "default",
+        "type": "string",
+        "options": [
+            "default",
+            "log",
+            "normalized_log",
+            "linear_inverse",
+            "quadratic_inverse",
+            "two_stage"
+        ],
+        "doc": "Barrier function for contact. 'default' uses the default barrier for each contact model. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (InversePowerBarrier with p=2), 'two_stage' (TwoStageBarrier)."
+    },
+    {
+        "pointer": "/contact/use_esp_formulation",
+        "default": false,
+        "type": "bool"
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
@@ -1235,6 +1295,18 @@
         "default": true,
         "type": "bool",
         "doc": "If using the convergent formulation, whether or not to use physical barrier stiffness. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/collision_set_type",
+        "default": "IPC",
+        "type": "string",
+        "doc": "Type of collision set to use. Options: \"IPC\", \"IMPROVED_MAX_APPROX\", \"OGC\"."
+    },
+    {
+        "pointer": "/contact/skip_obstacles",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, skip obstacle primitives when building the collision set."
     },
     {
         "pointer": "/contact/collision_mesh",
@@ -1475,7 +1547,8 @@
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "initial_barrier_stiffness"
+            "initial_barrier_stiffness",
+            "dhat_epsilon_scale"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1484,6 +1557,13 @@
         "default": 1,
         "type": "float",
         "doc": "Initial barrier stiffness if adaptive barrier is used."
+    },
+    {
+        "pointer": "/solver/contact/dhat_epsilon_scale",
+        "default": 1e-9,
+        "min": 0,
+        "type": "float",
+        "doc": "Passed to ipc::update_barrier_stiffness during the adaptive per-step update: the stiffness is doubled only while the minimum distance is below dhat_epsilon_scale * bbox_diagonal and still decreasing. Only used when barrier_stiffness is 'adaptive' and the simulation is time dependent. Defaults to the ipc-toolkit default (1e-9)."
     },
     {
         "pointer": "/solver/contact/CCD",
@@ -2489,9 +2569,16 @@
             "nodes",
             "forces",
             "force_high_order",
-            "jacobian_validity"
+            "jacobian_validity",
+            "obstacle_volume"
         ],
         "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/obstacle_volume",
+        "default": true,
+        "type": "bool",
+        "doc": "If true and the obstacle was loaded from a tetrahedral mesh, export the obstacle in volumetric (tet) form instead of its surface in the paraview output."
     },
     {
         "pointer": "/output/paraview/options/use_hdf5",

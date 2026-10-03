@@ -222,6 +222,14 @@ target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
+# Faster unordered map
+include(robin_map)
+target_link_libraries(polyfem PUBLIC tsl::robin_map)
+
+# Hashes
+include(abseil)
+target_link_libraries(polyfem PUBLIC absl::hash)
+
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     # IPC Toolkit uses TBB internally even when PolyFEM uses C++ threads.

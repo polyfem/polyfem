@@ -387,7 +387,7 @@ namespace polyfem::solver
 		return AdjointTools::map_primitive_to_node_order(*varform_, X) + diff_cache_->u(0);
 	}
 
-	SmoothContactForceForm::SmoothContactForceForm(
+	GCPContactForceForm::GCPContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
 		std::shared_ptr<const varform::DifferentiableVarForm> varform,
 		std::shared_ptr<const DiffCache> diff_cache,
@@ -404,7 +404,7 @@ namespace polyfem::solver
 		build_collision_mesh();
 	}
 
-	void SmoothContactForceForm::build_collision_mesh()
+	void GCPContactForceForm::build_collision_mesh()
 	{
 		// Deep copy and change the can_collide() function
 		collision_mesh_ = varform_->collision_mesh();
@@ -434,15 +434,15 @@ namespace polyfem::solver
 		};
 	}
 
-	ipc::SmoothCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
+	ipc::GCPCollisions GCPContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
-		ipc::SmoothCollisions collisions;
-		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(varform_->solve_data()->contact_form.get());
-		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase().get());
+		ipc::GCPCollisions collisions;
+		const auto gcp = dynamic_cast<const GCPContactForm *>(varform_->solve_data()->contact_form.get());
+		collisions.build(collision_mesh_, displaced_surface, gcp->get_params(), gcp->using_adaptive_dhat(), gcp->get_broad_phase().get());
 		return collisions;
 	}
 
-	double SmoothContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
+	double GCPContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		assert(varform_->solve_data()->contact_form != nullptr);
 
@@ -458,7 +458,7 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
+	Eigen::VectorXd GCPContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
 	{
 		assert(varform_->solve_data()->contact_form != nullptr);
 
@@ -476,7 +476,7 @@ namespace polyfem::solver
 		return weight() * (hessian * (coeff.array() * forces.array()).matrix());
 	}
 
-	void SmoothContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void GCPContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(varform_->solve_data()->contact_form != nullptr);
 
@@ -501,7 +501,7 @@ namespace polyfem::solver
 		});
 	}
 
-	void SmoothContactForceForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
+	void GCPContactForceForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
 		build_collision_mesh();
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));

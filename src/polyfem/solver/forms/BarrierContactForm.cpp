@@ -25,18 +25,39 @@ namespace polyfem::solver
 										   const bool enable_shape_derivatives,
 										   const ipc::BroadPhaseMethod broad_phase_method,
 										   const double ccd_tolerance,
-										   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, 1.0, use_physical_barrier)
+										   const int ccd_max_iterations,
+										   const double dhat_epsilon_scale,
+										   const ipc::NormalCollisions::CollisionSetType collision_set_type,
+										   const bool skip_obstacles,
+										   std::shared_ptr<ipc::Barrier> barrier) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale),
+																					barrier_potential_(barrier
+																										   ? ipc::BarrierPotential(barrier, dhat, /*stiffness=*/1.0, /*use_physical_barrier=*/false, /*use_squared_distance=*/false)
+																										   : ipc::BarrierPotential(dhat, /*stiffness=*/1.0, use_physical_barrier))
 	{
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
-		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
+
+		// collision_set_type and use_improved_max_operator both write the
+		// collision set type, so only one of them may be applied. The explicit
+		// collision_set_type wins when it asks for something other than the
+		// default IPC; otherwise use_improved_max_operator decides, which is
+		// what "use_convergent_formulation" drives.
+		if (collision_set_type != ipc::NormalCollisions::CollisionSetType::IPC)
+			collision_set_.set_collision_set_type(collision_set_type);
+		else
+			collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
+
+		collision_set_.set_skip_obstacles(skip_obstacles);
 	}
 
 	void BarrierContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
+
+		if (!barrier_potential_.use_squared_distance())
+			log_and_throw_error("Adaptive barrier stiffness is not supported for the selected barrier.");
 
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
@@ -209,7 +230,8 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface),
+					dhat_epsilon_scale_);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
