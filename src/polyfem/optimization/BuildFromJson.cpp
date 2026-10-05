@@ -706,6 +706,12 @@ namespace polyfem::from_json
 						args["dimensions"].get<std::vector<int>>());
 				}
 			}
+			else if (type == "elastic_material_smoothing")
+			{
+				obj = std::make_shared<ElasticMaterialSmoothingForm>(
+					var2sim, varforms[args["state"]],
+					args["volume_selection"].get<std::vector<int>>());
+			}
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(
