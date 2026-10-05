@@ -58,6 +58,12 @@ namespace polyfem::assembler
 		typedef std::pair<std::string, Eigen::MatrixXd> NamedMatrix;
 		typedef std::function<double(const RowVectorNd &, const RowVectorNd &, double, int)> ParamFunc;
 
+		/// Per-DOF max basis order and min element shape quality seen during
+		/// assembly, used to flag DOFs as problematic for solver preconditioning
+		/// (see NLProblem::get_problematic_dofs).
+		mutable Eigen::VectorXi basis_order_per_dof;
+		mutable Eigen::VectorXd element_quality_per_dof;
+
 		virtual ~Assembler() = default;
 
 		virtual std::string name() const = 0;

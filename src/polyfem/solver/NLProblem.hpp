@@ -1,5 +1,6 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
@@ -44,6 +45,17 @@ namespace polyfem::solver
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
 
+		virtual void get_problematic_dofs(std::set<int> &bad_dofs) override;
+
+		/// @brief Per-row function (block) assignment for multigrid-style linear
+		/// solvers, only computed when there is a single penalty form that
+		/// supports the fast axis-aligned projection (a simple selection of
+		/// full-DOF rows, e.g. Dirichlet BCs applied via augmented Lagrangian).
+		/// Returns an empty vector otherwise (e.g. general/QR-projected
+		/// constraints), since that reduced space is not a row selection and a
+		/// per-row function id would not be meaningful.
+		Eigen::VectorXi block_mapping() const override;
+
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) override;
@@ -73,6 +85,14 @@ namespace polyfem::solver
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
 
 		double normalize_forms() override;
+
+		/// Points at the constructing State/VarForm's own `args` (both legacy
+		/// State and VarForm own an `args` member with matching lifetime, so a
+		/// non-owning pointer set right after construction is safe); read by
+		/// get_problematic_dofs for the solver/precondition_* options. Left
+		/// null by callers that don't set it (e.g. NLHomoProblem), in which
+		/// case get_problematic_dofs reports no problematic DOFs.
+		const json *args_ = nullptr;
 
 		virtual double grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
 		virtual double step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;

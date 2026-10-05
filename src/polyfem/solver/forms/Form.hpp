@@ -4,6 +4,7 @@
 #include <polysolve/nonlinear/PostStepData.hpp>
 
 #include <filesystem>
+#include <set>
 
 namespace polyfem::solver
 {
@@ -142,6 +143,16 @@ namespace polyfem::solver
 		/// @brief sets the scale for the form
 		/// @param scale
 		void virtual set_scale(const double scale) { scale_ = scale; }
+
+		/// Per-DOF diagnostics a form may populate for the caller to aggregate
+		/// (see FullNLProblem::gradient/hessian), used to flag DOFs as
+		/// problematic for solver preconditioning (see
+		/// NLProblem::get_problematic_dofs). Element quality and basis order
+		/// are populated by ElasticForm; contact_patches (one set of DOFs per
+		/// contact patch) by contact forms that support Schwarz-style handling.
+		mutable Eigen::VectorXd element_quality_per_dof;
+		mutable Eigen::VectorXi basis_order_per_dof;
+		mutable std::vector<std::set<int>> contact_patches;
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite

@@ -165,7 +165,7 @@ namespace polyfem::legacy
 		const auto &fixed_entry = macro_strain_constraint.get_fixed_entry();
 		homo_problem->set_fixed_entry({});
 		{
-			std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+			std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true, dim);
 
 			Eigen::VectorXi al_indices = fixed_entry.array() + homo_problem->full_size();
 			Eigen::VectorXd al_values = utils::flatten(macro_strain_constraint.eval(step))(fixed_entry);
@@ -257,7 +257,7 @@ namespace polyfem::legacy
 		Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
 		homo_problem->init(reduced_sol);
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false);
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false, dim);
 		homo_problem->normalize_forms();
 		nl_solver->minimize(*homo_problem, reduced_sol);
 

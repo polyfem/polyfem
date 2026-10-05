@@ -49,6 +49,13 @@ namespace polyfem::solver
 
 		virtual double normalize_forms();
 
+		/// Aggregated across forms_ in gradient()/hessian() (see there for which
+		/// form contributes what); used by NLProblem::get_problematic_dofs.
+		Eigen::VectorXd contact_force_per_dof;
+		Eigen::VectorXd stress_per_dof;
+		Eigen::VectorXd basis_order_per_dof;
+		Eigen::VectorXd element_quality_per_dof;
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 		const bool is_residual_;

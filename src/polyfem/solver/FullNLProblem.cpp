@@ -111,6 +111,11 @@ namespace polyfem::solver
 
 	void FullNLProblem::gradient(const TVector &x, TVector &grad)
 	{
+		contact_force_per_dof.resize(x.size());
+		contact_force_per_dof.setZero();
+		stress_per_dof.resize(x.size());
+		stress_per_dof.setZero();
+
 		grad = TVector::Zero(x.size());
 		for (auto &f : forms_)
 		{
@@ -118,6 +123,18 @@ namespace polyfem::solver
 				continue;
 			TVector tmp;
 			f->first_derivative(x, tmp);
+
+			const std::string name = f->name();
+			if (name == "barrier-contact" || name == "smooth-contact" || name == "normal-adhesion")
+			{
+				contact_force_per_dof += tmp.cwiseAbs();
+				contact_patches = f->contact_patches;
+			}
+			else if (name == "elastic")
+			{
+				stress_per_dof += tmp.cwiseAbs();
+			}
+
 			grad += tmp;
 		}
 	}
@@ -132,6 +149,13 @@ namespace polyfem::solver
 			THessian tmp;
 			f->second_derivative(x, tmp);
 			hessian += tmp;
+
+			const std::string name = f->name();
+			if (name == "elastic")
+			{
+				basis_order_per_dof = f->basis_order_per_dof.cast<double>();
+				element_quality_per_dof = f->element_quality_per_dof;
+			}
 		}
 	}
 

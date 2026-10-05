@@ -26,6 +26,8 @@
 
 #include <polysolve/linear/FEMSolver.hpp>
 
+#include <set>
+
 #include <algorithm>
 
 namespace polyfem::varform
@@ -703,6 +705,27 @@ namespace polyfem::varform
 		assert(problem->is_scalar());
 		assert(rhs_assembler_ != nullptr);
 
+		{
+			std::set<int> bad_dofs;
+			if (args["solver"]["precondition_order_threshold"] > 0)
+			{
+				const int order_thresh = args["solver"]["precondition_order_threshold"];
+				for (int i = 0; i < primary_assembler_->basis_order_per_dof.size(); ++i)
+					if (primary_assembler_->basis_order_per_dof(i) >= order_thresh)
+						bad_dofs.insert(i);
+			}
+
+			if (args["solver"]["precondition_quality_threshold"] < 1.0)
+			{
+				const double quality_thresh = args["solver"]["precondition_quality_threshold"];
+				for (int i = 0; i < primary_assembler_->element_quality_per_dof.size(); ++i)
+					if (primary_assembler_->element_quality_per_dof(i) <= quality_thresh)
+						bad_dofs.insert(i);
+			}
+
+			solver->set_problematic_dofs(bad_dofs);
+		}
+
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
 			*solver,
@@ -841,7 +864,7 @@ namespace polyfem::varform
 
 	void ScalarVarForm::solve_static(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step)
 	{
-		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, problem_dimension());
 		logger().info("{}...", solver->name());
 
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
@@ -882,7 +905,7 @@ namespace polyfem::varform
 		assert(problem->is_time_dependent());
 		assert(rhs_assembler_ != nullptr);
 
-		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, problem_dimension());
 		logger().info("{}...", solver->name());
 
 		auto bdf = time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator(

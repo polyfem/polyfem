@@ -478,7 +478,7 @@ namespace polyfem::legacy
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al, const int dimension = 1) const;
 
 		/// Explicit periodic boundary-pair data used by periodic contact.
 		Eigen::VectorXi periodic_dof_mask;

@@ -201,7 +201,7 @@ if (POLYFEM_WITH_CUDA)
   set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
   # Enalbe CUDA support for libraries.
-  set(IPC_TOOLKIT_WITH_CUDA ON)
+  #set(IPC_TOOLKIT_WITH_CUDA ON)
   set(POLYSOLVE_WITH_CUDA ON)
 endif()
 

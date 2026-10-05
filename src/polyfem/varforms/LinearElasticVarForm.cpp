@@ -12,6 +12,8 @@
 
 #include <polysolve/linear/FEMSolver.hpp>
 
+#include <set>
+
 namespace polyfem::varform
 {
 	namespace
@@ -79,6 +81,27 @@ namespace polyfem::varform
 	{
 		assert(primary_assembler_->is_linear());
 		assert(rhs_assembler_ != nullptr);
+
+		{
+			std::set<int> bad_dofs;
+			if (args["solver"]["precondition_order_threshold"] > 0)
+			{
+				const int order_thresh = args["solver"]["precondition_order_threshold"];
+				for (int i = 0; i < primary_assembler_->basis_order_per_dof.size(); ++i)
+					if (primary_assembler_->basis_order_per_dof(i) >= order_thresh)
+						bad_dofs.insert(i);
+			}
+
+			if (args["solver"]["precondition_quality_threshold"] < 1.0)
+			{
+				const double quality_thresh = args["solver"]["precondition_quality_threshold"];
+				for (int i = 0; i < primary_assembler_->element_quality_per_dof.size(); ++i)
+					if (primary_assembler_->element_quality_per_dof(i) <= quality_thresh)
+						bad_dofs.insert(i);
+			}
+
+			solver->set_problematic_dofs(bad_dofs);
+		}
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh_->dimension();
 		const int precond_num = problem_dim * space_.n_bases;
@@ -166,7 +189,7 @@ namespace polyfem::varform
 
 	void LinearElasticVarForm::solve_static_linear(Eigen::MatrixXd &sol, const ForwardStepCallback &post_step)
 	{
-		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, problem_dimension());
 		logger().info("{}...", solver->name());
 
 		rhs_assembler_->set_bc(
@@ -188,7 +211,7 @@ namespace polyfem::varform
 		assert(rhs_assembler_ != nullptr);
 		assert(solve_data_.time_integrator != nullptr && "Transient linear elasticity requires an initialized time integrator");
 
-		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, problem_dimension());
 		logger().info("{}...", solver->name());
 
 		save_timestep(t0, 0, t0, dt, sol);
