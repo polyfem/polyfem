@@ -20,7 +20,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		const GenericMatParam &viscosity() const { return viscosity_; }
 

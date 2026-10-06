@@ -15,20 +15,13 @@ namespace polyfem
 		{
 		}
 
-		void NodeValues::load(const std::string &path)
+		void NodeValues::load(const io::ResourceIO &resources, const std::string &path)
 		{
-			std::fstream file;
-			file.open(path.c_str());
-
-			if (!file.good())
-			{
-				logger().error("Failed to open file: {}", path);
-				file.close();
-			}
+			auto file = resources.open(path, false);
 
 			std::string s;
 
-			while (getline(file, s))
+			while (getline(*file, s))
 			{
 				std::stringstream input(s);
 
@@ -47,8 +40,6 @@ namespace polyfem
 				while (input >> temp)
 					currentLine.push_back(temp);
 			}
-
-			file.close();
 		}
 
 		void NodeValues::init(const mesh::Mesh &mesh)
@@ -169,7 +160,7 @@ namespace polyfem
 			return true;
 		}
 
-		void NodeProblem::set_parameters(const json &params, const std::string &root_path)
+		void NodeProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (params.contains("rhs"))
 			{
@@ -179,7 +170,7 @@ namespace polyfem
 			if (params.contains("values"))
 			{
 				const std::string path = params["values"];
-				values_.load(path);
+				values_.load(resources, path);
 			}
 
 			if (params.contains("dirichlet_boundary"))

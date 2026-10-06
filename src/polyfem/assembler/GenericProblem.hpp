@@ -89,7 +89,7 @@ namespace polyfem
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
-			void set_parameters(const json &params, const std::string &root_path) override;
+			void set_parameters(const json &params, const io::ResourceIO &resources) override;
 
 			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
 			bool all_dimensions_dirichlet(const int fe_space_id) const override;
@@ -165,7 +165,7 @@ namespace polyfem
 			bool is_constant_in_time() const override { return !is_time_dept_; }
 			bool might_have_no_dirichlet() override { return !is_all_; }
 
-			void set_parameters(const json &params, const std::string &root_path) override;
+			void set_parameters(const json &params, const io::ResourceIO &resources) override;
 
 			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;

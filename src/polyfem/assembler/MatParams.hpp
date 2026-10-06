@@ -16,7 +16,7 @@ namespace polyfem::assembler
 		double operator()(const RowVectorNd &p, double t, int index) const;
 		double operator()(double x, double y, double z, double t, int index) const;
 
-		void add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path);
+		void add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources);
 
 	private:
 		const std::string param_name_;
@@ -33,7 +33,7 @@ namespace polyfem::assembler
 		const GenericMatParam &operator[](const size_t i) const { return params_[i]; }
 		size_t size() const { return params_.size(); }
 
-		void add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path);
+		void add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources);
 
 	private:
 		const std::string param_name_;
@@ -48,19 +48,19 @@ namespace polyfem::assembler
 		double operator()(int i, int j) const;
 		double &operator()(int i, int j);
 
-		void set_from_entries(const std::vector<double> &entries, const std::string &stress_unit, const std::string &root_path);
-		void set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_unit, const std::string &root_path);
-		void set_from_young_poisson(const double young, const double poisson, const std::string &stress_unit, const std::string &root_path);
+		void set_from_entries(const std::vector<double> &entries, const std::string &stress_unit, const io::ResourceIO &resources);
+		void set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_unit, const io::ResourceIO &resources);
+		void set_from_young_poisson(const double young, const double poisson, const std::string &stress_unit, const io::ResourceIO &resources);
 
 		void set_orthotropic(
 			double Ex, double Ey, double Ez,
 			double nuXY, double nuXZ, double nuYZ,
-			double muYZ, double muZX, double muXY, const std::string &stress_unit, const std::string &root_path);
-		void set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_unit, const std::string &root_path);
+			double muYZ, double muZX, double muXY, const std::string &stress_unit, const io::ResourceIO &resources);
+		void set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_unit, const io::ResourceIO &resources);
 		void set_transversely_isotropic(
 			double Et, double Ea,
 			double nu_t, double nu_a,
-			double Ga, const std::string &stress_units, const std::string &root_path);
+			double Ga, const std::string &stress_units, const io::ResourceIO &resources);
 
 		template <int DIM>
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
@@ -79,7 +79,7 @@ namespace polyfem::assembler
 	public:
 		LameParameters();
 
-		void add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const std::string &root_path);
+		void add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const io::ResourceIO &resources);
 
 		void lambda_mu(double px, double py, double pz, double x, double y, double z, double t, int el_id, double &lambda, double &mu) const;
 		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id, double &lambda, double &mu) const
@@ -96,7 +96,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd lambda_mat_, mu_mat_;
 
 	private:
-		void set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const std::string &root_path);
+		void set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const io::ResourceIO &resources);
 
 		int size_;
 		std::vector<utils::ExpressionValue> lambda_or_E_, mu_or_nu_;
@@ -109,7 +109,7 @@ namespace polyfem::assembler
 		Density();
 		virtual ~Density() = default;
 
-		virtual void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path);
+		virtual void add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources);
 
 		virtual double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
 		virtual double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
@@ -134,7 +134,7 @@ namespace polyfem::assembler
 
 		NoDensity() {}
 
-		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources) override
 		{
 			throw std::runtime_error("NoDensity does not support multimaterial");
 		}
@@ -152,8 +152,8 @@ namespace polyfem::assembler
 
 		ThermalMassDensity();
 
-		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path) override;
-		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const std::string &root_path);
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources) override;
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const io::ResourceIO &resources);
 
 		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const override;
 		double rho(const RowVectorNd &p, double t, int el_id) const;
@@ -172,7 +172,7 @@ namespace polyfem::assembler
 
 		void resize(const int size);
 
-		void add_multimaterial(const int index, const json &params, const std::string &unit, const std::string &root_path);
+		void add_multimaterial(const int index, const json &params, const std::string &unit, const io::ResourceIO &resources);
 
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
 

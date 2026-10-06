@@ -21,7 +21,7 @@ namespace polyfem
 
 			std::string name() const override { return "Laplacian"; }
 			std::map<std::string, ParamFunc> parameters() const override;
-			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+			void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 			/// computes local stiffness matrix (1x1) for bases i,j
 			/// where i,j is passed in through data

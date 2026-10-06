@@ -24,7 +24,7 @@ namespace polyfem::assembler
 		}
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		std::string name() const override { return "AMIPS"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }

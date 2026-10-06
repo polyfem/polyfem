@@ -1,16 +1,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -53,7 +58,7 @@ namespace
 		Eigen::MatrixXi cells(1, 3);
 		cells << 0, 1, 2;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	std::unique_ptr<Mesh> create_test_tetra_mesh()
@@ -67,7 +72,7 @@ namespace
 		Eigen::MatrixXi cells(1, 4);
 		cells << 0, 1, 2, 3;
 
-		return Mesh::create(vertices, cells);
+		return Mesh::create(MeshData(vertices, cells));
 	}
 
 	double geogram_facet_signed_area(const GEO::Mesh &mesh, const int facet)
@@ -83,11 +88,163 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("HYBRID reader validates face vertex indices", "[mesh_test][mesh_data]")
+{
+	for (const int vertex : {-1, 0, 4, 100})
+	{
+		CAPTURE(vertex);
+		std::istringstream input(
+			"4 4 3\n"
+			"0 0 0\n1 0 0\n0 1 0\n0 0 1\n"
+			"3 "
+			+ std::to_string(vertex) + " 1 2\n"
+									   "3 0 1 3\n3 0 2 3\n3 1 2 3\n"
+									   "4 0 1 2 3\n4 1 1 1 1\n0\n");
+		if (vertex == 0)
+		{
+			const auto data = MeshReader::read_hybrid(input, "test.hybrid");
+			CHECK(data.vertices.rows() == 4);
+			CHECK(data.cell_kernel_points.isApprox(Eigen::MatrixXd::Constant(1, 3, 0.25)));
+		}
+		else
+		{
+			CHECK_THROWS_WITH(MeshReader::read_hybrid(input, "test.hybrid"),
+							  "Invalid HYBRID face vertex " + std::to_string(vertex) + " in test.hybrid: expected an index in [0, 4).");
+		}
+	}
+}
+
+TEST_CASE("Geogram hex import preserves cube edges", "[mesh_test][mesh_data]")
+{
+	State state; // Initialize Geogram.
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+	GEO::Mesh geogram;
+	geogram.vertices.create_vertices(8);
+	for (int i = 0; i < 8; ++i)
+		for (int d = 0; d < 3; ++d)
+			geogram.vertices.point(i)[d] = vertices(i, d);
+	const GEO::index_t cell = geogram.cells.create_cells(1, GEO::MESH_HEX);
+	const std::vector<int> native_corners{1, 0, 2, 3, 5, 4, 6, 7};
+	for (int i = 0; i < 8; ++i)
+		geogram.cells.set_vertex(cell, i, native_corners[i]);
+	geogram.cells.connect();
+
+	const auto mesh = Mesh::create(MeshReader::from_geogram(geogram));
+	REQUIRE(mesh != nullptr);
+	CHECK(mesh->n_elements() == 1);
+	CHECK(mesh->n_faces() == 6);
+	REQUIRE(mesh->n_edges() == 12);
+	for (int e = 0; e < mesh->n_edges(); ++e)
+	{
+		const RowVectorNd edge = mesh->point(mesh->edge_vertex(e, 0)) - mesh->point(mesh->edge_vertex(e, 1));
+		CHECK(edge.norm() == Catch::Approx(1.0));
+	}
+}
+
+TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]")
+{
+	SECTION("2D conforming and nonconforming meshes")
+	{
+		Eigen::MatrixXd vertices(4, 2);
+		vertices << 0, 0,
+			1, 0,
+			1, 1,
+			0, 1;
+		Eigen::MatrixXi cells(2, 3);
+		cells << 0, 1, 2,
+			0, 2, 3;
+
+		for (const bool non_conforming : {false, true})
+		{
+			CAPTURE(non_conforming);
+			MeshData data(vertices, cells);
+			data.body_ids = {21, 22};
+			data.geometry_ids = {51, 52};
+			data.node_ids = {61, 62, 63, 64};
+			data.boundary_elements = {{0, 1}, {1, 2}, {0, 2}};
+			data.boundary_ids = {11, 12, 14};
+			const auto mesh = Mesh::create(data, non_conforming);
+
+			REQUIRE(mesh->has_body_ids());
+			CHECK(mesh->get_body_id(0) == 21);
+			CHECK(mesh->get_body_id(1) == 22);
+			REQUIRE(mesh->has_boundary_ids());
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 0, 1)) == 11);
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 1, 2)) == 12);
+			CHECK(mesh->get_boundary_id(edge_id(*mesh, 0, 2)) == 14);
+
+			const MeshData snapshot = mesh->to_mesh_data();
+			const auto restored = Mesh::create(snapshot, non_conforming);
+			CHECK(snapshot.vertices.isApprox(vertices));
+			CHECK(snapshot.body_ids == std::vector<int>{21, 22});
+			CHECK(snapshot.geometry_ids == std::vector<int>{51, 52});
+			CHECK(snapshot.node_ids == std::vector<int>{61, 62, 63, 64});
+			CHECK(restored->get_geometry_id(0) == 51);
+			CHECK(restored->get_geometry_id(1) == 52);
+			CHECK(restored->get_node_id(3) == 64);
+			CHECK(restored->get_boundary_id(edge_id(*restored, 0, 1)) == 11);
+			CHECK(restored->get_boundary_id(edge_id(*restored, 0, 2)) == 14);
+		}
+	}
+
+	SECTION("3D conforming and nonconforming meshes")
+	{
+		Eigen::MatrixXd vertices(5, 3);
+		vertices << 0, 0, 0,
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1,
+			0, 0, -1;
+		Eigen::MatrixXi cells(2, 4);
+		cells << 0, 1, 2, 3,
+			0, 2, 1, 4;
+
+		for (const bool non_conforming : {false, true})
+		{
+			CAPTURE(non_conforming);
+			MeshData data(vertices, cells);
+			data.body_ids = {41, 42};
+			data.geometry_ids = {71, 72};
+			data.node_ids = {81, 82, 83, 84, 85};
+			data.boundary_elements = {{0, 1, 3}, {0, 1, 2}};
+			data.boundary_ids = {31, 33};
+			const auto mesh = Mesh::create(data, non_conforming);
+
+			REQUIRE(mesh->has_body_ids());
+			CHECK(mesh->get_body_id(0) == 41);
+			CHECK(mesh->get_body_id(1) == 42);
+			REQUIRE(mesh->has_boundary_ids());
+			const int exterior_face = face_id(*mesh, {0, 1, 3});
+			const int interface_face = face_id(*mesh, {0, 1, 2});
+			REQUIRE(exterior_face >= 0);
+			REQUIRE(interface_face >= 0);
+			CHECK(mesh->get_boundary_id(exterior_face) == 31);
+			CHECK_FALSE(mesh->is_boundary_face(interface_face));
+			CHECK(mesh->get_boundary_id(interface_face) == 33);
+
+			const MeshData snapshot = mesh->to_mesh_data();
+			const auto restored = Mesh::create(snapshot, non_conforming);
+			CHECK(snapshot.vertices.isApprox(vertices));
+			CHECK(snapshot.body_ids == std::vector<int>{41, 42});
+			CHECK(snapshot.geometry_ids == std::vector<int>{71, 72});
+			CHECK(snapshot.node_ids == std::vector<int>{81, 82, 83, 84, 85});
+			CHECK(restored->get_geometry_id(0) == 71);
+			CHECK(restored->get_geometry_id(1) == 72);
+			CHECK(restored->get_node_id(4) == 85);
+			CHECK(restored->get_boundary_id(face_id(*restored, {0, 1, 3})) == 31);
+			CHECK(restored->get_boundary_id(face_id(*restored, {0, 1, 2})) == 33);
+		}
+	}
+}
+
 TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gmsh]")
 {
 	SECTION("MSH 2.2 lines, including a higher-order line and an internal edge")
 	{
-		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_2d_v22.msh");
+		const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+		const auto mesh = MeshLoader(resources).load_fem("gmsh_physical_sides_2d_v22.msh");
 		REQUIRE(mesh != nullptr);
 		REQUIRE(mesh->has_boundary_ids());
 		REQUIRE(mesh->has_body_ids());
@@ -113,7 +270,8 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 
 	SECTION("MSH 4.1 surfaces, including an internal face")
 	{
-		const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/gmsh_physical_sides_3d_v41.msh");
+		const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+		const auto mesh = MeshLoader(resources).load_fem("gmsh_physical_sides_3d_v41.msh");
 		REQUIRE(mesh != nullptr);
 		REQUIRE(mesh->has_boundary_ids());
 		REQUIRE(mesh->has_body_ids());
@@ -139,7 +297,8 @@ TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gm
 
 TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
 {
-	const auto mesh = Mesh::create(std::string(POLYFEM_DATA_DIR) + "/standard/reordered-local-vertices.msh");
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	const auto mesh = MeshLoader(resources).load_fem("standard/reordered-local-vertices.msh");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->n_cell_vertices(0) == 4);
 
@@ -352,8 +511,9 @@ TEST_CASE("append_2d", "[mesh_test]")
 	State state;
 
 	const std::string path = POLYFEM_DATA_DIR;
-	auto m1 = Mesh::create(POLYFEM_DATA_DIR + std::string("/contact/meshes/2D/arch/largeArch.01.obj"));
-	const auto m2 = Mesh::create(POLYFEM_DATA_DIR + std::string("/contact/meshes/2D/arch/largeArch.02.obj"));
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	auto m1 = MeshLoader(resources).load_fem("contact/meshes/2D/arch/largeArch.01.obj");
+	const auto m2 = MeshLoader(resources).load_fem("contact/meshes/2D/arch/largeArch.02.obj");
 
 	m1->append(m2);
 }
@@ -473,6 +633,7 @@ TEST_CASE("cmesh 3d selections and geometry queries", "[mesh_test]")
 
 TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 {
+	const io::FileSystemIO resources(".");
 	Obstacle obstacle;
 
 	Eigen::MatrixXd vertices(2, 2);
@@ -487,7 +648,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 	json displacement;
 	displacement["value"] = json::array({"x + t", "y + 2*t"});
 
-	obstacle.append_mesh(vertices, codim_vertices, codim_edges, faces, displacement, "");
+	obstacle.append_mesh(vertices, codim_vertices, codim_edges, faces, displacement, resources);
 	CHECK(obstacle.dim() == 2);
 	CHECK(obstacle.n_vertices() == 2);
 	CHECK(obstacle.n_edges() == 1);
@@ -529,7 +690,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 	CHECK(matrix_sol(1, 0) == Catch::Approx(1.5));
 	CHECK(matrix_sol(1, 1) == Catch::Approx(1.0));
 
-	obstacle.change_displacement(0, json::array({"x", "y"}), "", "");
+	obstacle.change_displacement(0, json::array({"x", "y"}), resources, "");
 	matrix_sol.setZero();
 	obstacle.update_displacement(0.5, matrix_sol);
 	CHECK(matrix_sol(0, 0) == Catch::Approx(0.0));
@@ -544,6 +705,7 @@ TEST_CASE("obstacle meshes planes and displacement updates", "[mesh_test]")
 
 TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh_test]")
 {
+	const io::FileSystemIO resources(".");
 	Obstacle empty_obstacle;
 	Eigen::MatrixXd no_vertices(0, 2);
 	Eigen::VectorXi no_codim_vertices(0);
@@ -551,7 +713,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	Eigen::MatrixXi no_faces(0, 3);
 	json empty_displacement;
 	empty_displacement["value"] = json::array({0, 0});
-	empty_obstacle.append_mesh(no_vertices, no_codim_vertices, no_edges, no_faces, empty_displacement, "");
+	empty_obstacle.append_mesh(no_vertices, no_codim_vertices, no_edges, no_faces, empty_displacement, resources);
 	empty_obstacle.append_mesh_sequence({}, no_codim_vertices, no_edges, no_faces, 24);
 	CHECK(empty_obstacle.n_vertices() == 0);
 	CHECK(empty_obstacle.dim() == 0);
@@ -563,7 +725,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 		0, 1;
 	Eigen::MatrixXi invalid_faces(1, 4);
 	invalid_faces << 0, 1, 2, 0;
-	REQUIRE_THROWS(invalid_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, invalid_faces, empty_displacement, ""));
+	REQUIRE_THROWS(invalid_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, invalid_faces, empty_displacement, resources));
 
 	Obstacle obstacle;
 	Eigen::MatrixXd vertices(3, 3);
@@ -575,7 +737,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	json displacement;
 	displacement["value"] = json::array({"x + t", "y + t", "z + t"});
 	displacement["interpolation"] = {{"type", "linear"}};
-	obstacle.append_mesh(vertices, Eigen::VectorXi(0), Eigen::MatrixXi(0, 2), faces, displacement, "");
+	obstacle.append_mesh(vertices, Eigen::VectorXi(0), Eigen::MatrixXi(0, 2), faces, displacement, resources);
 	CHECK(obstacle.dim() == 3);
 	CHECK(obstacle.n_vertices() == 3);
 	CHECK(obstacle.n_faces() == 1);
@@ -592,7 +754,7 @@ TEST_CASE("obstacle triangular meshes interpolation paths and 3d planes", "[mesh
 	json array_displacement;
 	array_displacement["value"] = json::array({"x + 1", "y + 1"});
 	array_displacement["interpolation"] = json::array({json{{"type", "linear"}}, json{{"type", "none"}}});
-	array_interp_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, no_faces, array_displacement, "");
+	array_interp_obstacle.append_mesh(vertices2d, no_codim_vertices, no_edges, no_faces, array_displacement, resources);
 	Eigen::MatrixXd array_sol = Eigen::MatrixXd::Zero(array_interp_obstacle.n_vertices(), array_interp_obstacle.dim());
 	array_interp_obstacle.update_displacement(0.5, array_sol);
 	CHECK(array_sol(0, 0) == Catch::Approx(0.5));
