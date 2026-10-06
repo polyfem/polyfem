@@ -580,30 +580,26 @@ namespace polyfem::legacy
 		mesh::Obstacle obstacle;
 
 		/// loads the mesh from the json arguments
-		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		/// @param[in] names keys in the hdf5
 		/// @param[in] cells list of cells from hdf5
 		/// @param[in] vertices list of vertices from hdf5
-		void load_mesh(bool non_conforming = false,
-					   const std::vector<std::string> &names = std::vector<std::string>(),
+		void load_mesh(const std::vector<std::string> &names = std::vector<std::string>(),
 					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 
 		/// loads the mesh from a geogram mesh
 		/// @param[in] meshin geo mesh
 		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
-		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		/// @param[in] skip_boundary_sideset skip_boundary_sideset = false it uses the lambda boundary_marker to assign the sideset
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool skip_boundary_sideset = false);
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim
 		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quad mesh if dim is 2)
-		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
+		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
-			mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
-			load_mesh(non_conforming);
+			mesh = mesh::Mesh::create(mesh::MeshData(V, F));
+			load_mesh();
 		}
 
 		/// Resets the mesh

@@ -40,14 +40,14 @@ namespace polyfem::legacy
 		n_pressure_bases = 0;
 	}
 
-	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool skip_boundary_sideset)
 	{
 		reset_mesh();
 
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading mesh...");
-		mesh = Mesh::create(mesh::MeshReader::from_geogram(meshin), non_conforming);
+		mesh = Mesh::create(mesh::MeshReader::from_geogram(meshin));
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -91,8 +91,7 @@ namespace polyfem::legacy
 		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 	}
 
-	void State::load_mesh(bool non_conforming,
-						  const std::vector<std::string> &names,
+	void State::load_mesh(const std::vector<std::string> &names,
 						  const std::vector<Eigen::MatrixXi> &cells,
 						  const std::vector<Eigen::MatrixXd> &vertices)
 	{
@@ -113,7 +112,7 @@ namespace polyfem::legacy
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh = geometry_loader.load_fem(args["geometry"], non_conforming);
+			mesh = geometry_loader.load_fem(args["geometry"]);
 		}
 
 		if (mesh == nullptr)
@@ -164,7 +163,7 @@ namespace polyfem::legacy
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			mesh->dimension(), non_conforming);
+			mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

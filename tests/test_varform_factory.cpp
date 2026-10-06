@@ -57,12 +57,11 @@ TEST_CASE("problem time dependence matches time configuration", "[varform][init]
 	const bool has_time = GENERATE(false, true);
 	const bool legacy_state = GENERATE(false, true);
 	json args;
+	args["geometry"] = {{{"mesh", "unused.obj"}}}; // Initialization does not read the mesh.
 	args["materials"] = {{"type", "Laplacian"}};
 	args["preset_problem"] = {{"type", transient_problem ? "TimeDependentScalar" : "Franke"}};
 	if (has_time)
 		args["time"] = {{"tend", 1}, {"dt", 1}};
-	else
-		args["time"] = nullptr;
 
 	auto check_init = [&](auto &state) {
 		if (transient_problem == has_time)

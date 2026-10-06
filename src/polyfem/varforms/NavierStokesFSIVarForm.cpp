@@ -558,7 +558,7 @@ namespace polyfem::varform
 					log_and_throw_error("Two-mesh NavierStokesFSI checkpoint is missing its solid mesh.");
 				fluid_mesh = mesh.copy();
 				solid_mesh = checkpoint_reader_->get().read_mesh(
-					"/checkpoint/meshes/solid", !mesh.is_conforming());
+					"/checkpoint/meshes/solid");
 			}
 			else
 			{

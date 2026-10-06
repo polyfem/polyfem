@@ -103,7 +103,7 @@ int forward_simulation_with_legacy_state(const std::vector<std::string> &names,
 	state.init(in_args, is_strict);
 
 	logger().warn("Running forward simulation with legacy state.");
-	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+	state.load_mesh(names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)

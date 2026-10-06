@@ -495,7 +495,7 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 		file.writeDataset(std::vector<int>{9}, "/meshes/triangle/geometry_ids");
 		file.writeDataset(boundary_elements, "/meshes/triangle/boundary_elements");
 		file.writeDataset(std::vector<int>{11, 12, 13}, "/meshes/triangle/boundary_ids");
-		file.writeAttribute(long(polyfem::mesh::MESH_SCHEMA_VERSION), "/meshes/triangle", "schema_version");
+		file.writeAttribute(long(1), "/meshes/triangle", "schema_version"); // Legacy input remains readable.
 		file.writeAttribute(long(2), "/meshes/triangle", "dimension");
 		file.writeAttribute(std::string("fem"), "/meshes/triangle", "mesh_type");
 
@@ -611,7 +611,7 @@ TEST_CASE("Checkpoint metadata and state round trip", "[hdf5][checkpoint]")
 	mesh_data.node_ids = {21, 22, 23};
 	mesh_data.boundary_elements = {{0, 1}, {1, 2}, {2, 0}};
 	mesh_data.boundary_ids = {11, 12, 13};
-	auto mesh = mesh::Mesh::create(mesh_data, false);
+	auto mesh = mesh::Mesh::create(mesh_data);
 	REQUIRE(mesh != nullptr);
 	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
 	auto higher_order_mesh = mesh::MeshLoader(resources).load_fem("contact/meshes/3D/simple/sphere/coarse/P2.msh");

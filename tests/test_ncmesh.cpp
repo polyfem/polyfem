@@ -76,7 +76,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.init_logger("", spdlog::level::off, spdlog::level::off, false);
 	state.init(in_args, true);
 
-	state.load_mesh(true);
+	state.load_mesh(); // Convert a base mesh explicitly before NC refinement.
 	state.update_mesh([](mesh::Mesh &mesh) {
 		auto *ncmesh = dynamic_cast<NCMesh2D *>(&mesh);
 		REQUIRE(ncmesh != nullptr);
@@ -157,7 +157,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.init_logger("", spdlog::level::off, spdlog::level::off, false);
 	state.init(in_args, true);
 
-	state.load_mesh(true);
+	state.load_mesh(); // Convert a base mesh explicitly before NC refinement.
 	state.update_mesh([](mesh::Mesh &mesh) {
 		auto *ncmesh = dynamic_cast<NCMesh3D *>(&mesh);
 		REQUIRE(ncmesh != nullptr);

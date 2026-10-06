@@ -415,7 +415,6 @@ namespace polyfem
 	void State::set_mesh(
 		GEO::Mesh &meshin,
 		const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker,
-		bool non_conforming,
 		bool skip_boundary_sideset)
 	{
 		igl::Timer timer;
@@ -423,7 +422,7 @@ namespace polyfem
 		logger().info("Loading mesh...");
 
 		std::unique_ptr<Mesh> mesh = Mesh::create(
-			mesh::MeshReader::from_geogram(meshin), non_conforming);
+			mesh::MeshReader::from_geogram(meshin));
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -445,7 +444,7 @@ namespace polyfem
 		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
-	void State::load_mesh(const bool non_conforming)
+	void State::load_mesh()
 	{
 		igl::Timer timer;
 		timer.start();
@@ -460,14 +459,14 @@ namespace polyfem
 		mesh::LoadedGeometry loaded_geometry;
 		if (checkpoint_)
 		{
-			loaded_geometry.fem = checkpoint_->get().read_mesh("/checkpoint/meshes/active", non_conforming);
+			loaded_geometry.fem = checkpoint_->get().read_mesh("/checkpoint/meshes/active");
 			loaded_geometry.obstacle = geometry_loader.load_obstacles(
 				args["geometry"], obstacle_displacements, dirichlet_conditions,
-				loaded_geometry.fem->dimension(), non_conforming);
+				loaded_geometry.fem->dimension());
 		}
 		else
 			loaded_geometry = geometry_loader.load(
-				args["geometry"], obstacle_displacements, dirichlet_conditions, non_conforming);
+				args["geometry"], obstacle_displacements, dirichlet_conditions);
 		auto &mesh = loaded_geometry.fem;
 
 		if (mesh == nullptr)
@@ -508,12 +507,12 @@ namespace polyfem
 		variational_formulation->solve(sol);
 	}
 
-	void State::set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)
+	void State::set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 	{
 		assert(variational_formulation != nullptr);
 		igl::Timer timer;
 		timer.start();
-		auto mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
+		auto mesh = mesh::Mesh::create(mesh::MeshData(V, F));
 		timer.stop();
 		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}

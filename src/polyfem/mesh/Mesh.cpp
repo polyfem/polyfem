@@ -77,24 +77,45 @@ namespace polyfem::mesh
 		}
 	}
 
-	std::unique_ptr<Mesh> Mesh::create(MeshData data, const bool non_conforming)
+	std::unique_ptr<Mesh> Mesh::create(MeshData data)
 	{
 		data.validate();
+		const bool use_nc = data.nc.has_value();
+		if (use_nc && (data.has_polyhedral_topology() || !data.higher_order_connectivity.empty()))
+			log_and_throw_error("NC meshes require linear triangle or tetrahedron geometry.");
 		const int dim = data.dimension();
 		assert(dim == 2 || dim == 3);
 
 		std::unique_ptr<Mesh> mesh;
-		if (dim == 2 && non_conforming)
+		if (dim == 2 && use_nc)
 			mesh = std::make_unique<NCMesh2D>();
-		else if (dim == 2 && !non_conforming)
+		else if (dim == 2 && !use_nc)
 			mesh = std::make_unique<CMesh2D>();
-		else if (dim == 3 && non_conforming)
+		else if (dim == 3 && use_nc)
 			mesh = std::make_unique<NCMesh3D>();
-		else if (dim == 3 && !non_conforming)
+		else if (dim == 3 && !use_nc)
 			mesh = std::make_unique<CMesh3D>();
 		if (!mesh || !mesh->build_from_data(data))
 			log_and_throw_error("Unable to construct runtime mesh from MeshData.");
 		return mesh;
+	}
+
+	std::unique_ptr<Mesh> Mesh::to_nonconforming() const
+	{
+		if (!is_conforming())
+			return copy();
+		auto data = to_mesh_data();
+		data.validate();
+		if (data.has_polyhedral_topology() || !data.higher_order_connectivity.empty() || data.elements.cols() != dimension() + 1)
+			log_and_throw_error("NC conversion requires linear triangle or tetrahedron geometry.");
+		std::unique_ptr<Mesh> result;
+		if (dimension() == 2)
+			result = std::make_unique<NCMesh2D>();
+		else
+			result = std::make_unique<NCMesh3D>();
+		if (!result->build_from_data(data))
+			log_and_throw_error("Unable to convert mesh to nonconforming storage.");
+		return result;
 	}
 
 	MeshData Mesh::to_mesh_data() const

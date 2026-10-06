@@ -125,6 +125,29 @@ namespace polyfem::io
 		write_attribute(group, "dimension", data.dimension());
 		write_attribute(group, "mesh_type", "fem");
 		write_attribute(group, "elements_are_ordered", long(data.elements_are_ordered));
+		if (data.nc)
+		{
+			const auto &nc = *data.nc;
+			const std::string nc_group = group + "/nc";
+			write_matrix(nc_group + "/vertices", nc.vertices);
+			write_int_matrix(nc_group + "/cells", nc.cells);
+			write_int_matrix(nc_group + "/ordered_cells", nc.ordered_cells);
+			write_int_matrix(nc_group + "/cell_edges", nc.cell_edges);
+			write_int_matrix(nc_group + "/children", nc.children);
+			write_int_matrix(nc_group + "/element_state", nc.element_state);
+			write_int_matrix(nc_group + "/edges", nc.edges);
+			write_int_matrix(nc_group + "/midpoints", nc.midpoints);
+			if (data.dimension() == 3)
+			{
+				write_int_matrix(nc_group + "/faces", nc.faces);
+				write_int_matrix(nc_group + "/cell_faces", nc.cell_faces);
+			}
+			write_int_vector(nc_group + "/node_ids", nc.node_ids);
+			write_int_vector(nc_group + "/refinement_history", nc.refinement_history);
+			write_attribute(nc_group, "schema_version", long(1));
+			write_attribute(nc_group, "label_flags", long(nc.label_flags));
+		}
+
 		if (!data.body_ids.empty())
 			write_int_vector(group + "/body_ids", data.body_ids);
 		if (!data.geometry_ids.empty())
@@ -263,8 +286,8 @@ namespace polyfem::io
 	long CheckpointReader::read_long(const std::string &path) const { return io_->read_long_vector(path).at(0); }
 	double CheckpointReader::read_double(const std::string &path) const { return io_->read_double_vector(path).at(0); }
 
-	std::unique_ptr<mesh::Mesh> CheckpointReader::read_mesh(const std::string &path, const bool non_conforming) const
+	std::unique_ptr<mesh::Mesh> CheckpointReader::read_mesh(const std::string &path) const
 	{
-		return mesh::MeshLoader(*io_).load_fem(path, non_conforming);
+		return mesh::MeshLoader(*io_).load_fem(path);
 	}
 } // namespace polyfem::io

@@ -267,7 +267,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(MeshData(vertices, cells), true);
+		auto mesh = Mesh::create(MeshData(vertices, cells))->to_nonconforming();
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -285,7 +285,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(MeshData(vertices, cells), true);
+		auto mesh = Mesh::create(MeshData(vertices, cells))->to_nonconforming();
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -308,7 +308,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(MeshData(vertices, cells), true);
+		auto mesh = Mesh::create(MeshData(vertices, cells))->to_nonconforming();
 		auto &ncmesh = dynamic_cast<NCMesh2D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();
@@ -336,7 +336,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(MeshData(vertices, cells), true);
+		auto mesh = Mesh::create(MeshData(vertices, cells))->to_nonconforming();
 		auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();
