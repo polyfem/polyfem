@@ -11,6 +11,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include <cmath>
 #include <fstream>
@@ -50,6 +52,38 @@ namespace
 		return args;
 	}
 } // namespace
+
+TEST_CASE("problem time dependence matches time configuration", "[varform][init]")
+{
+	const bool transient_problem = GENERATE(false, true);
+	const bool has_time = GENERATE(false, true);
+	const bool legacy_state = GENERATE(false, true);
+	json args;
+	args["materials"] = {{"type", "Laplacian"}};
+	args["preset_problem"] = {{"type", transient_problem ? "TimeDependentScalar" : "Franke"}};
+	if (has_time)
+		args["time"] = {{"tend", 1}, {"dt", 1}};
+	else
+		args["time"] = nullptr;
+
+	auto check_init = [&](auto &state) {
+		if (transient_problem == has_time)
+			CHECK_NOTHROW(state.init(args, true));
+		else
+			CHECK_THROWS_WITH(state.init(args, true),
+				"Problem time dependence must match the presence of the 'time' configuration.");
+	};
+	if (legacy_state)
+	{
+		legacy::State state;
+		check_init(state);
+	}
+	else
+	{
+		State state;
+		check_init(state);
+	}
+}
 
 TEST_CASE("varform factory supports migrated formulations", "[varform]")
 {

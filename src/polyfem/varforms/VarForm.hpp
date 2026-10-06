@@ -75,6 +75,9 @@ namespace polyfem
 			/// @param out_path output path for the formulation, used to save intermediate data
 			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 
+			/// Check time configuration after the derived formulation initializes its problem.
+			void validate_time_dependence() const;
+
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
 			void set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time = 0);

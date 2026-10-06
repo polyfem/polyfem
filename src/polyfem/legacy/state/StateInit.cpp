@@ -318,6 +318,10 @@ namespace polyfem::legacy
 		}
 
 		problem->set_units(*assembler, units);
+
+		const bool has_time = args.contains("time") && !args["time"].is_null();
+		if (problem->is_time_dependent() != has_time)
+			log_and_throw_error("Problem time dependence must match the presence of the 'time' configuration.");
 	}
 
 	void State::set_max_threads(const int max_threads)
