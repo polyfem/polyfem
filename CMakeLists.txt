@@ -406,6 +406,10 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC CLI11::CLI11)
 
+    add_executable(${PROJECT_NAME}_nc_mesh tools/generate_nc_mesh.cpp)
+    target_include_directories(${PROJECT_NAME}_nc_mesh PRIVATE "${PROJECT_BINARY_DIR}/generated")
+    target_link_libraries(${PROJECT_NAME}_nc_mesh PRIVATE polyfem::polyfem polyfem::warnings CLI11::CLI11)
+
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()

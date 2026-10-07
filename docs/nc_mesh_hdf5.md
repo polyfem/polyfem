@@ -50,3 +50,39 @@ construct or mutate a solver state.
 
 Run the focused tests with `unit_tests '[ncmesh]'` and the compatibility tests
 with `unit_tests '[hdf5]'`.
+
+## Generate a runnable bundle
+
+`PolyFEM_nc_mesh` takes a simulation JSON, loads its single FEM mesh, converts it
+to NC storage, and applies uniform/local/uniform refinement. It does not solve
+the simulation. In 2D, local selection uses the face barycenter's x coordinate;
+in 3D, it selects a tetrahedron if any vertex lies left of the x-plane.
+
+From the repository root:
+
+```sh
+cmake --build bin.nosync --target PolyFEM_nc_mesh PolyFEM_bin -j 4
+./bin.nosync/PolyFEM_nc_mesh \
+  --json bin.nosync/franke_nc_test.json \
+  --mesh data/contact/meshes/2D/simple/square.obj \
+  --base-refs 2 --local-refs 1 --final-refs 0 --x-cut 0.5 \
+  --output bin.nosync/franke_nc_generated.hdf5
+./bin.nosync/PolyFEM_bin \
+  --hdf5 bin.nosync/franke_nc_generated.hdf5 \
+  --output_dir bin.nosync/franke_nc_output
+```
+
+`--mesh` is optional when the JSON's mesh path resolves correctly. Refinement
+defaults are zero initial uniform passes, one local pass, and zero final uniform
+passes. The default cut is 0.5 in 2D and 0.25 in 3D. Use a new output filename;
+the generator does not overwrite existing bundles.
+
+The bundle contains `/config`, `/meshes/nc` (including full refinement state),
+and `/generation` provenance with the source config, source mesh bytes, and
+refinement parameters. The config points to the embedded mesh. Normalization,
+transformation, selections, and source `n_refs` are baked into the mesh before
+the extra refinement passes; the packaged geometry avoids applying them twice.
+The Franke example has inline problem/material settings, so the solver only
+needs the resulting HDF5 file. The generator currently accepts one FEM mesh
+entry; additional file-based simulation inputs must also be embedded before a
+bundle is portable.
