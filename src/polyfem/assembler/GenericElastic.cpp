@@ -79,6 +79,13 @@ namespace polyfem::assembler
 				continue;
 			}
 
+			// Absolute mode measures distortion from the regular element, not a stress.
+			if (!derived().real_def_grad(vals.val.row(p), data.t, el_id))
+			{
+				all.row(p).setConstant(std::nan(""));
+				continue;
+			}
+
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
@@ -504,6 +511,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
@@ -543,6 +552,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
@@ -583,6 +594,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;

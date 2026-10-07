@@ -153,6 +153,7 @@ namespace polyfem::solver
 
 		json use_rest = {};
 		use_rest["use_rest_pose"] = true;
+		use_rest["weight"] = 1.0;
 		amips_energy_->add_multimaterial(0, use_rest, varform_->get_units(), varform_->get_root_path());
 
 		Eigen::MatrixXd V;

@@ -18,20 +18,17 @@ namespace polyfem::assembler
 	class AMIPSEnergy : public GenericElastic<AMIPSEnergy>
 	{
 	public:
-		AMIPSEnergy()
-		{
-			autodiff_type_ = AutodiffType::NONE;
-		}
+		AMIPSEnergy();
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "AMIPS"; }
-		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool allow_inversion() const override { return false; }
 
-		bool real_def_grad() const override { return use_rest_pose_; }
+		bool real_def_grad(const RowVectorNd &p, const double t, const int el_id) const override { return use_rest_pose(p, t, el_id); }
 
 		template <typename T>
 		T elastic_energy(
@@ -42,20 +39,17 @@ namespace polyfem::assembler
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-			double power = -1;
-			if (use_rest_pose_)
-				power = size() == 2 ? 1. : (2. / 3.);
-			else
-				power = size() == 2 ? 2. : 5. / 3.;
+			const double power = 2. / size();
+			const bool rest_pose = use_rest_pose(p, t, el_id);
 
 			AutoDiffGradMat standard;
 
 			if (size() == 2)
-				standard = get_standard<2, T>(size(), use_rest_pose_);
+				standard = get_standard<2, T>(size(), rest_pose);
 			else
-				standard = get_standard<3, T>(size(), use_rest_pose_);
+				standard = get_standard<3, T>(size(), rest_pose);
 
-			if (!use_rest_pose_)
+			if (!rest_pose)
 				def_grad = def_grad * standard;
 
 			const T det = polyfem::utils::determinant(def_grad);
@@ -65,14 +59,14 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			const double weight = get_energy_weight(el_id);
+			const double weight = weight_(p, t, el_id);
 			return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 		}
 
 	private:
-		double get_energy_weight(const int el_id) const;
-		std::vector<double> energy_weights_;
-		bool use_rest_pose_ = false;
+		bool use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const;
+		GenericMatParam use_rest_pose_;
+		GenericMatParam weight_;
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
@@ -90,7 +84,7 @@ namespace polyfem::assembler
 				else
 					standard << 1, 0, 0,
 						0.5, std::sqrt(3) / 2., 0,
-						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+						0.5, 0.5 / std::sqrt(3), std::sqrt(2. / 3.);
 				standard = standard.inverse().transpose().eval();
 			}
 

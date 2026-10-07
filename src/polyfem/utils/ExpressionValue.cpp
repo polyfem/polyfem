@@ -317,6 +317,10 @@ namespace polyfem
 			{
 				init(vals.get<double>());
 			}
+			else if (vals.is_boolean())
+			{
+				init(vals.get<bool>() ? 1. : 0.);
+			}
 			else if (vals.is_array())
 			{
 				if (vals.empty() || vals[0].is_number())

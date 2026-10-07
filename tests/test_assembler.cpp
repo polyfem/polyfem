@@ -3,6 +3,7 @@
 #include <polyfem/Units.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
@@ -21,6 +22,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -539,6 +541,125 @@ namespace
 } // namespace
 
 // Gradient consistency: compare analytic gradient against central-difference of energy.
+TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = json({});
+	in_args["geometry"] = {};
+	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+	in_args["geometry"]["surface_selection"] = 7;
+	in_args["materials"] = {};
+	in_args["materials"]["type"] = "AMIPS";
+	const int discr_order = GENERATE(1, 2);
+	in_args["space"]["discr_order"] = discr_order;
+
+	State state;
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+	state.init(in_args, true);
+	state.load_mesh();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
+
+	Units units;
+	units.init(state.args["units"]);
+
+	// The mode is a material parameter: element 0 measures distortion from its rest shape, element 1 from the regular element.
+	const RowVectorNd origin = RowVectorNd::Zero(2);
+	AMIPSEnergy amips;
+	amips.set_size(2);
+	amips.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, debug.root_path);
+	amips.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, debug.root_path);
+	REQUIRE(amips.real_def_grad(origin, 0, 0));
+	REQUIRE(!amips.real_def_grad(origin, 0, 1));
+
+	// An expression selects the mode per point: rest pose where x > 1.
+	AMIPSEnergy amips_expr;
+	amips_expr.set_size(2);
+	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)", "weight": 1})json"_json, units, debug.root_path);
+	RowVectorNd right(2);
+	right << 2, 0;
+	REQUIRE(amips_expr.real_def_grad(right, 0, 0));
+	REQUIRE(!amips_expr.real_def_grad(origin, 0, 0));
+
+	Eigen::MatrixXd displacement(2 * debug.n_bases, 1);
+	displacement.setRandom();
+	displacement *= 1e-3;
+
+	const int el_id = 1;
+	const auto &bs = (*debug.bases)[el_id];
+	const auto &gbs = (*debug.geometry_bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, gbs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+	const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
+
+	if (discr_order > 1)
+	{
+		// A per-element AMIPS is defined only on straight simplices with linear displacement.
+		REQUIRE_THROWS(amips.compute_energy(data));
+		return;
+	}
+
+	// The energy is the element's AMIPS against the regular element, with no rest-volume factor.
+	Eigen::Matrix2d G;
+	for (int k = 0; k < 2; ++k)
+	{
+		const auto &g0 = vals.basis_values[0].global[0];
+		const auto &gk = vals.basis_values[k + 1].global[0];
+		for (int d = 0; d < 2; ++d)
+			G(d, k) = (gk.node(d) + displacement(gk.index * 2 + d)) - (g0.node(d) + displacement(g0.index * 2 + d));
+	}
+	Eigen::Matrix2d S;
+	S << 1, 0.5, 0, std::sqrt(3) / 2;
+	const Eigen::Matrix2d J = G * S.inverse();
+	REQUIRE(amips.compute_energy(data) == Catch::Approx((J.transpose() * J).trace() / J.determinant()).epsilon(1e-12));
+
+	// Gradient and Hessian match central differences.
+	const Eigen::VectorXd grad = amips.assemble_gradient(data);
+	const Eigen::MatrixXd hess = amips.assemble_hessian(data);
+	const double h = 1e-7;
+	for (int a = 0; a < 3; ++a)
+	{
+		for (int d = 0; d < 2; ++d)
+		{
+			const int i = vals.basis_values[a].global[0].index * 2 + d;
+			Eigen::MatrixXd xp = displacement, xm = displacement;
+			xp(i) += h;
+			xm(i) -= h;
+			const NonLinearAssemblerData dp(vals, 0, 0, xp, xp, da);
+			const NonLinearAssemblerData dm(vals, 0, 0, xm, xm, da);
+
+			const double fd_grad = (amips.compute_energy(dp) - amips.compute_energy(dm)) / (2 * h);
+			REQUIRE(grad(a * 2 + d) == Catch::Approx(fd_grad).epsilon(1e-5).margin(1e-6 * grad.cwiseAbs().maxCoeff()));
+
+			const Eigen::VectorXd fd_hess = (amips.assemble_gradient(dp) - amips.assemble_gradient(dm)) / (2 * h);
+			for (int k = 0; k < fd_hess.size(); ++k)
+				REQUIRE(hess(k, a * 2 + d) == Catch::Approx(fd_hess(k)).epsilon(1e-5).margin(1e-6 * hess.cwiseAbs().maxCoeff()));
+		}
+	}
+
+	// The autodiff-stress path agrees with the closed-form one.
+	struct StressAutodiffAMIPS : public AMIPSEnergy
+	{
+		StressAutodiffAMIPS() { autodiff_type_ = AutodiffType::STRESS; }
+	};
+	StressAutodiffAMIPS amips_ad;
+	amips_ad.set_size(2);
+	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, debug.root_path);
+	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, debug.root_path);
+	REQUIRE((amips_ad.assemble_gradient(data) - grad).norm() <= 1e-10 * grad.norm());
+	REQUIRE((amips_ad.assemble_hessian(data) - hess).norm() <= 1e-10 * hess.norm());
+
+	// Absolute mode has no stress: the stress output is NaN, the deformation gradient is not.
+	Eigen::MatrixXd local_pts(1, 2);
+	local_pts << 1. / 3, 1. / 3;
+	Eigen::MatrixXd stress, def_grad;
+	amips.compute_stress_tensor(OutputData(0, el_id, bs, gbs, local_pts, displacement), ElasticityTensorType::CAUCHY, stress);
+	amips.compute_stress_tensor(OutputData(0, el_id, bs, gbs, local_pts, displacement), ElasticityTensorType::F, def_grad);
+	REQUIRE(stress.array().isNaN().all());
+	REQUIRE(def_grad.allFinite());
+}
+
 TEST_CASE("modified-neohookean-gradient", "[assembler]")
 {
 	auto state = make_state_2d();
