@@ -58,7 +58,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &to_projection_quantities = new_local_mesh.projection_quantities();
 
 		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
-		Eigen::SparseMatrix<double> M, A;
+		StiffnessMatrix M, A;
 		{
 			assembler::MassMatrixAssembler assembler;
 			assembler::Mass mass_matrix_assembler;

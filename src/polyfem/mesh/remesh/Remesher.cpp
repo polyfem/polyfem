@@ -139,7 +139,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
-		Eigen::SparseMatrix<double> M, A;
+		StiffnessMatrix M, A;
 		{
 			MassMatrixAssembler assembler;
 			assembler::Mass mass_matrix_assembler;

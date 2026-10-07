@@ -59,9 +59,7 @@ namespace polyfem::mesh
 
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler;
 		assembler::AssemblyValsCache mass_assembly_vals_cache;
-		Eigen::SparseMatrix<double> mass;
-
-		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
+		StiffnessMatrix mass;		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
