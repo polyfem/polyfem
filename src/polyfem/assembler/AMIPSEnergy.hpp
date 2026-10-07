@@ -70,7 +70,7 @@ namespace polyfem::assembler
 		double get_energy_weight(const int el_id) const;
 		bool use_rest_pose(const int el_id) const;
 		std::vector<double> energy_weights_;
-		std::vector<bool> use_rest_pose_;
+		std::vector<utils::ExpressionValue> use_rest_pose_;
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

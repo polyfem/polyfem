@@ -14,9 +14,9 @@ namespace polyfem::assembler
 		assert(size() == 2 || size() == 3);
 
 		if (use_rest_pose_.size() <= index)
-			use_rest_pose_.resize(index + 1, false);
+			use_rest_pose_.resize(index + 1);
 
-		use_rest_pose_[index] = params.contains("use_rest_pose") && params["use_rest_pose"].get<bool>();
+		use_rest_pose_[index].init(params.contains("use_rest_pose") ? params["use_rest_pose"] : json(false), root_path);
 
 		if (energy_weights_.size() <= index)
 			energy_weights_.resize(index + 1, 1.0);
@@ -40,12 +40,13 @@ namespace polyfem::assembler
 
 	bool AMIPSEnergy::use_rest_pose(const int el_id) const
 	{
+		// The spec makes use_rest_pose a boolean, so the value is constant and is read once per element.
 		if (use_rest_pose_.empty())
 			return false;
 		if (use_rest_pose_.size() == 1)
-			return use_rest_pose_[0];
+			return use_rest_pose_[0](0, 0, 0, 0, el_id) != 0;
 		if (el_id >= 0 && el_id < (int)use_rest_pose_.size())
-			return use_rest_pose_[el_id];
+			return use_rest_pose_[el_id](0, 0, 0, 0, el_id) != 0;
 		return false;
 	}
 
