@@ -708,7 +708,13 @@
         "pointer": "/use_rest_pose",
         "type": "bool",
         "default": false,
-        "doc": "Use amips wrt to rest pose or the regular element"
+        "doc": "Measure AMIPS from the rest pose (true) or from the regular element (false)"
+    },
+    {
+        "pointer": "/use_rest_pose",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Per point: nonzero measures AMIPS from the rest pose, zero from the regular element; e.g. \"if(x-1, 1, 0)\""
     },
     {
         "pointer": "/weight",

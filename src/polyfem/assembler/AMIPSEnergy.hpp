@@ -31,7 +31,7 @@ namespace polyfem::assembler
 
 		bool allow_inversion() const override { return false; }
 
-		bool real_def_grad(const int el_id) const override { return use_rest_pose(el_id); }
+		bool real_def_grad(const RowVectorNd &p, const double t, const int el_id) const override { return use_rest_pose(p, t, el_id); }
 
 		template <typename T>
 		T elastic_energy(
@@ -43,7 +43,7 @@ namespace polyfem::assembler
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
 			const double power = 2. / size();
-			const bool rest_pose = use_rest_pose(el_id);
+			const bool rest_pose = use_rest_pose(p, t, el_id);
 
 			AutoDiffGradMat standard;
 
@@ -68,9 +68,9 @@ namespace polyfem::assembler
 
 	private:
 		double get_energy_weight(const int el_id) const;
-		bool use_rest_pose(const int el_id) const;
+		bool use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const;
 		std::vector<double> energy_weights_;
-		std::vector<utils::ExpressionValue> use_rest_pose_;
+		GenericMatParam use_rest_pose_{"use_rest_pose"};
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

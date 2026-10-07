@@ -563,13 +563,23 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	Units units;
 	units.init(state.args["units"]);
 
-	// The mode is per element: element 0 measures distortion from its rest shape, element 1 from the regular element.
+	// The mode is a material parameter: element 0 measures distortion from its rest shape, element 1 from the regular element.
+	const RowVectorNd origin = RowVectorNd::Zero(2);
 	AMIPSEnergy amips;
 	amips.set_size(2);
 	amips.add_multimaterial(0, R"({"use_rest_pose": true})"_json, units, debug.root_path);
 	amips.add_multimaterial(1, R"({"use_rest_pose": false})"_json, units, debug.root_path);
-	REQUIRE(amips.real_def_grad(0));
-	REQUIRE(!amips.real_def_grad(1));
+	REQUIRE(amips.real_def_grad(origin, 0, 0));
+	REQUIRE(!amips.real_def_grad(origin, 0, 1));
+
+	// An expression selects the mode per point: rest pose where x > 1.
+	AMIPSEnergy amips_expr;
+	amips_expr.set_size(2);
+	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)"})json"_json, units, debug.root_path);
+	RowVectorNd right(2);
+	right << 2, 0;
+	REQUIRE(amips_expr.real_def_grad(right, 0, 0));
+	REQUIRE(!amips_expr.real_def_grad(origin, 0, 0));
 
 	Eigen::MatrixXd displacement(2 * debug.n_bases, 1);
 	displacement.setRandom();

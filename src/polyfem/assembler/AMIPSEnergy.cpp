@@ -13,10 +13,7 @@ namespace polyfem::assembler
 	{
 		assert(size() == 2 || size() == 3);
 
-		if (use_rest_pose_.size() <= index)
-			use_rest_pose_.resize(index + 1);
-
-		use_rest_pose_[index].init(params.contains("use_rest_pose") ? params["use_rest_pose"] : json(false), root_path);
+		use_rest_pose_.add_multimaterial(index, params, "", root_path);
 
 		if (energy_weights_.size() <= index)
 			energy_weights_.resize(index + 1, 1.0);
@@ -38,16 +35,9 @@ namespace polyfem::assembler
 		return 1.0;
 	}
 
-	bool AMIPSEnergy::use_rest_pose(const int el_id) const
+	bool AMIPSEnergy::use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const
 	{
-		// The spec makes use_rest_pose a boolean, so the value is constant and is read once per element.
-		if (use_rest_pose_.empty())
-			return false;
-		if (use_rest_pose_.size() == 1)
-			return use_rest_pose_[0](0, 0, 0, 0, el_id) != 0;
-		if (el_id >= 0 && el_id < (int)use_rest_pose_.size())
-			return use_rest_pose_[el_id](0, 0, 0, 0, el_id) != 0;
-		return false;
+		return use_rest_pose_(p, t, el_id) != 0;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AMIPSEnergy::gradient(
@@ -66,7 +56,7 @@ namespace polyfem::assembler
 
 		const double weight = get_energy_weight(el_id);
 
-		if (use_rest_pose(el_id))
+		if (use_rest_pose(p, t, el_id))
 		{
 			if (size() == 2)
 				return weight * autogen::AMIPS2drest_gradient(p, t, el_id, F);
@@ -98,7 +88,7 @@ namespace polyfem::assembler
 
 		const double weight = get_energy_weight(el_id);
 
-		if (use_rest_pose(el_id))
+		if (use_rest_pose(p, t, el_id))
 		{
 			if (size() == 2)
 				return weight * autogen::AMIPS2drest_hessian(p, t, el_id, F);

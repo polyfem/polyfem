@@ -64,7 +64,7 @@ namespace polyfem::assembler
 
 		bool allow_inversion() const override { return true; }
 
-		virtual bool real_def_grad(const int el_id) const { return true; }
+		virtual bool real_def_grad(const RowVectorNd &p, const double t, const int el_id) const { return true; }
 
 	protected:
 		AutodiffType autodiff_type_ = AutodiffType::STRESS;
@@ -92,9 +92,14 @@ namespace polyfem::assembler
 		// element to the deformed one; the rest mesh does not enter it, so it must not weight
 		// it either. da integrates over the rest mesh; dividing by det(dX/dxi) * |reference
 		// element| turns that into the mean of AMIPS over the reference element.
+		// Each quadrature point takes the weight of its own mode.
 		Eigen::VectorXd point_weights(const NonLinearAssemblerData &data) const
 		{
-			if (derived().real_def_grad(data.vals.element_id))
+			const int n_pts = data.da.size();
+			bool any_absolute = false;
+			for (int p = 0; p < n_pts; ++p)
+				any_absolute |= !rest_pose_at(data, p);
+			if (!any_absolute)
 				return data.da;
 
 			// A per-element AMIPS is defined only on straight simplices with linear displacement.
@@ -104,8 +109,19 @@ namespace polyfem::assembler
 					"Absolute mode (use_rest_pose false) needs straight simplices with linear displacement; element {} has {} bases and {} geometric bases",
 					data.vals.element_id, data.vals.basis_values.size(), data.vals.n_geometric_bases);
 
-			const Eigen::VectorXd w = data.da.array() / data.vals.det.array();
-			return w / w.sum();
+			const Eigen::VectorXd reference = data.da.array() / data.vals.det.array();
+			const double reference_volume = reference.sum();
+			Eigen::VectorXd w = data.da;
+			for (int p = 0; p < n_pts; ++p)
+				if (!rest_pose_at(data, p))
+					w(p) = reference(p) / reference_volume;
+			return w;
+		}
+
+		// Whether quadrature point p measures distortion from the rest pose (true) or from the regular element.
+		bool rest_pose_at(const NonLinearAssemblerData &data, const long p) const
+		{
+			return derived().real_def_grad(data.vals.val.row(p), data.t, data.vals.element_id);
 		}
 
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
@@ -133,7 +149,7 @@ namespace polyfem::assembler
 				for (int d = 0; d < size(); ++d)
 					def_grad(d, d) += T(1);
 
-				if (!derived().real_def_grad(data.vals.element_id))
+				if (!rest_pose_at(data, p))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -207,7 +223,7 @@ namespace polyfem::assembler
 					for (int d2 = 0; d2 < size(); ++d2)
 						def_grad_ad(d1, d2) = Diff(d1 * size() + d2, def_grad(d1, d2));
 
-				if (!derived().real_def_grad(data.vals.element_id))
+				if (!rest_pose_at(data, p))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -271,7 +287,7 @@ namespace polyfem::assembler
 				Eigen::Matrix<double, n_basis, dim> G = grad * jac_it;
 				def_grad = local_disp.transpose() * G + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-				if (!derived().real_def_grad(data.vals.element_id))
+				if (!rest_pose_at(data, p))
 				{
 					DoubleGradMat jac_it = data.vals.jac_it[p];
 					jac_it = jac_it.inverse();
@@ -280,7 +296,7 @@ namespace polyfem::assembler
 				}
 
 				const Eigen::Matrix<double, dim, dim> P = derived().gradient(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
-				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad(data.vals.element_id) ? G : grad;
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = rest_pose_at(data, p) ? G : grad;
 				const Eigen::Matrix<double, n_basis, dim> Rloc = Bgrad * P.transpose() * w(p);
 
 				for (int a = 0; a < data.vals.basis_values.size(); ++a)
@@ -335,7 +351,7 @@ namespace polyfem::assembler
 					for (int j = 0; j < d; ++j)
 						def_grad_ad(i, j) = Diff2(i * d + j, def_grad(i, j));
 
-				if (!derived().real_def_grad(data.vals.element_id))
+				if (!rest_pose_at(data, p))
 				{
 					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
 					tmp_jac_it = tmp_jac_it.inverse();
@@ -413,7 +429,7 @@ namespace polyfem::assembler
 
 				def_grad = local_disp.transpose() * G + Eigen::Matrix<double, dim, dim>::Identity();
 
-				if (!derived().real_def_grad(data.vals.element_id))
+				if (!rest_pose_at(data, p))
 				{
 					DoubleGradMat jac_it = data.vals.jac_it[p];
 					jac_it = jac_it.inverse();
@@ -425,7 +441,7 @@ namespace polyfem::assembler
 				// Since P = dW/dF, A is just the Hessian of W wrt vec(F).
 				Eigen::Matrix<double, dim * dim, dim * dim> A = derived().hessian(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
-				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad(data.vals.element_id) ? G : grad_ref;
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = rest_pose_at(data, p) ? G : grad_ref;
 
 				for (int a = 0; a < nb; ++a)
 				{
