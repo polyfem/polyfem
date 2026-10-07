@@ -433,9 +433,9 @@ namespace polyfem::solver
 		};
 	}
 
-	ipc::SmoothCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
+	ipc::GCPCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
-		ipc::SmoothCollisions collisions;
+		ipc::GCPCollisions collisions;
 		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state_->solve_data.contact_form.get());
 		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase().get());
 		return collisions;

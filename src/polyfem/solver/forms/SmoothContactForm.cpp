@@ -32,14 +32,14 @@ namespace polyfem::solver
 				log_and_throw_error("use_rest_shape_measure needs an ipc-toolkit with the rest-shape measure (udaykusupati/ipc-toolkit); this build's ipc-toolkit has no such field");
 		}
 
-		ipc::SmoothContactParameters make_smooth_contact_params(
+		ipc::GCPParameters make_smooth_contact_params(
 			const double dhat,
 			const double alpha_t,
 			const double alpha_n,
 			const int dim,
 			const bool use_rest_shape_measure)
 		{
-			ipc::SmoothContactParameters out(dhat, alpha_t, 0, alpha_n, 0, dim - 1);
+			ipc::GCPParameters out(dhat, alpha_t, 0, alpha_n, 0, dim - 1);
 			set_use_rest_shape_measure(out, use_rest_shape_measure, 0);
 			return out;
 		}

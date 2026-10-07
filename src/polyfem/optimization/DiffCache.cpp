@@ -204,7 +204,7 @@ namespace polyfem
 		const Eigen::MatrixXd &u,
 		const StiffnessMatrix &gradu_h,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::TangentialCollisions &friction_constraint_set,
 		const ipc::NormalCollisions &normal_adhesion_set,
 		const ipc::TangentialCollisions &tangential_adhesion_set,
@@ -232,7 +232,7 @@ namespace polyfem
 		const StiffnessMatrix &gradu_h,
 		// const StiffnessMatrix &gradu_h_prev,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::TangentialCollisions &friction_collision_set)
 	{
 		bdf_order_(cur_step) = cur_bdf_order;
@@ -256,7 +256,7 @@ namespace polyfem
 		const Eigen::MatrixXd &u,
 		const StiffnessMatrix &gradu_h,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::NormalCollisions &normal_adhesion_set,
 		const Eigen::MatrixXd &disp_grad)
 	{
@@ -316,7 +316,7 @@ namespace polyfem
 		}
 
 		ipc::NormalCollisions cur_collision_set;
-		ipc::SmoothCollisions cur_smooth_collision_set;
+		ipc::GCPCollisions cur_smooth_collision_set;
 		ipc::TangentialCollisions cur_friction_set;
 		ipc::NormalCollisions cur_normal_adhesion_set;
 		ipc::TangentialCollisions cur_tangential_adhesion_set;

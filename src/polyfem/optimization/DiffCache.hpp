@@ -99,7 +99,7 @@ namespace polyfem
 				step += collision_set_.size();
 			return collision_set_[step];
 		}
-		const ipc::SmoothCollisions &smooth_collision_set(int step) const
+		const ipc::GCPCollisions &smooth_collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
@@ -146,7 +146,7 @@ namespace polyfem
 		// std::vector<StiffnessMatrix> gradu_h_prev_; // gradient of force at time T wrt. u at time (T-1) in transient simulations
 
 		std::vector<ipc::NormalCollisions> collision_set_;
-		std::vector<ipc::SmoothCollisions> smooth_collision_set_;
+		std::vector<ipc::GCPCollisions> smooth_collision_set_;
 		std::vector<ipc::TangentialCollisions> friction_collision_set_;
 
 		std::vector<ipc::NormalCollisions> normal_adhesion_collision_set_;
@@ -160,7 +160,7 @@ namespace polyfem
 			const Eigen::MatrixXd &u,
 			const StiffnessMatrix &gradu_h,
 			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::GCPCollisions &smooth_collision_set,
 			const ipc::TangentialCollisions &friction_constraint_set,
 			const ipc::NormalCollisions &normal_adhesion_set,
 			const ipc::TangentialCollisions &tangential_adhesion_set,
@@ -175,7 +175,7 @@ namespace polyfem
 			const StiffnessMatrix &gradu_h,
 			// const StiffnessMatrix &gradu_h_prev,
 			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::GCPCollisions &smooth_collision_set,
 			const ipc::TangentialCollisions &friction_collision_set);
 
 		void cache_quantities_quasistatic(
@@ -183,7 +183,7 @@ namespace polyfem
 			const Eigen::MatrixXd &u,
 			const StiffnessMatrix &gradu_h,
 			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::GCPCollisions &smooth_collision_set,
 			const ipc::NormalCollisions &normal_adhesion_set,
 			const Eigen::MatrixXd &disp_grad);
 	};

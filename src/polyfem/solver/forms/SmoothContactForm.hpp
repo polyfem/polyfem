@@ -5,8 +5,8 @@
 #include <polyfem/utils/Types.hpp>
 #include <polysolve/nonlinear/PostStepData.hpp>
 
-#include <ipc/smooth_contact/smooth_collisions.hpp>
-#include <ipc/smooth_contact/smooth_contact_potential.hpp>
+#include <ipc/gcp/gcp_collisions.hpp>
+#include <ipc/gcp/gcp_potential.hpp>
 
 namespace polyfem::solver
 {
@@ -40,9 +40,9 @@ namespace polyfem::solver
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
-		const ipc::SmoothContactParameters &get_params() const { return params; }
+		const ipc::GCPParameters &get_params() const { return params; }
 
-		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
+		const ipc::GCPCollisions &collision_set() const { return collision_set_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -70,11 +70,11 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-		ipc::SmoothContactParameters params;
+		ipc::GCPParameters params;
 		const bool use_adaptive_dhat;
 
 		/// @brief Cached constraint set for the current solution
-		ipc::SmoothCollisions collision_set_;
+		ipc::GCPCollisions collision_set_;
 		/// @brief Displaced surface that collision_set_ was last built from; a rebuild is skipped when
 		/// the next one is identical. A member, not a function-local static: a static is shared by every
 		/// form in the process and outlives the State, so a second solve starting where the previous one
@@ -82,6 +82,6 @@ namespace polyfem::solver
 		Eigen::MatrixXd cached_displaced_surface_;
 
 		/// @brief Contact potential
-		ipc::SmoothContactPotential barrier_potential_;
+		ipc::GCPPotential barrier_potential_;
 	};
 } // namespace polyfem::solver

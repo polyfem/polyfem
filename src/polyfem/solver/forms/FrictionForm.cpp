@@ -7,7 +7,7 @@
 
 #include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
-#include <ipc/smooth_contact/smooth_collisions.hpp>
+#include <ipc/gcp/gcp_collisions.hpp>
 
 #include <Eigen/Core>
 
@@ -111,7 +111,7 @@ namespace polyfem::solver
 		}
 		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(&contact_form_))
 		{
-			ipc::SmoothCollisions collision_set;
+			ipc::GCPCollisions collision_set;
 			if (smooth_contact->using_adaptive_dhat())
 				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase.get());
 			collision_set.build(
