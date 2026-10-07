@@ -18,16 +18,13 @@ namespace polyfem::assembler
 	class AMIPSEnergy : public GenericElastic<AMIPSEnergy>
 	{
 	public:
-		AMIPSEnergy()
-		{
-			autodiff_type_ = AutodiffType::NONE;
-		}
+		AMIPSEnergy();
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "AMIPS"; }
-		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool allow_inversion() const override { return false; }
 
@@ -62,15 +59,14 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			const double weight = get_energy_weight(el_id);
+			const double weight = weight_(p, t, el_id);
 			return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 		}
 
 	private:
-		double get_energy_weight(const int el_id) const;
 		bool use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const;
-		std::vector<double> energy_weights_;
-		GenericMatParam use_rest_pose_{"use_rest_pose"};
+		GenericMatParam use_rest_pose_;
+		GenericMatParam weight_;
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

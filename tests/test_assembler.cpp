@@ -567,15 +567,15 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	const RowVectorNd origin = RowVectorNd::Zero(2);
 	AMIPSEnergy amips;
 	amips.set_size(2);
-	amips.add_multimaterial(0, R"({"use_rest_pose": true})"_json, units, debug.root_path);
-	amips.add_multimaterial(1, R"({"use_rest_pose": false})"_json, units, debug.root_path);
+	amips.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, debug.root_path);
+	amips.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, debug.root_path);
 	REQUIRE(amips.real_def_grad(origin, 0, 0));
 	REQUIRE(!amips.real_def_grad(origin, 0, 1));
 
 	// An expression selects the mode per point: rest pose where x > 1.
 	AMIPSEnergy amips_expr;
 	amips_expr.set_size(2);
-	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)"})json"_json, units, debug.root_path);
+	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)", "weight": 1})json"_json, units, debug.root_path);
 	RowVectorNd right(2);
 	right << 2, 0;
 	REQUIRE(amips_expr.real_def_grad(right, 0, 0));
@@ -645,8 +645,8 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	};
 	StressAutodiffAMIPS amips_ad;
 	amips_ad.set_size(2);
-	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true})"_json, units, debug.root_path);
-	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false})"_json, units, debug.root_path);
+	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, debug.root_path);
+	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, debug.root_path);
 	REQUIRE((amips_ad.assemble_gradient(data) - grad).norm() <= 1e-10 * grad.norm());
 	REQUIRE((amips_ad.assemble_hessian(data) - hess).norm() <= 1e-10 * hess.norm());
 

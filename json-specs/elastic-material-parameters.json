@@ -718,8 +718,9 @@
     },
     {
         "pointer": "/weight",
-        "type": "float",
-        "default": 1.0,
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
         "doc": "Scale factor for the AMIPS energy."
     }
 ]

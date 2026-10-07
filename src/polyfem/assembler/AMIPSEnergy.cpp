@@ -9,30 +9,33 @@
 
 namespace polyfem::assembler
 {
+	AMIPSEnergy::AMIPSEnergy()
+		: use_rest_pose_("use_rest_pose"), weight_("weight")
+	{
+		autodiff_type_ = AutodiffType::NONE;
+	}
+
 	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 
 		use_rest_pose_.add_multimaterial(index, params, "", root_path);
 
-		if (energy_weights_.size() <= index)
-			energy_weights_.resize(index + 1, 1.0);
-
-		if (params.contains("weight"))
-			energy_weights_[index] = params["weight"].get<double>();
-		else
-			energy_weights_[index] = 1.0;
+		weight_.add_multimaterial(index, params, "", root_path);
 	}
 
-	double AMIPSEnergy::get_energy_weight(const int el_id) const
+	std::map<std::string, Assembler::ParamFunc> AMIPSEnergy::parameters() const
 	{
-		if (energy_weights_.empty())
-			return 1.0;
-		if (energy_weights_.size() == 1)
-			return energy_weights_[0];
-		if (el_id >= 0 && el_id < (int)energy_weights_.size())
-			return energy_weights_[el_id];
-		return 1.0;
+		std::map<std::string, ParamFunc> res;
+
+		res["use_rest_pose"] = [this](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return use_rest_pose_(p, t, e);
+		};
+		res["weight"] = [this](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return weight_(p, t, e);
+		};
+
+		return res;
 	}
 
 	bool AMIPSEnergy::use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const
@@ -54,7 +57,7 @@ namespace polyfem::assembler
 			return grad;
 		}
 
-		const double weight = get_energy_weight(el_id);
+		const double weight = weight_(p, t, el_id);
 
 		if (use_rest_pose(p, t, el_id))
 		{
@@ -86,7 +89,7 @@ namespace polyfem::assembler
 			return hessian;
 		}
 
-		const double weight = get_energy_weight(el_id);
+		const double weight = weight_(p, t, el_id);
 
 		if (use_rest_pose(p, t, el_id))
 		{
