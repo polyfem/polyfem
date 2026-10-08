@@ -60,7 +60,7 @@ namespace polyfem::mesh
 		if (!resources_.has_attribute(group, "schema_version"))
 			log_and_throw_error("Mesh group {} is missing schema_version metadata.", resources_.describe(group));
 		const long version = resources_.read_integer_attribute(group, "schema_version");
-		if (version != MESH_SCHEMA_VERSION)
+		if (version != 1 && version != MESH_SCHEMA_VERSION)
 			log_and_throw_error(
 				"Unsupported mesh schema version {} in {}; expected {}.",
 				version, resources_.describe(group), MESH_SCHEMA_VERSION);
@@ -72,7 +72,7 @@ namespace polyfem::mesh
 			log_and_throw_error("Mesh group {} is missing dimension metadata.", resources_.describe(group));
 	}
 
-	std::unique_ptr<Mesh> MeshLoader::load_fem(const std::string &path, const bool non_conforming) const
+	std::unique_ptr<Mesh> MeshLoader::load_fem(const std::string &path) const
 	{
 		if (!resources_.exists(path))
 			log_and_throw_error("Mesh resource {} does not exist.", resources_.describe(path));
@@ -91,7 +91,7 @@ namespace polyfem::mesh
 			}
 			else
 				data = MeshReader::read_geogram(resources_.materialize(path));
-			return Mesh::create(std::move(data), non_conforming);
+			return Mesh::create(std::move(data));
 		}
 
 		validate_group(path, "fem");
@@ -215,7 +215,41 @@ namespace polyfem::mesh
 			data.cell_is_hex.assign(cell_is_hex.begin(), cell_is_hex.end());
 			data.cell_kernel_points = resources_.read_matrix(child_path(path, "cell_kernel_points"));
 		}
-		return Mesh::create(std::move(data), non_conforming);
+		if (resources_.exists(child_path(path, "nc")))
+		{
+			if (resources_.read_integer_attribute(path, "schema_version") != 2)
+				log_and_throw_error("NC payload requires mesh schema version 2.");
+			const std::string group = child_path(path, "nc");
+			if (!resources_.is_group(group) || resources_.read_integer_attribute(group, "schema_version") != 1)
+				log_and_throw_error("Unsupported NC mesh payload.");
+			data.nc.emplace();
+			auto &nc = *data.nc;
+			nc.vertices = resources_.read_matrix(child_path(group, "vertices"));
+			nc.cells = resources_.read_int_matrix(child_path(group, "cells"));
+			nc.ordered_cells = resources_.read_int_matrix(child_path(group, "ordered_cells"));
+			nc.cell_edges = resources_.read_int_matrix(child_path(group, "cell_edges"));
+			nc.children = resources_.read_int_matrix(child_path(group, "children"));
+			nc.element_state = resources_.read_int_matrix(child_path(group, "element_state"));
+			nc.edges = resources_.read_int_matrix(child_path(group, "edges"));
+			nc.midpoints = resources_.read_int_matrix(child_path(group, "midpoints"));
+			if (dimension == 3)
+			{
+				nc.faces = resources_.read_int_matrix(child_path(group, "faces"));
+				nc.cell_faces = resources_.read_int_matrix(child_path(group, "cell_faces"));
+			}
+			else
+			{
+				nc.faces.resize(0, 4);
+				nc.cell_faces.resize(nc.cells.rows(), 0);
+			}
+			nc.node_ids = resources_.read_int_vector(child_path(group, "node_ids"));
+			nc.refinement_history = resources_.read_int_vector(child_path(group, "refinement_history"));
+			const long flags = resources_.read_integer_attribute(group, "label_flags");
+			if (flags < 0 || flags > 15)
+				log_and_throw_error("Invalid NC label flags.");
+			nc.label_flags = int(flags);
+		}
+		return Mesh::create(std::move(data));
 	}
 
 	SurfaceMesh MeshLoader::load_surface(const std::string &path) const

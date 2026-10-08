@@ -320,7 +320,9 @@ TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]
 			data.node_ids = {61, 62, 63, 64};
 			data.boundary_elements = {{0, 1}, {1, 2}, {0, 2}};
 			data.boundary_ids = {11, 12, 14};
-			const auto mesh = Mesh::create(data, non_conforming);
+			auto mesh = Mesh::create(data);
+			if (non_conforming)
+				mesh = mesh->to_nonconforming();
 
 			REQUIRE(mesh->has_body_ids());
 			CHECK(mesh->get_body_id(0) == 21);
@@ -331,7 +333,7 @@ TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]
 			CHECK(mesh->get_boundary_id(edge_id(*mesh, 0, 2)) == 14);
 
 			const MeshData snapshot = mesh->to_mesh_data();
-			const auto restored = Mesh::create(snapshot, non_conforming);
+			const auto restored = Mesh::create(snapshot);
 			CHECK(snapshot.vertices.isApprox(vertices));
 			CHECK(snapshot.body_ids == std::vector<int>{21, 22});
 			CHECK(snapshot.geometry_ids == std::vector<int>{51, 52});
@@ -365,7 +367,9 @@ TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]
 			data.node_ids = {81, 82, 83, 84, 85};
 			data.boundary_elements = {{0, 1, 3}, {0, 1, 2}};
 			data.boundary_ids = {31, 33};
-			const auto mesh = Mesh::create(data, non_conforming);
+			auto mesh = Mesh::create(data);
+			if (non_conforming)
+				mesh = mesh->to_nonconforming();
 
 			REQUIRE(mesh->has_body_ids());
 			CHECK(mesh->get_body_id(0) == 41);
@@ -380,7 +384,7 @@ TEST_CASE("MeshData imports volume and side selections", "[mesh_test][mesh_data]
 			CHECK(mesh->get_boundary_id(interface_face) == 33);
 
 			const MeshData snapshot = mesh->to_mesh_data();
-			const auto restored = Mesh::create(snapshot, non_conforming);
+			const auto restored = Mesh::create(snapshot);
 			CHECK(snapshot.vertices.isApprox(vertices));
 			CHECK(snapshot.body_ids == std::vector<int>{41, 42});
 			CHECK(snapshot.geometry_ids == std::vector<int>{71, 72});

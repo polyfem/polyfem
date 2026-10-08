@@ -220,6 +220,13 @@ namespace polyfem::varform
 		output_sampler_initialized_ = false;
 	}
 
+	void VarForm::validate_time_dependence() const
+	{
+		const bool has_time = args.contains("time") && !args["time"].is_null();
+		if (problem->is_time_dependent() != has_time)
+			log_and_throw_error("Problem time dependence must match the presence of the 'time' configuration.");
+	}
+
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)
 	{
 		set_obstacle(mesh::Obstacle());

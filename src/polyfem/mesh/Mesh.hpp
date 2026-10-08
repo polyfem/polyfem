@@ -78,10 +78,13 @@ namespace polyfem
 
 		public:
 			/// Construct a runtime mesh from format-independent decoded data.
-			static std::unique_ptr<Mesh> create(MeshData data, bool non_conforming = false);
+			static std::unique_ptr<Mesh> create(MeshData data);
+
+			/// Return an NC copy suitable for local refinement of linear simplex geometry.
+			std::unique_ptr<Mesh> to_nonconforming() const;
 
 			/// Capture the complete runtime mesh in the canonical, format-independent representation.
-			MeshData to_mesh_data() const;
+			virtual MeshData to_mesh_data() const;
 
 			/// @brief Create a copy of the mesh
 			/// @return pointer to the new copy mesh
@@ -483,7 +486,7 @@ namespace polyfem
 			/// @brief Update the node ids to reorder them
 			///
 			/// @param[in] in_node_to_node mapping from input nodes to polyfem nodes
-			void update_nodes(const Eigen::VectorXi &in_node_to_node);
+			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node);
 
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
@@ -673,7 +676,7 @@ namespace polyfem
 			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$.
 			/// @param[in] A Multiplicative matrix component of transformation
 			/// @param[in] b Additive translation component of transformation
-			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
+			virtual void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
 			/// Remove all top-dimensional elements whose mask entry is false.

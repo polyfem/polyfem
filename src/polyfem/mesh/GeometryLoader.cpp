@@ -2,6 +2,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
@@ -21,16 +23,15 @@ namespace polyfem::mesh
 	LoadedGeometry GeometryLoader::load(
 		const json &geometry,
 		const std::vector<json> &obstacle_displacements,
-		const std::vector<json> &dirichlet_conditions,
-		const bool non_conforming) const
+		const std::vector<json> &dirichlet_conditions) const
 	{
 		LoadedGeometry result;
-		result.fem = load_fem(geometry, non_conforming);
+		result.fem = load_fem(geometry);
 		if (!result.fem)
 			log_and_throw_error("Configured geometry contains no enabled FEM mesh.");
 		result.obstacle = load_obstacles(
 			geometry, obstacle_displacements, dirichlet_conditions,
-			result.fem->dimension(), non_conforming);
+			result.fem->dimension());
 		return result;
 	}
 
@@ -73,8 +74,7 @@ namespace polyfem::mesh
 	}
 
 	std::unique_ptr<Mesh> GeometryLoader::load_fem_entry(
-		const json &j_mesh,
-		const bool non_conforming) const
+		const json &j_mesh) const
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
 			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh);
@@ -82,7 +82,7 @@ namespace polyfem::mesh
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
 
-		std::unique_ptr<Mesh> mesh = MeshLoader(resources_).load_fem(j_mesh["mesh"].get<std::string>(), non_conforming);
+		std::unique_ptr<Mesh> mesh = MeshLoader(resources_).load_fem(j_mesh["mesh"].get<std::string>());
 		// --------------------------------------------------------------------
 
 		// NOTE: Normaliziation is done before transformations are applied and/or any selection operators
@@ -130,19 +130,21 @@ namespace polyfem::mesh
 		// }
 		if (n_refs > 0)
 		{
-			if (mesh->has_boundary_ids() && surface_selections.empty())
+			const bool is_nc = dynamic_cast<NCMesh2D *>(mesh.get()) || dynamic_cast<NCMesh3D *>(mesh.get());
+			if (!is_nc && mesh->has_boundary_ids() && surface_selections.empty())
 				log_and_throw_error("Unable to refine a mesh with stored surface selections; provide an explicit surface_selection to recompute them after refinement.");
 
 			// Check if the stored volume selection is uniform.
 			assert(mesh->n_elements() > 0);
 			const int uniform_value = mesh->get_body_id(0);
 			for (int i = 1; i < mesh->n_elements(); ++i)
-				if (mesh->get_body_id(i) != uniform_value)
+				if (!is_nc && mesh->get_body_id(i) != uniform_value)
 					log_and_throw_error("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs);
 
 			logger().info("Performing global h-refinement with {} refinements", n_refs);
 			mesh->refine(n_refs, refinement_location);
-			mesh->set_body_ids(std::vector<int>(mesh->n_elements(), uniform_value));
+			if (!is_nc)
+				mesh->set_body_ids(std::vector<int>(mesh->n_elements(), uniform_value));
 		}
 
 		// --------------------------------------------------------------------
@@ -310,8 +312,7 @@ namespace polyfem::mesh
 	// ========================================================================
 
 	std::unique_ptr<Mesh> GeometryLoader::load_fem(
-		const json &geometry,
-		const bool non_conforming) const
+		const json &geometry) const
 	{
 		// --------------------------------------------------------------------
 
@@ -332,12 +333,20 @@ namespace polyfem::mesh
 			if (geometry["type"] != "mesh" && geometry["type"] != "mesh_array")
 				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
 
-			const std::unique_ptr<Mesh> tmp_mesh = load_fem_entry(geometry, non_conforming);
+			std::unique_ptr<Mesh> tmp_mesh = load_fem_entry(geometry);
 
 			if (mesh == nullptr)
 				mesh = tmp_mesh->copy();
 			else
+			{
+				const bool target_nc = dynamic_cast<NCMesh2D *>(mesh.get()) || dynamic_cast<NCMesh3D *>(mesh.get());
+				const bool source_nc = dynamic_cast<NCMesh2D *>(tmp_mesh.get()) || dynamic_cast<NCMesh3D *>(tmp_mesh.get());
+				if (source_nc && !target_nc)
+					mesh = mesh->to_nonconforming();
+				if (target_nc && !source_nc)
+					tmp_mesh = tmp_mesh->to_nonconforming();
 				mesh->append(tmp_mesh);
+			}
 
 			if (geometry["type"] == "mesh_array")
 			{
@@ -486,8 +495,7 @@ namespace polyfem::mesh
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::vector<json> &dirichlets,
-		const int dim,
-		const bool) const
+		const int dim) const
 	{
 		Obstacle obstacle;
 

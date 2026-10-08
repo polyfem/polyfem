@@ -14,6 +14,7 @@ set(test_sources
   test_jacobian.cpp
   test_matrix.cpp
   test_ncmesh.cpp
+  test_nc_hdf5.cpp
   test_normal.cpp
   test_navier_stokes_forms.cpp
   test_output.cpp

@@ -2,11 +2,30 @@
 
 #include <Eigen/Core>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 namespace polyfem::mesh
 {
+	/// Primitive NC state. Indices refer to full storage, including inactive entities.
+	struct NCMeshData
+	{
+		Eigen::MatrixXd vertices;
+		Eigen::MatrixXi cells, ordered_cells, cell_edges, cell_faces, children;
+		/// Columns: level, parent, refined, ghost, body ID, geometry ID.
+		Eigen::MatrixXi element_state;
+		/// Connectivity followed by the boundary label.
+		Eigen::MatrixXi edges, faces;
+		/// Sorted edge endpoints followed by their midpoint vertex.
+		Eigen::MatrixXi midpoints;
+		std::vector<int> node_ids, refinement_history;
+		int label_flags = 0; // body=1, geometry=2, node=4, boundary=8
+		void validate(const class MeshData &active) const;
+		/// Merge full storage, remapping all references into this payload.
+		void append(const NCMeshData &other);
+	};
+
 	/// Format-independent input used to construct a runtime Mesh.
 	class MeshData
 	{
@@ -18,6 +37,7 @@ namespace polyfem::mesh
 		int dimension() const { return vertices.cols(); }
 		bool has_polyhedral_topology() const { return !faces.empty(); }
 
+		std::optional<NCMeshData> nc;
 		Eigen::MatrixXd vertices;
 		Eigen::MatrixXi elements;
 		/// Whether each element row carries a format-defined local vertex order.
