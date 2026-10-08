@@ -68,7 +68,7 @@ TEST_CASE("problem time dependence matches time configuration", "[varform][init]
 			CHECK_NOTHROW(state.init(args, true));
 		else
 			CHECK_THROWS_WITH(state.init(args, true),
-				"Problem time dependence must match the presence of the 'time' configuration.");
+							  "Problem time dependence must match the presence of the 'time' configuration.");
 	};
 	if (legacy_state)
 	{

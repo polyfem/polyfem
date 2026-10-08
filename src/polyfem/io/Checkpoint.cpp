@@ -45,7 +45,6 @@ namespace polyfem::io
 			return "/resources/tree/" + logical.substr(start);
 		}
 
-
 	} // namespace
 
 	CheckpointWriter::CheckpointWriter(const fs::path &path, const json &config, const CheckpointMetadata &metadata)
