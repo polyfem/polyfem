@@ -216,7 +216,9 @@ namespace
 			return n;
 		};
 
-		auto mesh = Mesh::create(input.V, input.T, non_conforming);
+		auto mesh = Mesh::create(MeshData(input.V, input.T));
+		if (non_conforming)
+			mesh = mesh->to_nonconforming();
 		REQUIRE(mesh != nullptr);
 		const int n_input_boundary_faces = n_boundary_faces(*mesh);
 		std::vector<double> min_angles = {min_tet_dihedral_angle(*mesh)};
@@ -490,7 +492,7 @@ TEST_CASE("NCMesh3D tet refinement does not degenerate", "[mesh_test][refinement
 
 		DYNAMIC_SECTION("adaptive " << c.name)
 		{
-			auto mesh = Mesh::create(c.mesh.V, c.mesh.T, true);
+			auto mesh = Mesh::create(MeshData(c.mesh.V, c.mesh.T))->to_nonconforming();
 			auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
 			for (int step = 1; step <= c.n_levels; ++step)
 			{

@@ -151,8 +151,8 @@ namespace polyfem::mesh
 			check_incidence(cell_edges, edges, 2);
 			check_incidence(cell_faces, faces, 3);
 			// Navigation uses a fixed local edge/face order, not just incidence sets.
-			const std::array<std::array<int, 2>, 6> local_edges = {{{0, 1}, {1, 2}, {2, 0}, {0, 3}, {1, 3}, {2, 3}}};
-			const std::array<std::array<int, 3>, 4> local_faces = {{{0, 1, 2}, {0, 1, 3}, {1, 2, 3}, {2, 0, 3}}};
+			const std::array<std::array<int, 2>, 6> local_edges = {{{{0, 1}}, {{1, 2}}, {{2, 0}}, {{0, 3}}, {{1, 3}}, {{2, 3}}}};
+			const std::array<std::array<int, 3>, 4> local_faces = {{{{0, 1, 2}}, {{0, 1, 3}}, {{1, 2, 3}}, {{2, 0, 3}}}};
 			for (int j = 0; j < cell_edges.cols(); ++j)
 			{
 				const int a = ordered_cells(i, local_edges[j][0]), b = ordered_cells(i, local_edges[j][1]);
