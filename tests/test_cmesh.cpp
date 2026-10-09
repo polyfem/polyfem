@@ -1,12 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
 
+#include <igl/PI.h>
+
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <algorithm>
+#include <array>
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <limits>
@@ -81,6 +86,156 @@ namespace
 		}
 		return 0.5 * area;
 	}
+
+	/// Minimum interior dihedral angle, in degrees, over all tetrahedra of a mesh.
+	double min_tet_dihedral_angle(const Mesh &mesh)
+	{
+		static const int faces[4][3] = {{1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2}};
+		double min_angle = 180;
+		for (int c = 0; c < mesh.n_cells(); ++c)
+		{
+			Eigen::Matrix<double, 4, 3> X;
+			for (int lv = 0; lv < 4; ++lv)
+				X.row(lv) = mesh.point(mesh.cell_vertex(c, lv));
+			const Eigen::RowVector3d centroid = X.colwise().mean();
+
+			std::array<Eigen::RowVector3d, 4> normals; // outward unit normals
+			for (int f = 0; f < 4; ++f)
+			{
+				const Eigen::RowVector3d a = X.row(faces[f][0]);
+				normals[f] = (X.row(faces[f][1]) - a).cross(X.row(faces[f][2]) - a).normalized();
+				if (normals[f].dot(a - centroid) < 0)
+					normals[f] *= -1;
+			}
+
+			// the interior dihedral angle is pi minus the angle between the outward normals
+			for (int i = 0; i < 4; ++i)
+				for (int j = i + 1; j < 4; ++j)
+					min_angle = std::min(min_angle, 180 - std::acos(std::clamp(normals[i].dot(normals[j]), -1.0, 1.0)) * 180 / igl::PI);
+		}
+		return min_angle;
+	}
+
+	/// Flips negatively oriented tets so that every input cell has positive volume.
+	Eigen::MatrixXi orient_tets(const Eigen::MatrixXd &V, Eigen::MatrixXi T)
+	{
+		for (int t = 0; t < T.rows(); ++t)
+		{
+			const Eigen::RowVector3d a = V.row(T(t, 0)), b = V.row(T(t, 1)), c = V.row(T(t, 2)), d = V.row(T(t, 3));
+			if ((b - a).dot((c - a).cross(d - a)) < 0)
+				std::swap(T(t, 1), T(t, 2));
+		}
+		return T;
+	}
+
+	struct TetMesh
+	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi T;
+	};
+
+	TetMesh regular_tet()
+	{
+		TetMesh m;
+		m.V.resize(4, 3);
+		m.V << 1, 1, 1,
+			1, -1, -1,
+			-1, 1, -1,
+			-1, -1, 1;
+		m.T.resize(1, 4);
+		m.T << 0, 1, 2, 3;
+		m.T = orient_tets(m.V, m.T);
+		return m;
+	}
+
+	TetMesh generic_tet()
+	{
+		TetMesh m;
+		m.V.resize(4, 3);
+		m.V << 0, 0, 0,
+			1, 0.1, 0.05,
+			0.3, 0.9, 0.2,
+			0.25, 0.3, 0.8;
+		m.T.resize(1, 4);
+		m.T << 0, 1, 2, 3;
+		m.T = orient_tets(m.V, m.T);
+		return m;
+	}
+
+	/// Unit cube split into 6 Kuhn tets around the (0,0,0)-(1,1,1) diagonal.
+	TetMesh kuhn_cube()
+	{
+		TetMesh m;
+		m.V.resize(8, 3);
+		for (int i = 0; i < 8; ++i)
+			m.V.row(i) << (i & 1), ((i >> 1) & 1), ((i >> 2) & 1);
+		m.T.resize(6, 4);
+		m.T << 0, 1, 3, 7,
+			0, 1, 5, 7,
+			0, 2, 3, 7,
+			0, 2, 6, 7,
+			0, 4, 5, 7,
+			0, 4, 6, 7;
+		m.T = orient_tets(m.V, m.T);
+		return m;
+	}
+
+	struct TetRefinementCase
+	{
+		std::string name;
+		TetMesh mesh;
+		double min_angle; ///< lower bound on the minimum dihedral angle (degrees) at every level
+		int n_levels;
+	};
+
+	/// Red refinement with a well-chosen inner diagonal produces at most 3 tet shapes,
+	/// so the minimum dihedral angle settles after the first level. The bounds are just
+	/// below those settled angles.
+	std::vector<TetRefinementCase> tet_refinement_cases()
+	{
+		return {
+			{"regular tet", regular_tet(), 54.7, 4},                    // 54.7356 = acos(1/sqrt(3))
+			{"generic tet", generic_tet(), 46.0, 4},                    // 46.0339
+			{"unit cube split into 6 Kuhn tets", kuhn_cube(), 35.2, 3}, // 35.2644
+		};
+	}
+
+	/// Uniformly refines a tet mesh one level at a time and returns the minimum
+	/// dihedral angle after each level (entry 0 is the input mesh).
+	std::vector<double> uniform_refinement_min_angles(const TetMesh &input, const bool non_conforming, const int n_levels)
+	{
+		const auto n_boundary_faces = [](const Mesh &mesh) {
+			int n = 0;
+			for (int f = 0; f < mesh.n_faces(); ++f)
+				n += mesh.is_boundary_face(f);
+			return n;
+		};
+
+		auto mesh = Mesh::create(input.V, input.T, non_conforming);
+		REQUIRE(mesh != nullptr);
+		const int n_input_boundary_faces = n_boundary_faces(*mesh);
+		std::vector<double> min_angles = {min_tet_dihedral_angle(*mesh)};
+		for (int level = 1; level <= n_levels; ++level)
+		{
+			mesh->refine(1, 0.5);
+			mesh->prepare_mesh();
+			REQUIRE(mesh->n_cells() == input.T.rows() << (3 * level));
+			// the refined mesh is conforming: only the input boundary faces are boundary, each split in 4
+			REQUIRE(n_boundary_faces(*mesh) == n_input_boundary_faces << (2 * level));
+			min_angles.push_back(min_tet_dihedral_angle(*mesh));
+		}
+		return min_angles;
+	}
+
+	/// Checks that the minimum dihedral angle stays above a bound at every refinement level.
+	void check_min_angles(const std::vector<double> &min_angles, const double bound)
+	{
+		for (int level = 1; level < min_angles.size(); ++level)
+		{
+			INFO("refinement level " << level);
+			CHECK(min_angles[level] > bound);
+		}
+	}
 } // namespace
 
 TEST_CASE("Gmsh physical sides are imported as mesh selections", "[mesh_test][gmsh]")
@@ -146,6 +301,48 @@ TEST_CASE("CMesh3D preserves cell-local vertex ordering", "[mesh_test][gmsh]")
 	const std::array<int, 4> expected_order = {{3, 1, 2, 0}};
 	for (int lv = 0; lv < int(expected_order.size()); ++lv)
 		CHECK(mesh->cell_vertex(0, lv) == expected_order[lv]);
+}
+
+TEST_CASE("CMesh3D uniform tet refinement does not degenerate", "[mesh_test][refinement]")
+{
+	// CMesh3D cuts the inner octahedron along its shortest diagonal
+	for (const auto &c : tet_refinement_cases())
+	{
+		DYNAMIC_SECTION(c.name)
+		{
+			check_min_angles(uniform_refinement_min_angles(c.mesh, false, c.n_levels), c.min_angle);
+		}
+	}
+}
+
+TEST_CASE("NCMesh3D tet refinement does not degenerate", "[mesh_test][refinement][ncmesh]")
+{
+	// NCMesh3D uses Bey's red refinement
+	for (const auto &c : tet_refinement_cases())
+	{
+		DYNAMIC_SECTION("uniform " << c.name)
+		{
+			check_min_angles(uniform_refinement_min_angles(c.mesh, true, c.n_levels), c.min_angle);
+		}
+
+		DYNAMIC_SECTION("adaptive " << c.name)
+		{
+			auto mesh = Mesh::create(c.mesh.V, c.mesh.T, true);
+			auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
+			for (int step = 1; step <= c.n_levels; ++step)
+			{
+				// refine every other cell, mixing cells of different levels with hanging nodes
+				std::vector<int> ids;
+				for (int e = 0; e < ncmesh.n_cells(); e += 2)
+					ids.push_back(e);
+				ncmesh.refine_elements(ids);
+				ncmesh.prepare_mesh();
+
+				INFO("refinement step " << step);
+				CHECK(min_tet_dihedral_angle(ncmesh) > c.min_angle);
+			}
+		}
+	}
 }
 
 TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")

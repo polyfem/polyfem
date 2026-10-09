@@ -824,5 +824,7 @@ TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elast
 		1,
 		state_ptr->mesh->is_volume());
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
-	test_form(form, *state_ptr, 1e-7, 1e-4);
+	// at x = 0 the singular values of F are all equal and finite differences with
+	// step 1e-7 are dominated by round-off (~1e-4 on entries that are exactly 0)
+	test_form(form, *state_ptr, 1e-6, 1e-4);
 }
