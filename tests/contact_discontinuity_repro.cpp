@@ -136,7 +136,7 @@ namespace
 		ipc::ESPParameters p(
 			s.dhat, s.dbar_factor, s.quad_order, s.area_weights,
 			static_cast<ipc::ESPParameters::IntegrationType>(s.integration_type));
-		p.face_quad_rule = build_quad_rule(s.quad_order);
+		p.set_quad_rule(build_quad_rule(s.quad_order));
 		// Barrier: leave default (NormalizedClampedLogBarrier per the struct).
 		// Caller can edit here to match production runs more precisely.
 		return p;
@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 	auto face_q_pos = [&](const Eigen::MatrixXd &X, int fi, int qi,
 						  const ipc::ESPParameters &p) {
 		Eigen::Matrix<double, 1, 3> q = Eigen::Matrix<double, 1, 3>::Zero();
-		const auto &qp = p.face_quad_rule[qi];
+		const auto &qp = p.get_quad_rule()[qi];
 		for (int j = 0; j < 3; ++j)
 			q += qp.lambda[j] * X.row(F(fi, j));
 		return q;

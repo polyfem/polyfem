@@ -77,8 +77,8 @@ namespace polyfem::solver
 		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
 		if (quadrature_order > 0)
 		{
-			params.face_quad_rule = build_quad_rule(quadrature_order);
-			verify_vertices_in_quad_rule(params.face_quad_rule);
+			params.set_quad_rule(build_quad_rule(quadrature_order));
+			verify_vertices_in_quad_rule(params.get_quad_rule());
 		}
 		return params;
 	}
