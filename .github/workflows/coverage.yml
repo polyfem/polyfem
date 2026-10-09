@@ -136,7 +136,31 @@ jobs:
           ccache --show-stats
 
       - name: Run Tests
-        run: OMP_NUM_THREADS=1 ctest --test-dir build --timeout 3000 --output-on-failure
+        shell: bash
+        run: |
+          (
+            trap 'exit 0' TERM
+            trap 'kill "${monitor_sleep_pid:-}" 2>/dev/null || true' EXIT
+            while true; do
+              date -u '+Test resource usage at %Y-%m-%dT%H:%M:%SZ'
+              free -h
+              df -h .
+              # Show the largest resident processes to identify memory-heavy tests.
+              ps -eo pid,comm,pcpu,pmem,rss --sort=-rss | sed -n '1,9p'
+              sleep 30 &
+              monitor_sleep_pid=$!
+              wait "$monitor_sleep_pid"
+            done
+          ) &
+          monitor_pid=$!
+
+          # CPU, I/O wait, and swap activity; the first sample is since boot,
+          # subsequent samples cover each 30-second interval.
+          vmstat -w 30 &
+          vmstat_pid=$!
+          trap 'kill "$monitor_pid" "$vmstat_pid" 2>/dev/null || true; wait "$monitor_pid" "$vmstat_pid" 2>/dev/null || true' EXIT
+
+          OMP_NUM_THREADS=1 ctest --test-dir build --timeout 3000 --output-on-failure
 
       - name: Create Coverage
         run: |
