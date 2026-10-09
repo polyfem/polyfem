@@ -406,15 +406,17 @@ namespace polyfem::mesh
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &codim_edges,
-		Eigen::MatrixXi &faces)
+		Eigen::MatrixXi &faces,
+		Eigen::MatrixXi &tets)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
 			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh);
 
 		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
 
+		tets.resize(0, 0);
 		bool read_success = read_surface_mesh(
-			mesh_path, vertices, codim_vertices, codim_edges, faces);
+			mesh_path, vertices, codim_vertices, codim_edges, faces, tets);
 
 		if (!read_success)
 			// error already logged in read_surface_mesh()
@@ -440,6 +442,11 @@ namespace polyfem::mesh
 			vertices = vertices * A.transpose();
 			vertices.rowwise() += b.transpose();
 		}
+
+		// Preserve volumetric (2D triangle) connectivity for optional volumetric paraview export.
+		// In 3D this is already populated by the tet-aware read_surface_mesh overload above.
+		if (dim == 2 && tets.rows() == 0 && faces.rows() > 0 && faces.cols() == 3)
+			tets = faces;
 
 		std::string extract = j_mesh["extract"];
 		// Default: "volume" clashes with defaults for non obstacle, here assume volume is suface
@@ -565,9 +572,10 @@ namespace polyfem::mesh
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
+				Eigen::MatrixXi tets;
 				read_obstacle_mesh(units,
 								   geometry, root_path, dim, vertices, codim_vertices,
-								   codim_edges, faces);
+								   codim_edges, faces, tets);
 
 				if (geometry["type"] == "mesh_array")
 				{
@@ -579,12 +587,13 @@ namespace polyfem::mesh
 					const VectorNi size = geometry["array"]["size"];
 
 					const int N = size.head(dim).prod();
-					const int nV = vertices.rows(), nCV = codim_vertices.rows(), nCE = codim_edges.rows(), nF = faces.rows();
+					const int nV = vertices.rows(), nCV = codim_vertices.rows(), nCE = codim_edges.rows(), nF = faces.rows(), nT = tets.rows();
 
 					vertices.conservativeResize(N * nV, Eigen::NoChange);
 					codim_vertices.conservativeResize(N * nCV, Eigen::NoChange);
 					codim_edges.conservativeResize(N * nCE, Eigen::NoChange);
 					faces.conservativeResize(N * nF, Eigen::NoChange);
+					tets.conservativeResize(N * nT, tets.cols());
 
 					for (int i = 0; i < size[0]; ++i)
 					{
@@ -609,6 +618,8 @@ namespace polyfem::mesh
 									codim_edges.middleRows(n * nCE, nCE) = codim_edges.topRows(nCE).array() + n * nV;
 								if (nF)
 									faces.middleRows(n * nF, nF) = faces.topRows(nF).array() + n * nV;
+								if (nT)
+									tets.middleRows(n * nT, nT) = tets.topRows(nT).array() + n * nV;
 							}
 						}
 					}
@@ -666,7 +677,7 @@ namespace polyfem::mesh
 				}
 
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacement, root_path);
+					vertices, codim_vertices, codim_edges, faces, displacement, root_path, tets);
 			}
 			else if (geometry["type"] == "plane")
 			{
@@ -717,6 +728,7 @@ namespace polyfem::mesh
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
+				Eigen::MatrixXi tets;
 
 				for (int i = 0; i < mesh_files.size(); ++i)
 				{
@@ -727,25 +739,28 @@ namespace polyfem::mesh
 					Eigen::VectorXi tmp_codim_vertices;
 					Eigen::MatrixXi tmp_codim_edges;
 					Eigen::MatrixXi tmp_faces;
+					Eigen::MatrixXi tmp_tets;
 					read_obstacle_mesh(units,
 									   jmesh, root_path, dim, vertices[i],
-									   tmp_codim_vertices, tmp_codim_edges, tmp_faces);
+									   tmp_codim_vertices, tmp_codim_edges, tmp_faces, tmp_tets);
 					if (i == 0)
 					{
 						codim_vertices = tmp_codim_vertices;
 						codim_edges = tmp_codim_edges;
 						faces = tmp_faces;
+						tets = tmp_tets;
 					}
 					else
 					{
 						assert((codim_vertices.array() == tmp_codim_vertices.array()).all());
 						assert((codim_edges.array() == tmp_codim_edges.array()).all());
 						assert((faces.array() == tmp_faces.array()).all());
+						assert((tets.array() == tmp_tets.array()).all());
 					}
 				}
 
 				obstacle.append_mesh_sequence(
-					vertices, codim_vertices, codim_edges, faces, geometry["fps"]);
+					vertices, codim_vertices, codim_edges, faces, geometry["fps"], tets);
 			}
 			else
 			{

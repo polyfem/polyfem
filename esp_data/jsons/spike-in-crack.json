@@ -1,0 +1,56 @@
+{
+    "boundary_conditions": {
+        "dirichlet_boundary": [{
+            "id": 1,
+            "value": ["t", 0, 0]
+        }],
+        "rhs": [0, 9.81, 0]
+    },
+    "common": "common.json",
+    "geometry": [{
+        "mesh": "../meshes/3D/simple/erleben/spike.msh",
+        "surface_selection": [{
+            "axis": 2,
+            "id": 1,
+            "position": 2
+        }],
+        "transformation": {
+            "rotation": [0, 0, 180],
+            "translation": [0, 2.0001, 0]
+        },
+        "volume_selection": 1
+    }, {
+        "is_obstacle": true,
+        "mesh": "../meshes/3D/obstacles/erleben/crack.obj",
+        "surface_selection": 0,
+        "transformation": {
+            "translation": [0, -1, 0]
+        }
+    }],
+    "materials": [{
+        "E": 1000000.0,
+        "id": 1,
+        "nu": 0.4,
+        "rho": 1000,
+        "type": "NeoHookean"
+    }],
+    "output": {
+        "paraview": {
+            "file_name": "spike-in-crack.pvd"
+        }
+    },
+    "tests": {
+        "err_h1": 4.958460582624212,
+        "err_h1_semi": 0.055913979374349394,
+        "err_l2": 4.958145316179081,
+        "err_linf": 4.958145316179081,
+        "err_linf_grad": 4.958145316179081,
+        "err_lp": 4.958145316179081,
+        "margin": 1e-05,
+        "time_steps": "all"
+    },
+    "time": {
+        "dt": 0.025,
+        "tend": 5
+    }
+}

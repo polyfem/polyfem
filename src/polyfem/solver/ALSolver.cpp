@@ -1,6 +1,7 @@
 #include "ALSolver.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 namespace polyfem::solver
 {
@@ -72,7 +73,10 @@ namespace polyfem::solver
 				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
 															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
 														: nl_solverin;
-				nl_solver->minimize(nl_problem, tmp_sol);
+				{
+					POLYFEM_SCOPED_TIMER("AL minimize");
+					nl_solver->minimize(nl_problem, tmp_sol);
+				}
 				nl_problem.finish();
 			}
 			catch (const std::runtime_error &e)
@@ -147,7 +151,10 @@ namespace polyfem::solver
 			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
 														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
 													: nl_solverin;
-			nl_solver->minimize(nl_problem, tmp_sol);
+			{
+				POLYFEM_SCOPED_TIMER("Reduced minimize");
+				nl_solver->minimize(nl_problem, tmp_sol);
+			}
 			nl_problem.finish();
 		}
 		catch (const std::runtime_error &e)

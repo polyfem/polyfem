@@ -5,6 +5,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 #ifdef POLYSOLVE_WITH_SPQR
@@ -606,6 +607,7 @@ namespace polyfem::solver
 
 	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
+		POLYFEM_SCOPED_TIMER("NLProblem::is_step_collision_free");
 		bool free = FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 
 		if (penalty_problem_ && free && full_size() == current_size())
@@ -616,6 +618,7 @@ namespace polyfem::solver
 
 	double NLProblem::value(const TVector &x)
 	{
+		POLYFEM_SCOPED_TIMER("NLProblem::value");
 		if (is_residual())
 		{
 			TVector residual;
@@ -636,6 +639,7 @@ namespace polyfem::solver
 
 	void NLProblem::gradient(const TVector &x, TVector &grad)
 	{
+		POLYFEM_SCOPED_TIMER("NLProblem::gradient");
 		FullNLProblem::gradient(reduced_to_full(x), grad);
 
 		if (full_size() != current_size())
@@ -655,6 +659,7 @@ namespace polyfem::solver
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
+		POLYFEM_SCOPED_TIMER("NLProblem::hessian");
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
 		if (full_size() != current_size())
@@ -671,6 +676,7 @@ namespace polyfem::solver
 
 	void NLProblem::solution_changed(const TVector &newX)
 	{
+		POLYFEM_SCOPED_TIMER("NLProblem::solution_changed");
 		FullNLProblem::solution_changed(reduced_to_full(newX));
 
 		if (penalty_problem_ && full_size() == current_size())
