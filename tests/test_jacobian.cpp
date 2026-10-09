@@ -32,6 +32,31 @@ using namespace polyfem::utils;
 using namespace polyfem::autogen;
 namespace
 {
+	// det J of the map with control points cp (rows in p_nodes order) at the
+	// reference points uv, in plain double arithmetic: a signed reference for
+	// the tests, unlike robust_evaluate_jacobian(), which is NaN where J < 0.
+	Eigen::VectorXd evaluate_jacobian(const int order, const Eigen::MatrixXd &cp, const Eigen::MatrixXd &uv)
+	{
+		const int dim = cp.cols();
+		std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
+		for (int bid = 0; bid < cp.rows(); bid++)
+		{
+			if (dim == 2)
+				p_grad_basis_value_2d(false, order, bid, uv, grads[bid]);
+			else
+				p_grad_basis_value_3d(false, order, bid, uv, grads[bid]);
+		}
+		Eigen::VectorXd result(uv.rows());
+		for (int k = 0; k < uv.rows(); k++)
+		{
+			Eigen::MatrixXd jac_mat = Eigen::MatrixXd::Zero(dim, dim);
+			for (int bid = 0; bid < cp.rows(); bid++)
+				jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
+			result(k) = jac_mat.determinant();
+		}
+		return result;
+	}
+
 	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean", const int discr_order = 1, const std::string &check_inversion = "Discrete")
 	{
 		const std::string path = POLYFEM_DATA_DIR;
@@ -183,18 +208,23 @@ namespace
 
 TEST_CASE("jacobian-evaluate", "[jacobian]")
 {
+	// The energy's det J comes from the generated evaluator, in intervals, on
+	// rest positions and displacements given separately. Where J is clearly
+	// positive it must agree with the plain formula on rest + displacement;
+	// where it is clearly negative the whole interval is, so it is NaN.
 	const double tol = 1e-8;
 	constexpr int N = 7;
 	for (int dim = 2; dim <= 3; dim++)
 	{
-		for (int order = 1; order < 4; order++)
+		for (int order = 1; order <= (dim == 2 ? 4 : 3); order++)
 		{
-			Eigen::MatrixXd cp;
+			Eigen::MatrixXd rest;
 			if (dim == 2)
-				autogen::p_nodes_2d(order, cp);
+				autogen::p_nodes_2d(order, rest);
 			else
-				autogen::p_nodes_3d(order, cp);
-			cp += Eigen::MatrixXd::Random(cp.rows(), cp.cols()) * 0.2;
+				autogen::p_nodes_3d(order, rest);
+			rest += Eigen::MatrixXd::Random(rest.rows(), rest.cols()) * 0.1;
+			const Eigen::MatrixXd disp = Eigen::MatrixXd::Random(rest.rows(), rest.cols()) * 0.2;
 
 			Eigen::MatrixXd uv;
 			if (dim == 2)
@@ -202,28 +232,26 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 			else
 				uv = upsample_tetrahedron<N>().leftCols<3>();
 
-			Eigen::VectorXd jac1 = robust_evaluate_jacobian(order, cp, uv);
+			const Eigen::VectorXd jac = robust_evaluate_jacobian(order, rest, disp, uv);
+			const Eigen::VectorXd ref = evaluate_jacobian(order, rest + disp, uv);
+			const double scale = ref.cwiseAbs().maxCoeff();
 
-			std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
-			for (int bid = 0; bid < cp.rows(); bid++)
-				if (dim == 2)
-					p_grad_basis_value_2d(false, order, bid, uv, grads[bid]);
-				else
-					p_grad_basis_value_3d(false, order, bid, uv, grads[bid]);
-
-			Eigen::VectorXd jac2 = jac1;
+			int n_pos = 0, n_neg = 0;
 			for (int k = 0; k < uv.rows(); k++)
 			{
-				Eigen::MatrixXd jac_mat;
-				jac_mat.setZero(dim, dim);
-				for (int bid = 0; bid < cp.rows(); bid++)
-					jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
-
-				jac2(k) = jac_mat.determinant();
+				CAPTURE(dim, order, k, ref(k), jac(k));
+				if (ref(k) > tol * scale)
+				{
+					CHECK(std::abs(jac(k) - ref(k)) <= tol * scale);
+					++n_pos;
+				}
+				else if (ref(k) < -tol * scale)
+				{
+					CHECK(std::isnan(jac(k)));
+					++n_neg;
+				}
 			}
-
-			Eigen::VectorXd denominator = jac1.array().abs().cwiseMax(jac2.array().abs()).cwiseMax(tol);
-			REQUIRE(((jac2 - jac1).array() / denominator.array()).abs().maxCoeff() / tol < 1);
+			CHECK(n_pos > 0);
 		}
 	}
 }
@@ -498,7 +526,7 @@ TEST_CASE("jacobian-is-valid-witness-tree", "[jacobian]")
 		// checking one direction is not enough, since on this axis-aligned
 		// mesh an edge node can leave them unchanged along a single axis.
 		const auto corner_jac = [&](const Eigen::VectorXd &u) {
-			return robust_evaluate_jacobian(order, extract_nodes(dim, bases[0], gbases[0], u, order), ref);
+			return evaluate_jacobian(order, extract_nodes(dim, bases[0], gbases[0], u, order), ref);
 		};
 		const Eigen::VectorXd j_rest = corner_jac(zero);
 		const double tol = 1e-12 * j_rest.cwiseAbs().maxCoeff();
@@ -560,9 +588,9 @@ TEST_CASE("jacobian-is-valid-witness-tree", "[jacobian]")
 			for (int l = 0; l < static_cast<int>(levels.size()); ++l)
 			{
 				const Eigen::MatrixXd v = leaves.middleRows(l * (dim + 1), dim + 1);
-				scale = std::max(scale, robust_evaluate_jacobian(order, rest_cp, v).cwiseAbs().maxCoeff());
+				scale = std::max(scale, evaluate_jacobian(order, rest_cp, v).cwiseAbs().maxCoeff());
 				if (levels[l] == depth)
-					min_j = std::min(min_j, robust_evaluate_jacobian(order, cp, v).minCoeff());
+					min_j = std::min(min_j, evaluate_jacobian(order, cp, v).minCoeff());
 			}
 			CAPTURE(dim, s, id, depth, min_j, scale);
 			CHECK(min_j <= 1e-10 * scale);
@@ -880,6 +908,61 @@ TEST_CASE("jacobian-conservative-quadrature", "[jacobian]")
 						++n_corners;
 				}
 				REQUIRE(n_corners == dim + 1);
+			}
+		}
+	}
+}
+
+TEST_CASE("jacobian-energy-sees-checked-control-points", "[jacobian]")
+{
+	// The energy's det J is evaluated on the control points the checks
+	// certify, bit for bit, whether the elastic form cached them or they are
+	// computed on the fly. Where the check accepts, the energy's J is then
+	// positive (at P1 it is the check's own interval).
+	for (const auto [dim, max_order] : {std::pair{2, 4}, std::pair{3, 3}})
+	{
+		for (int order = 1; order <= max_order; ++order)
+		{
+			CAPTURE(dim, order);
+			auto state = get_state(dim, "NeoHookean", order, "ConservativeStatic");
+			const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+			std::vector<basis::ElementBases> bases = *debug.bases;
+			const std::vector<basis::ElementBases> &gbases = *debug.geometry_bases;
+			assembler::AssemblyValsCache cache;
+			cache.init(dim == 3, bases, gbases);
+			const solver::ElasticForm form(
+				debug.n_bases, bases, gbases, *debug.assembler, cache,
+				/*t=*/0, /*dt=*/0.001, /*is_volume=*/dim == 3, /*jacobian_threshold=*/0,
+				solver::ElementInversionCheck::ConservativeStatic);
+
+			std::mt19937 gen(42);
+			std::uniform_real_distribution<double> dist(-1, 1);
+			Eigen::VectorXd u(debug.n_bases * dim);
+			for (Eigen::Index i = 0; i < u.size(); ++i)
+				u(i) = 0.05 * dist(gen);
+
+			// Shrink the perturbation until the check accepts it.
+			const Eigen::MatrixXd rest = rest_nodes(dim, bases, gbases);
+			while (!std::get<0>(is_valid(dim, bases, gbases, u, 0, 1'000'000, &rest)))
+				u /= 2;
+			const Eigen::MatrixXd disp = displacement_nodes(dim, bases, gbases, u);
+			const int n_per = rest.rows() / bases.size();
+
+			assembler::ElementAssemblyValues vals;
+			for (int e = 0; e < (int)bases.size(); ++e)
+			{
+				CAPTURE(e);
+				cache.compute(e, dim == 3, bases[e], gbases[e], vals);
+				REQUIRE(vals.control_points);
+				const ElementControlPoints &cp = *vals.control_points;
+				REQUIRE(cp.rest == rest.middleRows(e * n_per, n_per));
+				REQUIRE(control_point_displacement(dim, cp, bases[e], gbases[e], u) == disp.middleRows(e * n_per, n_per));
+
+				const Eigen::VectorXd cached = vals.eval_deformed_jacobian_determinant(u);
+				vals.control_points = nullptr;
+				const Eigen::VectorXd computed = vals.eval_deformed_jacobian_determinant(u);
+				REQUIRE(cached == computed);
+				REQUIRE((cached.array() > 0).all());
 			}
 		}
 	}

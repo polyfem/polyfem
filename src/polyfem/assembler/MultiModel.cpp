@@ -17,6 +17,12 @@ namespace polyfem::assembler
 		all_elastic_materials_.set_size(size);
 	}
 
+	void MultiModel::set_use_robust_jacobian()
+	{
+		ElasticityAssembler::set_use_robust_jacobian();
+		all_elastic_materials_.set_use_robust_jacobian();
+	}
+
 	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);

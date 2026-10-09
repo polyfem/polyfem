@@ -10,7 +10,7 @@ namespace polyfem
 	{
 		void AssemblyValsCache::init(const bool is_volume, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const bool is_mass)
 		{
-			cache.clear();
+			clear();
 			is_mass_ = is_mass;
 			const int n_bases = bases.size();
 			cache.resize(n_bases);
@@ -64,6 +64,12 @@ namespace polyfem
 			}
 			else
 				vals = cache[el_index];
+
+			if (!control_points_.empty())
+			{
+				assert(el_index < (int)control_points_.size());
+				vals.control_points = &control_points_[el_index];
+			}
 		}
 	} // namespace assembler
 

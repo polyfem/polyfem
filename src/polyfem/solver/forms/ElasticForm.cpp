@@ -150,6 +150,9 @@ namespace polyfem::solver
 			// mode, but the rest quadrature setup below assumes a valid rest
 			// state either way.
 			rest_nodes_ = utils::rest_nodes(is_volume_ ? 3 : 2, bases_, geom_bases_);
+			// The energy evaluates det J from the same control points the
+			// checks see; compute them once rather than on every assembly.
+			ass_vals_cache_.set_control_points(utils::element_control_points(is_volume_ ? 3 : 2, bases_, geom_bases_));
 			const auto [isvalid, id, tree] = is_valid(
 				is_volume_ ? 3 : 2, bases_, geom_bases_, x0, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 			if (!isvalid)

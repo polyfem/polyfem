@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 namespace polyfem
 {
@@ -29,6 +30,16 @@ namespace polyfem
 			void clear()
 			{
 				cache.clear();
+				control_points_.clear();
+			}
+
+			/// Control points of every element, which compute() hands to each
+			/// element's values for the robust Jacobian in the energy. They
+			/// belong to the bases the cache was initialized with, so init()
+			/// and clear() drop them.
+			void set_control_points(std::vector<utils::ElementControlPoints> control_points)
+			{
+				control_points_ = std::move(control_points);
 			}
 
 			inline bool is_initialized() const { return !cache.empty(); }
@@ -38,6 +49,7 @@ namespace polyfem
 		private:
 			std::vector<ElementAssemblyValues> cache; ///< vector of basis values and geometric mapping with one entry per element
 			bool is_mass_;
+			std::vector<utils::ElementControlPoints> control_points_;
 		};
 	} // namespace assembler
 } // namespace polyfem

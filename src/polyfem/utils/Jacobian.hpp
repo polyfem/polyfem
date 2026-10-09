@@ -108,9 +108,46 @@ namespace polyfem::utils
 	/// @return stacked leaf vertices ((dim+1) rows per leaf) and the depth of each leaf
 	std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree);
 
+	/// @brief One element's control points, as the conservative checks see
+	/// them: the nodes of order max(displacement, geometry).
+	struct ElementControlPoints
+	{
+		int order = 0;
+		/// Rest positions, one row per control point (same values as the
+		/// element's rows of rest_nodes()).
+		Eigen::MatrixXd rest;
+		/// Global node whose displacement each control point copies, when the
+		/// displacement basis is nodal there (as in displacement_nodes());
+		/// empty when the displacement has to be evaluated instead.
+		std::vector<int> nodes;
+	};
+
+	ElementControlPoints element_control_points(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
+
+	/// @brief Control points of every element, to compute once and reuse.
+	std::vector<ElementControlPoints> element_control_points(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases);
+
+	/// @brief Displacement of one element's control points: the same numbers
+	/// displacement_nodes() gives the checks.
+	Eigen::MatrixXd control_point_displacement(const int dim, const ElementControlPoints &cp, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::Ref<const Eigen::VectorXd> &u);
+
+	/// @brief Jacobian determinant of one element's map at reference points
+	/// @p uv, for the elastic energy under a conservative check.
+	///
+	/// It is evaluated with the generated expression the checks use (JacEval),
+	/// in interval arithmetic, on the same inputs: the rest positions and the
+	/// displacements of the control points, separately. The interval therefore
+	/// provably contains the true value, and if the check accepted this
+	/// configuration the true value is positive, so the part of the interval
+	/// below zero is discarded: each entry is the midpoint of [max(lo, 0), hi],
+	/// positive whenever hi > 0 (log J stays finite wherever the check passed),
+	/// and NaN when hi <= 0 (certainly inverted there).
+	/// @param rest Rest positions of the control points (ElementControlPoints::rest).
+	/// @param disp Their displacements (control_point_displacement()).
 	Eigen::VectorXd robust_evaluate_jacobian(
 		const int order,
-		const Eigen::MatrixXd &cp,
+		const Eigen::MatrixXd &rest,
+		const Eigen::MatrixXd &disp,
 		const Eigen::MatrixXd &uv);
 
 	/// @param rest Rest positions from rest_nodes(); computed here if null.
@@ -142,7 +179,8 @@ namespace polyfem::utils
 	/// @brief Rest positions of every element's control points: the nodes of
 	/// order max(displacement, geometry), mapped by the geometry. Compute it
 	/// once (in round-to-nearest) and pass it to the checks below, so they all
-	/// see the same numbers.
+	/// see the same numbers, which are also the ones the energy sees through
+	/// element_control_points().
 	Eigen::MatrixXd rest_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases);
 
 	/// @brief Displacement of every element's control points. When the

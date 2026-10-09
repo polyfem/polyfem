@@ -6,6 +6,7 @@
 #include <numeric>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 #include "Jacobian.hpp"
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -51,9 +52,14 @@ namespace polyfem::utils
 
 	namespace
 	{
+		int control_point_order(const basis::ElementBases &basis, const basis::ElementBases &gbasis)
+		{
+			return std::max(basis.bases.front().order(), gbasis.bases.front().order());
+		}
+
 		int control_point_order(const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases)
 		{
-			return std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+			return control_point_order(bases[0], gbases[0]);
 		}
 
 		Eigen::MatrixXd control_point_nodes(const int dim, const int order)
@@ -64,6 +70,55 @@ namespace polyfem::utils
 			else
 				autogen::p_nodes_2d(order, local_pts);
 			return local_pts;
+		}
+
+		/// Global node whose displacement each control point copies, or empty
+		/// if the displacement basis is not nodal there. @p vals holds the
+		/// element's bases evaluated at its @p n_per control points.
+		std::vector<int> nodal_nodes(const ElementAssemblyValues &vals, const int n_per)
+		{
+			// A conforming Lagrange basis of the control-point order is 1 at
+			// its own node and 0 at the others (up to the rounding of nodes
+			// like 1/3), with a single global of weight 1: each control point
+			// is then one entry of u, copied rather than computed.
+			constexpr double tol = 1e-10;
+			std::vector<int> owner(n_per, -1);
+			bool nodal = true;
+			for (int j = 0; j < (int)vals.basis_values.size(); ++j)
+			{
+				const auto &global = vals.basis_values[j].global;
+				if (global.size() != 1 || global.front().val != 1)
+					nodal = false;
+				const Eigen::VectorXd &val = vals.basis_values[j].val;
+				for (int k = 0; k < n_per; ++k)
+				{
+					if (std::abs(val(k) - 1) <= tol)
+					{
+						nodal = nodal && owner[k] < 0;
+						owner[k] = j;
+					}
+					else if (std::abs(val(k)) > tol)
+						nodal = false;
+				}
+			}
+			nodal = nodal && std::find(owner.begin(), owner.end(), -1) == owner.end();
+			if (!nodal)
+				return {};
+
+			std::vector<int> nodes(n_per);
+			for (int k = 0; k < n_per; ++k)
+				nodes[k] = vals.basis_values[owner[k]].global.front().index;
+			return nodes;
+		}
+
+		/// Add the displacement at the control points to @p out, evaluating
+		/// the basis there, which rounds: for geometry of higher order than the
+		/// displacement, or a non-conforming basis.
+		void evaluate_displacement(const ElementAssemblyValues &vals, const Eigen::Ref<const Eigen::VectorXd> &u, const int dim, Eigen::Ref<Eigen::MatrixXd> out)
+		{
+			for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+				for (const auto &g : vals.basis_values[j].global)
+					out += g.val * vals.basis_values[j].val * u.segment(g.index * dim, dim).transpose();
 		}
 	} // namespace
 
@@ -85,7 +140,6 @@ namespace polyfem::utils
 	{
 		const Eigen::MatrixXd local_pts = control_point_nodes(dim, control_point_order(bases, gbases));
 		const int n_per = local_pts.rows();
-		constexpr double tol = 1e-10;
 
 		Eigen::MatrixXd disp = Eigen::MatrixXd::Zero(bases.size() * n_per, dim);
 		bool all_exact = true;
@@ -94,50 +148,60 @@ namespace polyfem::utils
 			ElementAssemblyValues vals;
 			vals.compute(e, dim == 3, local_pts, bases[e], gbases[e]);
 
-			// A conforming Lagrange basis of the control-point order is 1 at
-			// its own node and 0 at the others (up to the rounding of nodes
-			// like 1/3), with a single global of weight 1: each control point
-			// is then one entry of u, copied rather than computed.
-			std::vector<int> owner(n_per, -1);
-			bool nodal = true;
-			for (int j = 0; j < (int)vals.basis_values.size(); ++j)
-			{
-				const auto &global = vals.basis_values[j].global;
-				if (global.size() != 1 || global.front().val != 1)
-					nodal = false;
-				const Eigen::VectorXd &val = vals.basis_values[j].val;
-				for (int k = 0; k < n_per; ++k)
-				{
-					if (std::abs(val(k) - 1) <= tol)
-					{
-						nodal = nodal && owner[k] < 0;
-						owner[k] = j;
-					}
-					else if (std::abs(val(k)) > tol)
-						nodal = false;
-				}
-			}
-			nodal = nodal && std::find(owner.begin(), owner.end(), -1) == owner.end();
-
-			if (nodal)
+			const std::vector<int> nodes = nodal_nodes(vals, n_per);
+			if (!nodes.empty())
 			{
 				for (int k = 0; k < n_per; ++k)
-				{
-					const int g = vals.basis_values[owner[k]].global.front().index;
-					disp.row(e * n_per + k) = u.segment(g * dim, dim).transpose();
-				}
+					disp.row(e * n_per + k) = u.segment(nodes[k] * dim, dim).transpose();
 				continue;
 			}
-
-			// Geometry of higher order than the displacement, or a
-			// non-conforming basis: evaluate, which rounds.
 			all_exact = false;
-			for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
-				for (const auto &g : vals.basis_values[j].global)
-					disp.middleRows(e * n_per, n_per) += g.val * vals.basis_values[j].val * u.segment(g.index * dim, dim).transpose();
+			evaluate_displacement(vals, u, dim, disp.middleRows(e * n_per, n_per));
 		}
 		if (exact)
 			*exact = all_exact;
+		return disp;
+	}
+
+	// The calls below are the ones rest_nodes() and displacement_nodes()
+	// make, so the energy sees exactly the numbers the checks certify.
+	ElementControlPoints element_control_points(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis)
+	{
+		ElementControlPoints cp;
+		cp.order = control_point_order(basis, gbasis);
+		const Eigen::MatrixXd local_pts = control_point_nodes(dim, cp.order);
+		gbasis.eval_geom_mapping(local_pts, cp.rest);
+
+		ElementAssemblyValues vals;
+		vals.compute(0, dim == 3, local_pts, basis, gbasis);
+		cp.nodes = nodal_nodes(vals, local_pts.rows());
+		return cp;
+	}
+
+	std::vector<ElementControlPoints> element_control_points(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases)
+	{
+		std::vector<ElementControlPoints> cps(bases.size());
+		maybe_parallel_for(bases.size(), [&](int start, int end, int /*thread_id*/) {
+			for (int e = start; e < end; ++e)
+				cps[e] = element_control_points(dim, bases[e], gbases[e]);
+		});
+		return cps;
+	}
+
+	Eigen::MatrixXd control_point_displacement(const int dim, const ElementControlPoints &cp, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::Ref<const Eigen::VectorXd> &u)
+	{
+		const int n_per = cp.rest.rows();
+		Eigen::MatrixXd disp(n_per, dim);
+		if (!cp.nodes.empty())
+		{
+			for (int k = 0; k < n_per; ++k)
+				disp.row(k) = u.segment(cp.nodes[k] * dim, dim).transpose();
+			return disp;
+		}
+		disp.setZero();
+		ElementAssemblyValues vals;
+		vals.compute(0, dim == 3, control_point_nodes(dim, cp.order), basis, gbasis);
+		evaluate_displacement(vals, u, dim, disp);
 		return disp;
 	}
 
@@ -297,38 +361,6 @@ namespace polyfem::utils
 		return {lo, hi};
 	}
 
-	Eigen::VectorXd robust_evaluate_jacobian(
-		const int order,
-		const Eigen::MatrixXd &cp,
-		const Eigen::MatrixXd &uv)
-	{
-#ifdef POLYFEM_WITH_MISO
-		const int dim = cp.cols();
-		Eigen::VectorXd result(uv.rows());
-
-		// TODO: replace with constant function evaluator (same as used for P=1 static validity)
-		std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
-		for (int bid = 0; bid < cp.rows(); bid++)
-		{
-			if (dim == 2)
-				autogen::p_grad_basis_value_2d(false, order, bid, uv, grads[bid]);
-			else
-				autogen::p_grad_basis_value_3d(false, order, bid, uv, grads[bid]);
-		}
-		for (int k = 0; k < uv.rows(); k++)
-		{
-			Eigen::MatrixXd jac_mat = Eigen::MatrixXd::Zero(dim, dim);
-			for (int bid = 0; bid < cp.rows(); bid++)
-				jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
-			result(k) = jac_mat.determinant();
-		}
-		return result;
-#else
-		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian evaluation!");
-		return Eigen::VectorXd::Zero(uv.rows());
-#endif
-	}
-
 #ifdef POLYFEM_WITH_MISO
 	namespace
 	{
@@ -397,6 +429,74 @@ namespace polyfem::utils
 		}
 	} // anonymous namespace
 #endif // POLYFEM_WITH_MISO
+
+	Eigen::VectorXd robust_evaluate_jacobian(
+		const int order,
+		const Eigen::MatrixXd &rest,
+		const Eigen::MatrixXd &disp,
+		const Eigen::MatrixXd &uv)
+	{
+		Eigen::VectorXd result(uv.rows());
+#ifdef POLYFEM_WITH_MISO
+		const int dim = rest.cols();
+		const FPUGuard fpu_guard;
+
+		// Where the check passed, the true value is positive: keep the part
+		// of the interval above zero and take its midpoint. Computed in
+		// round-up, so it cannot underflow to zero and stays within (0, hi].
+		const auto clip = [](const Real &j) {
+			const double lo = lower(j), hi = upper(j);
+			if (!(hi > 0))
+				return std::numeric_limits<double>::quiet_NaN();
+			return (std::max(lo, 0.) + hi) / 2;
+		};
+		const auto at_points = [&](const auto &jac) {
+			for (int k = 0; k < uv.rows(); ++k)
+				result(k) = clip(jac(uv, k));
+		};
+
+		if (dim == 2)
+		{
+			switch (order)
+			{
+			case 1:
+				result.setConstant(clip(eval_p1tri_jac(rest, disp, 0)));
+				break;
+			case 2:
+				at_points(make_p2tri_jac(rest, disp, 0));
+				break;
+			case 3:
+				at_points(make_p3tri_jac(rest, disp, 0));
+				break;
+			case 4:
+				at_points(make_p4tri_jac(rest, disp, 0));
+				break;
+			default:
+				throw_unsupported(dim, order);
+			}
+		}
+		else
+		{
+			switch (order)
+			{
+			case 1:
+				result.setConstant(clip(eval_p1tet_jac(rest, disp, 0)));
+				break;
+			case 2:
+				at_points(make_p2tet_jac(rest, disp, 0));
+				break;
+			case 3:
+				at_points(make_p3tet_jac(rest, disp, 0));
+				break;
+			default:
+				throw_unsupported(dim, order);
+			}
+		}
+#else
+		log_and_throw_error("Enable the Miso library to allow robust Jacobian evaluation!");
+#endif
+		return result;
+	}
 
 	// Debug utility: counts elements with invalid Jacobian in a given configuration.
 	// Not used in the solve loop; called for diagnostics and visualization.
