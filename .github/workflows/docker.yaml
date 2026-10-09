@@ -40,14 +40,16 @@ jobs:
           echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
           echo "CPU flags hash: $CPU_HASH"
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
+      - name: Restore Docker layers
+        id: cache-build
+        uses: actions/cache/restore@v5
         with:
           path: /tmp/.buildx-cache
-          key: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-${{ github.sha }}
+          key: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-
 
       - name: Build and Push Standard Docker Image
+        id: build
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -62,6 +64,17 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           platforms: linux/amd64
+
+      - name: Save Docker layers
+        if: >-
+          ${{ !cancelled() && steps.build.outcome == 'success'
+              && steps.cache-build.outputs.cache-primary-key != ''
+              && steps.cache-build.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Test Standard Docker Image (PR local)
         if: github.event_name == 'pull_request'

@@ -85,12 +85,12 @@ jobs:
           echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
           echo "CPU flags hash: $CPU_HASH"
 
-      - name: Cache Build
+      - name: Restore compiler cache
         id: cache-build
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
@@ -110,6 +110,7 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
+        id: build
         shell: bash
         run: |
           report_resources() {
@@ -134,6 +135,18 @@ jobs:
 
           cmake --build build
           ccache --show-stats
+
+      - name: Save compiler cache
+        if: >-
+          ${{ !cancelled()
+              && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+              && steps.cache-build.outputs.cache-primary-key != ''
+              && steps.cache-build.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Run Tests
         shell: bash
