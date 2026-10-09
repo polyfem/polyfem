@@ -302,9 +302,11 @@ namespace polyfem::solver
 			commit_refinement(invalidID, subdivision_tree);
 			pending_refinement_.reset();
 		}
-		else if (invalidID >= 0 && step <= 0.5)
+		else if (invalidID >= 0)
 		{
-			// Store as a candidate only; committed in post_step() if/when
+			// Any capped step: the path inverts somewhere the quadrature does
+			// not sample, and left that way the next direction heads back to
+			// it. Store as a candidate only; committed in post_step() if/when
 			// this step is accepted (see pending_refinement_ in the header).
 			pending_refinement_ = std::make_pair(invalidID, std::move(subdivision_tree));
 		}
