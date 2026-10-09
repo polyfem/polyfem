@@ -17,7 +17,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     env:
-      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
       CTEST_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
@@ -110,7 +110,30 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cmake --build build && ccache --show-stats
+        shell: bash
+        run: |
+          report_resources() {
+            date -u '+Resource usage at %Y-%m-%dT%H:%M:%SZ'
+            free -h
+            df -h .
+          }
+
+          # Keep resource readings in the log even if the runner is terminated.
+          (
+            trap 'exit 0' TERM
+            trap 'kill "${monitor_sleep_pid:-}" 2>/dev/null || true' EXIT
+            while true; do
+              report_resources
+              sleep 30 &
+              monitor_sleep_pid=$!
+              wait "$monitor_sleep_pid"
+            done
+          ) &
+          monitor_pid=$!
+          trap 'kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true' EXIT
+
+          cmake --build build
+          ccache --show-stats
 
       - name: Run Tests
         run: OMP_NUM_THREADS=1 ctest --test-dir build --timeout 3000 --output-on-failure
