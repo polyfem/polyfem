@@ -265,6 +265,15 @@ namespace polyfem::solver
 
 		const int dim = is_volume_ ? 3 : 2;
 
+		// Largest gap allowed between the certified step and the first
+		// inversion, as a fraction of the step. It only bounds the gap from
+		// above: when the inversion starts away from a subdivision vertex the
+		// check cannot stop until a sample shows it, by which point the gap is
+		// already far smaller. Keep it small enough that the margin applied
+		// below, rather than this slack, sets how far a capped step stays
+		// from the inversion.
+		constexpr double precision = 1e-2;
+
 		double step, invalidStep;
 		int invalidID;
 
@@ -273,7 +282,7 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, precision, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 			}
 
 			continuous_check_time_ += transient_check_time;
@@ -304,7 +313,14 @@ namespace polyfem::solver
 			pending_refinement_.reset();
 		}
 
-		return step;
+		// Stop short of the certified step. It can lie arbitrarily close to the
+		// first inversion, and a step taken all the way to it can leave the
+		// Jacobian somewhere within rounding of zero. No later check can then
+		// certify any step from there, and the solve stalls. The margin is still
+		// inside the certified range, which the widening in max_time_step()
+		// covers at any correctly rounded point.
+		constexpr double margin = 0.9;
+		return step < 1 ? margin * step : step;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
