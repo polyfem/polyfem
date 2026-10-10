@@ -73,6 +73,17 @@ jobs:
 
       - name: Compute CPU cache key
         run: |
+          mkdir -p coverage-diagnostics
+          lscpu | tee coverage-diagnostics/cpu.txt
+          cat /proc/cpuinfo > coverage-diagnostics/cpuinfo.txt
+          g++ -march=native -Q --help=target > coverage-diagnostics/compiler-native-target.txt
+          # A feature hash does not identify the CPU model or a runner CPU quota.
+          for resource in /sys/fs/cgroup/cpu.max /sys/fs/cgroup/cpu.stat /sys/fs/cgroup/cpu/cpu.cfs_quota_us /sys/fs/cgroup/cpu/cpu.cfs_period_us; do
+            if [ -r "$resource" ]; then
+              echo "$resource"
+              cat "$resource"
+            fi
+          done | tee coverage-diagnostics/cpu-quota.txt
           # A dependency builds with -march=native, which bakes CPU-specific
           # instructions (e.g. AVX-512) into the object files. ccache hashes the
           # literal "-march=native" flag, not the resolved instruction set, so it
@@ -103,11 +114,14 @@ jobs:
           cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
             -DPOLYSOLVE_WITH_CHOLMOD=OFF \
             -DPOLYSOLVE_WITH_AMGCL=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
+
+          cp build/CMakeCache.txt build/compile_commands.json coverage-diagnostics/
 
       - name: Build
         id: build
@@ -151,6 +165,14 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
+          # These quadrature fixtures were unchanged by the data updates.
+          # Compare serial and suite timings to distinguish CPU/code generation
+          # costs from parallel contention.
+          OMP_NUM_THREADS=1 /usr/bin/time -v -o coverage-diagnostics/serial-time.txt \
+            ctest --test-dir build -j 1 --timeout 3000 --output-on-failure \
+              -R '^auto_quadrature tensor product$' \
+              --output-log "$PWD/coverage-diagnostics/serial-test.log"
+
           (
             trap 'exit 0' TERM
             trap 'kill "${monitor_sleep_pid:-}" 2>/dev/null || true' EXIT
@@ -159,7 +181,7 @@ jobs:
               free -h
               df -h .
               # Show the largest resident processes to identify memory-heavy tests.
-              ps -eo pid,comm,pcpu,pmem,rss --sort=-rss | sed -n '1,9p'
+              ps -eo pid,nlwp,pcpu,pmem,rss,args --sort=-rss | sed -n '1,9p'
               sleep 30 &
               monitor_sleep_pid=$!
               wait "$monitor_sleep_pid"
@@ -173,7 +195,32 @@ jobs:
           vmstat_pid=$!
           trap 'kill "$monitor_pid" "$vmstat_pid" 2>/dev/null || true; wait "$monitor_pid" "$vmstat_pid" 2>/dev/null || true' EXIT
 
-          OMP_NUM_THREADS=1 ctest --test-dir build --timeout 3000 --output-on-failure
+          OMP_NUM_THREADS=1 /usr/bin/time -v -o coverage-diagnostics/suite-time.txt \
+            ctest --test-dir build --timeout 3000 --output-on-failure \
+              --output-log "$PWD/coverage-diagnostics/tests.log" \
+              --output-junit "$PWD/coverage-diagnostics/tests.xml"
+
+      - name: Collect final CPU diagnostics
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p coverage-diagnostics
+          if [ -r /sys/fs/cgroup/cpu.stat ]; then
+            cat /sys/fs/cgroup/cpu.stat | tee coverage-diagnostics/cpu-stat-final.txt
+          fi
+          if [ -f build/tests/unit_tests ]; then
+            ldd build/tests/unit_tests | tee coverage-diagnostics/test-libraries.txt
+          fi
+
+      - name: Save coverage diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-diagnostics-${{ github.run_attempt }}
+          path: |
+            coverage-diagnostics/
+            build/Testing/Temporary/LastTest.log
+            build/Testing/Temporary/LastTestsFailed.log
+          retention-days: 14
 
       - name: Create Coverage
         run: |
