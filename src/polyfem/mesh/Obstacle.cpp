@@ -99,7 +99,7 @@ namespace polyfem
 			const Eigen::MatrixXi &codim_edges,
 			const Eigen::MatrixXi &faces,
 			const json &displacement,
-			const std::string &root_path)
+			const io::ResourceIO &resources)
 		{
 			append_mesh(vertices, codim_vertices, codim_edges, faces);
 
@@ -107,7 +107,7 @@ namespace polyfem
 			for (size_t d = 0; d < dim_; ++d)
 			{
 				assert(displacement["value"].is_array());
-				displacements_.back().value[d].init(displacement["value"][d], root_path);
+				displacements_.back().value[d].init(displacement["value"][d], resources);
 			}
 
 			if (displacement.contains("interpolation"))
@@ -178,13 +178,9 @@ namespace polyfem
 		{
 			change_displacement(oid, func, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp));
 		}
-		void Obstacle::change_displacement(const int oid, const json &val, const std::string &interp)
+		void Obstacle::change_displacement(const int oid, const json &val, const io::ResourceIO &resources, const std::string &interp)
 		{
-			change_displacement(oid, val, "", interp);
-		}
-		void Obstacle::change_displacement(const int oid, const json &val, const std::string &root_path, const std::string &interp)
-		{
-			change_displacement(oid, val, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp), root_path);
+			change_displacement(oid, val, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp), resources);
 		}
 
 		void Obstacle::change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
@@ -205,14 +201,14 @@ namespace polyfem
 			displacements_[oid].interpolation.push_back(interp);
 		}
 
-		void Obstacle::change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp)
+		void Obstacle::change_displacement(const int oid, const json &val, const io::ResourceIO &resources, const std::shared_ptr<Interpolation> &interp)
 		{
-			change_displacement(oid, val, interp, "");
+			change_displacement(oid, val, interp, resources);
 		}
-		void Obstacle::change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp, const std::string &root_path)
+		void Obstacle::change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp, const io::ResourceIO &resources)
 		{
 			for (size_t k = 0; k < val.size(); ++k)
-				displacements_[oid].value[k].init(val[k], root_path);
+				displacements_[oid].value[k].init(val[k], resources);
 
 			displacements_[oid].interpolation.clear();
 			displacements_[oid].interpolation.push_back(interp);

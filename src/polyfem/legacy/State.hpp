@@ -3,6 +3,7 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/Units.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
@@ -111,6 +112,10 @@ namespace polyfem::legacy
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
+	private:
+		// Own the reader borrowed by RHS assemblers, outliving the solver state.
+		polyfem::io::FileSystemIO rhs_resources_{"."};
+
 	public:
 		//---------------------------------------------------
 		//-----------------initialization--------------------
@@ -597,7 +602,7 @@ namespace polyfem::legacy
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
 		{
-			mesh = mesh::Mesh::create(V, F, non_conforming);
+			mesh = mesh::Mesh::create(mesh::MeshData(V, F), non_conforming);
 			load_mesh(non_conforming);
 		}
 

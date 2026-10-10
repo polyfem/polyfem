@@ -55,13 +55,6 @@ namespace polyfem::varform
 		return *problem;
 	}
 
-	const std::string &DifferentiableLinearElasticVarForm::get_root_path() const { return root_path; }
-
-	std::string DifferentiableLinearElasticVarForm::input_path(const std::string &path, const bool only_if_exists) const
-	{
-		return LinearElasticVarForm::resolve_input_path(path, only_if_exists);
-	}
-
 	std::string DifferentiableLinearElasticVarForm::output_file_path(const std::string &path) const
 	{
 		return LinearElasticVarForm::resolve_output_path(path);

@@ -36,7 +36,7 @@ namespace
 		cells << 0, 1, 2, 3;
 
 		SquareSpace space;
-		space.mesh = mesh::Mesh::create(vertices, cells);
+		space.mesh = mesh::Mesh::create(mesh::MeshData(vertices, cells));
 		space.mesh->compute_boundary_ids([left_boundary_id](const size_t, const std::vector<int> &, const RowVectorNd &point, const bool is_boundary) {
 			if (!is_boundary)
 				return 0;

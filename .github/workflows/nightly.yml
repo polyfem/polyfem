@@ -37,6 +37,14 @@ jobs:
         with:
           fetch-depth: 10
 
+      - name: Set up Python test dependencies
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test dependencies
+        run: python -m pip install -r tests/python-requirements.txt
+
       - name: Dependencies
         run: |
           sudo apt-get update
@@ -54,12 +62,12 @@ jobs:
           echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
           echo "CPU flags hash: $CPU_HASH"
 
-      - name: Cache Build
+      - name: Restore compiler cache
         id: cache-build
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
 
       - name: Prepare ccache
@@ -81,12 +89,28 @@ jobs:
         id: build
         run: cmake --build build && ccache --show-stats
 
+      - name: Save compiler cache
+        if: >-
+          ${{ !cancelled()
+              && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+              && steps.cache-build.outputs.cache-primary-key != ''
+              && steps.cache-build.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
+
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
 
       - name: Slow integration tests
         if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && (matrix.threading == 'TBB' || matrix.threading == 'CPP') }}
         run: ./build/tests/unit_tests "[slow]" --rng-seed 1
+
+      - name: Checkpoint all transient integration scenes
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.config == 'Release' && matrix.threading == 'CPP' }}
+        run: ./build/tests/unit_tests "[checkpoint_all]" --rng-seed 1
 
   ####################
   # MacOS
@@ -111,17 +135,25 @@ jobs:
         with:
           fetch-depth: 10
 
+      - name: Set up Python test dependencies
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test dependencies
+        run: python -m pip install -r tests/python-requirements.txt
+
       - name: Dependencies
         run: |
           brew install ccache ninja
           echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
-      - name: Cache Build
+      - name: Restore compiler cache
         id: cache-build
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
@@ -139,7 +171,20 @@ jobs:
             -DPOLYFEM_WITH_TRIANGLE=ON
 
       - name: Build
+        id: build
         run: cmake --build build && ccache --show-stats
+
+      - name: Save compiler cache
+        if: >-
+          ${{ !cancelled()
+              && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+              && steps.cache-build.outputs.cache-primary-key != ''
+              && steps.cache-build.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
@@ -171,12 +216,12 @@ jobs:
           "SCCACHE_DIR=${env:LOCALAPPDATA}\Mozilla\sccache" | Out-File -FilePath $env:GITHUB_ENV -Append
 
 
-      - name: Cache build
+      - name: Restore compiler cache
         id: cache-build
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: ${{ env.SCCACHE_DIR }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
@@ -205,10 +250,23 @@ jobs:
             -S .
 
       - name: Build
+        id: build
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake --build build && sccache --show-stats
+
+      - name: Save compiler cache
+        if: >-
+          ${{ !cancelled()
+              && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+              && steps.cache-build.outputs.cache-primary-key != ''
+              && steps.cache-build.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.SCCACHE_DIR }}
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure

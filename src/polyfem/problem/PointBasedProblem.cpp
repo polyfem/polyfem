@@ -1,6 +1,4 @@
 #include "PointBasedProblem.hpp"
-#include <polyfem/io/MatrixIO.hpp>
-
 #include <iostream>
 #include <string>
 
@@ -11,7 +9,7 @@ namespace polyfem
 
 	namespace problem
 	{
-		bool PointBasedTensorProblem::BCValue::init(const json &data)
+		bool PointBasedTensorProblem::BCValue::init(const json &data, const io::ResourceIO &resources)
 		{
 			Eigen::Matrix<bool, 3, 1> dd;
 			dd.setConstant(true);
@@ -31,8 +29,8 @@ namespace polyfem
 				std::string rbf = "multiquadric";
 				double eps = 0.1;
 
-				read_matrix(data["function"], fun);
-				read_matrix(data["points"], pts);
+				fun = resources.read_matrix(data["function"].get<std::string>());
+				pts = resources.read_matrix(data["points"].get<std::string>());
 
 				int coord = -1;
 				if (data.contains("coordinate"))
@@ -43,7 +41,7 @@ namespace polyfem
 
 				is_tri = data.contains("triangles");
 				if (is_tri)
-					read_matrix(data["triangles"], tri);
+					tri = resources.read_int_matrix(data["triangles"].get<std::string>());
 				else
 				{
 					if (data.contains("rbf"))
@@ -231,7 +229,7 @@ namespace polyfem
 			return true;
 		}
 
-		void PointBasedTensorProblem::set_parameters(const json &params, const std::string &root_path)
+		void PointBasedTensorProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (initialized_)
 				return;
@@ -269,7 +267,7 @@ namespace polyfem
 				{
 					boundary_ids_[i] = j_boundary[i]["id"];
 					const auto ff = j_boundary[i]["value"];
-					const bool all_d = bc_[i].init(ff);
+					const bool all_d = bc_[i].init(ff, resources);
 					all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && all_d;
 				}
 			}
@@ -286,7 +284,7 @@ namespace polyfem
 				{
 					neumann_boundary_ids_[i] = j_boundary[i]["id"];
 					const auto ff = j_boundary[i]["value"];
-					neumann_bc_[i].init(ff);
+					neumann_bc_[i].init(ff, resources);
 				}
 			}
 		}

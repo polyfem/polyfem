@@ -22,8 +22,13 @@ namespace polyfem::solver
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
-		TargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const json &args)
-			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args)
+		TargetForm(
+			const VariableToSimulationGroup &variable_to_simulations,
+			std::shared_ptr<const varform::DifferentiableVarForm> varform,
+			std::shared_ptr<const DiffCache> diff_cache,
+			const json &args,
+			const io::ResourceIO &resources)
+			: SpatialIntegralForm(variable_to_simulations, std::move(varform), std::move(diff_cache), args), resources_(resources)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -54,6 +59,7 @@ namespace polyfem::solver
 		bool have_target_func = false;
 		utils::ExpressionValue target_func;
 		std::array<utils::ExpressionValue, 3> target_func_grad;
+		const io::ResourceIO &resources_;
 	};
 
 	class SDFTargetForm : public SpatialIntegralForm
@@ -124,7 +130,7 @@ namespace polyfem::solver
 	class NodeTargetForm : public StaticForm
 	{
 	public:
-		NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args);
+		NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args, const io::ResourceIO &resources);
 		NodeTargetForm(std::shared_ptr<const varform::DifferentiableVarForm> varform, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 

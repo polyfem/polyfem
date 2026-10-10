@@ -49,9 +49,9 @@ namespace polyfem::assembler
 		return result;
 	}
 
-	void Helmholtz::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void Helmholtz::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		k_.add_multimaterial(index, params, "", root_path);
+		k_.add_multimaterial(index, params, "", resources);
 	}
 
 	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const

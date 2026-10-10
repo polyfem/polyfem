@@ -1,16 +1,6 @@
+// Shared template implementation, included by the GenericElastic material groups.
+// This file is not compiled separately.
 #include "GenericElastic.hpp"
-
-#include <polyfem/assembler/MooneyRivlinElasticity.hpp>
-#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
-#include <polyfem/assembler/IsochoricNeoHookean.hpp>
-#include <polyfem/assembler/OgdenElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
-#include <polyfem/assembler/VolumePenalty.hpp>
-#include <polyfem/assembler/AMIPSEnergy.hpp>
-
-#include <polyfem/assembler/HGOFiber.hpp>
-#include <polyfem/assembler/ActiveFiber.hpp>
-#include <polyfem/assembler/HGODispersion.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -617,18 +607,5 @@ namespace polyfem::assembler
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
 				result.row(i) = (hess.row(i).reshaped(size(), size()) * vect).transpose();
 	}
-
-	template class GenericElastic<MooneyRivlinElasticity>;
-	template class GenericElastic<MooneyRivlin3ParamElasticity>;
-	template class GenericElastic<UnconstrainedOgdenElasticity>;
-	template class GenericElastic<IncompressibleOgdenElasticity>;
-	template class GenericElastic<NeoHookeanAutodiff>;
-	template class GenericElastic<IsochoricNeoHookean>;
-	template class GenericElastic<VolumePenalty>;
-	template class GenericElastic<AMIPSEnergy>;
-
-	template class GenericElastic<HGOFiber>;
-	template class GenericElastic<ActiveFiber>;
-	template class GenericElastic<HGODispersion>;
 
 } // namespace polyfem::assembler

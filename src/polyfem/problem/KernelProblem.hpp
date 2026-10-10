@@ -27,7 +27,7 @@ namespace polyfem
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
-			void set_parameters(const json &params, const std::string &root_path) override;
+			void set_parameters(const json &params, const io::ResourceIO &resources) override;
 			bool is_scalar() const override;
 
 		private:

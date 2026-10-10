@@ -8,6 +8,7 @@
 #include <polyfem/optimization/var2sims/VariableToSimulation.hpp>
 #include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <string>
 #include <memory>
@@ -18,13 +19,8 @@ namespace polyfem::from_json
 {
 	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
 		const json &args,
+		const io::ResourceIO &resources,
 		const size_t max_threads);
-
-	std::vector<std::shared_ptr<varform::DifferentiableVarForm>> build_varforms(
-		const std::string &root_path,
-		const json &args,
-		const size_t max_threads,
-		const json &output_log = json::object());
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
 		const json &args,
@@ -35,18 +31,21 @@ namespace polyfem::from_json
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
 		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
-		const std::vector<std::shared_ptr<DiffCache>> &diff_caches);
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 } // namespace polyfem::from_json

@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/Common.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 namespace polyfem
 {
@@ -26,22 +27,22 @@ namespace polyfem
 			/// @brief Build a selection objects from a JSON selection.
 			/// @param j_selections JSON object of selection(s).
 			/// @param mesh_bbox    Bounding box of the mesh.
-			/// @param root_path    Root path of the JSON file.
+			/// @param resources    Logical resource reader.
 			/// @return Shared pointer to selection object.
 			static std::shared_ptr<Selection> build(
 				const json &j_selections,
 				const BBox &mesh_bbox,
-				const std::string &root_path);
+				const io::ResourceIO &resources);
 
 			/// @brief Build a vector of selection objects from a JSON selection(s).
 			/// @param j_selections JSON object of selection(s).
 			/// @param mesh_bbox    Bounding box of the mesh.
-			/// @param root_path    Root path of the JSON file.
+			/// @param resources    Logical resource reader.
 			/// @return Vector of selection objects.
 			static std::vector<std::shared_ptr<utils::Selection>> build_selections(
 				const json &j_selections,
 				const BBox &mesh_bbox,
-				const std::string &root_path);
+				const io::ResourceIO &resources);
 
 			inline bool boundary_only() const { return boundary_only_; }
 
@@ -192,7 +193,8 @@ namespace polyfem
 		{
 		public:
 			FileSelection(
-				const std::string &file_path,
+				const io::ResourceIO &resources,
+				const std::string &path,
 				const int id_offset = 0);
 
 			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
