@@ -71,7 +71,7 @@ jobs:
           lcov
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
-      - name: Compute CPU cache key
+      - name: Record runner CPU
         run: |
           mkdir -p coverage-diagnostics
           lscpu | tee coverage-diagnostics/cpu.txt
@@ -84,14 +84,8 @@ jobs:
               cat "$resource"
             fi
           done | tee coverage-diagnostics/cpu-quota.txt
-          # A dependency builds with -march=native, which bakes CPU-specific
-          # instructions (e.g. AVX-512) into the object files. ccache hashes the
-          # literal "-march=native" flag, not the resolved instruction set, so it
-          # will happily reuse objects across different CPUs. GitHub's runner pool
-          # is heterogeneous (some hosts have AVX-512, some don't), so a cache built
-          # on a wider CPU gets replayed onto a narrower one -> SIGILL at runtime.
-          # Fold the CPU feature flags into the cache key so objects are only ever
-          # restored onto a compatible microarchitecture.
+          # Retain the feature hash for performance comparisons. Portable builds
+          # share compiler caches across CPU models of the same architecture.
           CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
           echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
           echo "CPU flags hash: $CPU_HASH"
@@ -101,8 +95,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cpu-${{ env.CPU_HASH }}-cache
+          key: ${{ runner.os }}-${{ runner.arch }}-cov-portable-v1-${{ matrix.threading }}-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-cov-portable-v1-${{ matrix.threading }}-cache-
 
       - name: Prepare ccache
         run: |
@@ -117,11 +111,27 @@ jobs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
+            -DPOLYFEM_PORTABLE_BUILD=ON \
             -DPOLYSOLVE_WITH_CHOLMOD=OFF \
             -DPOLYSOLVE_WITH_AMGCL=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
           cp build/CMakeCache.txt build/compile_commands.json coverage-diagnostics/
+          # Sharing objects across CPU models requires every dependency to avoid
+          # host-specific instruction flags, including newly added dependencies.
+          python - <<'PY'
+          import json
+          import shlex
+          from pathlib import Path
+
+          native = []
+          for entry in json.loads(Path("build/compile_commands.json").read_text()):
+              flags = entry.get("arguments") or shlex.split(entry["command"])
+              if any(flag in {"-march=native", "-mtune=native", "-mcpu=native"} for flag in flags):
+                  native.append(entry["file"])
+          if native:
+              raise SystemExit("Portable coverage build has native CPU flags:\n" + "\n".join(native))
+          PY
 
       - name: Build
         id: build

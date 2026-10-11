@@ -34,19 +34,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Compute CPU cache key
-        run: |
-          CPU_HASH=$(grep -m1 '^flags' /proc/cpuinfo | md5sum | cut -d' ' -f1)
-          echo "CPU_HASH=$CPU_HASH" >> "$GITHUB_ENV"
-          echo "CPU flags hash: $CPU_HASH"
-
       - name: Restore Docker layers
         id: cache-build
         uses: actions/cache/restore@v5
         with:
           path: /tmp/.buildx-cache
-          key: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: docker-${{ runner.os }}-cpu-${{ env.CPU_HASH }}-
+          key: docker-linux-amd64-portable-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: docker-linux-amd64-portable-v1-
 
       - name: Build and Push Standard Docker Image
         id: build
