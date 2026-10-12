@@ -23,7 +23,7 @@ namespace polyfem::assembler
 
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		std::string name() const override { return "InversionBarrier"; }
 		bool allow_inversion() const override { return false; }

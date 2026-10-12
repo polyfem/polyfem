@@ -144,7 +144,10 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("{} is not differentiable!", name());
 	}
 
-	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const varform::DifferentiableVarForm> varform)
+	AMIPSForm::AMIPSForm(
+		const VariableToSimulationGroup &variable_to_simulation,
+		std::shared_ptr<const varform::DifferentiableVarForm> varform,
+		const io::ResourceIO &resources)
 		: AdjointForm(variable_to_simulation),
 		  varform_(std::move(varform))
 	{
@@ -153,7 +156,7 @@ namespace polyfem::solver
 
 		json use_rest = {};
 		use_rest["use_rest_pose"] = true;
-		amips_energy_->add_multimaterial(0, use_rest, varform_->get_units(), varform_->get_root_path());
+		amips_energy_->add_multimaterial(0, use_rest, varform_->get_units(), resources);
 
 		Eigen::MatrixXd V;
 		varform_->get_vertices(V);

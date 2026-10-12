@@ -1,7 +1,6 @@
 #include <polyfem/optimization/forms/TransientForm.hpp>
 
 #include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
 #include <Eigen/Core>

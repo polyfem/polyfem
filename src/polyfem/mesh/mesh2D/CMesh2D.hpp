@@ -53,9 +53,7 @@ namespace polyfem
 
 			bool is_boundary_element(const int element_global_id) const override;
 
-			bool save(const std::string &path) const override;
-
-			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+			bool build_topology(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 			std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
@@ -95,8 +93,6 @@ namespace polyfem
 
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
-			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &mesh) override;
 
 		private:
 			GEO::Mesh mesh_;

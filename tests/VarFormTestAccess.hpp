@@ -22,7 +22,6 @@ namespace polyfem::test
 		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
 		int n_bases = 0;
 		int n_obstacle_vertices = 0;
-		std::string root_path;
 	};
 
 	struct NavierStokesFSIDebugData
@@ -74,8 +73,7 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					elastic->space_.n_bases,
-					output_space.obstacle ? output_space.obstacle->n_vertices() : 0,
-					form.root_path};
+					output_space.obstacle ? output_space.obstacle->n_vertices() : 0};
 			}
 
 			if (const auto *fluid = dynamic_cast<const varform::FluidVarForm *>(&form))
@@ -87,8 +85,7 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					fluid->space_.n_bases,
-					0,
-					form.root_path};
+					0};
 			}
 
 			if (const auto *bilaplacian = dynamic_cast<const varform::BilaplacianVarForm *>(&form))
@@ -100,8 +97,7 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					bilaplacian->space_.n_bases,
-					0,
-					form.root_path};
+					0};
 			}
 
 			if (const auto *scalar = dynamic_cast<const varform::ScalarVarForm *>(&form))
@@ -113,8 +109,7 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					scalar->space_.n_bases,
-					0,
-					form.root_path};
+					0};
 			}
 
 			throw std::runtime_error("Unsupported VarForm test debug data request.");

@@ -3,9 +3,6 @@
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
-#include <polyfem/io/OBJReader.hpp>
-#include <polyfem/io/MshReader.hpp>
-#include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/HashUtils.hpp>
@@ -15,9 +12,6 @@
 #include <tuple>
 
 #include <igl/PI.h>
-#include <igl/read_triangle_mesh.h>
-
-#include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/basic/geometry.h>
 #include <geogram/mesh/mesh_preprocessing.h>
@@ -29,7 +23,6 @@
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace polyfem::io;
 using namespace polyfem::utils;
 
 bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
@@ -1184,38 +1177,6 @@ void polyfem::mesh::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void find_codim_vertices(
-	const Eigen::MatrixXd &vertices,
-	const Eigen::MatrixXi &codim_edges,
-	const Eigen::MatrixXi &faces,
-	Eigen::VectorXi &codim_vertices)
-{
-	std::vector<bool> is_vertex_codim(vertices.rows(), true);
-	for (int i = 0; i < codim_edges.rows(); i++)
-	{
-		for (int j = 0; j < codim_edges.cols(); j++)
-		{
-			is_vertex_codim[codim_edges(i, j)] = false;
-		}
-	}
-	for (int i = 0; i < faces.rows(); i++)
-	{
-		for (int j = 0; j < faces.cols(); j++)
-		{
-			is_vertex_codim[faces(i, j)] = false;
-		}
-	}
-	const auto n_codim_vertices = std::count(is_vertex_codim.begin(), is_vertex_codim.end(), true);
-	codim_vertices.resize(n_codim_vertices);
-	for (int i = 0, ci = 0; i < vertices.rows(); i++)
-	{
-		if (is_vertex_codim[i])
-		{
-			codim_vertices[ci++] = i;
-		}
-	}
-}
-
 void find_triangle_surface_from_tets(
 	const Eigen::MatrixXi &tets,
 	Eigen::MatrixXi &faces)
@@ -1287,109 +1248,6 @@ void polyfem::mesh::extract_triangle_surface_from_tets(
 			tris(i, j) = full_to_surface[full_tris(i, j)];
 		}
 	}
-}
-
-bool polyfem::mesh::read_surface_mesh(
-	const std::string &mesh_path,
-	Eigen::MatrixXd &vertices,
-	Eigen::VectorXi &codim_vertices,
-	Eigen::MatrixXi &codim_edges,
-	Eigen::MatrixXi &faces)
-{
-	vertices.resize(0, 0);
-	codim_vertices.resize(0);
-	codim_edges.resize(0, 0);
-	faces.resize(0, 0);
-
-	std::string lowername = mesh_path;
-	std::transform(
-		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-
-	if (StringUtils::endswith(lowername, ".msh"))
-	{
-		Eigen::MatrixXi cells;
-		std::vector<std::vector<int>> elements;
-		std::vector<std::vector<double>> weights;
-		std::vector<int> body_ids;
-		if (!MshReader::load(mesh_path, vertices, cells, elements, weights, body_ids))
-		{
-			logger().error("Unable to load mesh: {}", mesh_path);
-			return false;
-		}
-
-		if (cells.cols() == 1)
-			codim_vertices = cells;
-		else if (cells.cols() == 2)
-			codim_edges = cells;
-		else if (cells.cols() == 3)
-			faces = cells;
-		else if (cells.cols() == 4)
-		{
-			if (vertices.cols() == 2)
-			{
-				logger().error("read_surface_mesh not implemented for 2D quad meshes");
-				return false;
-			}
-			else
-			{
-				// TODO: how to distinguish between 3D tet mesh and 3D surface quad mesh?
-				assert(vertices.cols() == 3);
-				Eigen::MatrixXd surface_vertices;
-				extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
-				vertices = surface_vertices;
-			}
-		}
-		else
-		{
-			logger().error("read_surface_mesh not implemented for hexahedral and polygonal/polyhedral meshes");
-			return false;
-		}
-	}
-	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support
-	{
-		if (!OBJReader::read(mesh_path, vertices, codim_edges, faces))
-		{
-			logger().error("Unable to load mesh: {}", mesh_path);
-			return false;
-		}
-	}
-	else if (!igl::read_triangle_mesh(mesh_path, vertices, faces))
-	{
-		GEO::Mesh mesh;
-		if (!GEO::mesh_load(mesh_path, mesh))
-		{
-			logger().error("Unable to load mesh: {}", mesh_path);
-			return false;
-		}
-
-		int dim = is_planar(mesh) ? 2 : 3;
-		vertices.resize(mesh.vertices.nb(), dim);
-		for (int vi = 0; vi < mesh.vertices.nb(); vi++)
-		{
-			const auto &v = mesh.vertices.point(vi);
-			for (int vj = 0; vj < dim; vj++)
-			{
-				vertices(vi, vj) = v[vj];
-			}
-		}
-
-		// TODO: Check that this works even for a volumetric mesh
-		assert(mesh.facets.nb());
-		int face_cols = mesh.facets.nb_vertices(0);
-		faces.resize(mesh.facets.nb(), face_cols);
-		for (int fi = 0; fi < mesh.facets.nb(); fi++)
-		{
-			assert(face_cols == mesh.facets.nb_vertices(fi));
-			for (int fj = 0; fj < mesh.facets.nb_vertices(fi); fj++)
-			{
-				faces(fi, fj) = mesh.facets.vertex(fi, fj);
-			}
-		}
-	}
-
-	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
-
-	return true;
 }
 
 int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)

@@ -9,6 +9,7 @@ namespace polyfem::varform
 	class DifferentiableNonlinearElasticVarForm : public NonlinearElasticVarForm, public DifferentiableVarForm
 	{
 	public:
+		using NonlinearElasticVarForm::NonlinearElasticVarForm;
 		void solve(
 			Eigen::MatrixXd &solution,
 			const InitialConditionOverride *initial_condition_override,
@@ -22,8 +23,6 @@ namespace polyfem::varform
 		const mesh::Mesh &get_mesh() const override;
 		assembler::Problem &get_problem() override;
 		const assembler::Problem &get_problem() const override;
-		const std::string &get_root_path() const override;
-		std::string input_path(const std::string &path, bool only_if_exists = false) const override;
 		std::string output_file_path(const std::string &path) const override;
 		const Units &get_units() const override;
 		bool is_contact_enabled() const override;
@@ -70,6 +69,7 @@ namespace polyfem::varform
 	class DifferentiableNonlinearElasticStaticVarForm final : public DifferentiableNonlinearElasticVarForm
 	{
 	public:
+		using DifferentiableNonlinearElasticVarForm::DifferentiableNonlinearElasticVarForm;
 		std::string name() const override { return "NonlinearElasticStatic"; }
 
 	private:
@@ -82,6 +82,7 @@ namespace polyfem::varform
 	class DifferentiableNonlinearElasticTransientVarForm final : public DifferentiableNonlinearElasticVarForm
 	{
 	public:
+		using DifferentiableNonlinearElasticVarForm::DifferentiableNonlinearElasticVarForm;
 		std::string name() const override { return "NonlinearElasticTransient"; }
 
 	private:

@@ -1,6 +1,9 @@
 set(SOURCES
+	Checkpoint.cpp
+	Checkpoint.hpp
 	Evaluator.cpp
 	Evaluator.hpp
+	InputLoader.hpp
 	MatrixIO.cpp
 	MatrixIO.hpp
 	MshReader.cpp
@@ -15,6 +18,8 @@ set(SOURCES
 	OutData.hpp
 	OutputData.hpp
 	OutStatsData.hpp
+	ResourceIO.cpp
+	ResourceIO.hpp
 	SolverCSVWriter.cpp
 	SolverCSVWriter.hpp
 	YamlToJson.cpp

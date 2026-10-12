@@ -13,8 +13,12 @@ set(SOURCES
 	Bilaplacian.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
-	GenericElastic.cpp
 	GenericElastic.hpp
+	GenericElasticMR.cpp
+	GenericElasticOgden.cpp
+	GenericElasticNH.cpp
+	GenericElasticFiber.cpp
+	GenericElasticOther.cpp
 	GenericFiber.cpp
 	GenericFiber.hpp
 	GenericProblem.cpp

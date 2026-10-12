@@ -1,6 +1,5 @@
 #include "ExpressionValue.hpp"
 
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
@@ -253,7 +252,7 @@ namespace polyfem
 			mat_ = val;
 		}
 
-		void ExpressionValue::init(const std::string &expr, const std::string &root_path)
+		void ExpressionValue::init(const std::string &expr, const io::ResourceIO &resources)
 		{
 			clear();
 
@@ -262,17 +261,15 @@ namespace polyfem
 				return;
 			}
 
-			const auto path = std::filesystem::path(utils::resolve_path(expr, root_path));
-
 			try
 			{
-				if (std::filesystem::is_regular_file(path))
+				if (resources.exists(expr) && !resources.is_group(expr))
 				{
-					read_matrix(path.string(), mat_);
+					mat_ = resources.read_matrix(expr);
 					return;
 				}
 			}
-			catch (const std::filesystem::filesystem_error &e)
+			catch (const std::exception &)
 			{
 			}
 
@@ -309,7 +306,7 @@ namespace polyfem
 			te_free(tmp);
 		}
 
-		void ExpressionValue::init(const json &vals, const std::string &root_path)
+		void ExpressionValue::init(const json &vals, const io::ResourceIO &resources)
 		{
 			clear();
 
@@ -336,7 +333,7 @@ namespace polyfem
 
 					for (int i = 0; i < vals.size(); ++i)
 					{
-						mat_expr_[i].init(vals[i], root_path);
+						mat_expr_[i].init(vals[i], resources);
 						if (unit_type_set_)
 						{
 							mat_expr_[i].unit_type_ = unit_type_;
@@ -375,7 +372,7 @@ namespace polyfem
 					if (!vals.contains("function_name") || !vals["function_name"].is_string())
 						log_and_throw_error("Python expression '{}' must include a string 'function_name'.", vals["file_name"].get<std::string>());
 
-					const std::string path = utils::resolve_path(vals["file_name"].get<std::string>(), root_path);
+					const std::string path = resources.materialize(vals["file_name"].get<std::string>()).string();
 					const std::string function_name = vals["function_name"].get<std::string>();
 
 					init_python(path, function_name);
@@ -387,12 +384,12 @@ namespace polyfem
 				if (!vals.contains("value"))
 					log_and_throw_error("Expression object must contain either 'value' or 'file_name'.");
 
-				init(vals["value"], root_path);
+				init(vals["value"], resources);
 				unit_ = unit;
 			}
 			else
 			{
-				init(vals.get<std::string>(), root_path);
+				init(vals.get<std::string>(), resources);
 			}
 		}
 

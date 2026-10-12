@@ -44,6 +44,7 @@ namespace polyfem
 				return element.input_vs.empty() ? element.vs[lv_id] : element.input_vs[lv_id];
 			}
 			inline int cell_face(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs[lf_id]; }
+			inline int cell_face_orientation(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs_flag[lf_id]; }
 			inline int cell_edge(const int c_id, const int le_id) const override { return mesh_.elements[c_id].es[le_id]; }
 			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.faces[f_id].vs[lv_id]; }
 			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edges[e_id].vs[lv_id]; }
@@ -56,9 +57,7 @@ namespace polyfem
 			bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
 			bool is_boundary_element(const int element_global_id) const override;
 
-			bool save(const std::string &path) const override;
-
-			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+			bool build_topology(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 
@@ -128,10 +127,9 @@ namespace polyfem
 
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
-			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &M) override;
 
 		private:
+			bool build_storage_from_geogram(const GEO::Mesh &mesh);
 			Mesh3DStorage mesh_;
 		};
 	} // namespace mesh

@@ -45,10 +45,10 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void Laplacian::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void Laplacian::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		if (!conductivity_param_name_.empty())
-			conductivity_.add_multimaterial(index, params, units.thermal_conductivity(), root_path);
+			conductivity_.add_multimaterial(index, params, units.thermal_conductivity(), resources);
 	}
 
 	double Laplacian::conductivity(const RowVectorNd &, const RowVectorNd &p, double t, int element_id) const
