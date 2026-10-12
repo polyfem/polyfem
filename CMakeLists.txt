@@ -70,6 +70,7 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
 option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
+option(POLYFEM_WITH_INFLATOR "Build the isolated microstructure inflator library" OFF)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
@@ -358,6 +359,12 @@ if(POLYFEM_WITH_PYTHON)
     target_link_libraries(polyfem PUBLIC pybind11::embed Python3::Python)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_PYTHON)
     target_compile_definitions(polyfem PUBLIC POLYFEM_PYTHON_EXECUTABLE="${Python3_EXECUTABLE}")
+endif()
+
+if(POLYFEM_WITH_INFLATOR)
+    include(inflator)
+    target_link_libraries(polyfem PRIVATE inflator::inflator)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_INFLATOR)
 endif()
 
 # # MMG wrapper

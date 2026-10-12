@@ -79,6 +79,7 @@ namespace polyfem::varform
 		QuadratureOrders n_boundary_samples() const;
 
 		void set_vertex_positions(const Eigen::MatrixXd &vertices);
+		virtual void replace_mesh(const std::string &path);
 		virtual void set_lame_parameters(const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu);
 		virtual void set_friction_coefficient(double coefficient);
 		virtual void set_damping_coefficients(double psi, double phi);

@@ -35,6 +35,9 @@
 #include <polyfem/optimization/var2sims/DirichletNodesVariableToSimulation.hpp>
 #include <polyfem/optimization/var2sims/PressureBoundaryVariableToSimulation.hpp>
 #include <polyfem/optimization/var2sims/PeriodicShapeVariableToSimulation.hpp>
+#ifdef POLYFEM_WITH_INFLATOR
+#include <polyfem/optimization/var2sims/InflatedPeriodicShapeVariableToSimulation.hpp>
+#endif
 
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
@@ -376,6 +379,17 @@ namespace polyfem::from_json
 				std::move(active_boundary_ids),
 				std::move(active_time_slices));
 		}
+		else if (var2sim_type == "inflated-periodic-shape")
+		{
+#ifdef POLYFEM_WITH_INFLATOR
+			var2sim = std::make_shared<InflatedPeriodicShapeVariableToSimulation>(
+				std::move(relevant_varforms),
+				std::move(rel_diff_caches),
+				std::move(compo), args["inflation"]);
+#else
+			log_and_throw_adjoint_error("Inflated periodic shape requires POLYFEM_WITH_INFLATOR=ON.");
+#endif
+		}
 		else if (var2sim_type == "periodic-shape")
 		{
 			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(
@@ -634,6 +648,10 @@ namespace polyfem::from_json
 			else if (type == "position")
 			{
 				obj = std::make_shared<PositionForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
+			}
+			else if (type == "homo_disp_grad")
+			{
+				obj = std::make_shared<HomogenizedDispGradForm>(var2sim, varforms[args["state"]], diff_caches[args["state"]], args);
 			}
 			else if (type == "stress")
 			{

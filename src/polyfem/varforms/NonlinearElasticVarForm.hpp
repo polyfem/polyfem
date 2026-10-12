@@ -75,7 +75,7 @@ namespace polyfem::varform
 			const InitialConditionOverride *initial_condition_override = nullptr);
 		virtual void init_forms(const json &args, int dim, Eigen::MatrixXd &sol, double t);
 		bool has_macro_strain() const;
-		void init_homogenization_solve(
+		Eigen::VectorXd init_homogenization_solve(
 			Eigen::MatrixXd &solution,
 			double time,
 			const InitialConditionOverride *initial_condition_override);

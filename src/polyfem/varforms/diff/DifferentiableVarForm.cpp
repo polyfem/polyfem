@@ -8,6 +8,11 @@
 
 namespace polyfem::varform
 {
+	void DifferentiableVarForm::replace_mesh(const std::string &path)
+	{
+		log_and_throw_error("Mesh replacement is not supported by {}.", name());
+	}
+
 	const ipc::CollisionMesh &DifferentiableVarForm::collision_mesh() const
 	{
 		log_and_throw_error("Variational formulation {} does not expose a collision mesh.", name());

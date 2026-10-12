@@ -24,5 +24,9 @@ set(SOURCES
     ShapeVariableToSimulation.hpp
 )
 
+if(POLYFEM_WITH_INFLATOR)
+    list(APPEND SOURCES InflatedPeriodicShapeVariableToSimulation.cpp InflatedPeriodicShapeVariableToSimulation.hpp)
+endif()
+
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

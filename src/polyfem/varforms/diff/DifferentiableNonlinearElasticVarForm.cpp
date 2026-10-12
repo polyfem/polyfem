@@ -1,6 +1,7 @@
 #include <polyfem/varforms/diff/DifferentiableNonlinearElasticVarForm.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/io/SolverCSVWriter.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -29,6 +30,34 @@ namespace polyfem::varform
 	void DifferentiableNonlinearElasticVarForm::prepare()
 	{
 		NonlinearElasticVarForm::prepare();
+	}
+
+	void DifferentiableNonlinearElasticVarForm::replace_mesh(const std::string &path)
+	{
+		if (args["geometry"].size() != 1)
+		{
+			log_and_throw_error("Mesh replacement requires one FEM geometry.");
+		}
+
+		json updated_args = args;
+		// Generated vertices already include physical scaling; do not reapply the input geometry transform or refinement.
+		updated_args["geometry"][0]["mesh"] = input_path(path);
+		updated_args["geometry"][0]["unit"] = "";
+		updated_args["geometry"][0]["n_refs"] = 0;
+		updated_args["geometry"][0]["advanced"]["normalize_mesh"] = false;
+		updated_args["geometry"][0]["transformation"] = {
+			{"dimensions", nullptr}, {"scale", 1}, {"rotation", nullptr},
+			{"rotation_mode", "xyz"}, {"translation", json::array()}};
+		updated_args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit_;
+		auto updated_mesh = mesh::read_fem_geometry(units, updated_args["geometry"], root_path);
+		const std::string formulation = primary_assembler_->name();
+		const Units saved_units = units;
+		const std::string saved_output_path = output_path;
+		// Destroy forms before rebuilding the data they reference; preserve this object's identity for objective references.
+		forms.clear();
+		solve_data_ = solver::SolveData();
+		NonlinearElasticVarForm::init(formulation, saved_units, updated_args, saved_output_path);
+		set_mesh(std::move(updated_mesh));
 	}
 
 	void DifferentiableNonlinearElasticVarForm::save_vtu(
@@ -367,8 +396,7 @@ namespace polyfem::varform
 
 		if (is_homogenization())
 		{
-			init_homogenization_solve(solution, /*time=*/0, initial_condition_override);
-			Eigen::VectorXd extended_solution;
+			Eigen::VectorXd extended_solution = init_homogenization_solve(solution, /*time=*/0, initial_condition_override);
 			solve_homogenization_step(0, 0.0, extended_solution, solution, post_step);
 			timer.stop();
 			timings.solving_time = timer.getElapsedTime();
