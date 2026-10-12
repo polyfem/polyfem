@@ -141,8 +141,8 @@ Collaboration diagram for polyfem::utils::FileSelection:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8a4eb50d0f75772f33c30577657beb16" id="r_a8a4eb50d0f75772f33c30577657beb16"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#a8a4eb50d0f75772f33c30577657beb16">FileSelection</a> (const std::string &amp;file_path, const int id_offset=0)</td></tr>
-<tr class="separator:a8a4eb50d0f75772f33c30577657beb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a633846f64b6b3410ac3a7161d6bda721" id="r_a633846f64b6b3410ac3a7161d6bda721"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#a633846f64b6b3410ac3a7161d6bda721">FileSelection</a> (const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources, const std::string &amp;path, const int id_offset=0)</td></tr>
+<tr class="separator:a633846f64b6b3410ac3a7161d6bda721"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfb36ed9c86e2a7f1b1da35ef1579eda" id="r_abfb36ed9c86e2a7f1b1da35ef1579eda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#abfb36ed9c86e2a7f1b1da35ef1579eda">inside</a> (const size_t p_id, const std::vector&lt; int &gt; &amp;vs, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const override</td></tr>
 <tr class="separator:abfb36ed9c86e2a7f1b1da35ef1579eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cdcb07091fa5e399c38fa9cdf0ef049" id="r_a2cdcb07091fa5e399c38fa9cdf0ef049"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#a2cdcb07091fa5e399c38fa9cdf0ef049">id</a> (const size_t element_id, const std::vector&lt; int &gt; &amp;vs, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const override</td></tr>
@@ -169,12 +169,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a8465d134d77a8f8dfeaffdde17950e54 inherit pub_types_classpolyfem_1_1utils_1_1_selection" id="r_a8465d134d77a8f8dfeaffdde17950e54"><td class="memItemLeft" align="right" valign="top">typedef std::array&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a></td></tr>
 <tr class="separator:a8465d134d77a8f8dfeaffdde17950e54 inherit pub_types_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classpolyfem_1_1utils_1_1_selection')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a></td></tr>
-<tr class="memitem:a45489e5dc7d2689051e1fbaba6c4d4aa inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection" id="r_a45489e5dc7d2689051e1fbaba6c4d4aa"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a45489e5dc7d2689051e1fbaba6c4d4aa">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const std::string &amp;root_path)</td></tr>
-<tr class="memdesc:a45489e5dc7d2689051e1fbaba6c4d4aa inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a selection objects from a JSON selection.  <br /></td></tr>
-<tr class="separator:a45489e5dc7d2689051e1fbaba6c4d4aa inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac72e5fdb609167acba1c08970a2890c3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection" id="r_ac72e5fdb609167acba1c08970a2890c3"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">utils::Selection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#ac72e5fdb609167acba1c08970a2890c3">build_selections</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const std::string &amp;root_path)</td></tr>
-<tr class="memdesc:ac72e5fdb609167acba1c08970a2890c3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a vector of selection objects from a JSON selection(s).  <br /></td></tr>
-<tr class="separator:ac72e5fdb609167acba1c08970a2890c3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855107b359069e901197cb4d9e9a92b3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection" id="r_a855107b359069e901197cb4d9e9a92b3"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a855107b359069e901197cb4d9e9a92b3">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources)</td></tr>
+<tr class="memdesc:a855107b359069e901197cb4d9e9a92b3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a selection objects from a JSON selection.  <br /></td></tr>
+<tr class="separator:a855107b359069e901197cb4d9e9a92b3 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc7b23ff99f3e50e81058e7e5cea883 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection" id="r_a7cc7b23ff99f3e50e81058e7e5cea883"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">utils::Selection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a7cc7b23ff99f3e50e81058e7e5cea883">build_selections</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources)</td></tr>
+<tr class="memdesc:a7cc7b23ff99f3e50e81058e7e5cea883 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a vector of selection objects from a JSON selection(s).  <br /></td></tr>
+<tr class="separator:a7cc7b23ff99f3e50e81058e7e5cea883 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1utils_1_1_specified_selection"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1utils_1_1_specified_selection')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html">polyfem::utils::SpecifiedSelection</a></td></tr>
 <tr class="memitem:ac9a3788cc0d97f863705f26226704edf inherit pro_methods_classpolyfem_1_1utils_1_1_specified_selection" id="r_ac9a3788cc0d97f863705f26226704edf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#ac9a3788cc0d97f863705f26226704edf">SpecifiedSelection</a> ()</td></tr>
 <tr class="separator:ac9a3788cc0d97f863705f26226704edf inherit pro_methods_classpolyfem_1_1utils_1_1_specified_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,10 +190,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00191">191</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00192">192</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8a4eb50d0f75772f33c30577657beb16" name="a8a4eb50d0f75772f33c30577657beb16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a4eb50d0f75772f33c30577657beb16">&#9670;&#160;</a></span>FileSelection()</h2>
+<a id="a633846f64b6b3410ac3a7161d6bda721" name="a633846f64b6b3410ac3a7161d6bda721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a633846f64b6b3410ac3a7161d6bda721">&#9670;&#160;</a></span>FileSelection()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -201,8 +201,14 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">polyfem::utils::FileSelection::FileSelection </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file_path</em>, </td>
+          <td class="paramname"><em>path</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -218,13 +224,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00312">312</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00310">310</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00202">data_</a>, <a class="el" href="_selection_8hpp_source.html#l00186">polyfem::utils::SpecifiedSelection::ids_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00204">data_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="_selection_8hpp_source.html#l00187">polyfem::utils::SpecifiedSelection::ids_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, and <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2cfa79302353b43c6acb5e353730cbcf">polyfem::io::ResourceIO::read_int_matrix()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_file_selection_a8a4eb50d0f75772f33c30577657beb16_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_file_selection_a633846f64b6b3410ac3a7161d6bda721_cgraph.svg" width="614" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -272,9 +278,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a707920405e3936d3f09e6dab592cd09e">polyfem::utils::SpecifiedSelection</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00361">361</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00362">362</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00202">data_</a>, and <a class="el" href="_selection_8cpp_source.html#l00305">polyfem::utils::SpecifiedSelection::id()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00204">data_</a>, and <a class="el" href="_selection_8cpp_source.html#l00303">polyfem::utils::SpecifiedSelection::id()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -325,9 +331,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a2384e4784df027e11d893a55e618949a">polyfem::utils::SpecifiedSelection</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00347">347</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00348">348</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00202">data_</a>, and <a class="el" href="_selection_8hpp_source.html#l00179">polyfem::utils::SpecifiedSelection::inside()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00204">data_</a>, and <a class="el" href="_selection_8hpp_source.html#l00180">polyfem::utils::SpecifiedSelection::inside()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -357,9 +363,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00202">202</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00204">204</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00312">FileSelection()</a>, <a class="el" href="_selection_8cpp_source.html#l00361">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00347">inside()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00310">FileSelection()</a>, <a class="el" href="_selection_8cpp_source.html#l00362">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00348">inside()</a>.</p>
 
 </div>
 </div>

@@ -35,6 +35,7 @@ var classpolyfem_1_1mesh_1_1_local_relaxation_data =
     [ "pressure_assembler", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a66599d7843102f7c3f733763ed75687c", null ],
     [ "pressure_boundary_nodes", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a863e8dd96e3a4fa1d59ff53926de43cf", null ],
     [ "problem", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#adf31961f34eb05bf056b193523a2736e", null ],
+    [ "resources_", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a90fb4dce607fab553feac31704d88f6f", null ],
     [ "rhs", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#acfb45b358239660a7ae0b42244c70842", null ],
     [ "solve_data", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a8873c67b721823b8d109782ea93316c1", null ]
 ];

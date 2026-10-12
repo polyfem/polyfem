@@ -5,7 +5,7 @@ var classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value =
     [ "init", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a3ba2c826498ce3623ea19bcefc9352d2", null ],
     [ "init", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a8ed4d9094ea8cfde58f4772d6f6f03e9", null ],
     [ "init", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a0fb23a262187c764ac664b484a04d8f3", null ],
-    [ "init", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a892916453bc073e5caedd634c9ca4a18", null ],
+    [ "init", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a42e608aa9bad4dfa4de508529c14463e", null ],
     [ "is_dirichet_dim", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#afe2d4f6c4d00f8f6237271606bdcf3c2", null ],
     [ "operator()", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a493cd1f87decf590279a966e7d072bfb", null ],
     [ "coordiante_0", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#aafcf24af79dac1d13f70fec76840394c", null ],

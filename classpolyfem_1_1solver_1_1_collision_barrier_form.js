@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_collision_barrier_form =
 [
-    [ "CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43f8570ffc5b9e903724c7f55592a2b1", null ],
+    [ "CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43ffcde10a9e01a9db53acefb33c551d", null ],
     [ "build_collision_set", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a33f5a75351168980dd42656127f1693c", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#ab521276c4d393e1845125386d3f4e26c", null ],
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#afa99bbe0187758a168ceeb8960bdad94", null ],

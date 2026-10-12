@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_h_g_o_dispersion =
 [
     [ "HGODispersion", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#a51680623cb6d3c2b3ef9099014fd8641", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#afcdfcac38f7359ec531273909bb3800b", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#a5cea29c17126ad45c0a6c7fb6f42a3f7", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#ab312a99178d3c358152936aa17fdbddd", null ],
     [ "I1", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#ab46b2e500ea3435b9cca9bf18c73bddc", null ],
     [ "I4", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html#a0587af4f4a5c04d42a3e1a3996148ec6", null ],

@@ -2,7 +2,7 @@ var searchData=
 [
   ['obj_5f_0',['obj_',['../classpolyfem_1_1solver_1_1_transient_form.html#a8d4999511a77452f662c2a6be41ca378',1,'polyfem::solver::TransientForm']]],
   ['objs_1',['objs',['../classpolyfem_1_1solver_1_1_min_target_dist_form.html#a2787ce556d307958e1ab4fed20c65bca',1,'polyfem::solver::MinTargetDistForm']]],
-  ['obstacle_2',['obstacle',['../classpolyfem_1_1legacy_1_1_state.html#a5f98af5fd49ca77d6fef0bbe537500ed',1,'polyfem::legacy::State::obstacle'],['../classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a3261c1c925295f996711d7b08b2e3571',1,'polyfem::varform::NonlinearElasticVarForm::obstacle'],['../structpolyfem_1_1io_1_1_output_space.html#ae8c71448ceb9f168bec48419825f62bf',1,'polyfem::io::OutputSpace::obstacle']]],
+  ['obstacle_2',['obstacle',['../classpolyfem_1_1legacy_1_1_state.html#a5f98af5fd49ca77d6fef0bbe537500ed',1,'polyfem::legacy::State::obstacle'],['../classpolyfem_1_1mesh_1_1_loaded_geometry.html#a2072639abfd8b2ef39157c4291ec4363',1,'polyfem::mesh::LoadedGeometry::obstacle'],['../classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a3261c1c925295f996711d7b08b2e3571',1,'polyfem::varform::NonlinearElasticVarForm::obstacle'],['../structpolyfem_1_1io_1_1_output_space.html#ae8c71448ceb9f168bec48419825f62bf',1,'polyfem::io::OutputSpace::obstacle']]],
   ['obstacle_5f_3',['obstacle_',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa269ae7cfd4b5d1a6ec2936e5be7ace4',1,'polyfem::assembler::PressureAssembler::obstacle_'],['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a56e3838bd4103d929e2b767f98123cc0',1,'polyfem::assembler::RhsAssembler::obstacle_']]],
   ['offset_5f_4',['offset_',['../classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form_1_1_block.html#aa62f87ab86db9c0b2da4aaa391fcbe2f',1,'polyfem::solver::StackedAugmentedLagrangianForm::Block::offset_'],['../classpolyfem_1_1solver_1_1_stacked_form_1_1_block.html#ae799a9c7e896de2f9b7502827c1b264c',1,'polyfem::solver::StackedForm::Block::offset_']]],
   ['old_5fto_5fnew_5f_5',['old_to_new_',['../classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a3927090483f64308309e7321e3c4b9a7',1,'polyfem::solver::BCLagrangianForm']]],
@@ -24,7 +24,9 @@ var searchData=
   ['output_5fdir_21',['output_dir',['../classpolyfem_1_1_opt_state.html#aa5b86fbc404f7d34534e654b19d13d87',1,'polyfem::OptState::output_dir'],['../classpolyfem_1_1legacy_1_1_state.html#ab3bb357f1290b1aec7f0173c371e2b8a',1,'polyfem::legacy::State::output_dir']]],
   ['output_5fdir_5f_22',['output_dir_',['../classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645',1,'polyfem::solver::Form']]],
   ['output_5fgeometry_5f_23',['output_geometry_',['../classpolyfem_1_1varform_1_1_var_form.html#a6c1a49dde611f98fe2e2b9627dc6f034',1,'polyfem::varform::VarForm']]],
-  ['output_5forders_24',['output_orders',['../structpolyfem_1_1io_1_1_output_space.html#a226c380d13b5aba61732865b4a3d1dca',1,'polyfem::io::OutputSpace']]],
-  ['output_5fpath_25',['output_path',['../classpolyfem_1_1varform_1_1_var_form.html#ab60cc205e46c8d92bd259685514cf45d',1,'polyfem::varform::VarForm']]],
-  ['output_5fsampler_5finitialized_5f_26',['output_sampler_initialized_',['../classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b',1,'polyfem::varform::VarForm']]]
+  ['output_5findex_24',['output_index',['../classpolyfem_1_1io_1_1_checkpoint_metadata.html#aecace9aeafd41dffc6d5f6522e27f40c',1,'polyfem::io::CheckpointMetadata']]],
+  ['output_5findex_5foffset_5f_25',['output_index_offset_',['../classpolyfem_1_1varform_1_1_var_form.html#a36b6dc70b99a307dc64745eebe993714',1,'polyfem::varform::VarForm']]],
+  ['output_5forders_26',['output_orders',['../structpolyfem_1_1io_1_1_output_space.html#a226c380d13b5aba61732865b4a3d1dca',1,'polyfem::io::OutputSpace']]],
+  ['output_5fpath_27',['output_path',['../classpolyfem_1_1varform_1_1_var_form.html#ab60cc205e46c8d92bd259685514cf45d',1,'polyfem::varform::VarForm']]],
+  ['output_5fsampler_5finitialized_5f_28',['output_sampler_initialized_',['../classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b',1,'polyfem::varform::VarForm']]]
 ];

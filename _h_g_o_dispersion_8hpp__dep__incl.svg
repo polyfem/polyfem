@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 574;
+var viewWidth = 580;
 var viewHeight = 104;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-1';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="347,-96 219,-96 219,-66 347,-66 347,-96"/>
-<text text-anchor="start" x="227" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
-<text text-anchor="middle" x="283" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/HGODispersion.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="351,-96 223,-96 223,-66 351,-66 351,-96"/>
+<text text-anchor="start" x="231" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
+<text text-anchor="middle" x="287" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/HGODispersion.hpp</text>
 </a>
 </g>
 </g>
@@ -78,18 +78,18 @@ var sectionId = 'dynsection-1';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M225.24,-63.12C189.93,-52.8 145.3,-39.76 111.95,-30.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="224.36,-66.51 234.94,-65.95 226.32,-59.79 224.36,-66.51"/>
+<path fill="none" stroke="#63b8ff" d="M228.19,-63.12C192.23,-52.8 146.78,-39.76 112.82,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="227.48,-66.56 238.06,-65.95 229.42,-59.83 227.48,-66.56"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="_generic_elastic_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="274,-30 146,-30 146,0 274,0 274,-30"/>
-<text text-anchor="start" x="154" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
-<text text-anchor="middle" x="210" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/GenericElastic.cpp</text>
+<g id="a_Node000003"><a xlink:href="_generic_elastic_fiber_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="279.5,-30 146.5,-30 146.5,0 279.5,0 279.5,-30"/>
+<text text-anchor="start" x="154.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
+<text text-anchor="middle" x="213" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/GenericElasticFiber.cpp</text>
 </a>
 </g>
 </g>
@@ -97,8 +97,8 @@ var sectionId = 'dynsection-1';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M259.28,-59.2C248.44,-49.7 235.88,-38.69 226.16,-30.16"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="256.97,-61.84 266.8,-65.8 261.59,-56.57 256.97,-61.84"/>
+<path fill="none" stroke="#63b8ff" d="M262.95,-59.2C251.97,-49.7 239.24,-38.69 229.38,-30.16"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="260.72,-61.9 270.58,-65.8 265.3,-56.61 260.72,-61.9"/>
 </a>
 </g>
 </g>
@@ -106,9 +106,9 @@ var sectionId = 'dynsection-1';
 <g id="Node000004" class="node">
 <title>Node4</title>
 <g id="a_Node000004"><a xlink:href="_generic_fiber_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="420,-30 292,-30 292,0 420,0 420,-30"/>
-<text text-anchor="start" x="300" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
-<text text-anchor="middle" x="356" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/GenericFiber.cpp</text>
+<polygon fill="white" stroke="#666666" points="426,-30 298,-30 298,0 426,0 426,-30"/>
+<text text-anchor="start" x="306" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
+<text text-anchor="middle" x="362" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/GenericFiber.cpp</text>
 </a>
 </g>
 </g>
@@ -116,8 +116,8 @@ var sectionId = 'dynsection-1';
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M306.72,-59.2C317.56,-49.7 330.12,-38.69 339.84,-30.16"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="304.41,-56.57 299.2,-65.8 309.03,-61.84 304.41,-56.57"/>
+<path fill="none" stroke="#63b8ff" d="M311.37,-59.2C322.51,-49.7 335.41,-38.69 345.4,-30.16"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="308.98,-56.64 303.64,-65.8 313.52,-61.97 308.98,-56.64"/>
 </a>
 </g>
 </g>
@@ -125,9 +125,9 @@ var sectionId = 'dynsection-1';
 <g id="Node000005" class="node">
 <title>Node5</title>
 <g id="a_Node000005"><a xlink:href="_h_g_o_dispersion_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="566,-30 438,-30 438,0 566,0 566,-30"/>
-<text text-anchor="start" x="446" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
-<text text-anchor="middle" x="502" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/HGODispersion.cpp</text>
+<polygon fill="white" stroke="#666666" points="572,-30 444,-30 444,0 572,0 572,-30"/>
+<text text-anchor="start" x="452" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/assembler</text>
+<text text-anchor="middle" x="508" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/HGODispersion.cpp</text>
 </a>
 </g>
 </g>
@@ -135,8 +135,8 @@ var sectionId = 'dynsection-1';
 <g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
 <g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M340.76,-63.12C376.07,-52.8 420.7,-39.76 454.05,-30.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="339.68,-59.79 331.06,-65.95 341.64,-66.51 339.68,-59.79"/>
+<path fill="none" stroke="#63b8ff" d="M345.28,-63.12C380.92,-52.8 425.96,-39.76 459.61,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="344.13,-59.81 335.5,-65.95 346.08,-66.54 344.13,-59.81"/>
 </a>
 </g>
 </g>

@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_deformed_collision_barrier_form =
 [
-    [ "DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a33aa718b7cae2a77bbef45bbb99d4814", null ],
+    [ "DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a96a486ddefa130ef15475698bd456c35", null ],
     [ "build_collision_set", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a8a9b38ce4f4ddab922cb257b20fa72e0", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a0ce9d1e6eae4588df5c7748d8e930909", null ],
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a8f187886b520ffd5fb7715758e6a50e5", null ],

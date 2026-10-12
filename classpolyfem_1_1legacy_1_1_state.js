@@ -138,6 +138,7 @@ var classpolyfem_1_1legacy_1_1_state =
     [ "pure_mass_ass_vals_cache", "classpolyfem_1_1legacy_1_1_state.html#a3d2f8c8aad8e681cd0f67055f1110364", null ],
     [ "pure_mass_matrix_assembler", "classpolyfem_1_1legacy_1_1_state.html#ae00ae9636808a091175a1b14c32fbc86", null ],
     [ "rhs", "classpolyfem_1_1legacy_1_1_state.html#a2e0dc64cd2090087f0f98af629c74698", null ],
+    [ "rhs_resources_", "classpolyfem_1_1legacy_1_1_state.html#aa76a9b3c666154b0cdcb75e80b7417f2", null ],
     [ "solve_data", "classpolyfem_1_1legacy_1_1_state.html#aeea501c841e9507fd52f175e0a92a21a", null ],
     [ "starting_max_edge_length", "classpolyfem_1_1legacy_1_1_state.html#aeb06e1d92ee33b6eaab1a00df135ef38", null ],
     [ "starting_min_edge_length", "classpolyfem_1_1legacy_1_1_state.html#a5036c9fe2b9d3a024d4da2acf58c655c", null ],

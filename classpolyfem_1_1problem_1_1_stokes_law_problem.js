@@ -10,7 +10,7 @@ var classpolyfem_1_1problem_1_1_stokes_law_problem =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a07e0d839f712d47020e76cfa7ea126dd", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#ac7594391bfffa4e40ea7e5649bea4bd8", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a198f93015678fecf6994896613344460", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a57cdb694ca17f476df80fdd93cff0773", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#af4d08c5e98e279fd9533b0fe35bd2463", null ],
     [ "is_time_dependent_", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a878d85329913fb69680016c8b1bee319", null ],
     [ "radius", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a63e72992cdaa2e085dc2358c50f2f5ab", null ],
     [ "viscosity_", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a28d976252a75d000e34991ae261412ac", null ]

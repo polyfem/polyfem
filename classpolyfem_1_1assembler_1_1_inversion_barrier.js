@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_inversion_barrier =
 [
     [ "InversionBarrier", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#a85d57145e9d4247b86479d2b540d9a9b", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#a2407d6d1e4de49a576cc101781dd2fcb", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#a3fc52d9d5f49c6039ab9e41eb643897b", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#ace85fb39c90362082d610b8df5ee2724", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#ae51a4087a14eff906ab5ba129c89e90d", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_inversion_barrier.html#a627d8f2fc0b0b33622bf73ea19dcf7f0", null ],

@@ -16,7 +16,7 @@ var classpolyfem_1_1problem_1_1_point_based_tensor_problem =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ac50debe5b3a962040225ea0b0590f837", null ],
     [ "neumann_bc", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a64167ebc9fe9e5dc72adfb37a059fd64", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a43dad3598fcc8761a6ac0cd116886fed", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a0db7fda673e0b8a371502db1efa7a645", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a82a7bb6d1e15d9e5afa7ebe46a92f04b", null ],
     [ "all_dimensions_dirichlet_", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a479103b753f879cd765eccf8958117ec", null ],
     [ "bc_", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#acb3def64177fad34fa048ee8fc07af45", null ],
     [ "initialized_", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a67d81d1128a1c8bcf437c4e1e2bef874", null ],

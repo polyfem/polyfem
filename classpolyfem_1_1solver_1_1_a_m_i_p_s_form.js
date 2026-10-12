@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_a_m_i_p_s_form =
 [
-    [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a15297051e586d87268d27d547b408118", null ],
+    [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a3b5766fcabebb599e771495a779ef9d6", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a653eca873137c884a22e958824816f8d", null ],
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a4a09fc78f3e8f84c2d958f495a43a9da", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174", null ],

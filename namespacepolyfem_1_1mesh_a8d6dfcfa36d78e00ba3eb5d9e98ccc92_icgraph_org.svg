@@ -162,10 +162,10 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="377.5,-142 251.5,-142 251.5,-112 377.5,-112 377.5,-142"/>
-<text text-anchor="start" x="259.5" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="314.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aae683db92f7f638e9b254e8219f4eb25" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="413,-142 216,-142 216,-112 413,-112 413,-142"/>
+<text text-anchor="start" x="224" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
+<text text-anchor="middle" x="314.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
 </a>
 </g>
 </g>
@@ -173,85 +173,85 @@
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.98,-111.61C419,-114.1 397.33,-116.8 377.79,-119.23"/>
+<path fill="none" stroke="#63b8ff" d="M438.88,-111.62C430.49,-112.66 421.81,-113.75 413.12,-114.83"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="439.45,-115.07 448.94,-110.36 438.58,-108.13 439.45,-115.07"/>
-</a>
-</g>
-</g>
-<!-- Node4 -->
-<g id="Node000004" class="node">
-<title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="413,-94 216,-94 216,-64 413,-64 413,-94"/>
-<text text-anchor="start" x="224" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
-<text text-anchor="middle" x="314.5" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
-</a>
-</g>
-</g>
-<!-- Node2&#45;&gt;Node4 -->
-<g id="edge3_Node000002_Node000004" class="edge">
-<title>Node2&#45;&gt;Node4</title>
-<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.88,-94.38C430.49,-93.34 421.81,-92.25 413.12,-91.17"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="438.58,-97.87 448.94,-95.64 439.45,-90.93 438.58,-97.87"/>
-</a>
-</g>
-</g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="165,-142 15,-142 15,-112 165,-112 165,-142"/>
-<text text-anchor="start" x="23" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
-<text text-anchor="middle" x="90" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_basis</text>
-</a>
-</g>
-</g>
-<!-- Node4&#45;&gt;Node5 -->
-<g id="edge4_Node000004_Node000005" class="edge">
-<title>Node4&#45;&gt;Node5</title>
-<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M233.93,-96.17C209.95,-101.34 183.82,-106.98 160.54,-112"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="234.67,-99.59 243.71,-94.06 233.2,-92.74 234.67,-99.59"/>
-</a>
-</g>
-</g>
-<!-- Node6 -->
-<g id="Node000006" class="node">
-<title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43f8570ffc5b9e903724c7f55592a2b1" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="180,-94 0,-94 0,-64 180,-64 180,-94"/>
-<text text-anchor="start" x="8" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Collision</text>
-<text text-anchor="middle" x="90" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">BarrierForm::CollisionBarrierForm</text>
-</a>
-</g>
-</g>
-<!-- Node4&#45;&gt;Node6 -->
-<g id="edge5_Node000004_Node000006" class="edge">
-<title>Node4&#45;&gt;Node6</title>
-<g id="a_edge5_Node000004_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M205.82,-79C197.21,-79 188.56,-79 180.1,-79"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="205.91,-82.5 215.91,-79 205.91,-75.5 205.91,-82.5"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a33aa718b7cae2a77bbef45bbb99d4814" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="175.5,-45.5 4.5,-45.5 4.5,-4.5 175.5,-4.5 175.5,-45.5"/>
-<text text-anchor="start" x="12.5" y="-33.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Deformed</text>
-<text text-anchor="start" x="12.5" y="-22.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm::Deformed</text>
-<text text-anchor="middle" x="90" y="-11.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm</text>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
+<polygon fill="white" stroke="#666666" points="377.5,-94 251.5,-94 251.5,-64 377.5,-64 377.5,-94"/>
+<text text-anchor="start" x="259.5" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="314.5" y="-71" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node7 -->
-<g id="edge6_Node000004_Node000007" class="edge">
-<title>Node4&#45;&gt;Node7</title>
-<g id="a_edge6_Node000004_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M241.68,-61.57C220.58,-56.45 197.32,-50.8 175.51,-45.51"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="240.98,-65 251.52,-63.96 242.63,-58.2 240.98,-65"/>
+<!-- Node2&#45;&gt;Node7 -->
+<g id="edge6_Node000002_Node000007" class="edge">
+<title>Node2&#45;&gt;Node7</title>
+<g id="a_edge6_Node000002_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M438.98,-94.39C419,-91.9 397.33,-89.2 377.79,-86.77"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.58,-97.87 448.94,-95.64 439.45,-90.93 438.58,-97.87"/>
+</a>
+</g>
+</g>
+<!-- Node4 -->
+<g id="Node000004" class="node">
+<title>Node4</title>
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="165,-190 15,-190 15,-160 165,-160 165,-190"/>
+<text text-anchor="start" x="23" y="-178" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
+<text text-anchor="middle" x="90" y="-167" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_basis</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node4 -->
+<g id="edge3_Node000003_Node000004" class="edge">
+<title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M233.93,-144.17C209.95,-149.34 183.82,-154.98 160.54,-160"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="234.67,-147.59 243.71,-142.06 233.2,-140.74 234.67,-147.59"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43ffcde10a9e01a9db53acefb33c551d" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="180,-142 0,-142 0,-112 180,-112 180,-142"/>
+<text text-anchor="start" x="8" y="-130" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Collision</text>
+<text text-anchor="middle" x="90" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">BarrierForm::CollisionBarrierForm</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node5 -->
+<g id="edge4_Node000003_Node000005" class="edge">
+<title>Node3&#45;&gt;Node5</title>
+<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M205.82,-127C197.21,-127 188.56,-127 180.1,-127"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="205.91,-130.5 215.91,-127 205.91,-123.5 205.91,-130.5"/>
+</a>
+</g>
+</g>
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a96a486ddefa130ef15475698bd456c35" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="175.5,-93.5 4.5,-93.5 4.5,-52.5 175.5,-52.5 175.5,-93.5"/>
+<text text-anchor="start" x="12.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Deformed</text>
+<text text-anchor="start" x="12.5" y="-70.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm::Deformed</text>
+<text text-anchor="middle" x="90" y="-59.5" font-family="Helvetica,sans-Serif" font-size="10.00">CollisionBarrierForm</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node6 -->
+<g id="edge5_Node000003_Node000006" class="edge">
+<title>Node3&#45;&gt;Node6</title>
+<g id="a_edge5_Node000003_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M241.68,-109.57C220.58,-104.45 197.32,-98.8 175.51,-93.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="240.98,-113 251.52,-111.96 242.63,-106.2 240.98,-113"/>
 </a>
 </g>
 </g>

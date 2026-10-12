@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#aa644575924db5ab08ebf63e9ddf05cf5", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#ad0257ba6d9b67ca0759a7d0a3832ab0d", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a36e1656cd7b3f3d705f374afc587cc1d", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a1db016b777141001ec9fbcad2c7de075", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a412dd60f8e098679eac5a8e4a6b2e035", null ],

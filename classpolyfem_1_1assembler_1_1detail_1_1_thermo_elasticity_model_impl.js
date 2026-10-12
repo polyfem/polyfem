@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl =
 [
     [ "ThermoElasticityModelImpl", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a7bfd3a2a5e357aa0f695f7228a8cc911", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a0c1d6387a0b655fb28770714ee776583", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a3a63ea4f6dedac5718eadab35c7c5ab3", null ],
     [ "alpha", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a70967c6c6b9eeabd469fd17f0d8df88b", null ],
     [ "cols", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a12b32d97878e738a380acd01b92386aa", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a69a6d8b2f9f4b49df3d655fdf3cedf00", null ],

@@ -1176,10 +1176,10 @@ var sectionId = 'dynsection-37';
 <!-- Node55 -->
 <g id="Node000055" class="node">
 <title>Node55</title>
-<g id="a_Node000055"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="1452.5,-1006.93 1326.5,-1006.93 1326.5,-976.93 1452.5,-976.93 1452.5,-1006.93"/>
-<text text-anchor="start" x="1334.5" y="-994.93" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="1389.5" y="-983.93" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
+<g id="a_Node000055"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aae683db92f7f638e9b254e8219f4eb25" target="_top" xlink:title=" ">
+<polygon fill="#fff0f0" stroke="red" points="1488,-1006.93 1291,-1006.93 1291,-976.93 1488,-976.93 1488,-1006.93"/>
+<text text-anchor="start" x="1299" y="-994.93" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
+<text text-anchor="middle" x="1389.5" y="-983.93" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
 </a>
 </g>
 </g>
@@ -1187,26 +1187,26 @@ var sectionId = 'dynsection-37';
 <g id="edge63_Node000054_Node000055" class="edge">
 <title>Node54&#45;&gt;Node55</title>
 <g id="a_edge63_Node000054_Node000055"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1530.59,-984.97C1504.87,-986.25 1476.87,-987.64 1452.72,-988.84"/>
+<path fill="none" stroke="#63b8ff" d="M1530.37,-984.98C1516.68,-985.66 1502.35,-986.37 1488.31,-987.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1530.88,-988.46 1540.7,-984.47 1530.54,-981.47 1530.88,-988.46"/>
 </a>
 </g>
 </g>
-<!-- Node56 -->
-<g id="Node000056" class="node">
-<title>Node56</title>
-<g id="a_Node000056"><a xlink:href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a86e3c72e0ef1eeef093572f8bf465824" target="_top" xlink:title=" ">
-<polygon fill="#fff0f0" stroke="red" points="1488,-958.93 1291,-958.93 1291,-928.93 1488,-928.93 1488,-958.93"/>
-<text text-anchor="start" x="1299" y="-946.93" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Nonlinear</text>
-<text text-anchor="middle" x="1389.5" y="-935.93" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::build_collision_mesh</text>
+<!-- Node59 -->
+<g id="Node000059" class="node">
+<title>Node59</title>
+<g id="a_Node000059"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
+<polygon fill="white" stroke="#666666" points="1452.5,-958.93 1326.5,-958.93 1326.5,-928.93 1452.5,-928.93 1452.5,-958.93"/>
+<text text-anchor="start" x="1334.5" y="-946.93" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
+<text text-anchor="middle" x="1389.5" y="-935.93" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
 </a>
 </g>
 </g>
-<!-- Node54&#45;&gt;Node56 -->
-<g id="edge64_Node000054_Node000056" class="edge">
-<title>Node54&#45;&gt;Node56</title>
-<g id="a_edge64_Node000054_Node000056"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1530.64,-967.34C1514.27,-964.6 1496.97,-961.71 1480.33,-958.93"/>
+<!-- Node54&#45;&gt;Node59 -->
+<g id="edge64_Node000054_Node000059" class="edge">
+<title>Node54&#45;&gt;Node59</title>
+<g id="a_edge64_Node000054_Node000059"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1530.59,-967.33C1504.87,-963.03 1476.87,-958.36 1452.72,-954.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1530.26,-970.82 1540.7,-969.02 1531.41,-963.92 1530.26,-970.82"/>
 </a>
 </g>

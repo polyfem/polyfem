@@ -7,6 +7,7 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
     [ "barycentric_coords", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ab4e611c0e23d4bd77355ad00843c1e00", null ],
     [ "cell_edge", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a3ff76dbfc406b591c3fa82bd6c6269e7", null ],
     [ "cell_face", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7", null ],
+    [ "cell_face_orientation", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a25a6b59e45c3ed1607ebb6807a3c8683", null ],
     [ "cell_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a787bfded5491223637ea596f348b0890", null ],
     [ "compute_cell_jacobian", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a2fc808fdbd5fbbe5fed1f485ccace7c3", null ],
     [ "compute_element_barycenters", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a69333860e46800d576a18b50e4efd03d", null ],

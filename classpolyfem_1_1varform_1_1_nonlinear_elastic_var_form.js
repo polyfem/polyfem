@@ -27,6 +27,7 @@ var classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form =
     [ "preprocess_contact_parameters", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#af7333f171182341b8f13b48759e5ab5f", null ],
     [ "reset", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a6904e023ccb7b5ce2edaefb69e9c05d9", null ],
     [ "save_timestep_for_embedding", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a3ba83ed74a233936b0055b7545715aa6", null ],
+    [ "set_obstacle", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a1ea37f4b081bf945708f6440d94754f8", null ],
     [ "solve_tensor_nonlinear", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a76b09cd5119d6673853e7749b45c372d", null ],
     [ "update_barrier_stiffness_for_embedding", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a67c08417eaca9ff8470e0e6b93d31e36", null ],
     [ "collision_mesh_", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a6bb0ef4bcf30bc430800833b78616e65", null ],

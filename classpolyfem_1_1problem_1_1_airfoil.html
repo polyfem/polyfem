@@ -153,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a59e59aa1b0a6ce8dbe5687ed29e79672"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02148cf84e86dbed9203fcf69fbe88af" id="r_a02148cf84e86dbed9203fcf69fbe88af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a02148cf84e86dbed9203fcf69fbe88af">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const override</td></tr>
 <tr class="separator:a02148cf84e86dbed9203fcf69fbe88af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac847e668ef922cbe21f408bf670f69b2" id="r_ac847e668ef922cbe21f408bf670f69b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#ac847e668ef922cbe21f408bf670f69b2">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
-<tr class="separator:ac847e668ef922cbe21f408bf670f69b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0b35d945afbe48d4410982356502e3" id="r_a4e0b35d945afbe48d4410982356502e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a4e0b35d945afbe48d4410982356502e3">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources) override</td></tr>
+<tr class="separator:a4e0b35d945afbe48d4410982356502e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2d9c1564afed6b23ee9da25dbb3cb47" id="r_ab2d9c1564afed6b23ee9da25dbb3cb47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#ab2d9c1564afed6b23ee9da25dbb3cb47">exact</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:ab2d9c1564afed6b23ee9da25dbb3cb47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a7d581f4ef603f11782354f084ae17d" id="r_a8a7d581f4ef603f11782354f084ae17d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_airfoil.html#a8a7d581f4ef603f11782354f084ae17d">exact_grad</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
@@ -348,7 +348,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00792">792</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00499">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>, <a class="el" href="_assembler_8cpp_source.html#l00090">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00466">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>, <a class="el" href="_assembler_8cpp_source.html#l00090">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -704,8 +704,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ac847e668ef922cbe21f408bf670f69b2" name="ac847e668ef922cbe21f408bf670f69b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac847e668ef922cbe21f408bf670f69b2">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a4e0b35d945afbe48d4410982356502e3" name="a4e0b35d945afbe48d4410982356502e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e0b35d945afbe48d4410982356502e3">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -722,8 +722,8 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -738,7 +738,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a628e6a14e8fe144fd3a7dfae3f70a737">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00756">756</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
 

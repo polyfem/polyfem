@@ -1,0 +1,25 @@
+var classpolyfem_1_1io_1_1_file_system_i_o =
+[
+    [ "FileSystemIO", "classpolyfem_1_1io_1_1_file_system_i_o.html#aeaa9d9c5abc9eb072e6a887873d43b1f", null ],
+    [ "canonical_path", "classpolyfem_1_1io_1_1_file_system_i_o.html#a8d24cd8aa33eb5065588dfabdfd487d2", null ],
+    [ "describe", "classpolyfem_1_1io_1_1_file_system_i_o.html#ae5a0bd52aeeb310930d4cd9f22f900d7", null ],
+    [ "exists", "classpolyfem_1_1io_1_1_file_system_i_o.html#a1a65c2bd80c4e912161d541508f2e880", null ],
+    [ "has_attribute", "classpolyfem_1_1io_1_1_file_system_i_o.html#a1156bf94ecdab12a7fa56b8694073ba4", null ],
+    [ "host_directory", "classpolyfem_1_1io_1_1_file_system_i_o.html#ae4340046002a8d3ebec21ee453984352", null ],
+    [ "is_group", "classpolyfem_1_1io_1_1_file_system_i_o.html#a6f56c00435aa3a3e81fe92bd0cbb9f51", null ],
+    [ "list", "classpolyfem_1_1io_1_1_file_system_i_o.html#a57c11f82ee42f99fb4caea55b3e4185a", null ],
+    [ "materialize", "classpolyfem_1_1io_1_1_file_system_i_o.html#a5b6c9ebf202d2f113b1f7799c5d59b44", null ],
+    [ "open", "classpolyfem_1_1io_1_1_file_system_i_o.html#ab42e4183851e62f563a9b5d60f09f924", null ],
+    [ "read_double_vector", "classpolyfem_1_1io_1_1_file_system_i_o.html#adac706c2e8093572a16569a621b7c8d7", null ],
+    [ "read_int_matrix", "classpolyfem_1_1io_1_1_file_system_i_o.html#ac08f1c7629899cdc84f54079b80e1681", null ],
+    [ "read_int_vector", "classpolyfem_1_1io_1_1_file_system_i_o.html#a589ed529bba6bfb6d6586473fb038bbd", null ],
+    [ "read_integer_attribute", "classpolyfem_1_1io_1_1_file_system_i_o.html#a24ce1987380ebb67c2296861b7278139", null ],
+    [ "read_long_vector", "classpolyfem_1_1io_1_1_file_system_i_o.html#a846703b26a09bcedffcd22f766757faf", null ],
+    [ "read_matrix", "classpolyfem_1_1io_1_1_file_system_i_o.html#a77608bdac61ee639ea7758369c993447", null ],
+    [ "read_shape_attribute", "classpolyfem_1_1io_1_1_file_system_i_o.html#aeef5cb3473135cab9bedb1e06520e026", null ],
+    [ "read_string_attribute", "classpolyfem_1_1io_1_1_file_system_i_o.html#a3c92790e71f4f80442e6a63703c3a258", null ],
+    [ "resolve", "classpolyfem_1_1io_1_1_file_system_i_o.html#a144a7d86b0eec03e48d957975d4ad489", null ],
+    [ "with_root", "classpolyfem_1_1io_1_1_file_system_i_o.html#a2d312464209f58a71c86d2633a0a5c4e", null ],
+    [ "host_directory_", "classpolyfem_1_1io_1_1_file_system_i_o.html#a04dfc133a02976b08d39c9629c726a57", null ],
+    [ "root_", "classpolyfem_1_1io_1_1_file_system_i_o.html#a163a30ce3a48d33bdb0334c4fecbb250", null ]
+];

@@ -9,6 +9,6 @@ var classpolyfem_1_1problem_1_1_generic_scalar_problem_exact =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a66f7414ee04b0dff3b29b064f59c33a6", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a15cd51761741712279feabcdf28a0a07", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a74bbfd0f274642068ac4349a80f116f9", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a70c87a5023bfee79b1d750631e8bbd67", null ],
     [ "func_", "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7", null ]
 ];

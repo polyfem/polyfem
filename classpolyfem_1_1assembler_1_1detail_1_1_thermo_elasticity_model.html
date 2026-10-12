@@ -141,8 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af835a9755702b43194b57c054ac38c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a353f77efebe386d3b6cdca87ba023f3b" id="r_a353f77efebe386d3b6cdca87ba023f3b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a353f77efebe386d3b6cdca87ba023f3b">set_size</a> (const int size)=0</td></tr>
 <tr class="separator:a353f77efebe386d3b6cdca87ba023f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee2dc992035defdb1ee2bcbf3bdb9a4d" id="r_aee2dc992035defdb1ee2bcbf3bdb9a4d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#aee2dc992035defdb1ee2bcbf3bdb9a4d">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const std::string &amp;root_path)=0</td></tr>
-<tr class="separator:aee2dc992035defdb1ee2bcbf3bdb9a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a273615c56d8b576833e23e0389ba4e04" id="r_a273615c56d8b576833e23e0389ba4e04"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a273615c56d8b576833e23e0389ba4e04">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources)=0</td></tr>
+<tr class="separator:a273615c56d8b576833e23e0389ba4e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68d813b28082fed155773b26946c964e" id="r_a68d813b28082fed155773b26946c964e"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a68d813b28082fed155773b26946c964e">compute_energy</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
 <tr class="separator:a68d813b28082fed155773b26946c964e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69e2cc2325d1e4481c6aa44079cc7ddb" id="r_a69e2cc2325d1e4481c6aa44079cc7ddb"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a69e2cc2325d1e4481c6aa44079cc7ddb">compute_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
@@ -180,8 +180,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aee2dc992035defdb1ee2bcbf3bdb9a4d" name="aee2dc992035defdb1ee2bcbf3bdb9a4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee2dc992035defdb1ee2bcbf3bdb9a4d">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a273615c56d8b576833e23e0389ba4e04" name="a273615c56d8b576833e23e0389ba4e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a273615c56d8b576833e23e0389ba4e04">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -210,8 +210,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -226,7 +226,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a0c1d6387a0b655fb28770714ee776583">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a3a63ea4f6dedac5718eadab35c7c5ab3">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;</a>.</p>
 
 </div>
 </div>

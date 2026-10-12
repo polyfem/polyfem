@@ -143,6 +143,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3b4065aa5d0563c8101a7ca757649765" id="r_a3b4065aa5d0563c8101a7ca757649765"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a3b4065aa5d0563c8101a7ca757649765">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, bool strict_validation, bool is_adjoint_optimization=false)</td></tr>
 <tr class="memdesc:a3b4065aa5d0563c8101a7ca757649765"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialize the polyfem solver with a json settings  <br /></td></tr>
 <tr class="separator:a3b4065aa5d0563c8101a7ca757649765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8a2ce9d46561ff61cd4880b193db7b6" id="r_ae8a2ce9d46561ff61cd4880b193db7b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae8a2ce9d46561ff61cd4880b193db7b6">init</a> (const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a> &amp;checkpoint, bool strict_validation)</td></tr>
+<tr class="separator:ae8a2ce9d46561ff61cd4880b193db7b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a1033142fa9b5d3c2f2d276ad0e4645" id="r_a4a1033142fa9b5d3c2f2d276ad0e4645"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a4a1033142fa9b5d3c2f2d276ad0e4645">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a> &amp;checkpoint, bool strict_validation)</td></tr>
+<tr class="separator:a4a1033142fa9b5d3c2f2d276ad0e4645"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad12cc749a55ca2f8ac62e6f1b869e33d" id="r_ad12cc749a55ca2f8ac62e6f1b869e33d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ad12cc749a55ca2f8ac62e6f1b869e33d">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources, bool strict_validation, bool is_adjoint_optimization=false)</td></tr>
+<tr class="separator:ad12cc749a55ca2f8ac62e6f1b869e33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43c2de37e679082b2ff150cfeb6d7365" id="r_a43c2de37e679082b2ff150cfeb6d7365"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365">set_max_threads</a> (const int max_threads=std::numeric_limits&lt; int &gt;::max())</td></tr>
 <tr class="separator:a43c2de37e679082b2ff150cfeb6d7365"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae358e188d7a615e5599fa603ec05f72a" id="r_ae358e188d7a615e5599fa603ec05f72a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae358e188d7a615e5599fa603ec05f72a">init_logger</a> (const std::string &amp;log_file, const spdlog::level::level_enum log_level, const spdlog::level::level_enum file_log_level, const bool is_quiet)</td></tr>
@@ -157,15 +163,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a407b2d656854310a3e0cbd5d55338df8" id="r_a407b2d656854310a3e0cbd5d55338df8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a407b2d656854310a3e0cbd5d55338df8">solve</a> (Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="memdesc:a407b2d656854310a3e0cbd5d55338df8"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves the problem, call other methods  <br /></td></tr>
 <tr class="separator:a407b2d656854310a3e0cbd5d55338df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37cc0825d6cd66410b5c1a0c46778a9f" id="r_a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a> (bool non_conforming=false, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;())</td></tr>
-<tr class="memdesc:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from the json arguments  <br /></td></tr>
-<tr class="separator:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4b4c624e46a71afeb97d56c50190eb3" id="r_ac4b4c624e46a71afeb97d56c50190eb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac4b4c624e46a71afeb97d56c50190eb3">load_mesh</a> (GEO::Mesh &amp;meshin, const std::function&lt; int(const size_t, const std::vector&lt; int &gt; &amp;, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;, bool)&gt; &amp;boundary_marker, bool non_conforming=false, bool skip_boundary_sideset=false)</td></tr>
-<tr class="memdesc:ac4b4c624e46a71afeb97d56c50190eb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from a geogram mesh  <br /></td></tr>
-<tr class="separator:ac4b4c624e46a71afeb97d56c50190eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce16a4580b29c071e8fd84fbada3497" id="r_a4ce16a4580b29c071e8fd84fbada3497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497">load_mesh</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, bool non_conforming=false)</td></tr>
-<tr class="memdesc:a4ce16a4580b29c071e8fd84fbada3497"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from V and F,  <br /></td></tr>
-<tr class="separator:a4ce16a4580b29c071e8fd84fbada3497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a4321fa2880e56ae641ff1d3aa979d" id="r_ad7a4321fa2880e56ae641ff1d3aa979d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ad7a4321fa2880e56ae641ff1d3aa979d">load_mesh</a> (bool non_conforming=false)</td></tr>
+<tr class="memdesc:ad7a4321fa2880e56ae641ff1d3aa979d"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from the json arguments  <br /></td></tr>
+<tr class="separator:ad7a4321fa2880e56ae641ff1d3aa979d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40b607ad76d9815e35aba1d723a283b6" id="r_a40b607ad76d9815e35aba1d723a283b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a40b607ad76d9815e35aba1d723a283b6">set_mesh</a> (GEO::Mesh &amp;meshin, const std::function&lt; int(const size_t, const std::vector&lt; int &gt; &amp;, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;, bool)&gt; &amp;boundary_marker, bool non_conforming=false, bool skip_boundary_sideset=false)</td></tr>
+<tr class="memdesc:a40b607ad76d9815e35aba1d723a283b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from a geogram mesh  <br /></td></tr>
+<tr class="separator:a40b607ad76d9815e35aba1d723a283b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58d8f0cfdd99d81c03a2ec834f2efe03" id="r_a58d8f0cfdd99d81c03a2ec834f2efe03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a58d8f0cfdd99d81c03a2ec834f2efe03">set_mesh</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, bool non_conforming=false)</td></tr>
+<tr class="memdesc:a58d8f0cfdd99d81c03a2ec834f2efe03"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from V and F,  <br /></td></tr>
+<tr class="separator:a58d8f0cfdd99d81c03a2ec834f2efe03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -192,11 +198,15 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a7d772ea8e80bc8468cd0665a28c8802b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cb5b898b1d7405ac47938217a84b463" id="r_a7cb5b898b1d7405ac47938217a84b463"><td class="memItemLeft" align="right" valign="top">spdlog::sink_ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a7cb5b898b1d7405ac47938217a84b463">file_sink_</a> = nullptr</td></tr>
 <tr class="separator:a7cb5b898b1d7405ac47938217a84b463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ba2b4ca51e4fab14254d9cf1469f23" id="r_ab5ba2b4ca51e4fab14254d9cf1469f23"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab5ba2b4ca51e4fab14254d9cf1469f23">resources_</a></td></tr>
+<tr class="separator:ab5ba2b4ca51e4fab14254d9cf1469f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76cad526ecb78af40343653b40dbaf3e" id="r_a76cad526ecb78af40343653b40dbaf3e"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a76cad526ecb78af40343653b40dbaf3e">checkpoint_</a></td></tr>
+<tr class="separator:a76cad526ecb78af40343653b40dbaf3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>VarForm-only simulation state. </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00029">29</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00036">36</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7ea2ea7e63cd4551c91179074321d60b" name="a7ea2ea7e63cd4551c91179074321d60b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ea2ea7e63cd4551c91179074321d60b">&#9670;&#160;</a></span>State()</h2>
@@ -213,7 +223,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00171">171</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00166">166</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_geogram_utils_8cpp_source.html#l00057">polyfem::utils::GeogramUtils::initialize()</a>, and <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>.</p>
 <div class="dynheader">
@@ -250,8 +260,45 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae8a2ce9d46561ff61cd4880b193db7b6" name="ae8a2ce9d46561ff61cd4880b193db7b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8a2ce9d46561ff61cd4880b193db7b6">&#9670;&#160;</a></span>init() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::init </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>checkpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>strict_validation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00385">385</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_checkpoint_8hpp_source.html#l00075">polyfem::io::CheckpointReader::config()</a>, and <a class="el" href="_state_8cpp_source.html#l00239">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ae8a2ce9d46561ff61cd4880b193db7b6_cgraph.svg" width="428" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a3b4065aa5d0563c8101a7ca757649765" name="a3b4065aa5d0563c8101a7ca757649765"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b4065aa5d0563c8101a7ca757649765">&#9670;&#160;</a></span>init()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4065aa5d0563c8101a7ca757649765">&#9670;&#160;</a></span>init() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -291,20 +338,112 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00244">244</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00239">239</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00017">polyfem::utils::apply_common_params()</a>, <a class="el" href="_state_8hpp_source.html#l00047">args</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00201">polyfem::varform::VarFormFactory::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00064">polyfem::utils::expand_bc_sidecars()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00091">polyfem::varform::formulation_from_args()</a>, <a class="el" href="_units_8cpp_source.html#l00009">polyfem::Units::init()</a>, <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8cpp_source.html#l00372">set_max_threads()</a>, and <a class="el" href="_state_8hpp_source.html#l00050">variational_formulation</a>.</p>
+<p class="reference">References <a class="el" href="_state_8cpp_source.html#l00239">init()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_build_from_json_8cpp_source.html#l00128">polyfem::from_json::build_differentiable_varform()</a>, and <a class="el" href="main_8cpp_source.html#l00078">forward_simulation_with_varform_state()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00069">forward_simulation_with_varform_state()</a>, <a class="el" href="main_8cpp_source.html#l00060">forward_simulation_with_varform_state()</a>, <a class="el" href="_state_8cpp_source.html#l00385">init()</a>, <a class="el" href="_state_8cpp_source.html#l00239">init()</a>, and <a class="el" href="_state_8cpp_source.html#l00390">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a3b4065aa5d0563c8101a7ca757649765_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a3b4065aa5d0563c8101a7ca757649765_cgraph.svg" width="158" height="60"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a3b4065aa5d0563c8101a7ca757649765_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a3b4065aa5d0563c8101a7ca757649765_icgraph.svg" width="660" height="215"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a4a1033142fa9b5d3c2f2d276ad0e4645" name="a4a1033142fa9b5d3c2f2d276ad0e4645"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a1033142fa9b5d3c2f2d276ad0e4645">&#9670;&#160;</a></span>init() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::init </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>checkpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>strict_validation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00390">390</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00068">args</a>, <a class="el" href="_state_8hpp_source.html#l00135">checkpoint_</a>, <a class="el" href="_state_8cpp_source.html#l00239">init()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_checkpoint_8hpp_source.html#l00076">polyfem::io::CheckpointReader::resources()</a>, and <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a4a1033142fa9b5d3c2f2d276ad0e4645_cgraph.svg" width="602" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ad12cc749a55ca2f8ac62e6f1b869e33d" name="ad12cc749a55ca2f8ac62e6f1b869e33d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad12cc749a55ca2f8ac62e6f1b869e33d">&#9670;&#160;</a></span>init() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::init </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>strict_validation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_adjoint_optimization</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00248">248</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00024">polyfem::utils::apply_common_params()</a>, <a class="el" href="_state_8hpp_source.html#l00068">args</a>, <a class="el" href="_state_8hpp_source.html#l00135">checkpoint_</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00201">polyfem::varform::VarFormFactory::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00105">polyfem::utils::expand_bc_sidecars()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00091">polyfem::varform::formulation_from_args()</a>, <a class="el" href="_units_8cpp_source.html#l00009">polyfem::Units::init()</a>, <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00274">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8hpp_source.html#l00134">resources_</a>, <a class="el" href="_state_8cpp_source.html#l00408">set_max_threads()</a>, <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>, and <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a8f4226e9f9e7ec3bccaae82b74da6731">polyfem::io::ResourceIO::with_root()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ad12cc749a55ca2f8ac62e6f1b869e33d_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -358,11 +497,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00176">176</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00171">171</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00084">console_sink_</a>, <a class="el" href="_state_8hpp_source.html#l00085">file_sink_</a>, and <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00105">console_sink_</a>, <a class="el" href="_state_8hpp_source.html#l00106">file_sink_</a>, and <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00244">init()</a>, <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>, and <a class="el" href="_state_8cpp_source.html#l00201">init_logger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00248">init()</a>, <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>, and <a class="el" href="_state_8cpp_source.html#l00196">init_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -371,7 +510,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ae358e188d7a615e5599fa603ec05f72a_icgraph.svg" width="100%" height="450"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ae358e188d7a615e5599fa603ec05f72a_icgraph.svg" width="352" height="103"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -412,9 +551,9 @@ Here is the caller graph for this function:</div>
 
 <p>initializing the logger meant for internal usage </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00208">208</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00203">203</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8cpp_source.html#l00230">set_log_level()</a>, <a class="el" href="_geogram_utils_8cpp_source.html#l00076">polyfem::utils::GeogramUtils::set_logger()</a>, and <a class="el" href="_logger_8cpp_source.html#l00062">polyfem::set_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_state_8cpp_source.html#l00225">set_log_level()</a>, <a class="el" href="_geogram_utils_8cpp_source.html#l00076">polyfem::utils::GeogramUtils::set_logger()</a>, and <a class="el" href="_logger_8cpp_source.html#l00062">polyfem::set_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -458,9 +597,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00201">201</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00196">196</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -469,8 +608,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a37cc0825d6cd66410b5c1a0c46778a9f" name="a37cc0825d6cd66410b5c1a0c46778a9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37cc0825d6cd66410b5c1a0c46778a9f">&#9670;&#160;</a></span>load_mesh() <span class="overload">[1/3]</span></h2>
+<a id="ad7a4321fa2880e56ae641ff1d3aa979d" name="ad7a4321fa2880e56ae641ff1d3aa979d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7a4321fa2880e56ae641ff1d3aa979d">&#9670;&#160;</a></span>load_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -479,30 +618,8 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::State::load_mesh </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>non_conforming</em> = <code>false</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>non_conforming</em> = <code>false</code></td><td>)</td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>names</em> = <code>std::vector&lt;std::string&gt;()</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; Eigen::MatrixXi &gt; &amp;&#160;</td>
-          <td class="paramname"><em>cells</em> = <code>std::vector&lt;Eigen::MatrixXi&gt;()</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
-          <td class="paramname"><em>vertices</em> = <code>std::vector&lt;Eigen::MatrixXd&gt;()</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -511,39 +628,118 @@ Here is the call graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">non_conforming</td><td>creates a conforming/non conforming mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">names</td><td>keys in the hdf5 </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">cells</td><td>list of cells from hdf5 </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">vertices</td><td>list of vertices from hdf5 </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00409">409</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00446">446</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00047">args</a>, <a class="el" href="_units_8cpp_source.html#l00009">polyfem::Units::init()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00185">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00304">polyfem::mesh::read_fem_geometry()</a>, and <a class="el" href="_state_8hpp_source.html#l00050">variational_formulation</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00068">args</a>, <a class="el" href="_state_8hpp_source.html#l00135">checkpoint_</a>, <a class="el" href="_geometry_loader_8hpp_source.html#l00016">polyfem::mesh::LoadedGeometry::fem</a>, <a class="el" href="_units_8cpp_source.html#l00009">polyfem::Units::init()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00274">polyfem::utils::is_param_valid()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00049">polyfem::utils::json_as_array()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00021">polyfem::mesh::GeometryLoader::load()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00485">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_geometry_loader_8hpp_source.html#l00017">polyfem::mesh::LoadedGeometry::obstacle</a>, <a class="el" href="_state_8hpp_source.html#l00134">resources_</a>, and <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_build_from_json_8cpp_source.html#l00128">polyfem::from_json::build_differentiable_varform()</a>, and <a class="el" href="main_8cpp_source.html#l00078">forward_simulation_with_varform_state()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00078">run_forward_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a37cc0825d6cd66410b5c1a0c46778a9f_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ad7a4321fa2880e56ae641ff1d3aa979d_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a37cc0825d6cd66410b5c1a0c46778a9f_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ad7a4321fa2880e56ae641ff1d3aa979d_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a4ce16a4580b29c071e8fd84fbada3497" name="a4ce16a4580b29c071e8fd84fbada3497"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ce16a4580b29c071e8fd84fbada3497">&#9670;&#160;</a></span>load_mesh() <span class="overload">[2/3]</span></h2>
+<a id="a81d50ae65a097daec8f46b732d057151" name="a81d50ae65a097daec8f46b732d057151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d50ae65a097daec8f46b732d057151">&#9670;&#160;</a></span>set_log_level()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::State::load_mesh </td>
+          <td class="memname">void polyfem::State::set_log_level </td>
+          <td>(</td>
+          <td class="paramtype">const spdlog::level::level_enum&#160;</td>
+          <td class="paramname"><em>log_level</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>change log level </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">log_level</td><td>0 all message, 6 no message. 2 is info, 1 is debug </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00225">225</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00105">console_sink_</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00203">init_logger()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a81d50ae65a097daec8f46b732d057151_cgraph.svg" width="331" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a81d50ae65a097daec8f46b732d057151_icgraph.svg" width="352" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a43c2de37e679082b2ff150cfeb6d7365" name="a43c2de37e679082b2ff150cfeb6d7365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43c2de37e679082b2ff150cfeb6d7365">&#9670;&#160;</a></span>set_max_threads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::set_max_threads </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>max_threads</em> = <code>std::numeric_limits&lt;int&gt;::max()</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">max_threads</td><td>max number of threads </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00408">408</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="par__for_8hpp_source.html#l00019">polyfem::utils::NThread::get()</a>, and <a class="el" href="par__for_8hpp_source.html#l00027">polyfem::utils::NThread::set_num_threads()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00248">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a43c2de37e679082b2ff150cfeb6d7365_cgraph.svg" width="632" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a43c2de37e679082b2ff150cfeb6d7365_icgraph.svg" width="352" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a58d8f0cfdd99d81c03a2ec834f2efe03" name="a58d8f0cfdd99d81c03a2ec834f2efe03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d8f0cfdd99d81c03a2ec834f2efe03">&#9670;&#160;</a></span>set_mesh() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::set_mesh </td>
           <td>(</td>
           <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>V</em>, </td>
@@ -578,25 +774,25 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00469">469</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00509">509</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00228">polyfem::mesh::Mesh::create()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00048">V</a>, and <a class="el" href="_state_8hpp_source.html#l00050">variational_formulation</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00080">polyfem::mesh::Mesh::create()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00048">V</a>, and <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a4ce16a4580b29c071e8fd84fbada3497_cgraph.svg" width="655" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a58d8f0cfdd99d81c03a2ec834f2efe03_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="ac4b4c624e46a71afeb97d56c50190eb3" name="ac4b4c624e46a71afeb97d56c50190eb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4b4c624e46a71afeb97d56c50190eb3">&#9670;&#160;</a></span>load_mesh() <span class="overload">[3/3]</span></h2>
+<a id="a40b607ad76d9815e35aba1d723a283b6" name="a40b607ad76d9815e35aba1d723a283b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40b607ad76d9815e35aba1d723a283b6">&#9670;&#160;</a></span>set_mesh() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::State::load_mesh </td>
+          <td class="memname">void polyfem::State::set_mesh </td>
           <td>(</td>
           <td class="paramtype">GEO::Mesh &amp;&#160;</td>
           <td class="paramname"><em>meshin</em>, </td>
@@ -638,95 +834,13 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00377">377</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00413">413</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00228">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_state_8hpp_source.html#l00050">variational_formulation</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00080">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00197">polyfem::mesh::MeshReader::from_geogram()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_ac4b4c624e46a71afeb97d56c50190eb3_cgraph.svg" width="655" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="a81d50ae65a097daec8f46b732d057151" name="a81d50ae65a097daec8f46b732d057151"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81d50ae65a097daec8f46b732d057151">&#9670;&#160;</a></span>set_log_level()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::State::set_log_level </td>
-          <td>(</td>
-          <td class="paramtype">const spdlog::level::level_enum&#160;</td>
-          <td class="paramname"><em>log_level</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>change log level </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">log_level</td><td>0 all message, 6 no message. 2 is info, 1 is debug </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00230">230</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00084">console_sink_</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00208">init_logger()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a81d50ae65a097daec8f46b732d057151_cgraph.svg" width="331" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a81d50ae65a097daec8f46b732d057151_icgraph.svg" width="352" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="a43c2de37e679082b2ff150cfeb6d7365" name="a43c2de37e679082b2ff150cfeb6d7365"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43c2de37e679082b2ff150cfeb6d7365">&#9670;&#160;</a></span>set_max_threads()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::State::set_max_threads </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>max_threads</em> = <code>std::numeric_limits&lt;int&gt;::max()</code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">max_threads</td><td>max number of threads </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00372">372</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="par__for_8hpp_source.html#l00019">polyfem::utils::NThread::get()</a>, and <a class="el" href="par__for_8hpp_source.html#l00027">polyfem::utils::NThread::set_num_threads()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00244">init()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a43c2de37e679082b2ff150cfeb6d7365_cgraph.svg" width="632" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a43c2de37e679082b2ff150cfeb6d7365_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a40b607ad76d9815e35aba1d723a283b6_cgraph.svg" width="100%" height="508"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -749,15 +863,15 @@ Here is the caller graph for this function:</div>
 
 <p>solves the problem, call other methods </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00461">461</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8cpp_source.html#l00502">502</a> of file <a class="el" href="_state_8cpp_source.html">State.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00053">time_callback</a>, and <a class="el" href="_state_8hpp_source.html#l00050">variational_formulation</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00074">time_callback</a>, and <a class="el" href="_state_8hpp_source.html#l00071">variational_formulation</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00078">forward_simulation_with_varform_state()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00078">run_forward_simulation()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a407b2d656854310a3e0cbd5d55338df8_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_state_a407b2d656854310a3e0cbd5d55338df8_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -777,9 +891,35 @@ Here is the caller graph for this function:</div>
 
 <p>main input arguments containing all defaults </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00047">47</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00068">68</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00244">init()</a>, and <a class="el" href="_state_8cpp_source.html#l00409">load_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00390">init()</a>, <a class="el" href="_state_8cpp_source.html#l00248">init()</a>, and <a class="el" href="_state_8cpp_source.html#l00446">load_mesh()</a>.</p>
+
+</div>
+</div>
+<a id="a76cad526ecb78af40343653b40dbaf3e" name="a76cad526ecb78af40343653b40dbaf3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76cad526ecb78af40343653b40dbaf3e">&#9670;&#160;</a></span>checkpoint_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::reference_wrapper&lt;const <a class="el" href="classpolyfem_1_1io_1_1_checkpoint_reader.html">io::CheckpointReader</a>&gt; &gt; polyfem::State::checkpoint_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00135">135</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00390">init()</a>, <a class="el" href="_state_8cpp_source.html#l00248">init()</a>, and <a class="el" href="_state_8cpp_source.html#l00446">load_mesh()</a>.</p>
 
 </div>
 </div>
@@ -805,9 +945,9 @@ Here is the caller graph for this function:</div>
 
 <p>logger sink to stdout </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00084">84</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00105">105</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>, and <a class="el" href="_state_8cpp_source.html#l00230">set_log_level()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>, and <a class="el" href="_state_8cpp_source.html#l00225">set_log_level()</a>.</p>
 
 </div>
 </div>
@@ -831,9 +971,35 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00085">85</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00106">106</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00176">init_logger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00171">init_logger()</a>.</p>
+
+</div>
+</div>
+<a id="ab5ba2b4ca51e4fab14254d9cf1469f23" name="ab5ba2b4ca51e4fab14254d9cf1469f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ba2b4ca51e4fab14254d9cf1469f23">&#9670;&#160;</a></span>resources_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a>&gt; polyfem::State::resources_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00134">134</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00248">init()</a>, and <a class="el" href="_state_8cpp_source.html#l00446">load_mesh()</a>.</p>
 
 </div>
 </div>
@@ -851,9 +1017,9 @@ Here is the caller graph for this function:</div>
 
 <p>Optional UI progress callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00053">53</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00074">74</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00461">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00502">solve()</a>.</p>
 
 </div>
 </div>
@@ -871,9 +1037,9 @@ Here is the caller graph for this function:</div>
 
 <p>active variational formulation </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00050">50</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00071">71</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_build_from_json_8cpp_source.html#l00128">polyfem::from_json::build_differentiable_varform()</a>, <a class="el" href="main_8cpp_source.html#l00078">forward_simulation_with_varform_state()</a>, <a class="el" href="_state_8cpp_source.html#l00244">init()</a>, <a class="el" href="_state_8cpp_source.html#l00409">load_mesh()</a>, <a class="el" href="_state_8cpp_source.html#l00469">load_mesh()</a>, <a class="el" href="_state_8cpp_source.html#l00377">load_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l00461">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00390">init()</a>, <a class="el" href="_state_8cpp_source.html#l00248">init()</a>, <a class="el" href="_state_8cpp_source.html#l00446">load_mesh()</a>, <a class="el" href="main_8cpp_source.html#l00078">run_forward_simulation()</a>, <a class="el" href="_state_8cpp_source.html#l00509">set_mesh()</a>, <a class="el" href="_state_8cpp_source.html#l00413">set_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l00502">solve()</a>.</p>
 
 </div>
 </div>

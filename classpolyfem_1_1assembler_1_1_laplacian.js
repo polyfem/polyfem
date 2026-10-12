@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_laplacian =
 [
     [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html#a885bbb72fdb4851d8d5ba0786f7f8297", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_laplacian.html#a9e73380dbbf595722a010038ca7b4fb6", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_laplacian.html#abf32b2c4e995c23f806ae881cc020ddf", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#a6f86923f1cf44097bb498d2ca4db9aef", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_laplacian.html#adc7b5a738074ba44208a49ea1027fd14", null ],

@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "polyfem::io::ResourceIO::AccessTracker", "classpolyfem_1_1io_1_1_resource_i_o_1_1_access_tracker.html", null ],
     [ "polyfem::solver::AdjointOptUtils", "structpolyfem_1_1solver_1_1_adjoint_opt_utils.html", null ],
     [ "polyfem::assembler::AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", null ],
     [ "polyfem::solver::ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", null ],
@@ -117,6 +118,9 @@ var hierarchy =
       [ "polyfem::BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", null ]
     ] ],
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", null ],
+    [ "polyfem::io::CheckpointMetadata", "classpolyfem_1_1io_1_1_checkpoint_metadata.html", null ],
+    [ "polyfem::io::CheckpointReader", "classpolyfem_1_1io_1_1_checkpoint_reader.html", null ],
+    [ "polyfem::io::CheckpointWriter", "classpolyfem_1_1io_1_1_checkpoint_writer.html", null ],
     [ "polyfem::CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", null ],
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", [
       [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ],
@@ -257,6 +261,7 @@ var hierarchy =
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
     [ "polyfem::assembler::GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", null ],
     [ "polyfem::utils::GeogramUtils", "classpolyfem_1_1utils_1_1_geogram_utils.html", null ],
+    [ "polyfem::mesh::GeometryLoader", "classpolyfem_1_1mesh_1_1_geometry_loader.html", null ],
     [ "polyfem::varform::GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", null ],
     [ "JIXIE::GivensRotation< T >", "class_j_i_x_i_e_1_1_givens_rotation.html", null ],
     [ "polyfem::mesh::Remesher::GlobalProjectionCache", "structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html", null ],
@@ -265,6 +270,8 @@ var hierarchy =
     [ "polyfem::utils::HashUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", null ],
     [ "polyfem::utils::HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", null ],
     [ "polyfem::quadrature::HexQuadrature", "classpolyfem_1_1quadrature_1_1_hex_quadrature.html", null ],
+    [ "polyfem::io::CheckpointWriter::Impl", "classpolyfem_1_1io_1_1_checkpoint_writer_1_1_impl.html", null ],
+    [ "polyfem::io::HDF5IO::Impl", "classpolyfem_1_1io_1_1_h_d_f5_i_o_1_1_impl.html", null ],
     [ "polyfem::time_integrator::ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html", [
       [ "polyfem::time_integrator::BDF", "classpolyfem_1_1time__integrator_1_1_b_d_f.html", null ],
       [ "polyfem::time_integrator::ImplicitEuler", "classpolyfem_1_1time__integrator_1_1_implicit_euler.html", null ],
@@ -299,6 +306,8 @@ var hierarchy =
     [ "polyfem::LazyCubicInterpolator", "classpolyfem_1_1_lazy_cubic_interpolator.html", null ],
     [ "polyfem::assembler::LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", null ],
     [ "polyfem::quadrature::LineQuadrature", "classpolyfem_1_1quadrature_1_1_line_quadrature.html", null ],
+    [ "polyfem::mesh::LoadedGeometry", "classpolyfem_1_1mesh_1_1_loaded_geometry.html", null ],
+    [ "polyfem::io::LoadedInput", "classpolyfem_1_1io_1_1_loaded_input.html", null ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
     [ "polyfem::mesh::LocalMesh< M >", "classpolyfem_1_1mesh_1_1_local_mesh.html", null ],
@@ -323,7 +332,10 @@ var hierarchy =
     ] ],
     [ "polyfem::mesh::Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", null ],
+    [ "polyfem::mesh::MeshData", "classpolyfem_1_1mesh_1_1_mesh_data.html", null ],
+    [ "polyfem::mesh::MeshLoader", "classpolyfem_1_1mesh_1_1_mesh_loader.html", null ],
     [ "polyfem::mesh::MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", null ],
+    [ "polyfem::mesh::MeshReader", "classpolyfem_1_1mesh_1_1_mesh_reader.html", null ],
     [ "polyfem::mesh::MeshWithID", "structpolyfem_1_1mesh_1_1_mesh_with_i_d.html", null ],
     [ "polyfem::assembler::MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", [
       [ "polyfem::assembler::BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", null ],
@@ -480,6 +492,10 @@ var hierarchy =
         [ "polyfem::mesh::SizingFieldRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_sizing_field_remesher.html", null ]
       ] ]
     ] ],
+    [ "polyfem::io::ResourceIO", "classpolyfem_1_1io_1_1_resource_i_o.html", [
+      [ "polyfem::io::FileSystemIO", "classpolyfem_1_1io_1_1_file_system_i_o.html", null ],
+      [ "polyfem::io::HDF5IO", "classpolyfem_1_1io_1_1_h_d_f5_i_o.html", null ]
+    ] ],
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
     [ "polyfem::io::RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
     [ "polyfem::legacy::io::RuntimeStatsCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
@@ -505,6 +521,7 @@ var hierarchy =
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::legacy::State", "classpolyfem_1_1legacy_1_1_state.html", null ],
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],
+    [ "polyfem::mesh::SurfaceMeshData", "classpolyfem_1_1mesh_1_1_surface_mesh_data.html", null ],
     [ "polyfem::solver::TangentialAdhesionForceDerivative", "classpolyfem_1_1solver_1_1_tangential_adhesion_force_derivative.html", null ],
     [ "polyfem::assembler::TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", null ],
     [ "polyfem::assembler::TensorInitialValue", "structpolyfem_1_1assembler_1_1_tensor_initial_value.html", null ],

@@ -153,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5d0fcb3e0dac1b4d707feacf07d07d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aff8792421569e328fd10ba71a9d40b" id="r_a4aff8792421569e328fd10ba71a9d40b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a4aff8792421569e328fd10ba71a9d40b">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>, const int fe_space_id=-1) const override</td></tr>
 <tr class="separator:a4aff8792421569e328fd10ba71a9d40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2da1c6563acfd196b2f3e9c938f414c" id="r_ad2da1c6563acfd196b2f3e9c938f414c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#ad2da1c6563acfd196b2f3e9c938f414c">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
-<tr class="separator:ad2da1c6563acfd196b2f3e9c938f414c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06cbcfdad889dc4bd521470e3c365d74" id="r_a06cbcfdad889dc4bd521470e3c365d74"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a06cbcfdad889dc4bd521470e3c365d74">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources) override</td></tr>
+<tr class="separator:a06cbcfdad889dc4bd521470e3c365d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_problem"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_problem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">polyfem::assembler::Problem</a></td></tr>
 <tr class="memitem:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab7bc716ad17294502839aa1435265cd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab7bc716ad17294502839aa1435265cd1">Problem</a> (const std::string &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a>)</td></tr>
 <tr class="separator:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -462,8 +462,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ad2da1c6563acfd196b2f3e9c938f414c" name="ad2da1c6563acfd196b2f3e9c938f414c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2da1c6563acfd196b2f3e9c938f414c">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a06cbcfdad889dc4bd521470e3c365d74" name="a06cbcfdad889dc4bd521470e3c365d74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06cbcfdad889dc4bd521470e3c365d74">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,8 +480,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -496,9 +496,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a628e6a14e8fe144fd3a7dfae3f70a737">polyfem::assembler::Problem</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a0306b45278b7d253d31ba979d9391062">polyfem::problem::Flow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a844159dff1672ff9510d7bdb9fa526eb">polyfem::problem::FlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_corner_flow.html#ad8bc3d5cd1ae0d97acaa9529f67aa0be">polyfem::problem::CornerFlow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_lshape.html#ab7fe2c8022d6f14fcc51dd58406f8ad2">polyfem::problem::Lshape</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#ab36971457c05fb166f1297024a0b6013">polyfem::problem::UnitFlowWithObstacle</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a765e5523688ac2898c6ca733fd7f3790">polyfem::problem::Flow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a6796fc9f42a7f51bcda1c89e44127bfa">polyfem::problem::FlowWithObstacle</a>, <a class="el" href="classpolyfem_1_1problem_1_1_corner_flow.html#a5b96a262e8f9e574d8f180e9f3a314f5">polyfem::problem::CornerFlow</a>, <a class="el" href="classpolyfem_1_1problem_1_1_lshape.html#a4491e5193f90caadfbdc7ab1b7a2c578">polyfem::problem::Lshape</a>, and <a class="el" href="classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#a5f6b65b0f6b3290cfeaff3602a2bc34e">polyfem::problem::UnitFlowWithObstacle</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00030">30</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
 
@@ -508,7 +508,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem_ad2da1c6563acfd196b2f3e9c938f414c_icgraph.svg" width="528" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_time_depentend_stokes_problem_a06cbcfdad889dc4bd521470e3c365d74_icgraph.svg" width="528" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

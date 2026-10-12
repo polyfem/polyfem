@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_volume_penalty =
 [
     [ "VolumePenalty", "classpolyfem_1_1assembler_1_1_volume_penalty.html#afce6e4fdabecf4d183a9c44810327d87", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_volume_penalty.html#a04b7e55c5eb9e49f1cb1414be7ff18e2", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_volume_penalty.html#a01d42ab023c44c7a9d2c555d8188f146", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_volume_penalty.html#a05027d89378b78a1ce1247a1c1ca4029", null ],
     [ "gradient", "classpolyfem_1_1assembler_1_1_volume_penalty.html#a7dd40ccacec4d9d8b9866164fa6cf664", null ],
     [ "hessian", "classpolyfem_1_1assembler_1_1_volume_penalty.html#a993a09b363974aed85e307c7e05f8858", null ],

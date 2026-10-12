@@ -4,7 +4,7 @@ var classpolyfem_1_1problem_1_1_node_values =
     [ "dirichlet_interpolate", "classpolyfem_1_1problem_1_1_node_values.html#abc5a320e1a4f2445db34a9773b8b5752", null ],
     [ "init", "classpolyfem_1_1problem_1_1_node_values.html#a6a9e2a72d2520f3f734c9bbd08406a12", null ],
     [ "interpolate", "classpolyfem_1_1problem_1_1_node_values.html#a4ccb2e40d05ff5d59d9781c6a8d81746", null ],
-    [ "load", "classpolyfem_1_1problem_1_1_node_values.html#a1fa62394d63d33d8b33c2885503d8743", null ],
+    [ "load", "classpolyfem_1_1problem_1_1_node_values.html#a4a6997b4297a79c6415051d1475ebd7b", null ],
     [ "neumann_interpolate", "classpolyfem_1_1problem_1_1_node_values.html#a20acce54ae9c571ea8bb0b6f38c361d4", null ],
     [ "data_", "classpolyfem_1_1problem_1_1_node_values.html#acaaaa320e61d7aaae49f0434dffa64c8", null ],
     [ "dirichlet_", "classpolyfem_1_1problem_1_1_node_values.html#a19b9181c3983a33435e7d6fbf05b2723", null ],

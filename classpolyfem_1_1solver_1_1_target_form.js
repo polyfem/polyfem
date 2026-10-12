@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_target_form =
 [
-    [ "TargetForm", "classpolyfem_1_1solver_1_1_target_form.html#aa74ab5453d26366bdbcb37289e18edfa", null ],
+    [ "TargetForm", "classpolyfem_1_1solver_1_1_target_form.html#aee2813b1b738691142d4d69aef18eeae", null ],
     [ "~TargetForm", "classpolyfem_1_1solver_1_1_target_form.html#a3db4cf13a46f052ec57edf2ab49d8c81", null ],
     [ "get_integral_functional", "classpolyfem_1_1solver_1_1_target_form.html#a3d5ef3814ac921658a55bbc521755e26", null ],
     [ "name", "classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500", null ],
@@ -11,6 +11,7 @@ var classpolyfem_1_1solver_1_1_target_form =
     [ "active_dimension_mask", "classpolyfem_1_1solver_1_1_target_form.html#aa7393444ff744de6d44b759756628775", null ],
     [ "e_to_ref_e_", "classpolyfem_1_1solver_1_1_target_form.html#aa59d9291f1a229b8fe16a481cd90cec4", null ],
     [ "have_target_func", "classpolyfem_1_1solver_1_1_target_form.html#aedc695824900376821ef328989c4ffcd", null ],
+    [ "resources_", "classpolyfem_1_1solver_1_1_target_form.html#a952bd897fc1e8ce49dd9eba3d54257dd", null ],
     [ "target_diff_cache_", "classpolyfem_1_1solver_1_1_target_form.html#a70f9faf3c5ab65077887779c3b0e01ab", null ],
     [ "target_disp", "classpolyfem_1_1solver_1_1_target_form.html#ab9db97c509575aa539fcf8e0207e0974", null ],
     [ "target_func", "classpolyfem_1_1solver_1_1_target_form.html#a9d0d5acaf6d7a1b59c6db53fc9f68650", null ],

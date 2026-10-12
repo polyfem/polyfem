@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_linear_elasticity =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a77321b4457342927dcb0a568dd9bbbbb", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a117dae3733f3384acea22a1f2501aafb", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a9a03babb52d12eb370ce0175464991d4", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa1a862bfc2bad0bfb530e5575a040d78", null ],

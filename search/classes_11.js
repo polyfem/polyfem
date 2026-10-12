@@ -39,5 +39,6 @@ var searchData=
   ['stressform_36',['StressForm',['../classpolyfem_1_1solver_1_1_stress_form.html',1,'polyfem::solver']]],
   ['stressnormform_37',['StressNormForm',['../classpolyfem_1_1solver_1_1_stress_norm_form.html',1,'polyfem::solver']]],
   ['sumcompositeform_38',['SumCompositeForm',['../classpolyfem_1_1solver_1_1_sum_composite_form.html',1,'polyfem::solver']]],
-  ['summodel_39',['SumModel',['../classpolyfem_1_1assembler_1_1_sum_model.html',1,'polyfem::assembler']]]
+  ['summodel_39',['SumModel',['../classpolyfem_1_1assembler_1_1_sum_model.html',1,'polyfem::assembler']]],
+  ['surfacemeshdata_40',['SurfaceMeshData',['../classpolyfem_1_1mesh_1_1_surface_mesh_data.html',1,'polyfem::mesh']]]
 ];

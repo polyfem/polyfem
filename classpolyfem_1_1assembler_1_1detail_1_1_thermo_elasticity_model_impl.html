@@ -148,8 +148,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a836eebef0b3f4d288cc694139506acc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84d6b1b48463b6df69cb7dd2633d5ce4" id="r_a84d6b1b48463b6df69cb7dd2633d5ce4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a84d6b1b48463b6df69cb7dd2633d5ce4">set_size</a> (const int <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a61e6094946b277ed8c1336a999f976f5">size</a>) override</td></tr>
 <tr class="separator:a84d6b1b48463b6df69cb7dd2633d5ce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c1d6387a0b655fb28770714ee776583" id="r_a0c1d6387a0b655fb28770714ee776583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a0c1d6387a0b655fb28770714ee776583">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const std::string &amp;root_path) override</td></tr>
-<tr class="separator:a0c1d6387a0b655fb28770714ee776583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a63ea4f6dedac5718eadab35c7c5ab3" id="r_a3a63ea4f6dedac5718eadab35c7c5ab3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a3a63ea4f6dedac5718eadab35c7c5ab3">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources) override</td></tr>
+<tr class="separator:a3a63ea4f6dedac5718eadab35c7c5ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69a6d8b2f9f4b49df3d655fdf3cedf00" id="r_a69a6d8b2f9f4b49df3d655fdf3cedf00"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a69a6d8b2f9f4b49df3d655fdf3cedf00">compute_energy</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const override</td></tr>
 <tr class="separator:a69a6d8b2f9f4b49df3d655fdf3cedf00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ac01a101b9bbce6e47d796438c14d31" id="r_a9ac01a101b9bbce6e47d796438c14d31"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a9ac01a101b9bbce6e47d796438c14d31">compute_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const override</td></tr>
@@ -212,8 +212,8 @@ template&lt;typename Elasticity &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0c1d6387a0b655fb28770714ee776583" name="a0c1d6387a0b655fb28770714ee776583"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c1d6387a0b655fb28770714ee776583">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a3a63ea4f6dedac5718eadab35c7c5ab3" name="a3a63ea4f6dedac5718eadab35c7c5ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a63ea4f6dedac5718eadab35c7c5ab3">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -244,8 +244,8 @@ template&lt;typename Elasticity &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -260,7 +260,7 @@ template&lt;typename Elasticity &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#aee2dc992035defdb1ee2bcbf3bdb9a4d">polyfem::assembler::detail::ThermoElasticityModel</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a273615c56d8b576833e23e0389ba4e04">polyfem::assembler::detail::ThermoElasticityModel</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_thermo_elasticity_8cpp_source.html#l00163">163</a> of file <a class="el" href="_thermo_elasticity_8cpp_source.html">ThermoElasticity.cpp</a>.</p>
 
@@ -268,7 +268,7 @@ template&lt;typename Elasticity &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl_a0c1d6387a0b655fb28770714ee776583_cgraph.svg" width="658" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl_a3a63ea4f6dedac5718eadab35c7c5ab3_cgraph.svg" width="658" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
