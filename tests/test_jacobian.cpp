@@ -19,6 +19,8 @@
 #include <catch2/catch_approx.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/quadrature/Quadrature.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
 #include "VarFormTestAccess.hpp"
@@ -638,6 +640,48 @@ TEST_CASE("jacobian-is-valid-thread-independent", "[jacobian]")
 	}
 
 	utils::NThread::get().set_num_threads(static_cast<int>(n_threads_before));
+}
+
+// Conservative modes switch the elastic energy to a corner quadrature. A
+// negative weight where J -> 0 makes the energy unbounded below: P4 triangles
+// on the order-6 rule (negative at the corners) diverged on the first time
+// step, and P3 tets on the order-4 rule (negative at the centroid) stalled on
+// twist-bar. Every corner must be present, and every weight positive.
+TEST_CASE("jacobian-conservative-quadrature", "[jacobian]")
+{
+	for (const auto [dim, max_order] : {std::pair{2, 4}, std::pair{3, 3}})
+	{
+		for (int order = 1; order <= max_order; ++order)
+		{
+			CAPTURE(dim, order);
+			auto state = get_state(dim, "NeoHookean", order);
+			const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+
+			std::vector<basis::ElementBases> bases = *debug.bases;
+			assembler::AssemblyValsCache cache;
+			const solver::ElasticForm form(
+				debug.n_bases, bases, *debug.geometry_bases, *debug.assembler, cache,
+				/*t=*/0, /*dt=*/0.001, /*is_volume=*/dim == 3, /*jacobian_threshold=*/0,
+				solver::ElementInversionCheck::ConservativeStatic);
+
+			const double volume = dim == 2 ? 1. / 2 : 1. / 6;
+			for (const basis::ElementBases &b : bases)
+			{
+				quadrature::Quadrature quad;
+				b.compute_quadrature(quad);
+				REQUIRE(quad.weights.sum() == Catch::Approx(volume).epsilon(1e-12));
+				REQUIRE(quad.weights.minCoeff() > 0);
+				int n_corners = 0;
+				for (Eigen::Index i = 0; i < quad.points.rows(); ++i)
+				{
+					const auto p = quad.points.row(i);
+					if ((p.array() == 0 || p.array() == 1).all() && p.sum() <= 1)
+						++n_corners;
+				}
+				REQUIRE(n_corners == dim + 1);
+			}
+		}
+	}
 }
 
 #endif

@@ -26,6 +26,43 @@ namespace polyfem::solver
 {
 	namespace
 	{
+		// Conservative modes use corner rules so the energy samples J at the
+		// corners. A negative weight at any point turns the log barrier there
+		// into a well, and the discrete energy becomes unbounded below as J
+		// vanishes at that point: the triangle order-6 rule (P4) has them at
+		// the corners, the tet order-4 rule (P3) at the centroid. Use the
+		// lowest order at or above the requested one whose rule has every
+		// corner and only positive weights. A family of corner rules with
+		// positive weights at every order would avoid the larger rules.
+		Quadrature corner_quadrature(const int dim, const int order)
+		{
+			const auto is_usable = [dim](const Quadrature &quad) {
+				if (quad.weights.size() == 0 || quad.weights.minCoeff() <= 0)
+					return false;
+				int n_corners = 0;
+				for (Eigen::Index i = 0; i < quad.points.rows(); ++i)
+				{
+					const auto p = quad.points.row(i);
+					if ((p.array() == 0 || p.array() == 1).all() && p.sum() <= 1)
+						++n_corners;
+				}
+				return n_corners == dim + 1;
+			};
+
+			constexpr int max_bump = 3;
+			Quadrature quad;
+			for (int o = order; o <= order + max_bump; ++o)
+			{
+				if (dim == 2)
+					TriQuadrature(true).get_quadrature(o, quad);
+				else
+					TetQuadrature(true).get_quadrature(o, quad);
+				if (is_usable(quad))
+					return quad;
+			}
+			log_and_throw_error("No corner quadrature with positive weights of order {} to {} in {}D", order, order + max_bump, dim);
+		}
+
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
 		{
 			Eigen::MatrixXd pts(dim + 1, dim);
@@ -40,25 +77,10 @@ namespace polyfem::solver
 					0, 0, 1;
 			auto [quad_points, levels] = extract_subelement(pts, tree);
 
-			Quadrature tmp, quad;
-			if (dim == 2)
-			{
-				TriQuadrature tri_quadrature(true);
-				tri_quadrature.get_quadrature(order, tmp);
-				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
-				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array();
-			}
-			else
-			{
-				TetQuadrature tet_quadrature(true);
-				// The corner rule for order 4 (Liu-Vinokur 9) has a large negative
-				// weight at the centroid, which corrupts non-polynomial integrands
-				// like NeoHookean near inversion. Order 5 has all-positive weights.
-				const int safe_order = (order == 4) ? 5 : order;
-				tet_quadrature.get_quadrature(safe_order, tmp);
-				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
-				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
-			}
+			Quadrature tmp = corner_quadrature(dim, order);
+			Quadrature quad;
+			tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
+			tmp.points.col(dim) = 1. - tmp.points.leftCols(dim).rowwise().sum().array();
 
 			quad.points.resize(tmp.size() * levels.size(), dim);
 			quad.weights.resize(tmp.size() * levels.size());
@@ -147,8 +169,8 @@ namespace polyfem::solver
 			}
 
 			// Replace the corner quadrature set by LagrangeBasis for every element.
-			// The default corner rule for order 4 has a negative centroid weight
-			// (see refine_quadrature); override it here so the base quadrature is
+			// Some default corner rules have negative weights (see
+			// corner_quadrature); override them here so the base quadrature is
 			// also safe before any adaptive refinement occurs.
 			const int dim = is_volume_ ? 3 : 2;
 			for (int e = 0; e < (int)bases_.size(); e++)
