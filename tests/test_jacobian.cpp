@@ -2,6 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/par_for.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <iomanip>
@@ -24,7 +25,7 @@ using namespace polyfem::utils;
 using namespace polyfem::autogen;
 namespace
 {
-	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean")
+	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean", const int discr_order = 1)
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 
@@ -55,6 +56,8 @@ namespace
 
 		})"_json;
 		in_args["materials"] = material;
+		if (discr_order != 1)
+			in_args["space"]["discr_order"] = discr_order;
 		if (dim == 2)
 		{
 			in_args["geometry"] = R"([{
@@ -329,6 +332,82 @@ TEST_CASE("jacobian-max-time-step", "[jacobian]")
 		auto [cert_valid, cert_id, cert_tree] = is_valid(dim, *debug.bases, *debug.geometry_bases, u_cert);
 		REQUIRE(cert_valid);
 	}
+}
+
+// is_valid()/max_time_step() flip the FPU into round-up mode for interval
+// arithmetic and must restore it on every exit path, including the throw for an
+// unsupported order. A leak here is invisible locally but silently changes the
+// rounding of every later floating-point operation on this thread.
+TEST_CASE("jacobian-fpu-rounding-restored", "[jacobian]")
+{
+	// 0.1 is not representable: under round-to-nearest the sum lands just below
+	// 1, under round-up strictly above it. Cheap way to observe the mode.
+	const auto sum_tenths = []() {
+		volatile double acc = 0.0;
+		for (int i = 0; i < 10; ++i)
+			acc = acc + 0.1;
+		return static_cast<double>(acc);
+	};
+
+	const double before = sum_tenths();
+
+	auto state = get_state(3);
+	const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	const Eigen::VectorXd u = Eigen::VectorXd::Zero(debug.n_bases * 3);
+
+	// Normal (non-throwing) path.
+	{
+		auto [valid, id, tree] = is_valid(3, *debug.bases, *debug.geometry_bases, u);
+		REQUIRE(valid);
+		REQUIRE(sum_tenths() == before);
+	}
+
+	// Throwing path: an order the generated solvers do not cover must still
+	// leave the rounding mode as it found it. Tetrahedra stop at P3, so a P4
+	// tet basis reaches the unsupported-order branch inside the guard's scope.
+	{
+		auto p4_state = get_state(3, "NeoHookean", /*discr_order=*/4);
+		const auto p4 = test::VarFormTestAccess::debug_data(*p4_state->variational_formulation);
+		const Eigen::VectorXd u4 = Eigen::VectorXd::Zero(p4.n_bases * 3);
+
+		REQUIRE_THROWS(is_valid(3, *p4.bases, *p4.geometry_bases, u4));
+		REQUIRE(sum_tenths() == before);
+	}
+}
+
+// The static check must not depend on how many threads it runs across: the
+// rounding mode it relies on is per-thread state, so a parallel implementation
+// that established it only on the calling thread would silently lose the
+// conservative guarantee on every worker.
+TEST_CASE("jacobian-is-valid-thread-independent", "[jacobian]")
+{
+	const size_t n_threads_before = utils::NThread::get().num_threads();
+
+	for (const int dim : {2, 3})
+	{
+		auto state = get_state(dim);
+		const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+		const int ndof = debug.n_bases * dim;
+
+		for (const Eigen::VectorXd &u : {Eigen::VectorXd(Eigen::VectorXd::Zero(ndof)),
+										 Eigen::VectorXd(make_x_flip(debug, dim))})
+		{
+			utils::NThread::get().set_num_threads(1);
+			const auto [serial_valid, serial_id, serial_tree] =
+				is_valid(dim, *debug.bases, *debug.geometry_bases, u);
+
+			utils::NThread::get().set_num_threads(8);
+			const auto [par_valid, par_id, par_tree] =
+				is_valid(dim, *debug.bases, *debug.geometry_bases, u);
+
+			CHECK(serial_valid == par_valid);
+			// Which element is reported must be deterministic too, otherwise
+			// logs and quadrature refinement drift run to run.
+			CHECK(serial_id == par_id);
+		}
+	}
+
+	utils::NThread::get().set_num_threads(static_cast<int>(n_threads_before));
 }
 
 #endif

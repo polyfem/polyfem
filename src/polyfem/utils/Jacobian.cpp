@@ -114,6 +114,35 @@ namespace polyfem::utils
 				// else: time-only subdivision, skip
 			}
 		}
+		/// @brief RAII guard for miso's interval arithmetic FPU state.
+		///
+		/// RealInterval::init()/deinit() switch the FPU rounding mode to
+		/// round-up and back to round-to-nearest. That is *per-thread* CPU
+		/// state, so it must be paired on every exit path -- including the
+		/// throws below, which previously left the whole thread stuck in
+		/// round-up mode -- and re-established inside each worker when these
+		/// routines are parallelized.
+		struct FPUGuard
+		{
+			FPUGuard() { RealInterval::init(); }
+			~FPUGuard() { RealInterval::deinit(); }
+			FPUGuard(const FPUGuard &) = delete;
+			FPUGuard &operator=(const FPUGuard &) = delete;
+		};
+
+		/// @brief Report an element type/order the conservative check cannot handle.
+		///
+		/// The miso-generated solvers only cover simplices: triangles up to
+		/// P4 and tetrahedra up to P3. Anything else (quads, hexahedra,
+		/// prisms, pyramids, or a higher order) lands here.
+		[[noreturn]] void throw_unsupported(const int dim, const int order)
+		{
+			log_and_throw_error(
+				"Conservative Jacobian check does not support {} of order {}; "
+				"supported: triangles (P1-P4) and tetrahedra (P1-P3). Use "
+				"\"check_inversion\": \"Discrete\" for this mesh.",
+				dim == 2 ? "2D elements" : "3D elements", order);
+		}
 	} // anonymous namespace
 #endif // POLYFEM_WITH_MISO
 
@@ -128,7 +157,7 @@ namespace polyfem::utils
 	{
 		std::vector<int> invalidList;
 #ifdef POLYFEM_WITH_MISO
-		RealInterval::init();
+		const FPUGuard fpu_guard;
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
@@ -167,7 +196,7 @@ namespace polyfem::utils
 					invalid = run_solve(make_p4tri_val(cp, o), e);
 					break;
 				default:
-					throw std::invalid_argument("Order not supported");
+					throw_unsupported(dim, order);
 				}
 			}
 			else
@@ -184,13 +213,12 @@ namespace polyfem::utils
 					invalid = run_solve(make_p3tet_val(cp, o), e);
 					break;
 				default:
-					throw std::invalid_argument("Order not supported");
+					throw_unsupported(dim, order);
 				}
 			}
 			if (invalid)
 				invalidList.push_back(e);
 		}
-		RealInterval::deinit();
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
 #endif
@@ -207,7 +235,7 @@ namespace polyfem::utils
 		const unsigned max_iter)
 	{
 #ifdef POLYFEM_WITH_MISO
-		RealInterval::init();
+		const FPUGuard fpu_guard;
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
@@ -249,7 +277,7 @@ namespace polyfem::utils
 					invalid = run_solve(make_p4tri_val(cp, o), e);
 					break;
 				default:
-					throw std::invalid_argument("Order not supported");
+					throw_unsupported(dim, order);
 				}
 			}
 			else
@@ -266,16 +294,12 @@ namespace polyfem::utils
 					invalid = run_solve(make_p3tet_val(cp, o), e);
 					break;
 				default:
-					throw std::invalid_argument("Order not supported");
+					throw_unsupported(dim, order);
 				}
 			}
 			if (invalid)
-			{
-				RealInterval::deinit();
 				return {false, e, Tree{}};
-			}
 		}
-		RealInterval::deinit();
 		return {true, -1, Tree{}};
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
@@ -294,7 +318,7 @@ namespace polyfem::utils
 		const unsigned max_iter)
 	{
 #ifdef POLYFEM_WITH_MISO
-		RealInterval::init();
+		const FPUGuard fpu_guard;
 		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
 		const int n_per = std::max(bases[0].bases.size(), gbases[0].bases.size());
 		const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
@@ -361,7 +385,7 @@ namespace polyfem::utils
 				run_batch([&](int o) { return make_p4tri_cgv(cp1, cp2, o); });
 				break;
 			default:
-				throw std::invalid_argument("Order not supported");
+				throw_unsupported(dim, order);
 			}
 		}
 		else
@@ -378,11 +402,10 @@ namespace polyfem::utils
 				run_batch([&](int o) { return make_p3tet_cgv(cp1, cp2, o); });
 				break;
 			default:
-				throw std::invalid_argument("Order not supported");
+				throw_unsupported(dim, order);
 			}
 		}
 
-		RealInterval::deinit();
 		return {step, invalid_id, invalid_step, tree};
 #else
 		log_and_throw_error("Enable Bezier or Miso library to allow robust Jacobian check!");
