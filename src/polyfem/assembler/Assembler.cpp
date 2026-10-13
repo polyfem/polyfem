@@ -431,23 +431,21 @@ namespace polyfem::assembler
 					long int offset = offsets[i];
 
 					std::copy(cache.entries().begin(), cache.entries().end(), triplets.begin() + offset);
-					offset += cache.entries().size();
+				offset += cache.entries().size();
 
-					if (cache.mat().nonZeros() > 0)
+				if (cache.mat().nonZeros() > 0)
+				{
+					long int count = 0;
+					for (int k = 0; k < cache.mat().outerSize(); ++k)
 					{
-						long int count = 0;
-						for (int k = 0; k < cache.mat().outerSize(); ++k)
+						for (StiffnessMatrix::InnerIterator it(cache.mat(), k); it; ++it)
 						{
-							for (Eigen::SparseMatrix<double>::InnerIterator it(cache.mat(), k); it; ++it)
-							{
-								assert(count < cache.mat().nonZeros());
-								triplets[offset + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
-							}
+							assert(count < cache.mat().nonZeros());
+							triplets[offset + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
 						}
 					}
-				});
-
-				timer.stop();
+				}
+			});				timer.stop();
 				logger().trace("done concatenate triplets {}s...", timer.getElapsedTime());
 
 				timer.start();
