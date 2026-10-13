@@ -27,6 +27,8 @@ var classpolyfem_1_1assembler_1_1_generic_elastic =
     [ "derived", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a54697166c61b941694dbb0232b27bd2b", null ],
     [ "gradient", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ac1b2111fdd727013baf376a89d12b9fe", null ],
     [ "hessian", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a2ca4c2128ba6cb135e8cb4575da5e8cb", null ],
-    [ "real_def_grad", "classpolyfem_1_1assembler_1_1_generic_elastic.html#af8aae207b0be030f6a59fd6586e224ad", null ],
+    [ "point_weights", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ad309736180ffab61f4730bde075d2844", null ],
+    [ "real_def_grad", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a757fd55b16fe4c110853531391a08a42", null ],
+    [ "rest_pose_at", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a1f4608feeb48aa2b5ff0a33d3674cdb6", null ],
     [ "autodiff_type_", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ad51d091fd6766f99e890d82bcb4be957", null ]
 ];

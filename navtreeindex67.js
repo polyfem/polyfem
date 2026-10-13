@@ -1,5 +1,11 @@
 var NAVTREEINDEX67 =
 {
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html":[7,0,10,6,24,4],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a1bca8ed4b01e3a638debdb3ecf82aac1":[8,0,4,4,22,4,11],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a1bca8ed4b01e3a638debdb3ecf82aac1":[7,0,10,6,24,4,11],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a217a3e351ddac688b8f1e02736860c0f":[7,0,10,6,24,4,13],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a217a3e351ddac688b8f1e02736860c0f":[8,0,4,4,22,4,13],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a2599e4a0ec914718eb1d7aa4167c8fa7":[8,0,4,4,22,4,3],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a2599e4a0ec914718eb1d7aa4167c8fa7":[7,0,10,6,24,4,3],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a":[7,0,10,6,24,4,8],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a":[8,0,4,4,22,4,8],
@@ -243,11 +249,5 @@ var NAVTREEINDEX67 =
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a61213e1f84f761aa9e78671dbfeef6da":[8,0,4,4,34,3,4],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a663b994b5a13a605d76a9295a6779257":[8,0,4,4,34,3,6],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a663b994b5a13a605d76a9295a6779257":[7,0,10,6,36,3,6],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a771d6f5b58a37bb59986ef6b60719693":[8,0,4,4,34,3,8],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a771d6f5b58a37bb59986ef6b60719693":[7,0,10,6,36,3,8],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a95cc87cbc131c9d54d593d8de79507cd":[8,0,4,4,34,3,7],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a95cc87cbc131c9d54d593d8de79507cd":[7,0,10,6,36,3,7],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#ab9c0be65a3361408667d25eb1e85a69d":[8,0,4,4,34,3,3],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#ab9c0be65a3361408667d25eb1e85a69d":[7,0,10,6,36,3,3],
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#ac2d826d058ad29142c166e0ba7c213e6":[7,0,10,6,36,3,2]
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a771d6f5b58a37bb59986ef6b60719693":[8,0,4,4,34,3,8]
 };

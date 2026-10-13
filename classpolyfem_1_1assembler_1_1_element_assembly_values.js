@@ -18,6 +18,7 @@ var classpolyfem_1_1assembler_1_1_element_assembly_values =
     [ "has_parameterization", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a71c5b93028a8c6b5f946ce7f09a0ae48", null ],
     [ "is_volume_", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#af00adc734a5115a4eb6dd1b0d3c6db36", null ],
     [ "jac_it", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06", null ],
+    [ "n_geometric_bases", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#aa9e64fb4832ea18931b01941650e7c43", null ],
     [ "quadrature", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d", null ],
     [ "val", "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf", null ]
 ];

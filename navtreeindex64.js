@@ -1,5 +1,11 @@
 var NAVTREEINDEX64 =
 {
+"namespaces.html":[7,0],
+"namespacespdlog.html":[7,0,17],
+"namespacespdlog_1_1level.html":[7,0,17,0],
+"namespacetetrahedron.html":[7,0,18],
+"namespacetetrahedron.html#a144f2d07d2b1e2b1cd7b019cd5d42e20":[7,0,18,6],
+"namespacetetrahedron.html#a18344bd86e16e6968b58500748ec2f13":[7,0,18,3],
 "namespacetetrahedron.html#a4e44a06c2223bd2fec6b9afcca2a32e1":[7,0,18,0],
 "namespacetetrahedron.html#a52d994434597dbcc88849348b370cfd6":[7,0,18,5],
 "namespacetetrahedron.html#a64cec644370efe9f3500b5e072720e7a":[7,0,18,4],
@@ -243,11 +249,5 @@ var NAVTREEINDEX64 =
 "raster_8hpp.html":[9,0,1,0,12,49],
 "raster_8hpp.html#a30b9d8b7f7d2f4cd16cc4bb5a3926499":[9,0,1,0,12,49,6],
 "raster_8hpp_source.html":[9,0,1,0,12,49],
-"struct_d_scalar1.html":[8,0,8],
-"struct_d_scalar1.html#a09f33bc10c398914a1deba226435c201":[8,0,8,49],
-"struct_d_scalar1.html#a0d8be015e1f3ce051b4a071bb9dccde5":[8,0,8,7],
-"struct_d_scalar1.html#a0ec55a0176a94ea5e4121ce77df3847c":[8,0,8,16],
-"struct_d_scalar1.html#a13704096417428ba1d8e0651c80c6907":[8,0,8,30],
-"struct_d_scalar1.html#a1ad44c521878b5204bb1e38ee42b364c":[8,0,8,43],
-"struct_d_scalar1.html#a1df44cebe596309535d03dfc2530ecc8":[8,0,8,31]
+"struct_d_scalar1.html":[8,0,8]
 };
