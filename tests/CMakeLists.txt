@@ -10,6 +10,7 @@ set(test_sources
   test_collision_proxy.cpp
   test_geometry_utils.cpp
   test_growth_elasticity.cpp
+  test_growth_law.cpp
   test_hdf5.cpp
   test_interpolation.cpp
   test_jacobian.cpp

@@ -1,7 +1,9 @@
 #include "GrowthElasticVarForm.hpp"
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
+#include <polyfem/assembler/GrowthElasticity.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 
@@ -14,6 +16,7 @@
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/GrowthDissipationForm.hpp>
 #include <polyfem/solver/forms/MixedAssemblerForm.hpp>
 #include <polyfem/solver/forms/StackedForm.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
@@ -174,6 +177,69 @@ namespace polyfem::varform
 		displacement_space_id_ = -1;
 		growth_space_id_ = -1;
 		elastic_formulation_ = "MaterialSum";
+		growth_law_ = GrowthLawSettings{};
+		threshold_per_element_.resize(0);
+		normal_growth_per_element_.resize(0);
+		growth_node_volume_.resize(0);
+		growth_node_weights_.resize(0);
+		theta_n_.resize(0);
+		pinned_growth_nodes_.clear();
+		growth_pinned_mask_.clear();
+		dissipation_form_ = nullptr;
+	}
+
+	void GrowthElasticVarForm::read_growth_law(const json &args)
+	{
+		growth_law_ = GrowthLawSettings{};
+		const json material = first_material(args["materials"]);
+		if (!material.contains("growth_law") || material["growth_law"].is_null())
+			return;
+
+		// jse always injects the block with its defaults, so "off" is the
+		// threshold sentinel "none" (the default), not an absent block. A block
+		// whose other settings were changed but whose threshold was left out is
+		// refused rather than silently ignored.
+		const json &gl = material["growth_law"];
+		const bool has_threshold = gl.contains("threshold") && (gl["threshold"].is_number() || gl["threshold"].is_object());
+		if (!has_threshold)
+		{
+			const GrowthLawSettings d;
+			if (gl.value("n_steps", d.n_steps) != d.n_steps || gl.value("t_end", d.t_end) != d.t_end
+				|| gl.value("max_active_set_iterations", d.max_active_set_iterations) != d.max_active_set_iterations
+				|| gl.value("active_set_tol", d.active_set_tol) != d.active_set_tol
+				|| gl.value("feasibility_tol", d.feasibility_tol) != d.feasibility_tol
+				|| gl.value("theta_floor_fraction", d.theta_floor_fraction) != d.theta_floor_fraction)
+				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
+									"(a number in Pa, or a per_element_file); set one to enable the law.");
+			return;
+		}
+
+		growth_law_.enabled = true;
+		growth_law_.n_steps = gl.value("n_steps", growth_law_.n_steps);
+		growth_law_.t_end = gl.value("t_end", growth_law_.t_end);
+		growth_law_.max_active_set_iterations = gl.value("max_active_set_iterations", growth_law_.max_active_set_iterations);
+		growth_law_.active_set_tol = gl.value("active_set_tol", growth_law_.active_set_tol);
+		growth_law_.feasibility_tol = gl.value("feasibility_tol", growth_law_.feasibility_tol);
+		growth_law_.theta_floor_fraction = gl.value("theta_floor_fraction", growth_law_.theta_floor_fraction);
+
+		if (growth_law_.n_steps < 1)
+			log_and_throw_error("growth_law n_steps must be >= 1, got {}.", growth_law_.n_steps);
+		if (!(growth_law_.t_end > 0))
+			log_and_throw_error("growth_law t_end must be positive, got {}.", growth_law_.t_end);
+		if (growth_law_.max_active_set_iterations < 1)
+			log_and_throw_error("growth_law max_active_set_iterations must be >= 1.");
+
+		// Solved and prescribed growth are different modes of the same field;
+		// the formulation allows partial prescription, but not through this
+		// switch, so refuse the ambiguous combination rather than pick one.
+		const std::string nodal = args["boundary_conditions"].value("growth_nodal_field", "");
+		if (!nodal.empty())
+			log_and_throw_error("growth_law (solved growth) cannot be combined with growth_nodal_field (prescribed growth).");
+
+		for (const json &m : utils::json_as_array(args["materials"]))
+			if (m.contains("growth_law") && m["growth_law"] != gl)
+				log_and_throw_error("All GrowthElasticity materials must share one growth_law block "
+									"(per-element thresholds go in the threshold file).");
 	}
 
 	void GrowthElasticVarForm::init(
@@ -184,11 +250,16 @@ namespace polyfem::varform
 	{
 		VarForm::init(formulation, units, args, out_path);
 		read_material_space_ids(args);
+		read_growth_law(args);
 
-		// Stage 1 of the growth build is static with theta prescribed; growth
-		// evolution in pseudo-time is Stage 2 and follows its own design.
+
+		// No dynamics: prescribed growth is a single static solve, and solved
+		// growth (growth_law) steps its own quasi-static pseudo-time through
+		// growth_law.n_steps / t_end, evaluating the displacement Dirichlet
+		// expressions at each increment's t. PolyFEM's "time" block (inertia,
+		// integrators) is not used.
 		if (args.contains("time") && !args["time"].is_null())
-			log_and_throw_error("GrowthElasticity supports static solves only (growth evolution is a later stage).");
+			log_and_throw_error("GrowthElasticity has no dynamics: use growth_law.n_steps / t_end for pseudo-time, not \"time\".");
 
 		// Contact is inherited u-block machinery and structurally functional here
 		// (collision mesh, barrier stiffness update), but the growth+contact
@@ -227,6 +298,16 @@ namespace polyfem::varform
 		tmp["is_time_dependent"] = false;
 		problem->set_parameters(tmp, root_path);
 		growth_problem_->set_parameters(tmp, root_path);
+		// Solved growth evaluates the displacement Dirichlet expressions at each
+		// pseudo-time increment (the production ramp), so they are not constant
+		// in time. The growth problem stays static: its only Dirichlet data are
+		// the active-set pins, which carry tabulated targets.
+		if (growth_law_.enabled)
+		{
+			json td;
+			td["is_time_dependent"] = true;
+			problem->set_parameters(td, root_path);
+		}
 
 		auto bc = args["boundary_conditions"];
 		bc["root_path"] = root_path;
@@ -307,8 +388,28 @@ namespace polyfem::varform
 			root_path, mesh.dimension());
 	}
 
-	void GrowthElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void GrowthElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args_in)
 	{
+		// Solved growth needs more than the centroid rule. At P1 the default
+		// quadrature is one point per tet, so the coupling energy and the
+		// dissipation see theta only through element averages, and nodal
+		// patterns with zero average on every element are exact null modes
+		// (hourglass modes of the growth field; on a Kuhn-split cube every tet
+		// holds one node of each class (i+j+k) mod 4, and V2 converged to such a
+		// pattern). With order >= 2 (four points on a tet) the nodal values map
+		// invertibly onto the point values, and the energy, convex in theta
+		// pointwise, fixes them. Prescribed growth is unaffected (theta is
+		// data), so only the solved mode raises it. Both spaces share the order
+		// (MixedAssemblerForm requires matching quadrature). Done here, on a
+		// local copy, because State re-injects its args after init().
+		json args = args_in;
+		if (growth_law_.enabled && args["space"]["advanced"]["quadrature_order"].get<int>() < 2)
+		{
+			logger().info("growth_law: quadrature_order raised to 2 "
+						  "(the centroid rule leaves the P1 growth field with null modes).");
+			args["space"]["advanced"]["quadrature_order"] = 2;
+		}
+
 		assert(problem);
 		assert(growth_problem_);
 		assert(primary_assembler_);
@@ -807,14 +908,28 @@ namespace polyfem::varform
 			t, /*dt=*/0.0, mesh_->is_volume());
 		stacked_form_->add(displacement_block, growth_block, growth_coupling_form_);
 
+		// Solved growth: the rate-independent dissipation on the growth block.
+		// It sits inside stacked_form_, so the stacked gradient's growth rows
+		// are dPi_inc/dtheta (the KKT residual of the active-set loop).
+		dissipation_form_ = nullptr;
+		if (growth_law_.enabled)
+		{
+			assert(growth_node_weights_.size() == growth_ndof());
+			assert(theta_n_.size() == growth_ndof());
+			dissipation_form_ = std::make_shared<solver::GrowthDissipationForm>(
+				growth_node_weights_, theta_n_, growth_law_.theta_floor_fraction);
+			stacked_form_->add(growth_block, dissipation_form_);
+		}
+
 		forms.clear();
 		forms.push_back(stacked_form_);
 		for (const auto &form : forms)
 			form->set_output_dir(output_path);
 
 		solve_data_.al_form.clear();
+		const bool has_growth_pins = growth_law_.enabled && !pinned_growth_nodes_.empty();
 		if (!boundary_.boundary_nodes.empty() || !growth_boundary_.boundary_nodes.empty()
-			|| prescribed_growth_field().size() > 0)
+			|| prescribed_growth_field().size() > 0 || has_growth_pins)
 		{
 			auto stacked_al = std::make_shared<solver::StackedAugmentedLagrangianForm>();
 			const auto displacement_al_block = stacked_al->add_block(displacement_block.size());
@@ -822,17 +937,35 @@ namespace polyfem::varform
 
 			if (!boundary_.boundary_nodes.empty())
 			{
+				// Prescribed growth is one static solve; solved growth steps the
+				// displacement Dirichlet data through pseudo-time.
 				stacked_al->add(
 					displacement_al_block,
 					std::make_shared<solver::BCLagrangianForm>(
 						displacement_block.size(),
 						boundary_.boundary_nodes, boundary_.local_boundary, boundary_.local_neumann_boundary,
 						elastic_boundary_samples(), mass_, *rhs_assembler_,
-						obstacle.n_vertices() * mesh_->dimension(), /*is_time_dependent=*/false, t));
+						obstacle.n_vertices() * mesh_->dimension(),
+						/*is_time_dependent=*/growth_law_.enabled, t));
 			}
 
 			const Eigen::MatrixXd &prescribed = prescribed_growth_field();
-			if (prescribed.size() > 0)
+			if (growth_law_.enabled)
+			{
+				// Active-set pins: every pinned growth DOF is Dirichlet at
+				// theta_n (tabulated targets). The node list is a member because
+				// BCLagrangianForm keeps a reference to it.
+				if (!growth_boundary_.boundary_nodes.empty())
+					log_and_throw_error("growth_law: growth-space dirichlet_boundary entries are not supported "
+										"(the growth law owns the growth DOFs; tag displacement BCs with fe_space).");
+				if (has_growth_pins)
+					stacked_al->add(
+						growth_al_block,
+						std::make_shared<solver::BCLagrangianForm>(
+							growth_block.size(), pinned_growth_nodes_, growth_mass_,
+							/*obstacle_ndof=*/0, Eigen::MatrixXd(theta_n_)));
+			}
+			else if (prescribed.size() > 0)
 			{
 				// Whole-field prescription: every growth DOF is Dirichlet with
 				// tabulated targets (BCLagrangianForm's target constructor; no
@@ -967,8 +1100,27 @@ namespace polyfem::varform
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
 
-		build_forms(sol, /*t=*/1.0);
+		stats.solver_info = json::array();
 
+		if (growth_law_.enabled)
+		{
+			solve_growth_law(sol);
+		}
+		else
+		{
+			build_forms(sol, /*t=*/1.0);
+			make_nl_problem(sol, /*t=*/1.0);
+			solve_nonlinear_step(0, sol);
+		}
+		converged_solution_ = sol;
+
+		timer.stop();
+		timings.solving_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.solving_time);
+	}
+
+	void GrowthElasticVarForm::make_nl_problem(const Eigen::MatrixXd &sol, const double t)
+	{
 		double characteristic_length = 0;
 		if (args["solver"]["advanced"]["characteristic_length"] > 0)
 			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
@@ -989,7 +1141,7 @@ namespace polyfem::varform
 			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
 
 		solve_data_.nl_problem = std::make_shared<solver::NLProblem>(
-			total_ndof(), /*t=*/1.0,
+			total_ndof(), t,
 			forms, solve_data_.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
 			characteristic_length, characteristic_force_density,
@@ -997,15 +1149,187 @@ namespace polyfem::varform
 			mesh_->dimension(),
 			/*is_time_dependent=*/false);
 		solve_data_.nl_problem->init(sol);
-		solve_data_.nl_problem->update_quantities(/*t=*/1.0, sol);
-		stats.solver_info = json::array();
+		solve_data_.nl_problem->update_quantities(t, sol);
+	}
 
-		solve_nonlinear_step(0, sol);
-		converged_solution_ = sol;
+	// ======================================================================
+	// Stage 2: solved growth
+	// ======================================================================
 
-		timer.stop();
-		timings.solving_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.solving_time);
+	void GrowthElasticVarForm::compute_growth_node_weights()
+	{
+		const int n_el = mesh_->n_elements();
+		const json material = first_material(args["materials"]);
+		const json &gl = material["growth_law"];
+
+		const auto read_scalar_field = [&](const json &spec, const std::string &what,
+										   const std::string &default_field, Eigen::VectorXd &out) {
+			if (spec.is_number())
+			{
+				out.setConstant(n_el, spec.get<double>());
+				return;
+			}
+			if (!spec.is_object() || spec.value("type", "") != "per_element_file")
+				log_and_throw_error("growth_law: {} must be a number or {{type: per_element_file, path, field}}.", what);
+			const Eigen::MatrixXd values = assembler::read_growth_cell_array(
+				resolve_input_path(spec.at("path").get<std::string>()), spec.value("field", default_field), 1);
+			if (values.rows() != n_el)
+				log_and_throw_error("growth_law: {} file has {} cells, mesh has {} elements.", what, values.rows(), n_el);
+			out = values.col(0);
+		};
+
+		read_scalar_field(gl.at("threshold"), "threshold", "PHI", threshold_per_element_);
+		if (!threshold_per_element_.allFinite())
+			log_and_throw_error("growth_law: threshold contains non-finite values.");
+
+		normal_growth_per_element_.setOnes(n_el);
+		if (material.contains("normal_growth"))
+			read_scalar_field(material["normal_growth"], "normal_growth", "VN", normal_growth_per_element_);
+		if (!(normal_growth_per_element_.array() > 0).all())
+			log_and_throw_error("growth_law: normal_growth must be positive.");
+
+		// w_a = sum_e vn_e phi_e int_e N_a dV (growth basis, the element's own
+		// quadrature), and the plain nodal volume int N_a dV for tolerances.
+		growth_node_volume_.setZero(growth_ndof());
+		growth_node_weights_.setZero(growth_ndof());
+		assembler::ElementAssemblyValues vals;
+		for (int e = 0; e < n_el; ++e)
+		{
+			growth_ass_vals_cache_.compute(
+				e, mesh_->is_volume(), growth_space_.basis_list()[e], growth_space_.geometry_basis_list()[e], vals);
+			const Eigen::ArrayXd da = vals.det.array() * vals.quadrature.weights.array();
+			const double coeff = normal_growth_per_element_(e) * threshold_per_element_(e);
+			for (const auto &bv : vals.basis_values)
+			{
+				const double integral = (bv.val.array() * da).sum();
+				for (const auto &g : bv.global)
+				{
+					growth_node_volume_(g.index) += g.val * integral;
+					growth_node_weights_(g.index) += g.val * integral * coeff;
+				}
+			}
+		}
+
+		logger().info("growth_law: threshold phi in [{:g}, {:g}] Pa over {} elements; {} increments to t = {:g}; "
+					  "{} growth quadrature points on element 0.",
+					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), n_el,
+					  growth_law_.n_steps, growth_law_.t_end, vals.quadrature.weights.size());
+	}
+
+	Eigen::VectorXd GrowthElasticVarForm::growth_multiplier(const Eigen::MatrixXd &solution) const
+	{
+		assert(stacked_form_);
+		Eigen::VectorXd full_grad;
+		stacked_form_->first_derivative(solution.col(0), full_grad);
+		return full_grad.tail(growth_ndof());
+	}
+
+	void GrowthElasticVarForm::solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution)
+	{
+		build_forms(solution, t);
+		make_nl_problem(solution, t);
+		solve_nonlinear_step(step, solution);
+	}
+
+	int GrowthElasticVarForm::solve_growth_increment(const int step, const double t, Eigen::MatrixXd &solution)
+	{
+		const int nu = displacement_ndof();
+		const int ng = growth_ndof();
+
+		// Release tolerance per DOF: the multiplier is an energy per unit growth
+		// (Pa x volume), so it is scaled by the nodal volume and the threshold
+		// magnitude (at least 1 Pa, so a zero threshold still has a scale).
+		const double force_scale = std::max(1.0, threshold_per_element_.cwiseAbs().maxCoeff());
+		const Eigen::VectorXd release_tol = growth_law_.active_set_tol * force_scale * growth_node_volume_;
+
+		// Pass 1 is the elastic predictor: every growth DOF pinned at theta_n.
+		std::vector<char> pinned(ng, 1);
+		for (int pass = 1; pass <= growth_law_.max_active_set_iterations; ++pass)
+		{
+			pinned_growth_nodes_.clear();
+			for (int a = 0; a < ng; ++a)
+			{
+				if (pinned[a])
+				{
+					pinned_growth_nodes_.push_back(a);
+					solution(nu + a, 0) = theta_n_(a); // pinned values exact: AL start error 0
+				}
+			}
+
+			solve_with_current_pins(step, t, solution);
+
+			const Eigen::VectorXd mult = growth_multiplier(solution);
+			int n_released = 0, n_pinned = 0, n_pinned_total = 0;
+			std::vector<char> next = pinned;
+			for (int a = 0; a < ng; ++a)
+			{
+				const double theta = solution(nu + a, 0);
+				if (pinned[a])
+				{
+					// at the bound: the law wants growth when dPi/dtheta < 0
+					if (mult(a) < -release_tol(a))
+					{
+						next[a] = 0;
+						++n_released;
+					}
+				}
+				else if (theta < theta_n_(a) - growth_law_.feasibility_tol)
+				{
+					next[a] = 1; // free DOF crossed the bound: irreversibility violated
+					++n_pinned;
+				}
+				n_pinned_total += next[a];
+			}
+
+			growth_pinned_mask_ = pinned;
+			logger().info("growth step {} (t = {:g}) active-set pass {}: {} released, {} pinned, {}/{} at theta_n",
+						  step, t, pass, n_released, n_pinned, n_pinned_total, ng);
+			stats.solver_info.push_back(
+				{{"type", "growth_active_set"}, {"t", t}, {"step", step}, {"pass", pass},
+				 {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
+
+			if (n_released == 0 && n_pinned == 0)
+				return pass;
+			pinned = next;
+		}
+
+		log_and_throw_error("growth step {} (t = {:g}): active set did not settle in {} passes "
+							"(raise growth_law.max_active_set_iterations, or reduce the increment).",
+							step, t, growth_law_.max_active_set_iterations);
+		return -1;
+	}
+
+	void GrowthElasticVarForm::solve_growth_law(Eigen::MatrixXd &solution)
+	{
+		compute_growth_node_weights();
+
+		const int nu = displacement_ndof();
+		const int ng = growth_ndof();
+		theta_n_ = solution.col(0).tail(ng);
+		if (!(theta_n_.array() > 0).all())
+			log_and_throw_error("growth_law: initial growth must be positive (min {}).", theta_n_.minCoeff());
+
+		for (int step = 1; step <= growth_law_.n_steps; ++step)
+		{
+			const double t = growth_law_.t_end * double(step) / double(growth_law_.n_steps);
+			const int passes = solve_growth_increment(step, t, solution);
+
+			const Eigen::VectorXd theta = solution.col(0).tail(ng);
+			const Eigen::VectorXd dtheta = theta - theta_n_;
+			const int n_active = int(std::count(growth_pinned_mask_.begin(), growth_pinned_mask_.end(), 0));
+			logger().info("growth step {}/{} (t = {:g}): {} pass(es), {}/{} DOFs growing, "
+						  "theta in [{:.6g}, {:.6g}], max increment {:.3e}, min increment {:.3e}",
+						  step, growth_law_.n_steps, t, passes, n_active, ng,
+						  theta.minCoeff(), theta.maxCoeff(), dtheta.maxCoeff(), dtheta.minCoeff());
+			stats.solver_info.push_back(
+				{{"type", "growth_step"}, {"t", t}, {"step", step}, {"passes", passes},
+				 {"n_growing", n_active}, {"theta_min", theta.minCoeff()}, {"theta_max", theta.maxCoeff()}});
+
+			// Irreversibility holds by construction: pinned DOFs equal theta_n and
+			// free DOFs passed the feasibility test. Clamp round-off only.
+			theta_n_ = theta.cwiseMax(theta_n_);
+			solution.col(0).segment(nu, ng) = theta_n_;
+		}
 	}
 
 	void GrowthElasticVarForm::export_data(const Eigen::MatrixXd &solution) const
@@ -1200,11 +1524,35 @@ namespace polyfem::varform
 		{
 			Eigen::VectorXd full_grad;
 			stacked_form_->first_derivative(stacked.col(0), full_grad);
-			const Eigen::MatrixXd reaction_nodal = full_grad.tail(growth_ndof());
+			Eigen::MatrixXd reaction_nodal = full_grad.tail(growth_ndof());
+			// Solved growth adds the dissipation to stacked_form_; growth_reaction
+			// keeps its V3 meaning, the pure energy gradient (assembled -vn f_I).
+			if (dissipation_form_)
+				reaction_nodal -= dissipation_form_->weights();
 
 			Eigen::MatrixXd values;
 			if (sample_growth_scalar(reaction_nodal, values))
 				fields.push_back({"growth_reaction", values, io::OutputField::Association::Point});
+
+			// The KKT residual of the active set, dPi_inc/dtheta: ~0 where theta
+			// grows, >= 0 where pinned at theta_n (the multiplier of the bound).
+			if (dissipation_form_ && options.export_field("growth_multiplier"))
+			{
+				const Eigen::MatrixXd mult = full_grad.tail(growth_ndof());
+				if (sample_growth_scalar(mult, values))
+					fields.push_back({"growth_multiplier", values, io::OutputField::Association::Point});
+			}
+		}
+
+		if (growth_law_.enabled && int(growth_pinned_mask_.size()) == growth_ndof()
+			&& options.export_field("growth_pinned"))
+		{
+			Eigen::MatrixXd mask(growth_ndof(), 1);
+			for (int a = 0; a < growth_ndof(); ++a)
+				mask(a) = growth_pinned_mask_[a] ? 1.0 : 0.0;
+			Eigen::MatrixXd values;
+			if (sample_growth_scalar(mask, values))
+				fields.push_back({"growth_pinned", values, io::OutputField::Association::Point});
 		}
 
 		if (growthelastic_assembler_)
