@@ -410,6 +410,16 @@ namespace polyfem::solver
 
 		return flag;
 	}
+
+	bool NLHomoProblem::is_step_acceptable(const TVector &x0, const TVector &x1)
+	{
+		bool flag = NLProblem::is_step_acceptable(x0.head(reduced_size()), x1.head(reduced_size()));
+		for (auto &form : homo_forms)
+			if (form->enabled())
+				flag &= form->is_step_acceptable(reduced_to_extended(x0), reduced_to_extended(x1));
+
+		return flag;
+	}
 	bool NLHomoProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		bool flag = NLProblem::is_step_collision_free(x0.head(reduced_size()), x1.head(reduced_size()));

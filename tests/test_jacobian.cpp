@@ -3,11 +3,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/par_for.hpp>
+#include "EigenAdapters.hpp"
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <iomanip>
 #include <iostream>
 #include <cmath>
+#include <limits>
+#include <random>
+#include <algorithm>
 
 #include <Eigen/Dense>
 
@@ -331,6 +335,232 @@ TEST_CASE("jacobian-max-time-step", "[jacobian]")
 		const Eigen::VectorXd u_cert = step * u_inv;
 		auto [cert_valid, cert_id, cert_tree] = is_valid(dim, *debug.bases, *debug.geometry_bases, u_cert);
 		REQUIRE(cert_valid);
+	}
+}
+
+// Refinement only lands in the right place if miso's child q is the same
+// sub-simplex as polyfem's child q -- with the same vertex order, since each
+// child's own children are defined relative to it. That is an assumption about
+// generated code, so check it: split real miso subdomains along random paths,
+// read each child's corners (its coordinate functions are affine, so their
+// control points are the vertex positions), and compare them with what
+// extract_subelement() produces for the same path.
+namespace
+{
+	struct IntervalGuard
+	{
+		IntervalGuard() { miso::RealInterval::init(); }
+		~IntervalGuard() { miso::RealInterval::deinit(); }
+	};
+
+	// Spatial child indices of a path -> the leaf simplex polyfem refines to.
+	Eigen::MatrixXd polyfem_leaf(const Eigen::MatrixXd &ref, const std::vector<int> &spatial_path, const int n_children)
+	{
+		utils::Tree tree;
+		utils::Tree *node = &tree;
+		for (const int q : spatial_path)
+		{
+			node->add_children(n_children);
+			node = &node->child(q);
+		}
+		const auto [leaves, levels] = extract_subelement(ref, tree);
+		const int dim = ref.cols();
+		// The deepest leaves are the last split's children, contiguous and in
+		// child order, so the path's leaf is the one at its final index.
+		int seen = 0;
+		for (int l = 0; l < static_cast<int>(levels.size()); ++l)
+			if (levels[l] == static_cast<int>(spatial_path.size()) && seen++ == spatial_path.back())
+				return leaves.middleRows(l * (dim + 1), dim + 1);
+		return Eigen::MatrixXd();
+	}
+
+	// Corners of a miso subdomain, as polyfem-ordered rows. Space-time
+	// subdomains have each spatial corner twice (t0, t1): vertex 2k is corner k.
+	template <typename Sub>
+	Eigen::MatrixXd miso_corners(const Sub &s, const int dim, const int *perm, const bool space_time)
+	{
+		Eigen::MatrixXd out(dim + 1, dim);
+		for (int j = 0; j <= dim; ++j)
+		{
+			const auto v = s.getVertex(space_time ? 2 * j : j);
+			for (int d = 0; d < dim; ++d)
+				out(perm[j], d) = lower(v[d]);
+			if (space_time)
+			{
+				// Tensor split: both time copies of a corner share its position.
+				const auto w = s.getVertex(2 * j + 1);
+				for (int d = 0; d < dim; ++d)
+					REQUIRE(lower(w[d]) == lower(v[d]));
+			}
+		}
+		return out;
+	}
+
+	template <typename Sub>
+	void check_child_numbering(Sub root, const int dim, const int *perm, const bool space_time)
+	{
+		const int n_spatial = dim == 2 ? 4 : 8;
+		const int n_children = space_time ? 2 * n_spatial : n_spatial;
+		Eigen::MatrixXd ref(dim + 1, dim);
+		if (dim == 2)
+			ref << 0, 0, 1, 0, 0, 1;
+		else
+			ref << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+
+		std::mt19937 rng(42);
+		for (int trial = 0; trial < 20; ++trial)
+		{
+			Sub cur = root;
+			std::vector<int> spatial_path;
+			for (int level = 0; level < 5; ++level)
+			{
+				const unsigned q = rng() % n_children;
+				Sub next;
+				// Scheme 0 is the spatial (Val) or space-time (CGV) split;
+				// the time-only scheme never moves the spatial corners.
+				cur.split(0, [&](Sub &&c) {
+					if (c.history->index == q)
+						next = std::move(c);
+				});
+				REQUIRE(next.history);
+				REQUIRE(next.history->index == q);
+				cur = std::move(next);
+				// build_tree() maps space-time child i to spatial child i/2.
+				spatial_path.push_back(space_time ? q / 2 : q);
+			}
+			CAPTURE(dim, space_time, trial, spatial_path);
+			const Eigen::MatrixXd expected = polyfem_leaf(ref, spatial_path, n_spatial);
+			REQUIRE(expected.size() > 0);
+			CHECK(miso_corners(cur, dim, perm, space_time) == expected);
+		}
+	}
+} // namespace
+
+TEST_CASE("jacobian-subdivision-matches-miso", "[jacobian]")
+{
+	const IntervalGuard guard;
+
+	// The coordinate functions do not depend on the element's nodes, so any
+	// node matrix of the right size will do.
+	Eigen::MatrixXd tri, tet;
+	p_nodes_2d(2, tri);
+	p_nodes_3d(2, tet);
+
+	SECTION("static triangle") { check_child_numbering(miso::make_p2tri_val(tri, 0), 2, miso::tri1_perm, false); }
+	SECTION("static tetrahedron") { check_child_numbering(miso::make_p2tet_val(tet, 0), 3, miso::tet1_perm, false); }
+	SECTION("continuous triangle") { check_child_numbering(miso::make_p2tri_cgv(tri, tri, 0), 2, miso::tri1_perm, true); }
+	SECTION("continuous tetrahedron") { check_child_numbering(miso::make_p2tet_cgv(tet, tet, 0), 3, miso::tet1_perm, true); }
+}
+
+// is_valid() reports *where* inside the element it found the violation, as a
+// subdivision path in the same child numbering the quadrature refinement uses.
+// Walking that path with the refinement's own geometry (extract_subelement)
+// must land on a simplex with a vertex where the Jacobian is not positive;
+// otherwise refining towards it would sample the wrong place.
+TEST_CASE("jacobian-is-valid-witness-tree", "[jacobian]")
+{
+	for (const int dim : {2, 3})
+	{
+		// P3: the triangle's interior node and the tet's face nodes have basis
+		// functions ~ l_i l_j l_k, whose gradient vanishes at every vertex.
+		// Moving one leaves the Jacobian at the corners untouched, so any
+		// inversion it causes is strictly inside the element and can only be
+		// found by subdividing -- which is what the tree has to record.
+		auto state = get_state(dim, "NeoHookean", /*discr_order=*/3);
+		const auto debug = test::VarFormTestAccess::debug_data(*state->variational_formulation);
+		const auto &bases = *debug.bases;
+		const auto &gbases = *debug.geometry_bases;
+		const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+		const Eigen::VectorXd zero = Eigen::VectorXd::Zero(debug.n_bases * dim);
+
+		Eigen::MatrixXd ref(dim + 1, dim);
+		if (dim == 2)
+			ref << 0, 0, 1, 0, 0, 1;
+		else
+			ref << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+
+		// A valid configuration has nothing to point at.
+		{
+			const auto [valid, id, tree] = is_valid(dim, bases, gbases, zero);
+			REQUIRE(valid);
+			REQUIRE(!tree.has_children());
+		}
+
+		// Find such a node on element 0 by the property itself rather than by
+		// assuming a local node ordering. Its basis gradient must vanish at the
+		// corners, so the corners must not move for a push in *any* direction:
+		// checking one direction is not enough, since on this axis-aligned
+		// mesh an edge node can leave them unchanged along a single axis.
+		const auto corner_jac = [&](const Eigen::VectorXd &u) {
+			return robust_evaluate_jacobian(order, extract_nodes(dim, bases[0], gbases[0], u, order), ref);
+		};
+		const Eigen::VectorXd j_rest = corner_jac(zero);
+		const double tol = 1e-12 * j_rest.cwiseAbs().maxCoeff();
+		Eigen::VectorXd dir;
+		for (const auto &b : bases[0].bases)
+		{
+			const int node = b.global()[0].index;
+			bool corners_fixed = true;
+			for (int d = 0; d < dim && corners_fixed; ++d)
+			{
+				Eigen::VectorXd u = zero;
+				u(node * dim + d) = 1;
+				corners_fixed = (corner_jac(u) - j_rest).cwiseAbs().maxCoeff() < tol;
+			}
+			if (corners_fixed)
+			{
+				dir = zero;
+				dir(node * dim) = 1;
+				break;
+			}
+		}
+		REQUIRE(dir.size() == zero.size());
+
+		// The Jacobian is affine in the displacement of that node, and its
+		// gradient changes sign across the element, so a large enough push
+		// inverts the interior. Bracket, then bisect to the onset.
+		double hi = 1;
+		while (std::get<0>(is_valid(dim, bases, gbases, hi * dir)))
+			hi *= 2;
+		double lo = 0;
+		for (int it = 0; it < 30; ++it)
+		{
+			const double mid = 0.5 * (lo + hi);
+			(std::get<0>(is_valid(dim, bases, gbases, mid * dir)) ? lo : hi) = mid;
+		}
+
+		for (const double s : {1.001, 1.1, 2.0})
+		{
+			const Eigen::VectorXd u = s * hi * dir;
+			const auto [valid, id, tree] = is_valid(dim, bases, gbases, u);
+			REQUIRE(!valid);
+			REQUIRE(id >= 0);
+
+			// Corners are still valid, so the violation cannot have been
+			// found at the root.
+			REQUIRE(tree.has_children());
+
+			const auto [leaves, levels] = extract_subelement(ref, tree);
+			const int depth = *std::max_element(levels.begin(), levels.end());
+
+			// The witness is one of the deepest leaves (its siblings are added
+			// alongside it), so the smallest Jacobian over their vertices must
+			// be non-positive. The scale is the rest Jacobian, for a relative
+			// tolerance that absorbs double rounding of an interval certificate.
+			const Eigen::MatrixXd cp = extract_nodes(dim, bases[id], gbases[id], u, order);
+			const Eigen::MatrixXd rest_cp = extract_nodes(dim, bases[id], gbases[id], zero, order);
+			double min_j = std::numeric_limits<double>::infinity();
+			double scale = 0;
+			for (int l = 0; l < static_cast<int>(levels.size()); ++l)
+			{
+				const Eigen::MatrixXd v = leaves.middleRows(l * (dim + 1), dim + 1);
+				scale = std::max(scale, robust_evaluate_jacobian(order, rest_cp, v).cwiseAbs().maxCoeff());
+				if (levels[l] == depth)
+					min_j = std::min(min_j, robust_evaluate_jacobian(order, cp, v).minCoeff());
+			}
+			CAPTURE(dim, s, id, depth, min_j, scale);
+			CHECK(min_j <= 1e-10 * scale);
+		}
 	}
 }
 

@@ -68,6 +68,12 @@ target_link_libraries(unit_tests PUBLIC polyfem::polyspline)
 include(polyfem_diff)
 target_link_libraries(unit_tests PUBLIC polyfem::diff)
 
+# The Jacobian tests walk miso's generated subdomains directly, to check that
+# their subdivision numbering matches polyfem's quadrature refinement.
+if(TARGET miso)
+    target_link_libraries(unit_tests PRIVATE miso)
+endif()
+
 ################################################################################
 # Compiler options
 ################################################################################

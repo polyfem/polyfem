@@ -15,6 +15,7 @@
 #include <memory>
 #include <stdexcept>
 #include <tuple>
+#include <limits>
 #include <vector>
 
 using namespace polyfem::assembler;
@@ -25,129 +26,6 @@ namespace polyfem::solver
 {
 	namespace
 	{
-		Eigen::MatrixXd refined_nodes(const int dim, const int i)
-		{
-			Eigen::MatrixXd A(dim + 1, dim);
-			if (dim == 2)
-			{
-				A << 0., 0.,
-					1., 0.,
-					0., 1.;
-				switch (i)
-				{
-				case 0:
-					break;
-				case 1:
-					A.col(0).array() += 1;
-					break;
-				case 2:
-					A.col(1).array() += 1;
-					break;
-				case 3:
-					A.array() -= 1;
-					A *= -1;
-					break;
-				default:
-					throw std::runtime_error("Invalid node index");
-				}
-			}
-			else
-			{
-				A << 0, 0, 0,
-					1, 0, 0,
-					0, 1, 0,
-					0, 0, 1;
-				switch (i)
-				{
-				case 0:
-					break;
-				case 1:
-					A.col(0).array() += 1;
-					break;
-				case 2:
-					A.col(1).array() += 1;
-					break;
-				case 3:
-					A.col(2).array() += 1;
-					break;
-				case 4:
-				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
-					A.col(2) += A.col(1);
-					A.col(1) = A.col(0);
-					A.col(0) = tmp;
-					break;
-				}
-				case 5:
-				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array();
-					A.col(1) += A.col(0);
-					A.col(0) = tmp;
-					break;
-				}
-				case 6:
-				{
-					Eigen::VectorXd tmp0 = A.col(0);
-					Eigen::VectorXd tmp1 = A.col(1);
-					A.col(0) = tmp1;
-					A.col(1) = 1. - tmp0.array() - tmp1.array();
-					A.col(2) += tmp0 + tmp1;
-					break;
-				}
-				case 7:
-				{
-					Eigen::VectorXd tmp = A.col(1);
-					A.col(0) += tmp;
-					A.col(1) = 1. - tmp.array();
-					A.col(2) += tmp;
-					break;
-				}
-				default:
-					throw std::runtime_error("Invalid node index");
-				}
-			}
-			return A / 2;
-		}
-
-		/// @brief given the position of the vertices of a triangle, extract the subtriangle vertices based on the tree
-		/// @param pts vertices of the triangle
-		/// @param tree refinement hiararchy
-		/// @return vertices of the subtriangles, and the refinement level of each subtriangle
-		std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree)
-		{
-			if (!tree.has_children())
-				return {pts, std::vector<int>{0}};
-
-			const int dim = pts.cols();
-			Eigen::MatrixXd out;
-			std::vector<int> levels;
-			for (int i = 0; i < tree.n_children(); i++)
-			{
-				Eigen::MatrixXd uv;
-				uv.setZero(dim + 1, dim + 1);
-				uv.rightCols(dim) = refined_nodes(dim, i);
-				if (dim == 2)
-					uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
-				else
-					uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
-
-				Eigen::MatrixXd pts_ = uv * pts;
-
-				auto [tmp, L] = extract_subelement(pts_, tree.child(i));
-				if (out.size() == 0)
-					out = tmp;
-				else
-				{
-					out.conservativeResize(out.rows() + tmp.rows(), Eigen::NoChange);
-					out.bottomRows(tmp.rows()) = tmp;
-				}
-				for (int &i : L)
-					++i;
-				levels.insert(levels.end(), L.begin(), L.end());
-			}
-			return {out, levels};
-		}
-
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
 		{
 			Eigen::MatrixXd pts(dim + 1, dim);
@@ -241,12 +119,18 @@ namespace polyfem::solver
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
 
-		if (check_inversion_ != ElementInversionCheck::Discrete)
+		if (is_conservative(check_inversion_))
 		{
 			Eigen::VectorXd x0;
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
-			if (!is_step_collision_free(x0, x0))
-				log_and_throw_error("Initial state has inverted elements!");
+			// Call is_valid() directly rather than going through one of the
+			// step hooks: which of those actually certifies depends on the
+			// mode, but the rest quadrature setup below assumes a valid rest
+			// state either way.
+			const auto [isvalid, id, tree] = is_valid(
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x0, jacobian_threshold_, conservative_max_iter_);
+			if (!isvalid)
+				log_and_throw_error("Initial state has inverted elements (element {})!", id);
 
 			int basis_order = 0;
 			int gbasis_order = 0;
@@ -317,6 +201,26 @@ namespace polyfem::solver
 
 	void ElasticForm::finish()
 	{
+		// Report what the conservative check cost over this solve. The call
+		// counts matter as much as the totals: the static check runs once per
+		// line-search trial point, the continuous one once per line search.
+		if (static_check_calls_ > 0)
+		{
+			logger().debug(
+				"Static Jacobian check: {} calls, {} rejections, {:.3f}s total ({:.3f} ms/call)",
+				static_check_calls_, static_check_rejections_, static_check_time_,
+				1e3 * static_check_time_ / static_check_calls_);
+		}
+		if (continuous_check_calls_ > 0)
+		{
+			logger().debug(
+				"Continuous Jacobian check: {} calls, {:.3f}s total ({:.3f} ms/call)",
+				continuous_check_calls_, continuous_check_time_,
+				1e3 * continuous_check_time_ / continuous_check_calls_);
+		}
+		static_check_time_ = continuous_check_time_ = 0;
+		static_check_calls_ = continuous_check_calls_ = static_check_rejections_ = 0;
+
 		for (auto &t : quadrature_hierarchy_)
 			t = Tree();
 		pending_refinement_.reset();
@@ -324,7 +228,10 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Discrete)
+		// Only the continuous check caps the step: it is the one that certifies
+		// the whole segment. The static check instead rejects individual
+		// candidates from is_step_valid(), so it leaves the step alone here.
+		if (check_inversion_ != ElementInversionCheck::ConservativeContinuous)
 			return 1.;
 
 		const int dim = is_volume_ ? 3 : 2;
@@ -337,8 +244,11 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, 0., conservative_max_iter_);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, jacobian_threshold_, conservative_max_iter_);
 			}
+
+			continuous_check_time_ += transient_check_time;
+			++continuous_check_calls_;
 
 			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
 						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree.depth());
@@ -370,10 +280,15 @@ namespace polyfem::solver
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Discrete)
+		// NOTE: this hook is named for contact, but ElasticForm uses it to mean
+		// "no element is inverted". polysolve's line search never calls it;
+		// ALSolver does, on whole configurations, a handful of times per solve.
+		// The line search is covered by max_step_size() (continuous) and
+		// is_step_acceptable() (static).
+		if (!is_conservative(check_inversion_))
 			return true;
 
-		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, 0., conservative_max_iter_);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_);
 		return isvalid;
 	}
 
@@ -396,6 +311,50 @@ namespace polyfem::solver
 		// return true;
 	}
 
+	bool ElasticForm::is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		// The static check certifies one configuration, the same question the
+		// quadrature sampling answers, but over the whole element. It runs only
+		// on steps that already passed the line search's descent criteria:
+		// running it on every trial point costs far more, and vetoing a trial
+		// the energy cannot tell apart from a valid one leaves the line search
+		// nothing to back away from.
+		if (check_inversion_ != ElementInversionCheck::ConservativeStatic)
+			return true;
+
+		double check_time = 0;
+		bool isvalid = false;
+		int id = -1;
+		Tree witness;
+		{
+			POLYFEM_SCOPED_TIMER("Static Jacobian Check", check_time);
+			std::tie(isvalid, id, witness) = is_valid(
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_);
+		}
+		static_check_time_ += check_time;
+		++static_check_calls_;
+
+		if (isvalid)
+			return true;
+
+		++static_check_rejections_;
+		logger().debug("Static Jacobian check rejected step at element {} (witness depth {})", id, witness.depth());
+
+		// Refine towards the violation, so that energy evaluated at this
+		// configuration samples it and is no longer finite. A rejection ends
+		// the line search, and the next direction is computed on the refined
+		// quadrature, so a later trial that reaches this configuration is
+		// turned down by the line search's ordinary finiteness checks. Merge
+		// the whole witness path rather than the usual two levels: the
+		// violation is certified at a vertex of the deepest witness simplex,
+		// and that vertex is only a quadrature point (corner quadrature) once
+		// that level of refinement exists.
+		if (id >= 0)
+			commit_refinement(id, witness, std::numeric_limits<int>::max());
+
+		return false;
+	}
+
 	void ElasticForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		if (!pending_refinement_.has_value())
@@ -407,13 +366,13 @@ namespace polyfem::solver
 		pending_refinement_.reset();
 	}
 
-	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree) const
+	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree, const int max_depth) const
 	{
 		const int dim = is_volume_ ? 3 : 2;
 
 		// Merge into quadrature_hierarchy_ and rebuild the live quadrature for
 		// this element, if the tree is actually refined.
-		if (quadrature_hierarchy_[id].merge(subdivision_tree))
+		if (quadrature_hierarchy_[id].merge(subdivision_tree, max_depth))
 		{
 			auto &bs = bases_[id];
 			auto &gbs = geom_bases_[id];

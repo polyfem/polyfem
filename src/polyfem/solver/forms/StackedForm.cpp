@@ -62,6 +62,22 @@ namespace polyfem::solver
 		return true;
 	}
 
+	bool StackedForm::is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		assert(x0.size() == size_);
+		assert(x1.size() == size_);
+
+		for (const Term &term : terms_)
+		{
+			if (!term.form->enabled())
+				continue;
+			if (!term.form->is_step_acceptable(gather(x0, term), gather(x1, term)))
+				return false;
+		}
+
+		return true;
+	}
+
 	bool StackedForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		assert(x0.size() == size_);

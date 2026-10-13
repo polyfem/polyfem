@@ -1,3 +1,4 @@
+#include <cassert>
 #include <numeric>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -64,6 +65,129 @@ namespace polyfem::utils
 		return cp;
 	}
 
+	Eigen::MatrixXd refined_nodes(const int dim, const int i)
+	{
+		Eigen::MatrixXd A(dim + 1, dim);
+		if (dim == 2)
+		{
+			A << 0., 0.,
+				1., 0.,
+				0., 1.;
+			switch (i)
+			{
+			case 0:
+				break;
+			case 1:
+				A.col(0).array() += 1;
+				break;
+			case 2:
+				A.col(1).array() += 1;
+				break;
+			case 3:
+				A.array() -= 1;
+				A *= -1;
+				break;
+			default:
+				throw std::runtime_error("Invalid node index");
+			}
+		}
+		else
+		{
+			A << 0, 0, 0,
+				1, 0, 0,
+				0, 1, 0,
+				0, 0, 1;
+			switch (i)
+			{
+			case 0:
+				break;
+			case 1:
+				A.col(0).array() += 1;
+				break;
+			case 2:
+				A.col(1).array() += 1;
+				break;
+			case 3:
+				A.col(2).array() += 1;
+				break;
+			case 4:
+			{
+				Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
+				A.col(2) += A.col(1);
+				A.col(1) = A.col(0);
+				A.col(0) = tmp;
+				break;
+			}
+			case 5:
+			{
+				Eigen::VectorXd tmp = 1. - A.col(0).array();
+				A.col(1) += A.col(0);
+				A.col(0) = tmp;
+				break;
+			}
+			case 6:
+			{
+				Eigen::VectorXd tmp0 = A.col(0);
+				Eigen::VectorXd tmp1 = A.col(1);
+				A.col(0) = tmp1;
+				A.col(1) = 1. - tmp0.array() - tmp1.array();
+				A.col(2) += tmp0 + tmp1;
+				break;
+			}
+			case 7:
+			{
+				Eigen::VectorXd tmp = A.col(1);
+				A.col(0) += tmp;
+				A.col(1) = 1. - tmp.array();
+				A.col(2) += tmp;
+				break;
+			}
+			default:
+				throw std::runtime_error("Invalid node index");
+			}
+		}
+		return A / 2;
+	}
+
+	/// @brief given the position of the vertices of a triangle, extract the subtriangle vertices based on the tree
+	/// @param pts vertices of the triangle
+	/// @param tree refinement hiararchy
+	/// @return vertices of the subtriangles, and the refinement level of each subtriangle
+	std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree)
+	{
+		if (!tree.has_children())
+			return {pts, std::vector<int>{0}};
+
+		const int dim = pts.cols();
+		Eigen::MatrixXd out;
+		std::vector<int> levels;
+		for (int i = 0; i < tree.n_children(); i++)
+		{
+			Eigen::MatrixXd uv;
+			uv.setZero(dim + 1, dim + 1);
+			uv.rightCols(dim) = refined_nodes(dim, i);
+			if (dim == 2)
+				uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
+			else
+				uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
+
+			Eigen::MatrixXd pts_ = uv * pts;
+
+			auto [tmp, L] = extract_subelement(pts_, tree.child(i));
+			if (out.size() == 0)
+				out = tmp;
+			else
+			{
+				out.conservativeResize(out.rows() + tmp.rows(), Eigen::NoChange);
+				out.bottomRows(tmp.rows()) = tmp;
+			}
+			for (int &i : L)
+				++i;
+			levels.insert(levels.end(), L.begin(), L.end());
+		}
+		return {out, levels};
+	}
+
 	Eigen::VectorXd robust_evaluate_jacobian(
 		const int order,
 		const Eigen::MatrixXd &cp,
@@ -112,6 +236,25 @@ namespace polyfem::utils
 					dst = &(dst->child(idx / 2));
 				}
 				// else: time-only subdivision, skip
+			}
+		}
+
+		/// @brief Build a refinement tree from a *spatial* subdivision path.
+		///
+		/// The static (*Val) problems split space only, with a single scheme,
+		/// so each path entry is already the spatial child index -- unlike the
+		/// space-time path handled by build_tree(). The child numbering matches
+		/// the one refine_quadrature() uses in ElasticForm (checked for both
+		/// triangles and tetrahedra, including vertex order, so it holds at
+		/// every depth).
+		void build_spatial_tree(Tree &tree, const std::vector<unsigned> &path, const unsigned n_children)
+		{
+			Tree *dst = &tree;
+			for (const auto idx : path)
+			{
+				assert(idx < n_children);
+				dst->add_children(n_children);
+				dst = &(dst->child(idx));
 			}
 		}
 		/// @brief RAII guard for miso's interval arithmetic FPU state.
@@ -241,7 +384,14 @@ namespace polyfem::utils
 		const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 		const int n_elem = static_cast<int>(bases.size());
 
-		auto run_solve = [threshold, max_iter](auto problem, int e) {
+		// Spatial split: 2^dim children per level.
+		const unsigned n_children = (dim == 2) ? 4u : 8u;
+		Tree witness;
+
+		// The witness subdomain solve() returns carries its own subdivision
+		// history, so the location of the violation comes for free; it is
+		// only a matter of not discarding it.
+		auto run_solve = [&](auto problem, int e) {
 			Parameters params;
 			params.constraintEpsilon.assign(1, threshold);
 			params.maxIter = max_iter;
@@ -250,10 +400,16 @@ namespace polyfem::utils
 			auto sols = solve(std::move(problem), params, &info);
 			if (!info.success())
 			{
+				// Ambiguous counts as invalid, but there is no certified
+				// location to refine towards, so leave the tree empty.
 				logger().warn("Jacobian solve gave up at element {} after {} iterations", e, info.numIterations);
-				return true; // ambiguous counts as invalid
+				return true;
 			}
-			return !sols.empty();
+			if (sols.empty())
+				return false;
+			if (sols.front().history)
+				build_spatial_tree(witness, sols.front().history->path(), n_children);
+			return true;
 		};
 
 		for (int e = 0; e < n_elem; ++e)
@@ -297,8 +453,10 @@ namespace polyfem::utils
 					throw_unsupported(dim, order);
 				}
 			}
+			// P1 has a constant Jacobian per element, so there is nothing to
+			// localize and the tree stays empty, as for the continuous check.
 			if (invalid)
-				return {false, e, Tree{}};
+				return {false, e, std::move(witness)};
 		}
 		return {true, -1, Tree{}};
 #else
@@ -361,7 +519,7 @@ namespace polyfem::utils
 			if (t_lo < step)
 			{
 				step = t_lo;
-				invalid_id = static_cast<int>(info.pathToFeasibleId);
+				invalid_id = info.pathToFeasibleId ? static_cast<int>(*info.pathToFeasibleId) : -1;
 				invalid_step = upper(result);
 				tree = Tree{};
 				build_tree(tree, info.pathToFeasible, n_children);

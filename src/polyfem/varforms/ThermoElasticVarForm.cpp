@@ -224,7 +224,8 @@ namespace polyfem::varform
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(elastic_formulation_);
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		const solver::ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
+		if (solver::is_conservative(check_inversion))
 		{
 			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(primary_assembler_))
 				elastic_assembler->set_use_robust_jacobian();

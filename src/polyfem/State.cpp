@@ -485,6 +485,23 @@ namespace polyfem
 		if constexpr (true)
 #endif
 		{
+			// The conservative checks are backed by miso-generated solvers that
+			// only cover simplices (triangles P1-P4, tetrahedra P1-P3), so quad,
+			// hex, prism and pyramid meshes fall back to the discrete check.
+			// Say so: silently downgrading a requested guarantee is worse than
+			// refusing it, and scenes usually inherit this from a shared base.
+			if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+			{
+#ifdef POLYFEM_WITH_MISO
+				logger().warn(
+					"Conservative inversion check requested but the mesh is not simplicial; "
+					"falling back to \"Discrete\". Inversion between quadrature points will not be detected.");
+#else
+				logger().warn(
+					"Conservative inversion check requested but this build has POLYFEM_WITH_MISO=OFF; "
+					"falling back to \"Discrete\". Inversion between quadrature points will not be detected.");
+#endif
+			}
 			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
 			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
 			args["solver"]["advanced"]["check_inversion"] = "Discrete";

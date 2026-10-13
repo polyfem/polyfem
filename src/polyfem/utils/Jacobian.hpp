@@ -2,6 +2,8 @@
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <sstream>
+#include <tuple>
+#include <vector>
 #include <spdlog/fmt/fmt.h>
 
 namespace polyfem::utils
@@ -93,6 +95,18 @@ namespace polyfem::utils
 		std::vector<std::unique_ptr<Tree>> children;
 	};
 
+	/// @brief Vertices of child @p i of the reference simplex under the
+	/// regular 1:2^dim split used for quadrature refinement, in the
+	/// parent's reference coordinates. Rows are vertices.
+	Eigen::MatrixXd refined_nodes(const int dim, const int i);
+
+	/// @brief Vertices of every leaf simplex of @p tree, obtained by
+	/// recursively applying refined_nodes() to the simplex @p pts.
+	/// @param pts vertices of the root simplex, one per row
+	/// @param tree refinement hierarchy
+	/// @return stacked leaf vertices ((dim+1) rows per leaf) and the depth of each leaf
+	std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree);
+
 	Eigen::VectorXd robust_evaluate_jacobian(
 		const int order,
 		const Eigen::MatrixXd &cp,
@@ -105,6 +119,13 @@ namespace polyfem::utils
 		const Eigen::VectorXd &u,
 		const unsigned max_iter = 1'000'000);
 
+	/// @brief Certify that no element of configuration @p u is inverted.
+	/// @return (valid, id of the first invalid element or -1, witness tree).
+	///         The tree is the subdivision path to where the violation was
+	///         found inside that element, in the same child numbering as the
+	///         quadrature refinement; it is empty for P1 (constant Jacobian,
+	///         nothing to localize), when the violation is already visible at
+	///         the element's corners, or when the solver gave up.
 	std::tuple<bool, int, Tree> is_valid(
 		const int dim,
 		const std::vector<basis::ElementBases> &bases,
