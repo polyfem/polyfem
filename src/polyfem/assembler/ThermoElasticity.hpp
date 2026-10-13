@@ -21,7 +21,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void set_size(const int size) override;
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 	protected:
 		int rows() const override { return size(); }

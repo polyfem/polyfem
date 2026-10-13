@@ -15,13 +15,13 @@ namespace polyfem::assembler
 		autodiff_type_ = AutodiffType::NONE;
 	}
 
-	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		use_rest_pose_.add_multimaterial(index, params, "", root_path);
+		use_rest_pose_.add_multimaterial(index, params, "", resources);
 
-		weight_.add_multimaterial(index, params, "", root_path);
+		weight_.add_multimaterial(index, params, "", resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> AMIPSEnergy::parameters() const

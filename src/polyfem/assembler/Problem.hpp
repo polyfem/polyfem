@@ -67,7 +67,7 @@ namespace polyfem
 			virtual void initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
 			virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 
-			virtual void set_parameters(const json &params, const std::string &root_path) {}
+			virtual void set_parameters(const json &params, const io::ResourceIO &resources) {}
 
 			virtual bool might_have_no_dirichlet() { return false; }
 			virtual bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const { return true; }

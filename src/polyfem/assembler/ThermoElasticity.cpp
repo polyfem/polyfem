@@ -105,7 +105,7 @@ namespace polyfem::assembler
 			virtual std::string elastic_name() const = 0;
 			virtual std::map<std::string, Assembler::ParamFunc> parameters() const = 0;
 			virtual void set_size(const int size) = 0;
-			virtual void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) = 0;
+			virtual void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) = 0;
 
 			virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
 			virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
@@ -122,7 +122,7 @@ namespace polyfem::assembler
 			std::map<std::string, Assembler::ParamFunc> parameters() const override;
 
 			void set_size(const int size) override;
-			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+			void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 			double compute_energy(const MixedNonLinearAssemblerData &data) const override;
 			Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const override;
@@ -160,10 +160,10 @@ namespace polyfem::assembler
 	}
 
 	template <typename Elasticity>
-	void detail::ThermoElasticityModelImpl<Elasticity>::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void detail::ThermoElasticityModelImpl<Elasticity>::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		alpha_.add_multimaterial(index, params, units.one_over_temperature(), root_path);
-		T0_.add_multimaterial(index, params, units.temperature(), root_path);
+		alpha_.add_multimaterial(index, params, units.one_over_temperature(), resources);
+		T0_.add_multimaterial(index, params, units.temperature(), resources);
 
 		if (!params.contains("elastic_material") || !params["elastic_material"].is_object())
 			log_and_throw_error("ThermoElasticity requires elastic_material to be an elastic material object.");
@@ -180,7 +180,7 @@ namespace polyfem::assembler
 		if (params.contains(MATERIAL_ELEMENT_INDEX))
 			elastic_params[MATERIAL_ELEMENT_INDEX] = params[MATERIAL_ELEMENT_INDEX];
 
-		elastic_.add_multimaterial(index, elastic_params, units, root_path);
+		elastic_.add_multimaterial(index, elastic_params, units, resources);
 	}
 
 	template <typename Elasticity>
@@ -296,7 +296,7 @@ namespace polyfem::assembler
 			model_->set_size(size);
 	}
 
-	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void ThermoElasticity::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		if (!params.contains("elastic_material") || !params["elastic_material"].is_object())
 			log_and_throw_error("ThermoElasticity requires elastic_material to be an elastic material object.");
@@ -315,7 +315,7 @@ namespace polyfem::assembler
 				elastic_formulation_, type);
 		}
 
-		model_->add_multimaterial(index, params, units, root_path);
+		model_->add_multimaterial(index, params, units, resources);
 	}
 
 	double ThermoElasticity::compute_energy(const MixedNonLinearAssemblerData &data) const

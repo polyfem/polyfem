@@ -17,11 +17,11 @@ namespace polyfem::assembler
 		all_elastic_materials_.set_size(size);
 	}
 
-	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		all_elastic_materials_.add_multimaterial(index, params, units, root_path);
+		all_elastic_materials_.add_multimaterial(index, params, units, resources);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

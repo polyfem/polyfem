@@ -219,6 +219,7 @@ namespace polyfem
 			int n_cell_faces(const int c_id) const override { return 4; }
 			int cell_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
 			int cell_face(const int c_id, const int lf_id) const override { return all_to_valid_face(elements[valid_to_all_elem(c_id)].faces(lf_id)); }
+			int cell_face_orientation(const int, const int) const override { return 1; }
 			int cell_edge(const int c_id, const int le_id) const override { return all_to_valid_edge(elements[valid_to_all_elem(c_id)].edges(le_id)); }
 			int face_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(faces[valid_to_all_face(f_id)].vertices(lv_id)); }
 			int face_edge(const int f_id, const int le_id) const;
@@ -231,13 +232,7 @@ namespace polyfem
 			bool is_boundary_face(const int face_global_id) const override { return faces[valid_to_all_face(face_global_id)].isboundary; }
 			bool is_boundary_element(const int element_global_id) const override;
 
-			bool save(const std::string &path) const override
-			{
-				// TODO
-				return false;
-			}
-
-			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+			bool build_topology(const MeshData &data) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 
@@ -379,8 +374,6 @@ namespace polyfem
 
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
-			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &M) override;
 
 			// index map from vertices to valid ones, and its inverse
 			inline int all_to_valid_vertex(const int id) const
