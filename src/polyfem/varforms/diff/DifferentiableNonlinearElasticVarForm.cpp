@@ -292,7 +292,8 @@ namespace polyfem::varform
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(
 				args["solver"]["augmented_lagrangian"]["nonlinear"],
-				args["solver"]["linear"], units.characteristic_length(), logger());
+				args["solver"]["linear"], units.characteristic_length(), logger(),
+				true, args["solver"]["augmented_lagrangian"]["nonlinear"]["norm_type"], mesh_->dimension());
 
 		solver::ALSolver al_solver(
 			solve_data_.al_form,
@@ -317,12 +318,12 @@ namespace polyfem::varform
 		al_solver.solve_al(
 			nl_problem, solution,
 			args["solver"]["augmented_lagrangian"]["nonlinear"],
-			args["solver"]["linear"], units.characteristic_length());
+			args["solver"]["linear"], units.characteristic_length(), nl_solver);
 
 		al_solver.solve_reduced(
 			nl_problem, solution,
 			args["solver"]["nonlinear"],
-			args["solver"]["linear"], units.characteristic_length());
+			args["solver"]["linear"], units.characteristic_length(), nl_solver);
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -441,7 +442,8 @@ namespace polyfem::varform
 			homo_problem->init(reduced_solution);
 			auto nonlinear_solver = polysolve::nonlinear::Solver::create(
 				args["solver"]["augmented_lagrangian"]["nonlinear"],
-				args["solver"]["linear"], units.characteristic_length(), logger());
+				args["solver"]["linear"], units.characteristic_length(), logger(), true,
+				args["solver"]["augmented_lagrangian"]["nonlinear"]["norm_type"], dim);
 			homo_problem->normalize_forms();
 			nonlinear_solver->minimize(*homo_problem, reduced_solution);
 
@@ -467,7 +469,8 @@ namespace polyfem::varform
 		homo_problem->init(reduced_solution);
 		auto nonlinear_solver = polysolve::nonlinear::Solver::create(
 			args["solver"]["nonlinear"], args["solver"]["linear"],
-			units.characteristic_length(), logger());
+			units.characteristic_length(), logger(), true,
+			args["solver"]["nonlinear"]["norm_type"], dim);
 		homo_problem->normalize_forms();
 		nonlinear_solver->minimize(*homo_problem, reduced_solution);
 

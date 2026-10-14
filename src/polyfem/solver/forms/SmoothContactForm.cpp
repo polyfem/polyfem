@@ -72,6 +72,21 @@ namespace polyfem::solver
 	{
 		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
+
+		contact_patches.clear();
+		const int num_collisions = collision_set_.size();
+		for (int i = 0; i < num_collisions; ++i)
+		{
+			contact_patches.push_back({});
+			for (const auto v : collision_set_[i].vertex_ids())
+			{
+				if (v < 0)
+					continue;
+				const int full_vertex_id = collision_mesh_.to_full_vertex_id(v);
+				for (int d = 0; d < collision_mesh_.dim(); ++d)
+					contact_patches.back().insert(full_vertex_id * collision_mesh_.dim() + d);
+			}
+		}
 	}
 
 	void SmoothContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const

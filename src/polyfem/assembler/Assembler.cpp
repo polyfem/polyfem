@@ -271,6 +271,10 @@ namespace polyfem::assembler
 			// (potentially parallel) loop over elements
 			// Note that n_bases is the number of elements since ach ElementBases object stores
 			// all local basis functions on a given element
+			std::vector<std::set<int>> el_to_dofs(n_bases);
+			std::vector<int> el_orders(n_bases, 0);
+			std::vector<double> el_qualities(n_bases, 1);
+
 			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
@@ -283,6 +287,37 @@ namespace polyfem::assembler
 					// compute geometric mapping
 					// evaluate and store basis functions/their gradients at quadrature points
 					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					for (auto &b : bases[e].bases)
+					{
+						el_orders[e] = std::max(el_orders[e], b.order());
+					}
+
+					for (Eigen::MatrixXd JinvT : vals.jac_it)
+					{
+						Eigen::MatrixXd J = JinvT.inverse().transpose();
+						Eigen::MatrixXd T;
+						double dim;
+						if (vals.is_volume_)
+						{
+							Eigen::MatrixXd Winv(3, 3);
+							Winv << 1.0, -1.0 / sqrt(3.0), -1.0 / sqrt(6.0),
+								0.0, 2.0 / sqrt(3.0), -1.0 / sqrt(6.0),
+								0.0, 0.0, sqrt(3.0 / 2.0);
+							T = J * Winv;
+							dim = 3;
+						}
+						else
+						{
+							Eigen::MatrixXd Winv(2, 2);
+							Winv << 1.0, -1.0 / sqrt(3.0),
+								0.0, 2.0 / sqrt(3.0);
+							T = J * Winv;
+							dim = 2;
+						}
+						double shape_score = dim * std::pow(T.determinant(), dim / 2.0) / T.squaredNorm();
+						el_qualities[e] = std::min(el_qualities[e], shape_score);
+					}
 
 					const Quadrature &quadrature = vals.quadrature;
 
@@ -319,6 +354,7 @@ namespace polyfem::assembler
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
 										const auto gi = global_i[ii].index * size() + m;
+										el_to_dofs[e].insert(gi);
 										const auto wi = global_i[ii].val;
 
 										for (size_t jj = 0; jj < global_j.size(); ++jj)
@@ -352,6 +388,19 @@ namespace polyfem::assembler
 					// if (!vals.has_parameterization) { logger().trace("-- Timer: {}", timer.getElapsedTime()); }
 				}
 			});
+
+			basis_order_per_dof.resize(stiffness.rows());
+			basis_order_per_dof.setZero();
+			element_quality_per_dof.resize(stiffness.rows());
+			element_quality_per_dof.setConstant(1.0);
+			for (int i = 0; i < el_orders.size(); ++i)
+			{
+				for (auto index : el_to_dofs[i])
+				{
+					basis_order_per_dof(index) = std::max(el_orders[i], basis_order_per_dof(index));
+					element_quality_per_dof(index) = std::min(el_qualities[i], element_quality_per_dof(index));
+				}
+			}
 
 			timer.stop();
 			logger().trace("done separate assembly {}s...", timer.getElapsedTime());
@@ -1118,6 +1167,10 @@ namespace polyfem::assembler
 		igl::Timer timer;
 		timer.start();
 
+		std::vector<std::set<int>> el_to_dofs(n_bases);
+		std::vector<int> el_orders(n_bases, 0);
+		std::vector<double> el_qualities(n_bases, 1);
+
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
@@ -1134,6 +1187,37 @@ namespace polyfem::assembler
 				ElementAssemblyValues vals;
 				QuadratureVector da;
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				for (auto &b : bases[e].bases)
+				{
+					el_orders[e] = std::max(el_orders[e], b.order());
+				}
+
+				for (Eigen::MatrixXd JinvT : vals.jac_it)
+				{
+					Eigen::MatrixXd J = JinvT.inverse().transpose();
+					Eigen::MatrixXd T;
+					double dim;
+					if (vals.is_volume_)
+					{
+						Eigen::MatrixXd Winv(3, 3);
+						Winv << 1.0, -1.0 / sqrt(3.0), -1.0 / sqrt(6.0),
+							0.0, 2.0 / sqrt(3.0), -1.0 / sqrt(6.0),
+							0.0, 0.0, sqrt(3.0 / 2.0);
+						T = J * Winv;
+						dim = 3;
+					}
+					else
+					{
+						Eigen::MatrixXd Winv(2, 2);
+						Winv << 1.0, -1.0 / sqrt(3.0),
+							0.0, 2.0 / sqrt(3.0);
+						T = J * Winv;
+						dim = 2;
+					}
+					double shape_score = dim * std::pow(T.determinant(), dim / 2.0) / T.squaredNorm();
+					el_qualities[e] = std::min(el_qualities[e], shape_score);
+				}
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -1182,6 +1266,7 @@ namespace polyfem::assembler
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
 									const auto gi = global_i[ii].index * size() + m;
+									el_to_dofs[e].insert(gi);
 									const auto wi = global_i[ii].val;
 
 									for (size_t jj = 0; jj < global_j.size(); ++jj)
@@ -1220,6 +1305,19 @@ namespace polyfem::assembler
 			mat_cache += *local_storage.cache;
 		}
 		hess = mat_cache.get_matrix();
+
+		basis_order_per_dof.resize(hess.rows());
+		basis_order_per_dof.setZero();
+		element_quality_per_dof.resize(hess.rows());
+		element_quality_per_dof.setConstant(1.0);
+		for (int i = 0; i < el_orders.size(); ++i)
+		{
+			for (auto index : el_to_dofs[i])
+			{
+				basis_order_per_dof(index) = std::max(el_orders[i], basis_order_per_dof(index));
+				element_quality_per_dof(index) = std::min(el_qualities[i], element_quality_per_dof(index));
+			}
+		}
 
 		timer.stop();
 		logger().trace("done merge assembly {}s...", timer.getElapsedTime());

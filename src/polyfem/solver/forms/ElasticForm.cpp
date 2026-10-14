@@ -312,6 +312,9 @@ namespace polyfem::solver
 			assembler_.assemble_hessian(
 				is_volume_, n_bases_, project_to_psd_, bases_,
 				geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_, *mat_cache_, hessian);
+
+			basis_order_per_dof = assembler_.basis_order_per_dof;
+			element_quality_per_dof = assembler_.element_quality_per_dof;
 		}
 	}
 

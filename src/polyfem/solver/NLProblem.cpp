@@ -634,6 +634,42 @@ namespace polyfem::solver
 		return res;
 	}
 
+	Eigen::VectorXi NLProblem::block_mapping() const
+	{
+		// At full size the system is the plain node-major full DOF vector, so
+		// the solver's own default interleaved (row i -> i % dim) mapping
+		// already matches; only the reduced (post-projection) case needs an
+		// explicit mapping.
+		if (full_size() == current_size())
+			return Eigen::VectorXi();
+
+		if (!(penalty_forms_.size() == 1 && penalty_forms_.front()->can_project()))
+			return Eigen::VectorXi();
+
+		// The fast axis-aligned projection (see project_gradient/project_diag/
+		// project_hessian) is backed by a projection matrix with exactly one
+		// nonzero (=1) per column: reduced row `i` corresponds to full DOF
+		// constraint_projection_matrix().col(i)'s single row index. This holds
+		// for both a plain BCLagrangianForm and a StackedAugmentedLagrangianForm
+		// composed only of such axis-aligned blocks.
+		const StiffnessMatrix &proj = penalty_forms_.front()->constraint_projection_matrix();
+		assert(proj.rows() == full_size());
+
+		Eigen::VectorXi mapping(proj.cols());
+		for (int col = 0; col < proj.outerSize(); ++col)
+		{
+			int full_dof = -1;
+			for (StiffnessMatrix::InnerIterator it(proj, col); it; ++it)
+			{
+				assert(full_dof < 0 && "expected a single nonzero per column (axis-aligned projection)");
+				full_dof = it.row();
+			}
+			assert(full_dof >= 0);
+			mapping[col] = full_dof % dim;
+		}
+		return mapping;
+	}
+
 	void NLProblem::gradient(const TVector &x, TVector &grad)
 	{
 		FullNLProblem::gradient(reduced_to_full(x), grad);
@@ -641,9 +677,36 @@ namespace polyfem::solver
 		if (full_size() != current_size())
 		{
 			if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			{
 				penalty_forms_.front()->project_gradient(grad);
+				if (contact_force_per_dof.size() > 0)
+					penalty_forms_.front()->project_gradient(contact_force_per_dof);
+
+				if (stress_per_dof.size() > 0)
+					penalty_forms_.front()->project_gradient(stress_per_dof);
+
+				for (auto &patch : contact_patches)
+				{
+					TVector test(full_size());
+					test.setZero();
+					for (auto dof : patch)
+						test(dof) = 1.0;
+					penalty_forms_.front()->project_gradient(test);
+					patch.clear();
+					for (int i = 0; i < test.size(); ++i)
+						if (test(i) > 1e-12)
+							patch.insert(i);
+				}
+			}
 			else
+			{
 				grad = Q2t_ * grad;
+				if (contact_force_per_dof.size() > 0)
+					contact_force_per_dof = Q2t_ * contact_force_per_dof;
+
+				if (stress_per_dof.size() > 0)
+					stress_per_dof = Q2t_ * stress_per_dof;
+			}
 		}
 		else if (penalty_problem_)
 		{
@@ -660,12 +723,67 @@ namespace polyfem::solver
 		if (full_size() != current_size())
 		{
 			full_hessian_to_reduced_hessian(hessian);
+			if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			{
+				if (basis_order_per_dof.size() > 0)
+					penalty_forms_.front()->project_diag(basis_order_per_dof);
+
+				if (element_quality_per_dof.size() > 0)
+					penalty_forms_.front()->project_diag(element_quality_per_dof);
+			}
+			else
+			{
+				if (basis_order_per_dof.size() > 0)
+					basis_order_per_dof = Q2t_ * basis_order_per_dof.asDiagonal() * Q2_;
+
+				if (element_quality_per_dof.size() > 0)
+					element_quality_per_dof = Q2t_ * element_quality_per_dof.asDiagonal() * Q2_;
+			}
 		}
 		else if (penalty_problem_)
 		{
 			THessian tmp;
 			penalty_problem_->hessian(x, tmp);
 			hessian += tmp;
+		}
+	}
+
+	void NLProblem::get_problematic_dofs(std::set<int> &bad_dofs)
+	{
+		bad_dofs.clear();
+		if (!args_)
+			return;
+		const json &args = *args_;
+
+		if (args["solver"]["precondition_contact"])
+		{
+			for (int i = 0; i < contact_force_per_dof.size(); ++i)
+				if (contact_force_per_dof(i) > 0.0)
+					bad_dofs.insert(i);
+		}
+
+		if (args["solver"]["precondition_von_mises_threshold"] > 0.0)
+		{
+			const double thresh = args["solver"]["precondition_von_mises_threshold"];
+			for (int i = 0; i < stress_per_dof.size(); ++i)
+				if (stress_per_dof(i) > thresh)
+					bad_dofs.insert(i);
+		}
+
+		if (args["solver"]["precondition_order_threshold"] > 0)
+		{
+			const double order_thresh = args["solver"]["precondition_order_threshold"];
+			for (int i = 0; i < basis_order_per_dof.size(); ++i)
+				if (basis_order_per_dof(i) >= order_thresh)
+					bad_dofs.insert(i);
+		}
+
+		if (args["solver"]["precondition_quality_threshold"] < 1.0)
+		{
+			const double quality_thresh = args["solver"]["precondition_quality_threshold"];
+			for (int i = 0; i < element_quality_per_dof.size(); ++i)
+				if (element_quality_per_dof(i) <= quality_thresh)
+					bad_dofs.insert(i);
 		}
 	}
 

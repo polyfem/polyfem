@@ -23,6 +23,7 @@
 
 #include <cassert>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -87,6 +88,27 @@ namespace polyfem::legacy
 		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
+		{
+			std::set<int> bad_dofs;
+			if (args["solver"]["precondition_order_threshold"] > 0)
+			{
+				const int order_thresh = args["solver"]["precondition_order_threshold"];
+				for (int i = 0; i < assembler->basis_order_per_dof.size(); ++i)
+					if (assembler->basis_order_per_dof(i) >= order_thresh)
+						bad_dofs.insert(i);
+			}
+
+			if (args["solver"]["precondition_quality_threshold"] < 1.0)
+			{
+				const double quality_thresh = args["solver"]["precondition_quality_threshold"];
+				for (int i = 0; i < assembler->element_quality_per_dof.size(); ++i)
+					if (assembler->element_quality_per_dof(i) <= quality_thresh)
+						bad_dofs.insert(i);
+			}
+
+			solver->set_problematic_dofs(bad_dofs);
+		}
+
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		int precond_num = problem_dim * n_bases;
 
@@ -132,8 +154,9 @@ namespace polyfem::legacy
 
 		// --------------------------------------------------------------------
 
+		const bool is_scalar_or_mixed = problem->is_scalar() || mixed_assembler != nullptr;
 		static_linear_solver_cache =
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, is_scalar_or_mixed ? 1 : mesh->dimension());
 		logger().info("{}...", static_linear_solver_cache->name());
 
 		// --------------------------------------------------------------------
@@ -237,7 +260,7 @@ namespace polyfem::legacy
 		// --------------------------------------------------------------------
 
 		auto solver =
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger(), true, is_scalar_or_mixed ? 1 : mesh->dimension());
 		logger().info("{}...", solver->name());
 
 		// --------------------------------------------------------------------
