@@ -144,15 +144,17 @@ namespace polyfem
 			}
 		}
 
-		Eigen::VectorXd ElementAssemblyValues::eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const
+		Eigen::VectorXd ElementAssemblyValues::eval_deformed_jacobian_determinant(const Eigen::Ref<const Eigen::VectorXd> &disp) const
 		{
 			assert(basis_);
 			assert(gbasis_);
-			int order = 0;
-			for (const auto &b : basis_->bases)
-				order = std::max(order, b.order());
-			const Eigen::MatrixXd cp = utils::extract_nodes(is_volume_ ? 3 : 2, *basis_, *gbasis_, disp, order);
-			return utils::robust_evaluate_jacobian(order, cp, quadrature.points);
+			const int dim = is_volume_ ? 3 : 2;
+			utils::ElementControlPoints computed;
+			if (!control_points)
+				computed = utils::element_control_points(dim, *basis_, *gbasis_);
+			const utils::ElementControlPoints &cp = control_points ? *control_points : computed;
+			const Eigen::MatrixXd d = utils::control_point_displacement(dim, cp, *basis_, *gbasis_, disp);
+			return utils::robust_evaluate_jacobian(cp.order, cp.rest, d, quadrature.points);
 		}
 
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
@@ -165,6 +167,7 @@ namespace polyfem
 		{
 			basis_ = &basis;
 			gbasis_ = &gbasis;
+			control_points = nullptr;
 
 			element_id = el_index;
 			is_volume_ = is_volume;

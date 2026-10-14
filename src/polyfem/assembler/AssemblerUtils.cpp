@@ -322,6 +322,12 @@ namespace polyfem
 			}
 		}
 
+		void AllElasticMaterials::set_use_robust_jacobian()
+		{
+			for (auto &it : elastic_material_map_)
+				it.second->set_use_robust_jacobian();
+		}
+
 		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 		{
 			for (auto &it : elastic_material_map_)

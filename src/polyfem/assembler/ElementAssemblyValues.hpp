@@ -5,6 +5,11 @@
 
 #include <vector>
 
+namespace polyfem::utils
+{
+	struct ElementControlPoints;
+}
+
 namespace polyfem
 {
 	namespace assembler
@@ -48,7 +53,17 @@ namespace polyfem
 			/// check if the element is flipped
 			bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &gbasis) const;
 
-			Eigen::VectorXd eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const;
+			/// Reference-space det J of the deformed map at the quadrature
+			/// points, evaluated as the conservative checks see it (see
+			/// utils::robust_evaluate_jacobian).
+			/// @param disp The full displacement; a one-column MatrixXd (as in
+			/// NonLinearAssemblerData) binds without a copy.
+			Eigen::VectorXd eval_deformed_jacobian_determinant(const Eigen::Ref<const Eigen::VectorXd> &disp) const;
+
+			/// This element's control points, precomputed for the energy's
+			/// robust Jacobian (set by AssemblyValsCache::compute, reset by
+			/// compute()). Computed on the fly when null.
+			const utils::ElementControlPoints *control_points = nullptr;
 
 		private:
 			const basis::ElementBases *basis_, *gbasis_;

@@ -15,6 +15,7 @@
 #include <memory>
 #include <stdexcept>
 #include <tuple>
+#include <limits>
 #include <vector>
 
 using namespace polyfem::assembler;
@@ -25,127 +26,41 @@ namespace polyfem::solver
 {
 	namespace
 	{
-		Eigen::MatrixXd refined_nodes(const int dim, const int i)
+		// Conservative modes use corner rules so the energy samples J at the
+		// corners. A negative weight at any point turns the log barrier there
+		// into a well, and the discrete energy becomes unbounded below as J
+		// vanishes at that point: the triangle order-6 rule (P4) has them at
+		// the corners, the tet order-4 rule (P3) at the centroid. Use the
+		// lowest order at or above the requested one whose rule has every
+		// corner and only positive weights. A family of corner rules with
+		// positive weights at every order would avoid the larger rules.
+		Quadrature corner_quadrature(const int dim, const int order)
 		{
-			Eigen::MatrixXd A(dim + 1, dim);
-			if (dim == 2)
-			{
-				A << 0., 0.,
-					1., 0.,
-					0., 1.;
-				switch (i)
+			const auto is_usable = [dim](const Quadrature &quad) {
+				if (quad.weights.size() == 0 || quad.weights.minCoeff() <= 0)
+					return false;
+				int n_corners = 0;
+				for (Eigen::Index i = 0; i < quad.points.rows(); ++i)
 				{
-				case 0:
-					break;
-				case 1:
-					A.col(0).array() += 1;
-					break;
-				case 2:
-					A.col(1).array() += 1;
-					break;
-				case 3:
-					A.array() -= 1;
-					A *= -1;
-					break;
-				default:
-					throw std::runtime_error("Invalid node index");
+					const auto p = quad.points.row(i);
+					if ((p.array() == 0 || p.array() == 1).all() && p.sum() <= 1)
+						++n_corners;
 				}
-			}
-			else
-			{
-				A << 0, 0, 0,
-					1, 0, 0,
-					0, 1, 0,
-					0, 0, 1;
-				switch (i)
-				{
-				case 0:
-					break;
-				case 1:
-					A.col(0).array() += 1;
-					break;
-				case 2:
-					A.col(1).array() += 1;
-					break;
-				case 3:
-					A.col(2).array() += 1;
-					break;
-				case 4:
-				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
-					A.col(2) += A.col(1);
-					A.col(1) = A.col(0);
-					A.col(0) = tmp;
-					break;
-				}
-				case 5:
-				{
-					Eigen::VectorXd tmp = 1. - A.col(0).array();
-					A.col(1) += A.col(0);
-					A.col(0) = tmp;
-					break;
-				}
-				case 6:
-				{
-					Eigen::VectorXd tmp0 = A.col(0);
-					Eigen::VectorXd tmp1 = A.col(1);
-					A.col(0) = tmp1;
-					A.col(1) = 1. - tmp0.array() - tmp1.array();
-					A.col(2) += tmp0 + tmp1;
-					break;
-				}
-				case 7:
-				{
-					Eigen::VectorXd tmp = A.col(1);
-					A.col(0) += tmp;
-					A.col(1) = 1. - tmp.array();
-					A.col(2) += tmp;
-					break;
-				}
-				default:
-					throw std::runtime_error("Invalid node index");
-				}
-			}
-			return A / 2;
-		}
+				return n_corners == dim + 1;
+			};
 
-		/// @brief given the position of the vertices of a triangle, extract the subtriangle vertices based on the tree
-		/// @param pts vertices of the triangle
-		/// @param tree refinement hiararchy
-		/// @return vertices of the subtriangles, and the refinement level of each subtriangle
-		std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree)
-		{
-			if (!tree.has_children())
-				return {pts, std::vector<int>{0}};
-
-			const int dim = pts.cols();
-			Eigen::MatrixXd out;
-			std::vector<int> levels;
-			for (int i = 0; i < tree.n_children(); i++)
+			constexpr int max_bump = 3;
+			Quadrature quad;
+			for (int o = order; o <= order + max_bump; ++o)
 			{
-				Eigen::MatrixXd uv;
-				uv.setZero(dim + 1, dim + 1);
-				uv.rightCols(dim) = refined_nodes(dim, i);
 				if (dim == 2)
-					uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
+					TriQuadrature(true).get_quadrature(o, quad);
 				else
-					uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
-
-				Eigen::MatrixXd pts_ = uv * pts;
-
-				auto [tmp, L] = extract_subelement(pts_, tree.child(i));
-				if (out.size() == 0)
-					out = tmp;
-				else
-				{
-					out.conservativeResize(out.rows() + tmp.rows(), Eigen::NoChange);
-					out.bottomRows(tmp.rows()) = tmp;
-				}
-				for (int &i : L)
-					++i;
-				levels.insert(levels.end(), L.begin(), L.end());
+					TetQuadrature(true).get_quadrature(o, quad);
+				if (is_usable(quad))
+					return quad;
 			}
-			return {out, levels};
+			log_and_throw_error("No corner quadrature with positive weights of order {} to {} in {}D", order, order + max_bump, dim);
 		}
 
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
@@ -162,25 +77,10 @@ namespace polyfem::solver
 					0, 0, 1;
 			auto [quad_points, levels] = extract_subelement(pts, tree);
 
-			Quadrature tmp, quad;
-			if (dim == 2)
-			{
-				TriQuadrature tri_quadrature(true);
-				tri_quadrature.get_quadrature(order, tmp);
-				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
-				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array();
-			}
-			else
-			{
-				TetQuadrature tet_quadrature(true);
-				// The corner rule for order 4 (Liu-Vinokur 9) has a large negative
-				// weight at the centroid, which corrupts non-polynomial integrands
-				// like NeoHookean near inversion. Order 5 has all-positive weights.
-				const int safe_order = (order == 4) ? 5 : order;
-				tet_quadrature.get_quadrature(safe_order, tmp);
-				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
-				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
-			}
+			Quadrature tmp = corner_quadrature(dim, order);
+			Quadrature quad;
+			tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
+			tmp.points.col(dim) = 1. - tmp.points.leftCols(dim).rowwise().sum().array();
 
 			quad.points.resize(tmp.size() * levels.size(), dim);
 			quad.weights.resize(tmp.size() * levels.size());
@@ -241,12 +141,22 @@ namespace polyfem::solver
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
 
-		if (check_inversion_ != ElementInversionCheck::Discrete)
+		if (is_conservative(check_inversion_))
 		{
 			Eigen::VectorXd x0;
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
-			if (!is_step_collision_free(x0, x0))
-				log_and_throw_error("Initial state has inverted elements!");
+			// Call is_valid() directly rather than going through one of the
+			// step hooks: which of those actually certifies depends on the
+			// mode, but the rest quadrature setup below assumes a valid rest
+			// state either way.
+			rest_nodes_ = utils::rest_nodes(is_volume_ ? 3 : 2, bases_, geom_bases_);
+			// The energy evaluates det J from the same control points the
+			// checks see; compute them once rather than on every assembly.
+			ass_vals_cache_.set_control_points(utils::element_control_points(is_volume_ ? 3 : 2, bases_, geom_bases_));
+			const auto [isvalid, id, tree] = is_valid(
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x0, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
+			if (!isvalid)
+				log_and_throw_error("Initial state has inverted elements (element {})!", id);
 
 			int basis_order = 0;
 			int gbasis_order = 0;
@@ -262,13 +172,16 @@ namespace polyfem::solver
 					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
 
+			refines_quadrature_ = basis_order > 1 || gbasis_order > 1;
+
 			// Replace the corner quadrature set by LagrangeBasis for every element.
-			// The default corner rule for order 4 has a negative centroid weight
-			// (see refine_quadrature); override it here so the base quadrature is
+			// Some default corner rules have negative weights (see
+			// corner_quadrature); override them here so the base quadrature is
 			// also safe before any adaptive refinement occurs.
 			const int dim = is_volume_ ? 3 : 2;
-			for (int e = 0; e < (int)bases_.size(); e++)
-				update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
+			if (refines_quadrature_)
+				for (int e = 0; e < (int)bases_.size(); e++)
+					update_quadrature(e, dim, quadrature_hierarchy_[e], quadrature_order_, bases_[e], geom_bases_[e], ass_vals_cache_);
 		}
 	}
 
@@ -317,6 +230,26 @@ namespace polyfem::solver
 
 	void ElasticForm::finish()
 	{
+		// Report what the conservative check cost over this solve. The call
+		// counts matter as much as the totals: the static check runs once per
+		// line-search trial point, the continuous one once per line search.
+		if (static_check_calls_ > 0)
+		{
+			logger().debug(
+				"Static Jacobian check: {} calls, {} rejections, {:.3f}s total ({:.3f} ms/call)",
+				static_check_calls_, static_check_rejections_, static_check_time_,
+				1e3 * static_check_time_ / static_check_calls_);
+		}
+		if (continuous_check_calls_ > 0)
+		{
+			logger().debug(
+				"Continuous Jacobian check: {} calls, {:.3f}s total ({:.3f} ms/call)",
+				continuous_check_calls_, continuous_check_time_,
+				1e3 * continuous_check_time_ / continuous_check_calls_);
+		}
+		static_check_time_ = continuous_check_time_ = 0;
+		static_check_calls_ = continuous_check_calls_ = static_check_rejections_ = 0;
+
 		for (auto &t : quadrature_hierarchy_)
 			t = Tree();
 		pending_refinement_.reset();
@@ -324,10 +257,22 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Discrete)
+		// Only the continuous check caps the step: it is the one that certifies
+		// the whole segment. The static check instead rejects individual
+		// candidates from is_step_valid(), so it leaves the step alone here.
+		if (check_inversion_ != ElementInversionCheck::ConservativeContinuous)
 			return 1.;
 
 		const int dim = is_volume_ ? 3 : 2;
+
+		// Largest gap allowed between the certified step and the first
+		// inversion, as a fraction of the step. It only bounds the gap from
+		// above: when the inversion starts away from a subdivision vertex the
+		// check cannot stop until a sample shows it, by which point the gap is
+		// already far smaller. Keep it small enough that the margin applied
+		// below, rather than this slack, sets how far a capped step stays
+		// from the inversion.
+		constexpr double precision = 1e-2;
 
 		double step, invalidStep;
 		int invalidID;
@@ -337,8 +282,11 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, .25, 0., conservative_max_iter_);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1, precision, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 			}
+
+			continuous_check_time_ += transient_check_time;
+			++continuous_check_calls_;
 
 			logger().log(step == 0 ? spdlog::level::err : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
 						 "Jacobian max step size: {} at element {}, invalid step size: {}, runtime {} sec, tree depth {}", step, invalidID, invalidStep, transient_check_time, subdivision_tree.depth());
@@ -354,9 +302,11 @@ namespace polyfem::solver
 			commit_refinement(invalidID, subdivision_tree);
 			pending_refinement_.reset();
 		}
-		else if (invalidID >= 0 && step <= 0.5)
+		else if (invalidID >= 0)
 		{
-			// Store as a candidate only; committed in post_step() if/when
+			// Any capped step: the path inverts somewhere the quadrature does
+			// not sample, and left that way the next direction heads back to
+			// it. Store as a candidate only; committed in post_step() if/when
 			// this step is accepted (see pending_refinement_ in the header).
 			pending_refinement_ = std::make_pair(invalidID, std::move(subdivision_tree));
 		}
@@ -365,15 +315,27 @@ namespace polyfem::solver
 			pending_refinement_.reset();
 		}
 
-		return step;
+		// Stop short of the certified step. It can lie arbitrarily close to the
+		// first inversion, and a step taken all the way to it can leave the
+		// Jacobian somewhere within rounding of zero. No later check can then
+		// certify any step from there, and the solve stalls. The margin is still
+		// inside the certified range, which the widening in max_time_step()
+		// covers at any correctly rounded point.
+		constexpr double margin = 0.9;
+		return step < 1 ? margin * step : step;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Discrete)
+		// NOTE: this hook is named for contact, but ElasticForm uses it to mean
+		// "no element is inverted". polysolve's line search never calls it;
+		// ALSolver does, on whole configurations, a handful of times per solve.
+		// The line search is covered by max_step_size() (continuous) and
+		// is_step_acceptable() (static).
+		if (!is_conservative(check_inversion_))
 			return true;
 
-		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, 0., conservative_max_iter_);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
 		return isvalid;
 	}
 
@@ -396,6 +358,50 @@ namespace polyfem::solver
 		// return true;
 	}
 
+	bool ElasticForm::is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		// The static check certifies one configuration, the same question the
+		// quadrature sampling answers, but over the whole element. It runs only
+		// on steps that already passed the line search's descent criteria:
+		// running it on every trial point costs far more, and vetoing a trial
+		// the energy cannot tell apart from a valid one leaves the line search
+		// nothing to back away from.
+		if (check_inversion_ != ElementInversionCheck::ConservativeStatic)
+			return true;
+
+		double check_time = 0;
+		bool isvalid = false;
+		int id = -1;
+		Tree witness;
+		{
+			POLYFEM_SCOPED_TIMER("Static Jacobian Check", check_time);
+			std::tie(isvalid, id, witness) = is_valid(
+				is_volume_ ? 3 : 2, bases_, geom_bases_, x1, jacobian_threshold_, conservative_max_iter_, &rest_nodes_);
+		}
+		static_check_time_ += check_time;
+		++static_check_calls_;
+
+		if (isvalid)
+			return true;
+
+		++static_check_rejections_;
+		logger().debug("Static Jacobian check rejected step at element {} (witness depth {})", id, witness.depth());
+
+		// Refine towards the violation, so that energy evaluated at this
+		// configuration samples it and is no longer finite. A rejection ends
+		// the line search, and the next direction is computed on the refined
+		// quadrature, so a later trial that reaches this configuration is
+		// turned down by the line search's ordinary finiteness checks. Merge
+		// the whole witness path rather than the usual two levels: the
+		// violation is certified at a vertex of the deepest witness simplex,
+		// and that vertex is only a quadrature point (corner quadrature) once
+		// that level of refinement exists.
+		if (id >= 0)
+			commit_refinement(id, witness, std::numeric_limits<int>::max());
+
+		return false;
+	}
+
 	void ElasticForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		if (!pending_refinement_.has_value())
@@ -407,13 +413,16 @@ namespace polyfem::solver
 		pending_refinement_.reset();
 	}
 
-	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree) const
+	void ElasticForm::commit_refinement(const int id, utils::Tree &subdivision_tree, const int max_depth) const
 	{
+		if (!refines_quadrature_)
+			return;
+
 		const int dim = is_volume_ ? 3 : 2;
 
 		// Merge into quadrature_hierarchy_ and rebuild the live quadrature for
 		// this element, if the tree is actually refined.
-		if (quadrature_hierarchy_[id].merge(subdivision_tree))
+		if (quadrature_hierarchy_[id].merge(subdivision_tree, max_depth))
 		{
 			auto &bs = bases_[id];
 			auto &gbs = geom_bases_[id];

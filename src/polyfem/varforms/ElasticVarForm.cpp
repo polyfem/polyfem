@@ -10,6 +10,8 @@
 
 #include <polyfem/basis/Basis.hpp>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -86,7 +88,8 @@ namespace polyfem::varform
 
 		primary_assembler_ = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(primary_assembler_->name() == formulation);
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		const solver::ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
+		if (solver::is_conservative(check_inversion))
 		{
 			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(primary_assembler_))
 				elastic_assembler->set_use_robust_jacobian();

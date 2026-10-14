@@ -627,13 +627,34 @@ namespace polyfem::legacy
 		if constexpr (true)
 #endif
 		{
+			// The conservative checks are backed by miso-generated solvers that
+			// only cover simplices (triangles P1-P4, tetrahedra P1-P3), so quad,
+			// hex, prism and pyramid meshes fall back to the discrete check.
+			// Say so: silently downgrading a requested guarantee is worse than
+			// refusing it, and scenes usually inherit this from a shared base.
+			if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+			{
+#ifdef POLYFEM_WITH_MISO
+				logger().warn(
+					"Conservative inversion check requested but the mesh is not simplicial; "
+					"falling back to \"Discrete\". Inversion between quadrature points will not be detected.");
+#else
+				logger().warn(
+					"Conservative inversion check requested but this build has POLYFEM_WITH_MISO=OFF; "
+					"falling back to \"Discrete\". Inversion between quadrature points will not be detected.");
+#endif
+			}
 			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
 			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
 			args["solver"]["advanced"]["check_inversion"] = "Discrete";
 		}
 		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
 		{
-			args["space"]["advanced"]["use_corner_quadrature"] = true;
+			// With linear displacement and geometry the Jacobian is constant per
+			// element: the check still runs, but it never refines, and every rule
+			// gives the same elastic energy, so keep the cheaper standard one.
+			if (!(disc_orders.maxCoeff() == 1 && mesh->is_linear() && !args["space"]["use_p_ref"]))
+				args["space"]["advanced"]["use_corner_quadrature"] = true;
 		}
 
 		Eigen::MatrixXi geom_disc_orders;

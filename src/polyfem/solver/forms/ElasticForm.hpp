@@ -17,15 +17,35 @@
 
 namespace polyfem::solver
 {
+	/// @brief Strategy used to keep elements from inverting.
 	enum class ElementInversionCheck
 	{
+		/// @brief No geometric check: inversion is only noticed indirectly,
+		/// when the energy/gradient sampled at the quadrature points turns
+		/// non-finite. Cheap, but blind to inversion between sample points.
 		Discrete,
-		Conservative,
+		/// @brief Certify that each step the line search accepts is
+		/// inversion-free (utils::is_valid). Substitute for the quadrature
+		/// sampling above: it answers the same question, but over the whole
+		/// element, and refines the quadrature where it finds a violation.
+		ConservativeStatic,
+		/// @brief Certify the whole segment between two configurations and
+		/// return the largest inversion-free step (utils::max_time_step).
+		/// Caps the step before the line search instead of testing a point.
+		ConservativeContinuous,
 	};
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		polyfem::solver::ElementInversionCheck,
 		{{ElementInversionCheck::Discrete, "Discrete"},
-		 {ElementInversionCheck::Conservative, "Conservative"}})
+		 {ElementInversionCheck::ConservativeStatic, "ConservativeStatic"},
+		 {ElementInversionCheck::ConservativeContinuous, "ConservativeContinuous"}})
+
+	/// @brief Does this strategy certify validity, rather than relying on
+	/// sampled quantities turning non-finite?
+	inline bool is_conservative(const ElementInversionCheck check)
+	{
+		return check != ElementInversionCheck::Discrete;
+	}
 
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
@@ -80,6 +100,13 @@ namespace polyfem::solver
 		/// @return True if the step is inversion free else false
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
+		/// @brief Static inversion check on a step the line search is about to
+		/// accept (ConservativeStatic only). On rejection, refines the quadrature
+		/// of the offending element towards the violation, so the energy there
+		/// is no longer finite and the line search backs away from it.
+		/// @return True if the step is inversion free
+		bool is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
@@ -129,16 +156,42 @@ namespace polyfem::solver
 		/// can never reach post_step(), so deferring it would just discard the
 		/// refinement candidate and leave the next iteration stuck on the same
 		/// too-coarse quadrature).
-		void commit_refinement(const int id, utils::Tree &subdivision_tree) const;
+		/// @param max_depth Most levels to add in one merge. The continuous check
+		/// adds two at a time; the static check merges its whole witness path,
+		/// since only the deepest level puts a quadrature point on the violation.
+		void commit_refinement(const int id, utils::Tree &subdivision_tree, const int max_depth = 2) const;
 
 		Eigen::VectorXd x_prev_;
 
+		/// @brief Rest positions of the control points (utils::rest_nodes),
+		/// computed once so every conservative check sees the same numbers.
+		Eigen::MatrixXd rest_nodes_;
+
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
+
+		/// @brief False when displacement and geometry are both linear. The
+		/// Jacobian is then constant per element, so the conservative check
+		/// still runs but there is nothing between quadrature points to refine
+		/// towards: commit_refinement() is a no-op and the quadrature is left as
+		/// the bases built it.
+		bool refines_quadrature_ = false;
 
 		/// @brief Pending (element id, subdivision tree) candidate from the
 		/// last max_step_size() call; replaced (not accumulated) each call,
 		/// committed in post_step() once a step is accepted.
 		mutable std::optional<std::pair<int, utils::Tree>> pending_refinement_;
+
+		/// @brief Cumulative cost of the conservative checks, reported by
+		/// finish() at the end of each nonlinear solve.
+		///
+		/// The two are called at very different rates -- the static check once
+		/// per line-search trial point, the continuous one once per line search
+		/// -- so the totals only mean something next to their call counts.
+		mutable double static_check_time_ = 0;
+		mutable double continuous_check_time_ = 0;
+		mutable long static_check_calls_ = 0;
+		mutable long continuous_check_calls_ = 0;
+		mutable long static_check_rejections_ = 0;
 	};
 } // namespace polyfem::solver
