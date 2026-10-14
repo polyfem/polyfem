@@ -1,7 +1,7 @@
 #include <polyfem/varforms/diff/DifferentiableNonlinearElasticVarForm.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/io/SolverCSVWriter.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -41,7 +41,7 @@ namespace polyfem::varform
 
 		json updated_args = args;
 		// Generated vertices already include physical scaling; do not reapply the input geometry transform or refinement.
-		updated_args["geometry"][0]["mesh"] = input_path(path);
+		updated_args["geometry"][0]["mesh"] = std::filesystem::absolute(path).string();
 		updated_args["geometry"][0]["unit"] = "";
 		updated_args["geometry"][0]["n_refs"] = 0;
 		updated_args["geometry"][0]["advanced"]["normalize_mesh"] = false;
@@ -49,7 +49,8 @@ namespace polyfem::varform
 			{"dimensions", nullptr}, {"scale", 1}, {"rotation", nullptr},
 			{"rotation_mode", "xyz"}, {"translation", json::array()}};
 		updated_args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit_;
-		auto updated_mesh = mesh::read_fem_geometry(units, updated_args["geometry"], root_path);
+		const io::FileSystemIO generated_resources(resources_.host_directory());
+		auto updated_mesh = mesh::GeometryLoader(units, generated_resources).load_fem(updated_args["geometry"]);
 		const std::string formulation = primary_assembler_->name();
 		const Units saved_units = units;
 		const std::string saved_output_path = output_path;
@@ -92,13 +93,6 @@ namespace polyfem::varform
 	{
 		assert(problem && "The problem must be initialized before it is accessed");
 		return *problem;
-	}
-
-	const std::string &DifferentiableNonlinearElasticVarForm::get_root_path() const { return root_path; }
-
-	std::string DifferentiableNonlinearElasticVarForm::input_path(const std::string &path, const bool only_if_exists) const
-	{
-		return NonlinearElasticVarForm::resolve_input_path(path, only_if_exists);
 	}
 
 	std::string DifferentiableNonlinearElasticVarForm::output_file_path(const std::string &path) const
@@ -237,6 +231,7 @@ namespace polyfem::varform
 
 		forms = solve_data_.init_forms(
 			units,
+			resources_,
 			dim, time, space_.space_in_node_to_node,
 			space_.n_bases, *space_.bases, space_.geometry_basis_list(), *primary_assembler_, ass_vals_cache_, mass_ass_vals_cache_, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			args["solver"]["advanced"]["conservative_max_iter"],
@@ -409,10 +404,6 @@ namespace polyfem::varform
 		if (post_step)
 			post_step(0, solution);
 
-		const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-		if (!state_path.empty())
-			io::write_matrix(state_path, "u", solution);
-
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);
@@ -499,7 +490,7 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			notify_time_step(t, time_steps, t0, dt);
-			save_elastic_step_state(t0, dt, t, solve_data_.time_integrator.get());
+			save_elastic_step_state(t0, dt, t, solution, solve_data_.time_integrator.get());
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}

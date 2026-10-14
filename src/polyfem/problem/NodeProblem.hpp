@@ -16,7 +16,7 @@ namespace polyfem
 		public:
 			NodeValues();
 
-			void load(const std::string &path);
+			void load(const io::ResourceIO &resources, const std::string &path);
 			void init(const mesh::Mesh &mesh);
 
 			double dirichlet_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
@@ -54,7 +54,7 @@ namespace polyfem
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return true; }
 
-			void set_parameters(const json &params, const std::string &root_path) override;
+			void set_parameters(const json &params, const io::ResourceIO &resources) override;
 
 			bool is_dimension_dirichet(const int tag, const int dim, const int fe_space_id = -1) const override;
 			bool all_dimensions_dirichlet(const int fe_space_id) const override

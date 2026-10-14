@@ -24,6 +24,7 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
+		using ElasticVarForm::ElasticVarForm;
 		std::string name() const override { return "LinearElastic"; }
 
 		std::vector<io::OutputField> output_fields(

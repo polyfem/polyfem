@@ -15,7 +15,7 @@ namespace polyfem::solver
 	InflatedPeriodicShapeVariableToSimulation::InflatedPeriodicShapeVariableToSimulation(
 		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms,
 		std::vector<std::shared_ptr<DiffCache>> diff_caches,
-		CompositeParametrization parametrization, const json &settings)
+		CompositeParametrization parametrization, const json &settings, const io::ResourceIO &resources)
 		: varforms_(std::move(varforms)),
 		  diff_caches_(std::move(diff_caches)),
 		  parametrization_(std::move(parametrization)),
@@ -66,7 +66,7 @@ namespace polyfem::solver
 		options_.facet_distance = meshing_.at("facetDistance").get<double>();
 		options_.cell_size = meshing_.at("cellSize").get<double>();
 		options_.edge_size = meshing_.at("edgeSize").get<double>();
-		wire_ = varforms_[0]->input_path(settings.at("wire"));
+		wire_ = resources.materialize(settings.at("wire").get<std::string>());
 		work_directory_ = varforms_[0]->output_file_path(settings.at("work_directory"));
 
 		std::filesystem::create_directories(work_directory_);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VariableToSimulation.hpp"
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 #include <inflator/Inflator.hpp>
 
@@ -13,7 +14,7 @@ namespace polyfem::solver
 		InflatedPeriodicShapeVariableToSimulation(
 			std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms,
 			std::vector<std::shared_ptr<DiffCache>> diff_caches,
-			CompositeParametrization parametrization, const json &settings);
+			CompositeParametrization parametrization, const json &settings, const io::ResourceIO &resources);
 
 		std::string name() const override { return "inflated-periodic-shape"; }
 		ParameterType parameter_type() const override { return ParameterType::PeriodicShape; }

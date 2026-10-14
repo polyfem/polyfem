@@ -8,6 +8,7 @@
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <Eigen/Core>
 
@@ -40,9 +41,11 @@ namespace polyfem
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
 		void init(const json &args, const bool strict_validation);
+		void init(const json &args, const io::ResourceIO &resources, bool strict_validation);
 
 		/// Run optimization, including remeshing restarts when the selected trigger requests them.
 		int run(json args, const bool strict_validation);
+		int run(json args, const io::ResourceIO &resources, bool strict_validation);
 
 		/// main input arguments containing all defaults
 		json args;
@@ -88,6 +91,7 @@ namespace polyfem
 		/// Variational formulations used by the optimization.
 		std::vector<std::shared_ptr<varform::DifferentiableVarForm>> varforms;
 		std::vector<json> state_args;
+		std::vector<std::unique_ptr<const io::ResourceIO>> state_resources;
 		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables
@@ -99,13 +103,6 @@ namespace polyfem
 		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 
 	private:
-		inline std::string root_path() const
-		{
-			if (utils::is_param_valid(args, "root_path"))
-				return args["root_path"].get<std::string>();
-			return "";
-		}
-
 		/// @brief Check and throw if any forward simulation varform::DifferentiableVarForm is not supported.
 		void check_unsupported() const;
 
@@ -118,6 +115,7 @@ namespace polyfem
 
 		bool remeshing_requested_ = false;
 		bool strict_validation_ = true;
+		std::unique_ptr<const io::ResourceIO> resources_;
 
 		//---------------------------------------------------
 		//-----------------output--------------------

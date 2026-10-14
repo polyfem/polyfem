@@ -16,6 +16,7 @@ namespace polyfem::varform
 	class NonlinearElasticVarForm : public ElasticVarForm
 	{
 	public:
+		using ElasticVarForm::ElasticVarForm;
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 
 		bool is_contact_enabled() const override
@@ -55,12 +56,13 @@ namespace polyfem::varform
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
 			const mesh::Obstacle &obstacle,
 			const json &args,
-			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const io::ResourceIO &resources,
 			const Eigen::VectorXi &in_node_to_node,
 			ipc::CollisionMesh &collision_mesh);
 
 	protected:
 		void reset() override;
+		void set_obstacle(mesh::Obstacle &&obstacle) override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void build_rhs_assembler() override;
@@ -113,6 +115,7 @@ namespace polyfem::varform
 	class NonlinearElasticTransientVarForm : public NonlinearElasticVarForm
 	{
 	public:
+		using NonlinearElasticVarForm::NonlinearElasticVarForm;
 		std::string name() const override { return "NonlinearElasticTransient"; }
 
 	private:
@@ -125,6 +128,7 @@ namespace polyfem::varform
 	class NonlinearElasticStaticVarForm : public NonlinearElasticVarForm
 	{
 	public:
+		using NonlinearElasticVarForm::NonlinearElasticVarForm;
 		std::string name() const override { return "NonlinearElasticStatic"; }
 
 	private:
