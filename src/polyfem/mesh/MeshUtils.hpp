@@ -177,6 +177,14 @@ namespace polyfem
 								  const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE);
 
 		///
+		/// @brief Boundary triangles of a tet mesh, indexing the tets' vertices.
+		///
+		/// @param[in]  tets   #T x 4 tet indices
+		/// @param[out] faces  #F x 3 boundary triangle indices
+		///
+		void find_triangle_surface_from_tets(const Eigen::MatrixXi &tets, Eigen::MatrixXi &faces);
+
+		///
 		/// @brief         			Extract triangular surface from a tetmesh
 		///
 		/// @param[in]     v,tets    tet mesh
@@ -187,26 +195,6 @@ namespace polyfem
 			const Eigen::MatrixXi &tets,
 			Eigen::MatrixXd &surface_vertices,
 			Eigen::MatrixXi &tris);
-
-		///
-		/// @brief      read a surface mesh
-		///
-		/// @param[in]  mesh_path       path to mesh file
-		/// @param[out] vertices        #V x 3/2 output vertices positions
-		/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
-		/// @param[out] codim_edges     indicies in vertices for the codimensional edges
-		/// @param[out] faces           indicies in vertices for the surface faces
-		///
-		bool read_surface_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::VectorXi &codim_vertices, Eigen::MatrixXi &codim_edges, Eigen::MatrixXi &faces);
-
-		///
-		/// @brief Variant of read_surface_mesh that also preserves the volumetric
-		/// (tetrahedral) connectivity when the input is a 3D tet mesh (.msh).
-		/// Vertex indices are NOT remapped: both `faces` and `tets` index into the
-		/// full returned `vertices`. For non-tet inputs, `tets` is returned empty
-		/// and behavior matches read_surface_mesh.
-		///
-		bool read_surface_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::VectorXi &codim_vertices, Eigen::MatrixXi &codim_edges, Eigen::MatrixXi &faces, Eigen::MatrixXi &tets);
 
 		/// Determine if the given mesh is planar (2D or tiny z-range).
 		bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);

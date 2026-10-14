@@ -2,7 +2,6 @@
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/varforms/VarFormUtils.hpp>
 
@@ -22,6 +21,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/Timer.h>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -30,37 +30,12 @@
 
 #include <fstream>
 #include <limits>
+#include <numeric>
 #include <spdlog/fmt/fmt.h>
 #include <paraviewo/VTMWriter.hpp>
 
 namespace polyfem::varform
 {
-	bool VarForm::read_initial_x_from_file(
-		const std::string &state_path,
-		const std::string &x_name,
-		const bool reorder,
-		const Eigen::VectorXi &in_node_to_node,
-		const int dim,
-		Eigen::MatrixXd &x)
-	{
-		if (state_path.empty())
-			return false;
-
-		if (!io::read_matrix(state_path, x_name, x))
-		{
-			logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
-			return false;
-		}
-
-		if (reorder)
-		{
-			const int ndof = in_node_to_node.size() * dim;
-			x.topRows(ndof) = utils::reorder_matrix(x.topRows(ndof), in_node_to_node, -1, dim);
-		}
-
-		return true;
-	}
-
 	namespace
 	{
 
@@ -95,53 +70,6 @@ namespace polyfem::varform
 				return true;
 
 			return args["space"]["advanced"]["isoparametric"];
-		}
-
-		/// Assumes in nodes are in order vertex, edge, face, then cell nodes.
-		void build_in_node_to_in_primitive(const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
-										   Eigen::VectorXi &in_node_to_in_primitive,
-										   Eigen::VectorXi &in_node_offset)
-		{
-			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
-			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
-			const int num_face_nodes = mesh_nodes.num_face_nodes();
-			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
-
-			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-
-			const long n_vertices = num_vertex_nodes;
-			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
-			in_node_to_in_primitive.resize(num_nodes);
-			in_node_offset.resize(num_nodes);
-
-			// Only one node per vertex, so this is an identity map.
-			in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
-			in_node_offset.head(num_vertex_nodes).setZero();
-
-			int prim_offset = n_vertices;
-			int node_offset = num_vertex_nodes;
-			auto foo = [&](const int num_prims, const int num_prim_nodes) {
-				if (num_prims <= 0 || num_prim_nodes <= 0)
-					return;
-				const Eigen::VectorXi range = Eigen::VectorXi::LinSpaced(num_prim_nodes, 0, num_prim_nodes - 1);
-				// TODO: This assumes isotropic degree of element.
-				const int node_per_prim = num_prim_nodes / num_prims;
-
-				in_node_to_in_primitive.segment(node_offset, num_prim_nodes) =
-					range.array() / node_per_prim + prim_offset;
-
-				in_node_offset.segment(node_offset, num_prim_nodes) =
-					range.unaryExpr([&](const int x) { return x % node_per_prim; });
-
-				prim_offset += num_prims;
-				node_offset += num_prim_nodes;
-			};
-
-			foo(mesh.n_edges(), num_edge_nodes);
-			foo(mesh.n_faces(), num_face_nodes);
-			foo(mesh.n_cells(), num_cell_nodes);
 		}
 
 		bool build_in_primitive_to_primitive(
@@ -233,9 +161,11 @@ namespace polyfem::varform
 				timer.start();
 				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
 				{
-					std::vector<int> in_face(in_ordered_faces.cols());
-					for (int i = 0; i < in_face.size(); i++)
-						in_face[i] = in_ordered_faces(in_fi, i);
+					std::vector<int> in_face;
+					in_face.reserve(in_ordered_faces.cols());
+					for (int i = 0; i < in_ordered_faces.cols(); i++)
+						if (in_ordered_faces(in_fi, i) >= 0)
+							in_face.push_back(in_ordered_faces(in_fi, i));
 					std::sort(in_face.begin(), in_face.end());
 
 					in_primitive_to_primitive[in_offset + in_fi] =
@@ -271,19 +201,20 @@ namespace polyfem::varform
 		problem = nullptr;
 		time_callback = nullptr;
 		mesh_ = nullptr;
+		checkpoint_reader_.reset();
+		output_index_offset_ = 0;
 	}
 
-	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void VarForm::init(
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path)
 	{
 		reset();
 
 		this->units = units;
 		this->args = args;
-
-		if (utils::is_param_valid(args, "root_path"))
-			root_path = args["root_path"].get<std::string>();
-		else
-			root_path = "";
 
 		this->output_path = out_path;
 		output_sampler_initialized_ = false;
@@ -291,6 +222,7 @@ namespace polyfem::varform
 
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)
 	{
+		set_obstacle(mesh::Obstacle());
 		mesh_ = std::move(mesh);
 		timings.loading_mesh_time = loading_mesh_time;
 		output_sampler_initialized_ = false;
@@ -299,6 +231,29 @@ namespace polyfem::varform
 			return;
 
 		load_mesh(*mesh_, args);
+	}
+
+	void VarForm::set_geometry(mesh::LoadedGeometry geometry, const double loading_mesh_time)
+	{
+		set_obstacle(std::move(geometry.obstacle));
+		mesh_ = std::move(geometry.fem);
+		timings.loading_mesh_time = loading_mesh_time;
+		output_sampler_initialized_ = false;
+		prepared_ = false;
+		if (mesh_)
+			load_mesh(*mesh_, args);
+	}
+
+	void VarForm::set_obstacle(mesh::Obstacle &&) {}
+
+	void VarForm::init_child_varform(
+		VarForm &child,
+		const std::string &formulation,
+		const Units &units,
+		const json &args,
+		const std::string &out_path) const
+	{
+		child.init(formulation, units, args, out_path);
 	}
 
 	void VarForm::prepare()
@@ -642,6 +597,8 @@ namespace polyfem::varform
 		const ForwardStepCallback &post_step)
 	{
 		prepare();
+		if (checkpoint_reader_)
+			deserialize_checkpoint(checkpoint_reader_->get(), sol);
 		solve_problem(sol, initial_condition_override, post_step);
 	}
 
@@ -691,25 +648,7 @@ namespace polyfem::varform
 			return;
 		}
 
-		const int num_vertex_nodes = space.mesh_nodes->num_vertex_nodes();
-		const int num_edge_nodes = space.mesh_nodes->num_edge_nodes();
-		const int num_face_nodes = space.mesh_nodes->num_face_nodes();
-		const int num_cell_nodes = space.mesh_nodes->num_cell_nodes();
-
-		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-		const long n_vertices = num_vertex_nodes;
-		const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-		const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
 		igl::Timer timer;
-
-		logger().trace("Building in-node to in-primitive mapping...");
-		timer.start();
-		Eigen::VectorXi in_node_to_in_primitive;
-		Eigen::VectorXi in_node_offset;
-		build_in_node_to_in_primitive(mesh, *space.mesh_nodes, in_node_to_in_primitive, in_node_offset);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
 		logger().trace("Building in-primitive to primitive mapping...");
 		timer.start();
@@ -767,9 +706,7 @@ namespace polyfem::varform
 			}
 			else if (order_json.is_string())
 			{
-				const std::string orders_path = utils::resolve_path(order_json, root_path);
-				Eigen::MatrixXi tmp;
-				io::read_matrix(orders_path, tmp);
+				const Eigen::MatrixXi tmp = resources_.read_int_matrix(order_json.get<std::string>());
 				assert(tmp.size() == orders.size());
 				assert(tmp.cols() == 1);
 				orders = tmp;
@@ -878,7 +815,7 @@ namespace polyfem::varform
 		for (int i = 0; i < mesh_->n_elements(); ++i)
 			body_ids[i] = mesh_->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"], units, root_path);
+		assembler.set_materials(body_ids, args["materials"], units, resources_);
 	}
 
 	void VarForm::ensure_output_sampler() const
@@ -927,15 +864,184 @@ namespace polyfem::varform
 		const double t0,
 		const double dt,
 		const int t,
-		const time_integrator::ImplicitTimeIntegrator *time_integrator,
-		const bool rest_mesh_written) const
+		const Eigen::MatrixXd &solution,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
 	{
 		const int global_t = output_file_index(t);
-		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
-		if (!state_path.empty() && time_integrator)
-			time_integrator->save_state(state_path);
+		const std::string pattern = args["output"]["checkpoint"]["path"];
+		if (pattern.empty())
+			return;
 
-		save_restart_json(t0, dt, t, rest_mesh_written);
+		json continuation = args;
+		continuation["time"]["t0"] = t0 + dt * t;
+		continuation["time"]["time_steps"] = std::max(0, args["time"]["time_steps"].get<int>() - t);
+		continuation["time"].erase("tend");
+		continuation["input"]["checkpoint"]["path"] = "";
+		io::CheckpointMetadata metadata;
+		metadata.formulation = name();
+		metadata.step = t;
+		metadata.time = t0 + dt * t;
+		metadata.dt = dt;
+		metadata.remaining_steps = continuation["time"]["time_steps"];
+		metadata.output_index = global_t;
+
+		io::CheckpointWriter writer(resolve_output_path(fmt::format(pattern, global_t)), continuation, metadata);
+		writer.write_mesh("/checkpoint/meshes/active", *mesh_);
+		serialize_checkpoint(writer, solution, metadata);
+		if (time_integrator)
+			time_integrator->serialize_checkpoint(writer, "/checkpoint/state/primary_integrator");
+		writer.embed_resources(resources_);
+		writer.finalize();
+	}
+
+	void VarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &) const
+	{
+		writer.write_matrix("/checkpoint/state/solution", solution);
+	}
+
+	void VarForm::deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution)
+	{
+		if (reader.metadata().formulation != name())
+			log_and_throw_error(
+				"Checkpoint formulation '{}' does not match '{}'.",
+				reader.metadata().formulation, name());
+		if (!reader.exists("/checkpoint/state/solution"))
+			log_and_throw_error("Checkpoint is missing formulation-owned solution state.");
+		solution = reader.read_matrix("/checkpoint/state/solution");
+		output_index_offset_ = reader.metadata().output_index;
+	}
+
+	void VarForm::restore_checkpoint_integrator(
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &integrator,
+		const std::string &group,
+		const double dt,
+		const std::string &ordering,
+		const FESpace &space,
+		const int block_size) const
+	{
+		if (!checkpoint_reader_)
+			return;
+		if (!integrator)
+			log_and_throw_error("Checkpoint requires integrator state at {}, but no integrator was constructed.", group);
+		const auto reorder = [this, &ordering, &space, block_size](Eigen::MatrixXd &value) {
+			if (checkpoint_reorder_enabled())
+				reorder_checkpoint_block(
+					checkpoint_reader_->get(), ordering, space,
+					block_size, 0, value);
+		};
+		integrator->deserialize_checkpoint(checkpoint_reader_->get(), group, dt, reorder);
+	}
+
+	void VarForm::write_checkpoint_ordering(
+		io::CheckpointWriter &writer,
+		const std::string &name,
+		const FESpace &space) const
+	{
+		const Eigen::VectorXi ordering = checkpoint_ordering(space);
+		if (ordering.size() == 0)
+			return;
+		writer.write_int_vector(
+			"/checkpoint/state/orderings/" + name,
+			std::vector<int>(ordering.data(), ordering.data() + ordering.size()));
+	}
+
+	Eigen::VectorXi VarForm::checkpoint_ordering(const FESpace &space) const
+	{
+		if (!space.mesh_nodes || space.mesh_nodes->n_nodes() != space.n_bases)
+			return {};
+
+		std::vector<int> nodes(space.n_bases);
+		std::iota(nodes.begin(), nodes.end(), 0);
+		std::stable_sort(nodes.begin(), nodes.end(), [&space](const int lhs, const int rhs) {
+			const RowVectorNd left = space.mesh_nodes->node_position(lhs);
+			const RowVectorNd right = space.mesh_nodes->node_position(rhs);
+			for (int d = 0; d < left.size(); ++d)
+			{
+				if (left[d] < right[d])
+					return true;
+				if (left[d] > right[d])
+					return false;
+			}
+			return lhs < rhs;
+		});
+
+		return Eigen::Map<const Eigen::VectorXi>(nodes.data(), nodes.size());
+	}
+
+	bool VarForm::checkpoint_reorder_enabled() const
+	{
+		return args.contains("input") && args["input"].is_object()
+			   && args["input"].contains("checkpoint") && args["input"]["checkpoint"].is_object()
+			   && args["input"]["checkpoint"].value("reorder", false);
+	}
+
+	void VarForm::reorder_checkpoint_block(
+		const io::CheckpointReader &reader,
+		const std::string &name,
+		const FESpace &space,
+		const int block_size,
+		const int row_offset,
+		Eigen::MatrixXd &value) const
+	{
+		const Eigen::VectorXi current_ordering = checkpoint_ordering(space);
+		const std::string path = "/checkpoint/state/orderings/" + name;
+		if (!reader.exists(path))
+		{
+			if (checkpoint_reorder_enabled() || current_ordering.size() != 0)
+				log_and_throw_error("Checkpoint reordering requires {}.", path);
+			return;
+		}
+		if (block_size <= 0 || current_ordering.size() == 0)
+			log_and_throw_error("Checkpoint reordering is unavailable for the {} solution block.", name);
+
+		const std::vector<int> stored_values = reader.read_int_vector(path);
+		const Eigen::VectorXi stored_ordering = Eigen::Map<const Eigen::VectorXi>(
+			stored_values.data(), stored_values.size());
+		if (stored_ordering.size() != current_ordering.size())
+			log_and_throw_error(
+				"Checkpoint {} ordering has {} nodes; the current space has {}.",
+				name, stored_ordering.size(), current_ordering.size());
+
+		const auto validate_permutation = [&name](const Eigen::VectorXi &permutation, const std::string &source) {
+			std::vector<bool> seen(permutation.size(), false);
+			for (const int index : permutation)
+			{
+				if (index < 0 || index >= permutation.size() || seen[index])
+					log_and_throw_error("{} {} ordering is not a permutation.", source, name);
+				seen[index] = true;
+			}
+		};
+		validate_permutation(stored_ordering, "Checkpoint");
+		validate_permutation(current_ordering, "Current");
+		if (!checkpoint_reorder_enabled())
+		{
+			if (stored_ordering != current_ordering)
+				log_and_throw_error(
+					"Checkpoint {} ordering differs from the reconstructed space; enable input.checkpoint.reorder.",
+					name);
+			return;
+		}
+
+		const int rows = current_ordering.size() * block_size;
+		if (row_offset < 0 || row_offset + rows > value.rows())
+			log_and_throw_error("Checkpoint {} solution block has invalid dimensions.", name);
+		const Eigen::MatrixXd input_order = utils::unreorder_matrix(
+			value.middleRows(row_offset, rows), stored_ordering, -1, block_size);
+		value.middleRows(row_offset, rows) = utils::reorder_matrix(
+			input_order, current_ordering, -1, block_size);
+	}
+
+	void VarForm::validate_checkpoint_solution(
+		const Eigen::MatrixXd &solution,
+		const int expected_rows) const
+	{
+		if (solution.rows() != expected_rows || solution.cols() != 1)
+			log_and_throw_error(
+				"Checkpoint solution for {} has dimensions {} x {}; expected {} x 1.",
+				name(), solution.rows(), solution.cols(), expected_rows);
 	}
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
@@ -1002,109 +1108,9 @@ namespace polyfem::varform
 			time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 	}
 
-	void VarForm::save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const
-	{
-		const std::string restart_json_path = args["output"]["restart_json"];
-		if (restart_json_path.empty())
-			return;
-
-		const int global_t = output_file_index(t);
-
-		json restart_json;
-		restart_json["root_path"] = root_path;
-		restart_json["common"] = root_path;
-		restart_json["time"] = {{"t0", t0 + dt * t}};
-		restart_json["output"] = {{"data", {{"file_index_offset", global_t}}}};
-
-		restart_json["space"] = R"({
-			"remesh": {
-				"collapse": {
-					"abs_max_edge_length": -1,
-					"rel_max_edge_length": -1
-				}
-			}
-		})"_json;
-
-		const double starting_min_edge_length = stats.min_edge_length;
-		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
-			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
-			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
-		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
-
-		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		if (!rest_mesh_path.empty())
-		{
-			if (!rest_mesh_written)
-				logger().warn("Restart JSON for {} references a rest mesh that this formulation does not write.", name());
-
-			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t));
-
-			std::vector<json> patch;
-			if (args["geometry"].is_array())
-			{
-				const std::vector<json> in_geometry = args["geometry"];
-				for (int i = 0; i < in_geometry.size(); ++i)
-				{
-					if (!in_geometry[i]["is_obstacle"].get<bool>())
-					{
-						patch.push_back({
-							{"op", "remove"},
-							{"path", fmt::format("/geometry/{}", i)},
-						});
-					}
-				}
-
-				const int remaining_geometry = in_geometry.size() - patch.size();
-				assert(remaining_geometry >= 0);
-
-				patch.push_back({
-					{"op", "add"},
-					{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
-					{"value",
-					 {
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
-			}
-			else
-			{
-				assert(args["geometry"].is_object());
-				patch.push_back({
-					{"op", "remove"},
-					{"path", "/geometry"},
-				});
-				patch.push_back({
-					{"op", "replace"},
-					{"path", "/geometry"},
-					{"value",
-					 {
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
-			}
-
-			restart_json["patch"] = patch;
-		}
-
-		restart_json["input"] = {{
-			"data",
-			{
-				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t))},
-			},
-		}};
-
-		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
-		file << restart_json;
-	}
-
 	int VarForm::output_file_index(const int t) const
 	{
-		return t + args["output"]["data"]["file_index_offset"].get<int>();
-	}
-
-	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
-	{
-		return utils::resolve_path(path, root_path, only_if_exists);
+		return t + output_index_offset_;
 	}
 
 	std::string VarForm::resolve_output_path(const std::string &path) const

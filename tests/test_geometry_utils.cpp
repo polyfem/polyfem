@@ -2,7 +2,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -52,9 +52,9 @@ namespace
 			{"volume_selection", {{"id_offset", 0}}}};
 	}
 
-	std::filesystem::path write_geometry_reader_obj(const std::string &name, const std::string &contents)
+	std::filesystem::path write_geometry_loader_obj(const std::string &name, const std::string &contents)
 	{
-		const std::filesystem::path path = std::filesystem::temp_directory_path() / ("polyfem_geometry_reader_" + name);
+		const std::filesystem::path path = std::filesystem::temp_directory_path() / ("polyfem_geometry_loader_" + name);
 		std::ofstream out(path);
 		REQUIRE(out.good());
 		out << contents;
@@ -71,70 +71,69 @@ namespace
 	}
 } // namespace
 
-TEST_CASE("read_surface_mesh preserves tets for a 3D msh", "[geometry][mesh_utils]")
+TEST_CASE("load_surface keeps a 3D msh's tets with keep_volume", "[geometry][mesh_utils]")
 {
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
 	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/bar/bar-6.msh";
+	const SurfaceMesh volume = MeshLoader(resources).load_surface(path, /*keep_volume=*/true);
 
-	Eigen::MatrixXd vertices;
-	Eigen::VectorXi codim_vertices;
-	Eigen::MatrixXi codim_edges, faces, tets;
-	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
-
-	REQUIRE(vertices.cols() == 3);
-	REQUIRE(tets.cols() == 4);
-	REQUIRE(tets.rows() > 0);
-	REQUIRE(faces.cols() == 3);
-	REQUIRE(faces.rows() > 0);
+	REQUIRE(volume.vertices.cols() == 3);
+	REQUIRE(volume.tets.cols() == 4);
+	REQUIRE(volume.tets.rows() > 0);
+	REQUIRE(volume.faces.cols() == 3);
+	REQUIRE(volume.faces.rows() > 0);
 
 	// Interior vertices are referenced by tets, not faces, but are not
-	// codimensional, so the overload must leave codim_vertices empty.
-	CHECK(codim_vertices.size() == 0);
-	CHECK(codim_edges.rows() == 0);
+	// codimensional.
+	CHECK(volume.points.size() == 0);
+	CHECK(volume.edges.rows() == 0);
 
 	// Both index into the full vertex set: no remapping.
-	CHECK(tets.minCoeff() >= 0);
-	CHECK(tets.maxCoeff() < vertices.rows());
-	CHECK(faces.minCoeff() >= 0);
-	CHECK(faces.maxCoeff() < vertices.rows());
+	CHECK(volume.tets.minCoeff() >= 0);
+	CHECK(volume.tets.maxCoeff() < volume.vertices.rows());
+	CHECK(volume.faces.minCoeff() >= 0);
+	CHECK(volume.faces.maxCoeff() < volume.vertices.rows());
 
 	// The surface is a strict subset of the volume.
-	CHECK(faces.rows() < 4 * tets.rows());
+	CHECK(volume.faces.rows() < 4 * volume.tets.rows());
 
-	// The 5-argument overload sees the same vertices and faces.
-	Eigen::MatrixXd surf_vertices;
-	Eigen::VectorXi surf_codim_vertices;
-	Eigen::MatrixXi surf_codim_edges, surf_faces;
-	REQUIRE(polyfem::mesh::read_surface_mesh(
-		path, surf_vertices, surf_codim_vertices, surf_codim_edges, surf_faces));
-	CHECK(surf_faces.rows() == faces.rows());
+	// Without keep_volume the loader finds the same faces.
+	const SurfaceMesh surface = MeshLoader(resources).load_surface(path);
+	CHECK(surface.tets.rows() == 0);
+	CHECK(surface.faces.rows() == volume.faces.rows());
 }
 
-TEST_CASE("read_surface_mesh returns no tets for a surface mesh", "[geometry][mesh_utils]")
+TEST_CASE("load_surface keeps no tets for a surface mesh", "[geometry][mesh_utils]")
 {
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
 	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/obstacles/funnel.obj";
+	const SurfaceMesh loaded = MeshLoader(resources).load_surface(path, /*keep_volume=*/true);
 
-	Eigen::MatrixXd vertices;
-	Eigen::VectorXi codim_vertices;
-	Eigen::MatrixXi codim_edges, faces, tets;
-	REQUIRE(polyfem::mesh::read_surface_mesh(path, vertices, codim_vertices, codim_edges, faces, tets));
-
-	CHECK(tets.rows() == 0);
-	CHECK(faces.rows() > 0);
+	CHECK(loaded.tets.rows() == 0);
+	CHECK(loaded.faces.rows() > 0);
 }
 
-TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][gmsh]")
+TEST_CASE("geometry loader handles stored Gmsh surface selections", "[geometry][gmsh]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
 
 	const Units units;
+	const io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(units, resources);
 	const std::filesystem::path mesh_path = std::filesystem::path(POLYFEM_DATA_DIR) / "gmsh_physical_sides_2d_v22.msh";
 
 	SECTION("explicit surface selections override imported tags")
 	{
 		json args = fem_mesh_json(mesh_path);
 		args["surface_selection"] = 77;
-		const auto mesh = read_fem_mesh(units, args, "");
+		const auto mesh = geometry_loader.load_fem_entry(args);
 		REQUIRE(mesh != nullptr);
 		for (int e = 0; e < mesh->n_edges(); ++e)
 			CHECK(mesh->get_boundary_id(e) == (mesh->is_boundary_edge(e) ? 77 : -1));
@@ -145,21 +144,23 @@ TEST_CASE("geometry reader handles stored Gmsh surface selections", "[geometry][
 		json args = fem_mesh_json(mesh_path);
 		args["n_refs"] = 1;
 		REQUIRE_THROWS_WITH(
-			read_fem_mesh(units, args, ""),
+			geometry_loader.load_fem_entry(args),
 			Catch::Matchers::ContainsSubstring("stored surface selections"));
 	}
 }
 
-TEST_CASE("geometry reader applies geometry selection from the mesh object", "[geometry][split]")
+TEST_CASE("geometry loader applies geometry selection from the mesh object", "[geometry][split]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
 
 	const std::filesystem::path mesh_path =
 		std::filesystem::path(POLYFEM_DATA_DIR) / "standard/simple_fsi_square.msh";
+	const io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(Units(), resources);
 	json args = fem_mesh_json(mesh_path);
 	args["geometry_selection"] = {{"same_as_volume", true}};
-	const auto mesh = read_fem_mesh(Units(), args, "");
+	const auto mesh = geometry_loader.load_fem_entry(args);
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->has_geometry_ids());
 
@@ -185,14 +186,16 @@ TEST_CASE("geometry selection splits a 2D mesh", "[geometry][split]")
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2,
 		0, 2, 3;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) { return 10 + int(e); });
 	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, const bool) { return 20 + int(v); });
 	mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, const bool boundary) { return boundary ? 7 : -1; });
 
 	const json selection = json::array({{{"id", 4}, {"box", {{-1.0, -1.0}, {0.49, 2.0}}}, {"boundary_only", false}},
 										{{"id", 9}, {"box", {{0.49, -1.0}, {2.0, 2.0}}}, {"boundary_only", false}}});
-	apply_geometry_selection(*mesh, selection, "");
+	const polyfem::io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(Units(), resources);
+	geometry_loader.apply_geometry_selection(*mesh, selection);
 	REQUIRE(mesh->get_geometry_ids() == std::vector<int>{9, 4});
 
 	auto pieces = mesh->split();
@@ -227,7 +230,7 @@ TEST_CASE("split defaults to geometry zero", "[geometry][split]")
 	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2, 0, 2, 3;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	auto pieces = mesh->split();
 	REQUIRE(pieces.size() == 1);
 	CHECK(pieces[0].id == 0);
@@ -243,11 +246,13 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	Eigen::Matrix<int, 2, 3> cells;
 	cells << 0, 1, 2, 0, 2, 3;
 
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->compute_body_ids([](const size_t e, const std::vector<int> &, const RowVectorNd &) {
 		return e == 0 ? 7 : 12;
 	});
-	apply_geometry_selection(*mesh, {{"same_as_volume", true}}, "");
+	const polyfem::io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(Units(), resources);
+	geometry_loader.apply_geometry_selection(*mesh, {{"same_as_volume", true}});
 	CHECK(mesh->get_geometry_ids() == std::vector<int>{7, 12});
 
 	auto pieces = mesh->split();
@@ -255,8 +260,8 @@ TEST_CASE("geometry selection can reuse volume IDs", "[geometry][split]")
 	CHECK(pieces[0].id == 7);
 	CHECK(pieces[1].id == 12);
 
-	auto default_mesh = Mesh::create(vertices, cells);
-	apply_geometry_selection(*default_mesh, {{"same_as_volume", true}}, "");
+	auto default_mesh = Mesh::create(MeshData(vertices, cells));
+	geometry_loader.apply_geometry_selection(*default_mesh, {{"same_as_volume", true}});
 	CHECK(default_mesh->get_geometry_ids() == std::vector<int>{0, 0});
 }
 
@@ -267,9 +272,9 @@ TEST_CASE("mesh interface is empty for separated meshes", "[geometry][split]")
 	vertices << 0, 0, 1, 0, 0, 1;
 	Eigen::Matrix<int, 1, 3> cell;
 	cell << 0, 1, 2;
-	auto first = Mesh::create(vertices, cell);
+	auto first = Mesh::create(MeshData(vertices, cell));
 	vertices.rowwise() += Eigen::RowVector2d(3, 0);
-	auto second = Mesh::create(vertices, cell);
+	auto second = Mesh::create(MeshData(vertices, cell));
 	CHECK(compute_mesh_interface(
 			  dynamic_cast<const Mesh2D &>(*first),
 			  dynamic_cast<const Mesh2D &>(*second))
@@ -288,7 +293,7 @@ TEST_CASE("geometry split finds a 3D interface", "[geometry][split]")
 	Eigen::Matrix<int, 2, 4> cells;
 	cells << 0, 1, 2, 3,
 		0, 2, 1, 4;
-	auto mesh = Mesh::create(vertices, cells);
+	auto mesh = Mesh::create(MeshData(vertices, cells));
 	mesh->set_geometry_ids({2, 3});
 	auto pieces = mesh->split();
 	REQUIRE(pieces.size() == 2);
@@ -310,7 +315,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -328,7 +333,7 @@ TEST_CASE("geometry split supports nonconforming mesh storage", "[geometry][spli
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		mesh->set_geometry_ids({1, 2});
 		auto pieces = mesh->split();
 		REQUIRE(pieces.size() == 2);
@@ -351,7 +356,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 		Eigen::Matrix<int, 2, 3> cells;
 		cells << 0, 1, 2, 0, 2, 3;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		auto &ncmesh = dynamic_cast<NCMesh2D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();
@@ -379,7 +384,7 @@ TEST_CASE("geometry split pairs nonconforming interfaces", "[geometry][split][nc
 		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1;
 		Eigen::Matrix<int, 2, 4> cells;
 		cells << 0, 1, 2, 3, 0, 2, 1, 4;
-		auto mesh = Mesh::create(vertices, cells, true);
+		auto mesh = Mesh::create(MeshData(vertices, cells), true);
 		auto &ncmesh = dynamic_cast<NCMesh3D &>(*mesh);
 		ncmesh.refine_elements({0});
 		ncmesh.prepare_mesh();
@@ -441,7 +446,7 @@ TEST_CASE("Tetrahedron volume", "[geometry]")
 	CHECK(tetrahedron_volume(V_flipped) == Catch::Approx(-1 / 6.));
 }
 
-TEST_CASE("geometry reader affine transformations", "[geometry][geometry_reader]")
+TEST_CASE("geometry loader affine transformations", "[geometry][geometry_loader]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
@@ -455,7 +460,7 @@ TEST_CASE("geometry reader affine transformations", "[geometry][geometry_reader]
 	transform2d["scale"] = json::array({2.0, 3.0});
 	transform2d["rotation"] = 90.0;
 	transform2d["translation"] = json::array({5.0});
-	construct_affine_transformation(1.0, transform2d, dims2, A, b);
+	GeometryLoader::construct_affine_transformation(1.0, transform2d, dims2, A, b);
 
 	Eigen::Matrix2d expected_A2;
 	expected_A2 << 0.0, -3.0,
@@ -471,7 +476,7 @@ TEST_CASE("geometry reader affine transformations", "[geometry][geometry_reader]
 	dimensions_transform["dimensions"] = json::array({4.0, 6.0});
 	dimensions_transform["rotation"] = json::array();
 	dimensions_transform["translation"] = json::array({1.0, 2.0, 3.0});
-	construct_affine_transformation(0.5, dimensions_transform, dims3, A, b);
+	GeometryLoader::construct_affine_transformation(0.5, dimensions_transform, dims3, A, b);
 
 	Eigen::Matrix3d expected_dimensions_A = Eigen::Matrix3d::Zero();
 	expected_dimensions_A.diagonal() << 1.0, 3.0, 0.0;
@@ -485,7 +490,7 @@ TEST_CASE("geometry reader affine transformations", "[geometry][geometry_reader]
 	axis_angle_transform["rotation"] = json::array({90.0, 0.0, 0.0, 1.0});
 	axis_angle_transform["rotation_mode"] = "axis_angle";
 	axis_angle_transform["translation"] = json::array({0.0, 0.0, 0.0});
-	construct_affine_transformation(1.0, axis_angle_transform, dims3, A, b);
+	GeometryLoader::construct_affine_transformation(1.0, axis_angle_transform, dims3, A, b);
 
 	Eigen::Matrix3d expected_axis_A;
 	expected_axis_A << 0.0, -2.0, 0.0,
@@ -495,18 +500,20 @@ TEST_CASE("geometry reader affine transformations", "[geometry][geometry_reader]
 	CHECK(b.isZero(1e-12));
 }
 
-TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry_reader]")
+TEST_CASE("geometry loader obstacle mesh extraction modes", "[geometry][geometry_loader]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
 
 	const Units units;
-	const std::filesystem::path line_path = write_geometry_reader_obj(
+	const polyfem::io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(units, resources);
+	const std::filesystem::path line_path = write_geometry_loader_obj(
 		"line.obj",
 		"v 0 0 0\n"
 		"v 1 0 0\n"
 		"l 1 2\n");
-	const std::filesystem::path tri_path = write_geometry_reader_obj(
+	const std::filesystem::path tri_path = write_geometry_loader_obj(
 		"tri.obj",
 		"v 0 0 0\n"
 		"v 1 0 0\n"
@@ -517,10 +524,16 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	Eigen::VectorXi codim_vertices;
 	Eigen::MatrixXi codim_edges;
 	Eigen::MatrixXi faces;
-	Eigen::MatrixXi tets;
+	const auto load_surface = [&](const json &entry) {
+		SurfaceMesh loaded = geometry_loader.load_surface(entry, 2);
+		vertices = std::move(loaded.vertices);
+		codim_vertices = std::move(loaded.points);
+		codim_edges = std::move(loaded.edges);
+		faces = std::move(loaded.faces);
+	};
 
 	json points_mesh = obstacle_mesh_json(line_path, "points");
-	read_obstacle_mesh(units, points_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
+	load_surface(points_mesh);
 	REQUIRE(vertices.rows() == 2);
 	REQUIRE(vertices.cols() == 2);
 	CHECK(codim_vertices.size() == 2);
@@ -532,7 +545,7 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	refined_edges_mesh["advanced"]["refinement_location"] = 0.25;
 	refined_edges_mesh["transformation"]["scale"] = 2.0;
 	refined_edges_mesh["transformation"]["translation"] = json::array({1.0, 0.0});
-	read_obstacle_mesh(units, refined_edges_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
+	load_surface(refined_edges_mesh);
 	REQUIRE(vertices.rows() == 3);
 	REQUIRE(codim_edges.rows() == 2);
 	CHECK(faces.size() == 0);
@@ -543,28 +556,30 @@ TEST_CASE("geometry reader obstacle mesh extraction modes", "[geometry][geometry
 	CHECK(codim_edges.row(1).isApprox(Eigen::RowVector2i(2, 1)));
 
 	json edge_from_surface_mesh = obstacle_mesh_json(tri_path, "edges");
-	read_obstacle_mesh(units, edge_from_surface_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
+	load_surface(edge_from_surface_mesh);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json surface_in_2d_mesh = obstacle_mesh_json(tri_path, "surface");
-	read_obstacle_mesh(units, surface_in_2d_mesh, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
+	load_surface(surface_in_2d_mesh);
 	CHECK(codim_edges.rows() == 3);
 	CHECK(faces.size() == 0);
 
 	json volume_obstacle = obstacle_mesh_json(line_path, "volume");
-	read_obstacle_mesh(units, volume_obstacle, "", 2, vertices, codim_vertices, codim_edges, faces, tets);
+	load_surface(volume_obstacle);
 	CHECK(codim_edges.rows() == 1);
 	CHECK(faces.size() == 0);
 }
 
-TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geometry_reader]")
+TEST_CASE("geometry loader obstacle geometry arrays and planes", "[geometry][geometry_loader]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
 
 	const Units units;
-	const std::filesystem::path line_path = write_geometry_reader_obj(
+	const io::FileSystemIO resources(".");
+	const GeometryLoader geometry_loader(units, resources);
+	const std::filesystem::path line_path = write_geometry_loader_obj(
 		"array_line.obj",
 		"v 0 0 0\n"
 		"v 1 0 0\n"
@@ -576,7 +591,7 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 	line_array["type"] = "mesh_array";
 	line_array["array"] = {{"relative", false}, {"offset", 2.0}, {"size", json::array({2, 1})}};
 
-	Obstacle obstacle = read_obstacle_geometry(units, json::array({line_array}), {}, {}, "", 2);
+	Obstacle obstacle = geometry_loader.load_obstacles(json::array({line_array}), {}, {}, 2);
 	CHECK(obstacle.dim() == 2);
 	CHECK(obstacle.n_vertices() == 4);
 	CHECK(obstacle.n_edges() == 2);
@@ -599,7 +614,7 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 		{"point", json::array({0.0, 0.0})},
 		{"normal", json::array({1.0, 0.0})}};
 
-	Obstacle planes = read_obstacle_geometry(units, json::array({disabled, plane, ground}), {}, {}, "", 2);
+	Obstacle planes = geometry_loader.load_obstacles(json::array({disabled, plane, ground}), {}, {}, 2);
 	REQUIRE(planes.planes().size() == 2);
 	CHECK(planes.planes()[0].normal().norm() == Catch::Approx(1.0).margin(1e-12));
 	CHECK(planes.planes()[1].normal().norm() == Catch::Approx(1.0).margin(1e-12));
@@ -608,6 +623,6 @@ TEST_CASE("geometry reader obstacle geometry arrays and planes", "[geometry][geo
 		{"enabled", true},
 		{"is_obstacle", true},
 		{"type", "invalid"}};
-	REQUIRE_THROWS(read_obstacle_geometry(units, json::array({invalid}), {}, {}, "", 2));
-	REQUIRE_THROWS(read_fem_geometry(units, json::array(), ""));
+	REQUIRE_THROWS(geometry_loader.load_obstacles(json::array({invalid}), {}, {}, 2));
+	REQUIRE_THROWS(geometry_loader.load_fem(json::array()));
 }

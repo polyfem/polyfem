@@ -1,12 +1,14 @@
 #include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
+#include <polyfem/mesh/MeshReader.hpp>
 
 #include <polyfem/utils/Selection.hpp>
 
@@ -45,7 +47,7 @@ namespace polyfem::legacy
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading mesh...");
-		mesh = Mesh::create(meshin, non_conforming);
+		mesh = Mesh::create(mesh::MeshReader::from_geogram(meshin), non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -75,12 +77,13 @@ namespace polyfem::legacy
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
+		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
+		const mesh::GeometryLoader geometry_loader(units, resources);
+		obstacle = geometry_loader.load_obstacles(
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			args["root_path"], mesh->dimension());
+			mesh->dimension());
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -95,6 +98,9 @@ namespace polyfem::legacy
 	{
 		assert(names.size() == cells.size());
 		assert(vertices.size() == cells.size());
+		assert(names.empty());
+		assert(cells.empty());
+		assert(vertices.empty());
 
 		reset_mesh();
 
@@ -102,13 +108,12 @@ namespace polyfem::legacy
 		timer.start();
 
 		logger().info("Loading mesh ...");
+		const polyfem::io::FileSystemIO resources(args["root_path"].get<std::string>());
+		const mesh::GeometryLoader geometry_loader(units, resources);
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh = mesh::read_fem_geometry(
-				units,
-				args["geometry"], args["root_path"],
-				names, vertices, cells, non_conforming);
+			mesh = geometry_loader.load_fem(args["geometry"], non_conforming);
 		}
 
 		if (mesh == nullptr)
@@ -155,12 +160,11 @@ namespace polyfem::legacy
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
+		obstacle = geometry_loader.load_obstacles(
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			args["root_path"], mesh->dimension(), names, vertices, cells);
+			mesh->dimension(), non_conforming);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

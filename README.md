@@ -47,6 +47,19 @@ The main executable, `./PolyFEM_bin`, can be called with a GUI or through a comm
 
 A more detailed documentation can be found on the [website](https://polyfem.github.io/).
 
+### HDF5 input: Python expression limitation
+
+Python expression scripts stored in an HDF5 bundle must be self-contained with
+respect to bundled files. PolyFEM extracts the requested script to a temporary
+file; it does not extract sibling files or redirect Python's file reads and
+imports through the HDF5 resource reader. For example, reading a data file
+beside `__file__` will not find that file inside the bundle.
+
+Files accessed indirectly by Python are not automatically discovered or embedded
+in checkpoints. Installed Python packages must remain available in the runtime
+environment. Ordinary filesystem inputs retain their normal Python file-access
+behavior.
+
 Documentation
 -------------
 

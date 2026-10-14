@@ -25,7 +25,7 @@ namespace polyfem
 				const Eigen::MatrixXi &codim_edges,
 				const Eigen::MatrixXi &faces,
 				const json &displacement,
-				const std::string &root_path,
+				const io::ResourceIO &resources,
 				const Eigen::MatrixXi &tets = Eigen::MatrixXi());
 			void append_mesh_sequence(
 				const std::vector<Eigen::MatrixXd> &vertices,
@@ -55,12 +55,11 @@ namespace polyfem
 
 			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
-			void change_displacement(const int oid, const json &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			void change_displacement(const int oid, const json &val, const io::ResourceIO &resources, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::string &interp = "");
 			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::string &interp = "");
-			void change_displacement(const int oid, const json &val, const std::string &interp = "");
-			void change_displacement(const int oid, const json &val, const std::string &root_path, const std::string &interp);
+			void change_displacement(const int oid, const json &val, const io::ResourceIO &resources, const std::string &interp = "");
 
 			void update_displacement(const double t, Eigen::MatrixXd &sol) const;
 			void set_zero(Eigen::MatrixXd &sol) const;
@@ -83,7 +82,7 @@ namespace polyfem
 				const int oid,
 				const json &val,
 				const std::shared_ptr<utils::Interpolation> &interp,
-				const std::string &root_path);
+				const io::ResourceIO &resources);
 
 			int dim_;
 			Eigen::MatrixXd v_;

@@ -20,8 +20,11 @@ namespace polyfem::varform
 		friend class polyfem::test::VarFormTestAccess;
 
 	public:
+		using FluidVarForm::FluidVarForm;
 		std::string name() const override { return "NavierStokesFSI"; }
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		void serialize_checkpoint(io::CheckpointWriter &writer, const Eigen::MatrixXd &solution, const io::CheckpointMetadata &metadata) const override;
+		void deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution) override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
@@ -60,8 +63,6 @@ namespace polyfem::varform
 		void build_forms(Eigen::MatrixXd &sol, double t);
 		void solve_nonlinear_step(int step, Eigen::MatrixXd &sol);
 		void update_transient_form_weights();
-		void save_mesh_integrator_state(int step) const;
-		void save_solid_integrator_state(int step) const;
 		void save_fsi_timestep(double time, int step, const Eigen::MatrixXd &solution) const;
 
 		int mesh_displacement_space_id_ = -1;

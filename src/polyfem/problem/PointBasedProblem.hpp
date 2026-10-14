@@ -28,7 +28,7 @@ namespace polyfem
 
 				Eigen::RowVector3d operator()(const Eigen::RowVector3d &pt) const;
 
-				bool init(const json &data);
+				bool init(const json &data, const io::ResourceIO &resources);
 
 				void init(const double x, const double y, const double z, const Eigen::Matrix<bool, 3, 1> &dd)
 				{
@@ -103,7 +103,7 @@ namespace polyfem
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
 
-			void set_parameters(const json &params, const std::string &root_path) override;
+			void set_parameters(const json &params, const io::ResourceIO &resources) override;
 
 			void add_constant(const int bc_tag, const Eigen::Vector3d &value)
 			{

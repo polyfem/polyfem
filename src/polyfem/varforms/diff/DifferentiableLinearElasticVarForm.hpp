@@ -8,6 +8,7 @@ namespace polyfem::varform
 	class DifferentiableLinearElasticVarForm final : public LinearElasticVarForm, public DifferentiableVarForm
 	{
 	public:
+		using LinearElasticVarForm::LinearElasticVarForm;
 		std::string name() const override;
 		void solve(
 			Eigen::MatrixXd &solution,
@@ -22,8 +23,6 @@ namespace polyfem::varform
 		const mesh::Mesh &get_mesh() const override;
 		assembler::Problem &get_problem() override;
 		const assembler::Problem &get_problem() const override;
-		const std::string &get_root_path() const override;
-		std::string input_path(const std::string &path, bool only_if_exists = false) const override;
 		std::string output_file_path(const std::string &path) const override;
 		const Units &get_units() const override;
 		bool is_contact_enabled() const override;

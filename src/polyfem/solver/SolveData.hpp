@@ -6,6 +6,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 
@@ -59,6 +60,7 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<Form>> init_forms(
 			// General
 			const Units &units,
+			const io::ResourceIO &resources,
 			const int dim,
 			const double t,
 			const Eigen::VectorXi &in_node_to_node,

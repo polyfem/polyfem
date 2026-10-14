@@ -1,10 +1,8 @@
 #include "JSONUtils.hpp"
 
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-
-#include <fstream>
-#include <filesystem>
 
 #include <jse/jse.h>
 
@@ -14,6 +12,53 @@ namespace polyfem
 {
 	namespace utils
 	{
+		namespace
+		{
+			std::string logical_parent(const std::string &path)
+			{
+				const std::filesystem::path parent = std::filesystem::path(path).parent_path();
+				return parent.empty() ? "." : parent.generic_string();
+			}
+		} // namespace
+
+		std::unique_ptr<const io::ResourceIO> apply_common_params(json &args, const io::ResourceIO &resources)
+		{
+			if (!args.contains("common"))
+				return nullptr;
+			const std::string common_path = args["common"].get<std::string>();
+			if (common_path.empty())
+				return nullptr;
+
+			json common_params = json::parse(resources.read_string(common_path));
+			auto common_resources = resources.with_root(logical_parent(common_path));
+			const bool has_explicit_root = common_params.contains("root_path")
+										   && common_params["root_path"].is_string()
+										   && !common_params["root_path"].get<std::string>().empty();
+			if (has_explicit_root)
+				common_resources = common_resources->with_root(common_params["root_path"].get<std::string>());
+			common_params.erase("root_path");
+			if (auto nested_resources = apply_common_params(common_params, *common_resources))
+				common_resources = std::move(nested_resources);
+
+			json patch;
+			if (args.contains("patch"))
+			{
+				patch = args["patch"];
+				args.erase("patch");
+			}
+			args.erase("root_path");
+			common_params.merge_patch(args);
+			if (!patch.empty())
+				common_params = common_params.patch(patch);
+			args = std::move(common_params);
+			args.erase("common");
+			// Preserve the caller's resource root unless this common file explicitly
+			// overrides it. Historically, paths inherited from a common file were
+			// resolved against the top-level input; merely locating the common file
+			// must not silently reroot the merged simulation.
+			return has_explicit_root ? std::move(common_resources) : nullptr;
+		}
+
 		void apply_common_params(json &args)
 		{
 			if (!args.contains("common"))
@@ -24,13 +69,9 @@ namespace polyfem
 			if (common_params_path.empty())
 				return;
 
-			std::ifstream file(common_params_path);
-			if (!file.is_open())
-				log_and_throw_error("Unable to open common params {} file", common_params_path);
-
-			json common_params;
-			file >> common_params;
-			file.close();
+			const std::filesystem::path common_path(common_params_path);
+			const io::FileSystemIO resources(common_path.parent_path());
+			json common_params = json::parse(resources.read_string(common_path.filename().string()));
 
 			// Recursively apply common params
 			const bool has_root_path = common_params.contains("root_path");
@@ -97,6 +138,54 @@ namespace polyfem
 
 						if (!sidecar.is_array())
 							log_and_throw_error("dirichlet_boundary file {} must contain an array", path);
+
+						jse::JSE jse;
+						for (const auto &e : sidecar)
+						{
+							json filled = e;
+							expanded.push_back(jse.inject_defaults(filled, rules));
+						}
+						continue;
+					}
+				}
+				expanded.push_back(entry);
+			}
+			bcs["dirichlet_boundary"] = expanded;
+		}
+
+		void expand_bc_sidecars(
+			json &args,
+			const json &rules,
+			const io::ResourceIO &resources)
+		{
+			if (!args.contains("boundary_conditions"))
+				return;
+
+			json &bcs = args["boundary_conditions"];
+			if (!bcs.contains("dirichlet_boundary") || !bcs["dirichlet_boundary"].is_array())
+				return;
+
+			json expanded = json::array();
+			for (const auto &entry : bcs["dirichlet_boundary"])
+			{
+				if (entry.is_string())
+				{
+					const std::string path = entry.get<std::string>();
+					if (std::filesystem::path(path).extension() == ".json")
+					{
+						json sidecar;
+						try
+						{
+							sidecar = json::parse(resources.read_string(path));
+						}
+						catch (const std::exception &e)
+						{
+							log_and_throw_error(
+								"Unable to read dirichlet_boundary resource {}: {}", path, e.what());
+						}
+
+						if (!sidecar.is_array())
+							log_and_throw_error("dirichlet_boundary resource {} must contain an array", path);
 
 						jse::JSE jse;
 						for (const auto &e : sidecar)
