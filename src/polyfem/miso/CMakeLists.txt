@@ -25,3 +25,20 @@ add_subdirectory(generated)
 
 target_link_libraries(polyfem PRIVATE miso)
 target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
+
+# Sources outside miso that pass misolib's intervals to it must be compiled
+# with misolib's own compile options and definitions, which miso keeps private.
+# The interval type (tight, built on NFG's interval_number) changes its memory
+# layout with the SIMD macros: one __m128d holding (high, -low) when __SSE2__,
+# __AVX2__ or NEON is defined, two doubles in the opposite order otherwise.
+# GCC and Clang on x86-64 always define __SSE2__ and arm64 always has NEON,
+# but MSVC defines none of them without /arch, and tight sets /arch:AVX2 (and
+# /fp:strict, which interval arithmetic in a directed rounding mode needs
+# anyway) only on the targets that link it. Without this, those sources and
+# miso read each other's bounds swapped.
+function(polyfem_use_miso_intervals target)
+	set_source_files_properties(${ARGN} TARGET_DIRECTORY ${target} PROPERTIES
+		COMPILE_OPTIONS "$<TARGET_PROPERTY:misolib::misolib,INTERFACE_COMPILE_OPTIONS>"
+		COMPILE_DEFINITIONS "$<TARGET_PROPERTY:misolib::misolib,INTERFACE_COMPILE_DEFINITIONS>")
+endfunction()
+polyfem_use_miso_intervals(polyfem "${PROJECT_SOURCE_DIR}/src/polyfem/utils/Jacobian.cpp")

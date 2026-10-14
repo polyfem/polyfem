@@ -72,6 +72,7 @@ target_link_libraries(unit_tests PUBLIC polyfem::diff)
 # their subdivision numbering matches polyfem's quadrature refinement.
 if(TARGET miso)
     target_link_libraries(unit_tests PRIVATE miso)
+    polyfem_use_miso_intervals(unit_tests "${CMAKE_CURRENT_SOURCE_DIR}/test_jacobian.cpp")
 endif()
 
 ################################################################################
