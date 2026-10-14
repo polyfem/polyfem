@@ -46,8 +46,7 @@ namespace polyfem::varform
 		updated_args["geometry"][0]["n_refs"] = 0;
 		updated_args["geometry"][0]["advanced"]["normalize_mesh"] = false;
 		updated_args["geometry"][0]["transformation"] = {
-			{"dimensions", nullptr}, {"scale", 1}, {"rotation", nullptr},
-			{"rotation_mode", "xyz"}, {"translation", json::array()}};
+			{"dimensions", nullptr}, {"scale", 1}, {"rotation", nullptr}, {"rotation_mode", "xyz"}, {"translation", json::array()}};
 		updated_args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit_;
 		const io::FileSystemIO generated_resources(resources_.host_directory());
 		auto updated_mesh = mesh::GeometryLoader(units, generated_resources).load_fem(updated_args["geometry"]);
