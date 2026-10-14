@@ -606,7 +606,7 @@ TEST_CASE("legacy RHS assembler projects initial conditions after construction",
 	CHECK(solution.isApprox(Eigen::MatrixXd::Constant(state.n_bases, 1, 2.0), 1e-10));
 }
 
-TEST_CASE("macro displacement gradient remains on legacy state path", "[varform][state]")
+TEST_CASE("static macro displacement gradient uses forward varform", "[varform][state][macro_strain]")
 {
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/neohookean.json");
 	args["/constraints/macro_displacement_gradient"_json_pointer] = {
@@ -614,13 +614,62 @@ TEST_CASE("macro displacement gradient remains on legacy state path", "[varform]
 		{"fixed_components", {0}}};
 
 	const io::FileSystemIO resources(args["root_path"].get<std::string>());
-	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	CHECK(varform::uses_varform_state(args, resources));
 
-	legacy::State state;
+	State state;
 	state.init(args, false);
 
-	REQUIRE(state.assembler != nullptr);
-	CHECK(state.assembler->name() == "NeoHookean");
+	REQUIRE(state.variational_formulation != nullptr);
+	CHECK(std::dynamic_pointer_cast<varform::NonlinearElasticStaticVarForm>(state.variational_formulation) != nullptr);
+	CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation) == nullptr);
+}
+
+TEST_CASE("incremental load macro strain uses forward varform", "[varform][state][macro_strain]")
+{
+	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/neohookean.json");
+	const io::FileSystemIO resources(args["root_path"].get<std::string>());
+	args["/constraints/macro_displacement_gradient"_json_pointer] = {
+		{"value", {{0, 0}, {0, "-0.01*t"}}},
+		{"fixed_components", {0, 1, 2, 3}}};
+	for (const bool quasistatic : {false, true})
+	{
+		CAPTURE(quasistatic);
+		args["time"] = {{"quasistatic", quasistatic}, {"dt", 1}, {"time_steps", 2}};
+		CHECK(varform::uses_varform_state(args, resources) == quasistatic);
+		CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args, true));
+		CHECK(varform::VarFormFactory::create("NeoHookean", args, resources, true) == nullptr);
+		if (quasistatic)
+		{
+			State state;
+			state.init(args, true);
+			CHECK(std::dynamic_pointer_cast<varform::NonlinearElasticTransientVarForm>(state.variational_formulation) != nullptr);
+			CHECK(std::dynamic_pointer_cast<varform::DifferentiableVarForm>(state.variational_formulation) == nullptr);
+		}
+		else
+			CHECK(varform::VarFormFactory::create("NeoHookean", args, resources) == nullptr);
+
+		json ordinary_args = args;
+		ordinary_args["constraints"].erase("macro_displacement_gradient");
+		CHECK(varform::uses_varform_state(ordinary_args, resources));
+	}
+	args["time"].erase("quasistatic");
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	args["time"]["quasistatic"] = true;
+	args["contact"] = {{"enabled", true}, {"periodic", true}};
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	args["boundary_conditions"]["periodic"] = {{{"boundary_ids", {1, 2}}}};
+	CHECK(varform::uses_varform_state(args, resources));
+	args["contact"]["enabled"] = false;
+	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	args.erase("contact");
+	for (const bool null_time : {false, true})
+	{
+		CAPTURE(null_time);
+		args.erase("time");
+		if (null_time)
+			args["time"] = nullptr;
+		CHECK(varform::uses_varform_state(args, resources));
+	}
 }
 
 TEST_CASE("optimization keeps varforms on the legacy state path", "[varform][state]")

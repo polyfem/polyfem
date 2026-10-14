@@ -79,5 +79,9 @@ namespace polyfem::solver
 
 		/// @brief Contact potential
 		const ipc::BarrierPotential barrier_potential_;
+
+	private:
+		/// Per-form cache: identical positions in another state do not imply that this collision set is built.
+		Eigen::MatrixXd cached_displaced_surface_;
 	};
 } // namespace polyfem::solver
