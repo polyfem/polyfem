@@ -78,7 +78,7 @@ namespace polyfem::solver
 		if (quadrature_order > 0)
 		{
 			params.set_quad_rule(build_quad_rule(quadrature_order));
-			verify_vertices_in_quad_rule(params.get_quad_rule());
+			verify_vertices_in_quad_rule(params.quad_rule());
 		}
 		return params;
 	}
@@ -178,18 +178,6 @@ namespace polyfem::solver
 			const double ratio = sqrt(curr_distance) / dhat();
 			const auto log_level = (ratio < 1e-6) ? spdlog::level::err : ((ratio < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
 			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
-		}
-
-		{
-			const double min_dist_fed = params.min_dist_seen();
-			if (std::isfinite(min_dist_fed))
-			{
-				const double ratio_fed = min_dist_fed / dhat();
-				const auto log_level_fed = (ratio_fed < 1e-6) ? spdlog::level::err
-															  : ((ratio_fed < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
-				polyfem::logger().log(log_level_fed, "Minimum distance fed to barrier: {}, dhat: {}", min_dist_fed, dhat());
-			}
-			params.reset_min_dist();
 		}
 
 		if (data.iter_num == 0)

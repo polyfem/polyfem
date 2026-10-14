@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 	auto face_q_pos = [&](const Eigen::MatrixXd &X, int fi, int qi,
 						  const ipc::ESPParameters &p) {
 		Eigen::Matrix<double, 1, 3> q = Eigen::Matrix<double, 1, 3>::Zero();
-		const auto &qp = p.get_quad_rule()[qi];
+		const auto &qp = p.quad_rule()[qi];
 		for (int j = 0; j < 3; ++j)
 			q += qp.lambda[j] * X.row(F(fi, j));
 		return q;
