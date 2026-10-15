@@ -90,12 +90,12 @@ def compute_energy(energy):
 
 
 energies = {
-    # "VolumePenalty2d": VolumePenaltyEnergy(dim=2),
-    # "VolumePenalty3d": VolumePenaltyEnergy(dim=3),
-    # "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2, power=1),
-    # "AMIPS2drest": AMIPSEnergy(use_rest_pose=True, dim=2, power=1),
-    # "AMIPS3d": AMIPSEnergy(use_rest_pose=False, dim=3, power=1),
-    # "AMIPS3drest": AMIPSEnergy(use_rest_pose=True, dim=3, power=1),
+    "VolumePenalty2d": VolumePenaltyEnergy(dim=2),
+    "VolumePenalty3d": VolumePenaltyEnergy(dim=3),
+    "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2, power=1),
+    "AMIPS2drest": AMIPSEnergy(use_rest_pose=True, dim=2, power=1),
+    "AMIPS3d": AMIPSEnergy(use_rest_pose=False, dim=3, power=1),
+    "AMIPS3drest": AMIPSEnergy(use_rest_pose=True, dim=3, power=1),
     "AMIPS2d_p2": AMIPSEnergy(use_rest_pose=False, dim=2, power=2),
     "AMIPS2drest_p2": AMIPSEnergy(use_rest_pose=True, dim=2, power=2),
     "AMIPS3d_p2": AMIPSEnergy(use_rest_pose=False, dim=3, power=2),
