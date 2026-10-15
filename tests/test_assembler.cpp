@@ -728,6 +728,26 @@ TEST_CASE("AMIPS squared autogen", "[assembler][amips][amips_squared]")
 	REQUIRE(grad.allFinite());
 	REQUIRE(hess.allFinite());
 	require_approx_matrix(hess, hess.transpose(), 1e-10);
+
+	// The original assembler calls the power-one autogen gradient and Hessian.
+	AMIPSEnergy original;
+	original.set_size(dim);
+	Units units;
+	original.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1}}, units, test_resources());
+	Matrix original_F = F; // elastic_energy applies the reference transform in place.
+	const double original_energy = original.elastic_energy(p, 0, 0, original_F);
+	const Matrix original_grad = original.gradient(p, 0, 0, F);
+	const Eigen::MatrixXd original_hess = original.hessian(p, 0, 0, F);
+	Eigen::VectorXd original_grad_flat(dim * dim);
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+			original_grad_flat(i * dim + j) = original_grad(i, j);
+
+	// Squaring the energy requires the chain rule, not squaring its derivatives.
+	REQUIRE(energy(F) == Catch::Approx(original_energy * original_energy).margin(1e-10));
+	require_approx_matrix(grad, 2 * original_energy * original_grad, 1e-10);
+	require_approx_matrix(hess,
+						  2 * original_grad_flat * original_grad_flat.transpose() + 2 * original_energy * original_hess, 1e-9);
 	if (sample == 0)
 	{
 		REQUIRE(energy(F) == Catch::Approx(dim * dim));
