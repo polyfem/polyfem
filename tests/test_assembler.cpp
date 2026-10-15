@@ -14,6 +14,10 @@
 #include <polyfem/assembler/InversionBarrier.hpp>
 #include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
+#include <polyfem/autogen/elastic_energies/AMIPS2d_p2.hpp>
+#include <polyfem/autogen/elastic_energies/AMIPS2drest_p2.hpp>
+#include <polyfem/autogen/elastic_energies/AMIPS3d_p2.hpp>
+#include <polyfem/autogen/elastic_energies/AMIPS3drest_p2.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/varforms/VarForm.hpp>
@@ -664,6 +668,107 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	amips.compute_stress_tensor(OutputData(0, el_id, bs, gbs, local_pts, displacement), ElasticityTensorType::F, def_grad);
 	REQUIRE(stress.array().isNaN().all());
 	REQUIRE(def_grad.allFinite());
+}
+
+TEST_CASE("AMIPS squared autogen", "[assembler][amips][amips_squared]")
+{
+	const int dim = GENERATE(2, 3);
+	const bool use_rest_pose = GENERATE(false, true);
+	const int sample = GENERATE(0, 1, 2);
+	CAPTURE(dim, use_rest_pose, sample);
+
+	using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+	const RowVectorNd p = RowVectorNd::Zero(dim);
+	const auto gradient = dim == 2
+							  ? (use_rest_pose ? autogen::AMIPS2drest_p2_gradient : autogen::AMIPS2d_p2_gradient)
+							  : (use_rest_pose ? autogen::AMIPS3drest_p2_gradient : autogen::AMIPS3d_p2_gradient);
+	const auto hessian = dim == 2
+							 ? (use_rest_pose ? autogen::AMIPS2drest_p2_hessian : autogen::AMIPS2d_p2_hessian)
+							 : (use_rest_pose ? autogen::AMIPS3drest_p2_hessian : autogen::AMIPS3d_p2_hessian);
+
+	// Columns are the edges of a unit regular simplex.
+	Matrix reference = Matrix::Identity(dim, dim);
+	if (!use_rest_pose)
+	{
+		reference(0, 1) = 0.5;
+		reference(1, 1) = std::sqrt(3.) / 2;
+		if (dim == 3)
+		{
+			reference(0, 2) = 0.5;
+			reference(1, 2) = 0.5 / std::sqrt(3.);
+			reference(2, 2) = std::sqrt(2. / 3.);
+		}
+	}
+	const auto energy = [&](const Matrix &F) {
+		const Matrix J = F * reference.inverse();
+		const double amips = J.squaredNorm() / std::pow(J.determinant(), 2. / dim);
+		return amips * amips;
+	};
+
+	Matrix deformation = Matrix::Identity(dim, dim);
+	if (sample != 0)
+	{
+		deformation(0, 0) = 1.2;
+		deformation(1, 1) = 0.8;
+		deformation(0, 1) = 0.3;
+		deformation(1, 0) = -0.1;
+		if (dim == 3)
+		{
+			deformation(2, 2) = 1.1;
+			deformation(0, 2) = -0.2;
+			deformation(2, 1) = 0.15;
+		}
+		if (sample == 2)
+			deformation *= 0.6;
+	}
+	const Matrix F = deformation * reference;
+	REQUIRE(F.determinant() > 0);
+	const Matrix grad = gradient(p, 0, 0, F);
+	const Eigen::MatrixXd hess = hessian(p, 0, 0, F);
+	REQUIRE(grad.allFinite());
+	REQUIRE(hess.allFinite());
+	require_approx_matrix(hess, hess.transpose(), 1e-10);
+
+	// The original assembler calls the power-one autogen gradient and Hessian.
+	AMIPSEnergy original;
+	original.set_size(dim);
+	Units units;
+	original.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1}}, units, test_resources());
+	Matrix original_F = F; // elastic_energy applies the reference transform in place.
+	const double original_energy = original.elastic_energy(p, 0, 0, original_F);
+	const Matrix original_grad = original.gradient(p, 0, 0, F);
+	const Eigen::MatrixXd original_hess = original.hessian(p, 0, 0, F);
+	Eigen::VectorXd original_grad_flat(dim * dim);
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+			original_grad_flat(i * dim + j) = original_grad(i, j);
+
+	// Squaring the energy requires the chain rule, not squaring its derivatives.
+	REQUIRE(energy(F) == Catch::Approx(original_energy * original_energy).margin(1e-10));
+	require_approx_matrix(grad, 2 * original_energy * original_grad, 1e-10);
+	require_approx_matrix(hess,
+						  2 * original_grad_flat * original_grad_flat.transpose() + 2 * original_energy * original_hess, 1e-9);
+	if (sample == 0)
+	{
+		REQUIRE(energy(F) == Catch::Approx(dim * dim));
+		REQUIRE(grad.norm() < 1e-10);
+	}
+
+	const double step = 1e-6;
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+		{
+			CAPTURE(i, j);
+			Matrix plus = F, minus = F;
+			plus(i, j) += step;
+			minus(i, j) -= step;
+			REQUIRE(grad(i, j) == Catch::Approx((energy(plus) - energy(minus)) / (2 * step)).margin(1e-7));
+			const Matrix fd_hess = (gradient(p, 0, 0, plus) - gradient(p, 0, 0, minus)) / (2 * step);
+			// The generator flattens F in row-major order, unlike Eigen's default storage.
+			for (int k = 0; k < dim; ++k)
+				for (int l = 0; l < dim; ++l)
+					REQUIRE(hess(k * dim + l, i * dim + j) == Catch::Approx(fd_hess(k, l)).margin(1e-6));
+		}
 }
 
 TEST_CASE("modified-neohookean-gradient", "[assembler]")
