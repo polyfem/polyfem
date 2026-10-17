@@ -263,7 +263,7 @@ namespace polyfem::mesh
 		return data;
 	}
 
-	SurfaceMeshData MeshReader::read_msh_surface(const std::filesystem::path &path)
+	SurfaceMeshData MeshReader::read_msh_surface(const std::filesystem::path &path, const bool keep_volume)
 	{
 		SurfaceMeshData result;
 		Eigen::MatrixXi cells;
@@ -279,6 +279,14 @@ namespace polyfem::mesh
 			result.edges = cells;
 		else if (cells.cols() == 3)
 			result.faces = cells;
+		else if (cells.cols() == 4 && result.vertices.cols() == 3 && keep_volume)
+		{
+			// Interior vertices belong to the tets, so they are not codimensional
+			// points: skip finalize_surface.
+			result.tets = cells;
+			find_triangle_surface_from_tets(cells, result.faces);
+			return result;
+		}
 		else if (cells.cols() == 4 && result.vertices.cols() == 3)
 		{
 			Eigen::MatrixXd surface_vertices;
