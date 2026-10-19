@@ -34,6 +34,7 @@ namespace polyfem
 
 			std::vector<int> node_ids_from_edge(const Navigation3D::Index &index, const int n_new_nodes);
 			std::vector<int> node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes);
+			std::vector<int> node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes, const int n_new_nodesq);
 			std::vector<int> node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes);
 
 			// Packed id from primitive

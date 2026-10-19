@@ -1,14 +1,12 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/MeshProcessing3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/utils/StringUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
 #include <igl/barycentric_coordinates.h>
 
-#include <geogram/mesh/mesh_io.h>
-#include <fstream>
+#include <unordered_map>
 
 using namespace polyfem::utils;
 
@@ -16,6 +14,130 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void CMesh3D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_cells());
+
+			auto face_key = [this](const int f) {
+				std::vector<int> key(n_face_vertices(f));
+				for (int lv = 0; lv < key.size(); ++lv)
+					key[lv] = face_vertex(f, lv);
+				std::sort(key.begin(), key.end());
+				return key;
+			};
+			auto edge_key = [this](const int e) {
+				return std::pair<int, int>(
+					std::min(edge_vertex(e, 0), edge_vertex(e, 1)),
+					std::max(edge_vertex(e, 0), edge_vertex(e, 1)));
+			};
+
+			std::unordered_map<std::vector<int>, int, utils::HashVector> old_boundary_ids;
+			std::unordered_map<std::vector<int>, FaceNodes, utils::HashVector> old_face_nodes;
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const auto key = face_key(f);
+				if (has_boundary_ids())
+					old_boundary_ids[key] = boundary_ids_[f];
+				if (f < face_nodes_.size())
+					old_face_nodes[key] = face_nodes_[f];
+			}
+
+			std::unordered_map<std::pair<int, int>, EdgeNodes, utils::HashPair> old_edge_nodes;
+			for (int e = 0; e < n_edges() && e < edge_nodes_.size(); ++e)
+				old_edge_nodes[edge_key(e)] = edge_nodes_[e];
+
+			if (cell_nodes_.size() == keep.size())
+			{
+				std::vector<CellNodes> filtered;
+				for (int c = 0; c < keep.size(); ++c)
+					if (keep[c])
+						filtered.push_back(cell_nodes_[c]);
+				cell_nodes_ = std::move(filtered);
+			}
+			filter_element_data(keep);
+
+			std::vector<bool> used_faces(mesh_.faces.size(), false);
+			for (int c = 0; c < keep.size(); ++c)
+				if (keep[c])
+					for (const int f : mesh_.elements[c].fs)
+						used_faces[f] = true;
+
+			std::vector<int> old_to_new_face(mesh_.faces.size(), -1);
+			std::vector<Face> faces;
+			faces.reserve(std::count(used_faces.begin(), used_faces.end(), true));
+			for (int f = 0; f < used_faces.size(); ++f)
+			{
+				if (!used_faces[f])
+					continue;
+				old_to_new_face[f] = faces.size();
+				faces.push_back(mesh_.faces[f]);
+				faces.back().id = faces.size() - 1;
+			}
+
+			std::vector<Element> elements;
+			elements.reserve(std::count(keep.begin(), keep.end(), true));
+			for (int c = 0; c < keep.size(); ++c)
+			{
+				if (!keep[c])
+					continue;
+				elements.push_back(mesh_.elements[c]);
+				auto &element = elements.back();
+				element.id = elements.size() - 1;
+				for (auto &f : element.fs)
+					f = old_to_new_face[f];
+			}
+			mesh_.faces = std::move(faces);
+			mesh_.elements = std::move(elements);
+
+			Navigation3D::prepare_mesh(mesh_);
+
+			if (!old_boundary_ids.empty())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const auto it = old_boundary_ids.find(face_key(f));
+					boundary_ids_[f] = it == old_boundary_ids.end() ? get_default_boundary_id(f) : it->second;
+				}
+			}
+			else
+				boundary_ids_.clear();
+
+			face_nodes_.clear();
+			if (!old_face_nodes.empty())
+			{
+				face_nodes_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const auto it = old_face_nodes.find(face_key(f));
+					if (it != old_face_nodes.end())
+						face_nodes_[f] = it->second;
+				}
+			}
+
+			edge_nodes_.clear();
+			if (!old_edge_nodes.empty())
+			{
+				edge_nodes_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const auto it = old_edge_nodes.find(edge_key(e));
+					if (it != old_edge_nodes.end())
+						edge_nodes_[e] = it->second;
+				}
+			}
+
+			in_ordered_edges_.resize(n_edges(), 2);
+			for (int e = 0; e < n_edges(); ++e)
+				in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
+			const int max_face_size = n_faces() == 0 ? 0 : std::max_element(mesh_.faces.begin(), mesh_.faces.end(), [](const Face &a, const Face &b) { return a.vs.size() < b.vs.size(); })->vs.size();
+			in_ordered_faces_.setConstant(n_faces(), max_face_size, -1);
+			for (int f = 0; f < n_faces(); ++f)
+				for (int lv = 0; lv < n_face_vertices(f); ++lv)
+					in_ordered_faces_(f, lv) = face_vertex(f, lv);
+			compute_elements_tag();
+		}
+
 		void CMesh3D::refine(const int n_refinement, const double t)
 		{
 			if (n_refinement <= 0)
@@ -25,6 +147,7 @@ namespace polyfem
 
 			// TODO refine high order mesh!
 			orders_.resize(0, 0);
+			clear_higher_order_data();
 			if (mesh_.type == MeshType::TET)
 			{
 				MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
@@ -77,131 +200,8 @@ namespace polyfem
 			assert(in_ordered_faces_.size() > 0);
 		}
 
-		bool CMesh3D::load(const std::string &path)
-		{
-			edge_nodes_.clear();
-			face_nodes_.clear();
-			cell_nodes_.clear();
-
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				GEO::mesh_load(path, M);
-				return load(M);
-			}
-
-			FILE *f = fopen(path.data(), "rt");
-			if (!f)
-				return false;
-
-			int nv, np, nh;
-			auto _ = fscanf(f, "%d %d %d", &nv, &np, &nh);
-			nh /= 3;
-
-			mesh_.points.resize(3, nv);
-			mesh_.vertices.resize(nv);
-
-			for (int i = 0; i < nv; i++)
-			{
-				double x, y, z;
-				auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
-				mesh_.points(0, i) = x;
-				mesh_.points(1, i) = y;
-				mesh_.points(2, i) = z;
-				Vertex v;
-				v.id = i;
-				mesh_.vertices[i] = v;
-			}
-			mesh_.faces.resize(np);
-			for (int i = 0; i < np; i++)
-			{
-				Face &p = mesh_.faces[i];
-				p.id = i;
-				int nw;
-
-				auto _ = fscanf(f, "%d", &nw);
-				p.vs.resize(nw);
-				for (int j = 0; j < nw; j++)
-				{
-					auto _ = fscanf(f, "%u", &(p.vs[j]));
-				}
-			}
-			mesh_.elements.resize(nh);
-			for (int i = 0; i < nh; i++)
-			{
-				Element &h = mesh_.elements[i];
-				h.id = i;
-
-				int nf;
-				auto _ = fscanf(f, "%d", &nf);
-				h.fs.resize(nf);
-
-				for (int j = 0; j < nf; j++)
-				{
-					auto _ = fscanf(f, "%u", &(h.fs[j]));
-				}
-
-				for (auto fid : h.fs)
-					h.vs.insert(h.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-				sort(h.vs.begin(), h.vs.end());
-				h.vs.erase(unique(h.vs.begin(), h.vs.end()), h.vs.end());
-
-				int tmp;
-				auto __ = fscanf(f, "%d", &tmp);
-				for (int j = 0; j < nf; j++)
-				{
-					int s;
-					auto _ = fscanf(f, "%d", &s);
-					h.fs_flag.push_back(s);
-				}
-			}
-			for (int i = 0; i < nh; i++)
-			{
-				int tmp;
-				auto _ = fscanf(f, "%d", &tmp);
-				mesh_.elements[i].hex = tmp;
-			}
-
-			char s[1024], sread[1024];
-			int find = false, num = 0;
-			while (!feof(f) && !find)
-			{
-				auto _ = fgets(s, 1024, f);
-				if (sscanf(s, "%s%d", sread, &num) == 2 && (strcmp(sread, "KERNEL") == 0))
-					find = true;
-			}
-			if (find)
-			{
-				for (int i = 0; i < nh; i++)
-				{
-					double x, y, z;
-					auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
-					mesh_.elements[i].v_in_Kernel.push_back(x);
-					mesh_.elements[i].v_in_Kernel.push_back(y);
-					mesh_.elements[i].v_in_Kernel.push_back(z);
-				}
-			}
-
-			fclose(f);
-
-			// remove horrible kernels and replace with barycenters
-			for (int c = 0; c < n_cells(); ++c)
-			{
-				auto bary = cell_barycenter(c);
-				for (int d = 0; d < 3; ++d)
-					mesh_.elements[c].v_in_Kernel[d] = bary(d);
-			}
-
-			Navigation3D::prepare_mesh(mesh_);
-			// if(is_simplicial())
-			// MeshProcessing3D::orient_volume_mesh(mesh_);
-			compute_elements_tag();
-			return true;
-		}
-
-		// load from a geogram surface mesh (for debugging), or volume mesh
-		// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
-		bool CMesh3D::load(const GEO::Mesh &M)
+		// Build the internal topology from the Geogram representation created from MeshData.
+		bool CMesh3D::build_storage_from_geogram(const GEO::Mesh &M)
 		{
 			edge_nodes_.clear();
 			face_nodes_.clear();
@@ -379,20 +379,17 @@ namespace polyfem
 						}
 					}
 
-					for (auto fid : cell.fs)
-					{
-						cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-					}
-					sort(cell.vs.begin(), cell.vs.end());
-					cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+					cell.input_vs.resize(M.cells.nb_vertices(c));
+					for (int lv = 0; lv < (int)M.cells.nb_vertices(c); ++lv)
+						cell.input_vs[lv] = M.cells.vertex(c, lv);
 
 					// Compute a point in the kernel (assumes the barycenter is ok)
 					Eigen::RowVector3d p(0, 0, 0);
-					for (int v : cell.vs)
+					for (int v : cell.input_vs)
 					{
 						p += mesh_.points.col(v).transpose();
 					}
-					p /= cell.vs.size();
+					p /= cell.input_vs.size();
 					mesh_.elements[c].v_in_Kernel.push_back(p[0]);
 					mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 					mesh_.elements[c].v_in_Kernel.push_back(p[2]);
@@ -408,65 +405,57 @@ namespace polyfem
 			return true;
 		}
 
-		bool CMesh3D::save(const std::string &path) const
+		bool CMesh3D::build_topology(const MeshData &data)
 		{
-
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				to_geogram_mesh(*this, M);
-				GEO::mesh_save(M, path);
-				return true;
-			}
-
-			std::fstream f(path, std::ios::out);
-
-			f << mesh_.points.cols() << " " << mesh_.faces.size() << " " << 3 * mesh_.elements.size() << std::endl;
-			for (int i = 0; i < mesh_.points.cols(); i++)
-				f << mesh_.points(0, i) << " " << mesh_.points(1, i) << " " << mesh_.points(2, i) << std::endl;
-
-			for (auto f_ : mesh_.faces)
-			{
-				f << f_.vs.size() << " ";
-				for (auto vid : f_.vs)
-					f << vid << " ";
-				f << std::endl;
-			}
-
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].fs.size() << " ";
-				for (auto fid : mesh_.elements[i].fs)
-					f << fid << " ";
-				f << std::endl;
-				f << mesh_.elements[i].fs_flag.size() << " ";
-				for (auto f_flag : mesh_.elements[i].fs_flag)
-					f << f_flag << " ";
-				f << std::endl;
-			}
-
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].hex << std::endl;
-			}
-
-			f << "KERNEL"
-			  << " " << mesh_.elements.size() << std::endl;
-			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
-			{
-				f << mesh_.elements[i].v_in_Kernel[0] << " " << mesh_.elements[i].v_in_Kernel[1] << " " << mesh_.elements[i].v_in_Kernel[2] << std::endl;
-			}
-			f.close();
-
-			return true;
-		}
-
-		bool CMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
+
+			if (data.has_polyhedral_topology())
+			{
+				mesh_.points = V.transpose();
+				mesh_.vertices.resize(V.rows());
+				for (int i = 0; i < V.rows(); ++i)
+					mesh_.vertices[i].id = i;
+
+				mesh_.faces.resize(data.faces.size());
+				for (int i = 0; i < data.faces.size(); ++i)
+				{
+					mesh_.faces[i].id = i;
+					mesh_.faces[i].vs.assign(data.faces[i].begin(), data.faces[i].end());
+				}
+
+				mesh_.elements.resize(F.rows());
+				bool all_hex = true;
+				for (int i = 0; i < F.rows(); ++i)
+				{
+					auto &element = mesh_.elements[i];
+					element.id = i;
+					element.fs.assign(data.cell_faces[i].begin(), data.cell_faces[i].end());
+					element.fs_flag.assign(
+						data.cell_face_orientations[i].begin(), data.cell_face_orientations[i].end());
+					element.hex = data.cell_is_hex[i];
+					all_hex &= element.hex;
+					if (data.elements_are_ordered)
+						for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
+							element.input_vs.push_back(F(i, j));
+					for (const int face : element.fs)
+						element.vs.insert(
+							element.vs.end(), mesh_.faces[face].vs.begin(), mesh_.faces[face].vs.end());
+					std::sort(element.vs.begin(), element.vs.end());
+					element.vs.erase(std::unique(element.vs.begin(), element.vs.end()), element.vs.end());
+					element.v_in_Kernel.resize(data.cell_kernel_points.cols());
+					for (int d = 0; d < data.cell_kernel_points.cols(); ++d)
+						element.v_in_Kernel[d] = data.cell_kernel_points(i, d);
+				}
+				mesh_.type = all_hex ? MeshType::HEX : MeshType::HYB;
+				Navigation3D::prepare_mesh(mesh_);
+				compute_elements_tag();
+				return true;
+			}
+			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
 
 			GEO::Mesh M;
 			M.vertices.create_vertices((int)V.rows());
@@ -522,7 +511,7 @@ namespace polyfem
 			}
 			M.cells.connect();
 
-			return load(M);
+			return build_storage_from_geogram(M);
 		}
 
 		void CMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
@@ -1068,6 +1057,9 @@ namespace polyfem
 				if (n.nodes.size() > 0)
 					n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
 			}
+			transform_higher_order_data(
+				Eigen::Matrix3d::Identity() * scaling,
+				-shift * scaling);
 
 			logger().debug("-- bbox before normalization:");
 			logger().debug("   min   : {}", minV);

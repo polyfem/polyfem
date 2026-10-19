@@ -8,6 +8,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <Eigen/Dense>
+
+#include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace polyfem::mesh
@@ -41,6 +43,18 @@ namespace polyfem::mesh
 		double ls_value = 0.;
 	};
 
+	/// @brief MMG remesh a 2D triangular mesh.
+	/// @param V Input mesh positions (vert num x 2) .
+	/// @param F Input mesh connectivity (face num x 3).
+	/// @param OV Output mesh positions.
+	/// @param OF Output mesh connectivity.
+	/// @param opt MMG options.
+	/// @param pinned_vertices Optional vertices pinned during remeshing.
+	bool remesh_2d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+				   Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
+				   MmgOptions opt = MmgOptions(),
+				   const std::vector<int> *pinned_vertices = nullptr);
+
 	///
 	/// Remesh a 2d triangle mesh adaptively following to the given scalar field.
 	///
@@ -49,9 +63,20 @@ namespace polyfem::mesh
 	/// @param[in]  S     { #V x 1 per-vertex scalar field to follow }
 	/// @param[out] OV    { #OV x (2|3) output mesh vertices }
 	/// @param[out] OF    { #OF x 3 output mesh triangles }
-	///
 	void remesh_adaptive_2d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXd &S,
 							Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, MmgOptions opt = MmgOptions());
+
+	/// @brief MMG remesh a 3D triangular tet mesh.
+	/// @param V Input mesh positions (vert num x 3) .
+	/// @param T Input mesh connectivity (tet num x 4).
+	/// @param OV Output mesh positions.
+	/// @param OF Output mesh connectivity.
+	/// @param opt MMG options.
+	/// @param pinned_vertices Optional vertices pinned during remeshing.
+	bool remesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &T,
+				   Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT,
+				   MmgOptions opt = MmgOptions(),
+				   const std::vector<int> *pinned_vertices = nullptr);
 
 	///
 	/// Remesh a 3d tet-mesh adaptively following to the given scalar field.

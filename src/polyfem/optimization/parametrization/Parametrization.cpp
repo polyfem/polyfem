@@ -3,12 +3,6 @@
 
 namespace polyfem::solver
 {
-	Eigen::VectorXd Parametrization::inverse_eval(const Eigen::VectorXd &y)
-	{
-		log_and_throw_adjoint_error("Not supported");
-		return Eigen::VectorXd();
-	}
-
 	int CompositeParametrization::size(const int x_size) const
 	{
 		int cur_size = x_size;
@@ -18,10 +12,27 @@ namespace polyfem::solver
 		return cur_size;
 	}
 
-	Eigen::VectorXd CompositeParametrization::inverse_eval(const Eigen::VectorXd &y)
+	int CompositeParametrization::inverse_size(int y_size) const
 	{
 		if (parametrizations_.empty())
+		{
+			return y_size;
+		};
+
+		int result = y_size;
+		for (int i = parametrizations_.size() - 1; i >= 0; i--)
+		{
+			result = parametrizations_[i]->inverse_size(result);
+		}
+		return result;
+	}
+
+	Eigen::VectorXd CompositeParametrization::inverse_eval(const Eigen::VectorXd &y) const
+	{
+		if (parametrizations_.empty())
+		{
 			return y;
+		}
 
 		Eigen::VectorXd x = y;
 		for (int i = parametrizations_.size() - 1; i >= 0; i--)

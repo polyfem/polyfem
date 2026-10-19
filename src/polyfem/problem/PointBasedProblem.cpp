@@ -1,6 +1,4 @@
 #include "PointBasedProblem.hpp"
-#include <polyfem/io/MatrixIO.hpp>
-
 #include <iostream>
 #include <string>
 
@@ -11,7 +9,7 @@ namespace polyfem
 
 	namespace problem
 	{
-		bool PointBasedTensorProblem::BCValue::init(const json &data)
+		bool PointBasedTensorProblem::BCValue::init(const json &data, const io::ResourceIO &resources)
 		{
 			Eigen::Matrix<bool, 3, 1> dd;
 			dd.setConstant(true);
@@ -31,8 +29,8 @@ namespace polyfem
 				std::string rbf = "multiquadric";
 				double eps = 0.1;
 
-				read_matrix(data["function"], fun);
-				read_matrix(data["points"], pts);
+				fun = resources.read_matrix(data["function"].get<std::string>());
+				pts = resources.read_matrix(data["points"].get<std::string>());
 
 				int coord = -1;
 				if (data.contains("coordinate"))
@@ -43,7 +41,7 @@ namespace polyfem
 
 				is_tri = data.contains("triangles");
 				if (is_tri)
-					read_matrix(data["triangles"], tri);
+					tri = resources.read_int_matrix(data["triangles"].get<std::string>());
 				else
 				{
 					if (data.contains("rbf"))
@@ -112,12 +110,12 @@ namespace polyfem
 			translation_.setZero();
 		}
 
-		void PointBasedTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void PointBasedTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		}
 
-		void PointBasedTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void PointBasedTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -136,7 +134,7 @@ namespace polyfem
 			}
 		}
 
-		void PointBasedTensorProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void PointBasedTensorProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -214,9 +212,9 @@ namespace polyfem
 			}
 		}
 
-		bool PointBasedTensorProblem::is_dimension_dirichet(const int tag, const int dim) const
+		bool PointBasedTensorProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
-			if (all_dimensions_dirichlet())
+			if (all_dimensions_dirichlet(fe_space_id))
 				return true;
 
 			for (size_t b = 0; b < boundary_ids_.size(); ++b)
@@ -231,7 +229,7 @@ namespace polyfem
 			return true;
 		}
 
-		void PointBasedTensorProblem::set_parameters(const json &params, const std::string &root_path)
+		void PointBasedTensorProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (initialized_)
 				return;
@@ -269,7 +267,7 @@ namespace polyfem
 				{
 					boundary_ids_[i] = j_boundary[i]["id"];
 					const auto ff = j_boundary[i]["value"];
-					const bool all_d = bc_[i].init(ff);
+					const bool all_d = bc_[i].init(ff, resources);
 					all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && all_d;
 				}
 			}
@@ -286,7 +284,7 @@ namespace polyfem
 				{
 					neumann_boundary_ids_[i] = j_boundary[i]["id"];
 					const auto ff = j_boundary[i]["value"];
-					neumann_bc_[i].init(ff);
+					neumann_bc_[i].init(ff, resources);
 				}
 			}
 		}

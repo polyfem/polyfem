@@ -5,8 +5,6 @@ set(SOURCES
 	ParametrizationForm.cpp
 	SpatialIntegralForms.cpp
 	SpatialIntegralForms.hpp
-	VariableToSimulation.cpp
-	VariableToSimulation.hpp
 	CompositeForm.cpp
 	CompositeForm.hpp
 	CompositeForms.cpp

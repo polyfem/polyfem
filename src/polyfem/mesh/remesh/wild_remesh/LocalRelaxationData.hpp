@@ -1,16 +1,22 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 
 namespace polyfem::mesh
 {
+	using State = polyfem::legacy::State;
+
 	// Things needed for the local relaxation solve
 	template <typename M>
 	class LocalRelaxationData
 	{
+		// Assemblers and forms retain references to this reader.
+		const io::FileSystemIO resources_;
+
 	public:
 		LocalRelaxationData(
 			const State &state,

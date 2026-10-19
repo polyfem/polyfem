@@ -19,11 +19,11 @@ namespace polyfem::assembler
 	{
 	}
 
-	void NeoHookeanElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void NeoHookeanElasticity::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, size() == 3, units.stress(), root_path);
+		params_.add_multimaterial(index, params, size() == 3, units.stress(), resources);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -407,11 +407,8 @@ namespace polyfem::assembler
 				for (int d = 0; d < dim; ++d)
 					def_grad(d, d) += T(1);
 
-				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
-
-				const T log_det_j = log(polyfem::utils::determinant(def_grad));
-				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+				const T val = elastic_energy_density(
+					data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
 				energy += val * data.da(p);
 			}

@@ -1,0 +1,98 @@
+[
+    {
+        "pointer": "/",
+        "type": "string",
+        "options": [
+            "ImplicitEuler",
+            "BDF1",
+            "BDF2",
+            "BDF3",
+            "BDF4",
+            "BDF5",
+            "BDF6",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "default": "ImplicitEuler",
+        "doc": "Time integrator"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "ImplicitEuler",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "fe_space"
+        ],
+        "doc": "Implicit Euler time integration"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "BDF",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "fe_space",
+            "steps"
+        ],
+        "doc": "Backwards differentiation formula time integration"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "ImplicitNewmark",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "fe_space",
+            "gamma",
+            "beta"
+        ],
+        "doc": "Implicit Newmark time integration"
+    },
+    {
+        "pointer": "/type",
+        "type": "string",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Type of time integrator to use"
+    },
+    {
+        "pointer": "/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the time integrator. If not specified, defaults to all finite element spaces."
+    },
+    {
+        "pointer": "/gamma",
+        "type": "float",
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
+        "doc": "Newmark gamma"
+    },
+    {
+        "pointer": "/beta",
+        "type": "float",
+        "default": 0.25,
+        "min": 0,
+        "max": 0.5,
+        "doc": "Newmark beta"
+    },
+    {
+        "pointer": "/steps",
+        "type": "int",
+        "default": 1,
+        "min": 1,
+        "max": 6,
+        "doc": "BDF order"
+    }
+]

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <polyfem/mesh/MeshData.hpp>
+
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/mesh2D/Navigation.hpp>
-#include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/HashUtils.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -15,6 +16,14 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		class Mesh;
+
+		struct MeshWithID
+		{
+			int id;
+			std::unique_ptr<Mesh> mesh;
+		};
+
 		/// Type of Element, check [Poly-Spline Finite Element Method] for a complete description.
 		/// **NOTE**:
 		/// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope
@@ -68,42 +77,18 @@ namespace polyfem
 			};
 
 		public:
-			///
-			/// factory to build the proper mesh
-			///
-			/// @param[in] path mesh path
-			/// @param[in] non_conforming yes or no for non conforming mesh
-			/// @return pointer to the mesh
-			static std::unique_ptr<Mesh> create(const std::string &path, const bool non_conforming = false);
+			/// Construct a runtime mesh from format-independent decoded data.
+			static std::unique_ptr<Mesh> create(MeshData data, bool non_conforming = false);
 
-			///
-			/// factory to build the proper mesh
-			///
-			/// @param[in] M geo mesh
-			/// @param[in] non_conforming yes or no for non conforming mesh
-			/// @return pointer to the mesh
-			static std::unique_ptr<Mesh> create(GEO::Mesh &M, const bool non_conforming = false);
-
-			///
-			/// factory to build the proper mesh
-			///
-			/// @param[in] vertices list of vertices
-			/// @param[in] cells list of cells
-			/// @param[in] non_conforming yes or no for non conforming mesh
-			/// @return pointer to the mesh
-			static std::unique_ptr<Mesh> create(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming = false);
-
-			///
-			/// factory to build the proper empty mesh
-			///
-			/// @param[in] dim dimension of the mesh
-			/// @param[in] non_conforming yes or no for non conforming mesh
-			/// @return pointer to the mesh
-			static std::unique_ptr<Mesh> create(const int dim, const bool non_conforming = false);
+			/// Capture the complete runtime mesh in the canonical, format-independent representation.
+			MeshData to_mesh_data() const;
 
 			/// @brief Create a copy of the mesh
 			/// @return pointer to the new copy mesh
 			virtual std::unique_ptr<Mesh> copy() const = 0;
+
+			/// Split the mesh according to its per-element geometry IDs.
+			std::vector<MeshWithID> split() const;
 
 		protected:
 			///
@@ -263,15 +248,13 @@ namespace polyfem
 			/// @return is cell boundary
 			virtual bool is_boundary_element(const int element_global_id) const = 0;
 
-			virtual bool save(const std::string &path) const = 0;
-
 		private:
-			/// @brief build a mesh from matrices
-			///
-			/// @param[in] V vertices
-			/// @param[in] F connectivity
-			/// @return if success
-			virtual bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) = 0;
+			/// Import all topology and metadata from MeshData.
+			bool build_from_data(const MeshData &data);
+
+			/// Construct only the dimension-specific topology. Metadata is applied by
+			/// build_from_data after edge/face indices exist.
+			virtual bool build_topology(const MeshData &data) = 0;
 
 		public:
 			/// @brief attach high order nodes
@@ -437,11 +420,6 @@ namespace polyfem
 			/// @param[in] marker lambda function that takes the node id, the position, and true/false if the element is on the boundary and returns an integer
 			void compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker);
 
-			/// @brief loads the boundary selections for a file
-			///
-			/// @param[in] path file's path
-			virtual void load_boundary_ids(const std::string &path);
-
 			/// @brief computes boundary selections based on a function
 			///
 			/// @param[in] marker lambda function that takes the id, the list of vertices, the barycenter, and true/false if the element is on the boundary and returns an integer
@@ -524,6 +502,22 @@ namespace polyfem
 			{
 				return body_ids_;
 			}
+
+			/// Set the geometry selection, one ID per element.
+			void set_geometry_ids(const std::vector<int> &geometry_ids)
+			{
+				assert(geometry_ids.size() == n_elements());
+				geometry_ids_ = geometry_ids;
+			}
+
+			/// Get the geometry ID of an element. The default geometry is 0.
+			int get_geometry_id(const int element) const
+			{
+				return has_geometry_ids() ? geometry_ids_.at(element) : 0;
+			}
+
+			const std::vector<int> &get_geometry_ids() const { return geometry_ids_; }
+			bool has_geometry_ids() const { return !geometry_ids_.empty(); }
 			/// @brief checks if points selections are available
 			///
 			/// @return points selections are available
@@ -682,16 +676,11 @@ namespace polyfem
 			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
-			/// @brief loads a mesh from the path
-			///
-			/// @param[in] path file location
-			/// @return if success
-			virtual bool load(const std::string &path) = 0;
-			/// @brief loads a mesh from a geo mesh
-			///
-			/// @param[in] M geo mesh
-			/// @return if success
-			virtual bool load(const GEO::Mesh &M) = 0;
+			/// Remove all top-dimensional elements whose mask entry is false.
+			virtual void remove_elements(const std::vector<bool> &keep) = 0;
+			void filter_element_data(const std::vector<bool> &keep);
+			void clear_higher_order_data();
+			void transform_higher_order_data(const MatrixNd &A, const VectorNd &b);
 
 			/// list of element types
 			std::vector<ElementType> elements_tag_;
@@ -701,6 +690,8 @@ namespace polyfem
 			std::vector<int> boundary_ids_;
 			/// list of volume labels
 			std::vector<int> body_ids_;
+			/// list of geometry labels, one per top-dimensional element
+			std::vector<int> geometry_ids_;
 			/// list of geometry orders, one per cell
 			Eigen::MatrixXi orders_;
 			/// stores if the mesh is rational
@@ -714,6 +705,14 @@ namespace polyfem
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;
+			/// Whether the source MeshData supplied explicit face/cell incidence. This
+			/// cannot be reconstructed from element tags alone (a tetrahedral-shaped
+			/// polyhedron is otherwise indistinguishable from a simplex).
+			bool has_explicit_polyhedral_topology_ = false;
+			/// Canonical connectivity is retained because the runtime edge/face caches do not
+			/// preserve the original per-element high-order node ordering.
+			Eigen::MatrixXd higher_order_nodes_;
+			std::vector<std::vector<int>> higher_order_connectivity_;
 
 			/// Order of the input vertices
 			Eigen::VectorXi in_ordered_vertices_;

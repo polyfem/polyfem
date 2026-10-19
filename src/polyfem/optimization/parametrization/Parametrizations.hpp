@@ -2,7 +2,6 @@
 
 #include "Parametrization.hpp"
 #include <polyfem/Common.hpp>
-#include <map>
 
 namespace polyfem::mesh
 {
@@ -21,8 +20,9 @@ namespace polyfem::solver
 	public:
 		ExponentialMap(const int from = -1, const int to = -1);
 
-		int size(const int x_size) const override { return x_size; }
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -35,8 +35,9 @@ namespace polyfem::solver
 	public:
 		Scaling(const double scale, const int from = -1, const int to = -1);
 
-		int size(const int x_size) const override { return x_size; }
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -48,14 +49,11 @@ namespace polyfem::solver
 	class PowerMap : public Parametrization
 	{
 	public:
-		PowerMap(const double power = 1, const int from = -1, const int to = -1) : power_(power), from_(from), to_(to)
-		{
-			assert(from_ < to_ || from_ < 0);
-			assert(power_ > 0);
-		}
+		PowerMap(const double power = 1, const int from = -1, const int to = -1);
 
-		int size(const int x_size) const override { return x_size; }
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -69,9 +67,9 @@ namespace polyfem::solver
 	public:
 		ENu2LambdaMu(const bool is_volume);
 
-		int size(const int x_size) const override { return x_size; }
-
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -79,37 +77,48 @@ namespace polyfem::solver
 		const bool is_volume_;
 	};
 
+	/// @brief Map per body to per FE node in node major layout (x1 y1 z1 x2 y2 z2...)
+	///
+	/// The order of the input body is pseudo randomly determined by the element order of input mesh,
+	/// *Which is different from body id*.
 	class PerBody2PerNode : public Parametrization
 	{
 	public:
 		PerBody2PerNode(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const int n_bases);
 
 		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
 		const mesh::Mesh &mesh_;
 		const std::vector<basis::ElementBases> &bases_;
-		int full_size_;
-		int reduced_size_;
-		Eigen::VectorXi node_id_to_body_id_;
+		int full_size_;                             /// FE node num.
+		int reduced_size_;                          /// Body num.
+		Eigen::VectorXi compacted_body_node_num_;   /// Number of nodes of a body.
+		Eigen::VectorXi node_id_to_compacted_body_; /// FE node index to body index.
 	};
 
+	/// @brief Map per body to per element in dim major layout (x1 x2 ... y1 y1 ... z1 z2 ...)
 	class PerBody2PerElem : public Parametrization
 	{
 	public:
 		PerBody2PerElem(const mesh::Mesh &mesh);
 
 		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
 		const mesh::Mesh &mesh_;
-		int full_size_;
-		int reduced_size_;
-		std::map<int, std::array<int, 2>> body_id_map_; // from body_id to {elem_id, index}
+		int full_size_;                                /// Element num.
+		int reduced_size_;                             /// Body num.
+		Eigen::VectorXi compacted_body_elem_num_;      /// Number if elements of a body.
+		Eigen::VectorXi elem_id_to_compacted_body_id_; /// Element index to body index.
 	};
 
 	class SliceMap : public Parametrization
@@ -118,8 +127,8 @@ namespace polyfem::solver
 		SliceMap(const int from = -1, const int to = -1, const int total = -1);
 
 		int size(const int x_size) const override { return to_ - from_; }
-
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -134,7 +143,8 @@ namespace polyfem::solver
 		InsertConstantMap(const Eigen::VectorXd &values, const int start_index = -1);
 
 		int size(const int x_size) const override;
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
@@ -145,13 +155,16 @@ namespace polyfem::solver
 		Eigen::VectorXd values_;
 	};
 
+	/// @brief Maps to average of neighboring
 	class LinearFilter : public Parametrization
 	{
 	public:
 		LinearFilter(const mesh::Mesh &mesh, const double radius);
 
-		int size(const int x_size) const override { return x_size; }
+		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -162,10 +175,11 @@ namespace polyfem::solver
 	class ScalarVelocityParametrization : public Parametrization
 	{
 	public:
-		ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
+		ScalarVelocityParametrization(const double start_val, const double dt);
 
-		int size(const int x_size) const override { return x_size; }
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 

@@ -104,7 +104,7 @@ namespace polyfem::solver
 		return y;
 	}
 
-	Eigen::VectorXd PeriodicMeshToMesh::inverse_eval(const Eigen::VectorXd &y)
+	Eigen::VectorXd PeriodicMeshToMesh::inverse_eval(const Eigen::VectorXd &y) const
 	{
 		assert(y.size() == dim_ * dependent_map.size());
 		Eigen::VectorXd x;

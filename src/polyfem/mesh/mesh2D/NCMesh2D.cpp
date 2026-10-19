@@ -10,6 +10,53 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void NCMesh2D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_faces());
+
+			std::vector<int> old_node_ids(vertices.size(), -1);
+			if (has_node_ids())
+				for (int v = 0; v < n_vertices(); ++v)
+					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
+			std::vector<int> old_boundary_ids(edges.size(), -1);
+			if (has_boundary_ids())
+				for (int e = 0; e < n_edges(); ++e)
+					old_boundary_ids[valid_to_all_edge(e)] = boundary_ids_[e];
+
+			for (int e = 0; e < keep.size(); ++e)
+			{
+				if (keep[e])
+					continue;
+				const int full_id = valid_to_all_elem(e);
+				auto &element = elements[full_id];
+				element.is_ghost = true;
+				for (const int edge : element.edges)
+					edges[edge].remove_element(full_id);
+				for (const int vertex : element.vertices)
+					--vertices[vertex].n_elem;
+				--n_elements;
+			}
+			filter_element_data(keep);
+			prepare_mesh();
+
+			if (has_node_ids())
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = old_node_ids[valid_to_all_vertex(v)];
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const int old_id = old_boundary_ids[valid_to_all_edge(e)];
+					boundary_ids_[e] = old_id < 0 ? get_default_boundary_id(e) : old_id;
+					edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+				}
+			}
+		}
+
 		bool NCMesh2D::is_boundary_element(const int element_global_id) const
 		{
 			assert(index_prepared);
@@ -24,6 +71,7 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
+			clear_higher_order_data();
 			std::vector<bool> refine_mask(elements.size(), false);
 			for (int i = 0; i < elements.size(); i++)
 				if (elements[i].is_valid())
@@ -36,8 +84,12 @@ namespace polyfem
 			refine(n_refinement - 1, t);
 		}
 
-		bool NCMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		bool NCMesh2D::build_topology(const MeshData &data)
 		{
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
+			if (F.cols() != 3 || F.minCoeff() < 0)
+				return false;
 			GEO::Mesh mesh_;
 			mesh_.clear(false, false);
 			to_geogram_mesh(V, F, mesh_);
@@ -341,7 +393,7 @@ namespace polyfem
 
 			for (auto &edge : edges)
 			{
-				if (edge.leader >= 0)
+				if (edge.leader >= 0 && edge.n_elem() > 0 && edges[edge.leader].n_elem() > 0)
 				{
 					edge.isboundary = false;
 					edges[edge.leader].isboundary = false;
@@ -545,48 +597,6 @@ namespace polyfem
 			}
 		}
 
-		bool NCMesh2D::load(const std::string &path)
-		{
-			assert(false);
-			return false;
-		}
-
-		bool NCMesh2D::load(const GEO::Mesh &mesh)
-		{
-			GEO::Mesh mesh_;
-			mesh_.clear(false, false);
-			mesh_.copy(mesh);
-			orient_normals_2d(mesh_);
-
-			Eigen::MatrixXd V(mesh_.vertices.nb(), 2);
-			Eigen::MatrixXi F(mesh_.facets.nb(), 3);
-
-			for (int v = 0; v < V.rows(); v++)
-			{
-				const double *ptr = mesh_.vertices.point_ptr(v);
-				V.row(v) << ptr[0], ptr[1];
-			}
-
-			for (int f = 0; f < F.rows(); f++)
-				for (int i = 0; i < F.cols(); i++)
-					F(f, i) = mesh_.facets.vertex(f, i);
-
-			n_elements = 0;
-			vertices.reserve(V.rows());
-			for (int i = 0; i < V.rows(); i++)
-			{
-				vertices.emplace_back(V.row(i));
-			}
-			for (int i = 0; i < F.rows(); i++)
-			{
-				add_element(F.row(i), -1);
-			}
-
-			prepare_mesh();
-
-			return true;
-		}
-
 		void NCMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
 		{
 			min = vertices[0].pos;
@@ -649,12 +659,13 @@ namespace polyfem
 			idx2.face = idx.face;
 			idx2.vertex = idx.vertex;
 			idx2.face_corner = -1;
+			const int full_vertex_id = valid_to_all_vertex(idx.vertex);
 
 			for (int i = 0; i < elem.edges.size(); i++)
 			{
 				const auto &edge = edges[elem.edges(i)];
 				const int valid_edge_id = all_to_valid_edge(elem.edges(i));
-				if (valid_edge_id != idx.edge && find(edge.vertices, idx.vertex) >= 0)
+				if (valid_edge_id != idx.edge && find(edge.vertices, full_vertex_id) >= 0)
 				{
 					idx2.edge = valid_edge_id;
 					break;
@@ -782,6 +793,7 @@ namespace polyfem
 		void NCMesh2D::set_body_ids(const std::vector<int> &body_ids)
 		{
 			assert(body_ids.size() == n_faces());
+			Mesh::set_body_ids(body_ids);
 			for (int i = 0; i < body_ids.size(); i++)
 			{
 				elements[valid_to_all_elem(i)].body_id = body_ids[i];
@@ -791,6 +803,7 @@ namespace polyfem
 		void NCMesh2D::set_boundary_ids(const std::vector<int> &boundary_ids)
 		{
 			assert(boundary_ids.size() == n_edges());
+			Mesh::set_boundary_ids(boundary_ids);
 			for (int i = 0; i < boundary_ids.size(); i++)
 			{
 				edges[valid_to_all_edge(i)].boundary_id = boundary_ids[i];

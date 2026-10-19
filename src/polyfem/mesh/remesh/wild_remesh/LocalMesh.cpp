@@ -580,7 +580,7 @@ namespace polyfem::mesh
 
 		std::vector<LocalBoundary> local_boundary;
 		Eigen::VectorXi vertex_to_basis;
-		std::unique_ptr<Mesh> mesh = Mesh::create(rest_positions(), elements());
+		std::unique_ptr<Mesh> mesh = Mesh::create(MeshData(rest_positions(), elements()));
 		int n_bases = Remesher::build_bases(
 			*mesh, formulation, bases, local_boundary, vertex_to_basis);
 

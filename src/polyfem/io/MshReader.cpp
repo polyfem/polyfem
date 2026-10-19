@@ -14,6 +14,20 @@
 
 namespace polyfem::io
 {
+	namespace
+	{
+		int num_corner_nodes(const int type)
+		{
+			if (type == 1 || type == 8 || type == 26 || type == 27 || type == 28) // line
+				return 2;
+			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) // triangle
+				return 3;
+			if (type == 3 || type == 10) // quad
+				return 4;
+			return -1;
+		}
+	} // namespace
+
 	template <typename Entity>
 	void map_entity_tag_to_physical_tag(const std::vector<Entity> &entities, std::unordered_map<int, int> &entity_tag_to_physical_tag)
 	{
@@ -30,11 +44,29 @@ namespace polyfem::io
 	{
 		std::vector<std::string> node_data_name;
 		std::vector<std::vector<double>> node_data;
+		std::vector<std::vector<int>> boundary_elements;
+		std::vector<int> boundary_ids;
 
-		return load(path, vertices, cells, elements, weights, body_ids, node_data_name, node_data);
+		return load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids, node_data_name, node_data);
+	}
+
+	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids, std::vector<std::vector<int>> &boundary_elements, std::vector<int> &boundary_ids)
+	{
+		std::vector<std::string> node_data_name;
+		std::vector<std::vector<double>> node_data;
+
+		return load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids, node_data_name, node_data);
 	}
 
 	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids, std::vector<std::string> &node_data_name, std::vector<std::vector<double>> &node_data)
+	{
+		std::vector<std::vector<int>> boundary_elements;
+		std::vector<int> boundary_ids;
+
+		return load(path, vertices, cells, elements, weights, body_ids, boundary_elements, boundary_ids, node_data_name, node_data);
+	}
+
+	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids, std::vector<std::vector<int>> &boundary_elements, std::vector<int> &boundary_ids, std::vector<std::string> &node_data_name, std::vector<std::vector<double>> &node_data)
 	{
 		if (!std::filesystem::exists(path))
 		{
@@ -135,10 +167,51 @@ namespace polyfem::io
 		assert(cells_cols > 0);
 
 		std::unordered_map<int, int> entity_tag_to_physical_tag;
+		std::unordered_map<int, int> boundary_entity_tag_to_physical_tag;
 		if (dim == 2)
+		{
 			map_entity_tag_to_physical_tag(spec.entities.surfaces, entity_tag_to_physical_tag);
+			map_entity_tag_to_physical_tag(spec.entities.curves, boundary_entity_tag_to_physical_tag);
+		}
 		else
+		{
 			map_entity_tag_to_physical_tag(spec.entities.volumes, entity_tag_to_physical_tag);
+			map_entity_tag_to_physical_tag(spec.entities.surfaces, boundary_entity_tag_to_physical_tag);
+		}
+
+		boundary_elements.clear();
+		boundary_ids.clear();
+		for (const auto &e : els.entity_blocks)
+		{
+			if (e.entity_dim != dim - 1)
+				continue;
+
+			const auto physical_tag = boundary_entity_tag_to_physical_tag.find(e.entity_tag);
+			if (physical_tag == boundary_entity_tag_to_physical_tag.end() || physical_tag->second == 0)
+				continue;
+
+			const int n_corners = num_corner_nodes(e.element_type);
+			if (n_corners < 0)
+			{
+				logger().warn("Ignoring unsupported tagged codimension-one Gmsh element type {}.", e.element_type);
+				continue;
+			}
+
+			const size_t n_nodes = mshio::nodes_per_element(e.element_type);
+			for (int i = 0; i < e.data.size(); i += n_nodes + 1)
+			{
+				std::vector<int> corners(n_corners);
+				for (int j = 0; j < n_corners; ++j)
+				{
+					const int node_tag = e.data[i + j + 1];
+					assert(node_tag >= 0 && node_tag < tag_to_index.size());
+					corners[j] = tag_to_index[node_tag];
+					assert(corners[j] >= 0 && corners[j] < n_vertices);
+				}
+				boundary_elements.emplace_back(std::move(corners));
+				boundary_ids.push_back(physical_tag->second);
+			}
+		}
 
 		cells.resize(num_els, cells_cols);
 		cells.setConstant(-1);

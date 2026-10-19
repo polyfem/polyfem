@@ -2,7 +2,9 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp> // utils::resolve_path
 #include <iostream>
+#include <sstream>
 
 namespace polyfem::assembler
 {
@@ -16,6 +18,52 @@ namespace polyfem::assembler
 			return (nu * E) / (1.0 - nu * nu);
 		}
 
+		// Reads a named VECTORS array under CELL_DATA from a legacy ASCII VTK
+		// file. Returns one Eigen::Vector3d per cell, in file order.
+		std::vector<Eigen::Vector3d> read_cell_vectors_legacy_vtk(
+			std::istream &in,
+			const std::string &description,
+			const std::string &field_name)
+		{
+			std::vector<Eigen::Vector3d> out;
+			std::string line;
+			int n_cell_data = -1;
+			bool found = false;
+
+			while (std::getline(in, line))
+			{
+				std::istringstream ss(line);
+				std::string tok;
+				ss >> tok;
+				if (tok == "CELL_DATA")
+				{
+					ss >> n_cell_data;
+				}
+				else if (tok == "VECTORS")
+				{
+					std::string name;
+					ss >> name;
+					if (name != field_name)
+						continue;
+					if (n_cell_data < 0)
+						log_and_throw_error("VECTORS encountered before CELL_DATA in fiber VTK");
+					out.resize(n_cell_data);
+					for (int i = 0; i < n_cell_data; ++i)
+					{
+						if (!(in >> out[i].x() >> out[i].y() >> out[i].z()))
+							log_and_throw_error(fmt::format(
+								"Fiber VTK '{}' ended early: expected {} vectors", description, n_cell_data));
+					}
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				log_and_throw_error(fmt::format(
+					"VECTORS '{}' not found under CELL_DATA in {}", field_name, description));
+			return out;
+		}
+
 		double convert_to_mu(const double E, const double nu)
 		{
 			return E / (2.0 * (1.0 + nu));
@@ -27,7 +75,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path)
+	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources)
 	{
 		for (int i = param_.size(); i <= index; ++i)
 		{
@@ -37,7 +85,9 @@ namespace polyfem::assembler
 
 		if (params.count(param_name_))
 		{
-			param_[index].init(params[param_name_], root_path);
+			param_[index].init(params[param_name_], resources);
+			if (params.contains(MATERIAL_ELEMENT_INDEX))
+				param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
 	}
 
@@ -64,7 +114,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParams::add_multimaterial(const int index, const json &params, const std::string &unit_type, const std::string &root_path)
+	void GenericMatParams::add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources)
 	{
 		if (!params.contains(param_name_))
 			return;
@@ -84,7 +134,9 @@ namespace polyfem::assembler
 				params_.at(i).param_.back().set_unit_type(unit_type);
 			}
 
-			params_.at(i).param_[index].init(params_array[i], root_path);
+			params_.at(i).param_[index].init(params_array[i], resources);
+			if (params.contains(MATERIAL_ELEMENT_INDEX))
+				params_.at(i).param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
 	}
 
@@ -122,7 +174,7 @@ namespace polyfem::assembler
 		return stiffness_tensor_(i, j);
 	}
 
-	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -132,7 +184,7 @@ namespace polyfem::assembler
 					entries[0],
 					entries[1],
 					entries[2],
-					entries[3], stress_units, root_path);
+					entries[3], stress_units, resources);
 
 				return;
 			}
@@ -158,7 +210,7 @@ namespace polyfem::assembler
 					entries[2],
 					entries[3],
 					entries[4],
-					stress_units, root_path);
+					stress_units, resources);
 
 				return;
 			}
@@ -173,7 +225,7 @@ namespace polyfem::assembler
 					entries[5],
 					entries[6],
 					entries[7],
-					entries[8], stress_units, root_path);
+					entries[8], stress_units, resources);
 
 				return;
 			}
@@ -208,7 +260,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -252,7 +304,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_young_poisson(const double young, const double nu, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_from_young_poisson(const double young, const double nu, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		if (size_ == 2)
 		{
@@ -278,7 +330,7 @@ namespace polyfem::assembler
 	void ElasticityTensor::set_orthotropic(
 		double Ex, double Ey, double Ez,
 		double nuXY, double nuXZ, double nuYZ,
-		double muYZ, double muZX, double muXY, const std::string &stress_units, const std::string &root_path)
+		double muYZ, double muZX, double muXY, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 3);
 
@@ -298,7 +350,7 @@ namespace polyfem::assembler
 		stiffness_tensor_ = compliance.inverse();
 	}
 
-	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units, const std::string &root_path)
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 2);
 
@@ -316,7 +368,7 @@ namespace polyfem::assembler
 	void ElasticityTensor::set_transversely_isotropic(
 		double Et, double Ea,
 		double nu_t, double nu_a,
-		double Ga, const std::string &stress_units, const std::string &root_path)
+		double Ga, const std::string &stress_units, const io::ResourceIO &resources)
 	{
 		assert(size_ == 3);
 
@@ -400,7 +452,7 @@ namespace polyfem::assembler
 		assert(!std::isinf(mu));
 	}
 
-	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const std::string &root_path)
+	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const io::ResourceIO &resources)
 	{
 		const int size = is_volume ? 3 : 2;
 		assert(size_ == -1 || size == size_);
@@ -416,29 +468,35 @@ namespace polyfem::assembler
 
 		if (params.count("young"))
 		{
-			set_e_nu(index, params["young"], params["nu"], stress_unit, root_path);
+			set_e_nu(index, params["young"], params["nu"], stress_unit, resources);
 		}
 		else if (params.count("E"))
 		{
-			set_e_nu(index, params["E"], params["nu"], stress_unit, root_path);
+			set_e_nu(index, params["E"], params["nu"], stress_unit, resources);
 		}
 		else if (params.count("lambda"))
 		{
-			lambda_or_E_[index].init(params["lambda"], root_path);
-			mu_or_nu_[index].init(params["mu"], root_path);
+			lambda_or_E_[index].init(params["lambda"], resources);
+			mu_or_nu_[index].init(params["mu"], resources);
 
 			lambda_or_E_[index].set_unit_type(stress_unit);
 			mu_or_nu_[index].set_unit_type(stress_unit);
 			is_lambda_mu_ = true;
 		}
+
+		if (params.contains(MATERIAL_ELEMENT_INDEX))
+		{
+			lambda_or_E_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
+			mu_or_nu_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
+		}
 	}
 
-	void LameParameters::set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const std::string &root_path)
+	void LameParameters::set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit, const io::ResourceIO &resources)
 	{
 		// TODO: conversion is always called
 		is_lambda_mu_ = false;
-		lambda_or_E_[index].init(E, root_path);
-		mu_or_nu_[index].init(nu, root_path);
+		lambda_or_E_[index].init(E, resources);
+		mu_or_nu_[index].init(nu, resources);
 
 		lambda_or_E_[index].set_unit_type(stress_unit);
 		// nu has no unit
@@ -462,7 +520,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void Density::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &root_path)
+	void Density::add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources)
 	{
 		for (int i = rho_.size(); i <= index; ++i)
 		{
@@ -471,14 +529,52 @@ namespace polyfem::assembler
 
 		if (params.count("rho"))
 		{
-			rho_[index].init(params["rho"], root_path);
+			rho_[index].init(params["rho"], resources);
 		}
 		else if (params.count("density"))
 		{
-			rho_[index].init(params["density"], root_path);
+			rho_[index].init(params["density"], resources);
 		}
+		if (params.contains(MATERIAL_ELEMENT_INDEX))
+			rho_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 
 		rho_[index].set_unit_type(density_unit);
+	}
+
+	ThermalMassDensity::ThermalMassDensity()
+		: rho_("rho"), heat_capacity_("heat_capacity")
+	{
+	}
+
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources)
+	{
+		add_multimaterial(index, params, density_unit, "", resources);
+	}
+
+	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const std::string &heat_capacity_unit, const io::ResourceIO &resources)
+	{
+		rho_.add_multimaterial(index, params, density_unit, resources);
+		heat_capacity_.add_multimaterial(index, params, heat_capacity_unit, resources);
+	}
+
+	double ThermalMassDensity::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
+	{
+		const double rho = rho_(x, y, z, t, el_id);
+		const double heat_capacity = heat_capacity_(x, y, z, t, el_id);
+		const double res = rho * heat_capacity;
+		assert(!std::isnan(res));
+		assert(!std::isinf(res));
+		return res;
+	}
+
+	double ThermalMassDensity::rho(const RowVectorNd &p, double t, int el_id) const
+	{
+		return rho_(p, t, el_id);
+	}
+
+	double ThermalMassDensity::heat_capacity(const RowVectorNd &p, double t, int el_id) const
+	{
+		return heat_capacity_(p, t, el_id);
 	}
 
 	FiberDirection::FiberDirection()
@@ -500,6 +596,20 @@ namespace polyfem::assembler
 
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> FiberDirection::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
 	{
+		// Per-element fiber file: bound by global el_id, returned as a size_ x 1
+		// column vector so downstream is_a_vector logic is unchanged.
+		if (use_per_element_file_)
+		{
+			if (el_id < 0 || el_id >= static_cast<int>(per_el_fibers_.size()))
+				log_and_throw_error(fmt::format(
+					"Fiber el_id {} out of range [0,{})", el_id, per_el_fibers_.size()));
+			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> res;
+			res.resize(size_, 1);
+			for (int i = 0; i < size_; ++i)
+				res(i, 0) = per_el_fibers_[el_id](i);
+			return res;
+		}
+
 		assert(dir_.size() == 1 || el_id < dir_.size());
 
 		const auto &tmp = dir_.size() == 1 ? dir_[0] : dir_[el_id];
@@ -554,8 +664,36 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit, const std::string &root_path)
+	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit, const io::ResourceIO &resources)
 	{
+		// Per-element fiber file:
+		//   { "type": "per_element_file", "path": "...vtk", "field": "FIB_DIR1" }
+		// Read once at setup, bound by global el_id, normalized at load.
+		// NOTE: a JSON object with keys {type, path, field} reports size() == 3, so
+		// this MUST precede the size-based checks below to avoid being misread as a
+		// 3-component vector.
+		if (dir.is_object() && dir.value("type", std::string()) == "per_element_file")
+		{
+			const std::string field = dir.value("field", std::string("FIB_DIR1"));
+			const std::string path = dir.at("path").get<std::string>();
+			const std::string description = resources.describe(path);
+			auto input = resources.open(path, false);
+
+			per_el_fibers_ = read_cell_vectors_legacy_vtk(*input, description, field);
+			for (auto &v : per_el_fibers_)
+			{
+				const double n = v.norm();
+				if (n < 1e-12)
+					log_and_throw_error("Zero-length fiber vector in per-element file");
+				v /= n;
+			}
+			use_per_element_file_ = true;
+			has_rotation_ = false; // a direction vector, not a rotation matrix
+			logger().info("FiberDirection: loaded {} per-element fibers ('{}') from {}",
+						  per_el_fibers_.size(), field, description);
+			return; // dir_ left empty; operator() short-circuits
+		}
+
 		for (int i = dir_.size(); i <= index; ++i)
 		{
 			dir_.emplace_back();
@@ -576,7 +714,7 @@ namespace polyfem::assembler
 					{
 						log_and_throw_error(fmt::format("Fiber must be a {} vector, row {} is {}", size, i, dir[i].dump()));
 					}
-					dir_[index](i, 0).init(dir[i], root_path);
+					dir_[index](i, 0).init(dir[i], resources);
 					dir_[index](i, 0).set_unit_type(unit);
 					continue;
 				}
@@ -586,7 +724,7 @@ namespace polyfem::assembler
 				}
 				for (int j = 0; j < size; ++j)
 				{
-					dir_[index](i, j).init(dir[i][j], root_path);
+					dir_[index](i, j).init(dir[i][j], resources);
 					dir_[index](i, j).set_unit_type(unit);
 				}
 			}
@@ -601,7 +739,7 @@ namespace polyfem::assembler
 			{
 				for (int j = 0; j < size; ++j)
 				{
-					dir_[index](i, j).init(dir[i * size + j], root_path);
+					dir_[index](i, j).init(dir[i * size + j], resources);
 					dir_[index](i, j).set_unit_type(unit);
 				}
 			}

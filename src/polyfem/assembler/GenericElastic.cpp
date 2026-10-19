@@ -1,15 +1,6 @@
+// Shared template implementation, included by the GenericElastic material groups.
+// This file is not compiled separately.
 #include "GenericElastic.hpp"
-
-#include <polyfem/assembler/MooneyRivlinElasticity.hpp>
-#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
-#include <polyfem/assembler/IsochoricNeoHookean.hpp>
-#include <polyfem/assembler/OgdenElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
-#include <polyfem/assembler/VolumePenalty.hpp>
-#include <polyfem/assembler/AMIPSEnergy.hpp>
-
-#include <polyfem/assembler/HGOFiber.hpp>
-#include <polyfem/assembler/ActiveFiber.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -78,6 +69,13 @@ namespace polyfem::assembler
 			if (type == ElasticityTensorType::F)
 			{
 				all.row(p) = fun(deformation_grad);
+				continue;
+			}
+
+			// Absolute mode measures distortion from the regular element, not a stress.
+			if (!derived().real_def_grad(vals.val.row(p), data.t, el_id))
+			{
+				all.row(p).setConstant(std::nan(""));
 				continue;
 			}
 
@@ -524,6 +522,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
@@ -563,6 +563,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
@@ -603,6 +605,8 @@ namespace polyfem::assembler
 
 		const double t = data.t;
 		const int el_id = data.el_id;
+		if (!derived().real_def_grad(data.global_pts, t, el_id))
+			log_and_throw_error("Stress derivatives are not available in absolute mode (use_rest_pose false)");
 		const Eigen::MatrixXd &local_pts = data.local_pts;
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
@@ -635,19 +639,7 @@ namespace polyfem::assembler
 				result.row(i) = vect * hess.row(i).reshaped(size(), size());
 			else
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
-				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
+				result.row(i) = (hess.row(i).reshaped(size(), size()) * vect).transpose();
 	}
-
-	template class GenericElastic<MooneyRivlinElasticity>;
-	template class GenericElastic<MooneyRivlin3ParamElasticity>;
-	template class GenericElastic<UnconstrainedOgdenElasticity>;
-	template class GenericElastic<IncompressibleOgdenElasticity>;
-	template class GenericElastic<NeoHookeanAutodiff>;
-	template class GenericElastic<IsochoricNeoHookean>;
-	template class GenericElastic<VolumePenalty>;
-	template class GenericElastic<AMIPSEnergy>;
-
-	template class GenericElastic<HGOFiber>;
-	template class GenericElastic<ActiveFiber>;
 
 } // namespace polyfem::assembler

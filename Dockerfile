@@ -32,6 +32,7 @@ RUN if [ -d .git ]; then git submodule update --init --recursive; fi
 RUN --mount=type=cache,target=/root/.ccache \
     cmake -S . -B build \
     -DPOLYFEM_WITH_TESTS=OFF \
+    -DPOLYFEM_PORTABLE_BUILD=ON \
     -DPOLYFEM_WITH_CCACHE=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS=""

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <map>
 
 #include <units/units.hpp>
@@ -22,10 +23,10 @@ namespace polyfem
 					expr.set_unit_type(unit_type);
 			}
 
-			void init(const json &vals, const std::string &root_path);
+			void init(const json &vals, const io::ResourceIO &resources);
 			void init(const double val);
 			void init(const Eigen::MatrixXd &val);
-			void init(const std::string &expr, const std::string &root_path);
+			void init(const std::string &expr, const io::ResourceIO &resources);
 #ifdef POLYFEM_WITH_PYTHON
 			void init_python(const std::string &path, const std::string &function_name);
 #endif
@@ -38,6 +39,7 @@ namespace polyfem
 			void init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo);
 
 			void set_t(const json &t);
+			void set_index(const int index) { index_ = index; }
 
 			double operator()(double x, double y, double z = 0, double t = 0, int index = -1) const;
 
@@ -83,6 +85,7 @@ namespace polyfem
 			Eigen::MatrixXd mat_;
 			std::vector<ExpressionValue> mat_expr_;
 			std::map<double, int> t_index_;
+			int index_ = -1;
 
 			units::precise_unit unit_type_;
 			units::precise_unit unit_;

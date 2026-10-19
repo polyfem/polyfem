@@ -364,6 +364,168 @@ namespace polyfem::mesh
 		return res;
 	}
 
+	std::vector<int> MeshNodes::node_ids_from_face(const Navigation3D::Index &index1, const int n_new_nodes, const int n_new_nodesq)
+	{
+		Navigation3D::Index index = index1;
+
+		std::vector<int> res;
+		if (n_new_nodes <= 0)
+			return res;
+
+		const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
+		assert(mesh3d->is_prism(index.element));
+
+		int start;
+		const bool is_tri = mesh3d->n_face_vertices(index.face) == 3;
+
+		if (connect_nodes_)
+			start = face_offset_ + index.face * max_nodes_per_face_;
+		else
+		{
+			if (mesh3d->is_boundary_face(index.face) || mesh3d->switch_element(index).element > index.element)
+				start = face_offset_ + index.face * max_nodes_per_face_;
+			else
+				start = face_offset_ + index.face * max_nodes_per_face_ + max_nodes_per_face_ / 2;
+		}
+
+		const int start_node_id = primitive_to_node_[start];
+
+#ifndef NDEBUG
+		if (!connect_nodes_)
+		{
+			assert(start_node_id < 0);
+		}
+#endif
+
+		if (start_node_id < 0 || !connect_nodes_)
+		{
+			int loc_index = 0;
+
+			if (is_tri)
+			{
+				for (int i = 1; i <= n_new_nodes; ++i)
+				{
+					const int end = n_new_nodes - i + 1;
+					for (int j = 1; j <= end; ++j)
+					{
+						const int primitive_id = start + loc_index;
+						const auto [node, node_id] = mesh3d->face_node(index, n_new_nodes, -1, i, j);
+
+						primitive_to_node_[primitive_id] = n_nodes();
+
+						in_ordered_vertices_.push_back(node_id);
+						node_to_primitive_.push_back(primitive_id);
+						node_to_primitive_gid_.push_back(index.face);
+
+						nodes_.row(primitive_id) = node;
+
+						res.push_back(primitive_to_node_[primitive_id]);
+						assert(in_ordered_vertices_.size() == n_nodes());
+
+						++loc_index;
+					}
+				}
+			}
+			else
+			{
+				const bool is_on_tri_face = mesh3d->n_face_vertices(mesh3d->switch_face(index).face) == 3; // on quad face, next to tri face
+				if (is_on_tri_face)
+					index = mesh3d->next_around_face(index);
+				assert(mesh3d->n_face_vertices(mesh3d->switch_face(index).face) == 4); // on quad face, next to quad face
+
+				for (int i = 1; i <= n_new_nodes; ++i)
+				{
+					for (int j = 1; j <= n_new_nodesq; ++j)
+					{
+						const int primitive_id = start + loc_index;
+						const auto [node, node_id] = mesh3d->face_node(index, n_new_nodes, n_new_nodesq, j, i);
+
+						primitive_to_node_[primitive_id] = n_nodes();
+
+						in_ordered_vertices_.push_back(node_id);
+						node_to_primitive_.push_back(primitive_id);
+						node_to_primitive_gid_.push_back(index.face);
+
+						nodes_.row(primitive_id) = node;
+
+						res.push_back(primitive_to_node_[primitive_id]);
+						assert(in_ordered_vertices_.size() == n_nodes());
+
+						++loc_index;
+					}
+				}
+			}
+		}
+		else // find existing nodes, todo
+		{
+			if (is_tri)
+			{
+				const int total_nodes = n_new_nodes * (n_new_nodes + 1) / 2;
+				for (int i = 1; i <= n_new_nodes; ++i)
+				{
+					const int end = n_new_nodes - i + 1;
+					for (int j = 1; j <= end; ++j)
+					{
+						const auto [p, _] = mesh3d->face_node(index, n_new_nodes, n_new_nodesq, i, j);
+
+						bool found = false;
+						for (int k = start; k < start + total_nodes; ++k)
+						{
+							const double dist = (nodes_.row(k) - p).norm();
+							if (dist < 1e-10)
+							{
+								res.push_back(primitive_to_node_[k]);
+								found = true;
+								break;
+							}
+						}
+
+						assert(found);
+					}
+				}
+			}
+			else
+			{
+				const bool is_on_tri_face = mesh3d->n_face_vertices(mesh3d->switch_face(index).face) == 3; // on quad face, next to tri face
+				if (is_on_tri_face)
+					index = mesh3d->next_around_face(index);
+				assert(mesh3d->n_face_vertices(mesh3d->switch_face(index).face) == 4); // on quad face, next to quad face
+
+				const int total_nodes = n_new_nodes * n_new_nodesq;
+				for (int i = 1; i <= n_new_nodes; ++i)
+				{
+					const int end = n_new_nodesq;
+					for (int j = 1; j <= end; ++j)
+					{
+						const auto [p, _] = mesh3d->face_node(index, n_new_nodes, n_new_nodesq, j, i);
+
+						bool found = false;
+						for (int k = start; k < start + total_nodes; ++k)
+						{
+							const double dist = (nodes_.row(k) - p).norm();
+							if (dist < 1e-10)
+							{
+								res.push_back(primitive_to_node_[k]);
+								found = true;
+								break;
+							}
+						}
+
+						assert(found);
+					}
+				}
+			}
+		}
+
+#ifndef NDEBUG
+		if (is_tri)
+			assert(res.size() == size_t(n_new_nodes * (n_new_nodes + 1) / 2));
+		else
+			assert(res.size() == size_t(n_new_nodes * n_new_nodesq));
+#endif
+		return res;
+	}
+
 	std::vector<int> MeshNodes::node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes)
 	{
 		std::vector<int> res;
@@ -371,6 +533,8 @@ namespace polyfem::mesh
 			return res;
 
 		const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
+		assert(!mesh3d->is_prism(index.element));
+
 		int start;
 		const bool is_tri = mesh3d->is_simplex(index.element) || (mesh3d->is_prism(index.element) && mesh3d->n_face_vertices(index.face) == 3) || (mesh3d->is_pyramid(index.element) && mesh3d->n_face_vertices(index.face) == 3);
 
@@ -527,9 +691,21 @@ namespace polyfem::mesh
 		}
 		else if (mesh3d->is_prism(index.element))
 		{
-			// TODO: implement me internal prism nodes
-			log_and_throw_error("Prism internal nodes not implemented yet");
-			assert(false);
+			assert(n_new_nodes == 1);
+			int loc_index = 0;
+
+			const int primitive_id = start + loc_index;
+
+			const auto [node, node_id] = mesh3d->cell_node(index, n_new_nodes, 0, 0, 0);
+			primitive_to_node_[primitive_id] = n_nodes();
+
+			in_ordered_vertices_.push_back(node_id);
+			node_to_primitive_.push_back(primitive_id);
+			node_to_primitive_gid_.push_back(index.element);
+
+			nodes_.row(primitive_id) = node;
+			res.push_back(primitive_to_node_[primitive_id]);
+			assert(in_ordered_vertices_.size() == n_nodes());
 		}
 		else if (mesh3d->is_pyramid(index.element))
 		{

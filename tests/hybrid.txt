@@ -1,0 +1,27 @@
+# hybrid prism / pyramid / tet elements, incl. anisotropic prism orders (p != q)
+# patch: affine field must be reproduced to machine zero (stitching sanity)
+hybrid/patch_prism_p2q1.json
+hybrid/patch_prism_p1q2.json
+hybrid/patch_hybrid_p2q1.json
+hybrid/patch_hybrid_p1q2.json
+# manufactured solution on the hybrid L-shape (mesh of the historical flipped-tet bug)
+hybrid/mms_lshape_p1q1.json
+hybrid/mms_lshape_p2q2.json
+hybrid/mms_lshape_p1q2.json
+hybrid/mms_lshape_p2q1.json
+hybrid/mms_lshape_p1q3.json
+hybrid/mms_lshape_p3q1.json
+# nonlinear (NeoHookean) manufactured solution on hybrid mesh
+hybrid/neohookean_lshape_p1q1.json
+hybrid/neohookean_lshape_p2q2.json
+hybrid/neohookean_lshape_p1q2.json
+hybrid/neohookean_lshape_p2q1.json
+hybrid/neohookean_lshape_p1q3.json
+hybrid/neohookean_lshape_p3q1.json
+# contact: collision-proxy validity (holes/T-junctions abort at the intersection check)
+hybrid/contact_lshape_p1q1.json
+hybrid/contact_lshape_p2q2.json
+hybrid/contact_lshape_p1q2.json
+hybrid/contact_lshape_p2q1.json
+hybrid/contact_lshape_p1q3.json
+hybrid/contact_lshape_p3q1.json

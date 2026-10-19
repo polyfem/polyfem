@@ -5,16 +5,32 @@
 #include <Eigen/Core>
 
 #include <map>
+#include <functional>
 #include <vector>
 #include <deque>
 
+namespace polyfem::io
+{
+	class CheckpointReader;
+	class CheckpointWriter;
+} // namespace polyfem::io
+
 namespace polyfem::time_integrator
 {
+	class BDF;
+
 	/// Implicit time integrator of a second order ODE (equivently a system of coupled first order ODEs).
 	class ImplicitTimeIntegrator
 	{
 	public:
-		ImplicitTimeIntegrator() {}
+		enum class DynamicOrder
+		{
+			First,
+			Second,
+		};
+
+		ImplicitTimeIntegrator(const DynamicOrder dynamic_order)
+			: dynamic_order_(dynamic_order) {}
 		virtual ~ImplicitTimeIntegrator() = default;
 
 		/// @brief Set the time integrator parameters from a json object.
@@ -57,15 +73,34 @@ namespace polyfem::time_integrator
 
 		/// @brief Access the time step size.
 		const double &dt() const { return dt_; }
+		DynamicOrder dynamic_order() const { return dynamic_order_; }
+		int maximum_steps() const { return max_steps(); }
 
-		/// @brief Save the values of \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param state_path path for the output file containing \f$x, v, a\f$ as hdf5
+		void serialize_checkpoint(io::CheckpointWriter &writer, const std::string &group) const;
+		void deserialize_checkpoint(
+			const io::CheckpointReader &reader,
+			const std::string &group,
+			double expected_dt,
+			const std::function<void(Eigen::MatrixXd &)> &transform = {});
+
+		/// Legacy State persistence. Non-legacy code uses serialize_checkpoint().
 		virtual void save_state(const std::string &state_path) const;
 
-		/// @brief Factory method for constructing implicit time integrators from the name of the integrator.
-		/// @param name name of the type of ImplicitTimeIntegrator to construct
-		/// @return new implicit time integrator of type specfied by name
-		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params);
+		/// @brief Factory method for constructing an implicit time integrator.
+		/// @param params integrator name or an object containing its type and parameters
+		/// @param dynamic_order order of the underlying dynamics
+		/// @return new implicit time integrator of the specified type
+		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(
+			const json &params,
+			DynamicOrder dynamic_order = DynamicOrder::Second);
+
+		/// @brief Construct a BDF integrator for algorithms using BDF-specific operations.
+		/// ImplicitEuler is accepted as the one-step BDF scheme.
+		/// @param params integrator name or an object containing its type and parameters
+		/// @param dynamic_order order of the underlying dynamics
+		static std::shared_ptr<BDF> construct_bdf_integrator(
+			const json &params,
+			DynamicOrder dynamic_order = DynamicOrder::Second);
 
 		/// @brief Get a vector of the names of possible ImplicitTimeIntegrators
 		/// @return names in no particular order
@@ -89,6 +124,8 @@ namespace polyfem::time_integrator
 		int steps() const { return x_prevs_.size(); }
 
 	protected:
+		const DynamicOrder dynamic_order_;
+
 		/// @brief Get the maximum number of steps to use for integration.
 		virtual int max_steps() const { return 1; }
 

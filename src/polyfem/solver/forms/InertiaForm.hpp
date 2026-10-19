@@ -7,6 +7,8 @@
 
 #include <Eigen/Core>
 
+#include <functional>
+
 namespace polyfem::solver
 {
 	/// @brief Form of the inertia
@@ -22,6 +24,13 @@ namespace polyfem::solver
 					const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
 		std::string name() const override { return "inertia"; }
+
+		using XTildeUpdater = std::function<void(const double, const Eigen::VectorXd &, Eigen::VectorXd &)>;
+		// Optional hook for fields whose time-dependent essential boundary values require a
+		// lifted time-integrator prediction before applying the mass term.
+		void set_x_tilde_updater(XTildeUpdater updater);
+
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 	protected:
 		/// @brief Compute the value of the form
@@ -40,8 +49,12 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	private:
+		Eigen::VectorXd x_tilde() const;
+
 		// TODO mass might be time dependent
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
+		XTildeUpdater x_tilde_updater_;
+		Eigen::VectorXd x_tilde_;
 	};
 } // namespace polyfem::solver
