@@ -42,3 +42,11 @@ function(polyfem_use_miso_intervals target)
 		COMPILE_DEFINITIONS "$<TARGET_PROPERTY:misolib::misolib,INTERFACE_COMPILE_DEFINITIONS>")
 endfunction()
 polyfem_use_miso_intervals(polyfem "${PROJECT_SOURCE_DIR}/src/polyfem/utils/Jacobian.cpp")
+
+# Some generated functions (P3TetCGV's subdivision and conversion routines) use
+# several hundred KB of stack each, and the search nests them. MSVC's default
+# 1 MB main-thread stack overflows; Linux and macOS default to 8 MB. Give every
+# executable linking polyfem the same 8 MB on Windows.
+if(MSVC)
+	target_link_options(polyfem INTERFACE /STACK:8388608)
+endif()
