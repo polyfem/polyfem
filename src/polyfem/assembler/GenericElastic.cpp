@@ -49,8 +49,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
-    	if (energy_out)
-        	energy_out->resize(local_pts.rows(), 1);
+		if (energy_out)
+			energy_out->resize(local_pts.rows(), 1);
 		DiffScalarBase::setVariableCount(deformation_grad.size());
 
 		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
@@ -72,24 +72,15 @@ namespace polyfem::assembler
 				continue;
 			}
 
-			// Absolute mode measures distortion from the regular element, not a stress.
-			if (!derived().real_def_grad(vals.val.row(p), data.t, el_id))
-			{
-				all.row(p).setConstant(std::nan(""));
-				continue;
-			}
+			// Whether this point measures distortion from the rest pose (true) or from the regular element.
+			const bool rest_pose = derived().real_def_grad(vals.val.row(p), data.t, el_id);
 
-			for (int d1 = 0; d1 < size(); ++d1)
-			{
-				for (int d2 = 0; d2 < size(); ++d2)
-					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
-			}
-
+			// The energy is also defined in absolute mode, where the stress below is not.
 			if (energy_out || type == ElasticityTensorType::ENERGY)
 			{
 				// Use the same deformation gradient as the solver (see GenericElastic.hpp)
 				DefGradMatrix<double> Fe = deformation_grad;
-				if (!derived().real_def_grad())
+				if (!rest_pose)
 					Fe = Fe * vals.jac_it[p].inverse();
 				const double e = derived().template elastic_energy<double>(local_pts.row(p), data.t, vals.element_id, Fe);
 
@@ -100,6 +91,19 @@ namespace polyfem::assembler
 					all(p, 0) = e;
 					continue;
 				}
+			}
+
+			// Absolute mode measures distortion from the regular element, not a stress.
+			if (!rest_pose)
+			{
+				all.row(p).setConstant(std::nan(""));
+				continue;
+			}
+
+			for (int d1 = 0; d1 < size(); ++d1)
+			{
+				for (int d2 = 0; d2 < size(); ++d2)
+					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
 			}
 
 			const auto val = derived().elastic_energy(local_pts.row(p), data.t, vals.element_id, def_grad);
