@@ -604,6 +604,16 @@ namespace polyfem::solver
 		return valid;
 	}
 
+	bool NLProblem::is_step_acceptable(const TVector &x0, const TVector &x1)
+	{
+		bool acceptable = FullNLProblem::is_step_acceptable(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (penalty_problem_ && acceptable && full_size() == current_size())
+			acceptable = penalty_problem_->is_step_acceptable(x0, x1);
+
+		return acceptable;
+	}
+
 	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		bool free = FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));

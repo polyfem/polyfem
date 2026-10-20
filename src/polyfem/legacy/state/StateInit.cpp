@@ -7,6 +7,8 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
@@ -289,7 +291,8 @@ namespace polyfem::legacy
 			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
 		}
 
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		const solver::ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
+		if (solver::is_conservative(check_inversion))
 		{
 			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
 				elastic_assembler->set_use_robust_jacobian();

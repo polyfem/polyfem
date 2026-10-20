@@ -92,6 +92,14 @@ namespace polyfem::solver
 		return true;
 	}
 
+	bool FullNLProblem::is_step_acceptable(const TVector &x0, const TVector &x1)
+	{
+		for (auto &f : forms_)
+			if (f->enabled() && !f->is_step_acceptable(x0, x1))
+				return false;
+		return true;
+	}
+
 	bool FullNLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		for (auto &f : forms_)

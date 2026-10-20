@@ -1624,15 +1624,16 @@
         "default": "Discrete",
         "options": [
             "Discrete",
-            "Conservative"
+            "ConservativeStatic",
+            "ConservativeContinuous"
         ],
-        "doc": "The method for checking if any element is flipped. \"Discrete\" skips the check; \"Conservative\" uses continuous CCD (max_time_step) to guarantee no inversion along the step."
+        "doc": "How to keep elements from inverting. \"Discrete\" performs no geometric check: inversion is only noticed when the energy sampled at the quadrature points turns non-finite, so inversion between sample points is missed. \"ConservativeStatic\" certifies that each step the line search accepts is inversion-free over the whole element, refining the quadrature where it is not, and is the conservative substitute for that sampling. \"ConservativeContinuous\" certifies the entire segment between two configurations and caps the step accordingly, which is strictly stronger but costs more. Both conservative modes require simplicial meshes and a MISO-enabled build."
     },
     {
         "pointer": "/solver/advanced/jacobian_threshold",
         "type": "float",
         "default": 0,
-        "doc": "."
+        "doc": "Minimum Jacobian determinant an element must keep for the conservative inversion check to accept it. 0 forbids only actual inversion; a small positive value additionally rejects near-degenerate elements. Ignored when check_inversion is \"Discrete\"."
     },
     {
         "pointer": "/solver/advanced/conservative_max_iter",

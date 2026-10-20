@@ -418,7 +418,9 @@ namespace polyfem::assembler
 		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
 
-		void set_use_robust_jacobian();
+		/// Evaluate det J in the energy as the conservative checks see it.
+		/// Composite models forward it to the models they are made of.
+		virtual void set_use_robust_jacobian();
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(

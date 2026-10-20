@@ -63,6 +63,7 @@ namespace polyfem::solver
 
 		void init(const TVector &x0) override;
 		bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		bool is_step_acceptable(const TVector &x0, const TVector &x1) override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
 		double max_step_size(const TVector &x0, const TVector &x1) override;
 

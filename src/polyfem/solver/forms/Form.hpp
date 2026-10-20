@@ -61,6 +61,16 @@ namespace polyfem::solver
 		/// @return True if the step is allowed
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 
+		/// @brief Last word on a step the line search is about to accept.
+		/// Runs only on steps that passed the descent criteria, so it suits
+		/// checks too expensive for every trial point. Returning false rejects
+		/// the step; the form may refine its own discretization first (the line
+		/// search then re-evaluates the energy at x0).
+		/// @param x0 Current solution
+		/// @param x1 Step the line search is about to accept
+		/// @return True to accept the step
+		virtual bool is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
+
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)

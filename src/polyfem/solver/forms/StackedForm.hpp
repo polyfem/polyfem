@@ -39,6 +39,7 @@ namespace polyfem::solver
 		void init(const Eigen::VectorXd &x) override;
 		void finish() override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		bool is_step_acceptable(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

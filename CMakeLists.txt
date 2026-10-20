@@ -272,13 +272,6 @@ target_link_libraries(polyfem PUBLIC geogram)
 include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
-# Jacobian
-if(POLYFEM_WITH_MISO)
-    include(hocgv_miso)
-    target_link_libraries(polyfem PRIVATE miso)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_MISO)
-endif()
-
 # spdlog
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
