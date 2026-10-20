@@ -60,13 +60,15 @@ namespace polyfem::assembler
 
 			const T powJ = pow(det, power);
 			const double weight = weight_(p, t, el_id);
-			return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
+			const T base_energy = (def_grad.transpose() * def_grad).trace() / powJ;
+			return T(weight) * pow(base_energy, power_(p, t, el_id));
 		}
 
 	private:
 		bool use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const;
 		GenericMatParam use_rest_pose_;
 		GenericMatParam weight_;
+		GenericMatParam power_{"power"};
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

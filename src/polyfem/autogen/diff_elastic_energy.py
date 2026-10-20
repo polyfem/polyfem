@@ -142,7 +142,7 @@ if __name__ == "__main__":
             # f.write("        }\n\n")
 
             f.write(
-                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
+                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
             f.write(
                 f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):
