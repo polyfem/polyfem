@@ -74,7 +74,7 @@ namespace polyfem::solver
 		const bool area_weights = esp_params["area_weights"];
 		const ipc::ESPParameters::IntegrationType itype = skip_obstacles ? ipc::ESPParameters::IntegrationType::NO_OBST : ipc::ESPParameters::IntegrationType::NORMAL;
 		ipc::ESPParameters params(dhat, dbar_factor, quadrature_order, area_weights, itype);
-		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier>(2.0) : std::make_shared<ipc::InversePowerBarrier>(1.0));
+		params.barrier = barrier ? barrier : (dim == 3 ? std::make_shared<ipc::InversePowerBarrier<>>(2.0) : std::make_shared<ipc::InversePowerBarrier<>>(1.0));
 		if (quadrature_order > 0)
 		{
 			params.set_quad_rule(build_quad_rule(quadrature_order));

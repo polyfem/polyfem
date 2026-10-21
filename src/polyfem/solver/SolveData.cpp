@@ -47,9 +47,9 @@ namespace
 		if (name == "normalized_log")
 			return std::make_shared<ipc::NormalizedClampedLogBarrier<>>();
 		if (name == "linear_inverse")
-			return std::make_shared<ipc::InversePowerBarrier>(1.0);
+			return std::make_shared<ipc::InversePowerBarrier<>>(1.0);
 		if (name == "quadratic_inverse")
-			return std::make_shared<ipc::InversePowerBarrier>(2.0);
+			return std::make_shared<ipc::InversePowerBarrier<>>(2.0);
 		if (name == "two_stage")
 			return std::make_shared<ipc::TwoStageBarrier<>>();
 		polyfem::log_and_throw_error("Unknown barrier type: '{}'. Valid options: 'default', 'log', 'normalized_log', 'linear_inverse', 'quadratic_inverse', 'two_stage'.", name);
