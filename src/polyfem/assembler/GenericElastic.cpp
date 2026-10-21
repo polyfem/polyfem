@@ -28,12 +28,12 @@ namespace polyfem::assembler
 
 	template <typename Derived>
 	void GenericElastic<Derived>::assign_stress_tensor(
-    const OutputData &data,
-    const int all_size,
-    const ElasticityTensorType &type,
-    Eigen::MatrixXd &all,
-    const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-    Eigen::MatrixXd *energy_out) const
+		const OutputData &data,
+		const int all_size,
+		const ElasticityTensorType &type,
+		Eigen::MatrixXd &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
+		Eigen::MatrixXd *energy_out) const
 	{
 		Eigen::MatrixXd deformation_grad(size(), size());
 		Eigen::MatrixXd stress_tensor(size(), size());
@@ -120,7 +120,6 @@ namespace polyfem::assembler
 				stress_tensor = pk1_from_cauchy(stress_tensor, deformation_grad);
 			else if (type == ElasticityTensorType::PK2)
 				stress_tensor = pk2_from_cauchy(stress_tensor, deformation_grad);
-
 
 			all.row(p) = fun(stress_tensor);
 		}

@@ -34,7 +34,7 @@ namespace polyfem::assembler
 								  const ElasticityTensorType &type,
 								  Eigen::MatrixXd &all,
 								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-								  Eigen::MatrixXd *energy_out = nullptr) const override;
+								  Eigen::MatrixXd *energy_out) const override;
 
 	private:
 		LameParameters params_;

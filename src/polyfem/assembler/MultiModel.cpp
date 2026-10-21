@@ -65,7 +65,8 @@ namespace polyfem::assembler
 		const int all_size,
 		const ElasticityTensorType &type,
 		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun, Eigen::MatrixXd *energy_out) const
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
+		Eigen::MatrixXd *energy_out) const
 	{
 		const std::string model = multi_material_models_[data.el_id];
 		const auto assembler = all_elastic_materials_.get_assembler(model);
