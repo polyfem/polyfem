@@ -10,7 +10,7 @@ message(STATUS "Third-party: creating target 'ipc::toolkit'")
 include(CPM)
 CPMAddPackage(
 	NAME "ipc-toolkit"
-	GIT_REPOSITORY https://github.com/fsichetti/ipc-toolkit.git
-	GIT_TAG "03c39d2b"
-	OPTIONS "IPC_TOOLKIT_WITH_GEOGRAM ON IPC_TOOLKIT_WITH_CUDA OFF"
+	GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
+	GIT_TAG "dff05854"
+	OPTIONS "IPC_TOOLKIT_WITH_CUDA OFF"
 )
