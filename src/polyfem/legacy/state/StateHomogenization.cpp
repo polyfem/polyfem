@@ -86,7 +86,7 @@ namespace polyfem::legacy
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
-			// High Order Contact Form
+			// ESP contact form
 			args["contact"]["use_esp_formulation"],
 			args["contact"]["esp_params"],
 			// Normal Adhesion Form

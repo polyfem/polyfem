@@ -26,7 +26,7 @@ namespace polyfem::solver
 					   const int ccd_max_iterations,
 					   const double dhat_epsilon_scale);
 
-		virtual std::string name() const override { return "high-order-contact"; }
+		virtual std::string name() const override { return "ESP"; }
 
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 

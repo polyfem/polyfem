@@ -297,7 +297,7 @@ namespace polyfem::mesh
 				state.args["contact"]["alpha_n"],
 				state.args["contact"]["use_adaptive_dhat"],
 				state.args["contact"]["min_distance_ratio"],
-				// High Order Contact Form
+				// ESP contact form
 				state.args["contact"]["use_esp_formulation"],
 				state.args["contact"]["esp_params"],
 				// Normal Adhesion Form

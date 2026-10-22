@@ -132,7 +132,7 @@ namespace polyfem::solver
 			const bool use_adaptive_dhat,
 			const double min_distance_ratio,
 
-			// High Order Contact Form
+			// ESP contact form
 			const bool use_esp_formulation,
 			json esp_params,
 
