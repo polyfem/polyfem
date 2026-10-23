@@ -15,11 +15,15 @@
 #include <polyfem/utils/Jacobian.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/SolverCSVWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/GCPContactForm.hpp>
@@ -62,10 +66,17 @@ namespace polyfem::varform
 		obstacle.clear();
 		solve_data_ = solver::SolveData();
 		forms.clear();
+		macro_strain_constraint_ = assembler::MacroStrainValue();
+		displacement_gradient_.resize(0, 0);
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler_ = nullptr;
 		damping_prev_assembler_ = nullptr;
 		contact_dhat_was_explicit_ = false;
+	}
+
+	bool NonlinearElasticVarForm::has_macro_strain() const
+	{
+		return args.contains("/constraints/macro_displacement_gradient"_json_pointer);
 	}
 
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -458,18 +469,19 @@ namespace polyfem::varform
 
 	void NonlinearElasticVarForm::build_periodic_collision_mesh()
 	{
-		assert(!mesh_->is_volume());
 		const int dim = mesh_->dimension();
 		const int n_tiles = 2;
+		const int tile_count = 1 << dim;
 
-		if (mesh_->dimension() != 2)
-			log_and_throw_error("Periodic collision mesh is only implemented in 2D!");
 		if (obstacle.n_vertices() != 0)
+		{
 			log_and_throw_error("Periodic contact does not support obstacles.");
+		}
 
 		const int n_bases = space_.n_bases;
 		const json &conditions = args["boundary_conditions"]["periodic"];
 		Eigen::VectorXi periodic_dof_mask = Eigen::VectorXi::Zero(n_bases);
+		Eigen::VectorXi periodic_face_mask = Eigen::VectorXi::Zero(n_bases);
 		Eigen::MatrixXd periodic_tile_offsets(dim, conditions.size());
 		for (int i = 0; i < int(conditions.size()); ++i)
 		{
@@ -481,7 +493,31 @@ namespace polyfem::varform
 				boundary_ids, condition.value("tolerance", 1e-5));
 			periodic_tile_offsets.col(i) = mapping.translation.transpose();
 			for (const int dof : mapping.boundary_dofs)
+			{
 				periodic_dof_mask(dof) = 1;
+			}
+			for (const auto &boundary : boundary_.total_local_boundary)
+			{
+				const auto &bases = space_.basis_list()[boundary.element_id()];
+				for (int primitive = 0; primitive < boundary.size(); ++primitive)
+				{
+					const int primitive_id = boundary.global_primitive_id(primitive);
+					for (int side = 0; side < 2; ++side)
+					{
+						if (mesh_->get_boundary_id(primitive_id) != boundary_ids[side])
+						{
+							continue;
+						}
+						for (const int node : bases.local_nodes_for_primitive(primitive_id, *mesh_))
+						{
+							for (const auto &global : bases.bases[node].global())
+							{
+								periodic_face_mask(global.index) |= 1 << (2 * i + side);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		Eigen::MatrixXd V(n_bases, dim);
@@ -490,54 +526,56 @@ namespace polyfem::varform
 				for (const auto &g : b.global())
 					V.row(g.index) = g.node;
 
-		Eigen::MatrixXi E = collision_mesh_.edges();
-		for (int i = 0; i < E.size(); i++)
+		Eigen::MatrixXi primitives = dim == 2 ? collision_mesh_.edges() : collision_mesh_.faces();
+		for (int entry = 0; entry < primitives.size(); ++entry)
 		{
-			E(i) = collision_mesh_.to_full_vertex_id(E(i));
-			if (E(i) < 0 || E(i) >= n_bases)
+			primitives(entry) = collision_mesh_.to_full_vertex_id(primitives(entry));
+			if (primitives(entry) < 0 || primitives(entry) >= n_bases)
+			{
 				log_and_throw_error("Periodic contact requires collision vertices to map to FE basis nodes.");
+			}
 		}
 
 		Eigen::MatrixXd bbox(V.cols(), 2);
 		bbox.col(0) = V.colwise().minCoeff();
 		bbox.col(1) = V.colwise().maxCoeff();
 
-		// remove boundary edges on periodic BC, buggy
+		// Exclude artificial cell cuts, not physical faces whose vertices lie on different periodic boundaries.
 		{
 			std::vector<int> ind;
-			for (int i = 0; i < E.rows(); i++)
+			for (int primitive = 0; primitive < primitives.rows(); ++primitive)
 			{
-				if (!periodic_dof_mask(E(i, 0)) || !periodic_dof_mask(E(i, 1)))
-					ind.push_back(i);
+				int common_faces = periodic_face_mask(primitives(primitive, 0));
+				for (int corner = 1; corner < primitives.cols(); ++corner)
+				{
+					common_faces &= periodic_face_mask(primitives(primitive, corner));
+				}
+				if (common_faces == 0)
+				{
+					ind.push_back(primitive);
+				}
 			}
 
-			E = E(ind, Eigen::all).eval();
+			primitives = primitives(ind, Eigen::all).eval();
 		}
 
-		Eigen::MatrixXd Vtmp, Vnew;
-		Eigen::MatrixXi Etmp, Enew;
-		Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
-		Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
+		Eigen::MatrixXd Vtmp(V.rows() * tile_count, dim);
+		Eigen::MatrixXi tiled_primitives(primitives.rows() * tile_count, primitives.cols());
 
 		if (periodic_tile_offsets.rows() != dim || periodic_tile_offsets.cols() != dim
 			|| Eigen::FullPivLU<Eigen::MatrixXd>(periodic_tile_offsets).rank() != dim)
 			log_and_throw_error("Periodic contact requires {} linearly independent periodic boundary pairs", dim);
 		const Eigen::MatrixXd &tile_offset = periodic_tile_offsets;
 
-		for (int i = 0, idx = 0; i < n_tiles; i++)
+		for (int tile = 0; tile < tile_count; ++tile)
 		{
-			for (int j = 0; j < n_tiles; j++)
+			Eigen::VectorXd block_id(dim);
+			for (int axis = 0; axis < dim; ++axis)
 			{
-				Eigen::Vector2d block_id;
-				block_id << i, j;
-
-				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
-				for (int vid = 0; vid < V.rows(); vid++)
-					Vtmp.block(idx * V.rows() + vid, 0, 1, 2) += (tile_offset * block_id).transpose();
-
-				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
-				idx += 1;
+				block_id(axis) = (tile >> (dim - axis - 1)) % n_tiles;
 			}
+			Vtmp.middleRows(tile * V.rows(), V.rows()) = V.rowwise() + (tile_offset * block_id).transpose();
+			tiled_primitives.middleRows(tile * primitives.rows(), primitives.rows()) = primitives.array() + tile * V.rows();
 		}
 
 		// clean duplicated vertices
@@ -550,8 +588,8 @@ namespace polyfem::varform
 					tmp.push_back(i);
 			}
 
-			indices.resize(tmp.size() * n_tiles * n_tiles);
-			for (int i = 0; i < n_tiles * n_tiles; i++)
+			indices.resize(tmp.size() * tile_count);
+			for (int i = 0; i < tile_count; i++)
 			{
 				indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
 				indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
@@ -589,15 +627,25 @@ namespace polyfem::varform
 			}
 		}
 
-		Vnew = Vtmp(SVJ, Eigen::all);
-
-		Enew.resizeLike(Etmp);
-		for (int d = 0; d < Etmp.cols(); d++)
-			Enew.col(d) = SVI(Etmp.col(d));
+		const Eigen::MatrixXd Vnew = Vtmp(SVJ, Eigen::all);
+		for (int entry = 0; entry < tiled_primitives.size(); ++entry)
+		{
+			tiled_primitives(entry) = SVI(tiled_primitives(entry));
+		}
+		Eigen::MatrixXi Enew;
+		Eigen::MatrixXi boundary_triangles(0, 3);
+		if (dim == 3)
+		{
+			boundary_triangles = std::move(tiled_primitives);
+			igl::edges(boundary_triangles, Enew);
+		}
+		else
+		{
+			Enew = std::move(tiled_primitives);
+		}
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
 
-		Eigen::MatrixXi boundary_triangles;
 		Eigen::SparseMatrix<double> displacement_map;
 		periodic_collision_mesh_ = ipc::CollisionMesh(is_on_surface,
 													  std::vector<bool>(Vnew.rows(), false),
@@ -610,7 +658,7 @@ namespace polyfem::varform
 
 		periodic_collision_mesh_to_basis_.setConstant(Vnew.rows(), -1);
 		for (int i = 0; i < V.rows(); i++)
-			for (int j = 0; j < n_tiles * n_tiles; j++)
+			for (int j = 0; j < tile_count; j++)
 				periodic_collision_mesh_to_basis_(SVI[j * V.rows() + i]) = i;
 
 		if (periodic_collision_mesh_to_basis_.maxCoeff() + 1 != V.rows())
@@ -657,11 +705,18 @@ namespace polyfem::varform
 			else if (sol.cols() != 1)
 				log_and_throw_error("Static elasticity requires exactly one initial solution column.");
 		}
-		init_solve(sol, 1.0, initial_condition_override);
-
-		solve_tensor_nonlinear(0, sol, true);
-		if (post_step)
-			post_step(0, sol);
+		if (has_macro_strain())
+		{
+			Eigen::VectorXd extended_solution = init_homogenization_solve(sol, 0.0, initial_condition_override);
+			solve_homogenization_step(0, 0.0, extended_solution, sol, post_step);
+		}
+		else
+		{
+			init_solve(sol, 1.0, initial_condition_override);
+			solve_tensor_nonlinear(0, sol, true);
+			if (post_step)
+				post_step(0, sol);
+		}
 
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
@@ -690,6 +745,24 @@ namespace polyfem::varform
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
+		}
+		if (has_macro_strain())
+		{
+			Eigen::VectorXd extended_solution = init_homogenization_solve(sol, t0, initial_condition_override);
+			for (int step = 0; step <= time_steps; ++step)
+			{
+				const double time = t0 + step * dt;
+				solve_homogenization_step(step, time, extended_solution, sol, post_step);
+				save_timestep(time, step, t0, dt, sol);
+				solve_data_.update_barrier_stiffness(sol);
+				logger().info("{}/{}  t={}", step, time_steps, time);
+				notify_time_step(step, time_steps, t0, dt);
+				save_elastic_step_state(t0, dt, step, sol, nullptr);
+			}
+			timer.stop();
+			timings.solving_time = timer.getElapsedTime();
+			logger().info(" took {}s", timings.solving_time);
+			return;
 		}
 		init_solve(sol, t0 + dt, initial_condition_override);
 		if (post_step)
@@ -775,7 +848,6 @@ namespace polyfem::varform
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 
-		// NOTE: some stuff are legacy and hardcoded to be off
 		forms = solve_data_.init_forms(
 			// General
 			units,
@@ -799,7 +871,8 @@ namespace polyfem::varform
 			// Augmented lagrangian form
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"], args["constraints"]["zero_mean"],
 			// Contact form
-			args["contact"]["enabled"], collision_mesh_, args["contact"]["dhat"],
+			args["contact"]["enabled"],
+			args["contact"]["periodic"] ? periodic_collision_mesh_ : collision_mesh_, args["contact"]["dhat"],
 			avg_mass_, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
@@ -832,9 +905,9 @@ namespace polyfem::varform
 			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
-			assembler::MacroStrainValue(),
+			macro_strain_constraint_,
 			// Periodic contact
-			false, Eigen::VectorXi(),
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis_,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -856,6 +929,205 @@ namespace polyfem::varform
 			solve_data_.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 	}
 
+	/// Return the initial extended solution [periodic displacement fluctuation | flatten(G)].
+	Eigen::VectorXd NonlinearElasticVarForm::init_homogenization_solve(
+		Eigen::MatrixXd &solution,
+		const double time,
+		const InitialConditionOverride *initial_condition_override)
+	{
+		assert(has_macro_strain());
+		forms.clear();
+		solve_data_ = solver::SolveData();
+		// Retain the RHS assembler so rebuilding forms also retains the Dirichlet constraints that remove translation modes.
+		solve_data_.rhs_assembler = rhs_assembler_;
+		displacement_gradient_.resize(0, 0);
+		macro_strain_constraint_ = assembler::MacroStrainValue();
+		macro_strain_constraint_.init(
+			mesh_->dimension(), args["constraints"]["macro_displacement_gradient"], resources_);
+		init_solve_data(solution, time, "", initial_condition_override);
+
+		for (const auto &[name, form] : solve_data_.named_forms())
+		{
+			if (name == "augmented_lagrangian")
+			{
+				form->set_weight(0);
+				form->disable();
+			}
+		}
+
+		// See chap 3.4 of https://dl.acm.org/doi/10.1145/3687765.
+		// Since rotation does not affect elastic behavior, enforce symmetry of macro strain tensor G.
+		bool solve_symmetric_macro_strain = false;
+		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
+		const int dim = mesh_->dimension();
+		for (int i = 0; i < dim && !solve_symmetric_macro_strain; ++i)
+		{
+			for (int j = 0; j < i; ++j)
+			{
+				const bool ij_fixed = std::find(
+										  fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), i + j * dim)
+									  != fixed_entries.data() + fixed_entries.size();
+				const bool ji_fixed = std::find(
+										  fixed_entries.data(), fixed_entries.data() + fixed_entries.size(), j + i * dim)
+									  != fixed_entries.data() + fixed_entries.size();
+				if (!ij_fixed && !ji_fixed)
+					solve_symmetric_macro_strain = true;
+			}
+		}
+
+		double characteristic_length = args["solver"]["advanced"]["characteristic_length"];
+		if (characteristic_length <= 0)
+		{
+			RowVectorNd min, max;
+			mesh_->bounding_box(min, max);
+			characteristic_length = (max - min).norm();
+		}
+		double characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		if (characteristic_force_density <= 0)
+			characteristic_force_density = 10000;
+
+		const int ndof = space_.n_bases * dim;
+		auto homo_problem = std::make_shared<solver::NLHomoProblem>(
+			ndof, macro_strain_constraint_, space_.n_bases, space_.mesh_nodes,
+			time, forms, solve_data_.al_form, solve_symmetric_macro_strain,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			characteristic_length, characteristic_force_density, pure_mass_, dim);
+		if (solve_data_.periodic_contact_form)
+			homo_problem->add_form(solve_data_.periodic_contact_form);
+		if (solve_data_.strain_al_lagr_form)
+			homo_problem->add_form(solve_data_.strain_al_lagr_form);
+
+		solve_data_.nl_problem = homo_problem;
+		const Eigen::VectorXd initial_reduced = Eigen::VectorXd::Zero(
+			homo_problem->reduced_size() + homo_problem->macro_reduced_size());
+		homo_problem->init(initial_reduced);
+		homo_problem->update_quantities(time, initial_reduced);
+		stats.solver_info = json::array();
+
+		if (!initial_condition_override || initial_condition_override->displacement_gradient.size() == 0)
+		{
+			return Eigen::VectorXd::Zero(ndof + dim * dim);
+		}
+
+		const Eigen::MatrixXd &gradient = initial_condition_override->displacement_gradient;
+		Eigen::VectorXd extended(ndof + dim * dim);
+		// The continuation state stores total displacement; the homogenization unknown stores u - G X.
+		extended.head(ndof) = solution - io::Evaluator::generate_linear_field(space_.n_bases, space_.mesh_nodes, gradient);
+		extended.tail(dim * dim) = utils::flatten(gradient);
+		return extended;
+	}
+
+	void NonlinearElasticVarForm::solve_homogenization_step(
+		const int step,
+		const double time,
+		Eigen::VectorXd &extended_solution,
+		Eigen::MatrixXd &solution,
+		const ForwardStepCallback &post_step)
+	{
+
+		// Approach the prescribed macro strain with AL, then eliminate fixed macro components to enforce it exactly.
+
+		auto homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data_.nl_problem);
+		assert(homo_problem && solve_data_.strain_al_lagr_form);
+
+		const int dim = mesh_->dimension();
+		if (extended_solution.size() == 0)
+			extended_solution.setZero(homo_problem->full_size() + dim * dim);
+		assert(extended_solution.size() == homo_problem->full_size() + dim * dim);
+		const Eigen::VectorXi &fixed_entries = macro_strain_constraint_.get_fixed_entry();
+		homo_problem->set_fixed_entry({});
+
+		auto lagrangian_form = solve_data_.strain_al_lagr_form;
+		lagrangian_form->enable();
+		Eigen::VectorXd reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->update_quantities(time, reduced_solution);
+		reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		const Eigen::VectorXd initial_solution = reduced_solution;
+		const Eigen::VectorXi fixed_indices = fixed_entries.array() + homo_problem->full_size();
+		const Eigen::VectorXd fixed_values =
+			utils::flatten(macro_strain_constraint_.eval(time))(fixed_entries);
+		const double initial_error = lagrangian_form->compute_error(extended_solution);
+		double current_error = initial_error;
+
+		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
+		const double eta_tolerance = args["solver"]["augmented_lagrangian"]["eta"];
+		const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
+		const double error_tolerance = args["solver"]["augmented_lagrangian"]["error"];
+		lagrangian_form->set_initial_weight(al_weight);
+		homo_problem->init(reduced_solution);
+		homo_problem->solution_changed(reduced_solution);
+
+		// Adjust the initial AL weight so that negative-gradient descent points toward the prescribed macro strain.
+		while (initial_error > 0 && al_weight < max_weight && scaling > 1)
+		{
+			Eigen::VectorXd gradient;
+			homo_problem->gradient(reduced_solution, gradient);
+			const Eigen::VectorXd macro_gradient = utils::flatten(homo_problem->reduced_to_disp_grad(gradient, true));
+			if ((macro_gradient(fixed_entries).array() * (extended_solution(fixed_indices) - fixed_values).array()).minCoeff() >= 0)
+				break;
+			al_weight = std::min(al_weight * scaling, max_weight);
+			lagrangian_form->set_initial_weight(al_weight);
+		}
+		logger().debug("Macro-strain AL initial penalty: {}", al_weight);
+
+		// Try enforcing the prescribed macro strain exactly to check whether the projection is feasible.
+		extended_solution(fixed_indices) = fixed_values;
+		Eigen::VectorXd constrained_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->line_search_begin(reduced_solution, constrained_solution);
+		bool force_al_solve = true;
+
+		// Match the fork's switch criterion: require both a feasible exact projection and a small squared macro residual.
+		while (force_al_solve
+			   || !std::isfinite(homo_problem->value(constrained_solution))
+			   || !homo_problem->is_step_valid(reduced_solution, constrained_solution)
+			   || !homo_problem->is_step_collision_free(reduced_solution, constrained_solution)
+			   || current_error > error_tolerance)
+		{
+			force_al_solve = false;
+			homo_problem->line_search_end();
+			// Apply any penalty increase from the previous iteration before minimizing again.
+			lagrangian_form->set_initial_weight(al_weight);
+			homo_problem->init(reduced_solution);
+			auto nonlinear_solver = polysolve::nonlinear::Solver::create(
+				args["solver"]["augmented_lagrangian"]["nonlinear"],
+				args["solver"]["linear"], units.characteristic_length(), logger());
+			homo_problem->normalize_forms();
+			nonlinear_solver->minimize(*homo_problem, reduced_solution);
+
+			extended_solution = homo_problem->reduced_to_extended(reduced_solution);
+			current_error = lagrangian_form->compute_error(extended_solution);
+			const double eta = initial_error > 0 ? 1 - std::sqrt(current_error / initial_error) : 1;
+			logger().debug("Macro-strain AL penalty {}, squared error {}, progress {}", al_weight, current_error, eta);
+			if (eta < eta_tolerance && al_weight < max_weight)
+				al_weight = std::min(al_weight * scaling, max_weight);
+			else
+				lagrangian_form->update_lagrangian(extended_solution, al_weight);
+			if (eta <= 0)
+				reduced_solution = initial_solution;
+
+			extended_solution(fixed_indices) = fixed_values;
+			constrained_solution = homo_problem->extended_to_reduced(extended_solution);
+			homo_problem->line_search_begin(reduced_solution, constrained_solution);
+		}
+		homo_problem->line_search_end();
+		lagrangian_form->disable();
+
+		homo_problem->set_fixed_entry(fixed_entries);
+		reduced_solution = homo_problem->extended_to_reduced(extended_solution);
+		homo_problem->init(reduced_solution);
+		auto nonlinear_solver = polysolve::nonlinear::Solver::create(
+			args["solver"]["nonlinear"], args["solver"]["linear"],
+			units.characteristic_length(), logger());
+		homo_problem->normalize_forms();
+		nonlinear_solver->minimize(*homo_problem, reduced_solution);
+
+		extended_solution = homo_problem->reduced_to_extended(reduced_solution);
+		displacement_gradient_ = homo_problem->reduced_to_disp_grad(reduced_solution);
+		solution = homo_problem->reduced_to_full(reduced_solution);
+		if (post_step)
+			post_step(step, solution);
+	}
 	void NonlinearElasticVarForm::init_solve(
 		Eigen::MatrixXd &sol,
 		const double t,
@@ -935,7 +1207,7 @@ namespace polyfem::varform
 
 		// --------------------------------------------------------------------
 
-		if (problem->is_time_dependent())
+		if (problem->is_time_dependent() && !has_macro_strain())
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 			solve_data_.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
