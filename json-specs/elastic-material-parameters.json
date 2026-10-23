@@ -430,6 +430,7 @@
         "optional": [
             "use_rest_pose",
             "weight",
+            "power",
             "id",
             "rho"
         ],
@@ -722,5 +723,12 @@
         "spec_file": "value1.json",
         "default": 1,
         "doc": "Scale factor for the AMIPS energy."
+    },
+    {
+        "pointer": "/power",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Power exponent applied to the AMIPS energy before weighting."
     }
 ]
