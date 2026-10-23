@@ -590,6 +590,20 @@ TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
 			CHECK(sol2(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
 	}
 
+	SECTION("Aitken relaxation reaches the same fixed point")
+	{
+		json c = args;
+		c["materials"]["growth_law"]["relag_acceleration"] = "aitken";
+		State s4;
+		s4.init(c, /*strict_validation=*/true);
+		s4.set_max_threads(1);
+		s4.load_mesh();
+		Eigen::MatrixXd sol4;
+		s4.solve(sol4);
+		for (int a = 0; a < nv; ++a)
+			CHECK(sol4(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
+	}
+
 	SECTION("lagged parallel threshold needs a lagged shear supply")
 	{
 		json bad = args;

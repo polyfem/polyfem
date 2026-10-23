@@ -110,6 +110,13 @@ namespace polyfem::varform
 		/// transverse shears removed and Ce_nn at the layer value)), then
 		/// threshold = phi_par + f_gamma and the node weights.
 		void update_lagged_threshold(const Eigen::MatrixXd &solution, double t);
+		/// the threshold the state implies: G(x) = (PHI_PAR, f_gamma) at C_check of the
+		/// state (PHI_PAR only when parallel_threshold is lagged, else the current one)
+		void threshold_target(const Eigen::MatrixXd &solution, double t,
+							  Eigen::VectorXd &par, Eigen::VectorXd &gam, Eigen::VectorXd &clamped);
+		/// install a threshold (parts), rebuild the node weights, log
+		void set_threshold(const Eigen::VectorXd &par, const Eigen::VectorXd &gam,
+						   const Eigen::VectorXd &clamped, double t, double omega);
 		/// Route B at C_check of displacement u, per element: f_I(Ce) (phi_full),
 		/// f_I(Ce shear-free, layer thickness) (phi_no_shear), and the total in-plane
 		/// area stretch theta_tot. f_par = phi_no_shear, f_gamma = phi_full - phi_no_shear.
@@ -234,6 +241,11 @@ namespace polyfem::varform
 			/// < 1: after the active set settles, one confirmation pass with the
 			/// nonlinear gradient tolerance multiplied by this factor (1 = off)
 			double final_tol_factor = 1.0;
+			/// shear_update "pass": "aitken" relaxes the per-pass threshold iteration
+			/// (Aitken / Irons-Tuck), omega clamped to [relag_omega_min, relag_omega_max]
+			std::string relag_acceleration = "none";
+			double relag_omega_min = 0.05;
+			double relag_omega_max = 5.0;
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
