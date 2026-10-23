@@ -262,10 +262,11 @@ namespace polyfem
 				return;
 			}
 
-			const auto path = std::filesystem::path(utils::resolve_path(expr, root_path));
-
 			try
 			{
+				// resolving can throw for strings that cannot be a path (e.g. longer than a
+				// file name may be); those are expressions
+				const auto path = std::filesystem::path(utils::resolve_path(expr, root_path));
 				if (std::filesystem::is_regular_file(path))
 				{
 					read_matrix(path.string(), mat_);

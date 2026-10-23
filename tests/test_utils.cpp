@@ -192,6 +192,21 @@ TEST_CASE("expression", "[utils]")
 	REQUIRE(time_expr(3, 0, 0, 0) == Catch::Approx(3).margin(1e-16));
 	REQUIRE(time_expr(3, 0, 0, 1) == Catch::Approx(6).margin(1e-16));
 
+	// an expression longer than a file name may be (e.g. a piecewise-in-time Dirichlet value)
+	// is not a path: checking it as one must not throw
+	std::string long_str = "x";
+	double long_ref = 2;
+	for (int k = 1; k <= 60; ++k)
+	{
+		long_str += fmt::format(" + {}*min(max(t*4-{},0),1)", k, k % 4);
+		long_ref += k * std::min(std::max(0.5 * 4 - k % 4, 0.), 1.);
+	}
+	REQUIRE(long_str.size() > 1000);
+	utils::ExpressionValue long_expr;
+	REQUIRE_NOTHROW(long_expr.init(json(long_str), ""));
+	long_expr.set_unit_type("");
+	REQUIRE(long_expr(2, 0, 0, 0.5) == Catch::Approx(long_ref).margin(1e-10));
+
 #ifdef POLYFEM_WITH_PYTHON
 	const std::filesystem::path python_file = std::filesystem::temp_directory_path() / "polyfem_python_expression_test.py";
 	{
