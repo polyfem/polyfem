@@ -218,7 +218,7 @@ namespace polyfem::mesh
 		return Mesh::create(std::move(data), non_conforming);
 	}
 
-	SurfaceMesh MeshLoader::load_surface(const std::string &path) const
+	SurfaceMesh MeshLoader::load_surface(const std::string &path, const bool keep_volume) const
 	{
 		if (!resources_.exists(path))
 			log_and_throw_error("Surface resource {} does not exist.", resources_.describe(path));
@@ -229,7 +229,7 @@ namespace polyfem::mesh
 			std::string extension = std::filesystem::path(path).extension().string();
 			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 			if (extension == ".msh")
-				result = MeshReader::read_msh_surface(materialized);
+				result = MeshReader::read_msh_surface(materialized, keep_volume);
 			else if (extension == ".obj")
 				result = MeshReader::read_obj_surface(materialized);
 			else if (!MeshReader::read_triangle_surface(materialized, result))

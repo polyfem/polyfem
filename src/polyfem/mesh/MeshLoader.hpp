@@ -19,7 +19,8 @@ namespace polyfem::mesh
 			: resources_(resources) {}
 
 		std::unique_ptr<Mesh> load_fem(const std::string &path, bool non_conforming = false) const;
-		SurfaceMesh load_surface(const std::string &path) const;
+		/// @param keep_volume Keep a 3D tet mesh's tets; see MeshReader::read_msh_surface.
+		SurfaceMesh load_surface(const std::string &path, bool keep_volume = false) const;
 
 	private:
 		void validate_group(const std::string &group, const std::string &expected_type) const;
