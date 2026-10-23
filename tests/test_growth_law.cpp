@@ -15,6 +15,7 @@
 // the fitted energy on that path (not the assembler).
 
 #include <polyfem/State.hpp>
+#include <polyfem/varforms/GrowthElasticVarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -290,5 +291,66 @@ TEST_CASE("growth_law_V2_cube", "[growth][growth_law]")
 		const double peak = lambda * lambda / vstar;
 		for (int a = 0; a < nv; ++a)
 			CHECK(theta(a) == Catch::Approx(peak).epsilon(1e-6));
+	}
+}
+
+TEST_CASE("growth_law_increment_output", "[growth][growth_law]")
+{
+	// Ramp the V2 stretch over four increments: growth activates in the first
+	// increment whose end-of-increment area stretch exceeds vartheta*, and
+	// save_increments writes one VTU per converged increment plus a PVD.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const auto dir = scratch_dir();
+	const std::string mesh = write_cube_mesh(dir, n);
+	const double phi = 469.0, vstar = activation_stretch(phi);
+	const double lambda = std::sqrt(1.5);
+	const int n_steps = 4;
+
+	int expected_step = 0;
+	for (int k = 1; k <= n_steps && expected_step == 0; ++k)
+	{
+		const double lk = 1.0 + (lambda - 1.0) * double(k) / n_steps;
+		if (lk * lk > vstar * (1 + 1e-6))
+			expected_step = k;
+	}
+	REQUIRE(expected_step > 1); // the ramp must start below threshold
+
+	for (const bool save : {true, false})
+	{
+		const auto out_dir = dir / (save ? "increments_on" : "increments_off");
+		std::filesystem::remove_all(out_dir);
+		std::filesystem::create_directories(out_dir);
+		json args = cube_args(mesh, lambda, phi, n_steps, 1.0, "t");
+		args["materials"]["growth_law"]["save_increments"] = save;
+		args["output"]["directory"] = out_dir.string();
+
+		State state;
+		state.init(args, /*strict_validation=*/true);
+		state.set_max_threads(1);
+		state.load_mesh();
+		Eigen::MatrixXd sol;
+		state.solve(sol);
+		REQUIRE(sol.rows() == 4 * nv);
+
+		const auto vf = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(state.variational_formulation);
+		REQUIRE(vf);
+		const Eigen::VectorXi &act = vf->growth_activation_step();
+		REQUIRE(act.size() == nv);
+		for (int a = 0; a < nv; ++a)
+			CHECK(act(a) == expected_step);
+
+		for (int k = 1; k <= n_steps; ++k)
+			CHECK(std::filesystem::exists(out_dir / ("growth_step_" + std::to_string(k) + ".vtu")) == save);
+		CHECK(std::filesystem::exists(out_dir / "growth_steps.pvd") == save);
+		if (save)
+		{
+			std::ifstream pvd(out_dir / "growth_steps.pvd");
+			const std::string text((std::istreambuf_iterator<char>(pvd)), std::istreambuf_iterator<char>());
+			int n_sets = 0;
+			for (size_t p = text.find("<DataSet"); p != std::string::npos; p = text.find("<DataSet", p + 1))
+				++n_sets;
+			CHECK(n_sets == n_steps);
+		}
 	}
 }

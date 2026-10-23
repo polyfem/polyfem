@@ -185,6 +185,7 @@ namespace polyfem::varform
 		theta_n_.resize(0);
 		pinned_growth_nodes_.clear();
 		growth_pinned_mask_.clear();
+		growth_activation_step_.resize(0);
 		dissipation_form_ = nullptr;
 	}
 
@@ -208,7 +209,8 @@ namespace polyfem::varform
 				|| gl.value("max_active_set_iterations", d.max_active_set_iterations) != d.max_active_set_iterations
 				|| gl.value("active_set_tol", d.active_set_tol) != d.active_set_tol
 				|| gl.value("feasibility_tol", d.feasibility_tol) != d.feasibility_tol
-				|| gl.value("theta_floor_fraction", d.theta_floor_fraction) != d.theta_floor_fraction)
+				|| gl.value("theta_floor_fraction", d.theta_floor_fraction) != d.theta_floor_fraction
+				|| gl.value("save_increments", d.save_increments) != d.save_increments)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -221,6 +223,7 @@ namespace polyfem::varform
 		growth_law_.active_set_tol = gl.value("active_set_tol", growth_law_.active_set_tol);
 		growth_law_.feasibility_tol = gl.value("feasibility_tol", growth_law_.feasibility_tol);
 		growth_law_.theta_floor_fraction = gl.value("theta_floor_fraction", growth_law_.theta_floor_fraction);
+		growth_law_.save_increments = gl.value("save_increments", growth_law_.save_increments);
 
 		if (growth_law_.n_steps < 1)
 			log_and_throw_error("growth_law n_steps must be >= 1, got {}.", growth_law_.n_steps);
@@ -1308,6 +1311,7 @@ namespace polyfem::varform
 		theta_n_ = solution.col(0).tail(ng);
 		if (!(theta_n_.array() > 0).all())
 			log_and_throw_error("growth_law: initial growth must be positive (min {}).", theta_n_.minCoeff());
+		growth_activation_step_ = Eigen::VectorXi::Zero(ng);
 
 		for (int step = 1; step <= growth_law_.n_steps; ++step)
 		{
@@ -1329,7 +1333,47 @@ namespace polyfem::varform
 			// free DOFs passed the feasibility test. Clamp round-off only.
 			theta_n_ = theta.cwiseMax(theta_n_);
 			solution.col(0).segment(nu, ng) = theta_n_;
+
+			// Activation increment (Q13(a)): the first increment in which a DOF
+			// was free in the settled active set AND grew. Free-but-unmoved
+			// DOFs (exactly at threshold) do not count.
+			for (int a = 0; a < ng; ++a)
+				if (growth_activation_step_(a) == 0 && !growth_pinned_mask_[a] && dtheta(a) > 0)
+					growth_activation_step_(a) = step;
+
+			if (growth_law_.save_increments)
+				save_growth_increment(step, t, solution);
 		}
+	}
+
+	void GrowthElasticVarForm::save_growth_increment(const int step, const double t, const Eigen::MatrixXd &solution)
+	{
+		const io::OutputSpace space = output_space();
+		if (!space.mesh)
+			return;
+
+		// output_fields falls back to converged_solution_ for non-stacked
+		// inputs; keep it current so every export path sees this increment.
+		converged_solution_ = solution;
+
+		ensure_output_sampler();
+		const auto opts = export_options(space);
+		const double dt = growth_law_.t_end / double(growth_law_.n_steps);
+		const std::string name = fmt::format("growth_step_{:d}.vtu", step);
+		output_geometry_.save_vtu(resolve_output_path(name), space,
+								  output_field_function(solution, opts), t, dt, opts);
+
+		// The PVD is rewritten each increment, so an aborted ramp still leaves
+		// a readable series of the increments that converged.
+		std::ofstream pvd(resolve_output_path("growth_steps.pvd"));
+		pvd << "<?xml version=\"1.0\"?>\n"
+			<< "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
+			<< "  <Collection>\n";
+		for (int k = 1; k <= step; ++k)
+			pvd << fmt::format("    <DataSet timestep=\"{:.17g}\" group=\"\" part=\"0\" file=\"growth_step_{:d}.vtu\"/>\n",
+							   growth_law_.t_end * double(k) / double(growth_law_.n_steps), k);
+		pvd << "  </Collection>\n</VTKFile>\n";
+		logger().info("growth step {}: wrote {}", step, resolve_output_path(name));
 	}
 
 	void GrowthElasticVarForm::export_data(const Eigen::MatrixXd &solution) const
@@ -1553,6 +1597,15 @@ namespace polyfem::varform
 			Eigen::MatrixXd values;
 			if (sample_growth_scalar(mask, values))
 				fields.push_back({"growth_pinned", values, io::OutputField::Association::Point});
+		}
+
+		if (growth_law_.enabled && growth_activation_step_.size() == growth_ndof()
+			&& options.export_field("growth_activation_step"))
+		{
+			const Eigen::MatrixXd steps = growth_activation_step_.cast<double>();
+			Eigen::MatrixXd values;
+			if (sample_growth_scalar(steps, values))
+				fields.push_back({"growth_activation_step", values, io::OutputField::Association::Point});
 		}
 
 		if (growthelastic_assembler_)
