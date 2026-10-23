@@ -1,11 +1,12 @@
 var classpolyfem_1_1solver_1_1_contact_form =
 [
-    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#ac76dcf3233f2c5245fe4d6e54cc28ba3", null ],
+    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a49cc2a626e95f8d981a17f8b3dd32d89", null ],
     [ "~ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a17adc903d8d5ec5f8beef902df220c17", null ],
     [ "barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440", null ],
     [ "barrier_support_size", "classpolyfem_1_1solver_1_1_contact_form.html#ac10f0e52ef9cf557e1113d10bf7f881b", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
     [ "dhat", "classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561", null ],
+    [ "dhat_epsilon_scale", "classpolyfem_1_1solver_1_1_contact_form.html#aeff8d490956102e12feb279ec15bcf3d", null ],
     [ "enable_shape_derivatives", "classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c", null ],
     [ "get_broad_phase", "classpolyfem_1_1solver_1_1_contact_form.html#a2eb4ff98f38adaaf22f7be1757e63bfe", null ],
     [ "init", "classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb", null ],
@@ -29,6 +30,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "candidates_", "classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89", null ],
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_contact_form.html#a95a81c1253e64a0777b2353c0eb3110c", null ],
     [ "dhat_", "classpolyfem_1_1solver_1_1_contact_form.html#ae7c67afb6fd4cf38153e5e7029ba869b", null ],
+    [ "dhat_epsilon_scale_", "classpolyfem_1_1solver_1_1_contact_form.html#a53d9be33fffdf07fbe659cf2ab190f41", null ],
     [ "dmin_", "classpolyfem_1_1solver_1_1_contact_form.html#a1d5a12c0e6924379374e826fbf097f82", null ],
     [ "enable_shape_derivatives_", "classpolyfem_1_1solver_1_1_contact_form.html#a80cde93e954fae5d1ed9ba561e4efc99", null ],
     [ "is_time_dependent_", "classpolyfem_1_1solver_1_1_contact_form.html#afec9402e40be461c8b303c028dbd3dc5", null ],

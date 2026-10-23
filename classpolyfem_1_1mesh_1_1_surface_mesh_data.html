@@ -138,6 +138,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ac995c2f5935194afa35ef5a10b00c90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc3ec451b573adaddb474de8e2c1283c" id="r_abc3ec451b573adaddb474de8e2c1283c"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html#abc3ec451b573adaddb474de8e2c1283c">faces</a></td></tr>
 <tr class="separator:abc3ec451b573adaddb474de8e2c1283c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07a93d853502fe5b8c1205a4c779aa25" id="r_a07a93d853502fe5b8c1205a4c779aa25"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html#a07a93d853502fe5b8c1205a4c779aa25">tets</a></td></tr>
+<tr class="memdesc:a07a93d853502fe5b8c1205a4c779aa25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Volumetric cells indexing vertices; only filled when a 3D tet mesh is read with keep_volume.  <br /></td></tr>
+<tr class="separator:a07a93d853502fe5b8c1205a4c779aa25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -157,7 +160,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00020">20</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00485">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00296">polyfem::mesh::MeshReader::read_obj_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00491">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00304">polyfem::mesh::MeshReader::read_obj_surface()</a>.</p>
 
 </div>
 </div>
@@ -175,7 +178,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00021">21</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00485">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00316">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00296">polyfem::mesh::MeshReader::read_obj_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00305">polyfem::mesh::MeshReader::read_triangle_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00491">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00324">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00304">polyfem::mesh::MeshReader::read_obj_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00313">polyfem::mesh::MeshReader::read_triangle_surface()</a>.</p>
 
 </div>
 </div>
@@ -193,7 +196,27 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00019">19</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00130">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="pyramid__bases_8py_source.html#l00101">pyramid_bases.Pyramid::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00076">q_bases.Lagrange::compute_basis()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00485">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00130">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="pyramid__bases_8py_source.html#l00101">pyramid_bases.Pyramid::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00076">q_bases.Lagrange::compute_basis()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00491">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>.</p>
+
+</div>
+</div>
+<a id="a07a93d853502fe5b8c1205a4c779aa25" name="a07a93d853502fe5b8c1205a4c779aa25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a93d853502fe5b8c1205a4c779aa25">&#9670;&#160;</a></span>tets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::mesh::SurfaceMeshData::tets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Volumetric cells indexing vertices; only filled when a 3D tet mesh is read with keep_volume. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00024">24</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_loader_8cpp_source.html#l00491">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>.</p>
 
 </div>
 </div>
@@ -211,7 +234,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00018">18</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00485">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00316">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00296">polyfem::mesh::MeshReader::read_obj_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00305">polyfem::mesh::MeshReader::read_triangle_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00491">polyfem::mesh::GeometryLoader::load_obstacles()</a>, <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00324">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00304">polyfem::mesh::MeshReader::read_obj_surface()</a>, and <a class="el" href="_mesh_reader_8cpp_source.html#l00313">polyfem::mesh::MeshReader::read_triangle_surface()</a>.</p>
 
 </div>
 </div>

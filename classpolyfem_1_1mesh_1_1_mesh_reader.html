@@ -141,8 +141,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:aed076e822a85f6f5f6dc866dfafd45b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af60828894071e52eb5b156d1bc28d3b1" id="r_af60828894071e52eb5b156d1bc28d3b1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_data.html">MeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#af60828894071e52eb5b156d1bc28d3b1">from_geogram</a> (GEO::Mesh &amp;mesh)</td></tr>
 <tr class="separator:af60828894071e52eb5b156d1bc28d3b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab52dab059f354dc7e52c7483ce224423" id="r_ab52dab059f354dc7e52c7483ce224423"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html">SurfaceMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#ab52dab059f354dc7e52c7483ce224423">read_msh_surface</a> (const std::filesystem::path &amp;path)</td></tr>
-<tr class="separator:ab52dab059f354dc7e52c7483ce224423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2800b75c1bcb6cbbead0c99190c8752c" id="r_a2800b75c1bcb6cbbead0c99190c8752c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html">SurfaceMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#a2800b75c1bcb6cbbead0c99190c8752c">read_msh_surface</a> (const std::filesystem::path &amp;path, bool keep_volume=false)</td></tr>
+<tr class="separator:a2800b75c1bcb6cbbead0c99190c8752c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad7b981cc2f33ed3169c0c7433c309fc" id="r_aad7b981cc2f33ed3169c0c7433c309fc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html">SurfaceMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#aad7b981cc2f33ed3169c0c7433c309fc">read_obj_surface</a> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="separator:aad7b981cc2f33ed3169c0c7433c309fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56c9cf0c2617eee2ada44146352e42fc" id="r_a56c9cf0c2617eee2ada44146352e42fc"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#a56c9cf0c2617eee2ada44146352e42fc">read_triangle_surface</a> (const std::filesystem::path &amp;path, <a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html">SurfaceMeshData</a> &amp;result)</td></tr>
@@ -153,7 +153,7 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Stateless format decoders used exclusively by <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_loader.html" title="The only non-legacy decoder from a logical resource path to mesh data.">MeshLoader</a> and in-memory adapters. </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00025">25</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_reader_8hpp_source.html#l00028">28</a> of file <a class="el" href="_mesh_reader_8hpp_source.html">MeshReader.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="af60828894071e52eb5b156d1bc28d3b1" name="af60828894071e52eb5b156d1bc28d3b1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af60828894071e52eb5b156d1bc28d3b1">&#9670;&#160;</a></span>from_geogram()</h2>
@@ -263,7 +263,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00316">316</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00324">324</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00028">polyfem::mesh::is_planar()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, and <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>.</p>
 
@@ -375,8 +375,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ab52dab059f354dc7e52c7483ce224423" name="ab52dab059f354dc7e52c7483ce224423"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab52dab059f354dc7e52c7483ce224423">&#9670;&#160;</a></span>read_msh_surface()</h2>
+<a id="a2800b75c1bcb6cbbead0c99190c8752c" name="a2800b75c1bcb6cbbead0c99190c8752c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2800b75c1bcb6cbbead0c99190c8752c">&#9670;&#160;</a></span>read_msh_surface()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -388,8 +388,18 @@ Here is the caller graph for this function:</div>
           <td class="memname"><a class="el" href="classpolyfem_1_1mesh_1_1_surface_mesh_data.html">SurfaceMeshData</a> polyfem::mesh::MeshReader::read_msh_surface </td>
           <td>(</td>
           <td class="paramtype">const std::filesystem::path &amp;&#160;</td>
-          <td class="paramname"><em>path</em></td><td>)</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keep_volume</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -398,21 +408,27 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keep_volume</td><td>For a 3D tet mesh, keep every vertex and the tets, and index the boundary faces into the full vertex set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00266">266</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_reader_8hpp_source.html#l00020">polyfem::mesh::SurfaceMeshData::edges</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01214">polyfem::mesh::extract_triangle_surface_from_tets()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00043">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00019">polyfem::mesh::SurfaceMeshData::points</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>, and <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">weights</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_reader_8hpp_source.html#l00020">polyfem::mesh::SurfaceMeshData::edges</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01214">polyfem::mesh::extract_triangle_surface_from_tets()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01180">polyfem::mesh::find_triangle_surface_from_tets()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00043">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00019">polyfem::mesh::SurfaceMeshData::points</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00024">polyfem::mesh::SurfaceMeshData::tets</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>, and <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00019">weights</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_loader_8cpp_source.html#l00221">polyfem::mesh::MeshLoader::load_surface()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_reader_ab52dab059f354dc7e52c7483ce224423_cgraph.svg" width="100%" height="452"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_reader_a2800b75c1bcb6cbbead0c99190c8752c_cgraph.svg" width="100%" height="490"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_reader_ab52dab059f354dc7e52c7483ce224423_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_reader_a2800b75c1bcb6cbbead0c99190c8752c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -441,7 +457,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00296">296</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00304">304</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_reader_8hpp_source.html#l00020">polyfem::mesh::SurfaceMeshData::edges</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>, and <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>.</p>
 
@@ -493,7 +509,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00305">305</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_reader_8cpp_source.html#l00313">313</a> of file <a class="el" href="_mesh_reader_8cpp_source.html">MeshReader.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, and <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>.</p>
 

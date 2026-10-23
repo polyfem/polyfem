@@ -175,6 +175,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a686a97c450596396024cc475bc9fdcc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a836e498642f74e5e6b4b6ee2c632b07b" id="r_a836e498642f74e5e6b4b6ee2c632b07b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b">use_hdf5</a></td></tr>
 <tr class="separator:a836e498642f74e5e6b4b6ee2c632b07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a33727675b0f61aa4489a39e3e1613c" id="r_a3a33727675b0f61aa4489a39e3e1613c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a3a33727675b0f61aa4489a39e3e1613c">obstacle_volume</a></td></tr>
+<tr class="separator:a3a33727675b0f61aa4489a39e3e1613c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>different export flags </p>
@@ -255,7 +257,7 @@ Public Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="io_2_out_data_8hpp_source.html#l00034">fields</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02567">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02405">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02586">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02424">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -290,11 +292,11 @@ Here is the caller graph for this function:</div>
 <p>return the extension of the output paraview files depending on use_hdf5 </p>
 <dl class="section return"><dt>Returns</dt><dd>either hdf or vtu </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00065">65</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00067">67</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="io_2_out_data_8hpp_source.html#l00051">use_hdf5</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -318,7 +320,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00046">46</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 
 </div>
 </div>
@@ -336,7 +338,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00040">40</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -354,7 +356,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00048">48</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 
 </div>
 </div>
@@ -372,7 +374,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00034">34</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02130">export_field()</a>, <a class="el" href="_var_form_8cpp_source.html#l00844">polyfem::varform::VarForm::output_field_function()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02130">export_field()</a>, <a class="el" href="_var_form_8cpp_source.html#l00844">polyfem::varform::VarForm::output_field_function()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -390,7 +392,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00041">41</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -408,7 +410,25 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00042">42</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+
+</div>
+</div>
+<a id="a3a33727675b0f61aa4489a39e3e1613c" name="a3a33727675b0f61aa4489a39e3e1613c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a33727675b0f61aa4489a39e3e1613c">&#9670;&#160;</a></span>obstacle_volume</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::io::OutGeometryData::ExportOptions::obstacle_volume</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00053">53</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 
 </div>
 </div>
@@ -426,7 +446,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00039">39</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00130">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="pyramid__bases_8py_source.html#l00101">pyramid_bases.Pyramid::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00076">q_bases.Lagrange::compute_basis()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00130">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="pyramid__bases_8py_source.html#l00101">pyramid_bases.Pyramid::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00076">q_bases.Lagrange::compute_basis()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -460,7 +480,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00047">47</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 
 </div>
 </div>
@@ -478,7 +498,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00037">37</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -496,7 +516,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00043">43</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -514,7 +534,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00051">51</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8hpp_source.html#l00065">file_extension()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02476">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02567">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02405">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02516">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8hpp_source.html#l00067">file_extension()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02495">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02586">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02424">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="io_2_out_data_8cpp_source.html#l02535">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 
 </div>
 </div>
@@ -532,7 +552,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00045">45</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02252">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02254">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 
 </div>
 </div>
@@ -550,7 +570,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00036">36</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>
@@ -568,7 +588,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="io_2_out_data_8hpp_source.html#l00038">38</a> of file <a class="el" href="io_2_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02184">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="io_2_out_data_8cpp_source.html#l02186">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 
 </div>
 </div>

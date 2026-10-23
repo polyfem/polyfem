@@ -250,7 +250,7 @@ $(document).ready(function(){initNavTree('_l2_projection_8cpp_source.html',''); 
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                collision_mesh, dhat, <span class="comment">/*avg_mass=*/</span>1.0, use_area_weighting, use_improved_max_operator,</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                use_physical_barrier, <span class="comment">/*use_adaptive_barrier_stiffness=*/</span><span class="keyword">false</span>, <span class="comment">/*is_time_dependent=*/</span><span class="keyword">true</span>,</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="comment">/*enable_shape_derivatives=*/</span><span class="keyword">false</span>, broad_phase_method, ccd_tolerance,</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                ccd_max_iterations));</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                ccd_max_iterations, <span class="comment">/*dhat_epsilon_scale=*/</span>1e-9));</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            forms.back()-&gt;set_weight(barrier_stiffness);</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(<a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(x0, dim))));</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>

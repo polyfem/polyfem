@@ -8,6 +8,8 @@ var dir_ce37b2bddd8e1ab4ba3543aeb3d8f659 =
     [ "ElasticForceDerivative.hpp", "_elastic_force_derivative_8hpp.html", "_elastic_force_derivative_8hpp" ],
     [ "FrictionForceDerivative.cpp", "_friction_force_derivative_8cpp.html", null ],
     [ "FrictionForceDerivative.hpp", "_friction_force_derivative_8hpp.html", "_friction_force_derivative_8hpp" ],
+    [ "GCPContactForceDerivative.cpp", "_g_c_p_contact_force_derivative_8cpp.html", null ],
+    [ "GCPContactForceDerivative.hpp", "_g_c_p_contact_force_derivative_8hpp.html", "_g_c_p_contact_force_derivative_8hpp" ],
     [ "InertiaForceDerivative.cpp", "_inertia_force_derivative_8cpp.html", "_inertia_force_derivative_8cpp" ],
     [ "InertiaForceDerivative.hpp", "_inertia_force_derivative_8hpp.html", "_inertia_force_derivative_8hpp" ],
     [ "NormalAdhesionForceDerivative.cpp", "_normal_adhesion_force_derivative_8cpp.html", null ],
@@ -16,8 +18,6 @@ var dir_ce37b2bddd8e1ab4ba3543aeb3d8f659 =
     [ "PeriodicContactForceDerivative.hpp", "_periodic_contact_force_derivative_8hpp.html", "_periodic_contact_force_derivative_8hpp" ],
     [ "PressureForceDerivative.cpp", "_pressure_force_derivative_8cpp.html", null ],
     [ "PressureForceDerivative.hpp", "_pressure_force_derivative_8hpp.html", "_pressure_force_derivative_8hpp" ],
-    [ "SmoothContactForceDerivative.cpp", "_smooth_contact_force_derivative_8cpp.html", null ],
-    [ "SmoothContactForceDerivative.hpp", "_smooth_contact_force_derivative_8hpp.html", "_smooth_contact_force_derivative_8hpp" ],
     [ "TangentialAdhesionForceDerivative.cpp", "_tangential_adhesion_force_derivative_8cpp.html", null ],
     [ "TangentialAdhesionForceDerivative.hpp", "_tangential_adhesion_force_derivative_8hpp.html", "_tangential_adhesion_force_derivative_8hpp" ]
 ];

@@ -8,6 +8,7 @@ var _mesh_utils_8hpp =
     [ "extract_polyhedra", "_mesh_utils_8hpp.html#ad5d500b681dc6c18ea395e2a4424dff8", null ],
     [ "extract_triangle_surface_from_tets", "_mesh_utils_8hpp.html#a614178cdb624f2eff9500fabb9a4f432", null ],
     [ "facet_barycenter", "_mesh_utils_8hpp.html#a9f801017db21aa959f16cfc91c986a04", null ],
+    [ "find_triangle_surface_from_tets", "_mesh_utils_8hpp.html#a38554c6ccdc738f385d7b84eb7ca44db", null ],
     [ "from_geogram_mesh", "_mesh_utils_8hpp.html#aa56d3e4087c89d5eec16b4af3f128879", null ],
     [ "generate_edges", "_mesh_utils_8hpp.html#ababf65206634e831070307de601d3a57", null ],
     [ "is_planar", "_mesh_utils_8hpp.html#a0eb020dda8244f82ea9450b2d655cadd", null ],

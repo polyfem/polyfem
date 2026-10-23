@@ -161,8 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aec910e9717ffcc54193ba27d17277281"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3901bb25cd0d80047a91f66b3903bf60" id="r_a3901bb25cd0d80047a91f66b3903bf60"><td class="memItemLeft" align="right" valign="top">const ipc::NormalCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a> (int step) const</td></tr>
 <tr class="separator:a3901bb25cd0d80047a91f66b3903bf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0240fbf898a1bfe6e79e5dd07687e61" id="r_ae0240fbf898a1bfe6e79e5dd07687e61"><td class="memItemLeft" align="right" valign="top">const ipc::SmoothCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61">smooth_collision_set</a> (int step) const</td></tr>
-<tr class="separator:ae0240fbf898a1bfe6e79e5dd07687e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ceba89ac3de0bda2a771836095d0fd5" id="r_a9ceba89ac3de0bda2a771836095d0fd5"><td class="memItemLeft" align="right" valign="top">const ipc::GCPCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a9ceba89ac3de0bda2a771836095d0fd5">smooth_collision_set</a> (int step) const</td></tr>
+<tr class="separator:a9ceba89ac3de0bda2a771836095d0fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74e38bb1b23e2e8eb8b4ca740f8984b3" id="r_a74e38bb1b23e2e8eb8b4ca740f8984b3"><td class="memItemLeft" align="right" valign="top">const ipc::TangentialCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a74e38bb1b23e2e8eb8b4ca740f8984b3">friction_collision_set</a> (int step) const</td></tr>
 <tr class="separator:a74e38bb1b23e2e8eb8b4ca740f8984b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb58cb479c4537968a3faafe50dace45" id="r_afb58cb479c4537968a3faafe50dace45"><td class="memItemLeft" align="right" valign="top">const ipc::NormalCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#afb58cb479c4537968a3faafe50dace45">normal_adhesion_collision_set</a> (int step) const</td></tr>
@@ -180,12 +180,12 @@ Public Attributes</h2></td></tr>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:af32af45e0605695e1fb5ab5a1a6329f7" id="r_af32af45e0605695e1fb5ab5a1a6329f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#af32af45e0605695e1fb5ab5a1a6329f7">init</a> (const int dimension, const int ndof, const int n_time_steps=0)</td></tr>
 <tr class="separator:af32af45e0605695e1fb5ab5a1a6329f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7830892f9edbb7a727480f01c4f7d152" id="r_a7830892f9edbb7a727480f01c4f7d152"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a7830892f9edbb7a727480f01c4f7d152">cache_quantities_static</a> (const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::SmoothCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61">smooth_collision_set</a>, const ipc::TangentialCollisions &amp;friction_constraint_set, const ipc::NormalCollisions &amp;normal_adhesion_set, const ipc::TangentialCollisions &amp;tangential_adhesion_set, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>)</td></tr>
-<tr class="separator:a7830892f9edbb7a727480f01c4f7d152"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbf12d49a9f1d1cf52ceadd6b278ad30" id="r_afbf12d49a9f1d1cf52ceadd6b278ad30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#afbf12d49a9f1d1cf52ceadd6b278ad30">cache_quantities_transient</a> (const int cur_step, const int cur_bdf_order, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a5e1be75ebb499393d031ce19a38774d5">v</a>, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a903f5f6112d4e152f123a4bf735afcf4">acc</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::SmoothCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61">smooth_collision_set</a>, const ipc::TangentialCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a74e38bb1b23e2e8eb8b4ca740f8984b3">friction_collision_set</a>)</td></tr>
-<tr class="separator:afbf12d49a9f1d1cf52ceadd6b278ad30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accb579c2770ebaca52effb391752b95a" id="r_accb579c2770ebaca52effb391752b95a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#accb579c2770ebaca52effb391752b95a">cache_quantities_quasistatic</a> (const int cur_step, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::SmoothCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61">smooth_collision_set</a>, const ipc::NormalCollisions &amp;normal_adhesion_set, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>)</td></tr>
-<tr class="separator:accb579c2770ebaca52effb391752b95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba1478cbb921cd94c2b05278775bf7f" id="r_a9ba1478cbb921cd94c2b05278775bf7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a9ba1478cbb921cd94c2b05278775bf7f">cache_quantities_static</a> (const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::GCPCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a9ceba89ac3de0bda2a771836095d0fd5">smooth_collision_set</a>, const ipc::TangentialCollisions &amp;friction_constraint_set, const ipc::NormalCollisions &amp;normal_adhesion_set, const ipc::TangentialCollisions &amp;tangential_adhesion_set, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>)</td></tr>
+<tr class="separator:a9ba1478cbb921cd94c2b05278775bf7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce8d098ac07df8ae269402a764784c9" id="r_abce8d098ac07df8ae269402a764784c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#abce8d098ac07df8ae269402a764784c9">cache_quantities_transient</a> (const int cur_step, const int cur_bdf_order, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a5e1be75ebb499393d031ce19a38774d5">v</a>, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a903f5f6112d4e152f123a4bf735afcf4">acc</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::GCPCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a9ceba89ac3de0bda2a771836095d0fd5">smooth_collision_set</a>, const ipc::TangentialCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a74e38bb1b23e2e8eb8b4ca740f8984b3">friction_collision_set</a>)</td></tr>
+<tr class="separator:abce8d098ac07df8ae269402a764784c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa761c550ade969eef30f11e718e51921" id="r_aa761c550ade969eef30f11e718e51921"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#aa761c550ade969eef30f11e718e51921">cache_quantities_quasistatic</a> (const int cur_step, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6">u</a>, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#aec910e9717ffcc54193ba27d17277281">gradu_h</a>, const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60">collision_set</a>, const ipc::GCPCollisions &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a9ceba89ac3de0bda2a771836095d0fd5">smooth_collision_set</a>, const ipc::NormalCollisions &amp;normal_adhesion_set, const Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7">disp_grad</a>)</td></tr>
+<tr class="separator:aa761c550ade969eef30f11e718e51921"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -209,8 +209,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a23108e47f58fd88fba4e0a8c441e96c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add4efdf8cc36133351bd41b1773b41b1" id="r_add4efdf8cc36133351bd41b1773b41b1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ipc::NormalCollisions &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#add4efdf8cc36133351bd41b1773b41b1">collision_set_</a></td></tr>
 <tr class="separator:add4efdf8cc36133351bd41b1773b41b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99490caa926705bd54ff54ded91a0a60" id="r_a99490caa926705bd54ff54ded91a0a60"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ipc::SmoothCollisions &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a99490caa926705bd54ff54ded91a0a60">smooth_collision_set_</a></td></tr>
-<tr class="separator:a99490caa926705bd54ff54ded91a0a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b0c3f1cf983cee3041ff8e4abe1290" id="r_a15b0c3f1cf983cee3041ff8e4abe1290"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ipc::GCPCollisions &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a15b0c3f1cf983cee3041ff8e4abe1290">smooth_collision_set_</a></td></tr>
+<tr class="separator:a15b0c3f1cf983cee3041ff8e4abe1290"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30e1b538890f638369d77262fdcd9a4e" id="r_a30e1b538890f638369d77262fdcd9a4e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ipc::TangentialCollisions &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a30e1b538890f638369d77262fdcd9a4e">friction_collision_set_</a></td></tr>
 <tr class="separator:a30e1b538890f638369d77262fdcd9a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26a77b6e6ca86c7e0e9ec8ada7a16df9" id="r_a26a77b6e6ca86c7e0e9ec8ada7a16df9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ipc::NormalCollisions &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a26a77b6e6ca86c7e0e9ec8ada7a16df9">normal_adhesion_collision_set_</a></td></tr>
@@ -400,8 +400,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="accb579c2770ebaca52effb391752b95a" name="accb579c2770ebaca52effb391752b95a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accb579c2770ebaca52effb391752b95a">&#9670;&#160;</a></span>cache_quantities_quasistatic()</h2>
+<a id="aa761c550ade969eef30f11e718e51921" name="aa761c550ade969eef30f11e718e51921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa761c550ade969eef30f11e718e51921">&#9670;&#160;</a></span>cache_quantities_quasistatic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -436,7 +436,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ipc::SmoothCollisions &amp;&#160;</td>
+          <td class="paramtype">const ipc::GCPCollisions &amp;&#160;</td>
           <td class="paramname"><em>smooth_collision_set</em>, </td>
         </tr>
         <tr>
@@ -472,18 +472,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_accb579c2770ebaca52effb391752b95a_cgraph.svg" width="639" height="294"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_aa761c550ade969eef30f11e718e51921_cgraph.svg" width="639" height="294"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_accb579c2770ebaca52effb391752b95a_icgraph.svg" width="424" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_aa761c550ade969eef30f11e718e51921_icgraph.svg" width="424" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a7830892f9edbb7a727480f01c4f7d152" name="a7830892f9edbb7a727480f01c4f7d152"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7830892f9edbb7a727480f01c4f7d152">&#9670;&#160;</a></span>cache_quantities_static()</h2>
+<a id="a9ba1478cbb921cd94c2b05278775bf7f" name="a9ba1478cbb921cd94c2b05278775bf7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba1478cbb921cd94c2b05278775bf7f">&#9670;&#160;</a></span>cache_quantities_static()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +512,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ipc::SmoothCollisions &amp;&#160;</td>
+          <td class="paramtype">const ipc::GCPCollisions &amp;&#160;</td>
           <td class="paramname"><em>smooth_collision_set</em>, </td>
         </tr>
         <tr>
@@ -560,18 +560,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a7830892f9edbb7a727480f01c4f7d152_cgraph.svg" width="603" height="294"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a9ba1478cbb921cd94c2b05278775bf7f_cgraph.svg" width="603" height="294"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a7830892f9edbb7a727480f01c4f7d152_icgraph.svg" width="388" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a9ba1478cbb921cd94c2b05278775bf7f_icgraph.svg" width="388" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="afbf12d49a9f1d1cf52ceadd6b278ad30" name="afbf12d49a9f1d1cf52ceadd6b278ad30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbf12d49a9f1d1cf52ceadd6b278ad30">&#9670;&#160;</a></span>cache_quantities_transient()</h2>
+<a id="abce8d098ac07df8ae269402a764784c9" name="abce8d098ac07df8ae269402a764784c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce8d098ac07df8ae269402a764784c9">&#9670;&#160;</a></span>cache_quantities_transient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -624,7 +624,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ipc::SmoothCollisions &amp;&#160;</td>
+          <td class="paramtype">const ipc::GCPCollisions &amp;&#160;</td>
           <td class="paramname"><em>smooth_collision_set</em>, </td>
         </tr>
         <tr>
@@ -654,12 +654,12 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_afbf12d49a9f1d1cf52ceadd6b278ad30_cgraph.svg" width="636" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_abce8d098ac07df8ae269402a764784c9_cgraph.svg" width="636" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_afbf12d49a9f1d1cf52ceadd6b278ad30_icgraph.svg" width="411" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_abce8d098ac07df8ae269402a764784c9_icgraph.svg" width="411" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -879,7 +879,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00144">gradu_h_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00046">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00258">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00207">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00230">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00287">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01009">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00258">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00207">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00230">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00287">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01010">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1024,8 +1024,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ae0240fbf898a1bfe6e79e5dd07687e61" name="ae0240fbf898a1bfe6e79e5dd07687e61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0240fbf898a1bfe6e79e5dd07687e61">&#9670;&#160;</a></span>smooth_collision_set()</h2>
+<a id="a9ceba89ac3de0bda2a771836095d0fd5" name="a9ceba89ac3de0bda2a771836095d0fd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ceba89ac3de0bda2a771836095d0fd5">&#9670;&#160;</a></span>smooth_collision_set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1034,7 +1034,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const ipc::SmoothCollisions &amp; polyfem::DiffCache::smooth_collision_set </td>
+          <td class="memname">const ipc::GCPCollisions &amp; polyfem::DiffCache::smooth_collision_set </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>step</em></td><td>)</td>
@@ -1056,12 +1056,12 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_ae0240fbf898a1bfe6e79e5dd07687e61_cgraph.svg" width="372" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a9ceba89ac3de0bda2a771836095d0fd5_cgraph.svg" width="372" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_ae0240fbf898a1bfe6e79e5dd07687e61_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a9ceba89ac3de0bda2a771836095d0fd5_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1136,7 +1136,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00046">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00138">u_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00258">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00207">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00230">cache_quantities_transient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00114">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00531">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00952">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00852">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01078">polyfem::solver::AdjointTools::dJ_pressure_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00258">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00207">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00230">cache_quantities_transient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00114">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00531">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00953">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00852">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01079">polyfem::solver::AdjointTools::dJ_pressure_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1499,8 +1499,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a99490caa926705bd54ff54ded91a0a60" name="a99490caa926705bd54ff54ded91a0a60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99490caa926705bd54ff54ded91a0a60">&#9670;&#160;</a></span>smooth_collision_set_</h2>
+<a id="a15b0c3f1cf983cee3041ff8e4abe1290" name="a15b0c3f1cf983cee3041ff8e4abe1290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15b0c3f1cf983cee3041ff8e4abe1290">&#9670;&#160;</a></span>smooth_collision_set_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1509,7 +1509,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;ipc::SmoothCollisions&gt; polyfem::DiffCache::smooth_collision_set_</td>
+          <td class="memname">std::vector&lt;ipc::GCPCollisions&gt; polyfem::DiffCache::smooth_collision_set_</td>
         </tr>
       </table>
   </td>

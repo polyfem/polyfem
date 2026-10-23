@@ -98,10 +98,10 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#a82a5221a463f1df4b39d4bc7b373961c" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="765.5,-1461.5 591.5,-1461.5 591.5,-1420.5 765.5,-1420.5 765.5,-1461.5"/>
-<text text-anchor="start" x="599.5" y="-1449.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::SmoothContact</text>
-<text text-anchor="start" x="599.5" y="-1438.5" font-family="Helvetica,sans-Serif" font-size="10.00">ForceForm::compute_adjoint</text>
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html#ae3915bf2795e28e7fcc76a67d1d0fca0" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="757,-1461.5 600,-1461.5 600,-1420.5 757,-1420.5 757,-1461.5"/>
+<text text-anchor="start" x="608" y="-1449.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::GCPContact</text>
+<text text-anchor="start" x="608" y="-1438.5" font-family="Helvetica,sans-Serif" font-size="10.00">ForceForm::compute_adjoint</text>
 <text text-anchor="middle" x="678.5" y="-1427.5" font-family="Helvetica,sans-Serif" font-size="10.00">_rhs_step</text>
 </a>
 </g>
@@ -110,7 +110,7 @@
 <g id="edge11_Node000001_Node000012" class="edge">
 <title>Node1&#45;&gt;Node12</title>
 <g id="a_edge11_Node000001_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M873.91,-872.43C869.24,-970.58 847.78,-1323.25 778,-1406 773.2,-1411.69 767.42,-1416.45 761.08,-1420.44"/>
+<path fill="none" stroke="#63b8ff" d="M873.91,-872.43C869.24,-970.58 847.78,-1323.25 778,-1406 772.27,-1412.8 765.12,-1418.28 757.31,-1422.69"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="877.42,-872.4 874.38,-862.25 870.43,-872.08 877.42,-872.4"/>
 </a>
 </g>
@@ -413,10 +413,10 @@
 <!-- Node28 -->
 <g id="Node000028" class="node">
 <title>Node28</title>
-<g id="a_Node000028"><a xlink:href="classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#aac4781571aa792ea31f98cf524494ff7" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="765.5,-545.5 591.5,-545.5 591.5,-504.5 765.5,-504.5 765.5,-545.5"/>
-<text text-anchor="start" x="599.5" y="-533.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::SmoothContact</text>
-<text text-anchor="start" x="599.5" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">ForceForm::compute_partial</text>
+<g id="a_Node000028"><a xlink:href="classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html#a386fd051a1df2c447fe93357ad4a5dab" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="757,-545.5 600,-545.5 600,-504.5 757,-504.5 757,-545.5"/>
+<text text-anchor="start" x="608" y="-533.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::GCPContact</text>
+<text text-anchor="start" x="608" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">ForceForm::compute_partial</text>
 <text text-anchor="middle" x="678.5" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">_gradient_step</text>
 </a>
 </g>
@@ -425,7 +425,7 @@
 <g id="edge28_Node000001_Node000028" class="edge">
 <title>Node1&#45;&gt;Node28</title>
 <g id="a_edge28_Node000001_Node000028"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M874.07,-821.64C870.62,-765.43 854.37,-629.48 778,-555 774.29,-551.38 770.15,-548.2 765.74,-545.39"/>
+<path fill="none" stroke="#63b8ff" d="M874.07,-821.64C870.62,-765.43 854.37,-629.48 778,-555 771.98,-549.13 764.86,-544.41 757.23,-540.61"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="870.58,-821.97 874.6,-831.78 877.57,-821.61 870.58,-821.97"/>
 </a>
 </g>

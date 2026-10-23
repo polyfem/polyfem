@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_periodic_contact_form =
 [
-    [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ad47eff5d566ff18a2acd5b082787f062", null ],
+    [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3bcd6f5c186936110780169929131162", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198", null ],
     [ "init", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab837609140f985bf4875b12679d17d7f", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4", null ],

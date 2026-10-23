@@ -144,8 +144,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4b04f8c6b0dea69e281c7952f2e4b11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c7609de46ce0c11f207fe9587234e58" id="r_a8c7609de46ce0c11f207fe9587234e58"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_loader.html#a8c7609de46ce0c11f207fe9587234e58">load_fem</a> (const std::string &amp;path, bool non_conforming=false) const</td></tr>
 <tr class="separator:a8c7609de46ce0c11f207fe9587234e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace479eba039bcbb977fcdf0742852cdc" id="r_ace479eba039bcbb977fcdf0742852cdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1mesh.html#a81d9c6d2c634b90fc922645edc8230ea">SurfaceMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_loader.html#ace479eba039bcbb977fcdf0742852cdc">load_surface</a> (const std::string &amp;path) const</td></tr>
-<tr class="separator:ace479eba039bcbb977fcdf0742852cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b0c047e629c9e1542d027368b090f39" id="r_a1b0c047e629c9e1542d027368b090f39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1mesh.html#a81d9c6d2c634b90fc922645edc8230ea">SurfaceMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_loader.html#a1b0c047e629c9e1542d027368b090f39">load_surface</a> (const std::string &amp;path, bool keep_volume=false) const</td></tr>
+<tr class="separator:a1b0c047e629c9e1542d027368b090f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -219,7 +219,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_loader_8cpp_source.html#l00075">75</a> of file <a class="el" href="_mesh_loader_8cpp_source.html">MeshLoader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00080">polyfem::mesh::Mesh::create()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aafb9496cc10e2d596e90d717c3c0346b">polyfem::io::ResourceIO::has_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad5ae92dde9a27ecfc298348a56d0f866">polyfem::io::ResourceIO::open()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#abf033c2c9d37fdecb51215989f6b21c8">polyfem::io::ResourceIO::read_double_vector()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00189">polyfem::mesh::MeshReader::read_geogram()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00088">polyfem::mesh::MeshReader::read_hybrid()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2cfa79302353b43c6acb5e353730cbcf">polyfem::io::ResourceIO::read_int_matrix()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2537b98b7f63a06a94834bdf8c8bcfe2">polyfem::io::ResourceIO::read_int_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#af8251610eae05355c9c115d61cf0c5e1">polyfem::io::ResourceIO::read_long_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00060">polyfem::mesh::MeshReader::read_msh()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00026">resources_</a>, and <a class="el" href="_mesh_loader_8cpp_source.html#l00054">validate_group()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00080">polyfem::mesh::Mesh::create()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aafb9496cc10e2d596e90d717c3c0346b">polyfem::io::ResourceIO::has_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad5ae92dde9a27ecfc298348a56d0f866">polyfem::io::ResourceIO::open()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#abf033c2c9d37fdecb51215989f6b21c8">polyfem::io::ResourceIO::read_double_vector()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00189">polyfem::mesh::MeshReader::read_geogram()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00088">polyfem::mesh::MeshReader::read_hybrid()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2cfa79302353b43c6acb5e353730cbcf">polyfem::io::ResourceIO::read_int_matrix()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2537b98b7f63a06a94834bdf8c8bcfe2">polyfem::io::ResourceIO::read_int_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#af8251610eae05355c9c115d61cf0c5e1">polyfem::io::ResourceIO::read_long_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00060">polyfem::mesh::MeshReader::read_msh()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00027">resources_</a>, and <a class="el" href="_mesh_loader_8cpp_source.html#l00054">validate_group()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_loader_8cpp_source.html#l00075">polyfem::mesh::GeometryLoader::load_fem_entry()</a>, and <a class="el" href="_checkpoint_8cpp_source.html#l00266">polyfem::io::CheckpointReader::read_mesh()</a>.</p>
 <div class="dynheader">
@@ -235,8 +235,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ace479eba039bcbb977fcdf0742852cdc" name="ace479eba039bcbb977fcdf0742852cdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace479eba039bcbb977fcdf0742852cdc">&#9670;&#160;</a></span>load_surface()</h2>
+<a id="a1b0c047e629c9e1542d027368b090f39" name="a1b0c047e629c9e1542d027368b090f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b0c047e629c9e1542d027368b090f39">&#9670;&#160;</a></span>load_surface()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,26 +245,42 @@ Here is the caller graph for this function:</div>
           <td class="memname"><a class="el" href="namespacepolyfem_1_1mesh.html#a81d9c6d2c634b90fc922645edc8230ea">SurfaceMesh</a> polyfem::mesh::MeshLoader::load_surface </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>path</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keep_volume</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keep_volume</td><td>Keep a 3D tet mesh's tets; see <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_reader.html#a2800b75c1bcb6cbbead0c99190c8752c">MeshReader::read_msh_surface</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_loader_8cpp_source.html#l00221">221</a> of file <a class="el" href="_mesh_loader_8cpp_source.html">MeshLoader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00020">polyfem::mesh::SurfaceMeshData::edges</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00019">polyfem::mesh::SurfaceMeshData::points</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00316">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2cfa79302353b43c6acb5e353730cbcf">polyfem::io::ResourceIO::read_int_matrix()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2537b98b7f63a06a94834bdf8c8bcfe2">polyfem::io::ResourceIO::read_int_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00296">polyfem::mesh::MeshReader::read_obj_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00305">polyfem::mesh::MeshReader::read_triangle_surface()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00026">resources_</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00054">validate_group()</a>, and <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00020">polyfem::mesh::SurfaceMeshData::edges</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00021">polyfem::mesh::SurfaceMeshData::faces</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="_mesh_reader_8hpp_source.html#l00019">polyfem::mesh::SurfaceMeshData::points</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00324">polyfem::mesh::MeshReader::read_geogram_surface()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2cfa79302353b43c6acb5e353730cbcf">polyfem::io::ResourceIO::read_int_matrix()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a2537b98b7f63a06a94834bdf8c8bcfe2">polyfem::io::ResourceIO::read_int_vector()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00266">polyfem::mesh::MeshReader::read_msh_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00304">polyfem::mesh::MeshReader::read_obj_surface()</a>, <a class="el" href="_mesh_reader_8cpp_source.html#l00313">polyfem::mesh::MeshReader::read_triangle_surface()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00027">resources_</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00054">validate_group()</a>, and <a class="el" href="_mesh_reader_8hpp_source.html#l00018">polyfem::mesh::SurfaceMeshData::vertices</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_build_from_json_8cpp_source.html#l00370">polyfem::from_json::build_form()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00333">polyfem::mesh::load_collision_proxy_mesh()</a>, and <a class="el" href="_geometry_loader_8cpp_source.html#l00382">polyfem::mesh::GeometryLoader::load_surface()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_loader_ace479eba039bcbb977fcdf0742852cdc_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_loader_a1b0c047e629c9e1542d027368b090f39_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_loader_ace479eba039bcbb977fcdf0742852cdc_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_loader_a1b0c047e629c9e1542d027368b090f39_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -305,7 +321,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_loader_8cpp_source.html#l00054">54</a> of file <a class="el" href="_mesh_loader_8cpp_source.html">MeshLoader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aafb9496cc10e2d596e90d717c3c0346b">polyfem::io::ResourceIO::has_attribute()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00010">polyfem::mesh::MESH_SCHEMA_VERSION</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a7b6e3c66360fcc92d704ac669e745816">polyfem::io::ResourceIO::read_string_attribute()</a>, and <a class="el" href="_mesh_loader_8hpp_source.html#l00026">resources_</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aafb9496cc10e2d596e90d717c3c0346b">polyfem::io::ResourceIO::has_attribute()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_loader_8hpp_source.html#l00010">polyfem::mesh::MESH_SCHEMA_VERSION</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa2622f4e6d4824ae82771a6403a8733f">polyfem::io::ResourceIO::read_integer_attribute()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#a7b6e3c66360fcc92d704ac669e745816">polyfem::io::ResourceIO::read_string_attribute()</a>, and <a class="el" href="_mesh_loader_8hpp_source.html#l00027">resources_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_loader_8cpp_source.html#l00075">load_fem()</a>, and <a class="el" href="_mesh_loader_8cpp_source.html#l00221">load_surface()</a>.</p>
 <div class="dynheader">
@@ -342,7 +358,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_loader_8hpp_source.html#l00026">26</a> of file <a class="el" href="_mesh_loader_8hpp_source.html">MeshLoader.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_loader_8hpp_source.html#l00027">27</a> of file <a class="el" href="_mesh_loader_8hpp_source.html">MeshLoader.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_loader_8cpp_source.html#l00075">load_fem()</a>, <a class="el" href="_mesh_loader_8cpp_source.html#l00221">load_surface()</a>, and <a class="el" href="_mesh_loader_8cpp_source.html#l00054">validate_group()</a>.</p>
 

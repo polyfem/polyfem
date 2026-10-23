@@ -193,10 +193,10 @@ var hierarchy =
         ] ],
         [ "polyfem::solver::StaticForm", "classpolyfem_1_1solver_1_1_static_form.html", [
           [ "polyfem::solver::BarycenterTargetForm", "classpolyfem_1_1solver_1_1_barycenter_target_form.html", null ],
+          [ "polyfem::solver::GCPContactForceForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html", null ],
           [ "polyfem::solver::MaxStressForm", "classpolyfem_1_1solver_1_1_max_stress_form.html", null ],
           [ "polyfem::solver::NodeTargetForm", "classpolyfem_1_1solver_1_1_node_target_form.html", null ],
           [ "polyfem::solver::ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html", null ],
-          [ "polyfem::solver::SmoothContactForceForm", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html", null ],
           [ "polyfem::solver::SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", [
             [ "polyfem::solver::AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", null ],
             [ "polyfem::solver::ComplianceForm", "classpolyfem_1_1solver_1_1_compliance_form.html", null ],
@@ -230,7 +230,8 @@ var hierarchy =
         [ "polyfem::solver::BarrierContactForm", "classpolyfem_1_1solver_1_1_barrier_contact_form.html", [
           [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
         ] ],
-        [ "polyfem::solver::SmoothContactForm", "classpolyfem_1_1solver_1_1_smooth_contact_form.html", null ]
+        [ "polyfem::solver::ESPContactForm", "classpolyfem_1_1solver_1_1_e_s_p_contact_form.html", null ],
+        [ "polyfem::solver::GCPContactForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_form.html", null ]
       ] ],
       [ "polyfem::solver::FSIInterfaceForm", "classpolyfem_1_1solver_1_1_f_s_i_interface_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
@@ -258,6 +259,7 @@ var hierarchy =
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
     [ "polyfem::solver::FrictionForceDerivative", "classpolyfem_1_1solver_1_1_friction_force_derivative.html", null ],
+    [ "polyfem::solver::GCPContactForceDerivative", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_derivative.html", null ],
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
     [ "polyfem::assembler::GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", null ],
     [ "polyfem::utils::GeogramUtils", "classpolyfem_1_1utils_1_1_geogram_utils.html", null ],
@@ -515,7 +517,6 @@ var hierarchy =
       [ "polyfem::utils::SphereSelection", "classpolyfem_1_1utils_1_1_sphere_selection.html", null ],
       [ "polyfem::utils::UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", null ]
     ] ],
-    [ "polyfem::solver::SmoothContactForceDerivative", "classpolyfem_1_1solver_1_1_smooth_contact_force_derivative.html", null ],
     [ "polyfem::solver::SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],

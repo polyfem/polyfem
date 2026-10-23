@@ -138,6 +138,7 @@ var namespacepolyfem_1_1mesh =
     [ "extract_triangle_surface_from_tets", "namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432", null ],
     [ "facet_barycenter", "namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04", null ],
     [ "find", "namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c", null ],
+    [ "find_triangle_surface_from_tets", "namespacepolyfem_1_1mesh.html#a38554c6ccdc738f385d7b84eb7ca44db", null ],
     [ "from_geogram_mesh", "namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879", null ],
     [ "generate_edges", "namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57", null ],
     [ "get_quality", "namespacepolyfem_1_1mesh.html#aeeb75343ae4dea20c931438731523228", null ],

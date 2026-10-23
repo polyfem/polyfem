@@ -58,6 +58,7 @@ var namespacepolyfem_1_1solver =
     [ "ElasticMaterialSmoothingForm", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form" ],
     [ "ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation" ],
     [ "ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu" ],
+    [ "ESPContactForm", "classpolyfem_1_1solver_1_1_e_s_p_contact_form.html", "classpolyfem_1_1solver_1_1_e_s_p_contact_form" ],
     [ "ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", "classpolyfem_1_1solver_1_1_exponential_map" ],
     [ "Form", "classpolyfem_1_1solver_1_1_form.html", "classpolyfem_1_1solver_1_1_form" ],
     [ "FrictionForceDerivative", "classpolyfem_1_1solver_1_1_friction_force_derivative.html", null ],
@@ -65,6 +66,9 @@ var namespacepolyfem_1_1solver =
     [ "FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation" ],
     [ "FSIInterfaceForm", "classpolyfem_1_1solver_1_1_f_s_i_interface_form.html", "classpolyfem_1_1solver_1_1_f_s_i_interface_form" ],
     [ "FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", "classpolyfem_1_1solver_1_1_full_n_l_problem" ],
+    [ "GCPContactForceDerivative", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_derivative.html", null ],
+    [ "GCPContactForceForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form" ],
+    [ "GCPContactForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_form" ],
     [ "HomoCompositeForm", "classpolyfem_1_1solver_1_1_homo_composite_form.html", "classpolyfem_1_1solver_1_1_homo_composite_form" ],
     [ "InequalityConstraintForm", "classpolyfem_1_1solver_1_1_inequality_constraint_form.html", "classpolyfem_1_1solver_1_1_inequality_constraint_form" ],
     [ "InertiaForceDerivative", "classpolyfem_1_1solver_1_1_inertia_force_derivative.html", null ],
@@ -122,9 +126,6 @@ var namespacepolyfem_1_1solver =
     [ "SDFTargetForm", "classpolyfem_1_1solver_1_1_s_d_f_target_form.html", "classpolyfem_1_1solver_1_1_s_d_f_target_form" ],
     [ "ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation" ],
     [ "SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", "classpolyfem_1_1solver_1_1_slice_map" ],
-    [ "SmoothContactForceDerivative", "classpolyfem_1_1solver_1_1_smooth_contact_force_derivative.html", null ],
-    [ "SmoothContactForceForm", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html", "classpolyfem_1_1solver_1_1_smooth_contact_force_form" ],
-    [ "SmoothContactForm", "classpolyfem_1_1solver_1_1_smooth_contact_form.html", "classpolyfem_1_1solver_1_1_smooth_contact_form" ],
     [ "SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", "classpolyfem_1_1solver_1_1_solve_data" ],
     [ "SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", "classpolyfem_1_1solver_1_1_spatial_integral_form" ],
     [ "StackedAugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html", "classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form" ],
@@ -168,6 +169,7 @@ var namespacepolyfem_1_1solver =
       [ "VertexSum", "namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faad22a1be59b755962010de3a6aa93458", null ]
     ] ],
     [ "apply_objective_json_spec", "namespacepolyfem_1_1solver.html#ae348c4163f5aa6fd389752f717522d83", null ],
+    [ "init_params", "namespacepolyfem_1_1solver.html#ab467f98229abe58bed8fa260732f319d", null ],
     [ "is_active_dims_valid", "namespacepolyfem_1_1solver.html#aa5c6c04af21d3fbd99595025ac384ad1", null ],
     [ "is_active_dirichlet_boundary_ids_valid", "namespacepolyfem_1_1solver.html#a95405c514e7c8aa6a4f61a67bf6e7575", null ],
     [ "is_active_dirichlet_node_valid", "namespacepolyfem_1_1solver.html#a97aa2c855609b7f35177426b47179845", null ],
@@ -175,5 +177,7 @@ var namespacepolyfem_1_1solver =
     [ "is_active_geom_nodes_valid", "namespacepolyfem_1_1solver.html#ae75ececdde4973bcea7632de62aefdb7", null ],
     [ "is_active_pressure_boundary_ids_valid", "namespacepolyfem_1_1solver.html#ab6d46f1afbb375f110b134510e0f027f", null ],
     [ "is_active_time_slices_valid", "namespacepolyfem_1_1solver.html#a4286fa41dac680292f151facd5e7e08e", null ],
-    [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138", null ]
+    [ "is_vertex_point", "namespacepolyfem_1_1solver.html#a0b4f633a23d68cd92e01b5ee87451bb2", null ],
+    [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespacepolyfem_1_1solver.html#a4461f8bf1e7aebc14d56ce057b06b138", null ],
+    [ "verify_vertices_in_quad_rule", "namespacepolyfem_1_1solver.html#adee87b500259a554a67aed5feb5d9054", null ]
 ];

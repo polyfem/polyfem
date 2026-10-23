@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_barrier_contact_form =
 [
-    [ "BarrierContactForm", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a21ad5a0422d866fe42460aad31bf7bf5", null ],
+    [ "BarrierContactForm", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a4a0351f3d23396a8fb52a12822bd7520", null ],
     [ "barrier_potential", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a5985007152c78163f48893d7e4f89a4b", null ],
     [ "collision_set", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#aa7fc50a04a7d499cdb525b26e41e19e6", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a034b828224878e611e7422965003971b", null ],

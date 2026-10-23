@@ -1,99 +1,99 @@
 <map id="polyfem::solver::Form" name="polyfem::solver::Form">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,1233,171,1259"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_adjoint_form.html" title=" " alt="" coords="250,369,461,395"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,1219,136,1005,172,856,216,705,251,610,288,519,345,394,350,396,293,521,256,612,221,707,177,857,141,1006,97,1220"/>
-<area shape="rect" id="Node000044" href="$classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html" title="Form of the augmented lagrangian." alt="" coords="252,718,459,758"/>
-<area shape="poly" id="edge22_Node000001_Node000044" title=" " alt="" coords="90,1219,106,1120,133,984,151,916,170,854,192,803,217,768,233,756,251,747,253,752,236,760,221,772,197,805,175,856,156,917,138,986,111,1121,96,1220"/>
-<area shape="rect" id="Node000050" href="$classpolyfem_1_1solver_1_1_average_pressure_form.html" title="Mean&#45;zero pressure equation with a scalar Lagrange multiplier." alt="" coords="263,782,448,822"/>
-<area shape="poly" id="edge27_Node000001_Node000050" title=" " alt="" coords="87,1220,91,1144,109,1039,125,983,148,928,178,877,217,832,238,817,261,808,263,813,240,822,220,836,182,880,153,930,130,985,114,1040,96,1144,92,1220"/>
-<area shape="rect" id="Node000051" href="$classpolyfem_1_1solver_1_1_body_form.html" title="Form representing body forces." alt="" coords="256,847,455,872"/>
-<area shape="poly" id="edge28_Node000001_Node000051" title=" " alt="" coords="88,1219,94,1151,114,1059,130,1010,153,962,181,919,217,881,235,869,255,862,257,867,237,874,220,885,185,922,157,965,135,1012,119,1060,100,1151,93,1220"/>
-<area shape="rect" id="Node000052" href="$classpolyfem_1_1solver_1_1_contact_form.html" title="Form representing the contact potential and forces." alt="" coords="248,896,463,921"/>
-<area shape="poly" id="edge29_Node000001_Node000052" title=" " alt="" coords="89,1219,100,1159,121,1081,138,1040,159,1000,185,963,217,932,246,915,249,920,220,936,189,967,164,1003,143,1042,126,1082,105,1160,95,1220"/>
-<area shape="rect" id="Node000056" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html" title="Residual&#45;only coupling of the physical fluid/solid interface and of the computational ALE mesh to the..." alt="" coords="234,945,477,971"/>
-<area shape="poly" id="edge32_Node000001_Node000056" title=" " alt="" coords="92,1219,105,1168,128,1103,165,1037,189,1007,217,981,239,968,242,973,220,985,193,1010,169,1040,133,1105,110,1170,97,1220"/>
-<area shape="rect" id="Node000057" href="$classpolyfem_1_1solver_1_1_friction_form.html" title="Form of the lagged friction disapative potential and forces." alt="" coords="249,995,462,1020"/>
-<area shape="poly" id="edge33_Node000001_Node000057" title=" " alt="" coords="95,1219,111,1177,136,1125,171,1073,193,1050,217,1030,247,1015,250,1020,220,1035,197,1054,175,1077,141,1128,116,1179,100,1221"/>
-<area shape="rect" id="Node000058" href="$classpolyfem_1_1solver_1_1_inertia_form.html" title="Form of the inertia." alt="" coords="252,1044,459,1069"/>
-<area shape="poly" id="edge34_Node000001_Node000058" title=" " alt="" coords="99,1220,118,1187,144,1149,177,1111,217,1080,251,1065,253,1070,220,1084,181,1115,148,1152,122,1190,104,1223"/>
-<area shape="rect" id="Node000059" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html" title=" " alt="" coords="259,1094,451,1134"/>
-<area shape="poly" id="edge35_Node000001_Node000059" title=" " alt="" coords="110,1222,157,1182,217,1145,258,1130,260,1135,220,1150,161,1187,114,1226"/>
-<area shape="rect" id="Node000060" href="$classpolyfem_1_1solver_1_1_l2_projection_form.html" title=" " alt="" coords="233,1159,478,1184"/>
-<area shape="poly" id="edge36_Node000001_Node000060" title=" " alt="" coords="130,1226,218,1194,272,1181,274,1187,219,1199,131,1231"/>
-<area shape="rect" id="Node000061" href="$classpolyfem_1_1solver_1_1_lagged_reg_form.html" title="Tikonov regularization form between x and x_lagged." alt="" coords="237,1208,474,1233"/>
-<area shape="poly" id="edge37_Node000001_Node000061" title=" " alt="" coords="184,1234,236,1229,236,1235,184,1240"/>
-<area shape="rect" id="Node000062" href="$classpolyfem_1_1solver_1_1_mixed_assembler_form.html" title=" " alt="" coords="219,1257,492,1283"/>
-<area shape="poly" id="edge38_Node000001_Node000062" title=" " alt="" coords="185,1252,219,1255,218,1260,184,1257"/>
-<area shape="rect" id="Node000063" href="$classpolyfem_1_1solver_1_1_mixed_linear_form.html" title="Constant saddle&#45;point coupling between velocity and pressure." alt="" coords="233,1307,477,1332"/>
-<area shape="poly" id="edge39_Node000001_Node000063" title=" " alt="" coords="131,1261,219,1293,269,1304,268,1309,218,1298,130,1266"/>
-<area shape="rect" id="Node000064" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_average_pressure_form.html" title="Mean&#45;zero pressure constraint on the current ALE domain." alt="" coords="246,1357,465,1397"/>
-<area shape="poly" id="edge40_Node000001_Node000064" title=" " alt="" coords="114,1266,161,1305,220,1342,250,1354,248,1359,217,1347,157,1310,110,1270"/>
-<area shape="rect" id="Node000065" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html" title="Global residual form for ALE Navier–Stokes on velocity, pressure, and mesh&#45;displacement spaces." alt="" coords="246,1421,465,1461"/>
-<area shape="poly" id="edge41_Node000001_Node000065" title=" " alt="" coords="104,1269,123,1301,149,1339,182,1376,220,1406,247,1420,245,1425,217,1411,178,1379,145,1342,119,1304,100,1272"/>
-<area shape="rect" id="Node000066" href="$classpolyfem_1_1solver_1_1_navier_stokes_form.html" title="Residual form for the viscous and convective velocity terms of Navier–Stokes." alt="" coords="230,1485,481,1511"/>
-<area shape="poly" id="edge42_Node000001_Node000066" title=" " alt="" coords="99,1271,114,1315,139,1370,174,1425,195,1450,220,1470,243,1483,241,1488,217,1475,192,1453,169,1428,134,1373,109,1317,94,1273"/>
-<area shape="rect" id="Node000067" href="$classpolyfem_1_1solver_1_1_normal_adhesion_form.html" title="Form representing the contact potential and forces." alt="" coords="219,1535,492,1560"/>
-<area shape="poly" id="edge43_Node000001_Node000067" title=" " alt="" coords="96,1272,108,1326,131,1394,147,1429,168,1464,192,1495,220,1521,238,1532,236,1537,217,1525,188,1498,163,1467,143,1432,126,1396,103,1327,91,1273"/>
-<area shape="rect" id="Node000068" href="$classpolyfem_1_1solver_1_1_pressure_form.html" title="Form representing body forces." alt="" coords="245,1584,466,1609"/>
-<area shape="poly" id="edge44_Node000001_Node000068" title=" " alt="" coords="94,1272,103,1334,124,1416,140,1459,162,1500,188,1538,220,1571,246,1585,243,1590,217,1575,184,1542,157,1503,136,1461,119,1418,98,1335,89,1273"/>
-<area shape="rect" id="Node000069" href="$classpolyfem_1_1solver_1_1_quadratic_penalty_form.html" title="Form for quadratic soft constraints." alt="" coords="258,1634,453,1674"/>
-<area shape="poly" id="edge45_Node000001_Node000069" title=" " alt="" coords="93,1272,99,1342,119,1436,135,1486,157,1535,185,1581,220,1620,238,1633,259,1642,257,1646,236,1637,217,1624,181,1584,152,1538,130,1488,114,1438,94,1343,87,1272"/>
-<area shape="rect" id="Node000070" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html" title="Tikonov regularization form between x and x_lagged." alt="" coords="261,1698,450,1738"/>
-<area shape="poly" id="edge46_Node000001_Node000070" title=" " alt="" coords="91,1272,94,1353,100,1406,111,1464,127,1524,149,1582,180,1637,220,1684,239,1698,262,1707,259,1712,237,1702,217,1688,176,1640,145,1585,121,1525,105,1465,95,1407,89,1353,86,1272"/>
-<area shape="rect" id="Node000071" href="$classpolyfem_1_1solver_1_1_stacked_form.html" title=" " alt="" coords="247,1763,463,1788"/>
-<area shape="poly" id="edge47_Node000001_Node000071" title=" " alt="" coords="95,1272,109,1377,136,1521,153,1593,173,1659,195,1713,220,1748,248,1765,246,1770,217,1752,191,1715,168,1661,148,1595,130,1522,104,1378,90,1273"/>
-<area shape="rect" id="Node000072" href="$classpolyfem_1_1solver_1_1_tangential_adhesion_form.html" title="Form of the lagged tangential adhesion disapative potential and forces." alt="" coords="256,1813,455,1853"/>
-<area shape="poly" id="edge48_Node000001_Node000072" title=" " alt="" coords="95,1273,108,1387,133,1545,150,1626,171,1699,194,1759,221,1799,237,1812,257,1821,255,1826,235,1816,217,1802,189,1761,166,1701,145,1627,128,1546,103,1387,89,1273"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html" title=" " alt="" coords="576,40,783,65"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="362,355,383,296,418,220,442,180,470,141,502,106,539,76,575,59,577,64,541,80,506,110,474,144,447,183,423,222,388,298,367,357"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_boundary_smoothing_form.html" title=" " alt="" coords="582,90,777,130"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="366,356,391,309,429,250,479,190,507,163,539,140,581,121,583,126,541,144,511,167,482,194,433,253,396,312,371,358"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html" title=" " alt="" coords="585,154,773,194"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="372,357,401,322,439,281,486,239,539,204,584,186,586,191,541,208,489,243,443,284,405,326,376,360"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_composite_form.html" title=" " alt="" coords="562,219,797,244"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="379,358,448,305,492,277,539,254,579,242,581,247,541,259,495,282,451,310,382,363"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html" title=" " alt="" coords="581,269,778,309"/>
-<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="403,362,539,318,585,306,587,311,541,323,405,367"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html" title="Penalizes relative jumps in per&#45;element Lamé parameters." alt="" coords="590,333,769,373"/>
-<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="474,369,590,358,590,363,475,374"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_min_jacobian_form.html" title="Compute the minimum jacobian of the mesh elements, not differentiable polygon elements not supported!" alt="" coords="557,397,801,423"/>
-<area shape="poly" id="edge17_Node000002_Node000018" title=" " alt="" coords="475,390,557,397,557,402,474,395"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_min_target_dist_form.html" title=" " alt="" coords="581,447,777,487"/>
-<area shape="poly" id="edge18_Node000002_Node000019" title=" " alt="" coords="414,396,541,431,593,445,592,450,539,437,412,401"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_parametrization_form.html" title=" " alt="" coords="545,512,813,537"/>
-<area shape="poly" id="edge19_Node000002_Node000020" title=" " alt="" coords="385,401,453,450,496,476,541,497,582,509,581,514,539,502,493,480,450,455,381,406"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_static_form.html" title=" " alt="" coords="578,561,781,587"/>
-<area shape="poly" id="edge20_Node000002_Node000023" title=" " alt="" coords="377,404,406,437,444,476,490,515,541,546,579,560,577,565,539,551,487,519,440,480,402,441,373,407"/>
-<area shape="rect" id="Node000042" href="$classpolyfem_1_1solver_1_1_transient_form.html" title=" " alt="" coords="567,611,791,636"/>
-<area shape="poly" id="edge21_Node000002_Node000042" title=" " alt="" coords="372,405,398,448,436,500,484,553,512,576,541,596,570,608,567,613,539,600,509,580,481,557,432,504,394,451,368,408"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,1229,171,1255"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_adjoint_form.html" title=" " alt="" coords="250,340,461,365"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,1215,137,1002,173,852,216,701,251,598,289,500,346,365,351,367,294,502,256,600,221,703,178,854,142,1003,97,1216"/>
+<area shape="rect" id="Node000044" href="$classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html" title="Form of the augmented lagrangian." alt="" coords="252,714,459,754"/>
+<area shape="poly" id="edge21_Node000001_Node000044" title=" " alt="" coords="90,1215,106,1116,133,980,151,912,170,850,192,799,217,764,233,752,251,743,253,748,236,756,221,768,197,801,175,852,156,913,138,982,111,1117,96,1216"/>
+<area shape="rect" id="Node000050" href="$classpolyfem_1_1solver_1_1_average_pressure_form.html" title="Mean&#45;zero pressure equation with a scalar Lagrange multiplier." alt="" coords="263,778,448,818"/>
+<area shape="poly" id="edge26_Node000001_Node000050" title=" " alt="" coords="87,1216,91,1140,109,1035,125,979,148,924,178,873,217,828,238,813,261,804,263,809,240,818,220,832,182,876,153,926,130,981,114,1036,96,1140,92,1216"/>
+<area shape="rect" id="Node000051" href="$classpolyfem_1_1solver_1_1_body_form.html" title="Form representing body forces." alt="" coords="256,843,455,868"/>
+<area shape="poly" id="edge27_Node000001_Node000051" title=" " alt="" coords="88,1215,94,1147,114,1055,130,1006,153,958,181,915,217,877,235,865,255,858,257,863,237,870,220,881,185,918,157,961,135,1008,119,1056,100,1147,93,1216"/>
+<area shape="rect" id="Node000052" href="$classpolyfem_1_1solver_1_1_contact_form.html" title="Form representing the contact potential and forces." alt="" coords="248,892,463,917"/>
+<area shape="poly" id="edge28_Node000001_Node000052" title=" " alt="" coords="89,1215,99,1155,121,1077,137,1035,159,995,185,958,217,927,247,910,249,915,220,931,189,962,163,998,142,1037,126,1078,104,1156,94,1216"/>
+<area shape="rect" id="Node000057" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html" title="Residual&#45;only coupling of the physical fluid/solid interface and of the computational ALE mesh to the..." alt="" coords="234,941,477,967"/>
+<area shape="poly" id="edge32_Node000001_Node000057" title=" " alt="" coords="92,1215,105,1164,128,1099,165,1033,189,1003,217,977,239,964,242,969,220,981,193,1006,169,1036,133,1101,110,1166,97,1216"/>
+<area shape="rect" id="Node000058" href="$classpolyfem_1_1solver_1_1_friction_form.html" title="Form of the lagged friction disapative potential and forces." alt="" coords="249,991,462,1016"/>
+<area shape="poly" id="edge33_Node000001_Node000058" title=" " alt="" coords="95,1215,111,1173,136,1121,171,1069,193,1046,217,1026,247,1011,250,1016,220,1031,197,1050,175,1073,141,1124,116,1175,100,1217"/>
+<area shape="rect" id="Node000059" href="$classpolyfem_1_1solver_1_1_inertia_form.html" title="Form of the inertia." alt="" coords="252,1040,459,1065"/>
+<area shape="poly" id="edge34_Node000001_Node000059" title=" " alt="" coords="99,1216,118,1183,144,1145,177,1107,217,1076,251,1061,253,1066,220,1080,181,1111,148,1148,122,1186,104,1219"/>
+<area shape="rect" id="Node000060" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html" title=" " alt="" coords="259,1090,451,1130"/>
+<area shape="poly" id="edge35_Node000001_Node000060" title=" " alt="" coords="110,1218,157,1178,217,1141,258,1126,260,1131,220,1146,161,1183,114,1222"/>
+<area shape="rect" id="Node000061" href="$classpolyfem_1_1solver_1_1_l2_projection_form.html" title=" " alt="" coords="233,1155,478,1180"/>
+<area shape="poly" id="edge36_Node000001_Node000061" title=" " alt="" coords="130,1222,218,1190,272,1177,274,1183,219,1195,131,1227"/>
+<area shape="rect" id="Node000062" href="$classpolyfem_1_1solver_1_1_lagged_reg_form.html" title="Tikonov regularization form between x and x_lagged." alt="" coords="237,1204,474,1229"/>
+<area shape="poly" id="edge37_Node000001_Node000062" title=" " alt="" coords="184,1230,236,1225,236,1231,184,1236"/>
+<area shape="rect" id="Node000063" href="$classpolyfem_1_1solver_1_1_mixed_assembler_form.html" title=" " alt="" coords="219,1253,492,1279"/>
+<area shape="poly" id="edge38_Node000001_Node000063" title=" " alt="" coords="185,1248,219,1251,218,1256,184,1253"/>
+<area shape="rect" id="Node000064" href="$classpolyfem_1_1solver_1_1_mixed_linear_form.html" title="Constant saddle&#45;point coupling between velocity and pressure." alt="" coords="233,1303,477,1328"/>
+<area shape="poly" id="edge39_Node000001_Node000064" title=" " alt="" coords="131,1257,219,1289,269,1300,268,1305,218,1294,130,1262"/>
+<area shape="rect" id="Node000065" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_average_pressure_form.html" title="Mean&#45;zero pressure constraint on the current ALE domain." alt="" coords="246,1353,465,1393"/>
+<area shape="poly" id="edge40_Node000001_Node000065" title=" " alt="" coords="114,1262,161,1301,220,1338,250,1350,248,1355,217,1343,157,1306,110,1266"/>
+<area shape="rect" id="Node000066" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html" title="Global residual form for ALE Navier–Stokes on velocity, pressure, and mesh&#45;displacement spaces." alt="" coords="246,1417,465,1457"/>
+<area shape="poly" id="edge41_Node000001_Node000066" title=" " alt="" coords="104,1265,123,1297,149,1335,182,1372,220,1402,247,1416,245,1421,217,1407,178,1375,145,1338,119,1300,100,1268"/>
+<area shape="rect" id="Node000067" href="$classpolyfem_1_1solver_1_1_navier_stokes_form.html" title="Residual form for the viscous and convective velocity terms of Navier–Stokes." alt="" coords="230,1481,481,1507"/>
+<area shape="poly" id="edge42_Node000001_Node000067" title=" " alt="" coords="99,1267,114,1311,139,1366,174,1421,195,1446,220,1466,243,1479,241,1484,217,1471,192,1449,169,1424,134,1369,109,1313,94,1269"/>
+<area shape="rect" id="Node000068" href="$classpolyfem_1_1solver_1_1_normal_adhesion_form.html" title="Form representing the contact potential and forces." alt="" coords="219,1531,492,1556"/>
+<area shape="poly" id="edge43_Node000001_Node000068" title=" " alt="" coords="96,1268,108,1322,131,1390,147,1425,168,1460,192,1491,220,1517,238,1528,236,1533,217,1521,188,1494,163,1463,143,1428,126,1392,103,1323,91,1269"/>
+<area shape="rect" id="Node000069" href="$classpolyfem_1_1solver_1_1_pressure_form.html" title="Form representing body forces." alt="" coords="245,1580,466,1605"/>
+<area shape="poly" id="edge44_Node000001_Node000069" title=" " alt="" coords="94,1268,103,1330,124,1412,140,1455,162,1496,188,1534,220,1567,246,1581,243,1586,217,1571,184,1538,157,1499,136,1457,119,1414,98,1331,89,1269"/>
+<area shape="rect" id="Node000070" href="$classpolyfem_1_1solver_1_1_quadratic_penalty_form.html" title="Form for quadratic soft constraints." alt="" coords="258,1630,453,1670"/>
+<area shape="poly" id="edge45_Node000001_Node000070" title=" " alt="" coords="93,1268,99,1338,119,1432,135,1482,157,1531,185,1577,220,1616,238,1629,259,1638,257,1642,236,1633,217,1620,181,1580,152,1534,130,1484,114,1434,94,1339,87,1268"/>
+<area shape="rect" id="Node000071" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html" title="Tikonov regularization form between x and x_lagged." alt="" coords="261,1694,450,1734"/>
+<area shape="poly" id="edge46_Node000001_Node000071" title=" " alt="" coords="91,1268,94,1349,100,1402,111,1460,127,1520,149,1578,180,1633,220,1680,239,1694,262,1703,259,1708,237,1698,217,1684,176,1636,145,1581,121,1521,105,1461,95,1403,89,1349,86,1268"/>
+<area shape="rect" id="Node000072" href="$classpolyfem_1_1solver_1_1_stacked_form.html" title=" " alt="" coords="247,1759,463,1784"/>
+<area shape="poly" id="edge47_Node000001_Node000072" title=" " alt="" coords="95,1268,109,1373,136,1517,153,1589,173,1655,195,1709,220,1744,248,1761,246,1766,217,1748,191,1711,168,1657,148,1591,130,1518,104,1374,90,1269"/>
+<area shape="rect" id="Node000073" href="$classpolyfem_1_1solver_1_1_tangential_adhesion_form.html" title="Form of the lagged tangential adhesion disapative potential and forces." alt="" coords="256,1809,455,1849"/>
+<area shape="poly" id="edge48_Node000001_Node000073" title=" " alt="" coords="95,1269,108,1383,133,1541,150,1622,171,1695,194,1755,221,1795,237,1808,257,1817,255,1822,235,1812,217,1798,189,1757,166,1697,145,1623,128,1542,103,1383,89,1269"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html" title=" " alt="" coords="576,11,783,36"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="362,326,383,267,418,190,442,150,470,112,502,76,539,46,575,29,577,34,541,51,506,80,474,115,447,153,423,193,388,269,367,328"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_boundary_smoothing_form.html" title=" " alt="" coords="582,61,777,101"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="366,326,391,279,429,221,479,161,507,134,539,110,581,91,583,96,541,115,511,138,482,164,433,224,396,282,371,329"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html" title=" " alt="" coords="585,125,773,165"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="372,327,401,293,439,251,486,209,539,174,584,156,586,161,541,179,489,214,443,255,405,296,376,331"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_composite_form.html" title=" " alt="" coords="562,189,797,215"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="379,329,448,276,492,248,539,225,579,212,581,217,541,230,495,253,451,280,382,333"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html" title=" " alt="" coords="581,239,778,279"/>
+<area shape="poly" id="edge14_Node000002_Node000016" title=" " alt="" coords="403,333,539,289,585,277,587,282,541,294,405,338"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html" title="Penalizes relative jumps in per&#45;element Lamé parameters." alt="" coords="590,303,769,343"/>
+<area shape="poly" id="edge15_Node000002_Node000017" title=" " alt="" coords="474,339,590,329,590,334,475,345"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_min_jacobian_form.html" title="Compute the minimum jacobian of the mesh elements, not differentiable polygon elements not supported!" alt="" coords="557,368,801,393"/>
+<area shape="poly" id="edge16_Node000002_Node000018" title=" " alt="" coords="475,360,557,367,557,373,474,366"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_min_target_dist_form.html" title=" " alt="" coords="581,418,777,458"/>
+<area shape="poly" id="edge17_Node000002_Node000019" title=" " alt="" coords="414,367,541,402,593,415,592,421,539,407,412,372"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_parametrization_form.html" title=" " alt="" coords="545,483,813,508"/>
+<area shape="poly" id="edge18_Node000002_Node000020" title=" " alt="" coords="385,372,453,421,496,446,541,468,582,480,581,485,539,472,493,451,450,425,381,376"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_static_form.html" title=" " alt="" coords="578,532,781,557"/>
+<area shape="poly" id="edge19_Node000002_Node000023" title=" " alt="" coords="377,375,406,408,444,447,490,485,541,517,579,531,577,536,539,522,487,490,440,451,402,411,373,378"/>
+<area shape="rect" id="Node000042" href="$classpolyfem_1_1solver_1_1_transient_form.html" title=" " alt="" coords="567,581,791,607"/>
+<area shape="poly" id="edge20_Node000002_Node000042" title=" " alt="" coords="372,376,398,419,436,471,484,523,512,547,541,566,570,579,567,584,539,571,509,551,481,527,432,474,394,422,368,379"/>
 <area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_layer_thickness_form.html" title=" " alt="" coords="871,5,1137,31"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="785,158,817,140,828,129,834,117,840,91,846,65,853,52,865,40,884,29,887,33,868,44,857,55,850,67,845,92,839,118,832,132,820,144,788,162"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="785,127,817,111,833,94,840,76,848,57,865,40,888,28,890,33,868,44,852,60,845,78,837,97,820,115,788,131"/>
 <area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_divide_form.html" title=" " alt="" coords="901,55,1107,80"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="807,211,817,204,829,191,836,178,840,148,844,118,852,103,865,89,899,71,902,76,868,93,856,106,850,120,845,149,841,179,834,194,820,208,810,215"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="806,181,817,175,834,155,840,133,847,110,865,89,899,73,902,77,868,93,852,113,845,135,838,157,820,179,809,186"/>
 <area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_homo_composite_form.html" title=" " alt="" coords="867,104,1141,129"/>
-<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="803,211,817,204,833,189,840,173,849,156,865,140,892,127,895,132,868,144,853,159,845,175,837,192,820,208,806,216"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="792,183,818,174,831,166,841,157,851,148,866,140,904,127,906,132,868,144,854,152,844,161,835,170,820,179,794,188"/>
 <area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_inequality_constraint_form.html" title=" " alt="" coords="905,154,1103,194"/>
-<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="765,214,905,189,906,194,766,219"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="810,188,905,180,905,185,811,193"/>
 <area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_log_composite_form.html" title=" " alt="" coords="875,219,1133,244"/>
-<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="811,229,875,229,875,234,811,234"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="811,211,875,217,874,222,810,216"/>
 <area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_negative_composite_form.html" title=" " alt="" coords="909,269,1099,309"/>
-<area shape="poly" id="edge11_Node000007_Node000012" title=" " alt="" coords="766,244,909,269,908,274,765,249"/>
+<area shape="poly" id="edge11_Node000007_Node000012" title=" " alt="" coords="788,215,820,225,844,239,868,253,909,267,908,272,866,258,841,243,818,230,787,220"/>
 <area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_plus_const_composite_form.html" title=" " alt="" coords="906,333,1102,373"/>
-<area shape="poly" id="edge12_Node000007_Node000013" title=" " alt="" coords="806,247,820,255,837,270,845,287,853,304,868,318,907,336,905,341,865,323,849,307,840,290,833,273,817,259,803,251"/>
+<area shape="poly" id="edge12_Node000007_Node000013" title=" " alt="" coords="810,219,820,225,832,236,839,249,846,273,851,297,858,308,868,319,886,330,907,338,905,343,884,335,865,323,853,311,846,299,840,274,834,251,828,240,817,229,807,223"/>
 <area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_power_form.html" title=" " alt="" coords="901,397,1107,423"/>
-<area shape="poly" id="edge13_Node000007_Node000014" title=" " alt="" coords="811,247,820,255,834,270,842,287,845,320,849,353,855,368,868,383,902,401,900,406,865,387,851,371,844,354,840,321,837,288,830,273,817,259,807,252"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_sum_composite_form.html" title=" " alt="" coords="872,447,1136,472"/>
-<area shape="poly" id="edge14_Node000007_Node000015" title=" " alt="" coords="810,247,821,255,838,277,846,299,847,322,845,346,844,368,845,390,852,411,868,432,886,444,883,449,865,436,847,414,840,391,838,368,840,345,842,322,840,300,833,279,817,259,807,251"/>
-<area shape="rect" id="Node000045" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html" title="Form of the augmented lagrangian for bc constraints." alt="" coords="552,660,807,685"/>
-<area shape="poly" id="edge23_Node000044_Node000045" title=" " alt="" coords="458,712,539,695,606,683,607,688,541,701,459,718"/>
-<area shape="rect" id="Node000046" href="$classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html" title="Form of the lagrangian in augmented lagrangian for homogenization." alt="" coords="574,710,785,750"/>
-<area shape="poly" id="edge24_Node000044_Node000046" title=" " alt="" coords="472,732,574,730,574,735,472,738"/>
-<area shape="rect" id="Node000047" href="$classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html" title="Form of the lagrangian in augmented lagrangian." alt="" coords="540,775,819,800"/>
-<area shape="poly" id="edge25_Node000044_Node000047" title=" " alt="" coords="473,753,596,772,595,777,472,758"/>
-<area shape="rect" id="Node000049" href="$classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html" title=" " alt="" coords="578,825,781,865"/>
-<area shape="poly" id="edge26_Node000044_Node000049" title=" " alt="" coords="473,759,493,768,508,778,518,789,527,799,541,809,579,824,577,829,539,814,524,803,514,792,505,782,491,772,470,763"/>
-<area shape="rect" id="Node000053" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html" title=" " alt="" coords="591,889,767,929"/>
-<area shape="poly" id="edge30_Node000052_Node000053" title=" " alt="" coords="476,906,591,906,591,911,476,911"/>
-<area shape="rect" id="Node000055" href="$classpolyfem_1_1solver_1_1_smooth_contact_form.html" title=" " alt="" coords="547,953,812,979"/>
-<area shape="poly" id="edge31_Node000052_Node000055" title=" " alt="" coords="442,921,607,951,606,956,441,926"/>
+<area shape="poly" id="edge13_Node000007_Node000014" title=" " alt="" coords="810,218,821,225,836,245,844,265,845,306,846,346,854,365,868,383,884,394,902,402,900,406,882,398,865,387,849,367,841,347,840,306,839,266,832,247,817,229,807,222"/>
+<area shape="rect" id="Node000045" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html" title="Form of the augmented lagrangian for bc constraints." alt="" coords="552,631,807,656"/>
+<area shape="poly" id="edge22_Node000044_Node000045" title=" " alt="" coords="418,707,539,666,596,653,597,659,541,671,419,712"/>
+<area shape="rect" id="Node000046" href="$classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html" title="Form of the lagrangian in augmented lagrangian for homogenization." alt="" coords="574,681,785,721"/>
+<area shape="poly" id="edge23_Node000044_Node000046" title=" " alt="" coords="472,719,574,709,574,714,473,725"/>
+<area shape="rect" id="Node000047" href="$classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html" title="Form of the lagrangian in augmented lagrangian." alt="" coords="540,745,819,771"/>
+<area shape="poly" id="edge24_Node000044_Node000047" title=" " alt="" coords="472,740,540,745,540,750,472,745"/>
+<area shape="rect" id="Node000049" href="$classpolyfem_1_1solver_1_1_stacked_augmented_lagrangian_form.html" title=" " alt="" coords="578,795,781,835"/>
+<area shape="poly" id="edge25_Node000044_Node000049" title=" " alt="" coords="460,755,493,763,541,779,591,793,589,798,539,785,491,769,459,760"/>
+<area shape="rect" id="Node000053" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html" title=" " alt="" coords="591,859,767,899"/>
+<area shape="poly" id="edge29_Node000052_Node000053" title=" " alt="" coords="476,893,591,884,591,889,476,898"/>
+<area shape="rect" id="Node000055" href="$classpolyfem_1_1solver_1_1_e_s_p_contact_form.html" title=" " alt="" coords="560,924,799,949"/>
+<area shape="poly" id="edge30_Node000052_Node000055" title=" " alt="" coords="476,914,560,922,560,928,476,919"/>
+<area shape="rect" id="Node000056" href="$classpolyfem_1_1solver_1_1_g_c_p_contact_form.html" title=" " alt="" coords="558,973,801,999"/>
+<area shape="poly" id="edge31_Node000052_Node000056" title=" " alt="" coords="471,918,493,926,508,934,518,943,527,952,541,960,576,971,574,976,539,964,524,956,514,947,505,939,491,931,469,923"/>
 </map>
