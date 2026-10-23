@@ -185,6 +185,9 @@ namespace polyfem::varform
 		threshold_clamped_.resize(0);
 		lag_residual_.resize(0);
 		attainment_.resize(0);
+		dissipation_.resize(0);
+		shear_work_.resize(0);
+		element_volume_.resize(0);
 		normal_growth_per_element_.resize(0);
 		growth_node_volume_.resize(0);
 		growth_node_weights_.resize(0);
@@ -1456,6 +1459,51 @@ namespace polyfem::varform
 		return out;
 	}
 
+	void GrowthElasticVarForm::accumulate_dissipation(const int step, const double t, const Eigen::VectorXd &dtheta)
+	{
+		// Route-B split of the increment's dissipation term v_n phi dtheta (per
+		// reference volume, Pa): D = v_n max(f_par, 0) dtheta >= 0, the dissipation,
+		// and S = v_n f_gamma dtheta, the shear supply (Q12 obligation 3). Needs the
+		// split, i.e. a solver-side threshold or a lagged shear supply.
+		const int n_el = mesh_->n_elements();
+		if (threshold_parallel_.size() != n_el || shear_supply_.size() != n_el)
+			return;
+		if (element_volume_.size() != n_el)
+		{
+			element_volume_.resize(n_el);
+			assembler::ElementAssemblyValues vals;
+			for (int e = 0; e < n_el; ++e)
+			{
+				growth_ass_vals_cache_.compute(
+					e, mesh_->is_volume(), growth_space_.basis_list()[e], growth_space_.geometry_basis_list()[e], vals);
+				element_volume_(e) = (vals.det.array() * vals.quadrature.weights.array()).sum();
+			}
+			dissipation_.setZero(n_el);
+			shear_work_.setZero(n_el);
+		}
+		const Eigen::VectorXd dth = element_mean_growth(dtheta.cwiseMax(0.0));
+		const Eigen::VectorXd D = normal_growth_per_element_.cwiseProduct(threshold_parallel_).cwiseProduct(dth);
+		const Eigen::VectorXd S = normal_growth_per_element_.cwiseProduct(shear_supply_).cwiseProduct(dth);
+		dissipation_ += D;
+		shear_work_ += S;
+		const double iD = D.dot(element_volume_), iS = S.dot(element_volume_);
+		const double cD = dissipation_.dot(element_volume_), cS = shear_work_.dot(element_volume_);
+		int n_grow = 0, n_neg = 0, n_dneg = 0;
+		for (int e = 0; e < n_el; ++e)
+			if (dth(e) > 0)
+			{
+				++n_grow;
+				n_neg += (threshold_per_element_(e) < 0);
+				n_dneg += (D(e) < 0);
+			}
+		logger().info("growth step {} (t = {:g}): dissipation int D dV {:.4g} (cumulative {:.4g}), shear supply int S dV "
+					  "{:.4g} (cumulative {:.4g}) [Pa x mesh volume]; S/D {:.3f}; growing elements {}, with phi < 0: {}, with D < 0: {}",
+					  step, t, iD, cD, iS, cS, iD != 0 ? iS / iD : 0.0, n_grow, n_neg, n_dneg);
+		stats.solver_info.push_back(
+			{{"type", "growth_dissipation"}, {"t", t}, {"step", step}, {"D", iD}, {"S", iS},
+			 {"D_cumulative", cD}, {"S_cumulative", cS}, {"n_phi_negative", n_neg}, {"n_D_negative", n_dneg}});
+	}
+
 	void GrowthElasticVarForm::report_lag_residual(const int step, const double t, const Eigen::MatrixXd &solution)
 	{
 		// The threshold the converged state itself implies (route B at its own
@@ -1624,6 +1672,8 @@ namespace polyfem::varform
 			stats.solver_info.push_back(
 				{{"type", "growth_step"}, {"t", t}, {"step", step}, {"passes", passes},
 				 {"n_growing", n_active}, {"theta_min", theta.minCoeff()}, {"theta_max", theta.maxCoeff()}});
+
+			accumulate_dissipation(step, t, dtheta);
 
 			// Irreversibility holds by construction: pinned DOFs equal theta_n and
 			// free DOFs passed the feasibility test. Clamp round-off only.
@@ -1920,6 +1970,10 @@ namespace polyfem::varform
 				per_element(lag_residual_, "growth_lag_residual");
 			if (attainment_.size() == mesh_->n_elements())
 				per_element(attainment_, "growth_attainment");
+			if (dissipation_.size() == mesh_->n_elements())
+				per_element(dissipation_, "growth_dissipation");
+			if (shear_work_.size() == mesh_->n_elements())
+				per_element(shear_work_, "growth_shear_supply_work");
 		}
 
 		if (growth_law_.enabled && growth_activation_step_.size() == growth_ndof()
