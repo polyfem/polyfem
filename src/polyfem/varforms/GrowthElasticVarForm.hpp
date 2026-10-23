@@ -110,6 +110,11 @@ namespace polyfem::varform
 		/// transverse shears removed and Ce_nn at the layer value)), then
 		/// threshold = phi_par + f_gamma and the node weights.
 		void update_lagged_threshold(const Eigen::MatrixXd &solution, double t);
+		/// the threshold is re-evaluated from the state during the run
+		bool threshold_follows_state() const
+		{
+			return growth_law_.shear_supply == "lagged" || growth_law_.parallel_threshold == "lagged";
+		}
 		/// the threshold the state implies: G(x) = (PHI_PAR, f_gamma) at C_check of the
 		/// state (PHI_PAR only when parallel_threshold is lagged, else the current one)
 		void threshold_target(const Eigen::MatrixXd &solution, double t,

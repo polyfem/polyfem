@@ -274,19 +274,19 @@ namespace polyfem::varform
 				log_and_throw_error("growth_law parallel_threshold must be \"file\", \"state\" or \"lagged\", got \"{}\".", pt);
 			if (pt != "file" && !(growth_law_.theta_crit > 0))
 				log_and_throw_error("growth_law parallel_threshold \"{}\" needs theta_crit > 0 (the C_check construction).", pt);
-			if (pt == "lagged" && growth_law_.shear_supply != "lagged")
-				log_and_throw_error("growth_law parallel_threshold \"lagged\" needs shear_supply \"lagged\" (both parts follow the state).");
+			if (pt == "lagged" && growth_law_.shear_supply == "frozen")
+				log_and_throw_error("growth_law parallel_threshold \"lagged\" needs shear_supply \"lagged\" or \"none\" (a frozen shear part would not follow the state).");
 		}
 		if (growth_law_.shear_update != "increment" && growth_law_.shear_update != "predictor" && growth_law_.shear_update != "pass")
 			log_and_throw_error("growth_law shear_update must be \"increment\", \"predictor\" or \"pass\", got \"{}\".", growth_law_.shear_update);
 		if (!(growth_law_.shear_update_tol > 0))
 			log_and_throw_error("growth_law shear_update_tol must be positive.");
-		if (growth_law_.shear_supply != "frozen" && growth_law_.shear_supply != "lagged")
-			log_and_throw_error("growth_law shear_supply must be \"frozen\" or \"lagged\", got \"{}\".", growth_law_.shear_supply);
-		if (growth_law_.shear_supply == "lagged")
+		if (growth_law_.shear_supply != "frozen" && growth_law_.shear_supply != "lagged" && growth_law_.shear_supply != "none")
+			log_and_throw_error("growth_law shear_supply must be \"frozen\", \"lagged\" or \"none\", got \"{}\".", growth_law_.shear_supply);
+		if (growth_law_.shear_supply == "lagged" && !(growth_law_.theta_crit > 0))
+			log_and_throw_error("growth_law shear_supply \"lagged\" needs theta_crit > 0 (the C_check construction).");
+		if (growth_law_.shear_supply != "frozen")
 		{
-			if (!(growth_law_.theta_crit > 0))
-				log_and_throw_error("growth_law shear_supply \"lagged\" needs theta_crit > 0 (the C_check construction).");
 			if (!gl["threshold"].is_object() && gl.value("parallel_threshold", std::string("file")) == "file")
 				log_and_throw_error("growth_law shear_supply \"lagged\" needs a per_element_file threshold carrying {} "
 									"(or parallel_threshold \"state\" / \"lagged\").", growth_law_.parallel_field);
@@ -1271,10 +1271,11 @@ namespace polyfem::varform
 			log_and_throw_error("growth_law: normal_growth must be positive.");
 
 		const std::string &par = growth_law_.parallel_threshold;
-		if (par == "file" && growth_law_.shear_supply == "lagged")
+		if (par == "file" && growth_law_.shear_supply != "frozen")
 		{
-			// Only the dissipative part is frozen; the shear supply starts at zero
-			// and is set from the state during every increment.
+			// Only the dissipative part is taken from the file; the shear supply is
+			// zero ("none": no shear credit, option (ii)) or set from the state
+			// during every increment ("lagged").
 			json spec = gl.at("threshold");
 			spec["field"] = growth_law_.parallel_field;
 			read_scalar_field(spec, "threshold (" + growth_law_.parallel_field + ")", growth_law_.parallel_field, threshold_parallel_);
@@ -1305,15 +1306,17 @@ namespace polyfem::varform
 			evaluate_threshold_state(us.col(0), growth_law_.t_end, full, ns, tt);
 			threshold_parallel_ = ns.cwiseMax(0.0);
 			threshold_clamped_ = (ns.array() < 0).cast<double>().matrix();
-			if (growth_law_.shear_supply == "lagged")
-				shear_supply_.setZero(n_el);
-			else
+			if (growth_law_.shear_supply == "frozen")
 				shear_supply_ = full - ns;
+			else
+				shear_supply_.setZero(n_el);
 			threshold_per_element_ = threshold_parallel_ + shear_supply_;
 			logger().info("growth_law: C_check threshold from the state in {}: PHI_PAR median {:.4g} Pa, clamped on {:.1f}% "
 						  "of elements; f_gamma median {:.4g} Pa ({})",
 						  path, median_of(threshold_parallel_), 100.0 * threshold_clamped_.mean(), median_of(full - ns),
-						  growth_law_.shear_supply == "lagged" ? "replaced per increment" : "frozen");
+						  growth_law_.shear_supply == "lagged" ? "replaced per increment"
+						  : growth_law_.shear_supply == "none" ? "not credited (shear_supply none)"
+															   : "frozen");
 		}
 		else if (par == "lagged")
 		{
@@ -1449,7 +1452,10 @@ namespace polyfem::varform
 	{
 		Eigen::VectorXd full, ns, tt;
 		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
-		gam = full - ns;
+		if (growth_law_.shear_supply == "none")
+			gam.setZero(full.size());
+		else
+			gam = full - ns;
 		if (growth_law_.parallel_threshold == "lagged")
 		{
 			par = ns.cwiseMax(0.0);
@@ -1691,7 +1697,7 @@ namespace polyfem::varform
 			// is linear in theta with gradient w, so the multiplier for the updated
 			// threshold is mult + (w_new - w_old), exactly, without another solve.
 			bool threshold_moved = false;
-			if (growth_law_.shear_supply == "lagged"
+			if (threshold_follows_state()
 				&& (growth_law_.shear_update == "pass" || (growth_law_.shear_update == "predictor" && pass == 1)))
 			{
 				const Eigen::VectorXd w_old = growth_node_weights_;
@@ -1823,7 +1829,7 @@ namespace polyfem::varform
 		const std::vector<char> mask0 = growth_pinned_mask_;
 		try
 		{
-			if (growth_law_.shear_supply == "lagged" && growth_law_.shear_update == "increment")
+			if (threshold_follows_state() && growth_law_.shear_update == "increment")
 				update_lagged_threshold(solution, t_from);
 			const int passes = solve_growth_increment(step, t_to, solution);
 			commit_increment(step, t_to, solution);

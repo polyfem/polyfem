@@ -560,9 +560,10 @@
         "default": "frozen",
         "options": [
             "frozen",
-            "lagged"
+            "lagged",
+            "none"
         ],
-        "doc": "frozen: the threshold file's field is phi_e for the whole run (route B at the end state's C_check). lagged: only the dissipative part phi_par (parallel_field) is frozen; the shear supply f_gamma is re-evaluated at the start of every increment on the previous increment's converged displacement, phi_e = phi_par,e + f_gamma,e (needs theta_crit)"
+        "doc": "frozen: the threshold file's field is phi_e for the whole run (route B at the end state's C_check). lagged: only the dissipative part phi_par (parallel_field) is frozen; the shear supply f_gamma is re-evaluated at the start of every increment on the previous increment's converged displacement, phi_e = phi_par,e + f_gamma,e (needs theta_crit). none: no shear credit, the threshold is PHI_PAR alone (option (ii); sensitivity to the shear treatment)"
     },
     {
         "pointer": "/growth_law/theta_crit",
