@@ -18,6 +18,7 @@
 #include <polyfem/varforms/GrowthElasticVarForm.hpp>
 #include <polyfem/assembler/GrowthElasticity.hpp>
 #include <polyfem/Units.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -518,5 +519,77 @@ TEST_CASE("growth_law_lagged_shear_supply", "[growth][growth_law]")
 		bad["materials"]["growth_law"].erase("theta_crit");
 		State s2;
 		CHECK_THROWS(s2.init(bad, /*strict_validation=*/true));
+	}
+}
+
+TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
+{
+	// Variant (b) at the state: with PHI_PAR re-evaluated on the solved state and
+	// iterated to its fixed point (parallel_threshold lagged, shear_update pass),
+	// the cube stops exactly at vartheta^e = theta_crit, theta = lambda^2 / theta_crit,
+	// for any theta_crit (here not the calibration value). A second solve with the
+	// threshold frozen at that converged state (parallel_threshold state) must
+	// reproduce it: the state threshold is the fixed point.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const auto dir = scratch_dir();
+	const std::string mesh = write_cube_mesh(dir, n);
+	const double lambda = std::sqrt(1.5), crit = 1.25;
+
+	json args = cube_args(mesh, lambda, 469.0, 1, 1.0, "t");
+	args["materials"]["growth_law"]["shear_supply"] = "lagged";
+	args["materials"]["growth_law"]["parallel_threshold"] = "lagged";
+	args["materials"]["growth_law"]["shear_update"] = "pass";
+	args["materials"]["growth_law"]["shear_update_tol"] = 1e-4;
+	args["materials"]["growth_law"]["theta_crit"] = crit;
+
+	State state;
+	state.init(args, /*strict_validation=*/true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+	REQUIRE(sol.rows() == 4 * nv);
+	const auto vf = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(state.variational_formulation);
+	REQUIRE(vf);
+	for (int a = 0; a < nv; ++a)
+		CHECK(sol(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
+	REQUIRE(vf->growth_attainment().size() > 0);
+	CHECK(vf->growth_attainment().minCoeff() == Catch::Approx(1.0).epsilon(1e-6));
+	CHECK(vf->growth_attainment().maxCoeff() == Catch::Approx(1.0).epsilon(1e-6));
+	CHECK(vf->growth_lag_residual().cwiseAbs().maxCoeff() < 1e-3);
+	const double phi_par = vf->growth_threshold_parallel()(0);
+	CHECK(phi_par > 0);
+
+	SECTION("threshold frozen at that state reproduces it")
+	{
+		const std::string state_file = (dir / "threshold_state.hdf5").string();
+		std::filesystem::remove(state_file);
+		const Eigen::MatrixXd u = sol.topRows(3 * nv);
+		REQUIRE(io::write_matrix(state_file, "u", u));
+
+		json b = cube_args(mesh, lambda, 469.0, 1, 1.0, "t");
+		b["materials"]["growth_law"]["parallel_threshold"] = "state";
+		b["materials"]["growth_law"]["threshold_state"] = state_file;
+		b["materials"]["growth_law"]["theta_crit"] = crit;
+		State s2;
+		s2.init(b, /*strict_validation=*/true);
+		s2.set_max_threads(1);
+		s2.load_mesh();
+		Eigen::MatrixXd sol2;
+		s2.solve(sol2);
+		const auto vf2 = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(s2.variational_formulation);
+		REQUIRE(vf2);
+		CHECK(vf2->growth_threshold_parallel()(0) == Catch::Approx(phi_par).epsilon(1e-8));
+		for (int a = 0; a < nv; ++a)
+			CHECK(sol2(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
+	}
+
+	SECTION("lagged parallel threshold needs a lagged shear supply")
+	{
+		json bad = args;
+		bad["materials"]["growth_law"]["shear_supply"] = "frozen";
+		State s3;
+		CHECK_THROWS(s3.init(bad, /*strict_validation=*/true));
 	}
 }

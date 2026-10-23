@@ -453,7 +453,10 @@
             "theta_crit",
             "parallel_field",
             "shear_update",
-            "shear_update_tol"
+            "shear_update_tol",
+            "parallel_threshold",
+            "threshold_state",
+            "lag_report"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -584,6 +587,29 @@
         "type": "float",
         "default": 1.0,
         "doc": "shear_update pass: the per-pass iteration stops when max |d phi_e| < shear_update_tol [Pa] (and the active set has settled)"
+    },
+    {
+        "pointer": "/growth_law/parallel_threshold",
+        "type": "string",
+        "default": "file",
+        "options": [
+            "file",
+            "state",
+            "lagged"
+        ],
+        "doc": "Dissipative part PHI_PAR = max(f_par(C_check), 0) of the route-B threshold. file: the threshold file's parallel_field (V0b). state: computed by the solver at C_check of the displacement in threshold_state (default input.data.state), with its own energy and fibers, then frozen (with shear_supply frozen, f_gamma from the same state). lagged: re-evaluated with f_gamma on the current state (timing shear_update; needs shear_supply lagged); with shear_update pass this is the in-increment re-lag. state and lagged need theta_crit"
+    },
+    {
+        "pointer": "/growth_law/threshold_state",
+        "type": "string",
+        "default": "",
+        "doc": "parallel_threshold state: state file (with the displacement u) at which C_check is built; empty uses input.data.state. Resolved relative to the input JSON"
+    },
+    {
+        "pointer": "/growth_law/lag_report",
+        "type": "bool",
+        "default": true,
+        "doc": "Log, per increment, the lag residual |phi(converged state) - phi used| and the attainment vartheta^e/theta_crit over grown unclamped elements, and export growth_lag_residual and growth_attainment (needs theta_crit)"
     }
 
 ]

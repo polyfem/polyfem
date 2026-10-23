@@ -182,6 +182,9 @@ namespace polyfem::varform
 		threshold_parallel_.resize(0);
 		shear_supply_.resize(0);
 		shear_supply_logged_once_ = false;
+		threshold_clamped_.resize(0);
+		lag_residual_.resize(0);
+		attainment_.resize(0);
 		normal_growth_per_element_.resize(0);
 		growth_node_volume_.resize(0);
 		growth_node_weights_.resize(0);
@@ -218,7 +221,10 @@ namespace polyfem::varform
 				|| gl.value("theta_crit", d.theta_crit) != d.theta_crit
 				|| gl.value("parallel_field", d.parallel_field) != d.parallel_field
 				|| gl.value("shear_update", d.shear_update) != d.shear_update
-				|| gl.value("shear_update_tol", d.shear_update_tol) != d.shear_update_tol)
+				|| gl.value("shear_update_tol", d.shear_update_tol) != d.shear_update_tol
+				|| gl.value("parallel_threshold", d.parallel_threshold) != d.parallel_threshold
+				|| gl.value("threshold_state", d.threshold_state) != d.threshold_state
+				|| gl.value("lag_report", d.lag_report) != d.lag_report)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -237,6 +243,18 @@ namespace polyfem::varform
 		growth_law_.parallel_field = gl.value("parallel_field", growth_law_.parallel_field);
 		growth_law_.shear_update = gl.value("shear_update", growth_law_.shear_update);
 		growth_law_.shear_update_tol = gl.value("shear_update_tol", growth_law_.shear_update_tol);
+		growth_law_.parallel_threshold = gl.value("parallel_threshold", growth_law_.parallel_threshold);
+		growth_law_.threshold_state = gl.value("threshold_state", growth_law_.threshold_state);
+		growth_law_.lag_report = gl.value("lag_report", growth_law_.lag_report);
+		{
+			const std::string &pt = growth_law_.parallel_threshold;
+			if (pt != "file" && pt != "state" && pt != "lagged")
+				log_and_throw_error("growth_law parallel_threshold must be \"file\", \"state\" or \"lagged\", got \"{}\".", pt);
+			if (pt != "file" && !(growth_law_.theta_crit > 0))
+				log_and_throw_error("growth_law parallel_threshold \"{}\" needs theta_crit > 0 (the C_check construction).", pt);
+			if (pt == "lagged" && growth_law_.shear_supply != "lagged")
+				log_and_throw_error("growth_law parallel_threshold \"lagged\" needs shear_supply \"lagged\" (both parts follow the state).");
+		}
 		if (growth_law_.shear_update != "increment" && growth_law_.shear_update != "predictor" && growth_law_.shear_update != "pass")
 			log_and_throw_error("growth_law shear_update must be \"increment\", \"predictor\" or \"pass\", got \"{}\".", growth_law_.shear_update);
 		if (!(growth_law_.shear_update_tol > 0))
@@ -247,8 +265,9 @@ namespace polyfem::varform
 		{
 			if (!(growth_law_.theta_crit > 0))
 				log_and_throw_error("growth_law shear_supply \"lagged\" needs theta_crit > 0 (the C_check construction).");
-			if (!gl["threshold"].is_object())
-				log_and_throw_error("growth_law shear_supply \"lagged\" needs a per_element_file threshold carrying {}.", growth_law_.parallel_field);
+			if (!gl["threshold"].is_object() && gl.value("parallel_threshold", std::string("file")) == "file")
+				log_and_throw_error("growth_law shear_supply \"lagged\" needs a per_element_file threshold carrying {} "
+									"(or parallel_threshold \"state\" / \"lagged\").", growth_law_.parallel_field);
 		}
 
 		if (growth_law_.n_steps < 1)
@@ -1217,13 +1236,14 @@ namespace polyfem::varform
 		if (!(normal_growth_per_element_.array() > 0).all())
 			log_and_throw_error("growth_law: normal_growth must be positive.");
 
-		if (growth_law_.shear_supply == "lagged")
+		const std::string &par = growth_law_.parallel_threshold;
+		if (par == "file" && growth_law_.shear_supply == "lagged")
 		{
 			// Only the dissipative part is frozen; the shear supply starts at zero
-			// and is set from the state at the start of every increment.
-			json par = gl.at("threshold");
-			par["field"] = growth_law_.parallel_field;
-			read_scalar_field(par, "threshold (" + growth_law_.parallel_field + ")", growth_law_.parallel_field, threshold_parallel_);
+			// and is set from the state during every increment.
+			json spec = gl.at("threshold");
+			spec["field"] = growth_law_.parallel_field;
+			read_scalar_field(spec, "threshold (" + growth_law_.parallel_field + ")", growth_law_.parallel_field, threshold_parallel_);
 			if (!threshold_parallel_.allFinite())
 				log_and_throw_error("growth_law: {} contains non-finite values.", growth_law_.parallel_field);
 			if ((threshold_parallel_.array() < 0).any())
@@ -1232,8 +1252,55 @@ namespace polyfem::varform
 			shear_supply_.setZero(n_el);
 			threshold_per_element_ = threshold_parallel_;
 		}
+		else if (par == "state")
+		{
+			// Route B at C_check of a given displacement state, with the solver's own
+			// energy and fibers (replaces the V0b threshold file): PHI_PAR frozen from
+			// it, and f_gamma too unless the shear supply is lagged.
+			std::string path = growth_law_.threshold_state;
+			if (path.empty())
+				path = args["input"]["data"]["state"].get<std::string>();
+			if (path.empty())
+				log_and_throw_error("growth_law parallel_threshold \"state\" needs threshold_state (or input.data.state).");
+			Eigen::MatrixXd us;
+			if (!read_initial_x_from_file(resolve_input_path(path), "u", args["input"]["data"]["reorder"],
+										  space_.space_in_node_to_node, mesh_->dimension(), us)
+				|| us.rows() != displacement_ndof())
+				log_and_throw_error("growth_law: cannot read the threshold-state displacement \"u\" from {}.", path);
+			Eigen::VectorXd full, ns, tt;
+			evaluate_threshold_state(us.col(0), growth_law_.t_end, full, ns, tt);
+			threshold_parallel_ = ns.cwiseMax(0.0);
+			threshold_clamped_ = (ns.array() < 0).cast<double>().matrix();
+			if (growth_law_.shear_supply == "lagged")
+				shear_supply_.setZero(n_el);
+			else
+				shear_supply_ = full - ns;
+			threshold_per_element_ = threshold_parallel_ + shear_supply_;
+			logger().info("growth_law: C_check threshold from the state in {}: PHI_PAR median {:.4g} Pa, clamped on {:.1f}% "
+						  "of elements; f_gamma median {:.4g} Pa ({})",
+						  path, median_of(threshold_parallel_), 100.0 * threshold_clamped_.mean(), median_of(full - ns),
+						  growth_law_.shear_supply == "lagged" ? "replaced per increment" : "frozen");
+		}
+		else if (par == "lagged")
+		{
+			// set from the state before any decision is made (increment start or
+			// after the elastic predictor); the file value is only a placeholder
+			threshold_parallel_ = threshold_per_element_.cwiseMax(0.0);
+			threshold_clamped_.setZero(n_el);
+			shear_supply_.setZero(n_el);
+			threshold_per_element_ = threshold_parallel_;
+		}
 
 		assemble_growth_node_weights();
+	}
+
+	double GrowthElasticVarForm::median_of(const Eigen::VectorXd &v)
+	{
+		if (v.size() == 0)
+			return std::nan("");
+		std::vector<double> s(v.data(), v.data() + v.size());
+		std::nth_element(s.begin(), s.begin() + s.size() / 2, s.end());
+		return s[s.size() / 2];
 	}
 
 	void GrowthElasticVarForm::assemble_growth_node_weights()
@@ -1272,17 +1339,23 @@ namespace polyfem::varform
 		}
 	}
 
-	void GrowthElasticVarForm::update_lagged_threshold(const Eigen::MatrixXd &solution, const double t)
+	void GrowthElasticVarForm::evaluate_threshold_state(
+		const Eigen::VectorXd &u, const double t,
+		Eigen::VectorXd &phi_full, Eigen::VectorXd &phi_no_shear, Eigen::VectorXd &theta_tot_out)
 	{
 		const auto ge = std::dynamic_pointer_cast<assembler::GrowthElasticity>(growthelastic_assembler_);
 		if (!ge)
-			log_and_throw_error("growth_law: lagged shear supply needs the GrowthElasticity assembler.");
+			log_and_throw_error("growth_law: the C_check threshold needs the GrowthElasticity assembler.");
 		const int n_el = mesh_->n_elements();
 		const int dim = mesh_->dimension();
 		if (dim != 3)
-			log_and_throw_error("growth_law: lagged shear supply is 3D only.");
-		const Eigen::VectorXd u = solution.col(0).head(displacement_ndof());
+			log_and_throw_error("growth_law: the C_check threshold is 3D only.");
+		if (!(growth_law_.theta_crit > 0))
+			log_and_throw_error("growth_law: the C_check threshold needs theta_crit > 0.");
 		const double crit = growth_law_.theta_crit;
+		phi_full.resize(n_el);
+		phi_no_shear.resize(n_el);
+		theta_tot_out.resize(n_el);
 
 		assembler::ElementAssemblyValues vals;
 		for (int e = 0; e < n_el; ++e)
@@ -1314,6 +1387,7 @@ namespace polyfem::varform
 			const double theta_tot = std::sqrt(std::max(c11 * c22 - c12 * c12, 0.0));
 			if (!(theta_tot > 0))
 				log_and_throw_error("growth_law: degenerate in-plane stretch on element {}.", e);
+			theta_tot_out(e) = theta_tot;
 
 			// C_check: Fg at theta = theta_tot / theta_crit (so vartheta^e = theta_crit), vn_e
 			const double th = theta_tot / crit;
@@ -1327,23 +1401,95 @@ namespace polyfem::varform
 			const double layer = 1.0 / n.dot(Ce.inverse() * n);
 			const Eigen::Matrix3d Ce_ns = P * Ce * P + layer * nn;
 
-			shear_supply_(e) = ge->driving_force(e, pos, t, Ce) - ge->driving_force(e, pos, t, Ce_ns);
+			phi_full(e) = ge->driving_force(e, pos, t, Ce);
+			phi_no_shear(e) = ge->driving_force(e, pos, t, Ce_ns);
 		}
-		if (!shear_supply_.allFinite())
-			log_and_throw_error("growth_law: non-finite shear supply.");
+		if (!phi_full.allFinite() || !phi_no_shear.allFinite())
+			log_and_throw_error("growth_law: non-finite C_check threshold.");
+	}
+
+	void GrowthElasticVarForm::update_lagged_threshold(const Eigen::MatrixXd &solution, const double t)
+	{
+		const int n_el = mesh_->n_elements();
+		Eigen::VectorXd full, ns, tt;
+		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
+		shear_supply_ = full - ns;
+		const bool parallel_lagged = growth_law_.parallel_threshold == "lagged";
+		if (parallel_lagged)
+		{
+			threshold_parallel_ = ns.cwiseMax(0.0);
+			threshold_clamped_ = (ns.array() < 0).cast<double>().matrix();
+		}
 
 		threshold_per_element_ = threshold_parallel_ + shear_supply_;
 		assemble_growth_node_weights();
 
-		std::vector<double> sorted(shear_supply_.data(), shear_supply_.data() + n_el);
-		std::nth_element(sorted.begin(), sorted.begin() + n_el / 2, sorted.end());
 		// round-off of f_gamma on zero-floored PHI_PAR is not a negative threshold
 		const double neg_tol = 1e-6 * std::max(1.0, threshold_parallel_.cwiseAbs().maxCoeff());
 		const int n_neg = int((threshold_per_element_.array() < -neg_tol).count());
+		const std::string par_info = parallel_lagged
+										 ? fmt::format("; PHI_PAR (lagged) median {:.4g} Pa, clamped on {:.1f}%",
+													   median_of(threshold_parallel_), 100.0 * threshold_clamped_.mean())
+										 : std::string();
 		logger().info("growth_law: lagged shear supply at t = {:g}: f_gamma median {:.4g} Pa, in [{:.4g}, {:.4g}]; "
-					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements",
-					  t, sorted[n_el / 2], shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
-					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), 100.0 * n_neg / n_el);
+					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements{}",
+					  t, median_of(shear_supply_), shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
+					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), 100.0 * n_neg / n_el, par_info);
+	}
+
+	Eigen::VectorXd GrowthElasticVarForm::element_mean_growth(const Eigen::VectorXd &theta)
+	{
+		const int n_el = mesh_->n_elements();
+		Eigen::VectorXd out(n_el);
+		assembler::ElementAssemblyValues vals;
+		for (int e = 0; e < n_el; ++e)
+		{
+			growth_ass_vals_cache_.compute(
+				e, mesh_->is_volume(), growth_space_.basis_list()[e], growth_space_.geometry_basis_list()[e], vals);
+			const Eigen::ArrayXd da = vals.det.array() * vals.quadrature.weights.array();
+			Eigen::ArrayXd th = Eigen::ArrayXd::Zero(da.size());
+			for (const auto &bv : vals.basis_values)
+				for (const auto &g : bv.global)
+					th += g.val * theta(g.index) * bv.val.array();
+			out(e) = (th * da).sum() / da.sum();
+		}
+		return out;
+	}
+
+	void GrowthElasticVarForm::report_lag_residual(const int step, const double t, const Eigen::MatrixXd &solution)
+	{
+		// The threshold the converged state itself implies (route B at its own
+		// C_check) against the one the increment used: the variant-(b) lag.
+		Eigen::VectorXd full, ns, tt;
+		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
+		const Eigen::VectorXd phi_state = ns.cwiseMax(0.0) + (full - ns);
+		lag_residual_ = phi_state - threshold_per_element_;
+		const Eigen::VectorXd th_e = element_mean_growth(solution.col(0).tail(growth_ndof()));
+		attainment_ = tt.cwiseQuotient(th_e) / growth_law_.theta_crit;
+
+		std::vector<double> res, att;
+		for (int e = 0; e < th_e.size(); ++e)
+			if (th_e(e) > 1.0 + 1e-9 && ns(e) >= 0) // grown, not clamped at this state's C_check
+			{
+				res.push_back(std::abs(lag_residual_(e)));
+				att.push_back(attainment_(e));
+			}
+		if (res.empty())
+		{
+			logger().info("growth step {} (t = {:g}): lag residual: no grown unclamped elements yet", step, t);
+			return;
+		}
+		const auto q = [](std::vector<double> v, const double f) {
+			const size_t k = std::min(v.size() - 1, size_t(f * double(v.size() - 1) + 0.5));
+			std::nth_element(v.begin(), v.begin() + k, v.end());
+			return v[k];
+		};
+		logger().info("growth step {} (t = {:g}): lag residual |phi(state) - phi used| median {:.4g} Pa (p95 {:.4g}); "
+					  "attainment median {:.4f} (p5 {:.4f}, p95 {:.4f}) over {} grown unclamped elements",
+					  step, t, q(res, 0.5), q(res, 0.95), q(att, 0.5), q(att, 0.05), q(att, 0.95), res.size());
+		stats.solver_info.push_back(
+			{{"type", "growth_lag_residual"}, {"t", t}, {"step", step}, {"abs_median", q(res, 0.5)},
+			 {"abs_p95", q(res, 0.95)}, {"attainment_median", q(att, 0.5)}});
 	}
 
 	Eigen::VectorXd GrowthElasticVarForm::growth_multiplier(const Eigen::MatrixXd &solution) const
@@ -1369,8 +1515,6 @@ namespace polyfem::varform
 		// Release tolerance per DOF: the multiplier is an energy per unit growth
 		// (Pa x volume), so it is scaled by the nodal volume and the threshold
 		// magnitude (at least 1 Pa, so a zero threshold still has a scale).
-		const double force_scale = std::max(1.0, threshold_per_element_.cwiseAbs().maxCoeff());
-		const Eigen::VectorXd release_tol = growth_law_.active_set_tol * force_scale * growth_node_volume_;
 
 		// Pass 1 is the elastic predictor: every growth DOF pinned at theta_n.
 		std::vector<char> pinned(ng, 1);
@@ -1409,6 +1553,9 @@ namespace polyfem::varform
 							  step, t, pass, dphi, threshold_moved ? " (re-solving)" : "");
 			}
 
+			// scale from the threshold in use (it may have just been updated)
+			const double force_scale = std::max(1.0, threshold_per_element_.cwiseAbs().maxCoeff());
+			const Eigen::VectorXd release_tol = growth_law_.active_set_tol * force_scale * growth_node_volume_;
 			int n_released = 0, n_pinned = 0, n_pinned_total = 0;
 			std::vector<char> next = pinned;
 			for (int a = 0; a < ng; ++a)
@@ -1489,6 +1636,9 @@ namespace polyfem::varform
 			for (int a = 0; a < ng; ++a)
 				if (growth_activation_step_(a) == 0 && !growth_pinned_mask_[a] && dtheta(a) > 0)
 					growth_activation_step_(a) = step;
+
+			if (growth_law_.lag_report && growth_law_.theta_crit > 0)
+				report_lag_residual(step, t, solution);
 
 			if (growth_law_.save_increments)
 				save_growth_increment(step, t, solution);
@@ -1762,6 +1912,14 @@ namespace polyfem::varform
 			per_element(threshold_per_element_, "growth_threshold");
 			if (shear_supply_.size() == mesh_->n_elements())
 				per_element(shear_supply_, "growth_shear_supply");
+			if (threshold_parallel_.size() == mesh_->n_elements())
+				per_element(threshold_parallel_, "growth_threshold_parallel");
+			if (threshold_clamped_.size() == mesh_->n_elements())
+				per_element(threshold_clamped_, "growth_clamped");
+			if (lag_residual_.size() == mesh_->n_elements())
+				per_element(lag_residual_, "growth_lag_residual");
+			if (attainment_.size() == mesh_->n_elements())
+				per_element(attainment_, "growth_attainment");
 		}
 
 		if (growth_law_.enabled && growth_activation_step_.size() == growth_ndof()
