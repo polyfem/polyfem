@@ -97,7 +97,7 @@ namespace polyfem::varform
 		void build_forms(Eigen::MatrixXd &solution, const double t);
 		/// NLProblem over the current forms and AL forms, initialized at sol, t.
 		void make_nl_problem(const Eigen::MatrixXd &sol, const double t);
-		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution);
+		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution, double grad_tol_factor = 1.0);
 
 		// ---- Stage 2: solved growth (growth_law on the material) ----
 		void read_growth_law(const json &args);
@@ -121,6 +121,9 @@ namespace polyfem::varform
 		void report_lag_residual(int step, double t, const Eigen::MatrixXd &solution);
 		/// route-B split of the increment's dissipation term (D, S), accumulated and logged
 		void accumulate_dissipation(int step, double t, const Eigen::VectorXd &dtheta);
+		/// phi - f_I per v_n-weighted nodal volume on the settled set: free and pinned
+		void log_kkt_residual(int step, double t, const Eigen::MatrixXd &solution,
+							  const Eigen::VectorXd &mult, const std::vector<char> &pinned);
 		static double median_of(const Eigen::VectorXd &v);
 		void solve_growth_law(Eigen::MatrixXd &solution);
 		/// growth_law.save_increments: the converged stacked state of increment
@@ -130,7 +133,7 @@ namespace polyfem::varform
 		/// One increment: primal-dual active-set loop on theta >= theta_n.
 		/// Returns the number of passes; throws if the set does not settle.
 		int solve_growth_increment(const int step, const double t, Eigen::MatrixXd &solution);
-		void solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution);
+		void solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution, double grad_tol_factor = 1.0);
 		/// d Pi_inc / d theta at the solution: stacked energy gradient plus the
 		/// dissipation weights (the KKT residual; >= 0 where pinned, ~0 where free).
 		Eigen::VectorXd growth_multiplier(const Eigen::MatrixXd &solution) const;
@@ -228,6 +231,9 @@ namespace polyfem::varform
 			std::string parallel_threshold = "file";
 			std::string threshold_state;       ///< parallel_threshold "state": state file with "u"
 			bool lag_report = true;            ///< log the lag residual per increment (needs theta_crit)
+			/// < 1: after the active set settles, one confirmation pass with the
+			/// nonlinear gradient tolerance multiplied by this factor (1 = off)
+			double final_tol_factor = 1.0;
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
@@ -242,6 +248,7 @@ namespace polyfem::varform
 		Eigen::VectorXd element_volume_;           ///< reference element volumes (growth quadrature)
 		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
 		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
+		Eigen::VectorXd growth_node_vn_volume_;    ///< int vn N_a dV (KKT residual in Pa)
 		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV
 		Eigen::VectorXd theta_n_;                  ///< converged growth of the previous increment
 		std::vector<int> pinned_growth_nodes_;     ///< member: BCLagrangianForm keeps a reference

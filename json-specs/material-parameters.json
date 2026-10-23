@@ -456,7 +456,8 @@
             "shear_update_tol",
             "parallel_threshold",
             "threshold_state",
-            "lag_report"
+            "lag_report",
+            "final_tol_factor"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -610,6 +611,12 @@
         "type": "bool",
         "default": true,
         "doc": "Log, per increment, the lag residual |phi(converged state) - phi used| and the attainment vartheta^e/theta_crit over grown unclamped elements, and export growth_lag_residual and growth_attainment (needs theta_crit)"
+    },
+    {
+        "pointer": "/growth_law/final_tol_factor",
+        "type": "float",
+        "default": 1.0,
+        "doc": "When < 1: once the active set has settled, one confirmation pass re-solves with solver.nonlinear.grad_norm_tol multiplied by this factor, and the set is re-checked on the tighter multipliers (1 = off)"
     }
 
 ]

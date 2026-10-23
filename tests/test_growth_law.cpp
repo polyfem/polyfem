@@ -598,3 +598,24 @@ TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
 		CHECK_THROWS(s3.init(bad, /*strict_validation=*/true));
 	}
 }
+
+TEST_CASE("growth_law_final_tolerance_pass", "[growth][growth_law]")
+{
+	// The confirmation pass re-solves the settled set with a tighter gradient
+	// tolerance; the solution is unchanged up to that tolerance.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const std::string mesh = write_cube_mesh(scratch_dir(), n);
+	const double phi = 469.0, lambda = std::sqrt(1.5);
+	json args = cube_args(mesh, lambda, phi, 1, 1.0, "t");
+	args["materials"]["growth_law"]["final_tol_factor"] = 0.01;
+	const double vstar = activation_stretch(phi);
+	const Eigen::VectorXd theta = solve_growth(args, nv);
+	for (int a = 0; a < nv; ++a)
+		CHECK(theta(a) == Catch::Approx(lambda * lambda / vstar).epsilon(1e-6));
+
+	json bad = cube_args(mesh, lambda, phi, 1, 1.0, "t");
+	bad["materials"]["growth_law"]["final_tol_factor"] = 0.0;
+	State state;
+	CHECK_THROWS(state.init(bad, /*strict_validation=*/true));
+}

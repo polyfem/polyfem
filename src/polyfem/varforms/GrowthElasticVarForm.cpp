@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fstream>
+#include <limits>
 #include <iomanip>
 #include <vector>
 
@@ -227,7 +228,8 @@ namespace polyfem::varform
 				|| gl.value("shear_update_tol", d.shear_update_tol) != d.shear_update_tol
 				|| gl.value("parallel_threshold", d.parallel_threshold) != d.parallel_threshold
 				|| gl.value("threshold_state", d.threshold_state) != d.threshold_state
-				|| gl.value("lag_report", d.lag_report) != d.lag_report)
+				|| gl.value("lag_report", d.lag_report) != d.lag_report
+				|| gl.value("final_tol_factor", d.final_tol_factor) != d.final_tol_factor)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -249,6 +251,9 @@ namespace polyfem::varform
 		growth_law_.parallel_threshold = gl.value("parallel_threshold", growth_law_.parallel_threshold);
 		growth_law_.threshold_state = gl.value("threshold_state", growth_law_.threshold_state);
 		growth_law_.lag_report = gl.value("lag_report", growth_law_.lag_report);
+		growth_law_.final_tol_factor = gl.value("final_tol_factor", growth_law_.final_tol_factor);
+		if (!(growth_law_.final_tol_factor > 0) || growth_law_.final_tol_factor > 1)
+			log_and_throw_error("growth_law final_tol_factor must be in (0, 1], got {}.", growth_law_.final_tol_factor);
 		{
 			const std::string &pt = growth_law_.parallel_threshold;
 			if (pt != "file" && pt != "state" && pt != "lagged")
@@ -1056,12 +1061,14 @@ namespace polyfem::varform
 		}
 	}
 
-	void GrowthElasticVarForm::solve_nonlinear_step(const int step, Eigen::MatrixXd &solution)
+	void GrowthElasticVarForm::solve_nonlinear_step(const int step, Eigen::MatrixXd &solution, const double grad_tol_factor)
 	{
 		assert(solve_data_.nl_problem != nullptr && "Growth forms must initialize the nonlinear problem before solving");
 		solver::NLProblem &nl_problem = *solve_data_.nl_problem;
 
-		const json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
+		json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
+		if (grad_tol_factor != 1.0 && nonlinear_params.contains("grad_norm_tol"))
+			nonlinear_params["grad_norm_tol"] = nonlinear_params["grad_norm_tol"].get<double>() * grad_tol_factor;
 		const json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
@@ -1313,6 +1320,7 @@ namespace polyfem::varform
 		// w_a = sum_e vn_e phi_e int_e N_a dV (growth basis, the element's own
 		// quadrature), and the plain nodal volume int N_a dV for tolerances.
 		growth_node_volume_.setZero(growth_ndof());
+		growth_node_vn_volume_.setZero(growth_ndof());
 		growth_node_weights_.setZero(growth_ndof());
 		assembler::ElementAssemblyValues vals;
 		for (int e = 0; e < n_el; ++e)
@@ -1327,6 +1335,7 @@ namespace polyfem::varform
 				for (const auto &g : bv.global)
 				{
 					growth_node_volume_(g.index) += g.val * integral;
+					growth_node_vn_volume_(g.index) += g.val * integral * normal_growth_per_element_(e);
 					growth_node_weights_(g.index) += g.val * integral * coeff;
 				}
 			}
@@ -1459,6 +1468,41 @@ namespace polyfem::varform
 		return out;
 	}
 
+	void GrowthElasticVarForm::log_kkt_residual(const int step, const double t, const Eigen::MatrixXd &solution,
+												 const Eigen::VectorXd &mult, const std::vector<char> &pinned)
+	{
+		// dPi/dtheta per v_n-weighted nodal volume is phi - f_I in Pa (nodal average):
+		// ~0 on free DOFs (the law holds), >= 0 on pinned ones (the slack).
+		std::vector<double> free_res;
+		double min_slack = std::numeric_limits<double>::infinity();
+		int n_pinned = 0;
+		for (int a = 0; a < int(pinned.size()); ++a)
+		{
+			const double v = growth_node_vn_volume_(a) > 0 ? growth_node_vn_volume_(a) : 1.0;
+			const double r = mult(a) / v;
+			if (pinned[a])
+			{
+				min_slack = std::min(min_slack, r);
+				++n_pinned;
+			}
+			else
+				free_res.push_back(std::abs(r));
+		}
+		double med = 0, mx = 0;
+		if (!free_res.empty())
+		{
+			mx = *std::max_element(free_res.begin(), free_res.end());
+			std::nth_element(free_res.begin(), free_res.begin() + free_res.size() / 2, free_res.end());
+			med = free_res[free_res.size() / 2];
+		}
+		logger().info("growth step {} (t = {:g}) KKT: free DOFs |phi - f_I| median {:.3g} Pa, max {:.3g} Pa ({}); "
+					  "pinned min slack {:.3g} Pa ({})",
+					  step, t, med, mx, free_res.size(), n_pinned > 0 ? min_slack : 0.0, n_pinned);
+		stats.solver_info.push_back(
+			{{"type", "growth_kkt"}, {"t", t}, {"step", step}, {"free_median_pa", med}, {"free_max_pa", mx},
+			 {"pinned_min_slack_pa", n_pinned > 0 ? min_slack : 0.0}});
+	}
+
 	void GrowthElasticVarForm::accumulate_dissipation(const int step, const double t, const Eigen::VectorXd &dtheta)
 	{
 		// Route-B split of the increment's dissipation term v_n phi dtheta (per
@@ -1548,11 +1592,11 @@ namespace polyfem::varform
 		return full_grad.tail(growth_ndof());
 	}
 
-	void GrowthElasticVarForm::solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution)
+	void GrowthElasticVarForm::solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution, const double grad_tol_factor)
 	{
 		build_forms(solution, t);
 		make_nl_problem(solution, t);
-		solve_nonlinear_step(step, solution);
+		solve_nonlinear_step(step, solution, grad_tol_factor);
 	}
 
 	int GrowthElasticVarForm::solve_growth_increment(const int step, const double t, Eigen::MatrixXd &solution)
@@ -1565,7 +1609,12 @@ namespace polyfem::varform
 		// magnitude (at least 1 Pa, so a zero threshold still has a scale).
 
 		// Pass 1 is the elastic predictor: every growth DOF pinned at theta_n.
+		// Once the set settles, one confirmation pass re-solves with the gradient
+		// tolerance scaled by final_tol_factor (when < 1), so the multipliers the
+		// set was decided on, and the reported state, are converged tighter than
+		// the release tolerance they are compared with.
 		std::vector<char> pinned(ng, 1);
+		bool tight = false;
 		for (int pass = 1; pass <= growth_law_.max_active_set_iterations; ++pass)
 		{
 			pinned_growth_nodes_.clear();
@@ -1578,7 +1627,7 @@ namespace polyfem::varform
 				}
 			}
 
-			solve_with_current_pins(step, t, solution);
+			solve_with_current_pins(step, t, solution, tight ? growth_law_.final_tol_factor : 1.0);
 
 			Eigen::VectorXd mult = growth_multiplier(solution);
 
@@ -1634,7 +1683,17 @@ namespace polyfem::varform
 				 {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
 
 			if (n_released == 0 && n_pinned == 0 && !threshold_moved)
+			{
+				if (growth_law_.final_tol_factor < 1.0 && !tight)
+				{
+					tight = true;
+					logger().info("growth step {} (t = {:g}): active set settled; confirmation pass with the gradient "
+								  "tolerance x {:g}", step, t, growth_law_.final_tol_factor);
+					continue;
+				}
+				log_kkt_residual(step, t, solution, mult, pinned);
 				return pass;
+			}
 			pinned = next;
 		}
 
