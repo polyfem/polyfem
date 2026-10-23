@@ -437,9 +437,9 @@ namespace polyfem::assembler
 			std::vector<NamedMatrix> &result) const override
 		{
 			result.clear();
-			Eigen::MatrixXd cauchy, pk1, pk2, F;
+			Eigen::MatrixXd cauchy, pk1, pk2, F, energy;
 
-			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
+			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy, &energy);
 			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
 			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
 			compute_stress_tensor(data, ElasticityTensorType::F, F);
@@ -448,38 +448,51 @@ namespace polyfem::assembler
 			result.emplace_back("pk1_stess", pk1);
 			result.emplace_back("pk2_stess", pk2);
 			result.emplace_back("F", F);
+			// Materials that don't compute energy leave it empty; keep the entry so
+			// every element returns the same list of fields.
+			if (energy.rows() != data.local_pts.rows())
+				energy.setZero(data.local_pts.rows(), 1);
+			result.emplace_back("energy", energy);
 		}
 
 		void compute_stress_tensor(const OutputData &data,
 								   const ElasticityTensorType &type,
-								   Eigen::MatrixXd &stresses) const
+								   Eigen::MatrixXd &stresses,
+								   Eigen::MatrixXd *energy_out = nullptr) const
 		{
-			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-				Eigen::MatrixXd tmp = stress;
-				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-				return Eigen::MatrixXd(a);
-			});
+			assign_stress_tensor(
+				data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
+					Eigen::MatrixXd tmp = stress;
+					auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
+					return Eigen::MatrixXd(a);
+				},
+				energy_out);
 		}
 
 		void compute_von_mises_stresses(const OutputData &data,
 										Eigen::MatrixXd &stresses) const
 		{
-			assign_stress_tensor(data, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-				Eigen::Matrix<double, 1, 1> res;
-				res.setConstant(von_mises_stress_for_stress_tensor(stress));
-				return res;
-			});
+			assign_stress_tensor(
+				data, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
+					Eigen::Matrix<double, 1, 1> res;
+					res.setConstant(von_mises_stress_for_stress_tensor(stress));
+					return res;
+				},
+				nullptr);
 		}
 
 		bool is_solution_displacement() const override { return true; }
 		bool is_tensor() const override { return true; }
 		virtual bool allow_inversion() const = 0;
 
+		/// Evaluates the stress of the given type at data.local_pts and maps each through fun into a row of all.
+		/// If energy_out is not null, also writes the elastic energy density per point (left empty if unsupported).
 		virtual void assign_stress_tensor(const OutputData &data,
 										  const int all_size,
 										  const ElasticityTensorType &type,
 										  Eigen::MatrixXd &all,
-										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
+										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
+										  Eigen::MatrixXd *energy_out) const = 0;
 
 	protected:
 		bool use_robust_jacobian = false;
