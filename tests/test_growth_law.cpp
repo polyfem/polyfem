@@ -633,3 +633,51 @@ TEST_CASE("growth_law_final_tolerance_pass", "[growth][growth_law]")
 	State state;
 	CHECK_THROWS(state.init(bad, /*strict_validation=*/true));
 }
+
+TEST_CASE("growth_law_increment_splitting", "[growth][growth_law]")
+{
+	// A large stretch in one increment with the Newton iterations capped (no
+	// growth: the threshold is out of reach, so only the elastic difficulty
+	// scales with the increment): the full increment fails, its halves
+	// converge. Without splitting the run aborts; with it, it reaches the same
+	// state as an uncapped single increment.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const std::string mesh = write_cube_mesh(scratch_dir(), n);
+	const double lambda = 1.9;
+	json ref = cube_args(mesh, lambda, 1e9, 1, 1.0, "t");
+
+	State s_ref;
+	s_ref.init(ref, /*strict_validation=*/true);
+	s_ref.set_max_threads(1);
+	s_ref.load_mesh();
+	Eigen::MatrixXd sol_ref;
+	s_ref.solve(sol_ref);
+
+	json args = ref;
+	args["solver"]["nonlinear"]["max_iterations"] = 5;
+	args["solver"]["augmented_lagrangian"]["nonlinear"]["max_iterations"] = 5;
+
+	json no_split = args;
+	no_split["materials"]["growth_law"]["max_increment_splits"] = 0;
+	{
+		State state;
+		state.init(no_split, /*strict_validation=*/true);
+		state.set_max_threads(1);
+		state.load_mesh();
+		Eigen::MatrixXd sol;
+		CHECK_THROWS(state.solve(sol));
+	}
+
+	args["materials"]["growth_law"]["max_increment_splits"] = 5; // margin: smaller steps need fewer iterations
+	State state;
+	state.init(args, /*strict_validation=*/true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+	REQUIRE(sol.rows() == sol_ref.rows());
+	CHECK((sol - sol_ref).cwiseAbs().maxCoeff() < 1e-8);
+	for (int a = 0; a < nv; ++a)
+		CHECK(sol(3 * nv + a) == 1.0);
+}

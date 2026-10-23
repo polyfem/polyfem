@@ -460,7 +460,8 @@
             "final_tol_factor",
             "relag_acceleration",
             "relag_omega_min",
-            "relag_omega_max"
+            "relag_omega_max",
+            "max_increment_splits"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -642,6 +643,12 @@
         "type": "float",
         "default": 5.0,
         "doc": "relag_acceleration aitken: upper clamp on the relaxation factor"
+    },
+    {
+        "pointer": "/growth_law/max_increment_splits",
+        "type": "int",
+        "default": 3,
+        "doc": "A failed increment (nonlinear solve, augmented Lagrangian, or active set not settling) is retried from its start as two half increments, recursively, up to this many levels; 0 aborts on the first failure"
     }
 
 ]
