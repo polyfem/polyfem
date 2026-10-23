@@ -179,6 +179,9 @@ namespace polyfem::varform
 		elastic_formulation_ = "MaterialSum";
 		growth_law_ = GrowthLawSettings{};
 		threshold_per_element_.resize(0);
+		threshold_parallel_.resize(0);
+		shear_supply_.resize(0);
+		shear_supply_logged_once_ = false;
 		normal_growth_per_element_.resize(0);
 		growth_node_volume_.resize(0);
 		growth_node_weights_.resize(0);
@@ -210,7 +213,10 @@ namespace polyfem::varform
 				|| gl.value("active_set_tol", d.active_set_tol) != d.active_set_tol
 				|| gl.value("feasibility_tol", d.feasibility_tol) != d.feasibility_tol
 				|| gl.value("theta_floor_fraction", d.theta_floor_fraction) != d.theta_floor_fraction
-				|| gl.value("save_increments", d.save_increments) != d.save_increments)
+				|| gl.value("save_increments", d.save_increments) != d.save_increments
+				|| gl.value("shear_supply", d.shear_supply) != d.shear_supply
+				|| gl.value("theta_crit", d.theta_crit) != d.theta_crit
+				|| gl.value("parallel_field", d.parallel_field) != d.parallel_field)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -224,6 +230,18 @@ namespace polyfem::varform
 		growth_law_.feasibility_tol = gl.value("feasibility_tol", growth_law_.feasibility_tol);
 		growth_law_.theta_floor_fraction = gl.value("theta_floor_fraction", growth_law_.theta_floor_fraction);
 		growth_law_.save_increments = gl.value("save_increments", growth_law_.save_increments);
+		growth_law_.shear_supply = gl.value("shear_supply", growth_law_.shear_supply);
+		growth_law_.theta_crit = gl.value("theta_crit", growth_law_.theta_crit);
+		growth_law_.parallel_field = gl.value("parallel_field", growth_law_.parallel_field);
+		if (growth_law_.shear_supply != "frozen" && growth_law_.shear_supply != "lagged")
+			log_and_throw_error("growth_law shear_supply must be \"frozen\" or \"lagged\", got \"{}\".", growth_law_.shear_supply);
+		if (growth_law_.shear_supply == "lagged")
+		{
+			if (!(growth_law_.theta_crit > 0))
+				log_and_throw_error("growth_law shear_supply \"lagged\" needs theta_crit > 0 (the C_check construction).");
+			if (!gl["threshold"].is_object())
+				log_and_throw_error("growth_law shear_supply \"lagged\" needs a per_element_file threshold carrying {}.", growth_law_.parallel_field);
+		}
 
 		if (growth_law_.n_steps < 1)
 			log_and_throw_error("growth_law n_steps must be >= 1, got {}.", growth_law_.n_steps);
@@ -1191,6 +1209,29 @@ namespace polyfem::varform
 		if (!(normal_growth_per_element_.array() > 0).all())
 			log_and_throw_error("growth_law: normal_growth must be positive.");
 
+		if (growth_law_.shear_supply == "lagged")
+		{
+			// Only the dissipative part is frozen; the shear supply starts at zero
+			// and is set from the state at the start of every increment.
+			json par = gl.at("threshold");
+			par["field"] = growth_law_.parallel_field;
+			read_scalar_field(par, "threshold (" + growth_law_.parallel_field + ")", growth_law_.parallel_field, threshold_parallel_);
+			if (!threshold_parallel_.allFinite())
+				log_and_throw_error("growth_law: {} contains non-finite values.", growth_law_.parallel_field);
+			if ((threshold_parallel_.array() < 0).any())
+				log_and_throw_error("growth_law: {} must be >= 0 (max(f_par(C_check), 0)); min {}.",
+									growth_law_.parallel_field, threshold_parallel_.minCoeff());
+			shear_supply_.setZero(n_el);
+			threshold_per_element_ = threshold_parallel_;
+		}
+
+		assemble_growth_node_weights();
+	}
+
+	void GrowthElasticVarForm::assemble_growth_node_weights()
+	{
+		const int n_el = mesh_->n_elements();
+
 		// w_a = sum_e vn_e phi_e int_e N_a dV (growth basis, the element's own
 		// quadrature), and the plain nodal volume int N_a dV for tolerances.
 		growth_node_volume_.setZero(growth_ndof());
@@ -1213,10 +1254,86 @@ namespace polyfem::varform
 			}
 		}
 
-		logger().info("growth_law: threshold phi in [{:g}, {:g}] Pa over {} elements; {} increments to t = {:g}; "
-					  "{} growth quadrature points on element 0.",
-					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), n_el,
-					  growth_law_.n_steps, growth_law_.t_end, vals.quadrature.weights.size());
+		if (!shear_supply_logged_once_)
+		{
+			logger().info("growth_law: threshold phi in [{:g}, {:g}] Pa over {} elements; {} increments to t = {:g}; "
+						  "{} growth quadrature points on element 0; shear supply {}.",
+						  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), n_el,
+						  growth_law_.n_steps, growth_law_.t_end, vals.quadrature.weights.size(), growth_law_.shear_supply);
+			shear_supply_logged_once_ = true;
+		}
+	}
+
+	void GrowthElasticVarForm::update_lagged_threshold(const Eigen::MatrixXd &solution, const double t)
+	{
+		const auto ge = std::dynamic_pointer_cast<assembler::GrowthElasticity>(growthelastic_assembler_);
+		if (!ge)
+			log_and_throw_error("growth_law: lagged shear supply needs the GrowthElasticity assembler.");
+		const int n_el = mesh_->n_elements();
+		const int dim = mesh_->dimension();
+		if (dim != 3)
+			log_and_throw_error("growth_law: lagged shear supply is 3D only.");
+		const Eigen::VectorXd u = solution.col(0).head(displacement_ndof());
+		const double crit = growth_law_.theta_crit;
+
+		assembler::ElementAssemblyValues vals;
+		for (int e = 0; e < n_el; ++e)
+		{
+			ass_vals_cache_.compute(e, mesh_->is_volume(), space_.basis_list()[e], space_.geometry_basis_list()[e], vals);
+			const Eigen::ArrayXd da = vals.det.array() * vals.quadrature.weights.array();
+			Eigen::Matrix3d F = Eigen::Matrix3d::Zero();
+			RowVectorNd pos = RowVectorNd::Zero(dim);
+			for (int p = 0; p < da.size(); ++p)
+			{
+				Eigen::Matrix3d Fp = Eigen::Matrix3d::Identity();
+				for (const auto &bv : vals.basis_values)
+					for (const auto &g : bv.global)
+						for (int d = 0; d < dim; ++d)
+							Fp.row(d) += g.val * u(g.index * dim + d) * bv.grad_t_m.row(p);
+				F += da(p) * Fp;
+				pos += da(p) * vals.val.row(p);
+			}
+			F /= da.sum();
+			pos /= da.sum();
+			const Eigen::Matrix3d C = F.transpose() * F;
+
+			// wall frame: n0 and any orthonormal in-plane pair
+			const Eigen::Vector3d n = ge->wall_normal(e).normalized();
+			const Eigen::Vector3d trial = std::abs(n(0)) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
+			const Eigen::Vector3d e1 = (trial - trial.dot(n) * n).normalized();
+			const Eigen::Vector3d e2 = n.cross(e1);
+			const double c11 = e1.dot(C * e1), c22 = e2.dot(C * e2), c12 = e1.dot(C * e2);
+			const double theta_tot = std::sqrt(std::max(c11 * c22 - c12 * c12, 0.0));
+			if (!(theta_tot > 0))
+				log_and_throw_error("growth_law: degenerate in-plane stretch on element {}.", e);
+
+			// C_check: Fg at theta = theta_tot / theta_crit (so vartheta^e = theta_crit), vn_e
+			const double th = theta_tot / crit;
+			const double vn = normal_growth_per_element_(e);
+			const Eigen::Matrix3d nn = n * n.transpose();
+			const Eigen::Matrix3d P = Eigen::Matrix3d::Identity() - nn;
+			const Eigen::Matrix3d Fgi = P / std::sqrt(th) + nn / vn;
+			const Eigen::Matrix3d Ce = Fgi.transpose() * C * Fgi;
+
+			// shear-free state: transverse shears removed, Ce_nn at the layer value
+			const double layer = 1.0 / n.dot(Ce.inverse() * n);
+			const Eigen::Matrix3d Ce_ns = P * Ce * P + layer * nn;
+
+			shear_supply_(e) = ge->driving_force(e, pos, t, Ce) - ge->driving_force(e, pos, t, Ce_ns);
+		}
+		if (!shear_supply_.allFinite())
+			log_and_throw_error("growth_law: non-finite shear supply.");
+
+		threshold_per_element_ = threshold_parallel_ + shear_supply_;
+		assemble_growth_node_weights();
+
+		std::vector<double> sorted(shear_supply_.data(), shear_supply_.data() + n_el);
+		std::nth_element(sorted.begin(), sorted.begin() + n_el / 2, sorted.end());
+		const int n_neg = int((threshold_per_element_.array() < 0).count());
+		logger().info("growth_law: lagged shear supply at t = {:g}: f_gamma median {:.4g} Pa, in [{:.4g}, {:.4g}]; "
+					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements",
+					  t, sorted[n_el / 2], shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
+					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), 100.0 * n_neg / n_el);
 	}
 
 	Eigen::VectorXd GrowthElasticVarForm::growth_multiplier(const Eigen::MatrixXd &solution) const
@@ -1316,6 +1433,8 @@ namespace polyfem::varform
 		for (int step = 1; step <= growth_law_.n_steps; ++step)
 		{
 			const double t = growth_law_.t_end * double(step) / double(growth_law_.n_steps);
+			if (growth_law_.shear_supply == "lagged")
+				update_lagged_threshold(solution, growth_law_.t_end * double(step - 1) / double(growth_law_.n_steps));
 			const int passes = solve_growth_increment(step, t, solution);
 
 			const Eigen::VectorXd theta = solution.col(0).tail(ng);
@@ -1597,6 +1716,22 @@ namespace polyfem::varform
 			Eigen::MatrixXd values;
 			if (sample_growth_scalar(mask, values))
 				fields.push_back({"growth_pinned", values, io::OutputField::Association::Point});
+		}
+
+		if (growth_law_.enabled && has_element_samples && threshold_per_element_.size() == mesh_->n_elements())
+		{
+			const auto per_element = [&](const Eigen::VectorXd &data, const std::string &name) {
+				if (!options.export_field(name))
+					return;
+				Eigen::MatrixXd values = Eigen::MatrixXd::Zero(output_rows, 1);
+				for (int i = 0; i < sample.element_ids.size() && i < output_rows; ++i)
+					if (sample.element_ids(i) >= 0)
+						values(i) = data(sample.element_ids(i));
+				fields.push_back({name, values, io::OutputField::Association::Point});
+			};
+			per_element(threshold_per_element_, "growth_threshold");
+			if (shear_supply_.size() == mesh_->n_elements())
+				per_element(shear_supply_, "growth_shear_supply");
 		}
 
 		if (growth_law_.enabled && growth_activation_step_.size() == growth_ndof()
