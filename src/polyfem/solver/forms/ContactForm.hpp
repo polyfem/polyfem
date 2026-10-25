@@ -120,6 +120,14 @@ namespace polyfem::solver
 
 		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
 
+		/// @brief True between line_search_begin and line_search_end (swept candidates of the segment are cached)
+		bool uses_cached_candidates() const { return use_cached_candidates_; }
+		/// @brief Swept candidates cached by line_search_begin. A caller may drop candidates that provably cannot become
+		/// active or collide on the segment (BilateralSegmentCertifier); line_search_end clears them.
+		ipc::Candidates &cached_candidates() { return candidates_; }
+		/// @brief Tight Inclusion CCD object used by max_step_size
+		const ipc::TightInclusionCCD &tight_inclusion_ccd() const { return tight_inclusion_ccd_; }
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution

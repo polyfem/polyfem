@@ -72,6 +72,7 @@ namespace polyfem::solver
 				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
 															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
 														: nl_solverin;
+				last_solver_ = nl_solver;
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -147,6 +148,7 @@ namespace polyfem::solver
 			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
 														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
 													: nl_solverin;
+			last_solver_ = nl_solver;
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}
