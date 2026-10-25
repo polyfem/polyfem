@@ -14,6 +14,7 @@ set(test_sources
   test_jacobian.cpp
   test_matrix.cpp
   test_ncmesh.cpp
+  test_nonsmooth_newton_contact.cpp
   test_normal.cpp
   test_navier_stokes_forms.cpp
   test_output.cpp

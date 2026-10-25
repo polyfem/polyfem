@@ -12,6 +12,8 @@ namespace polysolve::linear
 
 namespace polyfem::solver
 {
+	class BarrierContactNonsmoothTerm;
+
 	class NLProblem : public FullNLProblem
 	{
 	public:
@@ -68,11 +70,37 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector full_to_reduced_diag(const TVector &full_diag) const;
+		/// @brief True when every reduced dof is exactly one full dof with weight 1 (the reduced space selects full dofs);
+		/// then red_of_full[f] is the reduced index of full dof f, or -1 for an eliminated dof
+		bool reduction_is_selection(std::vector<int> &red_of_full) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
 
 		double normalize_forms() override;
+
+		// --- nonsmooth term (polysolve NonsmoothNewton): available in the reduced size with a term installed ---
+
+		/// @brief Install (or remove with null) the nonsmooth term of the reduced problem
+		void set_nonsmooth_term(const std::shared_ptr<BarrierContactNonsmoothTerm> &term) { nonsmooth_term_ = term; }
+		const std::shared_ptr<BarrierContactNonsmoothTerm> &nonsmooth_term() const { return nonsmooth_term_; }
+
+		bool has_nonsmooth_term() const override;
+		void smooth_gradient(const TVector &x, TVector &grad) override;
+		void smooth_hessian(const TVector &x, const bool project_to_psd, THessian &hessian) override;
+		double smooth_valid_fraction(const TVector &x, const TVector &a, const TVector &b) override;
+		void metric_diagonal(TVector &diag) override;
+		void nonsmooth_update(const TVector &y) override;
+		double nonsmooth_value(const TVector &y) override;
+		void nonsmooth_gradient(const TVector &y, TVector &grad) override;
+		void nonsmooth_hessian(const TVector &y, const bool project_to_psd, THessian &hessian) override;
+		bool nonsmooth_hessian_blocks(const TVector &y, TVector &grad, std::vector<polysolve::nonlinear::HessianBlock> &blocks) override;
+		int nonsmooth_active_size() override;
+		void nonsmooth_active_distances(const TVector &a, const TVector &b, TVector &distance, TVector &rate) override;
+		double nonsmooth_step_length(const TVector &a, const TVector &b) override;
+		double nonsmooth_length_scale() override;
+		double nonsmooth_activation_distance() override;
+		void nonsmooth_segment_begin(const TVector &a, const TVector &b) override;
 
 		virtual double grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
 		virtual double step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
@@ -118,6 +146,8 @@ namespace polyfem::solver
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;
+		std::shared_ptr<BarrierContactNonsmoothTerm> nonsmooth_term_;
+		BarrierContactNonsmoothTerm &term() const;
 		int num_penalty_constraints_ = 0;
 
 		void setup_constraints();
