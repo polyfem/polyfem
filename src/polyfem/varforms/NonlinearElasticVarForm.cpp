@@ -1047,13 +1047,11 @@ namespace polyfem::varform
 		const Eigen::VectorXd fixed_values =
 			utils::flatten(macro_strain_constraint_.eval(time))(fixed_entries);
 		const double initial_error = lagrangian_form->compute_error(extended_solution);
-		double current_error = initial_error;
 
 		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
 		const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
 		const double eta_tolerance = args["solver"]["augmented_lagrangian"]["eta"];
 		const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
-		const double error_tolerance = args["solver"]["augmented_lagrangian"]["error"];
 		lagrangian_form->set_initial_weight(al_weight);
 		homo_problem->init(reduced_solution);
 		homo_problem->solution_changed(reduced_solution);
@@ -1077,12 +1075,13 @@ namespace polyfem::varform
 		homo_problem->line_search_begin(reduced_solution, constrained_solution);
 		bool force_al_solve = true;
 
-		// Match the fork's switch criterion: require both a feasible exact projection and a small squared macro residual.
+		// AL supplies a feasible starting point for the exact constrained solve.
+		// Once projection is feasible, eliminate the fixed macro components rather
+		// than continuing to minimize a different, softly constrained problem.
 		while (force_al_solve
 			   || !std::isfinite(homo_problem->value(constrained_solution))
 			   || !homo_problem->is_step_valid(reduced_solution, constrained_solution)
-			   || !homo_problem->is_step_collision_free(reduced_solution, constrained_solution)
-			   || current_error > error_tolerance)
+			   || !homo_problem->is_step_collision_free(reduced_solution, constrained_solution))
 		{
 			force_al_solve = false;
 			homo_problem->line_search_end();
@@ -1096,7 +1095,7 @@ namespace polyfem::varform
 			nonlinear_solver->minimize(*homo_problem, reduced_solution);
 
 			extended_solution = homo_problem->reduced_to_extended(reduced_solution);
-			current_error = lagrangian_form->compute_error(extended_solution);
+			const double current_error = lagrangian_form->compute_error(extended_solution);
 			const double eta = initial_error > 0 ? 1 - std::sqrt(current_error / initial_error) : 1;
 			logger().debug("Macro-strain AL penalty {}, squared error {}, progress {}", al_weight, current_error, eta);
 			if (eta < eta_tolerance && al_weight < max_weight)

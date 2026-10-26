@@ -2,11 +2,14 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <polysolve/linear/Solver.hpp>
 
 #include <cmath>
@@ -22,6 +25,7 @@ namespace
 		std::unique_ptr<mesh::Mesh> mesh;
 		std::vector<basis::ElementBases> bases;
 		std::vector<mesh::LocalBoundary> local_boundary;
+		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
 		int n_bases = 0;
 	};
 
@@ -50,13 +54,49 @@ namespace
 		});
 
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
 		space.n_bases = basis::LagrangeBasis2d::build_bases(
 			dynamic_cast<const mesh::Mesh2D &>(*space.mesh), "Laplacian",
 			-1, -1, 2, false, false, false, false, false,
-			space.bases, space.local_boundary, poly_edge_to_data, mesh_nodes);
+			space.bases, space.local_boundary, poly_edge_to_data, space.mesh_nodes);
 		return space;
 	}
+
+	class CallbackForm : public solver::Form
+	{
+	public:
+		mutable Eigen::VectorXd last_x, last_x0;
+		std::string name() const override { return "callback test"; }
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
+		{
+			last_x0 = x0;
+			last_x = x1;
+			return true;
+		}
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
+		{
+			return is_step_valid(x0, x1);
+		}
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
+		{
+			is_step_valid(x0, x1);
+			return 1;
+		}
+		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override { is_step_valid(x0, x1); }
+		void post_step(const polysolve::nonlinear::PostStepData &data) override { last_x = data.x; }
+		void solution_changed(const Eigen::VectorXd &x) override { last_x = x; }
+		void init_lagging(const Eigen::VectorXd &x) override { last_x = x; }
+		void update_lagging(const Eigen::VectorXd &x, const int) override { last_x = x; }
+		void update_quantities(const double, const Eigen::VectorXd &x) override { last_x = x; }
+
+	protected:
+		double value_unweighted(const Eigen::VectorXd &x) const override { return x.squaredNorm() / 2; }
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradient) const override { gradient = x; }
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override
+		{
+			hessian.resize(x.size(), x.size());
+			hessian.setIdentity();
+		}
+	};
 
 	RowVectorNd point(const double x, const double y)
 	{
@@ -128,6 +168,79 @@ namespace
 		}
 	}
 } // namespace
+
+TEST_CASE("homogenization callbacks include macro displacement", "[periodic][macro_strain]")
+{
+	const bool symmetric = GENERATE(false, true);
+	CAPTURE(symmetric);
+	const SquareSpace space = make_square_space();
+	const int ndof = 2 * space.n_bases;
+	assembler::MacroStrainValue macro_strain;
+	macro_strain.init(2, {{"value", {{-0.2, 0}, {0, -0.15}}}, {"fixed_components", {0, 3}}}, io::FileSystemIO("."));
+	auto form = std::make_shared<CallbackForm>();
+	auto extended_form = std::make_shared<CallbackForm>();
+	auto periodic = std::make_shared<solver::PeriodicBoundaryLagrangianForm>(
+		ndof, 2, *space.mesh, space.bases, space.local_boundary,
+		std::array<int, 2>{{1, 2}}, 1e-5);
+	std::shared_ptr<polysolve::linear::Solver> linear_solver = polysolve::linear::Solver::create(
+		json({{"solver", "Eigen::SparseLU"}}), logger());
+	StiffnessMatrix mass(ndof, ndof);
+	mass.setIdentity();
+	solver::NLHomoProblem problem(
+		ndof, macro_strain, space.n_bases, space.mesh_nodes, 0,
+		{form}, {periodic}, symmetric, linear_solver, 1, 1, mass, 2);
+	problem.add_form(extended_form);
+
+	for (const bool fixed : {false, true})
+	{
+		CAPTURE(fixed);
+		problem.set_fixed_entry(fixed ? macro_strain.get_fixed_entry() : Eigen::VectorXi());
+		Eigen::VectorXd extended = Eigen::VectorXd::Zero(ndof + 4);
+		extended.tail(4) << -0.2, 0.03, 0.03, -0.15;
+		const Eigen::VectorXd x = problem.extended_to_reduced(extended);
+		const Eigen::VectorXd x0 = Eigen::VectorXd::Zero(x.size());
+		const Eigen::VectorXd full = problem.reduced_to_full(x);
+		const Eigen::VectorXd full0 = problem.reduced_to_full(x0);
+		REQUIRE(full.norm() > 0.1);
+		const auto check_callback = [&]() {
+			CHECK(form->last_x.isApprox(full, 1e-12));
+			CHECK(extended_form->last_x.isApprox(extended, 1e-12));
+		};
+		CHECK(problem.is_step_valid(x0, x));
+		check_callback();
+		CHECK(form->last_x0.isApprox(full0, 1e-12));
+		CHECK(problem.is_step_collision_free(x0, x));
+		check_callback();
+		CHECK(problem.max_step_size(x0, x) == 1);
+		check_callback();
+		problem.line_search_begin(x0, x);
+		check_callback();
+		problem.line_search_end();
+		problem.solution_changed(x);
+		check_callback();
+		problem.init_lagging(x);
+		check_callback();
+		problem.update_lagging(x, 1);
+		check_callback();
+		problem.update_quantities(0, x);
+		check_callback();
+		problem.post_step(polysolve::nonlinear::PostStepData(1, json::object(), x, x0));
+		check_callback();
+
+		const Eigen::VectorXd direction = Eigen::VectorXd::LinSpaced(x.size(), -0.4, 0.7);
+		const double eps = 1e-6;
+		Eigen::VectorXd gradient, plus_gradient, minus_gradient;
+		problem.gradient(x, gradient);
+		CHECK(std::abs(gradient.dot(direction)
+					   - (problem.value(x + eps * direction) - problem.value(x - eps * direction)) / (2 * eps))
+			  < 1e-8);
+		StiffnessMatrix hessian;
+		problem.hessian(x, hessian);
+		problem.gradient(x + eps * direction, plus_gradient);
+		problem.gradient(x - eps * direction, minus_gradient);
+		CHECK((hessian * direction - (plus_gradient - minus_gradient) / (2 * eps)).norm() < 1e-8);
+	}
+}
 
 TEST_CASE("periodic boundary form builds equality constraints", "[periodic][constraints]")
 {

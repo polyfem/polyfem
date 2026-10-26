@@ -62,7 +62,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector full_to_reduced_diag(const TVector &full_diag) const override;
-		TVector reduced_to_full(const TVector &reduced) const;
+		TVector reduced_to_full(const TVector &reduced) const override;
 
 		TVector reduced_to_extended(const TVector &reduced, bool homogeneous = false) const;
 		TVector extended_to_reduced(const TVector &extended) const;
