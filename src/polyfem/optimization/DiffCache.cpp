@@ -13,7 +13,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
@@ -208,7 +208,7 @@ namespace polyfem
 		const Eigen::MatrixXd &u,
 		const StiffnessMatrix &gradu_h,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::TangentialCollisions &friction_constraint_set,
 		const ipc::NormalCollisions &normal_adhesion_set,
 		const ipc::TangentialCollisions &tangential_adhesion_set,
@@ -236,7 +236,7 @@ namespace polyfem
 		const StiffnessMatrix &gradu_h,
 		// const StiffnessMatrix &gradu_h_prev,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::TangentialCollisions &friction_collision_set)
 	{
 		bdf_order_(cur_step) = cur_bdf_order;
@@ -260,7 +260,7 @@ namespace polyfem
 		const Eigen::MatrixXd &u,
 		const StiffnessMatrix &gradu_h,
 		const ipc::NormalCollisions &collision_set,
-		const ipc::SmoothCollisions &smooth_collision_set,
+		const ipc::GCPCollisions &smooth_collision_set,
 		const ipc::NormalCollisions &normal_adhesion_set,
 		const Eigen::MatrixXd &disp_grad)
 	{
@@ -309,7 +309,7 @@ namespace polyfem
 		}
 
 		ipc::NormalCollisions cur_collision_set;
-		ipc::SmoothCollisions cur_smooth_collision_set;
+		ipc::GCPCollisions cur_smooth_collision_set;
 		ipc::TangentialCollisions cur_friction_set;
 		ipc::NormalCollisions cur_normal_adhesion_set;
 		ipc::TangentialCollisions cur_tangential_adhesion_set;
@@ -323,8 +323,8 @@ namespace polyfem
 		{
 			if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(solve_data->contact_form.get()))
 				cur_collision_set = barrier_contact->collision_set();
-			else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(solve_data->contact_form.get()))
-				cur_smooth_collision_set = smooth_contact->collision_set();
+			else if (const auto gcp = dynamic_cast<const solver::GCPContactForm *>(solve_data->contact_form.get()))
+				cur_smooth_collision_set = gcp->collision_set();
 		}
 		if (solve_data->friction_form)
 			cur_friction_set = solve_data->friction_form->friction_collision_set();

@@ -2157,6 +2157,8 @@ namespace polyfem::io
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
 		use_hdf5 = args["output"]["paraview"]["options"]["use_hdf5"];
+
+		obstacle_volume = args["output"]["paraview"]["options"]["obstacle_volume"];
 	}
 
 	void OutGeometryData::save_vtu(
@@ -2323,27 +2325,44 @@ namespace polyfem::io
 				}
 			}
 
-			for (int i = 0; i < obstacle->get_face_connectivity().rows(); ++i)
-			{
-				elements.emplace_back();
-				elements.back().ctype = CellType::Triangle;
-				for (int j = 0; j < obstacle->get_face_connectivity().cols(); ++j)
-					elements.back().vertices.push_back(obstacle->get_face_connectivity()(i, j) + orig_p);
-			}
+			const bool emit_obstacle_volume = opts.obstacle_volume && obstacle->n_tets() > 0;
 
-			for (int i = 0; i < obstacle->get_edge_connectivity().rows(); ++i)
+			if (emit_obstacle_volume)
 			{
-				elements.emplace_back();
-				elements.back().ctype = CellType::Line;
-				for (int j = 0; j < obstacle->get_edge_connectivity().cols(); ++j)
-					elements.back().vertices.push_back(obstacle->get_edge_connectivity()(i, j) + orig_p);
+				// Volumetric export: emit obstacle tets only. Their boundary faces
+				// will be shown by ParaView as the visible surface.
+				for (int i = 0; i < obstacle->get_tet_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					elements.back().ctype = CellType::Tetrahedron;
+					for (int j = 0; j < obstacle->get_tet_connectivity().cols(); ++j)
+						elements.back().vertices.push_back(obstacle->get_tet_connectivity()(i, j) + orig_p);
+				}
 			}
-
-			for (int i = 0; i < obstacle->get_vertex_connectivity().size(); ++i)
+			else
 			{
-				elements.emplace_back();
-				elements.back().ctype = CellType::Vertex;
-				elements.back().vertices.push_back(obstacle->get_vertex_connectivity()(i) + orig_p);
+				for (int i = 0; i < obstacle->get_face_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					elements.back().ctype = CellType::Triangle;
+					for (int j = 0; j < obstacle->get_face_connectivity().cols(); ++j)
+						elements.back().vertices.push_back(obstacle->get_face_connectivity()(i, j) + orig_p);
+				}
+
+				for (int i = 0; i < obstacle->get_edge_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					elements.back().ctype = CellType::Line;
+					for (int j = 0; j < obstacle->get_edge_connectivity().cols(); ++j)
+						elements.back().vertices.push_back(obstacle->get_edge_connectivity()(i, j) + orig_p);
+				}
+
+				for (int i = 0; i < obstacle->get_vertex_connectivity().size(); ++i)
+				{
+					elements.emplace_back();
+					elements.back().ctype = CellType::Vertex;
+					elements.back().vertices.push_back(obstacle->get_vertex_connectivity()(i) + orig_p);
+				}
 			}
 		}
 
