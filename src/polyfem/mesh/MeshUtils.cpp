@@ -1177,7 +1177,7 @@ void polyfem::mesh::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void find_triangle_surface_from_tets(
+void polyfem::mesh::find_triangle_surface_from_tets(
 	const Eigen::MatrixXi &tets,
 	Eigen::MatrixXi &faces)
 {

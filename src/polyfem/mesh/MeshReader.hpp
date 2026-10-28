@@ -19,6 +19,9 @@ namespace polyfem::mesh
 		Eigen::VectorXi points;
 		Eigen::MatrixXi edges;
 		Eigen::MatrixXi faces;
+		/// Volumetric cells indexing vertices; only filled when a 3D tet mesh is
+		/// read with keep_volume.
+		Eigen::MatrixXi tets;
 	};
 
 	/// Stateless format decoders used exclusively by MeshLoader and in-memory adapters.
@@ -30,7 +33,9 @@ namespace polyfem::mesh
 		static MeshData read_geogram(const std::filesystem::path &path);
 		static MeshData from_geogram(GEO::Mesh &mesh);
 
-		static SurfaceMeshData read_msh_surface(const std::filesystem::path &path);
+		/// @param keep_volume For a 3D tet mesh, keep every vertex and the tets,
+		///        and index the boundary faces into the full vertex set.
+		static SurfaceMeshData read_msh_surface(const std::filesystem::path &path, bool keep_volume = false);
 		static SurfaceMeshData read_obj_surface(const std::filesystem::path &path);
 		static bool read_triangle_surface(const std::filesystem::path &path, SurfaceMeshData &result);
 		static SurfaceMeshData read_geogram_surface(const std::filesystem::path &path);
