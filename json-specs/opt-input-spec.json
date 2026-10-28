@@ -60,7 +60,7 @@
         "pointer": "/states/*/initial_guess",
         "default": -1,
         "type": "int",
-        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state. Only relevant for nonlinear problems."
+        "doc": "Source state ID for displacement and macro-gradient continuation, or -1 for no source. Requires serial static homogenization states with identical meshes and finite-element spaces; dependencies must be acyclic."
     },
     {
         "pointer": "/remeshing",
@@ -222,6 +222,7 @@
         "options": [
             "shape",
             "periodic-shape",
+            "inflated-periodic-shape",
             "elastic",
             "friction",
             "damping",
@@ -257,6 +258,37 @@
         "optional": [
         ]
     },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "inflated-periodic-shape",
+        "type": "object",
+        "required": ["state", "type", "composition", "inflation"]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/inflation",
+        "type": "object",
+        "required": ["wire", "work_directory", "initial", "meshing", "tiles"],
+        "optional": ["graph_radius", "symmetry"]
+    },
+    {"pointer": "/variable_to_simulation/*/inflation/symmetry", "type": "string", "default": "auto", "options": ["auto", "doubly_periodic", "orthotropic"]},
+    {"pointer": "/variable_to_simulation/*/inflation/wire", "type": "string"},
+    {"pointer": "/variable_to_simulation/*/inflation/work_directory", "type": "string"},
+    {"pointer": "/variable_to_simulation/*/inflation/initial", "type": "list", "min": 2},
+    {"pointer": "/variable_to_simulation/*/inflation/initial/*", "type": "float"},
+    {"pointer": "/variable_to_simulation/*/inflation/tiles", "type": "int", "min": 1},
+    {"pointer": "/variable_to_simulation/*/inflation/graph_radius", "type": "int", "min": 1, "default": 2},
+    {
+        "pointer": "/variable_to_simulation/*/inflation/meshing",
+        "type": "object",
+        "optional": ["maxArea", "marchingSquaresGridSize", "forceMSGridSize", "facetSize", "facetDistance", "cellSize", "edgeSize"]
+    },
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/maxArea", "type": "float", "min": 1e-12, "default": 0.001},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/marchingSquaresGridSize", "type": "int", "min": 2, "default": 256},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/forceMSGridSize", "type": "bool", "default": false},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/facetSize", "type": "float", "min": 1e-12, "default": 0.025},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/facetDistance", "type": "float", "min": 1e-12, "default": 0.002},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/cellSize", "type": "float", "min": 1e-12, "default": 0.15},
+    {"pointer": "/variable_to_simulation/*/inflation/meshing/edgeSize", "type": "float", "min": 1e-12, "default": 0.025},
     {
         "pointer": "/variable_to_simulation/*",
         "type_name": "elastic",
@@ -358,7 +390,8 @@
     },
     {
         "pointer": "/variable_to_simulation/*/state",
-        "type": "list"
+        "type": "list",
+        "min": 1
     },
     {
         "pointer": "/variable_to_simulation/*/state/*",
