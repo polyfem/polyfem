@@ -443,6 +443,13 @@ namespace polyfem::io
 		const int sampling_order)
 	{
 		assert(!mesh.is_volume());
+		if (mesh.has_poly())
+		{
+			logger().warn("Sampled 2D collision mesh requires triangle or quadrilateral elements; falling back to the standard boundary extraction");
+			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+				node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			return;
+		}
 		if (sampling_order > 0)
 		{
 			displacement_map_entries.clear();
@@ -454,6 +461,8 @@ namespace polyfem::io
 			{
 				const int el = lb.element_id();
 				const auto &b = bases[el];
+				if (b.bases.empty())
+					continue;
 				Eigen::MatrixXd ref_nodes;
 				if (mesh.is_simplex(el))
 					autogen::p_nodes_2d(b.bases.front().order(), ref_nodes);
@@ -468,10 +477,9 @@ namespace polyfem::io
 						continue;
 					const auto nodes = b.local_nodes_for_primitive(eid, mesh);
 					const int first = nodes(0), last = nodes(nodes.size() - 1);
-					const auto &g0 = b.bases[first].global();
-					const auto &g1 = b.bases[last].global();
-					if (g0.size() != 1 || g1.size() != 1)
-						log_and_throw_error("Upsampled 2D collision mesh requires independent edge endpoints.");
+					// Corner identity is topological even when its basis depends on multiple DOFs.
+					const int v0 = mesh.face_vertex(el, first);
+					const int v1 = mesh.face_vertex(el, last);
 					Eigen::MatrixXd points(sampling_order + 1, 2), positions;
 					for (int i = 0; i <= sampling_order; ++i)
 					{
@@ -485,8 +493,8 @@ namespace polyfem::io
 					for (int i = 0; i <= sampling_order; ++i)
 					{
 						// Share corners topologically, not by coordinate tolerance.
-						const std::array<int, 3> key = i == 0 ? std::array<int, 3>{{0, g0.front().index, 0}}
-							: i == sampling_order ? std::array<int, 3>{{0, g1.front().index, 0}}
+						const std::array<int, 3> key = i == 0 ? std::array<int, 3>{{0, v0, 0}}
+							: i == sampling_order ? std::array<int, 3>{{0, v1, 0}}
 							: std::array<int, 3>{{1, eid, i}};
 						const auto [it, inserted] = sample_ids.emplace(key, int(vertices.size()));
 						const int row = it->second;
@@ -527,6 +535,8 @@ namespace polyfem::io
 		{
 			const int el = lb.element_id();
 			const auto &b = bases[el];
+			if (b.bases.empty())
+				continue;
 			Eigen::MatrixXd points, positions;
 			if (mesh.is_simplex(el))
 				autogen::p_nodes_2d(b.bases.front().order(), points);
@@ -586,8 +596,6 @@ namespace polyfem::io
 		if (!mesh.is_volume() || mesh.has_poly()
 			|| !dynamic_cast<const Mesh3D &>(mesh).is_conforming())
 		{
-			if (geom_bases)
-				log_and_throw_error("Geometry-aware collision sampling requires a conforming volume mesh without polytopes.");
 			logger().warn("max_order collision-proxy sampling requires a conforming volume mesh without polytopes; falling back to the standard boundary extraction");
 			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
 								  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
@@ -1551,6 +1559,8 @@ namespace polyfem::io
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
 				const basis::ElementBases &b = bases[lb.element_id()];
+				if (b.bases.empty())
+					continue;
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
