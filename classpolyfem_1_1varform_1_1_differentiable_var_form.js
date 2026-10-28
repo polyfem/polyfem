@@ -44,6 +44,7 @@ var classpolyfem_1_1varform_1_1_differentiable_var_form =
     [ "primary_assembler", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#a4f5577e3e4b0656fc63eecaa25e78cbe", null ],
     [ "primary_space", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#acb55571633385f0aee1250fce6d53a14", null ],
     [ "primitive_to_node", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#aa354b37995fd0024c1d4b27d7eeb8477", null ],
+    [ "replace_mesh", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#a5a24227c5591dc73669a1bfbff70b8e9", null ],
     [ "save_vtu", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#ab27dcefac4e5c9bf13ee16cc4deeeae8", null ],
     [ "set_damping_coefficients", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#aa1531937e6c7505c1887d833bcd53c67", null ],
     [ "set_dirichlet_boundary", "classpolyfem_1_1varform_1_1_differentiable_var_form.html#ab412c14bfde2c4244b7724d57a538d35", null ],

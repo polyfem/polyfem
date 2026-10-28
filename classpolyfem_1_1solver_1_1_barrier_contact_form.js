@@ -17,5 +17,6 @@ var classpolyfem_1_1solver_1_1_barrier_contact_form =
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a726f81b480a520b450059eaa2864ff1b", null ],
     [ "BarrierContactForceDerivative", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a9a99f6000c6753a4914c9ebafb33ded7", null ],
     [ "barrier_potential_", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae0eb8cad3837646c717f0ef17b36e9cd", null ],
+    [ "cached_displaced_surface_", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#a765d7bba05ec3981190e2e1084af6aad", null ],
     [ "collision_set_", "classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae3b805f9e9c6d523e4d240774beda4d3", null ]
 ];

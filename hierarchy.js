@@ -185,6 +185,7 @@ var hierarchy =
         ] ],
         [ "polyfem::solver::DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html", null ],
         [ "polyfem::solver::ElasticMaterialSmoothingForm", "classpolyfem_1_1solver_1_1_elastic_material_smoothing_form.html", null ],
+        [ "polyfem::solver::HomogenizedDispGradForm", "classpolyfem_1_1solver_1_1_homogenized_disp_grad_form.html", null ],
         [ "polyfem::solver::MinJacobianForm", "classpolyfem_1_1solver_1_1_min_jacobian_form.html", null ],
         [ "polyfem::solver::MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html", null ],
         [ "polyfem::solver::ParametrizationForm", "classpolyfem_1_1solver_1_1_parametrization_form.html", [
@@ -584,6 +585,7 @@ var hierarchy =
       [ "polyfem::solver::DirichletNodesVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html", null ],
       [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", null ],
       [ "polyfem::solver::FrictionVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_variable_to_simulation.html", null ],
+      [ "polyfem::solver::InflatedPeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html", null ],
       [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", null ],
       [ "polyfem::solver::PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html", null ],
       [ "polyfem::solver::PressureBoundaryVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html", null ],

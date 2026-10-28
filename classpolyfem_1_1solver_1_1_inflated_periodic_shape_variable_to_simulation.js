@@ -1,0 +1,28 @@
+var classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation =
+[
+    [ "InflatedPeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a7feda60b2f687f6eb50abe35f0c5ead2", null ],
+    [ "affects_varform", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aee7bb87b22757e3123865e00f69cbdbe", null ],
+    [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aa02bd66080e97f3212954a2984df50b3", null ],
+    [ "compute_adjoint_term", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#abe9423951cc1f7ee285d31ff3d6c69bc", null ],
+    [ "inverse_dof", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a40e91e45ff4a6a115ccca51a2ec8fed4", null ],
+    [ "inverse_eval", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a67f82cbe3c36964cd05b02558066756d", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a1799bce84e9b81cb1423e6855f14ca48", null ],
+    [ "parameter_type", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a014272cc4cdef488aa939158f7620570", null ],
+    [ "update", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a8e6c6b0ea25915280abf8728f0eb8346", null ],
+    [ "update_state_variables", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#ab9108419c1dc1651c8224dfbc1c45912", null ],
+    [ "diff_caches_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#ae3c8e76d9b6606fc21188c2ab85d50cc", null ],
+    [ "dimension_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a42f632a578a6057d3313c353d809d4e1", null ],
+    [ "generation_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#ae130df44ca2d0add242f4122cc6fffbd", null ],
+    [ "initial_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aaad270ff1ca245c888851a42a55016e7", null ],
+    [ "last_parameters_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a5abcf526a3b3fd17232aa2e31faa0471", null ],
+    [ "meshing_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a46f74fdb9ec7c73234c0968c2c4bcb8f", null ],
+    [ "options_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aadad28b139ac421ac3ee3ed1274d0649", null ],
+    [ "parametrization_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a5913efc1614e1a4e259c32c31bb3f1a1", null ],
+    [ "periodic_jacobian_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a7ec1574f3c21c9997caf4a7c38c91208", null ],
+    [ "periodic_map_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#ad9524125a14db6b621bcb250816730e1", null ],
+    [ "periodic_parameters_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a9e5eb53b7cfbab430789f245896c053e", null ],
+    [ "shape_jacobian_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a6554f2904b9387566393ca3ff9844c06", null ],
+    [ "varforms_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aa09cc7e6ba7d8f8deec3bc6a2e03c3e8", null ],
+    [ "wire_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#aef1f125921a0ebbbfdafb83dbdc32d07", null ],
+    [ "work_directory_", "classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#a48e6b2133d85d37c35dd668ac456fa11", null ]
+];

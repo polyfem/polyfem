@@ -138,7 +138,7 @@ Inheritance diagram for polyfem::varform::NonlinearElasticVarForm:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::varform::NonlinearElasticVarForm:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form__coll__graph.svg" width="100%" height="560"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form__coll__graph.svg" width="100%" height="586"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -251,6 +251,13 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:adb1e997ae48c26d74dc18103b96a811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29b000eab6a170d5a3f8002067e56776" id="r_a29b000eab6a170d5a3f8002067e56776"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a29b000eab6a170d5a3f8002067e56776">init_forms</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac0b26aef4fc50f8ce54ab37cdd5fd7f1">args</a>, int dim, Eigen::MatrixXd &amp;sol, double t)</td></tr>
 <tr class="separator:a29b000eab6a170d5a3f8002067e56776"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ea96ba8c65d3760ec291d4ad3655aa" id="r_aa2ea96ba8c65d3760ec291d4ad3655aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aa2ea96ba8c65d3760ec291d4ad3655aa">has_macro_strain</a> () const</td></tr>
+<tr class="separator:aa2ea96ba8c65d3760ec291d4ad3655aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a336d4ec4bc9e0ee2e1ea2c38a1d02914" id="r_a336d4ec4bc9e0ee2e1ea2c38a1d02914"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a336d4ec4bc9e0ee2e1ea2c38a1d02914">init_homogenization_solve</a> (Eigen::MatrixXd &amp;solution, double time, const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *initial_condition_override)</td></tr>
+<tr class="memdesc:a336d4ec4bc9e0ee2e1ea2c38a1d02914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the initial extended solution [periodic displacement fluctuation | flatten(G)].  <br /></td></tr>
+<tr class="separator:a336d4ec4bc9e0ee2e1ea2c38a1d02914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e3ee3f791efa39bda51ac281f38a0f" id="r_a81e3ee3f791efa39bda51ac281f38a0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a81e3ee3f791efa39bda51ac281f38a0f">solve_homogenization_step</a> (int step, double time, Eigen::VectorXd &amp;extended_solution, Eigen::MatrixXd &amp;solution, const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;post_step)</td></tr>
+<tr class="separator:a81e3ee3f791efa39bda51ac281f38a0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76b09cd5119d6673853e7749b45c372d" id="r_a76b09cd5119d6673853e7749b45c372d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a76b09cd5119d6673853e7749b45c372d">solve_tensor_nonlinear</a> (int step, Eigen::MatrixXd &amp;sol, bool init_lagging=true)</td></tr>
 <tr class="separator:a76b09cd5119d6673853e7749b45c372d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff175dadcb18e8afe95c71f61f61a9f2" id="r_aff175dadcb18e8afe95c71f61f61a9f2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aff175dadcb18e8afe95c71f61f61a9f2">build_pressure_assembler</a> () const</td></tr>
@@ -359,6 +366,12 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a65066debbf585b6f8694b8ea2009fe28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3261c1c925295f996711d7b08b2e3571" id="r_a3261c1c925295f996711d7b08b2e3571"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a3261c1c925295f996711d7b08b2e3571">obstacle</a></td></tr>
 <tr class="separator:a3261c1c925295f996711d7b08b2e3571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2351410dc8c55f6d1a46926203dceb10" id="r_a2351410dc8c55f6d1a46926203dceb10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1assembler_1_1_macro_strain_value.html">assembler::MacroStrainValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a2351410dc8c55f6d1a46926203dceb10">macro_strain_constraint_</a></td></tr>
+<tr class="memdesc:a2351410dc8c55f6d1a46926203dceb10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prescribed macro displacement-gradient values and fixed components.  <br /></td></tr>
+<tr class="separator:a2351410dc8c55f6d1a46926203dceb10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c5bc65378a309cd4d15f5c49cde45c" id="r_a57c5bc65378a309cd4d15f5c49cde45c"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a57c5bc65378a309cd4d15f5c49cde45c">displacement_gradient_</a></td></tr>
+<tr class="memdesc:a57c5bc65378a309cd4d15f5c49cde45c"><td class="mdescLeft">&#160;</td><td class="mdescRight">For periodic structure, displacement u = periodic fluctuation ũ + macro strain GX.  <br /></td></tr>
+<tr class="separator:a57c5bc65378a309cd4d15f5c49cde45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae95fb801099b839ce4ad4f6ccf87af8f" id="r_ae95fb801099b839ce4ad4f6ccf87af8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#ae95fb801099b839ce4ad4f6ccf87af8f">solve_data_</a></td></tr>
 <tr class="separator:ae95fb801099b839ce4ad4f6ccf87af8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af88c357bc2fe8c9b59b1a196983a7846" id="r_af88c357bc2fe8c9b59b1a196983a7846"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">solver::Form</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#af88c357bc2fe8c9b59b1a196983a7846">forms</a></td></tr>
@@ -438,7 +451,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00015">15</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00016">16</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a1f8e3ce54b3384947a02dfb40832c9a6" name="a1f8e3ce54b3384947a02dfb40832c9a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f8e3ce54b3384947a02dfb40832c9a6">&#9670;&#160;</a></span>advance_for_embedding()</h2>
@@ -456,7 +469,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01002">1002</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01273">1273</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -504,7 +517,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00219">219</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00230">230</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00138">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
@@ -597,7 +610,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00311">311</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00322">322</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00155">polyfem::utils::append_rows()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00075">polyfem::mesh::build_collision_proxy()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00046">polyfem::mesh::Obstacle::codim_v()</a>, <a class="el" href="_mesh_8hpp_source.html#l00138">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00048">polyfem::mesh::Obstacle::e()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00737">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="io_2_out_data_8cpp_source.html#l00434">polyfem::io::OutGeometryData::extract_boundary_mesh_sampled()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00047">polyfem::mesh::Obstacle::f()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00049">polyfem::utils::json_as_array()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00317">polyfem::mesh::load_collision_proxy()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00039">polyfem::mesh::Obstacle::n_vertices()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00045">polyfem::mesh::Obstacle::v()</a>.</p>
 
@@ -649,7 +662,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00301">301</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00312">312</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
@@ -678,9 +691,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00459">459</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00470">470</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00107">polyfem::solver::PeriodicBoundaryLagrangianForm::build_mapping()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00048">V</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_lagrangian_form_8cpp_source.html#l00107">polyfem::solver::PeriodicBoundaryLagrangianForm::build_mapping()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -712,11 +725,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00620">620</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00668">668</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -752,7 +765,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a4433044f97bbd30c835d5717feeb7495">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00281">281</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00292">292</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
@@ -781,9 +794,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_solve_data_8hpp_source.html#l00188">polyfem::solver::SolveData::al_form</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">solve_data_</a>.</p>
+<p class="reference">References <a class="el" href="_solve_data_8hpp_source.html#l00188">polyfem::solver::SolveData::al_form</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00108">solve_data_</a>.</p>
 
 </div>
 </div>
@@ -810,9 +823,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00044">44</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00095">forms</a>.</p>
+<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00109">forms</a>.</p>
 
 </div>
 </div>
@@ -831,7 +844,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01023">1023</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01294">1294</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
@@ -860,7 +873,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_elastic_var_form_8hpp_source.html#l00103">polyfem::varform::ElasticVarForm::pure_mass_</a>.</p>
 
@@ -889,7 +902,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_elastic_var_form_8hpp_source.html#l00093">polyfem::varform::ElasticVarForm::space_</a>.</p>
 
@@ -918,9 +931,38 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">solve_data_</a>, and <a class="el" href="_solve_data_8hpp_source.html#l00202">polyfem::solver::SolveData::time_integrator</a>.</p>
+<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00108">solve_data_</a>, and <a class="el" href="_solve_data_8hpp_source.html#l00202">polyfem::solver::SolveData::time_integrator</a>.</p>
+
+</div>
+</div>
+<a id="aa2ea96ba8c65d3760ec291d4ad3655aa" name="aa2ea96ba8c65d3760ec291d4ad3655aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2ea96ba8c65d3760ec291d4ad3655aa">&#9670;&#160;</a></span>has_macro_strain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::varform::NonlinearElasticVarForm::has_macro_strain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00077">77</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00265">polyfem::varform::VarForm::args</a>.</p>
 
 </div>
 </div>
@@ -985,13 +1027,20 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ab7263bc352770d9f8bfa0a07e9872778">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00047">47</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00051">51</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00263">polyfem::varform::VarForm::args</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00096">contact_dhat_was_explicit_</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00082">polyfem::varform::ElasticVarForm::init()</a>, and <a class="el" href="_var_form_8hpp_source.html#l00262">polyfem::varform::VarForm::units</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00265">polyfem::varform::VarForm::args</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00110">contact_dhat_was_explicit_</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00082">polyfem::varform::ElasticVarForm::init()</a>, and <a class="el" href="_var_form_8hpp_source.html#l00264">polyfem::varform::VarForm::units</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::DifferentiableNonlinearElasticVarForm::replace_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a823aa5ecbcfcac0fcbcd622167d3d6db_cgraph.svg" width="100%" height="488"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a823aa5ecbcfcac0fcbcd622167d3d6db_icgraph.svg" width="547" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1044,11 +1093,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4">polyfem::varform::DifferentiableNonlinearElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00765">765</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00838">838</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1089,7 +1138,67 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00995">995</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01266">1266</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a336d4ec4bc9e0ee2e1ea2c38a1d02914" name="a336d4ec4bc9e0ee2e1ea2c38a1d02914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a336d4ec4bc9e0ee2e1ea2c38a1d02914">&#9670;&#160;</a></span>init_homogenization_solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::varform::NonlinearElasticVarForm::init_homogenization_solve </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>solution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structpolyfem_1_1varform_1_1_initial_condition_override.html">InitialConditionOverride</a> *&#160;</td>
+          <td class="paramname"><em>initial_condition_override</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the initial extended solution [periodic displacement fluctuation | flatten(G)]. </p>
+
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00933">933</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00051">polyfem::varform::InitialConditionOverride::displacement_gradient</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01123">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00366">polyfem::varform::DifferentiableNonlinearElasticStaticVarForm::solve_problem()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a336d4ec4bc9e0ee2e1ea2c38a1d02914_cgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a336d4ec4bc9e0ee2e1ea2c38a1d02914_icgraph.svg" width="595" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -1133,11 +1242,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00859">859</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01130">1130</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00487">polyfem::varform::DifferentiableNonlinearElasticStaticVarForm::solve_problem()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00539">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00366">polyfem::varform::DifferentiableNonlinearElasticStaticVarForm::solve_problem()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00418">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1197,20 +1306,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00900">900</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01171">1171</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_o_b_j_writer_8cpp_source.html#l00018">polyfem::io::OBJWriter::write()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00341">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_homogenization_solve()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_adb1e997ae48c26d74dc18103b96a811e_cgraph.svg" width="638" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_adb1e997ae48c26d74dc18103b96a811e_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1241,7 +1343,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00987">987</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01258">1258</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -1273,11 +1375,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2bb8e37a98fa8708c2a51c16b03d0b09">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00021">21</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00022">22</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00263">polyfem::varform::VarForm::args</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00265">polyfem::varform::VarForm::args</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00078">polyfem::varform::DifferentiableNonlinearElasticVarForm::is_contact_enabled()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00081">output_space()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00103">polyfem::varform::DifferentiableNonlinearElasticVarForm::is_contact_enabled()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00092">output_space()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1324,9 +1426,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a6af601a310f3a582a6d196c4942849a3">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00071">71</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00082">82</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00263">polyfem::varform::VarForm::args</a>, and <a class="el" href="_elastic_var_form_8cpp_source.html#l00137">polyfem::varform::ElasticVarForm::load_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00265">polyfem::varform::VarForm::args</a>, and <a class="el" href="_elastic_var_form_8cpp_source.html#l00137">polyfem::varform::ElasticVarForm::load_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1360,9 +1462,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_elastic_var_form.html#abc5f793988ef154d5a1e08549667603c">polyfem::varform::ElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00112">112</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00039">polyfem::mesh::Obstacle::n_vertices()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">obstacle</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00039">polyfem::mesh::Obstacle::n_vertices()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">obstacle</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1426,9 +1528,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a169111c6364d27f4277ebf02b123ba3b">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00089">89</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00100">100</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00263">polyfem::varform::VarForm::args</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00085">collision_mesh_</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996abbaff12800505b22a853e8b7f4eb6a22">polyfem::io::OutputSample::Contact</a>, <a class="el" href="_solve_data_8hpp_source.html#l00191">polyfem::solver::SolveData::contact_form</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_solve_data_8hpp_source.html#l00193">polyfem::solver::SolveData::elastic_form</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00447">polyfem::varform::ElasticVarForm::elastic_output_fields()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_var_form_8hpp_source.html#l00273">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm::name()</a>, <a class="el" href="_solve_data_8cpp_source.html#l00621">polyfem::solver::SolveData::named_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">obstacle</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_var_form_8hpp_source.html#l00261">polyfem::varform::VarForm::problem</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">solve_data_</a>, <a class="el" href="_solve_data_8hpp_source.html#l00202">polyfem::solver::SolveData::time_integrator</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00265">polyfem::varform::VarForm::args</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">collision_mesh_</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996abbaff12800505b22a853e8b7f4eb6a22">polyfem::io::OutputSample::Contact</a>, <a class="el" href="_solve_data_8hpp_source.html#l00191">polyfem::solver::SolveData::contact_form</a>, <a class="el" href="_output_data_8hpp_source.html#l00054">polyfem::io::OutputSample::domain</a>, <a class="el" href="_solve_data_8hpp_source.html#l00193">polyfem::solver::SolveData::elastic_form</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00447">polyfem::varform::ElasticVarForm::elastic_output_fields()</a>, <a class="el" href="_output_data_8hpp_source.html#l00029">polyfem::io::OutputFieldOptions::fields</a>, <a class="el" href="_var_form_8hpp_source.html#l00275">polyfem::varform::VarForm::mesh_</a>, <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm::name()</a>, <a class="el" href="_solve_data_8cpp_source.html#l00621">polyfem::solver::SolveData::named_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">obstacle</a>, <a class="el" href="structpolyfem_1_1io_1_1_output_field.html#ab89c3e52d2b23423a68cedc93a265a27a2a3cd5946cfd317eb99c3d32e35e2d4c">polyfem::io::OutputField::Point</a>, <a class="el" href="_output_data_8hpp_source.html#l00047">polyfem::io::OutputSample::points</a>, <a class="el" href="_var_form_8hpp_source.html#l00263">polyfem::varform::VarForm::problem</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00108">solve_data_</a>, <a class="el" href="_solve_data_8hpp_source.html#l00202">polyfem::solver::SolveData::time_integrator</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l01054">polyfem::varform::ThermoElasticVarForm::output_fields()</a>.</p>
 <div class="dynheader">
@@ -1472,11 +1574,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_elastic_var_form.html#a2bf5ba808f764303613868bf1e280e04">polyfem::varform::ElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00081">81</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00092">92</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00085">collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00021">is_contact_enabled()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">obstacle</a>, and <a class="el" href="_elastic_var_form_8cpp_source.html#l01149">polyfem::varform::ElasticVarForm::output_space()</a>.</p>
+<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00022">is_contact_enabled()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">obstacle</a>, and <a class="el" href="_elastic_var_form_8cpp_source.html#l01149">polyfem::varform::ElasticVarForm::output_space()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00038">polyfem::varform::DifferentiableNonlinearElasticVarForm::save_vtu()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00539">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00063">polyfem::varform::DifferentiableNonlinearElasticVarForm::save_vtu()</a>, and <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00418">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1508,7 +1610,7 @@ Here is the caller graph for this function:</div>
 <p>Prepare the standard nonlinear-elastic assembly state for use as a block in a larger nonlinear problem. </p>
 <p>This does not construct or solve the child NLProblem. </p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00982">982</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01253">1253</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -1535,7 +1637,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00250">250</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00261">261</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_units_8cpp_source.html#l00035">polyfem::Units::convert()</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 
@@ -1580,9 +1682,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a7ad2c0687359bdb9eb2041ac0172b263">polyfem::varform::ThermoElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">56</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">60</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00022">polyfem::mesh::Obstacle::clear()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00085">collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00096">contact_dhat_was_explicit_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00089">damping_assembler_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00090">damping_prev_assembler_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00088">elasticity_pressure_assembler</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00095">forms</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">obstacle</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00086">periodic_collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00087">periodic_collision_mesh_to_basis_</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00061">polyfem::varform::ElasticVarForm::reset()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">solve_data_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00022">polyfem::mesh::Obstacle::clear()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00110">contact_dhat_was_explicit_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00098">damping_assembler_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00099">damping_prev_assembler_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00107">displacement_gradient_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00097">elasticity_pressure_assembler</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00109">forms</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00104">macro_strain_constraint_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">obstacle</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00095">periodic_collision_mesh_</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00096">periodic_collision_mesh_to_basis_</a>, <a class="el" href="_elastic_var_form_8cpp_source.html#l00061">polyfem::varform::ElasticVarForm::reset()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00108">solve_data_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00185">polyfem::varform::ThermoElasticVarForm::reset()</a>.</p>
 <div class="dynheader">
@@ -1648,7 +1750,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01015">1015</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01286">1286</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -1678,9 +1780,79 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a455c4888d7a1a4ec8dbd640ccc0f707e">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00076">76</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00087">87</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">obstacle</a>.</p>
+<p class="reference">References <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">obstacle</a>.</p>
+
+</div>
+</div>
+<a id="a81e3ee3f791efa39bda51ac281f38a0f" name="a81e3ee3f791efa39bda51ac281f38a0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e3ee3f791efa39bda51ac281f38a0f">&#9670;&#160;</a></span>solve_homogenization_step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::varform::NonlinearElasticVarForm::solve_homogenization_step </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>extended_solution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>solution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> &amp;&#160;</td>
+          <td class="paramname"><em>post_step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01020">1020</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, and <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00366">polyfem::varform::DifferentiableNonlinearElasticStaticVarForm::solve_problem()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a81e3ee3f791efa39bda51ac281f38a0f_cgraph.svg" width="531" height="86"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form_a81e3ee3f791efa39bda51ac281f38a0f_icgraph.svg" width="602" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -1726,11 +1898,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a6ded0a155b3d908a25e2951c74cb9628">polyfem::varform::DifferentiableNonlinearElasticVarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01028">1028</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01299">1299</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_jacobian_8cpp_source.html#l00122">polyfem::utils::count_invalid()</a>, <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">polyfem::solver::FullNLProblem::finish()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00701">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00637">polyfem::solver::NLProblem::gradient()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00026">polyfem::solver::FullNLProblem::init()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00548">polyfem::solver::NLProblem::init_lagging()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">polyfem::solver::FullNLProblem::max_lagging_iterations()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00156">polyfem::solver::NLProblem::normalize_forms()</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00053">polyfem::solver::ALSolver::post_subsolve</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00753">polyfem::solver::NLProblem::reduced_to_full()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00029">polyfem::solver::ALSolver::solve_al()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00041">polyfem::solver::ALSolver::solve_reduced()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00556">polyfem::solver::NLProblem::update_lagging()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00058">polyfem::solver::FullNLProblem::uses_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00271">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00296">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1760,7 +1932,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01009">1009</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l01280">1280</a> of file <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html">NonlinearElasticVarForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -1785,9 +1957,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00100">polyfem::varform::DifferentiableNonlinearElasticVarForm::collision_mesh()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00089">output_fields()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00081">output_space()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00125">polyfem::varform::DifferentiableNonlinearElasticVarForm::collision_mesh()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00100">output_fields()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00092">output_space()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1811,9 +1983,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00110">110</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00047">init()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00215">polyfem::varform::ThermoElasticVarForm::init()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00051">init()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00215">polyfem::varform::ThermoElasticVarForm::init()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::DifferentiableNonlinearElasticVarForm::replace_mesh()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1837,9 +2009,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00103">polyfem::varform::DifferentiableNonlinearElasticVarForm::damping_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00147">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00161">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00128">polyfem::varform::DifferentiableNonlinearElasticVarForm::damping_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1863,9 +2035,38 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00099">99</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00108">polyfem::varform::DifferentiableNonlinearElasticVarForm::damping_prev_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00147">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00161">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00133">polyfem::varform::DifferentiableNonlinearElasticVarForm::damping_prev_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
+
+</div>
+</div>
+<a id="a57c5bc65378a309cd4d15f5c49cde45c" name="a57c5bc65378a309cd4d15f5c49cde45c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c5bc65378a309cd4d15f5c49cde45c">&#9670;&#160;</a></span>displacement_gradient_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::varform::NonlinearElasticVarForm::displacement_gradient_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>For periodic structure, displacement u = periodic fluctuation ũ + macro strain GX. </p>
+<p>displacement_gradient_ := G. </p>
+
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00107">107</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00159">polyfem::varform::DifferentiableNonlinearElasticVarForm::displacement_gradient()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1889,9 +2090,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00088">88</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00147">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00161">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1915,9 +2116,37 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00109">109</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00044">embedding_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00341">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_homogenization_solve()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00147">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00161">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>, and <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00938">polyfem::varform::ThermoElasticVarForm::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00045">embedding_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::DifferentiableNonlinearElasticVarForm::replace_mesh()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>, and <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00938">polyfem::varform::ThermoElasticVarForm::solve_problem()</a>.</p>
+
+</div>
+</div>
+<a id="a2351410dc8c55f6d1a46926203dceb10" name="a2351410dc8c55f6d1a46926203dceb10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2351410dc8c55f6d1a46926203dceb10">&#9670;&#160;</a></span>macro_strain_constraint_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1assembler_1_1_macro_strain_value.html">assembler::MacroStrainValue</a> polyfem::varform::NonlinearElasticVarForm::macro_strain_constraint_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prescribed macro displacement-gradient values and fixed components. </p>
+
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00104">104</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1941,9 +2170,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00101">101</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00339">polyfem::varform::ThermoElasticVarForm::build_basis()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00558">polyfem::varform::ThermoElasticVarForm::build_rhs_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00101">polyfem::varform::DifferentiableNonlinearElasticVarForm::get_obstacle()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00098">n_obstacle_vertices()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00089">output_fields()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00081">output_space()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00076">set_obstacle()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00339">polyfem::varform::ThermoElasticVarForm::build_basis()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00558">polyfem::varform::ThermoElasticVarForm::build_rhs_assembler()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00126">polyfem::varform::DifferentiableNonlinearElasticVarForm::get_obstacle()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00112">n_obstacle_vertices()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00100">output_fields()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00092">output_space()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00087">set_obstacle()</a>.</p>
 
 </div>
 </div>
@@ -1967,9 +2196,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -1993,9 +2222,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, and <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>.</p>
 
 </div>
 </div>
@@ -2019,9 +2248,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00108">108</a> of file <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html">NonlinearElasticVarForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00558">polyfem::varform::ThermoElasticVarForm::build_rhs_assembler()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00045">embedding_al_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00047">embedding_time_integrator()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00184">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00341">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_homogenization_solve()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00147">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00161">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00089">output_fields()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00056">reset()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00099">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_data()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00098">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_data()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00409">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_homogenization_step()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00877">polyfem::varform::ThermoElasticVarForm::solve_nonlinear_step()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00938">polyfem::varform::ThermoElasticVarForm::solve_problem()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00539">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00271">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_tensor_nonlinear()</a>, and <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00858">polyfem::varform::ThermoElasticVarForm::update_transient_form_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00697">polyfem::varform::ThermoElasticVarForm::build_forms()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00558">polyfem::varform::ThermoElasticVarForm::build_rhs_assembler()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00046">embedding_al_forms()</a>, <a class="el" href="_nonlinear_elastic_var_form_8hpp_source.html#l00048">embedding_time_integrator()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00209">polyfem::varform::DifferentiableNonlinearElasticVarForm::init_forms()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00172">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_geometry_update()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00186">polyfem::varform::DifferentiableNonlinearElasticVarForm::invalidate_after_parameter_update()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00100">output_fields()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00035">polyfem::varform::DifferentiableNonlinearElasticVarForm::replace_mesh()</a>, <a class="el" href="_nonlinear_elastic_var_form_8cpp_source.html#l00060">reset()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00124">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_data()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00123">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_data()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00877">polyfem::varform::ThermoElasticVarForm::solve_nonlinear_step()</a>, <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00938">polyfem::varform::ThermoElasticVarForm::solve_problem()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00418">polyfem::varform::DifferentiableNonlinearElasticTransientVarForm::solve_problem()</a>, <a class="el" href="_differentiable_nonlinear_elastic_var_form_8cpp_source.html#l00296">polyfem::varform::DifferentiableNonlinearElasticVarForm::solve_tensor_nonlinear()</a>, and <a class="el" href="_thermo_elastic_var_form_8cpp_source.html#l00858">polyfem::varform::ThermoElasticVarForm::update_transient_form_weights()</a>.</p>
 
 </div>
 </div>

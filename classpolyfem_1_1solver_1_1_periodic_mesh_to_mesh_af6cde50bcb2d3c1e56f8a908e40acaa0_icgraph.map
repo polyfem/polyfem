@@ -1,19 +1,21 @@
 <map id="polyfem::solver::PeriodicMeshToMesh::input_size" name="polyfem::solver::PeriodicMeshToMesh::input_size">
-<area shape="rect" id="Node000001" title=" " alt="" coords="744,129,928,169"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" title="Apply jacobian for chain rule." alt="" coords="484,17,696,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="783,125,695,82,642,59,644,54,697,77,785,120"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" title="Eval y = f(x)." alt="" coords="252,135,436,175"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="730,153,436,157,436,151,730,147"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#ac8c023fd4cd8a92d7535b86d0a3f52a9" title="Eval x = f^&#45;1 (y)." alt="" coords="6,110,203,150"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="730,140,696,137,474,124,252,126,203,128,203,122,252,121,474,119,696,131,730,134"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a94fb05f527188a7e7c4899375dd67ec1" title="Compute DOF of x given DOF of y." alt="" coords="493,186,687,226"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="737,175,677,189,676,183,735,169"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a428eaea284ac0e53b2ea4a648167571a" title="Compute DOF of y given DOF of x." alt="" coords="498,250,682,290"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="799,179,752,211,697,240,667,252,665,247,695,236,749,206,796,174"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ae8eb862b78ebeb95db22aaa4e4a447e3" title=" " alt="" coords="254,5,434,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="470,37,434,37,434,31,470,32"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6" title="Compute adjoint contribution of objective gradient." alt="" coords="5,5,204,60"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="240,35,204,35,204,30,240,30"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="238,147,203,143,204,138,239,142"/>
-<area shape="poly" id="edge9_Node000008_Node000005" title=" " alt="" coords="501,248,483,240,423,209,373,178,376,173,426,205,485,236,503,243"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="796,194,980,234"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" title="Apply jacobian for chain rule." alt="" coords="536,82,748,122"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="835,190,747,147,694,125,696,120,749,142,837,185"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" title="Eval y = f(x)." alt="" coords="304,201,488,241"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="782,218,488,222,488,217,782,213"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#ac8c023fd4cd8a92d7535b86d0a3f52a9" title="Eval x = f^&#45;1 (y)." alt="" coords="32,175,229,215"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="782,205,748,202,526,190,304,191,230,194,230,188,304,186,526,184,748,197,782,200"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a94fb05f527188a7e7c4899375dd67ec1" title="Compute DOF of x given DOF of y." alt="" coords="545,251,739,291"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="789,240,729,254,728,249,787,235"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a428eaea284ac0e53b2ea4a648167571a" title="Compute DOF of y given DOF of x." alt="" coords="550,315,734,355"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="851,244,804,276,749,306,719,318,717,313,747,301,801,271,848,240"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ae8eb862b78ebeb95db22aaa4e4a447e3" title=" " alt="" coords="306,71,486,125"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="522,103,486,102,486,97,522,97"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_inflated_periodic_shape_variable_to_simulation.html#abe9423951cc1f7ee285d31ff3d6c69bc" title="Compute adjoint contribution of objective gradient." alt="" coords="5,84,256,139"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="292,106,256,108,256,102,292,101"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a12d3272f449df4abedc040afab67b6c6" title="Compute adjoint contribution of objective gradient." alt="" coords="31,5,230,60"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="292,75,230,60,231,55,293,70"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="290,213,229,207,230,202,290,208"/>
+<area shape="poly" id="edge10_Node000009_Node000006" title=" " alt="" coords="553,313,535,306,475,275,425,243,428,239,478,270,537,301,555,308"/>
 </map>

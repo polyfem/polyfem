@@ -123,6 +123,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_barrier_con
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_barrier_contact_form-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::solver::BarrierContactForm Class Reference</div></div>
@@ -371,6 +372,12 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a743891166546a5be4dcafcf3470e6645"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645">output_dir_</a></td></tr>
 <tr class="separator:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a765d7bba05ec3981190e2e1084af6aad" id="r_a765d7bba05ec3981190e2e1084af6aad"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a765d7bba05ec3981190e2e1084af6aad">cached_displaced_surface_</a></td></tr>
+<tr class="memdesc:a765d7bba05ec3981190e2e1084af6aad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-form cache: identical positions in another state do not imply that this collision set is built.  <br /></td></tr>
+<tr class="separator:a765d7bba05ec3981190e2e1084af6aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -629,7 +636,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00185">185</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00184">184</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -708,7 +715,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3fb92cf33c43544ec3d89252409466fc">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00210">210</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00209">209</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 
@@ -773,7 +780,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a9afd0e3828702c9e9d173000e0a5b314">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00191">191</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00190">190</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -886,7 +893,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00114">114</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00160">polyfem::solver::ContactForm::broad_phase_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00170">polyfem::solver::ContactForm::candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00134">polyfem::solver::ContactForm::dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00137">polyfem::solver::ContactForm::dmin_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00168">polyfem::solver::ContactForm::use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00160">polyfem::solver::ContactForm::broad_phase_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00091">cached_displaced_surface_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00170">polyfem::solver::ContactForm::candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00134">polyfem::solver::ContactForm::dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00137">polyfem::solver::ContactForm::dmin_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00168">polyfem::solver::ContactForm::use_cached_candidates_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8cpp_source.html#l00054">update_barrier_stiffness()</a>.</p>
 <div class="dynheader">
@@ -1101,9 +1108,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad416da938150c3c0920be0c16d21bbbd">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00135">135</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00134">134</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00131">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00058">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00048">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00131">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00058">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1149,7 +1156,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a758c8d8023ad0bb8d0b9aca28f5a9123">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00130">130</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8cpp_source.html#l00129">129</a> of file <a class="el" href="_barrier_contact_form_8cpp_source.html">BarrierContactForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_barrier_contact_form_8hpp_source.html#l00087">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00058">polyfem::solver::ContactForm::compute_displaced_surface()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -1217,7 +1224,35 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_barrier_contact_form_8hpp_source.html">BarrierContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8hpp_source.html#l00058">barrier_potential()</a>, <a class="el" href="_barrier_contact_force_derivative_8cpp_source.html#l00010">polyfem::solver::BarrierContactForceDerivative::force_shape_derivative()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00054">update_barrier_stiffness()</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00055">use_physical_barrier()</a>, and <a class="el" href="_barrier_contact_form_8cpp_source.html#l00130">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8hpp_source.html#l00058">barrier_potential()</a>, <a class="el" href="_barrier_contact_force_derivative_8cpp_source.html#l00010">polyfem::solver::BarrierContactForceDerivative::force_shape_derivative()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00054">update_barrier_stiffness()</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00055">use_physical_barrier()</a>, and <a class="el" href="_barrier_contact_form_8cpp_source.html#l00129">value_unweighted()</a>.</p>
+
+</div>
+</div>
+<a id="a765d7bba05ec3981190e2e1084af6aad" name="a765d7bba05ec3981190e2e1084af6aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a765d7bba05ec3981190e2e1084af6aad">&#9670;&#160;</a></span>cached_displaced_surface_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::BarrierContactForm::cached_displaced_surface_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Per-form cache: identical positions in another state do not imply that this collision set is built. </p>
+
+<p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8hpp_source.html#l00091">91</a> of file <a class="el" href="_barrier_contact_form_8hpp_source.html">BarrierContactForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8cpp_source.html#l00114">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1245,7 +1280,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_contact_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_barrier_contact_form_8hpp_source.html">BarrierContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8cpp_source.html#l00017">BarrierContactForm()</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00057">collision_set()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00054">update_barrier_stiffness()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00114">update_collision_set()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00135">value_per_element_unweighted()</a>, and <a class="el" href="_barrier_contact_form_8cpp_source.html#l00130">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_contact_form_8cpp_source.html#l00017">BarrierContactForm()</a>, <a class="el" href="_barrier_contact_form_8hpp_source.html#l00057">collision_set()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00054">update_barrier_stiffness()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00114">update_collision_set()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00134">value_per_element_unweighted()</a>, and <a class="el" href="_barrier_contact_form_8cpp_source.html#l00129">value_unweighted()</a>.</p>
 
 </div>
 </div>

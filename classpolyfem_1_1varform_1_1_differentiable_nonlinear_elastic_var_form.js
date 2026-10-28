@@ -15,7 +15,6 @@ var classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form =
     [ "get_problem", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ad4bc9e6c82ed851cd055e45da549f835", null ],
     [ "get_units", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a43353e6d99acce130668bd4eaa727018", null ],
     [ "init_forms", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4", null ],
-    [ "init_homogenization_solve", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a083ec00530bb102436af48d8b4435619", null ],
     [ "initial_acceleration", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ab8b49c6d53c6c4bd3b9c2cf51e5ea1f6", null ],
     [ "initial_solution", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a67a54091cd05e06aeb4c4a8b4c1f5170", null ],
     [ "initial_velocity", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a6bd4509f6468d5d71a86b2ed0370f1d8", null ],
@@ -30,13 +29,11 @@ var classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form =
     [ "prepare", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a741628f483d3cfeb55c4b71df3083e4c", null ],
     [ "primary_assembler", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a4dea2cda47df15773aaca363c4772481", null ],
     [ "primary_space", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a71f0c3ac715cdbec59c5ab1120fa84f8", null ],
+    [ "replace_mesh", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02", null ],
     [ "save_vtu", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ae21a3761182fbfe21a1070161c0ae1d0", null ],
     [ "solve", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a8e1cf22395e35a5c3f194071de404b9f", null ],
     [ "solve_data", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a7b2dbb3f1a1a52d88af36c1ba4132e5b", null ],
     [ "solve_data", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ac965c60f781b939cd42bff1180204b61", null ],
-    [ "solve_homogenization_step", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aaff57c848ccbfbe5d370d57cd729cdf6", null ],
     [ "solve_tensor_nonlinear", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a6ded0a155b3d908a25e2951c74cb9628", null ],
-    [ "differentiable_mode_", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ad53faef9f7e9842ee580a55f82ad37ff", null ],
-    [ "displacement_gradient_", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ab092015b4246298af0cb333ee7424445", null ],
-    [ "macro_strain_constraint_", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a5bbae0121cead7cecbf2eb15d5909357", null ]
+    [ "differentiable_mode_", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#ad53faef9f7e9842ee580a55f82ad37ff", null ]
 ];

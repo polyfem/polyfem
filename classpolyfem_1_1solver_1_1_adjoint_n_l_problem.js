@@ -23,6 +23,7 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
     [ "curr_x", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a9620f6eae6d809ad41ea41538286c6f0", null ],
     [ "enable_slim", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#add1c9ed4ee0f4fe22d5a3b7171b62c4c", null ],
     [ "form_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ae379d4a80106913981f6acf3874c7e19", null ],
+    [ "initial_guess_sources_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a65a450d1e1a65f077ef4d3e8d9790349", null ],
     [ "remeshing_trigger_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a0a966ba6540c6348a3f940f51de06e18", null ],
     [ "save_freq", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a2d208a608f8035404b88482f7e7560ad", null ],
     [ "save_iter", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aba97a50b0012266602dc92f25b72cfd7", null ],

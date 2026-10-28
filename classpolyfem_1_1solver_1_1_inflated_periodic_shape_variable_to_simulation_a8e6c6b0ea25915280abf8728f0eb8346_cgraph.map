@@ -1,0 +1,37 @@
+<map id="polyfem::solver::InflatedPeriodicShapeVariableToSimulation::update" name="polyfem::solver::InflatedPeriodicShapeVariableToSimulation::update">
+<area shape="rect" id="Node000001" title="Update forward simulation varforms from optimization variables." alt="" coords="5,100,256,155"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="555,5,732,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,98,232,64,303,35,364,22,426,15,541,10,541,16,426,20,365,28,305,41,234,68,174,102"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#af42e8ffafbdbf4e0f1f253595a5ed543" title="Eval y = f(x)." alt="" coords="304,50,507,90"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,99,295,90,296,95,257,104"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="324,115,487,140"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="256,125,310,125,310,130,256,130"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="316,165,495,205"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="257,151,303,161,302,166,256,156"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1io_1_1_msh_writer.html#affb1457daf098439eee6cc690a1f57f1" title="saves the mesh" alt="" coords="320,253,491,293"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="184,152,356,244,353,249,182,157"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="485,162,505,149,522,127,529,103,535,79,553,53,582,34,585,38,557,57,540,81,534,105,527,129,508,153,488,167"/>
+<area shape="poly" id="edge19_Node000006_Node000006" title=" " alt="" coords="361,253,358,243,366,234,381,228,405,226,433,229,448,236,446,241,432,234,405,231,382,233,369,238,364,244,366,252"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0424129f0b565f3f3b1743ee3ccffbe" title="id of the vertex of a cell" alt="" coords="562,67,725,107"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="455,250,481,235,505,215,521,190,527,166,534,142,553,117,558,113,562,117,557,121,539,144,532,168,526,192,509,218,484,239,457,255"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="562,131,725,171"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="441,250,553,188,581,175,583,179,556,192,444,255"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="780,189,943,229"/>
+<area shape="poly" id="edge11_Node000006_Node000009" title=" " alt="" coords="473,250,554,231,664,217,766,210,767,215,664,223,555,237,474,255"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_mesh.html#ab66149e5d692cf4b94a9f286b4aaa7b0" title="Get the volume selection of all elements (cells in 3d, faces in 2d)" alt="" coords="562,246,725,286"/>
+<area shape="poly" id="edge10_Node000006_Node000010" title=" " alt="" coords="491,268,548,266,548,271,491,273"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#af8681d00e208c5075fa415a49e42471d" title="number of vertices of a cell" alt="" coords="562,310,725,350"/>
+<area shape="poly" id="edge12_Node000006_Node000011" title=" " alt="" coords="490,290,549,305,548,310,488,295"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="562,374,725,414"/>
+<area shape="poly" id="edge13_Node000006_Node000012" title=" " alt="" coords="438,291,492,325,556,360,571,367,569,371,553,364,489,329,435,295"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e" title="number of vertices" alt="" coords="562,438,725,478"/>
+<area shape="poly" id="edge17_Node000006_Node000015" title=" " alt="" coords="423,291,478,356,515,392,556,424,566,430,563,434,553,428,511,396,474,359,419,295"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="562,502,725,542"/>
+<area shape="poly" id="edge18_Node000006_Node000016" title=" " alt="" coords="418,292,437,333,468,385,508,440,556,488,564,493,561,497,553,492,504,444,463,388,433,335,413,294"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="721,169,772,183,771,188,719,174"/>
+<area shape="poly" id="edge14_Node000012_Node000009" title=" " alt="" coords="710,371,730,360,764,332,793,300,838,239,843,242,798,304,767,336,734,364,713,376"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="780,342,943,382"/>
+<area shape="poly" id="edge15_Node000012_Node000013" title=" " alt="" coords="724,379,766,373,767,379,725,385"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="780,406,943,446"/>
+<area shape="poly" id="edge16_Node000012_Node000014" title=" " alt="" coords="725,403,767,409,766,415,724,409"/>
+</map>

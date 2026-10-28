@@ -10,6 +10,7 @@ var searchData=
   ['hgodispersion_7',['HGODispersion',['../classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html',1,'polyfem::assembler']]],
   ['hgofiber_8',['HGOFiber',['../classpolyfem_1_1assembler_1_1_h_g_o_fiber.html',1,'polyfem::assembler']]],
   ['homocompositeform_9',['HomoCompositeForm',['../classpolyfem_1_1solver_1_1_homo_composite_form.html',1,'polyfem::solver']]],
-  ['hookelinearelasticity_10',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler']]],
-  ['hrzmass_11',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]]
+  ['homogenizeddispgradform_10',['HomogenizedDispGradForm',['../classpolyfem_1_1solver_1_1_homogenized_disp_grad_form.html',1,'polyfem::solver']]],
+  ['hookelinearelasticity_11',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler']]],
+  ['hrzmass_12',['HRZMass',['../classpolyfem_1_1assembler_1_1_h_r_z_mass.html',1,'polyfem::assembler']]]
 ];
