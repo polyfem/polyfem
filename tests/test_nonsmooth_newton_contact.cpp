@@ -112,7 +112,7 @@ namespace
 	}
 
 	/// the counters of one reduced solve: polysolve's NonsmoothNewton block, PolyFEM's contact term block
-	const json &block(const json &e, const std::string &name)
+	const json &block(const json &e, const char *name)
 	{
 		static const json empty = json::object();
 		return e.contains("info") && e["info"].contains(name) ? e["info"][name] : empty;
@@ -195,7 +195,14 @@ TEST_CASE("nonsmooth_newton_contact_options", "[nonsmooth_newton]")
 }
 
 #ifdef POLYSOLVE_WITH_CHOLMOD
-TEST_CASE("nonsmooth_newton_contact_without_method_is_native_newton", "[nonsmooth_newton]")
+// The full simulations run only in release builds, like the other simulation tests (verify_run, test_output).
+#ifdef NDEBUG
+#define NONSMOOTH_NEWTON_SIM_TAGS "[nonsmooth_newton]"
+#else
+#define NONSMOOTH_NEWTON_SIM_TAGS "[.][nonsmooth_newton]"
+#endif
+
+TEST_CASE("nonsmooth_newton_contact_without_method_is_native_newton", NONSMOOTH_NEWTON_SIM_TAGS)
 {
 	// without the strategy (debug/method = false) the chain is polysolve's Newton chain; the installed contact term may
 	// only change how max_step_size is computed (certified narrow phase), never its result
@@ -208,7 +215,7 @@ TEST_CASE("nonsmooth_newton_contact_without_method_is_native_newton", "[nonsmoot
 	CHECK(native == own);
 }
 
-TEST_CASE("nonsmooth_newton_contact_stop_before_step", "[nonsmooth_newton]")
+TEST_CASE("nonsmooth_newton_contact_stop_before_step", NONSMOOTH_NEWTON_SIM_TAGS)
 {
 	// the stopping criteria of Solver::minimize act before the strategy's own step: with x_delta_tol above every step
 	// norm both solvers stop at their first direction and leave the iterate unchanged
@@ -224,7 +231,7 @@ TEST_CASE("nonsmooth_newton_contact_stop_before_step", "[nonsmooth_newton]")
 	CHECK(native == own);
 }
 
-TEST_CASE("nonsmooth_newton_contact_five_cubes", "[nonsmooth_newton]")
+TEST_CASE("nonsmooth_newton_contact_five_cubes", NONSMOOTH_NEWTON_SIM_TAGS)
 {
 	// the stack hits the plane at step 8. The trajectory is not compared with the native solver: at the impact the
 	// incremental potential is nonconvex and the two solvers may converge to different (valid) minimizers.
@@ -250,7 +257,7 @@ TEST_CASE("nonsmooth_newton_contact_five_cubes", "[nonsmooth_newton]")
 	CHECK(all_rc(o, "local_contact_blocks"));
 }
 
-TEST_CASE("nonsmooth_newton_contact_collision_proxy", "[nonsmooth_newton]")
+TEST_CASE("nonsmooth_newton_contact_collision_proxy", NONSMOOTH_NEWTON_SIM_TAGS)
 {
 	// a sampled collision proxy (max_order tessellation, lattice order 4) has more collision vertices than FE nodes and
 	// interpolated displacements: the per-collision blocks are not applicable and the global contact assembly is used
