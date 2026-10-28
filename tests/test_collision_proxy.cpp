@@ -610,6 +610,9 @@ TEST_CASE("Bernstein 3D collision mesh evaluates a watertight sampled surface", 
 		Eigen::RowVector3d expected = collision.rest_positions().row(i);
 		expected(0) += 0.2 * expected(0) * expected(1);
 		CHECK((sampled.row(i) - expected).norm() < 1e-12);
+	}
+}
+
 TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]")
 {
 	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D";
