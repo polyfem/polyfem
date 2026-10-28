@@ -23,7 +23,8 @@ namespace polyfem
 		CAUCHY,
 		PK1,
 		PK2,
-		F
+		F,
+		ENERGY
 	};
 
 	Eigen::VectorXd

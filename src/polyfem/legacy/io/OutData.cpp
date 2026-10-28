@@ -1745,6 +1745,31 @@ namespace polyfem::legacy::io
 
 				for (const auto &[name, v] : tvals)
 				{
+					if (name == "energy")
+					{
+						// Scalar field: must not go through the per-dimension splitting below.
+						if (opts.export_field("energy"))
+							writer.add_field(name, v);
+
+						if (opts.export_field("energy_avg"))
+						{
+							// Per-element mean of the energy already computed at the vis points
+							const int n_el = int(bases.size());
+							Eigen::VectorXd sum = Eigen::VectorXd::Zero(n_el);
+							Eigen::VectorXi cnt = Eigen::VectorXi::Zero(n_el);
+							for (int i = 0; i < el_id.size(); ++i)
+							{
+								sum(el_id(i)) += v(i, 0);
+								cnt(el_id(i))++;
+							}
+							Eigen::MatrixXd energy_avg = Eigen::MatrixXd::Zero(v.rows(), 1);
+							for (int i = 0; i < el_id.size(); ++i)
+								energy_avg(i) = sum(el_id(i)) / cnt(el_id(i));
+							writer.add_field("energy_avg", energy_avg);
+						}
+						continue;
+					}
+
 					const int stride = mesh.dimension();
 					assert(v.cols() % stride == 0);
 

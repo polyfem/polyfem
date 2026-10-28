@@ -619,7 +619,9 @@ namespace polyfem::varform
 									  || options.export_field("cauchy_stess")
 									  || options.export_field("pk1_stess")
 									  || options.export_field("pk2_stess")
-									  || options.export_field("F");
+									  || options.export_field("F")
+									  || options.export_field("energy")
+									  || options.export_field("energy_avg");
 			if (!wants_tensor)
 				return;
 
@@ -651,6 +653,38 @@ namespace polyfem::varform
 
 			for (const auto &[name, values] : point_values)
 			{
+				if (name == "energy")
+				{
+					// Scalar field: must not go through the per-dimension splitting below.
+					if (options.export_field("energy"))
+						fields.push_back({name, values, io::OutputField::Association::Point});
+
+					if (options.export_field("energy_avg"))
+					{
+						// Per-element mean of the energy at the sample points.
+						Eigen::VectorXd sum = Eigen::VectorXd::Zero(mesh_->n_elements());
+						Eigen::VectorXi cnt = Eigen::VectorXi::Zero(mesh_->n_elements());
+						for (int i = 0; i < sample.element_ids.size(); ++i)
+						{
+							const int e = sample.element_ids(i);
+							if (e < 0)
+								continue;
+							sum(e) += values(i, 0);
+							cnt(e)++;
+						}
+
+						Eigen::MatrixXd avg = Eigen::MatrixXd::Zero(values.rows(), 1);
+						for (int i = 0; i < sample.element_ids.size(); ++i)
+						{
+							const int e = sample.element_ids(i);
+							if (e >= 0)
+								avg(i) = sum(e) / cnt(e);
+						}
+						fields.push_back({"energy_avg", avg, io::OutputField::Association::Point});
+					}
+					continue;
+				}
+
 				if (!options.export_field(name))
 					continue;
 
@@ -729,8 +763,9 @@ namespace polyfem::varform
 				if (avg_tensor.empty() && !tmp_t.empty())
 				{
 					avg_tensor.resize(tmp_t.size());
-					for (auto &m : avg_tensor)
-						m.setZero(space_.n_bases, actual_dim * actual_dim);
+					// Not every tensor is dim x dim (e.g. the scalar "energy"), so size by its own columns.
+					for (int k = 0; k < tmp_t.size(); ++k)
+						avg_tensor[k].setZero(space_.n_bases, tmp_t[k].second.cols());
 				}
 
 				for (size_t j = 0; j < bs.bases.size(); ++j)
@@ -770,6 +805,10 @@ namespace polyfem::varform
 
 			for (int k = 0; k < tmp_t.size(); ++k)
 			{
+				// "energy_avg" is the per-element mean written by append_tensor_values.
+				if (tmp_t[k].first == "energy")
+					continue;
+
 				const std::string base_name = fmt::format("{:s}_avg", tmp_t[k].first);
 				if (!options.export_field(base_name))
 					continue;
