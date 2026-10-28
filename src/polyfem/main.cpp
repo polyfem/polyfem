@@ -13,7 +13,6 @@
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/io/InputLoader.hpp>
 #include <polyfem/io/Checkpoint.hpp>
-#include <polyfem/varforms/VarFormFactory.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -234,10 +233,7 @@ int forward_simulation(const CLI::App &command_line,
 			is_strict, fallback_solver, log_level, continuation);
 	}
 
-	if (varform::uses_varform_state(in_args, resources))
-		return forward_simulation_with_varform_state(resources, in_args, is_strict);
-
-	log_and_throw_error("Non supported configuration.");
+	return forward_simulation_with_varform_state(resources, in_args, is_strict);
 }
 
 int forward_simulation(const CLI::App &command_line,

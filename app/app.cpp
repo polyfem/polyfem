@@ -22,7 +22,6 @@
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/InputLoader.hpp>
 #include <polyfem/varforms/VarForm.hpp>
-#include <polyfem/varforms/VarFormFactory.hpp>
 #ifdef POLYFEM_WITH_OPTIMIZATION
 #include <polyfem/optimization/OptState.hpp>
 #endif
@@ -489,23 +488,17 @@ int main(int argc, char **argv)
 									in_args.contains("/input/checkpoint/reorder"_json_pointer)
 										? in_args["/input/checkpoint/reorder"_json_pointer].get<bool>()
 										: false;
-								if (!varform::uses_varform_state(continuation, checkpoint->resources()))
-									throw std::runtime_error("Checkpoints are supported");
 								state = std::make_shared<State>();
 								state->init(continuation, *checkpoint, true);
 								state->time_callback = callback;
 								worker = std::make_shared<std::thread>(run_varform_polyfem, state);
 							}
-							else if (varform::uses_varform_state(in_args, *input_resources))
+							else
 							{
 								state = std::make_shared<State>();
 								state->init(in_args, *input_resources, true);
 								state->time_callback = callback;
 								worker = std::make_shared<std::thread>(run_varform_polyfem, state);
-							}
-							else
-							{
-								throw std::runtime_error("Unsupported configuration.");
 							}
 							worker->detach();
 						}

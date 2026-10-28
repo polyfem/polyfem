@@ -231,6 +231,13 @@ namespace polyfem::varform
 	{
 		ElasticVarForm::build_basis(mesh, iso_parametric, args);
 
+		problem->setup_bc(
+			mesh, assembler::BoundaryKind::NormalAlignedNeumann, /*fe_space_id=*/-1,
+			boundary_.total_local_boundary, boundary_.local_pressure_boundary);
+		problem->setup_bc(
+			mesh, assembler::BoundaryKind::PressureCavity, /*fe_space_id=*/-1,
+			boundary_.total_local_boundary, boundary_.local_pressure_cavity);
+
 		// Legacy nonlinear/contact code assumes the displacement space includes obstacle vertices.
 		// The shared build path only counts FE bases, so extend it here
 		// before constructing collision/contact state.

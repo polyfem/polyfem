@@ -9,7 +9,6 @@
 #include "polyfem/utils/MatrixUtils.hpp"
 #include "polyfem/State.hpp"
 #include "polyfem/varforms/VarForm.hpp"
-#include "polyfem/varforms/VarFormFactory.hpp"
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
@@ -171,16 +170,7 @@ AuthenticateResult authenticate_input(
 	}
 
 	json out = json({});
-	AuthenticateResult run_result;
-	if (varform::uses_varform_state(args, resources))
-	{
-		run_result = run_varform_state(args, out, resources);
-	}
-	else
-	{
-		spdlog::error("State cannot read bundled input {}", input_name);
-		return SOLVE_FAILED;
-	}
+	const AuthenticateResult run_result = run_varform_state(args, out, resources);
 	if (run_result != SUCCESS)
 		return run_result;
 
@@ -706,7 +696,7 @@ TEST_CASE("all testable transient scenes support checkpoint continuation", "[.][
 			json effective = loaded.config;
 			auto common_resources = utils::apply_common_params(effective, *loaded.resources);
 			const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
-			if (!has_multiple_time_steps(effective) || !varform::uses_varform_state(effective, resources))
+			if (!has_multiple_time_steps(effective))
 				continue;
 
 			CAPTURE(scene, manifest);

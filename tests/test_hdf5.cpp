@@ -14,7 +14,6 @@
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <algorithm>
 #include <array>
@@ -527,10 +526,10 @@ TEST_CASE("ResourceIO filesystem and HDF5 backends", "[hdf5][resource_io]")
 	}
 	const io::LoadedInput loaded = io::load_hdf5_input(bundle);
 	CHECK(loaded.config["geometry"].empty());
-	CHECK(varform::uses_varform_state(loaded.config, *loaded.resources));
 	json effective_config = loaded.config;
 	auto common_resources = utils::apply_common_params(effective_config, *loaded.resources);
 	REQUIRE(common_resources != nullptr);
+	CHECK(effective_config["materials"]["type"] == "NeoHookean");
 	CHECK(common_resources->read_string("local.txt") == "common-local resource");
 	CHECK(loaded.resources->read_string("assets/note.txt") == "embedded text");
 	CHECK(loaded.resources->with_root("assets")->read_string("note.txt") == "embedded text");

@@ -1,5 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <polyfem/State.hpp>
+#include "VarFormTestAccess.hpp"
+
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/FixedCorotational.hpp>
@@ -26,6 +29,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
+#include <cmath>
 #include <iostream>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +41,35 @@ using namespace polyfem::assembler;
 
 namespace
 {
-	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean")
+	struct ElasticFormFixture
+	{
+		State state;
+		std::shared_ptr<varform::ElasticVarForm> formulation;
+		test::ElasticFormDebugData data;
+		ipc::CollisionMesh collision_mesh;
+
+		explicit ElasticFormFixture(const json &args)
+			: formulation(prepare_form(state, args)),
+			  data(test::VarFormTestAccess::elastic_form_data(*formulation))
+		{
+			test::VarFormTestAccess::build_collision_mesh(*formulation, collision_mesh);
+		}
+
+	private:
+		static std::shared_ptr<varform::ElasticVarForm> prepare_form(State &state, const json &args)
+		{
+			state.init(args, true);
+			state.set_max_threads(1);
+			state.load_mesh();
+			auto form = std::dynamic_pointer_cast<varform::ElasticVarForm>(state.variational_formulation);
+			if (!form)
+				throw std::runtime_error("Form derivative fixture requires an elastic VarForm.");
+			test::VarFormTestAccess::prepare(*form);
+			return form;
+		}
+	};
+
+	std::shared_ptr<ElasticFormFixture> get_fixture(int dim, const std::string &material_type = "NeoHookean", const bool cavity = false)
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 
@@ -150,24 +182,23 @@ namespace
 			})"_json;
 		}
 
-		auto state = std::make_shared<State>();
-		state->init(in_args, true);
-		state->set_max_threads(1);
+		if (cavity)
+		{
+			assert(dim == 2);
+			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/annulus/annulus.msh";
+			in_args["geometry"][0]["surface_selection"] = {{{"id", 7}, {"center", {0, 0}}, {"radius", 0.51}}};
+			in_args["boundary_conditions"].erase("dirichlet_boundary");
+			in_args["boundary_conditions"]["pressure_cavity"] = {{{"id", 7}, {"value", -1000}}};
+		}
 
-		state->load_mesh();
-
-		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
-
-		return state;
+		return std::make_shared<ElasticFormFixture>(in_args);
 	}
 } // namespace
 
 template <typename Form>
-void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4, const int n_rand = 10)
+void test_form(Form &form, const ElasticFormFixture &fixture, double step = 1e-8, double tol = 1e-4, const int n_rand = 10)
 {
-	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * state.mesh->dimension());
+	Eigen::VectorXd x = Eigen::VectorXd::Zero(fixture.data.space.ndof());
 
 	form.init(x);
 	form.init_lagging(x);
@@ -228,56 +259,56 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
+	const auto fixture = get_fixture(dim);
+	const auto rhs_assembler_ptr = fixture->data.rhs_assembler;
+	const int ndof = fixture->data.space.n_bases * fixture->data.mesh.dimension();
 
-	BodyForm form(ndof, state_ptr->n_pressure_bases,
-				  state_ptr->boundary_nodes,
-				  state_ptr->local_boundary,
-				  state_ptr->local_neumann_boundary,
-				  state_ptr->n_boundary_samples(),
-				  state_ptr->rhs,
+	BodyForm form(ndof, /*n_pressure_bases=*/0,
+				  fixture->data.boundary.boundary_nodes,
+				  fixture->data.boundary.local_boundary,
+				  fixture->data.boundary.local_neumann_boundary,
+				  fixture->data.boundary_samples,
+				  fixture->data.rhs,
 				  *rhs_assembler_ptr,
-				  state_ptr->mass_matrix_assembler->density(),
-				  false, state_ptr->problem->is_time_dependent());
+				  fixture->data.mass_assembler.density(),
+				  false, fixture->data.problem.is_time_dependent());
 	Eigen::VectorXd x_prev;
-	x_prev.setRandom(state_ptr->n_bases * 3);
+	x_prev.setRandom(ndof);
 	x_prev /= 100.;
-	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
+	form.update_quantities(fixture->state.args["time"]["t0"].get<double>() + 5 * fixture->state.args["time"]["dt"].get<double>(), x_prev);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
+	const auto fixture = get_fixture(dim);
+	const auto rhs_assembler_ptr = fixture->data.rhs_assembler;
+	const int ndof = fixture->data.space.n_bases * fixture->data.mesh.dimension();
 
-	BodyForm form(ndof, state_ptr->n_pressure_bases,
-				  state_ptr->boundary_nodes,
-				  state_ptr->local_boundary,
-				  state_ptr->local_neumann_boundary,
-				  state_ptr->n_boundary_samples(),
-				  state_ptr->rhs,
+	BodyForm form(ndof, /*n_pressure_bases=*/0,
+				  fixture->data.boundary.boundary_nodes,
+				  fixture->data.boundary.local_boundary,
+				  fixture->data.boundary.local_neumann_boundary,
+				  fixture->data.boundary_samples,
+				  fixture->data.rhs,
 				  *rhs_assembler_ptr,
-				  state_ptr->mass_matrix_assembler->density(),
-				  false, state_ptr->problem->is_time_dependent());
+				  fixture->data.mass_assembler.density(),
+				  false, fixture->data.problem.is_time_dependent());
 
 	Eigen::VectorXd x_prev;
-	x_prev.setRandom(state_ptr->n_bases * dim);
+	x_prev.setRandom(fixture->data.space.n_bases * dim);
 	x_prev /= 100.;
-	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
+	form.update_quantities(fixture->state.args["time"]["t0"].get<double>() + 5 * fixture->state.args["time"]["dt"].get<double>(), x_prev);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double dhat = 1e-3;
 	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
@@ -290,19 +321,19 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 	const double dt = 1e-3;
 
 	BarrierContactForm form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		fixture->collision_mesh, dhat, fixture->data.average_mass,
 		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 	form.set_barrier_stiffness(barrier_stiffness);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("ESP contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double dhat = 1e-3;
 	const double barrier_stiffness = 1e7;
@@ -322,19 +353,19 @@ TEST_CASE("ESP contact form derivatives", "[form][form_derivatives][contact_form
 		 {"area_weights", area_weights}});
 
 	ESPContactForm form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, esp_params,
+		fixture->collision_mesh, dhat, fixture->data.average_mass, esp_params,
 		/*skip_obstacles=*/false, /*barrier=*/nullptr, /*use_adaptive_dhat=*/false,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 	form.set_barrier_stiffness(barrier_stiffness);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double dhat = 1e-3;
 	const double alpha = 0.2;
@@ -349,44 +380,77 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const json contact_args = json::object({{"a", a}, {"alpha_t", alpha}, {"alpha_n", 0.1}, {"beta_t", 0}, {"beta_n", 0}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
 
 	GCPContactForm form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
+		fixture->collision_mesh, dhat, fixture->data.average_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim, GENERATE("NeoHookean", "MooneyRivlin3ParamSymbolic"));
+	const auto fixture = get_fixture(dim, GENERATE("NeoHookean", "MooneyRivlin3ParamSymbolic"));
 	ElasticForm form(
-		state_ptr->n_bases,
-		state_ptr->bases,
-		state_ptr->geom_bases(),
-		*state_ptr->assembler,
-		state_ptr->ass_vals_cache,
+		fixture->data.space.n_bases,
+		fixture->data.bases,
+		fixture->data.space.geometry_basis_list(),
+		fixture->data.assembler,
+		fixture->data.assembly_cache,
 		0,
-		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume());
-	test_form(form, *state_ptr, 1e-7);
+		fixture->state.args["time"]["dt"],
+		fixture->data.mesh.is_volume());
+	test_form(form, *fixture, 1e-7);
 }
 
 TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]")
 {
 	const int dim = GENERATE(2, 3);
 	const bool is_time_dependent = GENERATE(true);
-	const auto state_ptr = get_state(dim);
-	state_ptr->elasticity_pressure_assembler = state_ptr->build_pressure_assembler();
+	const auto fixture = get_fixture(dim);
+	const auto pressure_assembler = test::VarFormTestAccess::build_pressure_assembler(*fixture->formulation);
 	PressureForm form(
-		state_ptr->n_bases,
-		state_ptr->local_pressure_boundary,
-		state_ptr->local_pressure_cavity,
-		state_ptr->boundary_nodes,
-		state_ptr->n_boundary_samples(),
-		*state_ptr->elasticity_pressure_assembler,
+		fixture->data.space.n_bases,
+		fixture->data.boundary.local_pressure_boundary,
+		fixture->data.boundary.local_pressure_cavity,
+		fixture->data.boundary.boundary_nodes,
+		fixture->data.boundary_samples,
+		*pressure_assembler,
 		is_time_dependent);
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
+}
+
+TEST_CASE("cavity pressure form derivatives", "[form][form_derivatives][pressure_form]")
+{
+	const auto fixture = get_fixture(2, "NeoHookean", true);
+	REQUIRE(fixture->data.boundary.local_pressure_boundary.empty());
+	REQUIRE(fixture->data.boundary.local_pressure_cavity.size() == 1);
+	REQUIRE_FALSE(fixture->data.boundary.local_pressure_cavity.at(7).empty());
+	const auto pressure_assembler = test::VarFormTestAccess::build_pressure_assembler(*fixture->formulation);
+	PressureForm form(
+		fixture->data.space.n_bases,
+		fixture->data.boundary.local_pressure_boundary,
+		fixture->data.boundary.local_pressure_cavity,
+		fixture->data.boundary.boundary_nodes,
+		fixture->data.boundary_samples,
+		*pressure_assembler,
+		true);
+	const Eigen::VectorXd x = Eigen::VectorXd::Zero(fixture->data.space.ndof());
+	const Eigen::VectorXd direction = Eigen::VectorXd::Random(x.size()).normalized();
+	const double step = 1e-5;
+	REQUIRE(std::isfinite(form.value(x)));
+	Eigen::VectorXd grad, grad_plus, grad_minus;
+	form.first_derivative(x, grad);
+	REQUIRE(grad.norm() > 0);
+	const double finite_directional_gradient = (form.value(x + step * direction) - form.value(x - step * direction)) / (2 * step);
+	CHECK(std::abs(grad.dot(direction) - finite_directional_gradient) < 1e-4);
+
+	StiffnessMatrix hess;
+	form.second_derivative(x, hess);
+	form.first_derivative(x + step * direction, grad_plus);
+	form.first_derivative(x - step * direction, grad_minus);
+	const Eigen::VectorXd hess_direction = hess * direction;
+	CHECK((hess_direction - (grad_plus - grad_minus) / (2 * step)).norm() < 1e-4 * std::max(1.0, hess_direction.norm()));
 }
 
 namespace
@@ -395,7 +459,7 @@ namespace
 		const int dim,
 		const bool use_convergent_formulation)
 	{
-		const auto state_ptr = get_state(dim);
+		const auto fixture = get_fixture(dim);
 		const double epsv = 1e-3;
 		const double dhat = 1e-3;
 		const double barrier_stiffness = 1e7;
@@ -411,7 +475,7 @@ namespace
 				CAPTURE(dim, use_convergent_formulation, mu, is_time_dependent);
 
 				BarrierContactForm contact_form(
-					state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+					fixture->collision_mesh, dhat, fixture->data.average_mass,
 					use_convergent_formulation, use_convergent_formulation,
 					use_convergent_formulation, use_adaptive_barrier_stiffness,
 					is_time_dependent, false, broad_phase_method,
@@ -419,11 +483,11 @@ namespace
 				contact_form.set_barrier_stiffness(barrier_stiffness);
 
 				FrictionForm form(
-					state_ptr->collision_mesh, nullptr, epsv, mu,
+					fixture->collision_mesh, nullptr, epsv, mu,
 					broad_phase_method, contact_form,
 					/*n_lagging_iters=*/-1);
 
-				test_form(form, *state_ptr, 1e-8, 1e-4, 3);
+				test_form(form, *fixture, 1e-8, 1e-4, 3);
 			}
 	}
 } // namespace
@@ -431,7 +495,7 @@ namespace
 TEST_CASE("smooth contact friction form derivatives", "[form][form_derivatives][friction_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 	const double epsv = 1e-3;
 	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
 	const double dhat = 1e-3;
@@ -443,22 +507,22 @@ TEST_CASE("smooth contact friction form derivatives", "[form][form_derivatives][
 	const json contact_args = json::object({{"alpha_t", 0.2}, {"alpha_n", 0.1}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
 
 	const GCPContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		fixture->collision_mesh, dhat, fixture->data.average_mass,
 		contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(
-		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		fixture->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
 		/*n_lagging_iters=*/-1);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("high-order contact friction form derivatives", "[form][form_derivatives][friction_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 	const double epsv = 1e-3;
 	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
 	const double dhat = 1e-3;
@@ -470,15 +534,15 @@ TEST_CASE("high-order contact friction form derivatives", "[form][form_derivativ
 	const json esp_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"normalize_weights", false}, {"area_weights", true}});
 
 	const ESPContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, esp_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
+		fixture->collision_mesh, dhat, fixture->data.average_mass, esp_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
 		/*use_adaptive_dhat=*/false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(
-		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		fixture->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
 		/*n_lagging_iters=*/-1);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("friction form derivatives 2d convergent", "[form][form_derivatives][friction_form]")
@@ -504,81 +568,81 @@ TEST_CASE("friction form derivatives 3d nonconvergent", "[form][form_derivatives
 TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 	const double dt = 1e-2;
 	std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
-	state_ptr->set_materials(*damping_assembler);
+	test::VarFormTestAccess::set_materials(*fixture->formulation, *damping_assembler);
 
 	ElasticForm form(
-		state_ptr->n_bases,
-		state_ptr->bases,
-		state_ptr->geom_bases(),
+		fixture->data.space.n_bases,
+		fixture->data.bases,
+		fixture->data.space.geometry_basis_list(),
 		*damping_assembler,
-		state_ptr->ass_vals_cache,
+		fixture->data.assembly_cache,
 		0,
 		dt,
-		state_ptr->mesh->is_volume());
-	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
-	test_form(form, *state_ptr);
+		fixture->data.mesh.is_volume());
+	form.update_quantities(0, Eigen::VectorXd::Ones(fixture->data.space.n_bases * dim));
+	test_form(form, *fixture);
 }
 
 TEST_CASE("inertia form derivatives", "[form][form_derivatives][inertia_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
 	time_integrator.init(
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
 		dt);
 
-	InertiaForm form(state_ptr->mass, time_integrator);
-	form.update_quantities(0, Eigen::VectorXd::Zero(state_ptr->n_bases * dim));
+	InertiaForm form(fixture->data.mass, time_integrator);
+	form.update_quantities(0, Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim));
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][lagged_reg_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double weight = 1e3;
 	LaggedRegForm form(/*n_lagging_iters=*/-1);
 	form.set_weight(weight);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleigh_damping_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 	ElasticForm elastic_form(
-		state_ptr->n_bases,
-		state_ptr->bases,
-		state_ptr->geom_bases(),
-		*state_ptr->assembler,
-		state_ptr->ass_vals_cache,
+		fixture->data.space.n_bases,
+		fixture->data.bases,
+		fixture->data.space.geometry_basis_list(),
+		fixture->data.assembler,
+		fixture->data.assembly_cache,
 		0,
-		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume());
+		fixture->state.args["time"]["dt"],
+		fixture->data.mesh.is_volume());
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
 	time_integrator.init(
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
+		Eigen::VectorXd::Zero(fixture->data.space.n_bases * dim),
 		dt);
 
 	RayleighDampingForm form(
 		elastic_form, time_integrator, true, 0.1, 1);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_form]")
@@ -586,32 +650,32 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 	static const int n_rand = 10;
 
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	const int ndof = state_ptr->n_bases * dim;
-	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const auto fixture = get_fixture(dim);
+	const int ndof = fixture->data.space.n_bases * dim;
+	const auto rhs_assembler_ptr = fixture->data.rhs_assembler;
 
 	assembler::Mass mass_mat_assembler;
 	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	state_ptr->mass_matrix_assembler->assemble(dim == 3,
-											   state_ptr->n_bases,
-											   state_ptr->bases,
-											   state_ptr->geom_bases(),
-											   state_ptr->mass_ass_vals_cache,
-											   0,
-											   mass_tmp,
-											   true);
+	fixture->data.mass_assembler.assemble(dim == 3,
+										  fixture->data.space.n_bases,
+										  fixture->data.bases,
+										  fixture->data.space.geometry_basis_list(),
+										  fixture->data.mass_assembly_cache,
+										  0,
+										  mass_tmp,
+										  true);
 
 	BCLagrangianForm form(
 		ndof,
-		state_ptr->boundary_nodes,
-		state_ptr->local_boundary,
-		state_ptr->local_neumann_boundary,
-		state_ptr->n_boundary_samples(),
+		fixture->data.boundary.boundary_nodes,
+		fixture->data.boundary.local_boundary,
+		fixture->data.boundary.local_neumann_boundary,
+		fixture->data.boundary_samples,
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle.ndof(),
-		state_ptr->problem->is_time_dependent(),
+		fixture->formulation->output_space().obstacle->ndof(),
+		fixture->data.problem.is_time_dependent(),
 		0);
 
 	Eigen::VectorXd x = Eigen::VectorXd::Zero(ndof);
@@ -623,7 +687,7 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 	for (int i = 0; i < n_rand; ++i)
 	{
 		form.update_lagrangian(x, k_al);
-		test_form(form, *state_ptr);
+		test_form(form, *fixture);
 
 		x.setRandom();
 		x /= 100;
@@ -637,69 +701,69 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 	static const int n_rand = 10;
 
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	const int ndof = state_ptr->n_bases * dim;
-	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const auto fixture = get_fixture(dim);
+	const int ndof = fixture->data.space.n_bases * dim;
+	const auto rhs_assembler_ptr = fixture->data.rhs_assembler;
 
 	assembler::Mass mass_mat_assembler;
 	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	state_ptr->mass_matrix_assembler->assemble(dim == 3,
-											   state_ptr->n_bases,
-											   state_ptr->bases,
-											   state_ptr->geom_bases(),
-											   state_ptr->mass_ass_vals_cache,
-											   0,
-											   mass_tmp,
-											   true);
+	fixture->data.mass_assembler.assemble(dim == 3,
+										  fixture->data.space.n_bases,
+										  fixture->data.bases,
+										  fixture->data.space.geometry_basis_list(),
+										  fixture->data.mass_assembly_cache,
+										  0,
+										  mass_tmp,
+										  true);
 
 	BCLagrangianForm form(
 		ndof,
-		state_ptr->boundary_nodes,
-		state_ptr->local_boundary,
-		state_ptr->local_neumann_boundary,
-		state_ptr->n_boundary_samples(),
+		fixture->data.boundary.boundary_nodes,
+		fixture->data.boundary.local_boundary,
+		fixture->data.boundary.local_neumann_boundary,
+		fixture->data.boundary_samples,
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle.ndof(),
-		state_ptr->problem->is_time_dependent(),
+		fixture->formulation->output_space().obstacle->ndof(),
+		fixture->data.problem.is_time_dependent(),
 		0);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("Inversion barrier form derivatives", "[form][form_derivatives][inversion_barrier]")
 {
 
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
 	const double vhat = 1e-3;
 
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
-	state_ptr->build_mesh_matrices(V, F);
+	test::VarFormTestAccess::build_mesh_matrices(*fixture->formulation, V, F);
 
-	InversionBarrierForm form(V, F, state_ptr->mesh->dimension(), vhat);
+	InversionBarrierForm form(V, F, fixture->data.mesh.dimension(), vhat);
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 
-	REQUIRE(state_ptr->mass.size() > 0);
-	L2ProjectionForm form(state_ptr->mass, state_ptr->mass, Eigen::VectorXd::Ones(state_ptr->mass.cols()));
+	REQUIRE(fixture->data.mass.size() > 0);
+	L2ProjectionForm form(fixture->data.mass, fixture->data.mass, Eigen::VectorXd::Ones(fixture->data.mass.cols()));
 
-	test_form(form, *state_ptr);
+	test_form(form, *fixture);
 }
 
 TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
 {
 	const int dim = GENERATE(2, 3);
-	std::shared_ptr<State> state;
+	std::shared_ptr<ElasticFormFixture> fixture;
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 		json in_args = R"(
@@ -782,46 +846,38 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  			})"_json;
 		}
 
-		state = std::make_shared<State>();
-		state->init(in_args, true);
-		state->set_max_threads(1);
-
-		state->load_mesh();
-
-		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
+		fixture = std::make_shared<ElasticFormFixture>(in_args);
 	}
 	ElasticForm form(
-		state->n_bases,
-		state->bases,
-		state->geom_bases(),
-		*state->assembler,
-		state->ass_vals_cache,
+		fixture->data.space.n_bases,
+		fixture->data.bases,
+		fixture->data.space.geometry_basis_list(),
+		fixture->data.assembler,
+		fixture->data.assembly_cache,
 		0,
-		state->args["time"]["dt"],
-		state->mesh->is_volume());
-	test_form(form, *state);
+		fixture->state.args["time"]["dt"],
+		fixture->data.mesh.is_volume());
+	test_form(form, *fixture);
 }
 
 TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elastic_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto fixture = get_fixture(dim);
 	std::shared_ptr<assembler::FixedCorotational> assembler = std::make_shared<assembler::FixedCorotational>();
-	state_ptr->set_materials(*assembler);
+	test::VarFormTestAccess::set_materials(*fixture->formulation, *assembler);
 
 	ElasticForm form(
-		state_ptr->n_bases,
-		state_ptr->bases,
-		state_ptr->geom_bases(),
+		fixture->data.space.n_bases,
+		fixture->data.bases,
+		fixture->data.space.geometry_basis_list(),
 		*assembler,
-		state_ptr->ass_vals_cache,
+		fixture->data.assembly_cache,
 		0,
 		1,
-		state_ptr->mesh->is_volume());
-	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
+		fixture->data.mesh.is_volume());
+	form.update_quantities(0, Eigen::VectorXd::Ones(fixture->data.space.n_bases * dim));
 	// at x = 0 the singular values of F are all equal and finite differences with
 	// step 1e-7 are dominated by round-off (~1e-4 on entries that are exactly 0)
-	test_form(form, *state_ptr, 1e-6, 1e-4);
+	test_form(form, *fixture, 1e-6, 1e-4);
 }

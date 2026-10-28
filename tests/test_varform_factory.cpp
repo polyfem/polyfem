@@ -10,6 +10,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include <cmath>
 #include <fstream>
@@ -82,7 +83,6 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		{"solid_material", {{"type", "NeoHookean"}}}};
 	CHECK(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
 	CHECK(varform::VarFormFactory::create("NavierStokesFSI", contact_fsi_args, resources) != nullptr);
-	CHECK(varform::uses_varform_state(contact_fsi_args, resources));
 
 	contact_fsi_args["materials"].erase("solid_material");
 	CHECK_FALSE(varform::VarFormFactory::supports("NavierStokesFSI", contact_fsi_args));
@@ -128,7 +128,33 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	CHECK(scalar_with_zero_mean->name() == "Scalar");
 }
 
-TEST_CASE("state can opt into migrated varforms", "[varform][state]")
+TEST_CASE("varforms reject unsupported follower and cavity pressure loads", "[varform]")
+{
+	const io::FileSystemIO resources(".");
+	for (const std::string field : {"pressure_boundary", "pressure_cavity"})
+	{
+		json args = transient_args();
+		args["boundary_conditions"][field] = {{{"id", 1}, {"value", 1}}};
+		for (const std::string formulation : {
+				 "Laplacian", "Stokes", "NavierStokes", "NavierStokesFSI",
+				 "OperatorSplitting", "IncompressibleLinearElasticity", "Bilaplacian", "ThermoElasticity"})
+		{
+			CAPTURE(field, formulation);
+			CHECK(varform::VarFormFactory::supports(formulation, args));
+			const auto form = varform::VarFormFactory::create(formulation, args, resources);
+			REQUIRE(form != nullptr);
+			CHECK_THROWS_WITH(form->init(formulation, Units(), args, ""),
+							  formulation + " does not support boundary_conditions." + field + ".");
+		}
+		CHECK(varform::VarFormFactory::supports("NeoHookean", args));
+		CHECK(varform::VarFormFactory::create("NeoHookean", args, resources) != nullptr);
+		const auto elastic_form = varform::VarFormFactory::create("LinearElasticity", args, resources);
+		REQUIRE(elastic_form != nullptr);
+		CHECK(elastic_form->name() == "NonlinearElasticTransient");
+	}
+}
+
+TEST_CASE("state selects supported varforms", "[varform][state]")
 {
 	for (const auto &[scene, expected_name] : {
 			 std::pair{std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json", std::string("Stokes")},
@@ -582,8 +608,7 @@ TEST_CASE("static macro displacement gradient uses forward varform", "[varform][
 		{"value", {{0, 0}, {0, 0}}},
 		{"fixed_components", {0}}};
 
-	const io::FileSystemIO resources(args["root_path"].get<std::string>());
-	CHECK(varform::uses_varform_state(args, resources));
+	CHECK(varform::VarFormFactory::supports("NeoHookean", args));
 
 	State state;
 	state.init(args, false);
@@ -604,7 +629,7 @@ TEST_CASE("incremental load macro strain uses forward varform", "[varform][state
 	{
 		CAPTURE(quasistatic);
 		args["time"] = {{"quasistatic", quasistatic}, {"dt", 1}, {"time_steps", 2}};
-		CHECK(varform::uses_varform_state(args, resources) == quasistatic);
+		CHECK(varform::VarFormFactory::supports("NeoHookean", args) == quasistatic);
 		CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args, true));
 		CHECK(varform::VarFormFactory::create("NeoHookean", args, resources, true) == nullptr);
 		if (quasistatic)
@@ -619,17 +644,17 @@ TEST_CASE("incremental load macro strain uses forward varform", "[varform][state
 
 		json ordinary_args = args;
 		ordinary_args["constraints"].erase("macro_displacement_gradient");
-		CHECK(varform::uses_varform_state(ordinary_args, resources));
+		CHECK(varform::VarFormFactory::supports("NeoHookean", ordinary_args));
 	}
 	args["time"].erase("quasistatic");
-	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args));
 	args["time"]["quasistatic"] = true;
 	args["contact"] = {{"enabled", true}, {"periodic", true}};
-	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args));
 	args["boundary_conditions"]["periodic"] = {{{"boundary_ids", {1, 2}}}};
-	CHECK(varform::uses_varform_state(args, resources));
+	CHECK(varform::VarFormFactory::supports("NeoHookean", args));
 	args["contact"]["enabled"] = false;
-	CHECK_FALSE(varform::uses_varform_state(args, resources));
+	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", args));
 	args.erase("contact");
 	for (const bool null_time : {false, true})
 	{
@@ -637,6 +662,6 @@ TEST_CASE("incremental load macro strain uses forward varform", "[varform][state
 		args.erase("time");
 		if (null_time)
 			args["time"] = nullptr;
-		CHECK(varform::uses_varform_state(args, resources));
+		CHECK(varform::VarFormFactory::supports("NeoHookean", args));
 	}
 }

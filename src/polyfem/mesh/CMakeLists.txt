@@ -15,6 +15,8 @@ set(SOURCES
 	MeshNodes.hpp
 	MeshUtils.cpp
 	MeshUtils.hpp
+	MMGRemesh.cpp
+	MMGRemesh.hpp
 	Obstacle.cpp
 	Obstacle.hpp
 	SlimSmooth.cpp
