@@ -23,8 +23,6 @@
 
 #include <finitediff.hpp>
 
-#include <polyfem/legacy/State.hpp>
-
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 
@@ -36,7 +34,6 @@ using namespace polyfem;
 using namespace polyfem::solver;
 using namespace polyfem::time_integrator;
 using namespace polyfem::assembler;
-using polyfem::legacy::State;
 
 namespace
 {

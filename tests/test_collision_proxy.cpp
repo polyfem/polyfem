@@ -6,7 +6,6 @@
 #include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/State.hpp>
-#include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
@@ -358,15 +357,5 @@ TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]"
 		REQUIRE(output_space.collision_mesh != nullptr);
 		REQUIRE(output_space.obstacle != nullptr);
 		check_obstacle_flags(*output_space.collision_mesh, output_space.obstacle->n_vertices());
-	}
-
-	SECTION("legacy State")
-	{
-		polyfem::legacy::State state;
-		state.init(in_args, true);
-		state.set_max_threads(1);
-		state.load_mesh();
-		state.build_basis();
-		check_obstacle_flags(state.collision_mesh, state.obstacle.n_vertices());
 	}
 }

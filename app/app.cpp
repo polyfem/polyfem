@@ -21,7 +21,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/InputLoader.hpp>
-#include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 #ifdef POLYFEM_WITH_OPTIMIZATION
@@ -70,36 +69,6 @@ int run_varform_polyfem(std::shared_ptr<State> state)
 
 		state->variational_formulation->save_json(sol);
 		state->variational_formulation->export_data(sol);
-		return EXIT_SUCCESS;
-	}
-	catch (const std::exception &e)
-	{
-		logger().error("Exception: {}", e.what());
-		return EXIT_FAILURE;
-	}
-}
-
-int run_legacy_polyfem(std::shared_ptr<legacy::State> state)
-{
-	try
-	{
-		state->load_mesh();
-		if (!state->mesh)
-			return EXIT_FAILURE;
-
-		state->stats.compute_mesh_stats(*state->mesh);
-		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
-
-		Eigen::MatrixXd sol;
-		Eigen::MatrixXd pressure;
-		state->solve_problem(sol, pressure);
-		state->compute_errors(sol);
-
-		logger().info("total time: {}s", state->timings.total_time());
-		state->save_json(sol);
-		state->export_data(sol, pressure);
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception &e)
@@ -320,7 +289,6 @@ int main(int argc, char **argv)
 	set_adjoint_logger(std::make_shared<spdlog::logger>(opt_logger));
 
 	std::shared_ptr<State> state;
-	std::shared_ptr<legacy::State> legacy_state;
 #ifdef POLYFEM_WITH_OPTIMIZATION
 	std::shared_ptr<OptState> opt_state;
 #endif
@@ -522,8 +490,7 @@ int main(int argc, char **argv)
 										? in_args["/input/checkpoint/reorder"_json_pointer].get<bool>()
 										: false;
 								if (!varform::uses_varform_state(continuation, checkpoint->resources()))
-									throw std::runtime_error("Checkpoints are supported only by the non-legacy State.");
-								legacy_state = nullptr;
+									throw std::runtime_error("Checkpoints are supported");
 								state = std::make_shared<State>();
 								state->init(continuation, *checkpoint, true);
 								state->time_callback = callback;
@@ -531,7 +498,6 @@ int main(int argc, char **argv)
 							}
 							else if (varform::uses_varform_state(in_args, *input_resources))
 							{
-								legacy_state = nullptr;
 								state = std::make_shared<State>();
 								state->init(in_args, *input_resources, true);
 								state->time_callback = callback;
@@ -539,14 +505,7 @@ int main(int argc, char **argv)
 							}
 							else
 							{
-								if (dynamic_cast<const io::HDF5IO *>(input_resources.get()) != nullptr)
-									throw std::runtime_error("HDF5 resources are supported only by the non-legacy State.");
-								state = nullptr;
-								legacy_state = std::make_shared<legacy::State>();
-								in_args["root_path"] = input_resources->describe("");
-								legacy_state->init(in_args, true);
-								legacy_state->time_callback = callback;
-								worker = std::make_shared<std::thread>(run_legacy_polyfem, legacy_state);
+								throw std::runtime_error("Unsupported configuration.");
 							}
 							worker->detach();
 						}

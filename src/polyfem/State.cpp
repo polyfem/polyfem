@@ -30,9 +30,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <ipc/utils/logger.hpp>
-#ifdef POLYFEM_WITH_ITR
-#include <wmtk/utils/Logger.hpp>
-#endif
 
 #include <igl/Timer.h>
 
@@ -209,15 +206,8 @@ namespace polyfem
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
-#ifdef POLYFEM_WITH_ITR
-		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
-#endif
-
 		logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
-#ifdef POLYFEM_WITH_ITR
-		wmtk::logger().set_level(spdlog::level::trace);
-#endif
 
 		set_log_level(log_level);
 	}
@@ -374,7 +364,7 @@ namespace polyfem
 
 		variational_formulation = varform::VarFormFactory::create(formulation, args, *resources_, is_adjoint_optimization);
 		if (!variational_formulation)
-			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
+			throw std::runtime_error("polyfem::State is varform-only; invalid " + formulation + ".");
 
 		logger().info("Using variational formulation: {}", variational_formulation->name());
 		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;

@@ -7,7 +7,6 @@ the legacy `State` split.
 
 The current migration target is:
 
-- preserve unsupported functionality through `polyfem::legacy::State`;
 - make the new forward-simulation path small and understandable;
 - move physics-specific solve and output behavior into VarForms;
 - keep shared FEM, mesh, solver, and assembler code independent of either
@@ -15,27 +14,13 @@ The current migration target is:
 
 ## Runtime Routing
 
-`src/polyfem/main.cpp` and `app/app.cpp` are the application boundaries between
-the new and legacy paths.
+`src/polyfem/main.cpp` and `app/app.cpp` are the application boundaries.
 
 1. The input JSON is loaded and command-line overrides are applied.
 2. `varform::uses_varform_state(args)` asks `VarFormFactory` whether the setup is
    supported by the new path.
 3. Supported setups run through `polyfem::State`.
-4. Unsupported setups run through `polyfem::legacy::State`.
 
-The routing decision is intentionally temporary. It allows the new path to have
-one coherent design without partially supporting legacy-only features.
-
-Current reasons to select the legacy path include:
-
-- optimization and adjoint workflows;
-- remeshing;
-- periodic boundary conditions and periodic contact;
-- formulations not represented by a VarForm;
-- homogenisation;
-- unsupported combinations of contact, pressure boundary conditions, and
-  constraints.
 
 ## Ownership Boundaries
 
@@ -86,13 +71,6 @@ Derived VarForms own physics-specific behavior and any additional FE spaces.
 Duplicating auxiliary-space bookkeeping in mixed VarForms is intentional. It
 keeps the base class honest: the only universal FE-space assumption is that a
 formulation has at least one primary space.
-
-### `polyfem::legacy::State`
-
-The legacy state is a preserved implementation for functionality that has not
-been migrated. New VarForms and new I/O must not depend on it.
-
-Optimization and adjoint code currently use the legacy state explicitly.
 
 ## Lifecycle
 
@@ -203,8 +181,6 @@ The geometry writer owns:
 - Paraview/HDF5/VTM/PVD serialization;
 - geometry-only fields such as normals, sidesets, and discretization order.
 
-The writer must not depend on `State`, `legacy::State`, or a concrete VarForm
-subclass.
 
 ## Adding a VarForm
 
@@ -238,9 +214,6 @@ The migration needs four complementary kinds of tests:
 - restart tests: verify every transient VarForm can save and resume its own
   time-integrator state.
 
-Direct legacy-versus-VarForm comparisons are useful for a small representative
-set while the migration is active. They should not become a permanent
-requirement after the legacy path is removed.
 
 ## Known Gaps
 
@@ -250,8 +223,6 @@ final architecture:
 - restore and diagnose the disabled 2D homogenization integration test;
 - design state-file naming and restart behavior for VarForms with multiple
   independent time integrators;
-- add stronger output-field and legacy-equivalence tests;
-- remove remaining compatibility-only output after the legacy path is retired.
 
 ## Deferred Work
 
