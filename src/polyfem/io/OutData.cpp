@@ -2,6 +2,7 @@
 
 #include <array>
 #include <map>
+#include <set>
 
 #include "Evaluator.hpp"
 #include "MatrixIO.hpp"
@@ -431,6 +432,146 @@ namespace polyfem::io
 
 	} // namespace
 
+	void OutGeometryData::extract_boundary_mesh_2d_sampled(
+		const mesh::Mesh &mesh, const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &geom_bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &node_positions, Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+		const int sampling_order)
+	{
+		assert(!mesh.is_volume());
+		if (mesh.has_poly())
+		{
+			logger().warn("Sampled 2D collision mesh requires triangle or quadrilateral elements; falling back to the standard boundary extraction");
+			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+				node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+			return;
+		}
+		if (sampling_order > 0)
+		{
+			displacement_map_entries.clear();
+			std::map<std::array<int, 3>, int> sample_ids;
+			std::vector<Eigen::RowVector2d> vertices;
+			std::vector<std::pair<int, int>> edges;
+			std::set<int> visited_edges;
+			for (const auto &lb : total_local_boundary)
+			{
+				const int el = lb.element_id();
+				const auto &b = bases[el];
+				if (b.bases.empty())
+					continue;
+				Eigen::MatrixXd ref_nodes;
+				if (mesh.is_simplex(el))
+					autogen::p_nodes_2d(b.bases.front().order(), ref_nodes);
+				else if (mesh.is_cube(el))
+					autogen::q_nodes_2d(b.bases.front().order(), ref_nodes);
+				else
+					log_and_throw_error("Sampled 2D collision mesh requires triangle or quadrilateral elements.");
+				for (int j = 0; j < lb.size(); ++j)
+				{
+					const int eid = lb.global_primitive_id(j);
+					if (!visited_edges.insert(eid).second)
+						continue;
+					const auto nodes = b.local_nodes_for_primitive(eid, mesh);
+					const int first = nodes(0), last = nodes(nodes.size() - 1);
+					// Corner identity is topological even when its basis depends on multiple DOFs.
+					const int v0 = mesh.face_vertex(el, first);
+					const int v1 = mesh.face_vertex(el, last);
+					Eigen::MatrixXd points(sampling_order + 1, 2), positions;
+					for (int i = 0; i <= sampling_order; ++i)
+					{
+						const double t = double(i) / sampling_order;
+						points.row(i) = (1 - t) * ref_nodes.row(first) + t * ref_nodes.row(last);
+					}
+					geom_bases[el].eval_geom_mapping(points, positions);
+					std::vector<assembler::AssemblyValues> values;
+					b.evaluate_bases(points, values);
+					int previous = -1;
+					for (int i = 0; i <= sampling_order; ++i)
+					{
+						// Share corners topologically, not by coordinate tolerance.
+						const std::array<int, 3> key = i == 0 ? std::array<int, 3>{{0, v0, 0}}
+							: i == sampling_order ? std::array<int, 3>{{0, v1, 0}}
+							: std::array<int, 3>{{1, eid, i}};
+						const auto [it, inserted] = sample_ids.emplace(key, int(vertices.size()));
+						const int row = it->second;
+						if (inserted)
+						{
+							vertices.push_back(positions.row(i));
+							for (size_t k = 0; k < values.size(); ++k)
+								for (const auto &g : b.bases[k].global())
+								{
+									const double weight = values[k].val(i) * g.val;
+									if (weight != 0)
+										displacement_map_entries.emplace_back(row, g.index, weight);
+								}
+						}
+						if (previous >= 0)
+							edges.emplace_back(previous, row);
+						previous = row;
+					}
+				}
+			}
+			node_positions.resize(vertices.size(), 2);
+			for (int i = 0; i < int(vertices.size()); ++i)
+				node_positions.row(i) = vertices[i];
+			boundary_edges.resize(edges.size(), 2);
+			for (int i = 0; i < int(edges.size()); ++i)
+				boundary_edges.row(i) << edges[i].first, edges[i].second;
+			boundary_triangles.resize(0, 0);
+			return;
+		}
+
+		extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
+			node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+
+		// Keep the nodal boundary connectivity, but evaluate the FE field at
+		// those reference nodes instead of treating its coefficients as values.
+		std::vector<bool> visited(n_bases, false);
+		for (const auto &lb : total_local_boundary)
+		{
+			const int el = lb.element_id();
+			const auto &b = bases[el];
+			if (b.bases.empty())
+				continue;
+			Eigen::MatrixXd points, positions;
+			if (mesh.is_simplex(el))
+				autogen::p_nodes_2d(b.bases.front().order(), points);
+			else if (mesh.is_cube(el))
+				autogen::q_nodes_2d(b.bases.front().order(), points);
+			else
+				log_and_throw_error("Sampled 2D collision mesh requires triangle or quadrilateral elements.");
+			geom_bases[el].eval_geom_mapping(points, positions);
+			std::vector<assembler::AssemblyValues> values;
+			b.evaluate_bases(points, values);
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const auto nodes = b.local_nodes_for_primitive(lb.global_primitive_id(j), mesh);
+				for (const int node : nodes)
+				{
+					const auto &global = b.bases[node].global();
+					if (global.size() != 1)
+						continue;
+					const int row = global.front().index;
+					if (visited[row])
+						continue;
+					visited[row] = true;
+					node_positions.row(row) = positions.row(node);
+					for (size_t k = 0; k < values.size(); ++k)
+						for (const auto &g : b.bases[k].global())
+						{
+							const double weight = values[k].val(node) * g.val;
+							if (weight != 0)
+								displacement_map_entries.emplace_back(row, g.index, weight);
+						}
+				}
+			}
+		}
+	}
+
 	void OutGeometryData::extract_boundary_mesh_sampled(
 		const mesh::Mesh &mesh,
 		const int n_bases,
@@ -440,7 +581,8 @@ namespace polyfem::io
 		Eigen::MatrixXi &boundary_edges,
 		Eigen::MatrixXi &boundary_triangles,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
-		const int sampling_order)
+		const int sampling_order,
+		const std::vector<basis::ElementBases> *geom_bases)
 	{
 		using namespace polyfem::mesh;
 
@@ -624,6 +766,22 @@ namespace polyfem::io
 
 				std::vector<polyfem::assembler::AssemblyValues> vals;
 				b.evaluate_bases(pts, vals);
+				Eigen::MatrixXd mapped_positions;
+				if (geom_bases)
+				{
+					// The geometry may have a different basis/order than displacement.
+					// Avoid the rational pyramid apex singularity during evaluation.
+					Eigen::MatrixXd geometry_points = pts;
+					if (apex_node >= 0)
+						for (int s = 0; s < pts.rows(); ++s)
+							if (std::abs(pts(s, 2) - 1.0) < 1e-12)
+								geometry_points.row(s).setZero();
+					geom_bases->at(el).eval_geom_mapping(geometry_points, mapped_positions);
+					if (apex_node >= 0)
+						for (int s = 0; s < pts.rows(); ++s)
+							if (std::abs(pts(s, 2) - 1.0) < 1e-12)
+								mapped_positions.row(s) = mesh3d.point(mesh3d.get_ordered_vertices_from_pyramid(el).back());
+				}
 
 				const auto edge_key = [M](const int va, const int vb, const int step) {
 					return va < vb ? std::array<int, 4>{{1, va, vb, step}}
@@ -703,6 +861,8 @@ namespace polyfem::io
 								weights[g.index] += Ni * g.val;
 							}
 						}
+					if (geom_bases)
+						pos = mapped_positions.row(s).transpose();
 					assert(pos.allFinite());
 
 					const int vid = int(vertices.size());
@@ -1399,6 +1559,8 @@ namespace polyfem::io
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
 				const basis::ElementBases &b = bases[lb.element_id()];
+				if (b.bases.empty())
+					continue;
 
 				for (int j = 0; j < lb.size(); ++j)
 				{

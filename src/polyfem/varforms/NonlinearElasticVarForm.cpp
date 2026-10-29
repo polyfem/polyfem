@@ -337,7 +337,20 @@ namespace polyfem::varform
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 
 		const auto extract_default_collision_mesh = [&]() {
-			if (args.at("/space/basis_type"_json_pointer) == "Spline")
+			if (!mesh.is_volume() && args.at("/space/basis_type"_json_pointer) == "Bernstein")
+			{
+				io::OutGeometryData::extract_boundary_mesh_2d_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, geom_bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+			}
+			else if (args.at("/space/basis_type"_json_pointer) == "Bernstein")
+			{
+				io::OutGeometryData::extract_boundary_mesh_sampled(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
+					0, &geom_bases);
+			}
+			else if (args.at("/space/basis_type"_json_pointer) == "Spline")
 			{
 				io::OutGeometryData::extract_boundary_mesh_sampled(
 					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
@@ -371,10 +384,25 @@ namespace polyfem::varform
 			else if (collision_mesh_args.contains("tessellation_type")
 					 && collision_mesh_args["tessellation_type"] == "max_order")
 			{
-				io::OutGeometryData::extract_boundary_mesh_sampled(
-					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
-					collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
-					utils::json_value<int>(collision_mesh_args, "sampling_order", 0));
+				if (!mesh.is_volume() && args.at("/space/basis_type"_json_pointer) != "Spline")
+				{
+					int order = utils::json_value<int>(collision_mesh_args, "sampling_order", 0);
+					if (order == 0)
+						for (const auto &lb : total_local_boundary)
+							if (!bases[lb.element_id()].bases.empty())
+								order = std::max(order, bases[lb.element_id()].bases.front().order());
+					polyfem::io::OutGeometryData::extract_boundary_mesh_2d_sampled(
+						mesh, n_bases - obstacle.n_vertices(), bases, geom_bases, total_local_boundary,
+						collision_vertices, collision_edges, collision_triangles, displacement_map_entries, order);
+				}
+				else
+				{
+					io::OutGeometryData::extract_boundary_mesh_sampled(
+						mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+						collision_vertices, collision_edges, collision_triangles, displacement_map_entries,
+						utils::json_value<int>(collision_mesh_args, "sampling_order", 0),
+						args.at("/space/basis_type"_json_pointer) == "Bernstein" ? &geom_bases : nullptr);
+				}
 			}
 			else if (collision_mesh_args.contains("max_edge_length"))
 			{

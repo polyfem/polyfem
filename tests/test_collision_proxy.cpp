@@ -313,6 +313,306 @@ TEST_CASE("spline contact builds a displacement map", "[build_collision_proxy]")
 	CHECK(mapped_displacements.rows() == output_space.collision_mesh->rest_positions().rows());
 }
 
+TEST_CASE("Bernstein 2D collision mesh evaluates Lagrange samples", "[collision_proxy][bernstein]")
+{
+	polyfem::json args = {
+		{"geometry", {{{"mesh", ""}}}},
+		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
+		{"space", {{"discr_order", 3}, {"basis_type", "Bernstein"}}},
+		{"contact", {{"enabled", true}, {"dhat", 0.01}}},
+		{"output", {{"log", {{"level", "warning"}}}}}};
+	const int sampling_order = GENERATE(-1, 0, 1, 6, 10);
+	if (sampling_order >= 0)
+		args["contact"]["collision_mesh"] = {{"enabled", true}, {"tessellation_type", "max_order"}, {"sampling_order", sampling_order}};
+	const int segments = sampling_order > 0 ? sampling_order : 3;
+	polyfem::State state;
+	state.init(args, true);
+	Eigen::MatrixXd V(3, 2);
+	V << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi F(1, 3);
+	F << 0, 1, 2;
+	state.set_mesh(V, F);
+	polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto debug = polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	const auto output = state.variational_formulation->output_space();
+	REQUIRE(output.collision_mesh != nullptr);
+	const auto &collision = *output.collision_mesh;
+	REQUIRE(collision.num_vertices() == 3 * segments);
+	CHECK(collision.num_edges() == 3 * segments);
+	CHECK(collision.num_faces() == 0);
+	CHECK_FALSE(ipc::has_intersections(collision, collision.rest_positions()));
+
+	// Perturb only the Bernstein coefficient at (1/3, 0). Along the bottom
+	// edge its cubic basis is 3*t*(1-t)^2, not a nodal hat function.
+	Eigen::MatrixXd u = Eigen::MatrixXd::Zero(debug.n_bases, 2);
+	int control = -1;
+	for (const auto &b : debug.bases->front().bases)
+		if ((b.global().front().node.head<2>() - Eigen::RowVector2d(1.0 / 3, 0)).norm() < 1e-12)
+			control = b.global().front().index;
+	REQUIRE(control >= 0);
+	u(control, 1) = 1;
+	const Eigen::MatrixXd displaced = collision.displace_vertices(u);
+	int bottom_samples = 0;
+	for (int i = 0; i < collision.num_vertices(); ++i)
+	{
+		const double x = collision.rest_positions()(i, 0);
+		const double y = collision.rest_positions()(i, 1);
+		if (std::abs(y) < 1e-12)
+		{
+			++bottom_samples;
+			CHECK(displaced(i, 0) == Catch::Approx(x).margin(1e-12));
+			CHECK(displaced(i, 1) == Catch::Approx(3 * x * (1 - x) * (1 - x)).margin(1e-12));
+		}
+	}
+	CHECK(bottom_samples == segments + 1);
+
+	// Partition of unity: a uniform coefficient displacement translates
+	// every sampled collision vertex by exactly the same amount.
+	u.col(0).setConstant(0.2);
+	u.col(1).setConstant(-0.3);
+	const Eigen::MatrixXd translated = collision.displace_vertices(u);
+	for (int i = 0; i < collision.num_vertices(); ++i)
+		CHECK((translated.row(i) - collision.rest_positions().row(i) - Eigen::RowVector2d(0.2, -0.3)).norm() < 1e-12);
+}
+
+TEST_CASE("2D collision sampling supports weighted corners and empty bases", "[collision_proxy][sampling_regression]")
+{
+	polyfem::json args = {
+		{"geometry", {{{"mesh", ""}}}},
+		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
+		{"space", {{"discr_order", 1}}},
+		{"output", {{"log", {{"level", "warning"}}}}}};
+	polyfem::State state;
+	state.init(args, true);
+	Eigen::MatrixXd V(3, 2);
+	V << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi F(1, 3);
+	F << 0, 1, 2;
+	state.set_mesh(V, F);
+	polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto debug = polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	auto bases = *debug.bases;
+	Eigen::MatrixXd vertices;
+	Eigen::MatrixXi edges, faces;
+	std::vector<Eigen::Triplet<double>> entries;
+
+	SECTION("weighted corner")
+	{
+		// Replace one corner DOF by a weighted combination of two DOFs.
+		auto &corner = bases.front().bases.front().global();
+		corner = {bases.front().bases[1].global().front(), bases.front().bases[2].global().front()};
+		corner[0].val = 0.25;
+		corner[1].val = 0.75;
+		polyfem::io::OutGeometryData::extract_boundary_mesh_2d_sampled(
+			*debug.mesh, debug.n_bases, bases, *debug.geometry_bases, *debug.total_local_boundary,
+			vertices, edges, faces, entries, 3);
+		REQUIRE(vertices.rows() == 9);
+		CHECK(edges.rows() == 9);
+		Eigen::SparseMatrix<double> map(vertices.rows(), debug.n_bases);
+		map.setFromTriplets(entries.begin(), entries.end());
+		for (int i = 0; i < vertices.rows(); ++i)
+		{
+			CHECK(map.row(i).sum() == Catch::Approx(1));
+			if (vertices.row(i).norm() < 1e-12)
+			{
+				CHECK(map.coeff(i, corner[0].index) == Catch::Approx(0.25));
+				CHECK(map.coeff(i, corner[1].index) == Catch::Approx(0.75));
+			}
+		}
+	}
+	SECTION("empty boundary element")
+	{
+		const int order = GENERATE(0, 3);
+		bases.front().bases.clear();
+		REQUIRE_NOTHROW(polyfem::io::OutGeometryData::extract_boundary_mesh_2d_sampled(
+			*debug.mesh, debug.n_bases, bases, *debug.geometry_bases, *debug.total_local_boundary,
+			vertices, edges, faces, entries, order));
+		CHECK(edges.rows() == 0);
+		CHECK(entries.empty());
+	}
+}
+
+TEST_CASE("2D polygon collision sampling uses standard extraction", "[collision_proxy][sampling_regression]")
+{
+	Eigen::MatrixXd V(5, 2);
+	V << 0, 0, 1, 0, 2, 1, 1, 2, 0, 1;
+	Eigen::MatrixXi F(1, 5);
+	F << 0, 1, 2, 3, 4;
+	const auto mesh = polyfem::mesh::Mesh::create(polyfem::mesh::MeshData(V, F));
+	REQUIRE(mesh->has_poly());
+	std::vector<polyfem::basis::ElementBases> bases(1);
+	for (int i = 0; i < 5; ++i)
+	{
+		bases.front().bases.emplace_back();
+		bases.front().bases.back().init(1, i, i, V.row(i));
+	}
+	bases.front().set_local_node_from_primitive_func([](const int edge, const polyfem::mesh::Mesh &mesh) {
+		Eigen::VectorXi nodes(2);
+		nodes << mesh.edge_vertex(edge, 0), mesh.edge_vertex(edge, 1);
+		return nodes;
+	});
+	std::vector<polyfem::mesh::LocalBoundary> boundary;
+	boundary.emplace_back(0, polyfem::mesh::BoundaryType::POLYGON);
+	for (int e = 0; e < mesh->n_edges(); ++e)
+		boundary.front().add_boundary_primitive(e, e);
+	Eigen::MatrixXd vertices;
+	Eigen::MatrixXi edges, faces;
+	std::vector<Eigen::Triplet<double>> entries;
+	const int order = GENERATE(0, 3);
+	REQUIRE_NOTHROW(polyfem::io::OutGeometryData::extract_boundary_mesh_2d_sampled(
+		*mesh, 5, bases, {}, boundary, vertices, edges, faces, entries, order));
+	CHECK(vertices.isApprox(V));
+	CHECK(edges.rows() == 5);
+	CHECK(faces.size() == 0);
+	CHECK(entries.empty());
+}
+
+TEST_CASE("Bernstein contact falls back on nonconforming volume meshes", "[collision_proxy][sampling_regression]")
+{
+	polyfem::json args = {
+		{"geometry", {{{"mesh", ""}}}},
+		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
+		{"space", {{"discr_order", 1}, {"basis_type", "Bernstein"}}},
+		{"contact", {{"enabled", true}, {"dhat", 0.01}}},
+		{"output", {{"log", {{"level", "warning"}}}}}};
+	polyfem::State state;
+	state.init(args, true);
+	Eigen::MatrixXd V(4, 3);
+	V << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+	Eigen::MatrixXi F(1, 4);
+	F << 0, 1, 2, 3;
+	state.set_mesh(V, F, true);
+	REQUIRE_NOTHROW(polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation));
+	const auto output = state.variational_formulation->output_space();
+	REQUIRE(output.collision_mesh != nullptr);
+	CHECK(output.collision_mesh->num_vertices() == 4);
+	CHECK(output.collision_mesh->num_faces() == 4);
+}
+
+TEST_CASE("2D spline max-order collision sampling preserves standard extraction", "[collision_proxy][sampling_regression]")
+{
+	polyfem::json args = {
+		{"geometry", {{{"mesh", ""}}}},
+		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
+		{"space", {{"basis_type", "Spline"}}},
+		{"contact", {{"enabled", true}, {"dhat", 0.01},
+			{"collision_mesh", {{"enabled", true}, {"tessellation_type", "max_order"}}}}},
+		{"output", {{"log", {{"level", "warning"}}}}}};
+	polyfem::State state;
+	state.init(args, true);
+	Eigen::MatrixXd V(16, 2);
+	for (int y = 0; y < 4; ++y)
+		for (int x = 0; x < 4; ++x)
+			V.row(4 * y + x) << x, y;
+	Eigen::MatrixXi F(9, 4);
+	for (int y = 0; y < 3; ++y)
+		for (int x = 0; x < 3; ++x)
+			F.row(3 * y + x) << 4 * y + x, 4 * y + x + 1, 4 * (y + 1) + x + 1, 4 * (y + 1) + x;
+	state.set_mesh(V, F);
+	polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto output = state.variational_formulation->output_space();
+	REQUIRE(output.collision_mesh != nullptr);
+	const auto &collision = *output.collision_mesh;
+	double perimeter = 0;
+	for (int i = 0; i < collision.num_edges(); ++i)
+		perimeter += (collision.rest_positions().row(collision.edges()(i, 0))
+			- collision.rest_positions().row(collision.edges()(i, 1))).norm();
+	const auto debug = polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	Eigen::MatrixXd expected_vertices;
+	Eigen::MatrixXi expected_edges, expected_faces;
+	std::vector<Eigen::Triplet<double>> entries;
+	polyfem::io::OutGeometryData::extract_boundary_mesh(
+		*debug.mesh, debug.n_bases, *debug.bases, *debug.total_local_boundary,
+		expected_vertices, expected_edges, expected_faces, entries);
+	double expected_perimeter = 0;
+	for (int i = 0; i < expected_edges.rows(); ++i)
+		expected_perimeter += (expected_vertices.row(expected_edges(i, 0))
+			- expected_vertices.row(expected_edges(i, 1))).norm();
+	CHECK(collision.num_edges() == expected_edges.rows());
+	CHECK(perimeter == Catch::Approx(expected_perimeter));
+}
+
+TEST_CASE("Bernstein 3D collision mesh evaluates a watertight sampled surface", "[collision_proxy][bernstein][3d]")
+{
+	const int sampling_order = GENERATE(-1, 0, 1, 6);
+	const int order = sampling_order > 0 ? sampling_order : 3;
+	polyfem::json args = {
+		{"geometry", {{{"mesh", ""}}}},
+		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
+		{"space", {{"discr_order", 3}, {"basis_type", "Bernstein"}}},
+		{"contact", {{"enabled", true}, {"dhat", 0.01}}},
+		{"output", {{"log", {{"level", "warning"}}}}}};
+	if (sampling_order >= 0)
+		args["contact"]["collision_mesh"] = {{"enabled", true}, {"tessellation_type", "max_order"}, {"sampling_order", sampling_order}};
+	polyfem::State state;
+	state.init(args, true);
+	state.set_max_threads(1);
+	Eigen::MatrixXd V(4, 3);
+	V << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+	Eigen::MatrixXi T(1, 4);
+	T << 0, 1, 2, 3;
+	state.set_mesh(V, T);
+	polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto debug = polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	const auto output = state.variational_formulation->output_space();
+	REQUIRE(output.collision_mesh != nullptr);
+	const auto &collision = *output.collision_mesh;
+	CHECK(collision.num_vertices() == 2 * order * order + 2);
+	CHECK(collision.num_faces() == 4 * order * order);
+	check_closed_surface_mesh(collision.rest_positions(), collision.faces(), 2, 1);
+	CHECK_FALSE(ipc::has_intersections(collision, collision.rest_positions()));
+
+	// A single cubic Bernstein edge coefficient has the analytic value
+	// 3*x*(1-x-y-z)^2 on the reference tetrahedron.
+	Eigen::MatrixXd u = Eigen::MatrixXd::Zero(debug.n_bases, 3);
+	int control = -1;
+	for (const auto &b : debug.bases->front().bases)
+		if ((b.global().front().node - Eigen::RowVector3d(1.0 / 3, 0, 0)).norm() < 1e-12)
+			control = b.global().front().index;
+	REQUIRE(control >= 0);
+	u(control, 2) = 1;
+	const Eigen::MatrixXd displaced = collision.displace_vertices(u);
+	for (int i = 0; i < collision.num_vertices(); ++i)
+	{
+		const Eigen::RowVector3d p = collision.rest_positions().row(i);
+		const double l0 = 1 - p.sum();
+		CHECK((displaced.row(i) - p - Eigen::RowVector3d(0, 0, 3 * p(0) * l0 * l0)).norm() < 1e-12);
+	}
+	u.rowwise() = Eigen::RowVector3d(0.2, -0.3, 0.4);
+	const Eigen::MatrixXd translated = collision.displace_vertices(u);
+	for (int i = 0; i < collision.num_vertices(); ++i)
+		CHECK((translated.row(i) - collision.rest_positions().row(i) - Eigen::RowVector3d(0.2, -0.3, 0.4)).norm() < 1e-12);
+
+	// Give the independent geometry a curved mapping x -> x + 0.2*x*y.
+	// FE displacements must still be evaluated in the original reference domain.
+	auto geometry = *debug.geometry_bases;
+	const auto original = geometry.front();
+	geometry.front().set_bases_func([original](const Eigen::MatrixXd &points, std::vector<polyfem::assembler::AssemblyValues> &values) {
+		original.evaluate_bases(points, values);
+		Eigen::MatrixXd physical_points;
+		original.eval_geom_mapping(points, physical_points);
+		for (size_t k = 0; k < original.bases.size(); ++k)
+		{
+			const auto &p = original.bases[k].global().front().node;
+			const double sign = p.norm() < 1e-12 ? -1 : (p - Eigen::RowVector3d(1, 0, 0)).norm() < 1e-12 ? 1 : 0;
+			values[k].val.col(0).array() += sign * 0.2 * physical_points.col(0).array() * physical_points.col(1).array();
+		}
+	});
+	Eigen::MatrixXd sampled;
+	Eigen::MatrixXi edges, faces;
+	std::vector<Eigen::Triplet<double>> entries;
+	polyfem::io::OutGeometryData::extract_boundary_mesh_sampled(
+		*debug.mesh, debug.n_bases, *debug.bases, *debug.total_local_boundary,
+		sampled, edges, faces, entries, order, &geometry);
+	REQUIRE(sampled.rows() == collision.num_vertices());
+	for (int i = 0; i < sampled.rows(); ++i)
+	{
+		Eigen::RowVector3d expected = collision.rest_positions().row(i);
+		expected(0) += 0.2 * expected(0) * expected(1);
+		CHECK((sampled.row(i) - expected).norm() < 1e-12);
+	}
+}
+
 TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]")
 {
 	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D";
