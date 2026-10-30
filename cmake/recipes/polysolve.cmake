@@ -10,4 +10,4 @@ message(STATUS "Third-party: creating target 'polysolve'")
 include(CPM)
 
 CPMDeclarePackage(eigen NAME eigen GIT_REPOSITORY https://eigen.googlesource.com/mirror GIT_TAG 5.0.1 DOWNLOAD_ONLY ON)
-CPMAddPackage("gh:Kaiyao-Ge/polysolve#c6c8281c77bd7439369f09843c2169a846dbe6d6")
+CPMAddPackage("gh:Kaiyao-Ge/polysolve#f39cb8308a1c60d892619f20c0b80b8edbada640")

@@ -249,11 +249,19 @@ TEST_CASE("nonsmooth_newton_contact_five_cubes", NONSMOOTH_NEWTON_SIM_TAGS)
 		REQUIRE(f.is_open());
 		f >> o;
 	}
-	// the protected path is taken on contact iterates, and its failures fall back to the native line search
+	// the protected path is taken on contact iterates, and its failures fall back to the native line search; once the
+	// true energy no longer verifies the path (handoff "any", the default) the Newton chain finishes the solve
 	CHECK(sum_stat(o, "active_iterations") > 0);
 	CHECK(sum_stat(o, "path_iterations") > 0);
 	CHECK(sum_stat(o, "inner_steps") >= sum_stat(o, "path_iterations"));
-	CHECK(sum_stat(o, "path_iterations") + sum_stat(o, "line_search_iterations") + sum_stat(o, "path_failures") == sum_stat(o, "iterations"));
+	CHECK(sum_stat(o, "handoff_noise_floor") + sum_stat(o, "handoff_grad_norm") > 0);
+	for (const auto &e : o["solver_info"])
+	{
+		const json &s = block(e, "NonsmoothNewton");
+		// Newton chain iterations only after a handoff or a failed direction
+		if (e.value("type", "") == "rc" && s.value("fallback_iterations", 0L) > 0)
+			CHECK(s.value("handoff_noise_floor", 0L) + s.value("handoff_grad_norm", 0L) + s.value("failed_directions", 0L) > 0);
+	}
 	CHECK(all_rc(o, "local_contact_blocks"));
 }
 
