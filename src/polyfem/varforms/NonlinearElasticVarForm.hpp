@@ -121,8 +121,9 @@ namespace polyfem::varform
 		void check_nonsmooth_newton_config() const;
 		/// @brief NonsmoothNewton: reject unsupported problems before the solve (throws with the reason)
 		void check_nonsmooth_newton_support() const;
-		/// @brief NonsmoothNewton: the barrier contact form as the nonsmooth term of the reduced problem
-		std::shared_ptr<solver::BarrierContactNonsmoothTerm> make_nonsmooth_term();
+		/// @brief NonsmoothNewton: the barrier contact form as the nonsmooth term of the solves with these nonlinear solver
+		/// parameters (the reduced solve or the augmented Lagrangian subproblems)
+		std::shared_ptr<solver::BarrierContactNonsmoothTerm> make_nonsmooth_term(const json &nonlinear_params);
 		std::shared_ptr<solver::FastTetValidity> nonsmooth_fast_validity_; ///< built on first use (null: not applicable)
 		/// displacement map of collision_mesh_ (collision full vertex <- FE node); empty: the collision full vertices are the FE nodes
 		Eigen::SparseMatrix<double> collision_displacement_map_;

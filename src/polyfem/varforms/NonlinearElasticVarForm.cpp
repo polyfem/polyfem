@@ -60,7 +60,8 @@ namespace polyfem::varform
 		clean_args["contact"].erase("_dhat_was_explicit");
 		ElasticVarForm::init(formulation, units, clean_args, out_path);
 		contact_dhat_was_explicit_ = contact_dhat_was_explicit;
-		if (solver::selects_nonsmooth_newton(this->args["solver"]["nonlinear"]))
+		if (solver::selects_nonsmooth_newton(this->args["solver"]["nonlinear"])
+			|| solver::selects_nonsmooth_newton(this->args["solver"]["augmented_lagrangian"]["nonlinear"]))
 			check_nonsmooth_newton_config();
 	}
 
@@ -1366,7 +1367,7 @@ namespace polyfem::varform
 			log_and_throw_error("{}: needs a positive lumped mass", name);
 	}
 
-	std::shared_ptr<solver::BarrierContactNonsmoothTerm> NonlinearElasticVarForm::make_nonsmooth_term()
+	std::shared_ptr<solver::BarrierContactNonsmoothTerm> NonlinearElasticVarForm::make_nonsmooth_term(const json &nonlinear_params)
 	{
 		if (!nonsmooth_fast_validity_done_)
 		{
@@ -1376,7 +1377,7 @@ namespace polyfem::varform
 		return std::make_shared<solver::BarrierContactNonsmoothTerm>(
 			*solve_data_.nl_problem, forms, pure_mass_ * Eigen::VectorXd::Ones(pure_mass_.cols()), collision_mesh_,
 			&collision_displacement_map_, nonsmooth_fast_validity_,
-			solver::BarrierContactNonsmoothTerm::Options::from_json(args["solver"]["nonlinear"]));
+			solver::BarrierContactNonsmoothTerm::Options::from_json(nonlinear_params));
 	}
 
 	void NonlinearElasticVarForm::solve_tensor_nonlinear(
@@ -1414,16 +1415,20 @@ namespace polyfem::varform
 				this->solve_data_.update_barrier_stiffness(sol);
 			});
 
-		// NonsmoothNewton: the barrier contact form is the nonsmooth term of the reduced solve
+		// NonsmoothNewton: the barrier contact form is the nonsmooth term of the solves that select it, the reduced solve
+		// and the full-size augmented Lagrangian subproblems (whose solver parameters default to solver/nonlinear)
+		const json &al_nonlinear_params = args["solver"]["augmented_lagrangian"]["nonlinear"];
 		const bool nonsmooth = solver::selects_nonsmooth_newton(args["solver"]["nonlinear"]);
-		if (nonsmooth)
+		const bool al_nonsmooth = solver::selects_nonsmooth_newton(al_nonlinear_params);
+		if (nonsmooth || al_nonsmooth)
 			check_nonsmooth_newton_support();
 
 		al_solver.post_subsolve = [&](const double al_weight) {
 			json info = nl_solver->info();
-			if (nonsmooth && al_weight == 0 && al_solver.last_solver() && nl_problem.nonsmooth_term())
+			if (al_solver.last_solver() && nl_problem.nonsmooth_term())
 			{
-				// counters of the solver used by the reduced solve and of the contact term
+				// counters of the solver used by the subsolve and of the contact term (the term of the augmented Lagrangian
+				// subproblems counts over all of them in this step)
 				info = al_solver.last_solver()->info();
 				info["contact_term"] = nl_problem.nonsmooth_term()->stats();
 			}
@@ -1437,11 +1442,21 @@ namespace polyfem::varform
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		if (al_nonsmooth)
+			nl_problem.set_nonsmooth_term(make_nonsmooth_term(al_nonlinear_params));
+		try
+		{
+			al_solver.solve_al(nl_problem, sol, al_nonlinear_params, args["solver"]["linear"], units.characteristic_length());
+		}
+		catch (...)
+		{
+			nl_problem.set_nonsmooth_term(nullptr);
+			throw;
+		}
+		nl_problem.set_nonsmooth_term(nullptr);
 
 		if (nonsmooth)
-			nl_problem.set_nonsmooth_term(make_nonsmooth_term());
+			nl_problem.set_nonsmooth_term(make_nonsmooth_term(args["solver"]["nonlinear"]));
 		try
 		{
 			al_solver.solve_reduced(nl_problem, sol,

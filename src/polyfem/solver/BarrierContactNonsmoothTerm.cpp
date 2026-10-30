@@ -118,16 +118,17 @@ namespace polyfem::solver
 	BarrierContactNonsmoothTerm::~BarrierContactNonsmoothTerm() = default;
 
 	// ------------------------------------------------------------------------------------------------------ dof maps
-	// The term works in the reduced space (cf. NLProblem::gradient / hessian). Without constraint forms the reduced space
-	// is the full space: the reduction matrices are not set up and full-size quantities are already reduced.
+	// The term works in the current size of the problem (cf. NLProblem::gradient / hessian): the reduced space, or the full
+	// space in the augmented Lagrangian subproblems. Without constraint forms the reduced space is the full space: the
+	// reduction matrices are not set up and full-size quantities are already reduced.
 	Vec BarrierContactNonsmoothTerm::to_reduced(const Vec &full) const
 	{
-		return problem_.full_size() != problem_.reduced_size() ? problem_.full_to_reduced_grad(full) : full;
+		return problem_.full_size() != problem_.reduced_size() && !problem_.uses_full_size() ? problem_.full_to_reduced_grad(full) : full;
 	}
 
 	void BarrierContactNonsmoothTerm::to_reduced(StiffnessMatrix &hessian) const
 	{
-		if (problem_.full_size() != problem_.reduced_size())
+		if (problem_.full_size() != problem_.reduced_size() && !problem_.uses_full_size())
 			problem_.full_hessian_to_reduced_hessian(hessian);
 	}
 
@@ -205,6 +206,7 @@ namespace polyfem::solver
 			gn += gt;
 		}
 		grad = to_reduced(gn);
+		problem_.add_penalty_gradient(x, grad);
 	}
 
 	void BarrierContactNonsmoothTerm::smooth_hessian(const Vec &x, const bool project_to_psd, StiffnessMatrix &hessian)
@@ -222,6 +224,7 @@ namespace polyfem::solver
 			h += tmp;
 		}
 		to_reduced(h);
+		problem_.add_penalty_hessian(x, h);
 		hessian = std::move(h);
 	}
 
@@ -265,6 +268,23 @@ namespace polyfem::solver
 	void BarrierContactNonsmoothTerm::metric_diagonal(Vec &diag) const
 	{
 		diag = problem_.full_to_reduced_diag(mass_full_);
+		if (problem_.uses_full_size())
+		{
+			// augmented Lagrangian subproblems: the obstacle dofs are free and massless; give them the mean mass of the
+			// FE dofs, as BCLagrangianForm does for the obstacle entries of its penalty metric
+			double sum = 0;
+			int n = 0;
+			for (int i = 0; i < diag.size(); ++i)
+				if (diag[i] > 0)
+				{
+					sum += diag[i];
+					++n;
+				}
+			const double mean = n ? sum / n : 1.0;
+			for (int i = 0; i < diag.size(); ++i)
+				if (!(diag[i] > 0))
+					diag[i] = mean;
+		}
 	}
 
 	// ---------------------------------------------------------------------------------------------- nonsmooth term
@@ -296,8 +316,8 @@ namespace polyfem::solver
 
 	bool BarrierContactNonsmoothTerm::hessian_blocks(const Vec &y, Vec &grad, std::vector<polysolve::nonlinear::HessianBlock> &blocks)
 	{
-		if (!(opts_.local_blocks && local_ok_))
-			return false;
+		if (!(opts_.local_blocks && local_ok_) || problem_.uses_full_size())
+			return false; // the local blocks map to the reduced dofs
 		const auto V = contact_->compute_displaced_surface(problem_.reduced_to_full(y));
 		const auto &cs = contact_->collision_set();
 		const auto &bp = contact_->barrier_potential();

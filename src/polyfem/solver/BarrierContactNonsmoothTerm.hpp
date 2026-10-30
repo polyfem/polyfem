@@ -27,15 +27,17 @@ namespace polyfem::solver
 	/// @brief True if the nonlinear solver parameters select polysolve's NonsmoothNewton strategy
 	bool selects_nonsmooth_newton(const json &nonlinear_params);
 
-	/// @brief The barrier contact form as the nonsmooth term of the reduced problem (polysolve Problem::nonsmooth_*).
+	/// @brief The barrier contact form as the nonsmooth term of an NLProblem (polysolve Problem::nonsmooth_*), in its
+	/// current size: the reduced problem, or the full-size augmented Lagrangian subproblems.
 	///
-	/// Smooth part: all other forms; nonsmooth term: the (single) BarrierContactForm. The state of the term is the
-	/// collision set of the form; nonsmooth_update rebuilds it at the trial point (new and vanished collisions included).
-	/// With local blocks the contact derivatives are formed per collision (12-vector gradient, 12x12 unprojected Hessian)
-	/// and scattered to reduced dofs; this needs a plain selection reduced <- full map and a collision mesh whose vertices
-	/// each follow exactly one FE node with weight 1 (checked once from the dof map and the collision displacement map).
-	/// max_step_size on a segment with cached candidates goes through BilateralSegmentCertifier (same result as the form's
-	/// max_step_size); element validity through FastTetValidity where applicable.
+	/// Smooth part: all other forms (plus the augmented Lagrangian penalty in the full size); nonsmooth term: the (single)
+	/// BarrierContactForm. The state of the term is the collision set of the form; nonsmooth_update rebuilds it at the
+	/// trial point (new and vanished collisions included). With local blocks the contact derivatives are formed per
+	/// collision (12-vector gradient, 12x12 unprojected Hessian) and scattered to reduced dofs; this needs the reduced
+	/// size, a plain selection reduced <- full map and a collision mesh whose vertices each follow exactly one FE node
+	/// with weight 1 (checked once from the dof map and the collision displacement map). max_step_size on a segment with
+	/// cached candidates goes through BilateralSegmentCertifier (same result as the form's max_step_size); element
+	/// validity through FastTetValidity where applicable.
 	class BarrierContactNonsmoothTerm
 	{
 	public:
@@ -65,7 +67,7 @@ namespace polyfem::solver
 									const Options &opts);
 		~BarrierContactNonsmoothTerm();
 
-		// --- polysolve::nonlinear::Problem nonsmooth callbacks (reduced coordinates) ---
+		// --- polysolve::nonlinear::Problem nonsmooth callbacks (coordinates of the current problem size) ---
 		void smooth_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
 		void smooth_hessian(const Eigen::VectorXd &x, const bool project_to_psd, StiffnessMatrix &hessian);
 		double smooth_valid_fraction(const Eigen::VectorXd &x, const Eigen::VectorXd &a, const Eigen::VectorXd &b);

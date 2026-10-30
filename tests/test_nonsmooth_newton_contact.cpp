@@ -49,10 +49,18 @@ namespace
 			args["output"]["json"] = out_json;
 		args["/solver/max_threads"_json_pointer] = 1;
 		args["/solver/linear/solver"_json_pointer] = "Eigen::CholmodSupernodalLLT";
+		// the augmented Lagrangian subproblems inherit the solver (none in this scene: the plane does not move)
 		args["/solver/nonlinear/solver"_json_pointer] = solver;
-		// the AL subproblems keep the native Newton
-		args["/solver/augmented_lagrangian/nonlinear/solver"_json_pointer] = "Newton";
 		args["/output/log/level"_json_pointer] = "error";
+		return args;
+	}
+
+	/// five_cubes with the plane moving up into the stack: once the plane touches the bottom cube, the obstacle
+	/// displacement of a step cannot be applied directly and the step starts with augmented Lagrangian subproblems
+	json five_cubes_pushed(const int steps, const std::string &solver, const std::string &out_json)
+	{
+		json args = five_cubes(steps, solver, out_json);
+		args["/boundary_conditions/obstacle_displacements"_json_pointer] = json::array({json{{"id", 0}, {"value", json::array({0, "2 * t", 0})}}});
 		return args;
 	}
 
@@ -137,13 +145,14 @@ namespace
 		return any;
 	}
 
-	/// sum of a NonsmoothNewton counter (or of the total "iterations") over the reduced solves in the output JSON
-	long sum_stat(const json &out, const std::string &key)
+	/// sum of a NonsmoothNewton counter (or of the total "iterations") over the reduced solves ("rc") or the augmented
+	/// Lagrangian subproblems ("al") in the output JSON
+	long sum_stat(const json &out, const std::string &key, const std::string &type = "rc")
 	{
 		long s = 0;
 		for (const auto &e : out["solver_info"])
 		{
-			if (e.value("type", "") != "rc")
+			if (e.value("type", "") != type)
 				continue;
 			const json &b = key == "iterations" ? e["info"] : block(e, "NonsmoothNewton");
 			if (b.contains(key))
@@ -288,6 +297,51 @@ TEST_CASE("nonsmooth_newton_contact_collision_proxy", NONSMOOTH_NEWTON_SIM_TAGS)
 	}
 	CHECK(sum_stat(o, "active_iterations") > 0);
 	CHECK(!any_rc(o, "local_contact_blocks"));
+}
+
+TEST_CASE("nonsmooth_newton_contact_al_subproblems", NONSMOOTH_NEWTON_SIM_TAGS)
+{
+	// the plane pushes the stack up: the steps after the first contact start with augmented Lagrangian subproblems, where
+	// the contact term acts in the full size when augmented_lagrangian/nonlinear selects NonsmoothNewton (by default it
+	// inherits solver/nonlinear)
+	const int steps = 8;
+	const auto read = [](const std::string &path) {
+		json o;
+		std::ifstream f(path);
+		REQUIRE(f.is_open());
+		f >> o;
+		return o;
+	};
+	const auto count = [](const json &out, const std::string &type, const char *name) {
+		int n = 0;
+		for (const auto &e : out["solver_info"])
+			n += e.value("type", "") == type && block(e, name).size() > 0;
+		return n;
+	};
+
+	const std::string out = (std::filesystem::temp_directory_path() / "nonsmooth_newton_contact_al_subproblems.json").string();
+	std::shared_ptr<CheckedTransientVarForm> checked;
+	const Eigen::MatrixXd sol = run(five_cubes_pushed(steps, "NonsmoothNewton", out), &checked);
+	REQUIRE(sol.allFinite());
+	CHECK(checked->frames == steps);
+	CHECK(!checked->intersecting);
+	const json o = read(out);
+	REQUIRE(count(o, "al", "NonsmoothNewton") > 0);
+	CHECK(count(o, "al", "contact_term") == count(o, "al", "NonsmoothNewton"));
+	CHECK(sum_stat(o, "active_iterations", "al") > 0);
+	CHECK(sum_stat(o, "path_iterations", "al") > 0);
+
+	// native Newton in the augmented Lagrangian subproblems: no contact term there
+	const std::string out_native = (std::filesystem::temp_directory_path() / "nonsmooth_newton_contact_al_native.json").string();
+	json args = five_cubes_pushed(steps, "NonsmoothNewton", out_native);
+	args["/solver/augmented_lagrangian/nonlinear/solver"_json_pointer] = "Newton";
+	std::shared_ptr<CheckedTransientVarForm> checked_native;
+	const Eigen::MatrixXd sol_native = run(args, &checked_native);
+	REQUIRE(sol_native.allFinite());
+	CHECK(!checked_native->intersecting);
+	const json o_native = read(out_native);
+	CHECK(count(o_native, "al", "contact_term") == 0);
+	CHECK(count(o_native, "rc", "contact_term") > 0);
 }
 
 TEST_CASE("nonsmooth_newton_contact_rejects_unsupported", "[nonsmooth_newton]")
