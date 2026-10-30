@@ -8,13 +8,14 @@ from pathlib import Path
 
 
 class AMIPSEnergy:
-    def __init__(self, use_rest_pose, dim, power):
+    def __init__(self, use_rest_pose, dim):
         self.use_rest_pose = use_rest_pose
         self.dim = dim
-        self.power = power
+        # Keep the exponent symbolic so one generated kernel supports any power.
+        self.power = sp.Symbol('power', real=True)
 
     def parameters(self):
-        return []
+        return ["power"]
 
     def get_standard(self):
         if self.use_rest_pose:
@@ -37,8 +38,8 @@ class AMIPSEnergy:
         return standard
 
     def eval(self, p, t, el_id, def_grad):
-        power = 1 if self.dim == 2 else sp.Rational(2, 3)
-        
+        det_exponent = sp.Rational(2, self.dim)
+
         standard = self.get_standard()
 
         if not self.use_rest_pose:
@@ -49,7 +50,7 @@ class AMIPSEnergy:
         # if det <= 0:
         #     return sp.nan
 
-        powJ = det**power
+        powJ = det**det_exponent
         return ((def_grad.T @ def_grad).trace() / powJ) ** self.power
 
 
@@ -92,14 +93,10 @@ def compute_energy(energy):
 energies = {
     "VolumePenalty2d": VolumePenaltyEnergy(dim=2),
     "VolumePenalty3d": VolumePenaltyEnergy(dim=3),
-    "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2, power=1),
-    "AMIPS2drest": AMIPSEnergy(use_rest_pose=True, dim=2, power=1),
-    "AMIPS3d": AMIPSEnergy(use_rest_pose=False, dim=3, power=1),
-    "AMIPS3drest": AMIPSEnergy(use_rest_pose=True, dim=3, power=1),
-    "AMIPS2d_p2": AMIPSEnergy(use_rest_pose=False, dim=2, power=2),
-    "AMIPS2drest_p2": AMIPSEnergy(use_rest_pose=True, dim=2, power=2),
-    "AMIPS3d_p2": AMIPSEnergy(use_rest_pose=False, dim=3, power=2),
-    "AMIPS3drest_p2": AMIPSEnergy(use_rest_pose=True, dim=3, power=2),
+    "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2),
+    "AMIPS2drest": AMIPSEnergy(use_rest_pose=True, dim=2),
+    "AMIPS3d": AMIPSEnergy(use_rest_pose=False, dim=3),
+    "AMIPS3drest": AMIPSEnergy(use_rest_pose=True, dim=3),
 }
 
 
