@@ -66,6 +66,7 @@ namespace polyfem::solver
 
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
+		bool uses_full_size() const { return current_size_ == CurrentSize::FULL_SIZE; }
 
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
@@ -79,9 +80,15 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
-		// --- nonsmooth term (polysolve NonsmoothNewton): available in the reduced size with a term installed ---
+		/// @brief Add the gradient / Hessian of the augmented Lagrangian penalty at the full-size x (no-op in the reduced
+		/// size, where the constraints are projected out)
+		void add_penalty_gradient(const TVector &x, TVector &grad);
+		void add_penalty_hessian(const TVector &x, THessian &hessian);
 
-		/// @brief Install (or remove with null) the nonsmooth term of the reduced problem
+		// --- nonsmooth term (polysolve NonsmoothNewton): available with a term installed ---
+
+		/// @brief Install (or remove with null) the nonsmooth term of the solves that follow: the reduced solve, or the
+		/// full-size augmented Lagrangian subproblems
 		void set_nonsmooth_term(const std::shared_ptr<BarrierContactNonsmoothTerm> &term) { nonsmooth_term_ = term; }
 		const std::shared_ptr<BarrierContactNonsmoothTerm> &nonsmooth_term() const { return nonsmooth_term_; }
 

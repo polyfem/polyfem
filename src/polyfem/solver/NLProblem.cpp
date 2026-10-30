@@ -589,11 +589,12 @@ namespace polyfem::solver
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
+		double max_step;
 		// certified narrow phase on a segment with cached candidates (same result as the forms' max_step_size)
 		if (has_nonsmooth_term() && nonsmooth_term_->certified_max_step_size())
-			return nonsmooth_term_->max_step_size(x0, x1);
-
-		double max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+			max_step = nonsmooth_term_->max_step_size(x0, x1);
+		else
+			max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 
 		if (penalty_problem_ && full_size() == current_size())
 			max_step = std::min(max_step, penalty_problem_->max_step_size(x0, x1));
@@ -674,6 +675,24 @@ namespace polyfem::solver
 			penalty_problem_->hessian(x, tmp);
 			hessian += tmp;
 		}
+	}
+
+	void NLProblem::add_penalty_gradient(const TVector &x, TVector &grad)
+	{
+		if (!penalty_problem_ || full_size() != current_size())
+			return;
+		TVector tmp;
+		penalty_problem_->gradient(x, tmp);
+		grad += tmp;
+	}
+
+	void NLProblem::add_penalty_hessian(const TVector &x, THessian &hessian)
+	{
+		if (!penalty_problem_ || full_size() != current_size())
+			return;
+		THessian tmp;
+		penalty_problem_->hessian(x, tmp);
+		hessian += tmp;
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -852,13 +871,14 @@ namespace polyfem::solver
 	// ------------------------------------------------------------------------------------------------ nonsmooth term
 	bool NLProblem::has_nonsmooth_term() const
 	{
-		return nonsmooth_term_ != nullptr && current_size_ == CurrentSize::REDUCED_SIZE;
+		// the caller installs the term only around the solves that use it (BarrierContactNonsmoothTerm handles both sizes)
+		return nonsmooth_term_ != nullptr;
 	}
 
 	BarrierContactNonsmoothTerm &NLProblem::term() const
 	{
 		if (!has_nonsmooth_term())
-			log_and_throw_error("NLProblem: no nonsmooth term installed for the current problem size");
+			log_and_throw_error("NLProblem: no nonsmooth term installed");
 		return *nonsmooth_term_;
 	}
 
