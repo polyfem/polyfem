@@ -210,21 +210,27 @@ namespace polyfem::varform
 		mesh.update_nodes(space_.space_in_node_to_node);
 
 		boundary_.clear_boundary_conditions();
-		for (const auto &lb : boundary_.total_local_boundary)
-			boundary_.local_boundary.emplace_back(lb);
-
-		std::vector<basis::ElementBases> empty_pressure_bases;
-		std::vector<int> empty_pressure_boundary_nodes;
 		problem->setup_bc(
-			mesh, space_.n_bases,
-			space_.basis_list(), space_.geometry_basis_list(), empty_pressure_bases,
-			boundary_.local_boundary,
-			boundary_.boundary_nodes,
-			boundary_.local_neumann_boundary,
-			boundary_.local_pressure_boundary,
-			boundary_.local_pressure_cavity,
-			empty_pressure_boundary_nodes,
-			boundary_.dirichlet_nodes, boundary_.neumann_nodes);
+			mesh, assembler::BoundaryKind::Dirichlet, fe_space_id,
+			space_.basis_list(), boundary_.total_local_boundary,
+			boundary_.local_boundary, boundary_.boundary_nodes, mesh.dimension());
+		problem->setup_bc(
+			mesh, assembler::BoundaryKind::Neumann, fe_space_id,
+			boundary_.total_local_boundary, boundary_.local_neumann_boundary);
+
+		problem->setup_nodal_bc(
+			mesh, assembler::BoundaryKind::Dirichlet, fe_space_id, space_.n_bases, boundary_.dirichlet_nodes);
+		problem->setup_nodal_bc(
+			mesh, assembler::BoundaryKind::Neumann, fe_space_id, space_.n_bases, boundary_.neumann_nodes);
+
+		for (const int n_id : boundary_.dirichlet_nodes)
+		{
+			const int tag = mesh.get_node_id(n_id);
+			for (int d = 0; d < mesh.dimension(); ++d)
+				if (problem->is_nodal_dimension_dirichlet(n_id, tag, d, fe_space_id))
+					boundary_.boundary_nodes.push_back(n_id * mesh.dimension() + d);
+		}
+		boundary_.normalize_boundary_nodes();
 
 		rebuild_node_positions(space_.basis_list(), boundary_.dirichlet_nodes, boundary_.dirichlet_nodes_position);
 		rebuild_node_positions(space_.basis_list(), boundary_.neumann_nodes, boundary_.neumann_nodes_position);

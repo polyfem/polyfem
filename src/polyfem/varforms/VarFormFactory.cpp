@@ -1,6 +1,5 @@
 #include <polyfem/varforms/VarFormFactory.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/varforms/BilaplacianVarForm.hpp>
 #include <polyfem/varforms/FluidVarForm.hpp>
 #include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
@@ -88,46 +87,6 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	std::string formulation_from_args(const json &args)
-	{
-		if (!args.contains("materials") || args["materials"].is_null())
-			return "";
-
-		if (args["materials"].is_array())
-		{
-			std::string current;
-			for (const auto &m : args["materials"])
-			{
-				const std::string tmp = m["type"];
-				if (current.empty())
-					current = tmp;
-				else if (current != tmp)
-				{
-					if (assembler::AssemblerUtils::is_elastic_material(current)
-						&& assembler::AssemblerUtils::is_elastic_material(tmp))
-					{
-						current = "MultiModels";
-					}
-					else
-					{
-						return "";
-					}
-				}
-			}
-
-			return current;
-		}
-
-		return args["materials"].value("type", "");
-	}
-
-	bool uses_varform_state(json args, const io::ResourceIO &resources)
-	{
-		utils::apply_common_params(args, resources);
-		const std::string formulation = formulation_from_args(args);
-		return !formulation.empty() && VarFormFactory::supports(formulation, args);
-	}
-
 	bool VarFormFactory::supports(
 		const std::string &formulation,
 		const json &args,
@@ -159,8 +118,6 @@ namespace polyfem::varform
 				return false;
 		}
 
-		const bool has_pressure = has_non_empty_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
-								  || has_non_empty_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
 		const bool has_file_constraints =
 			has_non_empty_entries(args, "/constraints/hard"_json_pointer)
 			|| has_non_empty_entries(args, "/constraints/soft"_json_pointer);
@@ -174,7 +131,7 @@ namespace polyfem::varform
 			has_file_constraints || has_periodic_constraints || has_zero_mean_constraints;
 
 		if (formulation == "ThermoElasticity")
-			return !is_optimization && !has_pressure && !has_constraints;
+			return !is_optimization && !has_constraints;
 
 		if (formulation == "Stokes")
 			return !is_optimization && !has_contact && !has_constraints;
@@ -189,13 +146,13 @@ namespace polyfem::varform
 				   && args.contains("time") && !args["time"].is_null()
 				   && !has_contact && !has_constraints;
 		if (formulation == "IncompressibleLinearElasticity")
-			return !is_optimization && !has_contact && !has_pressure && !has_constraints;
+			return !is_optimization && !has_contact && !has_constraints;
 		if (formulation == "Bilaplacian")
 			return !is_optimization && !has_contact && !has_constraints;
 
 		if (is_scalar_formulation(formulation))
 		{
-			return !homogenization && !has_contact && !has_pressure && !has_file_constraints;
+			return !homogenization && !has_contact && !has_file_constraints;
 		}
 
 		return is_elastic_formulation(formulation);
