@@ -86,7 +86,6 @@ var namespacepolyfem =
       [ "build_variable_to_simulation_group", "namespacepolyfem_1_1from__json.html#ac4fb54b34771758a437f1b456c5a720b", null ]
     ] ],
     [ "io", "namespacepolyfem_1_1io.html", "namespacepolyfem_1_1io" ],
-    [ "legacy", "namespacepolyfem_1_1legacy.html", "namespacepolyfem_1_1legacy" ],
     [ "mesh", "namespacepolyfem_1_1mesh.html", "namespacepolyfem_1_1mesh" ],
     [ "problem", "namespacepolyfem_1_1problem.html", "namespacepolyfem_1_1problem" ],
     [ "quadrature", "namespacepolyfem_1_1quadrature.html", "namespacepolyfem_1_1quadrature" ],

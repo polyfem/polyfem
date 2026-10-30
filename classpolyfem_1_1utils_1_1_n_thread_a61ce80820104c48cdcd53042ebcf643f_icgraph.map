@@ -1,45 +1,27 @@
 <map id="polyfem::utils::NThread::num_threads" name="polyfem::utils::NThread::num_threads">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1272,324,1447,364"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e" title=" " alt="" coords="1066,229,1207,269"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1298,321,1184,272,1186,267,1300,316"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1utils_1_1_n_thread.html#ae8b361561f7cdb675bc69991af706d85" title=" " alt="" coords="1049,388,1224,428"/>
-<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="1277,370,1208,391,1206,385,1275,365"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf" title=" " alt="" coords="823,179,989,205"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1052,231,957,207,958,202,1053,226"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3" title="saves the output statistic to a json object" alt="" coords="811,229,1001,269"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="1052,252,1002,252,1002,247,1052,247"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1legacy_1_1_state.html#a9866e0228e4bcfba7a5d3daf8dd048f6" title="saves the output statistic to a stream" alt="" coords="557,37,725,77"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="816,224,809,218,796,201,789,185,785,152,780,121,774,106,761,91,744,79,724,71,726,66,746,75,764,87,778,103,786,119,790,152,794,183,800,199,813,214,819,220"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a0cea4f98c7867ab16b0f36c4a72e1c70" title="Save the solution to a JSON file, for output purposes." alt="" coords="533,101,749,141"/>
-<area shape="poly" id="edge11_Node000004_Node000011" title=" " alt="" coords="820,225,809,218,793,202,785,185,776,170,761,155,739,144,742,139,764,151,781,167,789,183,797,199,812,214,823,221"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#ab7d2123b87aee42428694eb082e6eda2" title="Save the solution to a JSON file, for output purposes." alt="" coords="543,165,740,205"/>
-<area shape="poly" id="edge12_Node000004_Node000012" title=" " alt="" coords="809,229,724,208,725,203,810,223"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a71e871ddf098f01260999a4a6c952617" title="Save the solution to a JSON file, for output purposes." alt="" coords="520,229,763,269"/>
-<area shape="poly" id="edge13_Node000004_Node000013" title=" " alt="" coords="797,252,763,252,763,247,797,247"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a1dfde857c6ef83067e22f035d10f0346" title="Save the solution to a JSON file, for output purposes." alt="" coords="540,293,743,333"/>
-<area shape="poly" id="edge14_Node000004_Node000014" title=" " alt="" coords="810,275,725,296,724,291,809,270"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a0b197f68194c3373dda953cb87d45dc8" title="Save the solution to a JSON file, for output purposes." alt="" coords="549,357,733,397"/>
-<area shape="poly" id="edge15_Node000004_Node000015" title=" " alt="" coords="871,280,822,315,764,348,733,360,731,355,762,343,819,311,868,276"/>
-<area shape="rect" id="Node000006" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="314,261,462,301"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="546,78,522,91,478,131,443,179,417,225,400,262,395,260,412,223,439,176,474,128,518,87,543,74"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1legacy_1_1_state.html#a88ad3a8d372018f56ab5d78ed0f137cc" title="gets the output log as json this is not what gets printed but more informative information,..." alt="" coords="304,5,472,45"/>
-<area shape="poly" id="edge9_Node000005_Node000009" title=" " alt="" coords="543,48,472,39,472,33,544,42"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1legacy_1_1_state.html#a192eea1879f548c86ae246f690f8e7a9" title="saves the output statistic to disc according to params" alt="" coords="304,69,472,109"/>
-<area shape="poly" id="edge10_Node000005_Node000010" title=" " alt="" coords="544,72,472,81,472,76,543,67"/>
-<area shape="rect" id="Node000007" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,269,256,294"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="300,284,256,284,256,279,300,279"/>
-<area shape="poly" id="edge7_Node000007_Node000007" title=" " alt="" coords="208,258,200,250,182,247,167,249,158,254,157,260,161,267,157,270,151,260,154,251,165,244,182,242,203,246,212,254"/>
-<area shape="rect" id="Node000008" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,269,60,294"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="94,284,60,284,60,279,94,279"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1_opt_state.html#a1bdd4da10abe6727d616a0028ec03884" title=" " alt="" coords="821,367,991,393"/>
-<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="1035,398,991,393,992,388,1036,393"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1legacy_1_1_state.html#a492287a19e624c1886c4f0bd3e12267b" title=" " alt="" coords="822,417,990,457"/>
-<area shape="poly" id="edge18_Node000016_Node000018" title=" " alt="" coords="1036,423,991,429,990,424,1036,418"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365" title=" " alt="" coords="833,481,979,521"/>
-<area shape="poly" id="edge21_Node000016_Node000020" title=" " alt="" coords="1083,436,1002,472,970,484,968,479,1000,467,1081,432"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1legacy_1_1_state.html#a0c0600598c4d3ed30a3f1c1a590c9723" title="initialize the polyfem solver with a json settings" alt="" coords="557,421,725,461"/>
-<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="808,441,726,443,725,437,808,436"/>
-<area shape="poly" id="edge20_Node000019_Node000006" title=" " alt="" coords="543,423,519,412,483,387,450,357,402,303,406,300,454,354,486,383,521,407,546,418"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1_state.html#ad12cc749a55ca2f8ac62e6f1b869e33d" title=" " alt="" coords="568,489,715,514"/>
-<area shape="poly" id="edge22_Node000020_Node000021" title=" " alt="" coords="819,504,715,504,715,499,819,499"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="757,205,932,245"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e" title=" " alt="" coords="551,141,693,181"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="760,204,691,184,693,179,762,199"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1utils_1_1_n_thread.html#ae8b361561f7cdb675bc69991af706d85" title=" " alt="" coords="535,237,709,277"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="744,242,710,247,709,242,743,237"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf" title=" " alt="" coords="308,91,475,117"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="537,143,442,119,444,114,538,138"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3" title="saves the output statistic to a json object" alt="" coords="296,141,487,181"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="538,164,487,164,487,159,538,159"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a0cea4f98c7867ab16b0f36c4a72e1c70" title="Save the solution to a JSON file, for output purposes." alt="" coords="19,5,235,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="304,137,294,130,278,112,270,93,262,76,246,59,226,48,228,43,250,55,267,73,275,91,282,109,298,126,307,132"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#ab7d2123b87aee42428694eb082e6eda2" title="Save the solution to a JSON file, for output purposes." alt="" coords="28,69,225,109"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="306,140,247,124,204,112,205,107,249,119,307,135"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a71e871ddf098f01260999a4a6c952617" title="Save the solution to a JSON file, for output purposes." alt="" coords="5,133,248,173"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="282,161,248,160,248,154,282,155"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a1dfde857c6ef83067e22f035d10f0346" title="Save the solution to a JSON file, for output purposes." alt="" coords="25,197,228,237"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="283,187,222,200,221,195,282,182"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a0b197f68194c3373dda953cb87d45dc8" title="Save the solution to a JSON file, for output purposes." alt="" coords="35,261,219,301"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="353,191,305,223,249,252,216,264,215,259,247,247,302,218,350,187"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_opt_state.html#a1bdd4da10abe6727d616a0028ec03884" title=" " alt="" coords="306,245,477,270"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="521,260,477,260,477,255,521,255"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365" title=" " alt="" coords="318,311,465,351"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="546,284,456,313,454,308,545,279"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#ad12cc749a55ca2f8ac62e6f1b869e33d" title=" " alt="" coords="53,326,200,351"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="304,336,200,339,200,334,304,331"/>
 </map>

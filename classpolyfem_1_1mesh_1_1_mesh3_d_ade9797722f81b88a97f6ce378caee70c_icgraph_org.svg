@@ -12,10 +12,10 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="765,-71 629,-71 629,-30 765,-30 765,-71"/>
-<text text-anchor="start" x="637" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh3D</text>
-<text text-anchor="start" x="637" y="-48" font-family="Helvetica,sans-Serif" font-size="10.00">::get_ordered_vertices</text>
-<text text-anchor="middle" x="697" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">_from_prism</text>
+<polygon fill="#999999" stroke="#666666" points="765,-95 629,-95 629,-54 765,-54 765,-95"/>
+<text text-anchor="start" x="637" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh3D</text>
+<text text-anchor="start" x="637" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">::get_ordered_vertices</text>
+<text text-anchor="middle" x="697" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">_from_prism</text>
 </a>
 </g>
 </g>
@@ -23,10 +23,10 @@
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a336d832fe4c64d04653ff8cf96fdf3f6" target="_top" xlink:title="extracts a collision proxy sampling every boundary face on a uniform lattice of the globally maximal ...">
-<polygon fill="white" stroke="#666666" points="593,-71 449,-71 449,-30 593,-30 593,-71"/>
-<text text-anchor="start" x="457" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
-<text text-anchor="start" x="457" y="-48" font-family="Helvetica,sans-Serif" font-size="10.00">Data::extract_boundary</text>
-<text text-anchor="middle" x="521" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">_mesh_sampled</text>
+<polygon fill="white" stroke="#666666" points="593,-95 449,-95 449,-54 593,-54 593,-95"/>
+<text text-anchor="start" x="457" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
+<text text-anchor="start" x="457" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">Data::extract_boundary</text>
+<text text-anchor="middle" x="521" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">_mesh_sampled</text>
 </a>
 </g>
 </g>
@@ -34,8 +34,8 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M618.51,-50.5C610.06,-50.5 601.49,-50.5 593.13,-50.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="618.73,-54 628.73,-50.5 618.73,-47 618.73,-54"/>
+<path fill="none" stroke="#63b8ff" d="M618.51,-74.5C610.06,-74.5 601.49,-74.5 593.13,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="618.73,-78 628.73,-74.5 618.73,-71 618.73,-78"/>
 </a>
 </g>
 </g>
@@ -53,27 +53,8 @@
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.64,-60.05C430.24,-61.03 421.65,-62.04 413.11,-63.05"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="439.24,-63.5 448.76,-58.86 438.42,-56.55 439.24,-63.5"/>
-</a>
-</g>
-</g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="377.5,-41.5 251.5,-41.5 251.5,-11.5 377.5,-11.5 377.5,-41.5"/>
-<text text-anchor="start" x="259.5" y="-29.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="314.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
-</a>
-</g>
-</g>
-<!-- Node2&#45;&gt;Node7 -->
-<g id="edge6_Node000002_Node000007" class="edge">
-<title>Node2&#45;&gt;Node7</title>
-<g id="a_edge6_Node000002_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.59,-40.95C418.28,-38.56 396.83,-36.05 377.63,-33.79"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="438.42,-44.45 448.76,-42.14 439.24,-37.5 438.42,-44.45"/>
+<path fill="none" stroke="#63b8ff" d="M438.64,-74.5C430.24,-74.5 421.65,-74.5 413.11,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.76,-78 448.76,-74.5 438.76,-71 438.76,-78"/>
 </a>
 </g>
 </g>

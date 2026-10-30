@@ -1,52 +1,34 @@
 <map id="polyfem::mesh::Mesh::create" name="polyfem::mesh::Mesh::create">
-<area shape="rect" id="Node000001" title="Construct a runtime mesh from format&#45;independent decoded data." alt="" coords="2157,281,2320,321"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_local_mesh.html#a1a045a45c0e98615b682ca7605cb0d32" title="Build the ElementBases for the local mesh." alt="" coords="1895,67,2092,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2221,270,2202,235,2177,194,2145,154,2108,121,2087,109,2090,105,2111,116,2149,151,2182,191,2207,232,2225,267"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a6c2db58e5d049efebd8c95d19db8cb7b" title=" " alt="" coords="1877,131,2109,171"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="2210,272,2165,227,2138,204,2108,185,2082,173,2085,168,2111,180,2141,200,2169,223,2214,269"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh_loader.html#a8c7609de46ce0c11f207fe9587234e58" title=" " alt="" coords="1890,195,2097,235"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="2171,279,2108,256,2055,237,2056,232,2110,251,2173,274"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1legacy_1_1_state.html#ac70c3886bcffb88621dd38db4b0de953" title="loads the mesh from V and F," alt="" coords="747,220,915,260"/>
-<area shape="poly" id="edge22_Node000001_Node000018" title=" " alt="" coords="2143,296,1945,282,1712,275,1424,275,1284,272,1144,266,915,250,915,245,1144,261,1284,267,1424,269,1712,269,1945,277,2144,290"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1legacy_1_1_state.html#ae0dbd692627c4719ce619ccb11938fbc" title="loads the mesh from a geogram mesh" alt="" coords="1909,309,2077,349"/>
-<area shape="poly" id="edge23_Node000001_Node000021" title=" " alt="" coords="2144,315,2078,322,2077,317,2144,309"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="1896,373,2091,413"/>
-<area shape="poly" id="edge24_Node000001_Node000022" title=" " alt="" coords="2188,330,2110,364,2074,376,2073,371,2108,359,2185,325"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1_state.html#a58d8f0cfdd99d81c03a2ec834f2efe03" title="loads the mesh from V and F," alt="" coords="1899,438,2088,463"/>
-<area shape="poly" id="edge25_Node000001_Node000023" title=" " alt="" coords="2216,334,2171,383,2142,407,2111,428,2079,440,2077,436,2108,423,2139,403,2167,379,2212,330"/>
-<area shape="rect" id="Node000024" href="$classpolyfem_1_1_state.html#a40b607ad76d9815e35aba1d723a283b6" title="loads the mesh from a geogram mesh" alt="" coords="1899,487,2088,513"/>
-<area shape="poly" id="edge26_Node000001_Node000024" title=" " alt="" coords="2225,336,2206,370,2181,409,2149,447,2111,478,2088,490,2085,485,2108,474,2145,443,2177,406,2202,367,2220,333"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7a84ad351ae9f4d38cdad34660fd6585" title=" " alt="" coords="1595,67,1827,107"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1890,130,1799,109,1800,104,1892,125"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#af899f45ffc4fe4e57f5632a9703d4039" title=" " alt="" coords="1592,131,1829,171"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1890,194,1799,173,1800,168,1892,189"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80" title=" " alt="" coords="1599,195,1822,235"/>
-<area shape="poly" id="edge21_Node000005_Node000020" title=" " alt="" coords="1876,217,1822,217,1822,212,1876,212"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a0dbf485b3a728a8eadab7a7e86c8e037" title="Load and combine the enabled FEM entries in a geometry configuration." alt="" coords="1307,131,1544,171"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1579,153,1544,153,1544,148,1579,148"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a927ea1e21d5c2c2306a4632b81b7eaf4" title=" " alt="" coords="999,67,1237,107"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1315,130,1214,109,1215,104,1316,125"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1legacy_1_1_state.html#a3f31bbbf5840f6ecbca38838c3e09977" title="loads the mesh from the json arguments" alt="" coords="1034,131,1202,171"/>
-<area shape="poly" id="edge16_Node000007_Node000016" title=" " alt="" coords="1293,153,1202,153,1202,148,1293,148"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="977,195,1259,235"/>
-<area shape="poly" id="edge20_Node000007_Node000019" title=" " alt="" coords="1316,176,1215,197,1214,192,1315,171"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#ad7a4321fa2880e56ae641ff1d3aa979d" title="loads the mesh from the json arguments" alt="" coords="732,74,929,99"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="986,89,930,89,930,84,986,84"/>
-<area shape="rect" id="Node000010" href="$main_8cpp.html#a0db0bdb04cc388ac24d09941c4d38696" title=" " alt="" coords="508,74,684,99"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="718,89,684,89,684,84,718,84"/>
-<area shape="rect" id="Node000011" href="$main_8cpp.html#ad25c24f2b13f71530f593dbdc20bfcaf" title=" " alt="" coords="304,5,460,45"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="537,73,452,48,453,43,539,68"/>
-<area shape="rect" id="Node000012" href="$main_8cpp.html#a92fd232d50bdf76441b6c3f521356c2c" title=" " alt="" coords="304,69,460,109"/>
-<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="494,91,460,91,460,86,494,85"/>
-<area shape="rect" id="Node000013" href="$main_8cpp.html#a6e6ac95cda201242f104ab1f7082be37" title=" " alt="" coords="108,65,256,90"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="290,86,256,84,257,79,290,81"/>
-<area shape="rect" id="Node000014" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,138,256,163"/>
-<area shape="poly" id="edge13_Node000012_Node000014" title=" " alt="" coords="304,116,225,140,224,135,302,111"/>
-<area shape="poly" id="edge14_Node000014_Node000014" title=" " alt="" coords="208,127,200,120,182,117,167,119,158,123,157,129,161,137,157,139,151,130,154,120,165,114,182,111,203,115,212,123"/>
-<area shape="rect" id="Node000015" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,138,60,163"/>
-<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="94,153,60,153,60,148,94,148"/>
-<area shape="rect" id="Node000017" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="522,131,670,171"/>
-<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="1020,153,670,153,670,148,1020,148"/>
-<area shape="poly" id="edge19_Node000016_Node000018" title=" " alt="" coords="1021,173,978,185,879,222,877,217,977,180,1020,168"/>
-<area shape="poly" id="edge18_Node000017_Node000014" title=" " alt="" coords="508,153,256,153,256,148,508,148"/>
+<area shape="rect" id="Node000001" title="Construct a runtime mesh from format&#45;independent decoded data." alt="" coords="2132,159,2295,199"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh_loader.html#a8c7609de46ce0c11f207fe9587234e58" title=" " alt="" coords="1877,101,2084,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2118,158,2062,144,2063,139,2119,153"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#a58d8f0cfdd99d81c03a2ec834f2efe03" title="loads the mesh from V and F," alt="" coords="1886,166,2075,191"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="2118,181,2075,181,2075,176,2118,176"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1_state.html#a40b607ad76d9815e35aba1d723a283b6" title="loads the mesh from a geogram mesh" alt="" coords="1886,215,2075,241"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="2119,201,2042,218,2041,213,2118,196"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#af899f45ffc4fe4e57f5632a9703d4039" title=" " alt="" coords="1592,69,1829,109"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1863,110,1829,106,1830,101,1864,105"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80" title=" " alt="" coords="1599,133,1822,173"/>
+<area shape="poly" id="edge14_Node000002_Node000014" title=" " alt="" coords="1864,138,1822,143,1822,137,1863,133"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a0dbf485b3a728a8eadab7a7e86c8e037" title="Load and combine the enabled FEM entries in a geometry configuration." alt="" coords="1307,69,1544,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1579,92,1544,92,1544,87,1579,87"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a927ea1e21d5c2c2306a4632b81b7eaf4" title=" " alt="" coords="999,37,1237,77"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1293,78,1237,72,1237,67,1293,73"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="977,101,1259,141"/>
+<area shape="poly" id="edge13_Node000004_Node000013" title=" " alt="" coords="1294,106,1259,109,1259,104,1293,100"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#ad7a4321fa2880e56ae641ff1d3aa979d" title="loads the mesh from the json arguments" alt="" coords="732,45,929,70"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="986,60,930,60,930,55,986,55"/>
+<area shape="rect" id="Node000007" href="$main_8cpp.html#a0db0bdb04cc388ac24d09941c4d38696" title=" " alt="" coords="508,45,684,70"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="718,60,684,60,684,55,718,55"/>
+<area shape="rect" id="Node000008" href="$main_8cpp.html#ad25c24f2b13f71530f593dbdc20bfcaf" title=" " alt="" coords="304,5,460,45"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="497,45,460,40,461,34,498,40"/>
+<area shape="rect" id="Node000009" href="$main_8cpp.html#a92fd232d50bdf76441b6c3f521356c2c" title=" " alt="" coords="304,69,460,109"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="498,75,461,80,460,75,497,69"/>
+<area shape="rect" id="Node000010" href="$main_8cpp.html#a6e6ac95cda201242f104ab1f7082be37" title=" " alt="" coords="108,39,256,65"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="290,75,250,67,251,62,291,70"/>
+<area shape="rect" id="Node000011" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,113,256,138"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="291,108,254,115,253,110,290,103"/>
+<area shape="poly" id="edge11_Node000011_Node000011" title=" " alt="" coords="208,102,200,94,182,91,167,93,158,98,157,104,161,111,157,114,151,104,154,95,165,88,182,86,203,90,212,98"/>
+<area shape="rect" id="Node000012" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,113,60,138"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="94,128,60,128,60,123,94,123"/>
 </map>

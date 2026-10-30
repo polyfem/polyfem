@@ -122,8 +122,7 @@ $(document).ready(function(){initNavTree('namespacepolyfem_1_1varform.html','');
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">polyfem::varform Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -195,15 +194,6 @@ Classes</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a213fe561712fd8d6ce35d6bbc882d31c" id="r_a213fe561712fd8d6ce35d6bbc882d31c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c">ForwardStepCallback</a> = std::function&lt; void(int step, const Eigen::MatrixXd &amp;solution)&gt;</td></tr>
 <tr class="separator:a213fe561712fd8d6ce35d6bbc882d31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a13760d3cf0705a6cac9d9d5a79011cb3" id="r_a13760d3cf0705a6cac9d9d5a79011cb3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html#a13760d3cf0705a6cac9d9d5a79011cb3">formulation_from_args</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
-<tr class="memdesc:a13760d3cf0705a6cac9d9d5a79011cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the formulation type from the given JSON arguments.  <br /></td></tr>
-<tr class="separator:a13760d3cf0705a6cac9d9d5a79011cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab29df71f56e61bdf2a6bd51a3b50b20f" id="r_ab29df71f56e61bdf2a6bd51a3b50b20f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1varform.html#ab29df71f56e61bdf2a6bd51a3b50b20f">uses_varform_state</a> (<a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> args, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources)</td></tr>
-<tr class="memdesc:ab29df71f56e61bdf2a6bd51a3b50b20f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the given JSON arguments use a <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">VarForm</a> state.  <br /></td></tr>
-<tr class="separator:ab29df71f56e61bdf2a6bd51a3b50b20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a213fe561712fd8d6ce35d6bbc882d31c" name="a213fe561712fd8d6ce35d6bbc882d31c"></a>
@@ -219,104 +209,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_var_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_var_form_8hpp_source.html">VarForm.hpp</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a13760d3cf0705a6cac9d9d5a79011cb3" name="a13760d3cf0705a6cac9d9d5a79011cb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a13760d3cf0705a6cac9d9d5a79011cb3">&#9670;&#160;</a></span>formulation_from_args()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string polyfem::varform::formulation_from_args </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Extracts the formulation type from the given JSON arguments. </p>
-<p>this is temporary until legacy state is removed </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">args</td><td>JSON arguments containing material information. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The formulation type as a string. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00091">91</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00289">polyfem::assembler::AssemblerUtils::is_elastic_material()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00248">polyfem::State::init()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00124">uses_varform_state()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1varform_a13760d3cf0705a6cac9d9d5a79011cb3_cgraph.svg" width="659" height="90"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1varform_a13760d3cf0705a6cac9d9d5a79011cb3_icgraph.svg" width="100%" height="397"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="ab29df71f56e61bdf2a6bd51a3b50b20f" name="ab29df71f56e61bdf2a6bd51a3b50b20f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab29df71f56e61bdf2a6bd51a3b50b20f">&#9670;&#160;</a></span>uses_varform_state()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool polyfem::varform::uses_varform_state </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td>
-          <td class="paramname"><em>args</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
-          <td class="paramname"><em>resources</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Checks if the given JSON arguments use a <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">VarForm</a> state. </p>
-<p>this is temporary until legacy state is removed </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">args</td><td>JSON arguments containing material information. </td></tr>
-    <tr><td class="paramname">resources</td><td>Resource reader used to resolve common configurations. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>True if the JSON arguments use a <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">VarForm</a> state, false otherwise. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_var_form_factory_8cpp_source.html#l00124">124</a> of file <a class="el" href="_var_form_factory_8cpp_source.html">VarFormFactory.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00024">polyfem::utils::apply_common_params()</a>, <a class="el" href="_var_form_factory_8cpp_source.html#l00091">formulation_from_args()</a>, and <a class="el" href="_var_form_factory_8cpp_source.html#l00131">polyfem::varform::VarFormFactory::supports()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00289">forward_simulation()</a>, and <a class="el" href="main_8cpp_source.html#l00231">forward_simulation()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1varform_ab29df71f56e61bdf2a6bd51a3b50b20f_cgraph.svg" width="100%" height="485"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1varform_ab29df71f56e61bdf2a6bd51a3b50b20f_icgraph.svg" width="484" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
 
 </div>
 </div>

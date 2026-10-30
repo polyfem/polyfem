@@ -6,7 +6,7 @@ var searchData=
   ['variabletosimulation_3',['VariableToSimulation',['../classpolyfem_1_1solver_1_1_variable_to_simulation.html',1,'polyfem::solver']]],
   ['variabletosimulationgroup_4',['VariableToSimulationGroup',['../classpolyfem_1_1solver_1_1_variable_to_simulation_group.html',1,'polyfem::solver']]],
   ['vertex_5',['Vertex',['../structpolyfem_1_1mesh_1_1_vertex.html',1,'polyfem::mesh']]],
-  ['vertexattributes_6',['vertexattributes',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html',1,'polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::VertexAttributes'],['../classpolyfem_1_1renderer_1_1_vertex_attributes.html',1,'polyfem::renderer::VertexAttributes']]],
+  ['vertexattributes_6',['VertexAttributes',['../classpolyfem_1_1renderer_1_1_vertex_attributes.html',1,'polyfem::renderer']]],
   ['viscousdamping_7',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html',1,'polyfem::assembler']]],
   ['viscousdampingprev_8',['ViscousDampingPrev',['../classpolyfem_1_1assembler_1_1_viscous_damping_prev.html',1,'polyfem::assembler']]],
   ['volumeform_9',['VolumeForm',['../classpolyfem_1_1solver_1_1_volume_form.html',1,'polyfem::solver']]],

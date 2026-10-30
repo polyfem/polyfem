@@ -29,6 +29,5 @@ var searchData=
   ['geometryloader_26',['GeometryLoader',['../classpolyfem_1_1mesh_1_1_geometry_loader.html',1,'polyfem::mesh']]],
   ['geometrymapping_27',['GeometryMapping',['../classpolyfem_1_1varform_1_1_geometry_mapping.html',1,'polyfem::varform']]],
   ['givensrotation_28',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
-  ['globalprojectioncache_29',['GlobalProjectionCache',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html',1,'polyfem::mesh::Remesher']]],
-  ['gravityproblem_30',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
+  ['gravityproblem_29',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
 ];

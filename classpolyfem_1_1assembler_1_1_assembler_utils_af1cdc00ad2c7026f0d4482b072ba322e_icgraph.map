@@ -1,44 +1,31 @@
 <map id="polyfem::assembler::AssemblerUtils::make_assembler" name="polyfem::assembler::AssemblerUtils::make_assembler">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1008,385,1181,439"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_sum_model.html#ae4a7a17ea58c1f3ca4cc7bc4156a398d" title=" " alt="" coords="731,5,957,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1087,371,1076,303,1054,219,1037,175,1016,133,990,94,958,59,942,48,945,43,962,55,994,90,1020,130,1042,173,1059,217,1081,302,1092,370"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_all_elastic_materials.html#ab96c542a1889c928cd34ed30b31a4e70" title=" " alt="" coords="768,70,920,125"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1081,372,1066,319,1041,257,1005,194,983,165,958,139,940,126,919,116,921,112,943,122,962,135,987,161,1010,191,1045,255,1071,317,1087,370"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a3b5766fcabebb599e771495a779ef9d6" title=" " alt="" coords="741,149,947,189"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1076,373,1058,333,1032,287,999,242,958,203,939,192,941,187,962,199,1003,238,1036,284,1062,330,1081,371"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1legacy_1_1_state.html#a0c0600598c4d3ed30a3f1c1a590c9723" title="initialize the polyfem solver with a json settings" alt="" coords="760,213,928,253"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1066,375,1020,319,991,291,959,268,927,253,930,248,961,263,994,287,1024,315,1070,372"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#af5e42123923229a769c4403d1a589ca5" title="Initialize the variational formulation with the given parameters." alt="" coords="736,277,952,317"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1037,380,959,338,911,320,913,315,961,334,1039,375"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a3e2f168df3b17008b4db88beedcda9e0" title="Initialize the variational formulation with the given parameters." alt="" coords="751,392,937,432"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="994,415,938,415,938,409,994,409"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#afdcccc063d8631a1a8d5a5b4215404dc" title="Initialize the variational formulation with the given parameters." alt="" coords="437,335,680,375"/>
-<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="994,389,960,383,815,367,680,360,680,354,815,362,960,377,995,384"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a46c47a7424987bfb4efc90952977ec49" title="Initialize the variational formulation with the given parameters." alt="" coords="745,456,943,496"/>
-<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="996,440,924,459,922,453,994,435"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#aef196a22b2379f8d87deb0b9cd11f4db" title="Initialize the variational formulation with the given parameters." alt="" coords="465,488,652,528"/>
-<area shape="poly" id="edge17_Node000001_Node000015" title=" " alt="" coords="1058,451,1014,484,988,499,961,511,881,528,799,535,721,533,652,526,652,521,721,528,799,529,880,523,959,505,986,494,1011,480,1054,447"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ada498ec60df6988972f0715bb854fe7c" title="Initialize the variational formulation with the given parameters." alt="" coords="743,571,945,611"/>
-<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="1067,452,1021,505,993,531,961,554,924,573,921,568,959,550,989,527,1017,501,1063,449"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#adc1bcce8a60065a6b9a0f5367bb71dd2" title="Initialize the variational formulation with the given parameters." alt="" coords="752,635,936,675"/>
-<area shape="poly" id="edge19_Node000001_Node000017" title=" " alt="" coords="1081,453,1062,494,1036,540,1003,586,962,625,938,638,935,634,958,621,999,582,1032,537,1058,491,1076,451"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ab7263bc352770d9f8bfa0a07e9872778" title="Initialize the variational formulation with the given parameters." alt="" coords="747,699,941,739"/>
-<area shape="poly" id="edge20_Node000001_Node000018" title=" " alt="" coords="1087,453,1072,507,1047,570,1011,634,988,663,962,689,943,701,940,696,958,685,984,660,1006,631,1042,568,1067,505,1082,452"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a312e1fefb77164111fd598cd8b4521e9" title=" " alt="" coords="728,763,960,803"/>
-<area shape="poly" id="edge21_Node000001_Node000019" title=" " alt="" coords="1092,454,1080,519,1057,599,1040,641,1018,682,993,720,962,753,945,765,942,760,958,749,989,716,1014,679,1035,639,1052,598,1075,518,1086,453"/>
-<area shape="rect" id="Node000006" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="485,213,633,253"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="746,236,633,236,633,231,746,231"/>
-<area shape="rect" id="Node000007" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="175,221,323,246"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="471,236,323,236,323,231,471,231"/>
-<area shape="poly" id="edge7_Node000007_Node000007" title=" " alt="" coords="287,211,277,203,249,199,226,201,213,206,211,212,217,219,213,222,206,212,210,202,224,196,249,194,279,198,291,207"/>
-<area shape="rect" id="Node000008" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,221,60,246"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="161,236,60,236,60,231,161,231"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="737,393,658,377,659,372,738,388"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a823aa5ecbcfcac0fcbcd622167d3d6db" title="Initialize the variational formulation with the given parameters." alt="" coords="455,399,662,439"/>
-<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="737,417,662,419,662,414,737,412"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="108,399,389,439"/>
-<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="442,421,390,421,390,416,442,416"/>
-<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="732,491,653,500,652,495,731,486"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7a84ad351ae9f4d38cdad34660fd6585" title=" " alt="" coords="443,763,675,803"/>
-<area shape="poly" id="edge22_Node000019_Node000020" title=" " alt="" coords="714,785,675,785,675,780,714,780"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="900,321,1073,375"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_sum_model.html#ae4a7a17ea58c1f3ca4cc7bc4156a398d" title=" " alt="" coords="625,5,852,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="975,308,961,252,936,185,900,117,877,86,850,59,833,48,836,43,854,55,881,83,905,114,941,183,966,250,981,307"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_all_elastic_materials.html#ab96c542a1889c928cd34ed30b31a4e70" title=" " alt="" coords="663,70,815,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="967,309,948,269,923,224,890,179,850,139,813,118,816,114,854,135,894,175,927,221,953,267,972,307"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a3b5766fcabebb599e771495a779ef9d6" title=" " alt="" coords="635,149,842,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="958,311,912,255,883,227,851,204,827,192,829,187,853,199,886,223,916,251,962,308"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#af5e42123923229a769c4403d1a589ca5" title="Initialize the variational formulation with the given parameters." alt="" coords="631,213,847,253"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="929,316,851,274,804,256,806,251,853,270,931,311"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a3e2f168df3b17008b4db88beedcda9e0" title="Initialize the variational formulation with the given parameters." alt="" coords="645,328,832,368"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="886,351,832,351,832,345,886,345"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#afdcccc063d8631a1a8d5a5b4215404dc" title="Initialize the variational formulation with the given parameters." alt="" coords="335,271,577,311"/>
+<area shape="poly" id="edge11_Node000001_Node000007" title=" " alt="" coords="886,325,852,319,710,303,577,296,578,290,710,298,852,313,887,320"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a46c47a7424987bfb4efc90952977ec49" title="Initialize the variational formulation with the given parameters." alt="" coords="640,392,837,432"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="887,376,818,395,816,389,886,371"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#aef196a22b2379f8d87deb0b9cd11f4db" title="Initialize the variational formulation with the given parameters." alt="" coords="363,424,549,464"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="950,387,906,420,880,435,853,447,775,464,694,470,617,469,549,462,550,457,617,463,694,465,774,459,851,441,878,430,903,416,946,383"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#ada498ec60df6988972f0715bb854fe7c" title="Initialize the variational formulation with the given parameters." alt="" coords="638,507,839,547"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="959,388,913,441,885,467,853,490,816,509,813,504,851,486,881,463,909,437,955,385"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#adc1bcce8a60065a6b9a0f5367bb71dd2" title="Initialize the variational formulation with the given parameters." alt="" coords="647,571,831,611"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="973,389,954,430,928,476,895,522,854,561,832,573,829,569,850,557,891,518,924,473,949,427,968,387"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ab7263bc352770d9f8bfa0a07e9872778" title="Initialize the variational formulation with the given parameters." alt="" coords="641,635,836,675"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="979,389,964,443,939,506,903,570,880,599,854,625,836,637,833,632,850,621,876,596,898,567,934,504,959,441,974,388"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="631,329,555,313,556,308,632,324"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#a823aa5ecbcfcac0fcbcd622167d3d6db" title="Initialize the variational formulation with the given parameters." alt="" coords="353,335,559,375"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="632,353,560,355,560,350,632,348"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="5,335,287,375"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="339,357,287,357,287,352,339,352"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="627,427,550,436,549,431,626,422"/>
 </map>

@@ -48,7 +48,7 @@
 <script type="application/ecmascript">
 var viewWidth = 804;
 var viewHeight = 146;
-var sectionId = 'dynsection-46';
+var sectionId = 'dynsection-37';
 </script>
 <script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
@@ -58,18 +58,18 @@ var sectionId = 'dynsection-46';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Load a collision proxy displacement map from a resource.">
-<polygon fill="#999999" stroke="#666666" points="796,-65.5 602,-65.5 602,-35.5 796,-35.5 796,-65.5"/>
-<text text-anchor="start" x="610" y="-53.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
-<text text-anchor="middle" x="699" y="-42.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy_displacement_map</text>
+<polygon fill="#999999" stroke="#666666" points="796,-89.5 602,-89.5 602,-59.5 796,-59.5 796,-89.5"/>
+<text text-anchor="start" x="610" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
+<text text-anchor="middle" x="699" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy_displacement_map</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge8_Node000001_Node000001" class="edge">
+<g id="edge7_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
-<g id="a_edge8_Node000001_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M732.26,-76.1C727.71,-80.47 716.63,-83.5 699,-83.5 669.31,-83.5 658.18,-74.91 665.6,-65.78"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="735.76,-75.82 732.4,-65.78 728.76,-75.73 735.76,-75.82"/>
+<g id="a_edge7_Node000001_Node000001"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M732.26,-100.1C727.71,-104.47 716.63,-107.5 699,-107.5 669.31,-107.5 658.18,-98.91 665.6,-89.78"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="735.76,-99.82 732.4,-89.78 728.76,-99.73 735.76,-99.82"/>
 </a>
 </g>
 </g>
@@ -77,9 +77,9 @@ var sectionId = 'dynsection-46';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1mesh.html#a6e00552e2ecb564ed4dc59a8720e099b" target="_top" xlink:title="Load a collision proxy mesh and displacement map from resources.">
-<polygon fill="white" stroke="#666666" points="566,-65.5 449,-65.5 449,-35.5 566,-35.5 566,-65.5"/>
-<text text-anchor="start" x="457" y="-53.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
-<text text-anchor="middle" x="507.5" y="-42.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
+<polygon fill="white" stroke="#666666" points="566,-89.5 449,-89.5 449,-59.5 566,-59.5 566,-89.5"/>
+<text text-anchor="start" x="457" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
+<text text-anchor="middle" x="507.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
 </a>
 </g>
 </g>
@@ -87,17 +87,17 @@ var sectionId = 'dynsection-46';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M591.61,-50.5C582.91,-50.5 574.34,-50.5 566.21,-50.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="591.86,-54 601.86,-50.5 591.86,-47 591.86,-54"/>
+<path fill="none" stroke="#63b8ff" d="M591.61,-74.5C582.91,-74.5 574.34,-74.5 566.21,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="591.86,-78 601.86,-74.5 591.86,-71 591.86,-78"/>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge7_Node000002_Node000002" class="edge">
+<g id="edge6_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
-<g id="a_edge7_Node000002_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M540.76,-76.1C536.21,-80.47 525.13,-83.5 507.5,-83.5 477.81,-83.5 466.68,-74.91 474.1,-65.78"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="544.26,-75.82 540.9,-65.78 537.26,-75.73 544.26,-75.82"/>
+<g id="a_edge6_Node000002_Node000002"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M540.76,-100.1C536.21,-104.47 525.13,-107.5 507.5,-107.5 477.81,-107.5 466.68,-98.91 474.1,-89.78"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="544.26,-99.82 540.9,-89.78 537.26,-99.73 544.26,-99.82"/>
 </a>
 </g>
 </g>
@@ -115,27 +115,8 @@ var sectionId = 'dynsection-46';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.93,-58.99C430.59,-60.04 421.93,-61.13 413.25,-62.22"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="439.45,-62.45 448.93,-57.73 438.58,-55.51 439.45,-62.45"/>
-</a>
-</g>
-</g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="377.5,-41.5 251.5,-41.5 251.5,-11.5 377.5,-11.5 377.5,-41.5"/>
-<text text-anchor="start" x="259.5" y="-29.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="314.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
-</a>
-</g>
-</g>
-<!-- Node2&#45;&gt;Node7 -->
-<g id="edge6_Node000002_Node000007" class="edge">
-<title>Node2&#45;&gt;Node7</title>
-<g id="a_edge6_Node000002_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.98,-42.02C419,-39.51 397.23,-36.77 377.6,-34.3"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="438.58,-45.49 448.93,-43.27 439.45,-38.55 438.58,-45.49"/>
+<path fill="none" stroke="#63b8ff" d="M438.93,-74.5C430.59,-74.5 421.93,-74.5 413.25,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.93,-78 448.93,-74.5 438.93,-71 438.93,-78"/>
 </a>
 </g>
 </g>

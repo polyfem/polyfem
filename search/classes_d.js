@@ -8,7 +8,7 @@ var searchData=
   ['operatorsplittingvarform_5',['OperatorSplittingVarForm',['../classpolyfem_1_1varform_1_1_operator_splitting_var_form.html',1,'polyfem::varform']]],
   ['optassemblerdata_6',['OptAssemblerData',['../classpolyfem_1_1assembler_1_1_opt_assembler_data.html',1,'polyfem::assembler']]],
   ['optstate_7',['OptState',['../classpolyfem_1_1_opt_state.html',1,'polyfem']]],
-  ['outgeometrydata_8',['outgeometrydata',['../classpolyfem_1_1io_1_1_out_geometry_data.html',1,'polyfem::io::OutGeometryData'],['../classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html',1,'polyfem::legacy::io::OutGeometryData']]],
+  ['outgeometrydata_8',['OutGeometryData',['../classpolyfem_1_1io_1_1_out_geometry_data.html',1,'polyfem::io']]],
   ['outputdata_9',['OutputData',['../classpolyfem_1_1assembler_1_1_output_data.html',1,'polyfem::assembler']]],
   ['outputfield_10',['OutputField',['../structpolyfem_1_1io_1_1_output_field.html',1,'polyfem::io']]],
   ['outputfieldoptions_11',['OutputFieldOptions',['../structpolyfem_1_1io_1_1_output_field_options.html',1,'polyfem::io']]],

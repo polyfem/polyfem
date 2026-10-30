@@ -159,15 +159,6 @@ var annotated_dup =
         [ "ResourceIO", "classpolyfem_1_1io_1_1_resource_i_o.html", "classpolyfem_1_1io_1_1_resource_i_o" ],
         [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ]
       ] ],
-      [ "legacy", "namespacepolyfem_1_1legacy.html", [
-        [ "io", "namespacepolyfem_1_1legacy_1_1io.html", [
-          [ "EnergyCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_energy_c_s_v_writer.html", "classpolyfem_1_1legacy_1_1io_1_1_energy_c_s_v_writer" ],
-          [ "OutGeometryData", "classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1legacy_1_1io_1_1_out_geometry_data" ],
-          [ "RuntimeStatsCSVWriter", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1legacy_1_1io_1_1_runtime_stats_c_s_v_writer" ]
-        ] ],
-        [ "InitialConditionOverride", "classpolyfem_1_1legacy_1_1_initial_condition_override.html", "classpolyfem_1_1legacy_1_1_initial_condition_override" ],
-        [ "State", "classpolyfem_1_1legacy_1_1_state.html", "classpolyfem_1_1legacy_1_1_state" ]
-      ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
         [ "Navigation", "namespacepolyfem_1_1mesh_1_1_navigation.html", [
           [ "Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation_1_1_index" ]
@@ -183,8 +174,6 @@ var annotated_dup =
         [ "GeometryLoader", "classpolyfem_1_1mesh_1_1_geometry_loader.html", "classpolyfem_1_1mesh_1_1_geometry_loader" ],
         [ "LoadedGeometry", "classpolyfem_1_1mesh_1_1_loaded_geometry.html", "classpolyfem_1_1mesh_1_1_loaded_geometry" ],
         [ "LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", "classpolyfem_1_1mesh_1_1_local_boundary" ],
-        [ "LocalMesh", "classpolyfem_1_1mesh_1_1_local_mesh.html", "classpolyfem_1_1mesh_1_1_local_mesh" ],
-        [ "LocalRelaxationData", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html", "classpolyfem_1_1mesh_1_1_local_relaxation_data" ],
         [ "Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
         [ "Mesh2D", "classpolyfem_1_1mesh_1_1_mesh2_d.html", "classpolyfem_1_1mesh_1_1_mesh2_d" ],
         [ "Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html", "classpolyfem_1_1mesh_1_1_mesh3_d" ],
@@ -198,16 +187,8 @@ var annotated_dup =
         [ "NCMesh2D", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d" ],
         [ "NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d" ],
         [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
-        [ "PhysicsRemesher", "classpolyfem_1_1mesh_1_1_physics_remesher.html", "classpolyfem_1_1mesh_1_1_physics_remesher" ],
-        [ "PhysicsTetRemesher", "classpolyfem_1_1mesh_1_1_physics_tet_remesher.html", "classpolyfem_1_1mesh_1_1_physics_tet_remesher" ],
-        [ "PhysicsTriRemesher", "classpolyfem_1_1mesh_1_1_physics_tri_remesher.html", "classpolyfem_1_1mesh_1_1_physics_tri_remesher" ],
-        [ "Remesher", "classpolyfem_1_1mesh_1_1_remesher.html", "classpolyfem_1_1mesh_1_1_remesher" ],
-        [ "SizingFieldRemesher", "classpolyfem_1_1mesh_1_1_sizing_field_remesher.html", "classpolyfem_1_1mesh_1_1_sizing_field_remesher" ],
         [ "SurfaceMeshData", "classpolyfem_1_1mesh_1_1_surface_mesh_data.html", "classpolyfem_1_1mesh_1_1_surface_mesh_data" ],
-        [ "TetOperationCache", "classpolyfem_1_1mesh_1_1_tet_operation_cache.html", "classpolyfem_1_1mesh_1_1_tet_operation_cache" ],
-        [ "TriOperationCache", "classpolyfem_1_1mesh_1_1_tri_operation_cache.html", "classpolyfem_1_1mesh_1_1_tri_operation_cache" ],
-        [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ],
-        [ "WildRemesher", "classpolyfem_1_1mesh_1_1_wild_remesher.html", "classpolyfem_1_1mesh_1_1_wild_remesher" ]
+        [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ]
       ] ],
       [ "problem", "namespacepolyfem_1_1problem.html", [
         [ "Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html", "classpolyfem_1_1problem_1_1_airfoil" ],

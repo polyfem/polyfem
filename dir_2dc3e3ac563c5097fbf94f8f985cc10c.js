@@ -4,7 +4,6 @@ var dir_2dc3e3ac563c5097fbf94f8f985cc10c =
     [ "autogen", "dir_203a0b4429a33981429312ec216e7182.html", "dir_203a0b4429a33981429312ec216e7182" ],
     [ "basis", "dir_13510bfc8d6c882cc83f48e81fc78b9e.html", "dir_13510bfc8d6c882cc83f48e81fc78b9e" ],
     [ "io", "dir_734cdad6c925c4f361e29f2a6d60e23c.html", "dir_734cdad6c925c4f361e29f2a6d60e23c" ],
-    [ "legacy", "dir_fa8a4ee9aeb1d12f70338891099f248e.html", "dir_fa8a4ee9aeb1d12f70338891099f248e" ],
     [ "mesh", "dir_15d4893607df4bf7106bb9ed16128612.html", "dir_15d4893607df4bf7106bb9ed16128612" ],
     [ "optimization", "dir_5da2a33dc2e1a94e890bf1b87e3a1bf1.html", "dir_5da2a33dc2e1a94e890bf1b87e3a1bf1" ],
     [ "problem", "dir_db543a2fc901b00946a595a25d020389.html", "dir_db543a2fc901b00946a595a25d020389" ],

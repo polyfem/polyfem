@@ -99,7 +99,9 @@ var namespacepolyfem_1_1assembler =
     ] ],
     [ "BoundaryKind", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8", [
       [ "Dirichlet", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8abac152b762896edff34ed668ae1a546f", null ],
-      [ "Neumann", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152", null ]
+      [ "Neumann", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8ab8537a769dbc90cb1762215441212152", null ],
+      [ "NormalAlignedNeumann", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8a8eb79103d4a5f785aeec2bbde2e95d75", null ],
+      [ "PressureCavity", "namespacepolyfem_1_1assembler.html#a1ccda60ef94536dd9d0dbe5127807de8a7079abc3c893e4e6af9a9ada1642d815", null ]
     ] ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ],

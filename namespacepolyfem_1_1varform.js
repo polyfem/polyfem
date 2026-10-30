@@ -31,7 +31,5 @@ var namespacepolyfem_1_1varform =
     [ "VarForm", "classpolyfem_1_1varform_1_1_var_form.html", "classpolyfem_1_1varform_1_1_var_form" ],
     [ "VarFormBoundaryState", "structpolyfem_1_1varform_1_1_var_form_boundary_state.html", "structpolyfem_1_1varform_1_1_var_form_boundary_state" ],
     [ "VarFormFactory", "classpolyfem_1_1varform_1_1_var_form_factory.html", null ],
-    [ "ForwardStepCallback", "namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c", null ],
-    [ "formulation_from_args", "namespacepolyfem_1_1varform.html#a13760d3cf0705a6cac9d9d5a79011cb3", null ],
-    [ "uses_varform_state", "namespacepolyfem_1_1varform.html#ab29df71f56e61bdf2a6bd51a3b50b20f", null ]
+    [ "ForwardStepCallback", "namespacepolyfem_1_1varform.html#a213fe561712fd8d6ce35d6bbc882d31c", null ]
 ];

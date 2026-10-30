@@ -12,18 +12,18 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Load a collision proxy mesh and displacement map from resources.">
-<polygon fill="#999999" stroke="#666666" points="566,-65.5 449,-65.5 449,-35.5 566,-35.5 566,-65.5"/>
-<text text-anchor="start" x="457" y="-53.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
-<text text-anchor="middle" x="507.5" y="-42.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
+<polygon fill="#999999" stroke="#666666" points="566,-89.5 449,-89.5 449,-59.5 566,-59.5 566,-89.5"/>
+<text text-anchor="start" x="457" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::load</text>
+<text text-anchor="middle" x="507.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_collision_proxy</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge6_Node000001_Node000001" class="edge">
+<g id="edge5_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
-<g id="a_edge6_Node000001_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M541.11,-76.1C536.51,-80.47 525.31,-83.5 507.5,-83.5 477.5,-83.5 466.25,-74.91 473.75,-65.78"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="544.61,-75.82 541.25,-65.78 537.61,-75.73 544.61,-75.82"/>
+<g id="a_edge5_Node000001_Node000001"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M541.11,-100.1C536.51,-104.47 525.31,-107.5 507.5,-107.5 477.5,-107.5 466.25,-98.91 473.75,-89.78"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="544.61,-99.82 541.25,-89.78 537.61,-99.73 544.61,-99.82"/>
 </a>
 </g>
 </g>
@@ -41,27 +41,8 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.93,-58.99C430.59,-60.04 421.93,-61.13 413.25,-62.22"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="439.45,-62.45 448.93,-57.73 438.58,-55.51 439.45,-62.45"/>
-</a>
-</g>
-</g>
-<!-- Node6 -->
-<g id="Node000006" class="node">
-<title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1legacy_1_1_state.html#abf4ee6f748385ff6ec3ce185c4eadab4" target="_top" xlink:title="extracts the boundary mesh for collision, called in build_basis">
-<polygon fill="white" stroke="#666666" points="377.5,-41.5 251.5,-41.5 251.5,-11.5 377.5,-11.5 377.5,-41.5"/>
-<text text-anchor="start" x="259.5" y="-29.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::legacy::State</text>
-<text text-anchor="middle" x="314.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">::build_collision_mesh</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node6 -->
-<g id="edge5_Node000001_Node000006" class="edge">
-<title>Node1&#45;&gt;Node6</title>
-<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M438.98,-42.02C419,-39.51 397.23,-36.77 377.6,-34.3"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="438.58,-45.49 448.93,-43.27 439.45,-38.55 438.58,-45.49"/>
+<path fill="none" stroke="#63b8ff" d="M438.93,-74.5C430.59,-74.5 421.93,-74.5 413.25,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.93,-78 448.93,-74.5 438.93,-71 438.93,-78"/>
 </a>
 </g>
 </g>

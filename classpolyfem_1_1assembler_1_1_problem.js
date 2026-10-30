@@ -37,9 +37,9 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_problem.html#a628e6a14e8fe144fd3a7dfae3f70a737", null ],
     [ "set_units", "classpolyfem_1_1assembler_1_1_problem.html#a91d7b46070a342c902c52805391cb903", null ],
     [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#a88edacdb61c6b303a8e113b5cc3209a4", null ],
-    [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#a0d01038e6a37fff6f045eeb59111fd98", null ],
+    [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#af3e4226c9f0c893c811a361dafa93305", null ],
+    [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#ae7b171ad48adb6eee737e3fd53f34ac7", null ],
     [ "setup_nodal_bc", "classpolyfem_1_1assembler_1_1_problem.html#ae6fd0188ff803d62924ab7d252a14195", null ],
-    [ "setup_pressure_cavity_bc", "classpolyfem_1_1assembler_1_1_problem.html#a7dced08c8868dfcb5e2f6efe9b69978c", null ],
     [ "update_nodes", "classpolyfem_1_1assembler_1_1_problem.html#a92740a6fa985a4a8e4a8f5e88b35cda6", null ],
     [ "boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#ad36799574a3148a8aaeb05640a3f4bea", null ],
     [ "name_", "classpolyfem_1_1assembler_1_1_problem.html#a8c5f8ee21d844b1f2a99432a96168e1b", null ],
@@ -47,6 +47,5 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "normal_aligned_neumann_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#a51548724e62166e38d3da91006de92d3", null ],
     [ "pressure_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#a971bc9ef3c5fee60af0aef112b85b09f", null ],
     [ "pressure_cavity_ids_", "classpolyfem_1_1assembler_1_1_problem.html#af8622631539003f1f0bbaacafe363b4e", null ],
-    [ "splitting_pressure_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050", null ],
     [ "updated_dirichlet_node_ordering_", "classpolyfem_1_1assembler_1_1_problem.html#a70de874756e51566b3fe1f34279fb08d", null ]
 ];

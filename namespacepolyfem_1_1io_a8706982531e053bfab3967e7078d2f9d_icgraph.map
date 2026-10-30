@@ -1,30 +1,19 @@
 <map id="polyfem::io::write_matrix_binary" name="polyfem::io::write_matrix_binary">
-<area shape="rect" id="Node000001" title=" " alt="" coords="993,229,1131,269"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1io.html#afe649b7ee254544f8cac2e7d11d32338" title="Writes a matrix to a file. Determines the file format based on the path&#39;s extension." alt="" coords="808,229,945,269"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="980,252,946,252,946,247,980,247"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a8991938815b74265d402c777c3932dc0" title=" " alt="" coords="544,5,760,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="862,217,846,180,824,138,795,95,758,59,739,48,742,43,762,55,799,92,828,135,851,178,867,215"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#afda018390b13508e6c84f9cd58ee8729" title=" " alt="" coords="559,69,745,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="853,220,813,170,787,145,759,124,736,112,738,107,761,119,790,141,817,166,857,216"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#aa0a78339610e3bdc6d72641150894083" title=" " alt="" coords="553,133,751,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="830,225,759,188,727,176,729,171,761,183,833,220"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a276b0e71089e306a3ab3c3293f190522" title=" " alt="" coords="544,197,760,237"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="794,240,760,235,761,230,795,235"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a5e42f26ef1bcd6bca084c2f22c8137a3" title=" " alt="" coords="560,261,744,301"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="794,264,744,271,744,266,794,258"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed5192a399c77dc8198af3d72ea428d9" title="Legacy State persistence. Non&#45;legacy code uses serialize_checkpoint()." alt="" coords="559,326,745,381"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="832,279,761,316,732,328,730,323,759,311,829,274"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da" title="saves the volume vtu file" alt="" coords="556,405,748,445"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="860,283,819,339,792,369,761,394,737,408,734,403,759,390,789,365,815,336,855,279"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1legacy_1_1_state.html#ae8174512fdfb4de037d593ef99b26c0f" title="solves the problems" alt="" coords="568,469,736,509"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="868,284,853,324,831,371,801,419,762,459,738,474,735,469,758,455,796,416,826,369,848,322,863,282"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#abe2c6289fe2c9cc61ff0a6f1ee7f4d03" title="Save the VTU datasets and append them to an existing VTM container." alt="" coords="304,405,496,445"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="542,428,496,428,496,423,542,423"/>
-<area shape="rect" id="Node000012" href="$main_8cpp.html#a0d6fd6ed6fda5fc5e4b6ed34b45fe322" title=" " alt="" coords="326,469,474,509"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="555,492,474,492,474,487,555,487"/>
-<area shape="rect" id="Node000013" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,477,256,502"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="312,492,256,492,256,487,312,487"/>
-<area shape="poly" id="edge13_Node000013_Node000013" title=" " alt="" coords="208,466,200,458,182,455,167,457,158,462,157,468,161,475,157,478,151,468,154,459,165,452,182,450,203,454,212,462"/>
-<area shape="rect" id="Node000014" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,477,60,502"/>
-<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="94,492,60,492,60,487,94,487"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="695,165,832,205"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1io.html#afe649b7ee254544f8cac2e7d11d32338" title="Writes a matrix to a file. Determines the file format based on the path&#39;s extension." alt="" coords="509,165,647,205"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="681,188,647,188,647,183,681,183"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a8991938815b74265d402c777c3932dc0" title=" " alt="" coords="245,5,461,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="554,156,514,106,488,81,460,60,437,48,439,43,463,55,492,77,518,102,558,152"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#afda018390b13508e6c84f9cd58ee8729" title=" " alt="" coords="260,69,447,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="532,161,460,124,428,112,430,107,462,119,534,156"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#aa0a78339610e3bdc6d72641150894083" title=" " alt="" coords="255,133,452,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="495,176,452,170,453,165,496,171"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a276b0e71089e306a3ab3c3293f190522" title=" " alt="" coords="245,197,461,237"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="496,200,462,205,461,199,495,194"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a5e42f26ef1bcd6bca084c2f22c8137a3" title=" " alt="" coords="261,261,445,301"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="534,215,462,252,430,264,428,259,460,247,532,210"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da" title="saves the volume vtu file" alt="" coords="257,325,449,365"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="558,218,518,268,492,294,463,316,439,328,437,323,460,311,488,290,514,265,554,215"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#abe2c6289fe2c9cc61ff0a6f1ee7f4d03" title="Save the VTU datasets and append them to an existing VTM container." alt="" coords="5,325,197,365"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="244,348,197,348,197,343,244,343"/>
 </map>
