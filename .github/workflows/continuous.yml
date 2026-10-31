@@ -23,6 +23,8 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
+      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -91,7 +93,7 @@ jobs:
           key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Tests
-        run: OMP_NUM_THREADS=1 ctest --test-dir build --verbose --output-on-failure
+        run: ctest --test-dir build --verbose --output-on-failure
 
       # - name: Setup tmate session
       #   if: ${{ failure() }}
@@ -107,6 +109,8 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 3
       CTEST_PARALLEL_LEVEL: 3
+      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -184,6 +188,8 @@ jobs:
       SCCACHE_IDLE_TIMEOUT: "12000"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
+      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
       matrix:

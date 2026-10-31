@@ -79,6 +79,24 @@ namespace polyfem::solver
 		bool depends_on_step_prev_ = false;
 	};
 
+	/// Objective component G_ij, used to penalize macroscopic shear or lateral expansion.
+	class HomogenizedDispGradForm : public AdjointForm
+	{
+	public:
+		HomogenizedDispGradForm(const VariableToSimulationGroup &variables,
+								std::shared_ptr<const varform::DifferentiableVarForm> varform,
+								std::shared_ptr<const DiffCache> diff_cache, const json &args);
+		std::string name() const override { return "homo_disp_grad"; }
+		double value_unweighted(const Eigen::VectorXd &variables) const override;
+		Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &variables,
+													const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const override;
+
+	private:
+		std::shared_ptr<const varform::DifferentiableVarForm> varform_;
+		std::shared_ptr<const DiffCache> diff_cache_;
+		std::vector<int> dimensions_;
+	};
+
 	class MaxStressForm : public StaticForm
 	{
 	public:

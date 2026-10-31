@@ -16,6 +16,18 @@ namespace polyfem
 
 namespace polyfem::solver
 {
+
+	/// For homogenization problem, u = ũ + GX
+	/// u := displacement
+	/// ũ := periodic fluctuation
+	/// G := macro strain tensor, represent global change.
+	///
+	/// This class maps between three states: full, extended, and reduced.
+	/// full := full nodal displacement u.
+	/// extended := [ ũ | flatten G ]
+	/// reduced := [ ũ | unknown component of flatten G ]
+	///
+	/// Note that user might choose to fix some component of G thus extended != reduced.
 	class NLHomoProblem : public NLProblem
 	{
 	public:
@@ -50,7 +62,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector full_to_reduced_diag(const TVector &full_diag) const override;
-		TVector reduced_to_full(const TVector &reduced) const;
+		TVector reduced_to_full(const TVector &reduced) const override;
 
 		TVector reduced_to_extended(const TVector &reduced, bool homogeneous = false) const;
 		TVector extended_to_reduced(const TVector &extended) const;
@@ -94,8 +106,13 @@ namespace polyfem::solver
 		const assembler::MacroStrainValue &macro_strain_constraint_;
 
 		Eigen::VectorXi fixed_mask_;
+		/// Selection matrix that maps potentially symmetric macro strain G to its free dof (reduced).
+		/// Effective only if user fix some component of G.
 		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
-		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
+		/// Selection matrix that maps full macro strain G to its upper triangular dof (mid).
+		/// Enable if symmtric G is enable else a dummy.
+		Eigen::MatrixXd macro_full_to_mid_;
+		Eigen::MatrixXd macro_mid_to_full_;
 
 		std::vector<std::shared_ptr<Form>> homo_forms;
 	};
