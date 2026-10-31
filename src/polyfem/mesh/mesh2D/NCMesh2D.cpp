@@ -12,6 +12,7 @@ namespace polyfem
 	{
 		void NCMesh2D::remove_elements(const std::vector<bool> &keep)
 		{
+			counts_cached = false;
 			assert(keep.size() == n_faces());
 
 			std::vector<int> old_node_ids(vertices.size(), -1);
@@ -104,6 +105,7 @@ namespace polyfem
 			refineHistory.clear();
 			index_prepared = false;
 			adj_prepared = false;
+			counts_cached = false;
 
 			vertices.reserve(V.rows());
 			for (int i = 0; i < V.rows(); i++)
@@ -199,6 +201,7 @@ namespace polyfem
 
 		int NCMesh2D::add_element(Eigen::Vector3i v, int parent)
 		{
+			counts_cached = false;
 			const int id = elements.size();
 			const int level = (parent < 0) ? 0 : elements[parent].level + 1;
 			elements.emplace_back(2, v, level, parent);
@@ -229,6 +232,7 @@ namespace polyfem
 
 		void NCMesh2D::refine_element(int id_full)
 		{
+			counts_cached = false;
 			auto &elem = elements[id_full];
 			if (elem.is_not_valid())
 				throw std::runtime_error("Cannot refine an invalid element!");
@@ -305,6 +309,7 @@ namespace polyfem
 
 		void NCMesh2D::coarsen_element(int id_full)
 		{
+			counts_cached = false;
 			const int parent_id = elements[id_full].parent;
 			auto &parent = elements[parent_id];
 
@@ -501,6 +506,8 @@ namespace polyfem
 
 		void NCMesh2D::build_index_mapping()
 		{
+			counts_cached = false;
+
 			all_to_valid_elemMap.assign(elements.size(), -1);
 			valid_to_all_elemMap.resize(n_elements);
 
@@ -538,6 +545,9 @@ namespace polyfem
 				valid_to_all_edgeMap[j] = i;
 				j++;
 			}
+			n_valid_vertices = valid_to_all_vertexMap.size();
+			n_valid_edges = valid_to_all_edgeMap.size();
+			counts_cached = true;
 			index_prepared = true;
 		}
 
