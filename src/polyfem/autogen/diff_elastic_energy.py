@@ -11,9 +11,11 @@ class AMIPSEnergy:
     def __init__(self, use_rest_pose, dim):
         self.use_rest_pose = use_rest_pose
         self.dim = dim
+        # Keep the exponent symbolic so one generated kernel supports any power.
+        self.power = sp.Symbol('power', real=True)
 
     def parameters(self):
-        return []
+        return ["power"]
 
     def get_standard(self):
         if self.use_rest_pose:
@@ -36,8 +38,8 @@ class AMIPSEnergy:
         return standard
 
     def eval(self, p, t, el_id, def_grad):
-        power = 1 if self.dim == 2 else sp.Rational(2, 3)
-        
+        det_exponent = sp.Rational(2, self.dim)
+
         standard = self.get_standard()
 
         if not self.use_rest_pose:
@@ -48,8 +50,8 @@ class AMIPSEnergy:
         # if det <= 0:
         #     return sp.nan
 
-        powJ = det**power
-        return (def_grad.T @ def_grad).trace() / powJ
+        powJ = det**det_exponent
+        return ((def_grad.T @ def_grad).trace() / powJ) ** self.power
 
 
 class VolumePenaltyEnergy:
@@ -137,7 +139,7 @@ if __name__ == "__main__":
             # f.write("        }\n\n")
 
             f.write(
-                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
+                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
             f.write(
                 f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):

@@ -666,6 +666,103 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	REQUIRE(def_grad.allFinite());
 }
 
+TEST_CASE("AMIPS arbitrary power", "[assembler][amips][amips_power]")
+{
+	const int dim = GENERATE(2, 3);
+	const bool use_rest_pose = GENERATE(false, true);
+	const int sample = GENERATE(0, 1, 2);
+	const double power = GENERATE(-1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0);
+	CAPTURE(dim, use_rest_pose, sample, power);
+
+	using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+	const RowVectorNd p = RowVectorNd::Zero(dim);
+	AMIPSEnergy powered;
+	powered.set_size(dim);
+	Units units;
+	powered.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1.7}, {"power", power}}, units, test_resources());
+	const auto gradient = [&](const Matrix &F) { return powered.gradient(p, 0, 0, F); };
+	const auto hessian = [&](const Matrix &F) { return powered.hessian(p, 0, 0, F); };
+
+	// Columns are the edges of a unit regular simplex.
+	Matrix reference = Matrix::Identity(dim, dim);
+	if (!use_rest_pose)
+	{
+		reference(0, 1) = 0.5;
+		reference(1, 1) = std::sqrt(3.) / 2;
+		if (dim == 3)
+		{
+			reference(0, 2) = 0.5;
+			reference(1, 2) = 0.5 / std::sqrt(3.);
+			reference(2, 2) = std::sqrt(2. / 3.);
+		}
+	}
+	const auto energy = [&](Matrix F) { return powered.elastic_energy(p, 0, 0, F); };
+
+	Matrix deformation = Matrix::Identity(dim, dim);
+	if (sample != 0)
+	{
+		deformation(0, 0) = 1.2;
+		deformation(1, 1) = 0.8;
+		deformation(0, 1) = 0.3;
+		deformation(1, 0) = -0.1;
+		if (dim == 3)
+		{
+			deformation(2, 2) = 1.1;
+			deformation(0, 2) = -0.2;
+			deformation(2, 1) = 0.15;
+		}
+		if (sample == 2)
+			deformation *= 0.6;
+	}
+	const Matrix F = deformation * reference;
+	REQUIRE(F.determinant() > 0);
+	const Matrix grad = gradient(F);
+	const Eigen::MatrixXd hess = hessian(F);
+	REQUIRE(grad.allFinite());
+	REQUIRE(hess.allFinite());
+	require_approx_matrix(hess, hess.transpose(), 1e-10);
+
+	// Compare with the chain rule applied to the unweighted power-one energy.
+	AMIPSEnergy original;
+	original.set_size(dim);
+	original.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1}}, units, test_resources());
+	Matrix original_F = F; // elastic_energy applies the reference transform in place.
+	const double original_energy = original.elastic_energy(p, 0, 0, original_F);
+	const Matrix original_grad = original.gradient(p, 0, 0, F);
+	const Eigen::MatrixXd original_hess = original.hessian(p, 0, 0, F);
+	Eigen::VectorXd original_grad_flat(dim * dim);
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+			original_grad_flat(i * dim + j) = original_grad(i, j);
+
+	// Include a non-unit weight to verify it is applied after exponentiation.
+	REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(original_energy, power)).margin(1e-10));
+	require_approx_matrix(grad, 1.7 * power * std::pow(original_energy, power - 1) * original_grad, 1e-10);
+	require_approx_matrix(hess,
+						  1.7 * (power * (power - 1) * std::pow(original_energy, power - 2) * original_grad_flat * original_grad_flat.transpose() + power * std::pow(original_energy, power - 1) * original_hess), 1e-9);
+	if (sample == 0)
+	{
+		REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(dim, power)));
+		REQUIRE(grad.norm() < 1e-10);
+	}
+
+	const double step = 1e-6;
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+		{
+			CAPTURE(i, j);
+			Matrix plus = F, minus = F;
+			plus(i, j) += step;
+			minus(i, j) -= step;
+			REQUIRE(grad(i, j) == Catch::Approx((energy(plus) - energy(minus)) / (2 * step)).margin(1e-7));
+			const Matrix fd_hess = (gradient(plus) - gradient(minus)) / (2 * step);
+			// The generator flattens F in row-major order, unlike Eigen's default storage.
+			for (int k = 0; k < dim; ++k)
+				for (int l = 0; l < dim; ++l)
+					REQUIRE(hess(k * dim + l, i * dim + j) == Catch::Approx(fd_hess(k, l)).margin(1e-6));
+		}
+}
+
 TEST_CASE("modified-neohookean-gradient", "[assembler]")
 {
 	auto state = make_state_2d();
@@ -1626,4 +1723,192 @@ TEST_CASE("per-body material arrays use body-local element indices", "[assembler
 	CHECK(mass.density()(p, p, 0, 1) == 20.0);
 	CHECK(mass.density()(p, p, 0, 2) == 11.0);
 	CHECK(mass.density()(p, p, 0, 3) == 21.0);
+}
+
+TEST_CASE("amips_power_default", "[assembler]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = json({});
+	in_args["geometry"] = {};
+	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+	in_args["geometry"]["surface_selection"] = 7;
+
+	in_args["preset_problem"] = {};
+	in_args["preset_problem"]["type"] = "ElasticExact";
+
+	in_args["materials"] = {};
+	in_args["materials"]["type"] = "NeoHookean";
+	in_args["materials"]["E"] = 1e5;
+	in_args["materials"]["nu"] = 0.3;
+
+	State state;
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+	state.init(in_args, true);
+	state.load_mesh();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	Units units;
+	units.init(state.args["units"]);
+
+	AMIPSEnergy no_power, with_power;
+	no_power.set_size(2);
+	with_power.set_size(2);
+
+	json params_no_power = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params_with_power = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
+
+	no_power.add_multimaterial(0, params_no_power, units, test_resources());
+	with_power.add_multimaterial(0, params_with_power, units, test_resources());
+
+	const int el_id = 0;
+	const auto &bs = (*debug.bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+	Eigen::MatrixXd displacement(2 * debug.n_bases, 1);
+	for (int rand = 0; rand < 10; ++rand)
+	{
+		displacement.setRandom();
+		const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
+		const double e1 = no_power.compute_energy(data);
+		const double e2 = with_power.compute_energy(data);
+		if (std::isnan(e1))
+			REQUIRE(std::isnan(e2));
+		else
+			REQUIRE(e1 == Catch::Approx(e2).margin(1e-12));
+	}
+}
+
+TEST_CASE("amips_power_squared", "[assembler]")
+{
+	AMIPSEnergy base_amips, power2_amips;
+	base_amips.set_size(2);
+	power2_amips.set_size(2);
+
+	json params_base = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params_power2 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 2.0}};
+
+	Units units;
+	base_amips.add_multimaterial(0, params_base, units, test_resources());
+	power2_amips.add_multimaterial(0, params_power2, units, test_resources());
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
+	F.setIdentity();
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
+
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
+
+	auto F1 = F;
+	auto F2 = F;
+	const double e = base_amips.elastic_energy<double>(p, 0, 0, F1);
+	const double e2 = power2_amips.elastic_energy<double>(p, 0, 0, F2);
+
+	REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
+}
+
+TEST_CASE("amips_power_cubed_gradient_hessian_fd", "[assembler]")
+{
+	AMIPSEnergy amips;
+	const int dim = GENERATE(2, 3);
+	const double power = GENERATE(1.0, 2.0, 3.0);
+	const bool rest_pose = GENERATE(false, true);
+	amips.set_size(dim);
+
+	json params_power3 = {{"type", "AMIPS"}, {"power", power}, {"use_rest_pose", rest_pose}, {"weight", 1.7}};
+	Units units;
+	amips.add_multimaterial(0, params_power3, units, test_resources());
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(dim, dim);
+	F.setIdentity();
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
+
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(dim);
+
+	auto F0 = F;
+	const double e0 = amips.elastic_energy<double>(p, 0, 0, F0);
+	REQUIRE_FALSE(std::isnan(e0));
+
+	const auto grad = amips.gradient(p, 0, 0, F);
+	const auto hess = amips.hessian(p, 0, 0, F);
+
+	const double h = 1e-6;
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> fd_grad(dim, dim);
+	for (int i = 0; i < dim; ++i)
+	{
+		for (int j = 0; j < dim; ++j)
+		{
+			auto Fp = F, Fm = F;
+			Fp(i, j) += h;
+			Fm(i, j) -= h;
+			const double ep = amips.elastic_energy<double>(p, 0, 0, Fp);
+			const double em = amips.elastic_energy<double>(p, 0, 0, Fm);
+			fd_grad(i, j) = (ep - em) / (2 * h);
+		}
+	}
+
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
+			REQUIRE(grad(i, j) == Catch::Approx(fd_grad(i, j)).margin(1e-6).epsilon(1e-4));
+
+	Eigen::MatrixXd fd_hess(dim * dim, dim * dim);
+	for (int i = 0; i < dim; ++i)
+	{
+		for (int j = 0; j < dim; ++j)
+		{
+			auto Fp = F, Fm = F;
+			Fp(i, j) += h;
+			Fm(i, j) -= h;
+			const auto gp = amips.gradient(p, 0, 0, Fp);
+			const auto gm = amips.gradient(p, 0, 0, Fm);
+			const auto col = (gp - gm) / (2 * h);
+			for (int a = 0; a < dim; ++a)
+				for (int b = 0; b < dim; ++b)
+					fd_hess(a * dim + b, i * dim + j) = col(a, b);
+		}
+	}
+
+	for (int r = 0; r < dim * dim; ++r)
+		for (int c = 0; c < dim * dim; ++c)
+			REQUIRE(hess(r, c) == Catch::Approx(fd_hess(r, c)).margin(1e-4).epsilon(1e-3));
+}
+
+TEST_CASE("amips_power_multi_element", "[assembler]")
+{
+	AMIPSEnergy amips;
+	amips.set_size(2);
+
+	json params0 = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params1 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
+	json params2 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 2.0}};
+
+	Units units;
+	amips.add_multimaterial(0, params0, units, test_resources());
+	amips.add_multimaterial(1, params1, units, test_resources());
+	amips.add_multimaterial(2, params2, units, test_resources());
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
+	F.setIdentity();
+	F(0, 0) = 1.1;
+	F(0, 1) = 0.1;
+	F(1, 0) = 0.0;
+	F(1, 1) = 0.9;
+
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
+
+	auto F0 = F, F1 = F, F2 = F;
+	const double e0 = amips.elastic_energy<double>(p, 0, 0, F0);
+	const double e1 = amips.elastic_energy<double>(p, 0, 1, F1);
+	const double e2 = amips.elastic_energy<double>(p, 0, 2, F2);
+
+	REQUIRE(e0 == Catch::Approx(e1).margin(1e-12));
+	REQUIRE(e0 != Catch::Approx(1.0).margin(1e-8));
+
+	REQUIRE(e2 == Catch::Approx(e1 * e1).margin(1e-12));
 }

@@ -22,6 +22,11 @@ namespace polyfem::assembler
 		use_rest_pose_.add_multimaterial(index, params, "", resources);
 
 		weight_.add_multimaterial(index, params, "", resources);
+
+		json power_params = params;
+		if (!power_params.contains("power"))
+			power_params["power"] = 1.0;
+		power_.add_multimaterial(index, power_params, "", resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> AMIPSEnergy::parameters() const
@@ -33,6 +38,10 @@ namespace polyfem::assembler
 		};
 		res["weight"] = [this](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
 			return weight_(p, t, e);
+		};
+
+		res["power"] = [this](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return power_(p, t, e);
 		};
 
 		return res;
@@ -58,20 +67,20 @@ namespace polyfem::assembler
 		}
 
 		const double weight = weight_(p, t, el_id);
-
+		const double power = power_(p, t, el_id);
 		if (use_rest_pose(p, t, el_id))
 		{
 			if (size() == 2)
-				return weight * autogen::AMIPS2drest_gradient(p, t, el_id, F);
+				return weight * autogen::AMIPS2drest_gradient(p, t, el_id, F, power);
 			else
-				return weight * autogen::AMIPS3drest_gradient(p, t, el_id, F);
+				return weight * autogen::AMIPS3drest_gradient(p, t, el_id, F, power);
 		}
 		else
 		{
 			if (size() == 2)
-				return weight * autogen::AMIPS2d_gradient(p, t, el_id, F);
+				return weight * autogen::AMIPS2d_gradient(p, t, el_id, F, power);
 			else
-				return weight * autogen::AMIPS3d_gradient(p, t, el_id, F);
+				return weight * autogen::AMIPS3d_gradient(p, t, el_id, F, power);
 		}
 	}
 
@@ -90,20 +99,20 @@ namespace polyfem::assembler
 		}
 
 		const double weight = weight_(p, t, el_id);
-
+		const double power = power_(p, t, el_id);
 		if (use_rest_pose(p, t, el_id))
 		{
 			if (size() == 2)
-				return weight * autogen::AMIPS2drest_hessian(p, t, el_id, F);
+				return weight * autogen::AMIPS2drest_hessian(p, t, el_id, F, power);
 			else
-				return weight * autogen::AMIPS3drest_hessian(p, t, el_id, F);
+				return weight * autogen::AMIPS3drest_hessian(p, t, el_id, F, power);
 		}
 		else
 		{
 			if (size() == 2)
-				return weight * autogen::AMIPS2d_hessian(p, t, el_id, F);
+				return weight * autogen::AMIPS2d_hessian(p, t, el_id, F, power);
 			else
-				return weight * autogen::AMIPS3d_hessian(p, t, el_id, F);
+				return weight * autogen::AMIPS3d_hessian(p, t, el_id, F, power);
 		}
 	}
 
