@@ -1727,57 +1727,57 @@ TEST_CASE("per-body material arrays use body-local element indices", "[assembler
 
 TEST_CASE("amips_power_default", "[assembler]")
 {
-    const std::string path = POLYFEM_DATA_DIR;
-    json in_args = json({});
-    in_args["geometry"] = {};
-    in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
-    in_args["geometry"]["surface_selection"] = 7;
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = json({});
+	in_args["geometry"] = {};
+	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+	in_args["geometry"]["surface_selection"] = 7;
 
-    in_args["preset_problem"] = {};
-    in_args["preset_problem"]["type"] = "ElasticExact";
+	in_args["preset_problem"] = {};
+	in_args["preset_problem"]["type"] = "ElasticExact";
 
-    in_args["materials"] = {};
-    in_args["materials"]["type"] = "NeoHookean";
-    in_args["materials"]["E"] = 1e5;
-    in_args["materials"]["nu"] = 0.3;
+	in_args["materials"] = {};
+	in_args["materials"]["type"] = "NeoHookean";
+	in_args["materials"]["E"] = 1e5;
+	in_args["materials"]["nu"] = 0.3;
 
-    State state;
-    state.init_logger("", spdlog::level::err, spdlog::level::off, false);
-    state.init(in_args, true);
-    state.load_mesh();
-    test::VarFormTestAccess::prepare(*state.variational_formulation);
-    const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
-    Units units;
-    units.init(state.args["units"]);
+	State state;
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+	state.init(in_args, true);
+	state.load_mesh();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	Units units;
+	units.init(state.args["units"]);
 
-    AMIPSEnergy no_power, with_power;
-    no_power.set_size(2);
-    with_power.set_size(2);
+	AMIPSEnergy no_power, with_power;
+	no_power.set_size(2);
+	with_power.set_size(2);
 
-    json params_no_power = {{"type", "AMIPS"}, {"weight", 1.0}};
-    json params_with_power = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
+	json params_no_power = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params_with_power = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
 
-    no_power.add_multimaterial(0, params_no_power, units, test_resources());
-    with_power.add_multimaterial(0, params_with_power, units, test_resources());
+	no_power.add_multimaterial(0, params_no_power, units, test_resources());
+	with_power.add_multimaterial(0, params_with_power, units, test_resources());
 
-    const int el_id = 0;
-    const auto &bs = (*debug.bases)[el_id];
-    ElementAssemblyValues vals;
-    vals.compute(el_id, false, bs, bs);
-    const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+	const int el_id = 0;
+	const auto &bs = (*debug.bases)[el_id];
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+	const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
 
-    Eigen::MatrixXd displacement(2 * debug.n_bases, 1);
-    for (int rand = 0; rand < 10; ++rand)
-    {
-        displacement.setRandom();
-        const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
-        const double e1 = no_power.compute_energy(data);
-        const double e2 = with_power.compute_energy(data);
-        if (std::isnan(e1))
-            REQUIRE(std::isnan(e2));
-        else
-            REQUIRE(e1 == Catch::Approx(e2).margin(1e-12));
-    }
+	Eigen::MatrixXd displacement(2 * debug.n_bases, 1);
+	for (int rand = 0; rand < 10; ++rand)
+	{
+		displacement.setRandom();
+		const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
+		const double e1 = no_power.compute_energy(data);
+		const double e2 = with_power.compute_energy(data);
+		if (std::isnan(e1))
+			REQUIRE(std::isnan(e2));
+		else
+			REQUIRE(e1 == Catch::Approx(e2).margin(1e-12));
+	}
 }
 
 TEST_CASE("amips_power_squared", "[assembler]")
