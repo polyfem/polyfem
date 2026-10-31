@@ -1,5 +1,8 @@
 #include "NLProblem.hpp"
 
+#include <polyfem/solver/BarrierContactNonsmoothTerm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -586,7 +589,12 @@ namespace polyfem::solver
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
-		double max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+		double max_step;
+		// certified narrow phase on a segment with cached candidates (same result as the forms' max_step_size)
+		if (has_nonsmooth_term() && nonsmooth_term_->certified_max_step_size())
+			max_step = nonsmooth_term_->max_step_size(x0, x1);
+		else
+			max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 
 		if (penalty_problem_ && full_size() == current_size())
 			max_step = std::min(max_step, penalty_problem_->max_step_size(x0, x1));
@@ -667,6 +675,24 @@ namespace polyfem::solver
 			penalty_problem_->hessian(x, tmp);
 			hessian += tmp;
 		}
+	}
+
+	void NLProblem::add_penalty_gradient(const TVector &x, TVector &grad)
+	{
+		if (!penalty_problem_ || full_size() != current_size())
+			return;
+		TVector tmp;
+		penalty_problem_->gradient(x, tmp);
+		grad += tmp;
+	}
+
+	void NLProblem::add_penalty_hessian(const TVector &x, THessian &hessian)
+	{
+		if (!penalty_problem_ || full_size() != current_size())
+			return;
+		THessian tmp;
+		penalty_problem_->hessian(x, tmp);
+		hessian += tmp;
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -750,6 +776,57 @@ namespace polyfem::solver
 		return diag;
 	}
 
+	bool NLProblem::reduction_is_selection(std::vector<int> &red_of_full) const
+	{
+		red_of_full.assign(full_size_, -1);
+		if (reduced_size_ == full_size_ && penalty_forms_.empty())
+		{
+			for (int i = 0; i < full_size_; ++i)
+				red_of_full[i] = i;
+			return true;
+		}
+		// P (full x reduced) with x_full = x0 + P x_reduced: a selection has exactly one unit entry per column
+		const auto columns_select = [&](const StiffnessMatrix &P) {
+			if (P.rows() != full_size_ || P.cols() != reduced_size_)
+				return false;
+			for (int j = 0; j < P.outerSize(); ++j)
+			{
+				int row = -1;
+				for (StiffnessMatrix::InnerIterator it(P, j); it; ++it)
+				{
+					if (it.value() == 0)
+						continue;
+					if (row >= 0 || it.value() != 1 || red_of_full[it.row()] != -1)
+						return false;
+					row = int(it.row());
+				}
+				if (row < 0)
+					return false;
+				red_of_full[row] = j;
+			}
+			return true;
+		};
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+		{
+			const auto &form = penalty_forms_.front();
+			if (std::dynamic_pointer_cast<const BCLagrangianForm>(form))
+			{
+				// the projection keeps the unconstrained dofs (BCLagrangianForm::project_gradient): a selection by construction
+				TVector code(full_size_);
+				for (int i = 0; i < full_size_; ++i)
+					code[i] = i;
+				form->project_gradient(code);
+				if (code.size() != reduced_size_)
+					return false;
+				for (int j = 0; j < code.size(); ++j)
+					red_of_full[int(code[j])] = j;
+				return true;
+			}
+			return form->has_projection() && columns_select(form->constraint_projection_matrix());
+		}
+		return columns_select(Q2_);
+	}
+
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		// Full is already at the reduced size
@@ -790,4 +867,34 @@ namespace polyfem::solver
 			});
 		}
 	}
+
+	// ------------------------------------------------------------------------------------------------ nonsmooth term
+	bool NLProblem::has_nonsmooth_term() const
+	{
+		// the caller installs the term only around the solves that use it (BarrierContactNonsmoothTerm handles both sizes)
+		return nonsmooth_term_ != nullptr;
+	}
+
+	BarrierContactNonsmoothTerm &NLProblem::term() const
+	{
+		if (!has_nonsmooth_term())
+			log_and_throw_error("NLProblem: no nonsmooth term installed");
+		return *nonsmooth_term_;
+	}
+
+	void NLProblem::smooth_gradient(const TVector &x, TVector &grad) { term().smooth_gradient(x, grad); }
+	void NLProblem::smooth_hessian(const TVector &x, const bool project_to_psd, THessian &hessian) { term().smooth_hessian(x, project_to_psd, hessian); }
+	double NLProblem::smooth_valid_fraction(const TVector &x, const TVector &a, const TVector &b) { return term().smooth_valid_fraction(x, a, b); }
+	void NLProblem::metric_diagonal(TVector &diag) { term().metric_diagonal(diag); }
+	void NLProblem::nonsmooth_update(const TVector &y) { term().update(y); }
+	double NLProblem::nonsmooth_value(const TVector &y) { return term().value(y); }
+	void NLProblem::nonsmooth_gradient(const TVector &y, TVector &grad) { term().gradient(y, grad); }
+	void NLProblem::nonsmooth_hessian(const TVector &y, const bool project_to_psd, THessian &hessian) { term().hessian(y, project_to_psd, hessian); }
+	bool NLProblem::nonsmooth_hessian_blocks(const TVector &y, TVector &grad, std::vector<polysolve::nonlinear::HessianBlock> &blocks) { return term().hessian_blocks(y, grad, blocks); }
+	int NLProblem::nonsmooth_active_size() { return term().active_size(); }
+	void NLProblem::nonsmooth_active_distances(const TVector &a, const TVector &b, TVector &distance, TVector &rate) { term().active_distances(a, b, distance, rate); }
+	double NLProblem::nonsmooth_step_length(const TVector &a, const TVector &b) { return term().step_length(a, b); }
+	double NLProblem::nonsmooth_length_scale() { return term().length_scale(); }
+	double NLProblem::nonsmooth_activation_distance() { return term().activation_distance(); }
+	void NLProblem::nonsmooth_segment_begin(const TVector &a, const TVector &b) { term().segment_begin(a, b); }
 } // namespace polyfem::solver

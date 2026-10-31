@@ -52,6 +52,9 @@ namespace polyfem::solver
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
+		/// @brief Nonlinear solver used by the last solve_al / solve_reduced call (null before the first one)
+		const std::shared_ptr<polysolve::nonlinear::Solver> &last_solver() const { return last_solver_; }
+
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
 		const double initial_al_weight;
@@ -61,5 +64,7 @@ namespace polyfem::solver
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
+
+		std::shared_ptr<polysolve::nonlinear::Solver> last_solver_;
 	};
 } // namespace polyfem::solver

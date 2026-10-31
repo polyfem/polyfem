@@ -20,6 +20,10 @@
 #include <polyfem/io/SolverCSVWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/BarrierContactNonsmoothTerm.hpp>
+#include <polyfem/solver/FastTetValidity.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
@@ -27,6 +31,7 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/GCPContactForm.hpp>
+#include <polyfem/solver/forms/ESPContactForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/lagrangian/PeriodicBoundaryLagrangianForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
@@ -55,6 +60,9 @@ namespace polyfem::varform
 		clean_args["contact"].erase("_dhat_was_explicit");
 		ElasticVarForm::init(formulation, units, clean_args, out_path);
 		contact_dhat_was_explicit_ = contact_dhat_was_explicit;
+		if (solver::selects_nonsmooth_newton(this->args["solver"]["nonlinear"])
+			|| solver::selects_nonsmooth_newton(this->args["solver"]["augmented_lagrangian"]["nonlinear"]))
+			check_nonsmooth_newton_config();
 	}
 
 	void NonlinearElasticVarForm::reset()
@@ -72,6 +80,9 @@ namespace polyfem::varform
 		damping_assembler_ = nullptr;
 		damping_prev_assembler_ = nullptr;
 		contact_dhat_was_explicit_ = false;
+		nonsmooth_fast_validity_ = nullptr;
+		nonsmooth_fast_validity_done_ = false;
+		collision_displacement_map_.resize(0, 0);
 	}
 
 	bool NonlinearElasticVarForm::has_macro_strain() const
@@ -230,6 +241,9 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+		// the NonsmoothNewton fast validity check caches the rest tets of the space
+		nonsmooth_fast_validity_ = nullptr;
+		nonsmooth_fast_validity_done_ = false;
 
 		problem->setup_bc(
 			mesh, assembler::BoundaryKind::NormalAlignedNeumann, /*fe_space_id=*/-1,
@@ -323,7 +337,7 @@ namespace polyfem::varform
 		build_collision_mesh(
 			mesh, space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), boundary_.total_local_boundary, obstacle,
 			args, resources_,
-			space_.space_in_node_to_node, collision_mesh_);
+			space_.space_in_node_to_node, collision_mesh_, &collision_displacement_map_);
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -336,7 +350,8 @@ namespace polyfem::varform
 		const json &args,
 		const io::ResourceIO &resources,
 		const Eigen::VectorXi &in_node_to_node,
-		ipc::CollisionMesh &collision_mesh_)
+		ipc::CollisionMesh &collision_mesh_,
+		Eigen::SparseMatrix<double> *displacement_map_out)
 	{
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
@@ -472,6 +487,8 @@ namespace polyfem::varform
 		};
 
 		collision_mesh_.init_area_jacobians();
+		if (displacement_map_out)
+			*displacement_map_out = displacement_map;
 	}
 
 	void NonlinearElasticVarForm::build_periodic_collision_mesh()
@@ -1303,6 +1320,66 @@ namespace polyfem::varform
 		return mesh_ ? space_.n_bases * mesh_->dimension() : 0;
 	}
 
+	void NonlinearElasticVarForm::check_nonsmooth_newton_config() const
+	{
+		const std::string name = "NonsmoothNewton";
+		if (!(args.contains("time") && !args["time"].is_null()))
+			log_and_throw_error("{}: only transient problems are supported (the subspace metric is the lumped mass)", name);
+		if (!args["contact"]["enabled"])
+			log_and_throw_error("{}: needs contact (contact/enabled)", name);
+		if (has_macro_strain())
+			log_and_throw_error("{}: homogenization (macro strain) is not supported", name);
+		if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+			log_and_throw_error("{}: only the discrete element inversion check is supported (check_inversion = \"Discrete\")", name);
+	}
+
+	void NonlinearElasticVarForm::check_nonsmooth_newton_support() const
+	{
+		const std::string name = "NonsmoothNewton";
+		check_nonsmooth_newton_config();
+		if (!problem->is_time_dependent())
+			log_and_throw_error("{}: only transient problems are supported (the subspace metric is the lumped mass)", name);
+		if (mesh_->dimension() != 3)
+			log_and_throw_error("{}: only 3D problems are supported", name);
+		if (solve_data_.nl_problem == nullptr || solve_data_.nl_problem->uses_lagging())
+			log_and_throw_error("{}: lagged forms (friction, tangential adhesion) are not supported", name);
+		int n_barrier = 0;
+		for (const auto &f : forms)
+		{
+			if (std::dynamic_pointer_cast<solver::PeriodicContactForm>(f))
+				log_and_throw_error("{}: periodic contact is not supported", name);
+			if (std::dynamic_pointer_cast<solver::GCPContactForm>(f))
+				log_and_throw_error("{}: GCP (smooth) contact is not supported", name);
+			if (std::dynamic_pointer_cast<solver::ESPContactForm>(f))
+				log_and_throw_error("{}: extremum sum potential contact is not supported", name);
+			if (std::dynamic_pointer_cast<solver::NormalAdhesionForm>(f))
+				log_and_throw_error("{}: normal adhesion is not supported", name);
+			if (auto c = std::dynamic_pointer_cast<solver::BarrierContactForm>(f))
+			{
+				++n_barrier;
+				if (c->enable_shape_derivatives())
+					log_and_throw_error("{}: contact shape derivatives (adjoint / optimization) are not supported", name);
+			}
+		}
+		if (n_barrier != 1)
+			log_and_throw_error("{}: needs exactly one barrier contact form (contact enabled), found {}", name, n_barrier);
+		if (pure_mass_.size() == 0 || !(pure_mass_.sum() > 0))
+			log_and_throw_error("{}: needs a positive lumped mass", name);
+	}
+
+	std::shared_ptr<solver::BarrierContactNonsmoothTerm> NonlinearElasticVarForm::make_nonsmooth_term(const json &nonlinear_params)
+	{
+		if (!nonsmooth_fast_validity_done_)
+		{
+			nonsmooth_fast_validity_ = solver::FastTetValidity::build(space_.basis_list(), space_.geometry_basis_list(), space_.n_bases, args["materials"]);
+			nonsmooth_fast_validity_done_ = true;
+		}
+		return std::make_shared<solver::BarrierContactNonsmoothTerm>(
+			*solve_data_.nl_problem, forms, pure_mass_ * Eigen::VectorXd::Ones(pure_mass_.cols()), collision_mesh_,
+			&collision_displacement_map_, nonsmooth_fast_validity_,
+			solver::BarrierContactNonsmoothTerm::Options::from_json(nonlinear_params));
+	}
+
 	void NonlinearElasticVarForm::solve_tensor_nonlinear(
 		const int step,
 		Eigen::MatrixXd &sol,
@@ -1338,22 +1415,59 @@ namespace polyfem::varform
 				this->solve_data_.update_barrier_stiffness(sol);
 			});
 
+		// NonsmoothNewton: the barrier contact form is the nonsmooth term of the solves that select it, the reduced solve
+		// and the full-size augmented Lagrangian subproblems (whose solver parameters default to solver/nonlinear)
+		const json &al_nonlinear_params = args["solver"]["augmented_lagrangian"]["nonlinear"];
+		const bool nonsmooth = solver::selects_nonsmooth_newton(args["solver"]["nonlinear"]);
+		const bool al_nonsmooth = solver::selects_nonsmooth_newton(al_nonlinear_params);
+		if (nonsmooth || al_nonsmooth)
+			check_nonsmooth_newton_support();
+
 		al_solver.post_subsolve = [&](const double al_weight) {
+			json info = nl_solver->info();
+			if (al_solver.last_solver() && nl_problem.nonsmooth_term())
+			{
+				// counters of the solver used by the subsolve and of the contact term (the term of the augmented Lagrangian
+				// subproblems counts over all of them in this step)
+				info = al_solver.last_solver()->info();
+				info["contact_term"] = nl_problem.nonsmooth_term()->stats();
+			}
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", step},
-				 {"info", nl_solver->info()}});
+				 {"info", info}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(stats.solver_info.size(), step, sol);
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		if (al_nonsmooth)
+			nl_problem.set_nonsmooth_term(make_nonsmooth_term(al_nonlinear_params));
+		try
+		{
+			al_solver.solve_al(nl_problem, sol, al_nonlinear_params, args["solver"]["linear"], units.characteristic_length());
+		}
+		catch (...)
+		{
+			nl_problem.set_nonsmooth_term(nullptr);
+			throw;
+		}
+		nl_problem.set_nonsmooth_term(nullptr);
 
-		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		if (nonsmooth)
+			nl_problem.set_nonsmooth_term(make_nonsmooth_term(args["solver"]["nonlinear"]));
+		try
+		{
+			al_solver.solve_reduced(nl_problem, sol,
+									args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		}
+		catch (...)
+		{
+			nl_problem.set_nonsmooth_term(nullptr);
+			throw;
+		}
+		nl_problem.set_nonsmooth_term(nullptr);
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{

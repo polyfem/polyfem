@@ -1,6 +1,12 @@
 set(SOURCES
 	ALSolver.cpp
 	ALSolver.hpp
+	BarrierContactNonsmoothTerm.cpp
+	BarrierContactNonsmoothTerm.hpp
+	BilateralSegmentCertifier.cpp
+	BilateralSegmentCertifier.hpp
+	FastTetValidity.cpp
+	FastTetValidity.hpp
 	FullNLProblem.cpp
 	FullNLProblem.hpp
 	NLProblem.cpp
