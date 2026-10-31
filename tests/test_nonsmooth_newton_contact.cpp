@@ -27,11 +27,15 @@
 using namespace polyfem;
 
 // polysolve's NonsmoothNewton with the barrier contact form as the nonsmooth term (BarrierContactNonsmoothTerm).
-// The solving tests need CHOLMOD: the strategy requires Eigen::CholmodSupernodalLLT (an LLT that reports indefinite
-// matrices). Builds without it (POLYSOLVE_WITH_CHOLMOD=OFF) only run the option tests.
-#ifdef POLYSOLVE_WITH_CHOLMOD
 namespace
 {
+	// the strategy needs an LLT that reports indefinite matrices
+#ifdef POLYSOLVE_WITH_CHOLMOD
+	const std::string llt_solver = "Eigen::CholmodSupernodalLLT";
+#else
+	const std::string llt_solver = "Eigen::SimplicialLLT";
+#endif
+
 	/// 5 stacked cubes falling onto a plane (contact from the first steps), shortened to `steps` time steps
 	json five_cubes(const int steps, const std::string &solver, const std::string &out_json)
 	{
@@ -48,7 +52,7 @@ namespace
 		if (!out_json.empty())
 			args["output"]["json"] = out_json;
 		args["/solver/max_threads"_json_pointer] = 1;
-		args["/solver/linear/solver"_json_pointer] = "Eigen::CholmodSupernodalLLT";
+		args["/solver/linear/solver"_json_pointer] = llt_solver;
 		// the augmented Lagrangian subproblems inherit the solver (none in this scene: the plane does not move)
 		args["/solver/nonlinear/solver"_json_pointer] = solver;
 		args["/output/log/level"_json_pointer] = "error";
@@ -161,7 +165,6 @@ namespace
 		return s;
 	}
 } // namespace
-#endif
 
 TEST_CASE("nonsmooth_newton_contact_options", "[nonsmooth_newton]")
 {
@@ -203,7 +206,6 @@ TEST_CASE("nonsmooth_newton_contact_options", "[nonsmooth_newton]")
 	CHECK(!solver::selects_nonsmooth_newton(json{{"solver", "Newton"}}));
 }
 
-#ifdef POLYSOLVE_WITH_CHOLMOD
 // The full simulations run only in release builds, like the other simulation tests (verify_run, test_output).
 #ifdef NDEBUG
 #define NONSMOOTH_NEWTON_SIM_TAGS "[nonsmooth_newton]"
@@ -368,4 +370,3 @@ TEST_CASE("nonsmooth_newton_contact_rejects_unsupported", "[nonsmooth_newton]")
 		CHECK_THROWS_WITH(run(args), ContainsSubstring("macro strain"));
 	}
 }
-#endif
