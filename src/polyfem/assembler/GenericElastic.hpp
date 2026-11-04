@@ -38,8 +38,7 @@ namespace polyfem::assembler
 								  const int all_size,
 								  const ElasticityTensorType &type,
 								  Eigen::MatrixXd &all,
-								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-								  Eigen::MatrixXd *energy_out) const override;
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 		void compute_stress_grad_multiply_mat(const OptAssemblerData &data,
 											  const Eigen::MatrixXd &mat,

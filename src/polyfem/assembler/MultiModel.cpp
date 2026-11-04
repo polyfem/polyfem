@@ -65,14 +65,13 @@ namespace polyfem::assembler
 		const int all_size,
 		const ElasticityTensorType &type,
 		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-		Eigen::MatrixXd *energy_out) const
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const std::string model = multi_material_models_[data.el_id];
 		const auto assembler = all_elastic_materials_.get_assembler(model);
 		auto elasticity_assembler = dynamic_cast<ElasticityNLAssembler *>(assembler.get());
 		assert(elasticity_assembler && "Failed to cast assembler to ElasticityNLAssembler.");
-		elasticity_assembler->assign_stress_tensor(data, all_size, type, all, fun, energy_out);
+		elasticity_assembler->assign_stress_tensor(data, all_size, type, all, fun);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const

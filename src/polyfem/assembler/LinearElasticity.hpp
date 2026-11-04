@@ -79,8 +79,7 @@ namespace polyfem::assembler
 								  const int all_size,
 								  const ElasticityTensorType &type,
 								  Eigen::MatrixXd &all,
-								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-								  Eigen::MatrixXd *energy_out) const override;
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		// class that stores and compute lame parameters per point

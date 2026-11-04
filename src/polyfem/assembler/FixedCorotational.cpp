@@ -235,8 +235,7 @@ namespace polyfem::assembler
 												 const int all_size,
 												 const ElasticityTensorType &type,
 												 Eigen::MatrixXd &all,
-												 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-												 Eigen::MatrixXd *energy_out) const
+												 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
@@ -250,8 +249,6 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
-		if (energy_out)
-			energy_out->setZero(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -271,8 +268,11 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
-			if (energy_out)
-				(*energy_out)(p, 0) = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
+				continue;
+			}
 
 			Eigen::MatrixXd stress_tensor;
 			if (size() == 2)

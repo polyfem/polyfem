@@ -55,8 +55,7 @@ namespace polyfem::assembler
 																		 const int all_size,
 																		 const ElasticityTensorType &type,
 																		 Eigen::MatrixXd &all,
-																		 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun,
-																		 Eigen::MatrixXd *energy_out) const
+																		 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
@@ -67,6 +66,13 @@ namespace polyfem::assembler
 		assert(size() == 2 || size() == 3);
 		all.resize(local_pts.rows(), all_size);
 		assert(displacement.cols() == 1);
+
+		// This formulation has no energy.
+		if (type == ElasticityTensorType::ENERGY)
+		{
+			all.setZero();
+			return;
+		}
 
 		Eigen::MatrixXd displacement_grad(size(), size());
 
