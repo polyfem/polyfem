@@ -526,12 +526,14 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// Initialize node_ids_ if it is not initialized yet.
+		// Initialize node_ids_ if it is not initialized yet (with the defaults,
+		// which must be read before node_ids_ becomes non-empty).
 		if (!has_node_ids() && mesh.has_node_ids())
 		{
-			node_ids_.resize(n_vertices);
-			for (int i = 0; i < node_ids_.size(); ++i)
-				node_ids_[i] = get_node_id(i); // results in default if node_ids_ is empty
+			std::vector<int> defaults(n_vertices);
+			for (int i = 0; i < n_vertices; ++i)
+				defaults[i] = get_node_id(i);
+			node_ids_ = std::move(defaults);
 		}
 
 		if (mesh.has_node_ids())
@@ -603,31 +605,39 @@ namespace polyfem::mesh
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
 		// --------------------------------------------------------------------
-		for (const auto &n : mesh.edge_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			edge_nodes_.push_back(tmp);
-		}
-		for (const auto &n : mesh.face_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			tmp.v3 += n_vertices;
-			face_nodes_.push_back(tmp);
-		}
-		for (const auto &n : mesh.cell_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			tmp.v3 += n_vertices;
-			tmp.v4 += n_vertices;
-			cell_nodes_.push_back(tmp);
-		}
-		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
+		// The curved-geometry nodes and the rational weights are indexed by
+		// edge/face/cell/element id, and the appended entities keep their ids
+		// shifted by this mesh's counts: pad both sides with empty entries
+		// (= linear) so the ids stay aligned when only one mesh has them.
+		const auto append_padded = [](auto &entries, const int n_entries, const auto &other, const int n_other, const auto &shift) {
+			if (entries.empty() && other.empty())
+				return;
+			entries.resize(n_entries);
+			for (auto n : other)
+			{
+				shift(n);
+				entries.push_back(std::move(n));
+			}
+			entries.resize(n_entries + n_other);
+		};
+		const int n_cells_this = is_volume() ? n_cells() : 0;
+		const int n_cells_other = mesh.is_volume() ? mesh.n_cells() : 0;
+		append_padded(edge_nodes_, n_edges(), mesh.edge_nodes_, mesh.n_edges(), [&](EdgeNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+		});
+		append_padded(face_nodes_, n_faces(), mesh.face_nodes_, mesh.n_faces(), [&](FaceNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+			n.v3 += n_vertices;
+		});
+		append_padded(cell_nodes_, n_cells_this, mesh.cell_nodes_, n_cells_other, [&](CellNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+			n.v3 += n_vertices;
+			n.v4 += n_vertices;
+		});
+		append_padded(cell_weights_, n_elements(), mesh.cell_weights_, mesh.n_elements(), [](std::vector<double> &) {});
 		// --------------------------------------------------------------------
 
 		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());

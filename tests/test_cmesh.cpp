@@ -1153,3 +1153,55 @@ TEST_CASE("affine transformations move element kernels", "[mesh_test]")
 	CHECK((mesh3d.kernel(0) - expected).norm() < 1e-12);
 	CHECK((mesh3d.cell_barycenter(0) - expected).norm() < 1e-12);
 }
+
+TEST_CASE("appending a curved mesh to a linear one keeps its nodes aligned", "[mesh_test]")
+{
+	const std::string dir = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/sphere/coarse/";
+	const io::FileSystemIO resources(dir);
+	// A linear mesh built from plain vertices and cells has no curved-node slots.
+	const MeshData p1 = MeshLoader(resources).load_fem("P1.msh")->to_mesh_data();
+	auto merged = Mesh::create(MeshData(p1.vertices, p1.elements));
+	const auto linear = Mesh::create(MeshData(p1.vertices, p1.elements));
+	const auto curved = MeshLoader(resources).load_fem("P2.msh");
+	REQUIRE(curved->orders().maxCoeff() == 2);
+	merged->append(curved);
+
+	const auto &merged3d = dynamic_cast<const Mesh3D &>(*merged);
+	const auto &curved3d = dynamic_cast<const Mesh3D &>(*curved);
+	const auto &linear3d = dynamic_cast<const Mesh3D &>(*linear);
+	REQUIRE(merged->n_cells() == linear->n_cells() + curved->n_cells());
+	const int n_shift = linear->n_cells();
+	int n_curved = 0;
+	for (int c = 0; c < merged->n_cells(); ++c)
+	{
+		auto index = merged3d.get_index_from_element(c);
+		const bool second = c >= n_shift;
+		auto reference = second ? curved3d.get_index_from_element(c - n_shift) : linear3d.get_index_from_element(c);
+		const Mesh3D &source = second ? curved3d : linear3d;
+		for (int le = 0; le < 3; ++le)
+		{
+			const RowVectorNd node = merged3d.edge_node(index, 1, 0).first;
+			const RowVectorNd expected = source.edge_node(reference, 1, 0).first;
+			CHECK((node - expected).norm() < 1e-12);
+			const RowVectorNd midpoint = (merged->point(index.vertex) + merged->point(merged3d.switch_vertex(index).vertex)) / 2;
+			n_curved += (node - midpoint).norm() > 1e-10;
+			index = merged3d.next_around_face(index);
+			reference = source.next_around_face(reference);
+		}
+	}
+	CHECK(n_curved > 0);
+}
+
+TEST_CASE("appending node ids gives the receiving mesh the default ids", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi cells(1, 3);
+	cells << 0, 1, 2;
+	auto first = Mesh::create(MeshData(vertices, cells));
+	auto second = Mesh::create(MeshData(vertices, cells));
+	second->compute_node_ids([](const size_t, const RowVectorNd &, bool) { return 5; });
+	first->append(second);
+	for (int v = 0; v < 6; ++v)
+		CHECK(first->get_node_id(v) == (v < 3 ? -1 : 5));
+}

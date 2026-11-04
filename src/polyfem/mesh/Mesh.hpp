@@ -52,7 +52,7 @@ namespace polyfem
 			class EdgeNodes
 			{
 			public:
-				int v1, v2;
+				int v1 = -1, v2 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
@@ -61,7 +61,7 @@ namespace polyfem
 			class FaceNodes
 			{
 			public:
-				int v1, v2, v3;
+				int v1 = -1, v2 = -1, v3 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
@@ -70,7 +70,7 @@ namespace polyfem
 			class CellNodes
 			{
 			public:
-				int v1, v2, v3, v4;
+				int v1 = -1, v2 = -1, v3 = -1, v4 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
