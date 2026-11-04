@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 
+#include <polyfem/mesh/NCMeshStorage.hpp>
 #include <set>
 
 namespace polyfem
@@ -60,10 +61,9 @@ namespace polyfem
 
 			struct ncVert
 			{
-				ncVert(const Eigen::VectorXd pos_) : pos(pos_) {};
-				~ncVert() {};
+				ncVert(const Eigen::VectorXd &pos_) : pos(pos_) {};
 
-				Eigen::VectorXd pos;
+				InlineVector<double, 3> pos;
 				bool isboundary = false;
 
 				int edge = -1; // only used if the vertex is on the interior of an edge
@@ -76,11 +76,10 @@ namespace polyfem
 
 			struct ncBoundary
 			{
-				ncBoundary(const Eigen::VectorXi vert) : vertices(vert)
+				ncBoundary(const Eigen::VectorXi &vert) : vertices(vert)
 				{
 					weights.setConstant(-1);
 				};
-				~ncBoundary() {};
 
 				int n_elem() const
 				{
@@ -121,8 +120,8 @@ namespace polyfem
 					return oppo;
 				}
 
-				std::set<int> elem_list; // elements that contain this edge/face
-				Eigen::VectorXi vertices;
+				SortedIds elem_list; // elements that contain this edge/face
+				InlineVector<int, 2> vertices;
 
 				bool isboundary = false; // valid only after calling mark_boundary()
 				int boundary_id = -1;
@@ -140,7 +139,7 @@ namespace polyfem
 
 			struct ncElem
 			{
-				ncElem(const int dim_, const Eigen::VectorXi vertices_, const int level_, const int parent_) : dim(dim_), level(level_), parent(parent_), geom_vertices(vertices_)
+				ncElem(const int dim_, const Eigen::VectorXi &vertices_, const int level_, const int parent_) : dim(dim_), level(level_), parent(parent_), geom_vertices(vertices_)
 				{
 					vertices = geom_vertices;
 
@@ -149,7 +148,6 @@ namespace polyfem
 					faces.setConstant(4 * (dim - 2), 1, -1);
 					children.setConstant(std::round(pow(2, dim)), 1, -1);
 				};
-				~ncElem() {};
 
 				bool is_valid() const
 				{
@@ -164,13 +162,13 @@ namespace polyfem
 				int dim;
 				int level; // level of refinement
 				int parent;
-				Eigen::VectorXi geom_vertices;
+				InlineVector<int, 3> geom_vertices;
 
-				Eigen::VectorXi vertices; // geom_vertices with a different order that used in polyfem
+				InlineVector<int, 3> vertices; // geom_vertices with a different order that used in polyfem
 
-				Eigen::VectorXi edges;
-				Eigen::VectorXi faces;
-				Eigen::VectorXi children;
+				InlineVector<int, 3> edges;
+				InlineVector<int, 1> faces; // unused in 2D
+				InlineVector<int, 4> children;
 
 				int body_id = 0;
 
