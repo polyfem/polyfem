@@ -427,3 +427,59 @@ TEST_CASE("non-conforming refinement after coarsening", "[ncmesh][mesh_test]")
 		CHECK(query(*twice) == query(*once));
 	}
 }
+
+TEST_CASE("non-conforming append merges structure and labels", "[ncmesh][mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		auto first = Mesh::create(nc_test_mesh(dim), true);
+		MeshData shifted = nc_test_mesh(dim);
+		shifted.vertices.col(0).array() += 5;
+		auto second = Mesh::create(shifted, true);
+
+		// First mesh: refined with hanging nodes, labeled.
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*first).refine_elements({0});
+		else
+			dynamic_cast<NCMesh3D &>(*first).refine_elements({0});
+		first->set_body_ids(std::vector<int>(first->n_elements(), 7));
+		first->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+		const int n_first_elements = first->n_elements(), n_first_vertices = first->n_vertices();
+		const int n_first_boundary = first->n_boundary_elements();
+		std::vector<int> first_boundary_ids;
+		for (int b = 0; b < n_first_boundary; ++b)
+			first_boundary_ids.push_back(first->get_boundary_id(b));
+
+		// Second mesh: body ids only.
+		second->set_body_ids(std::vector<int>(second->n_elements(), 9));
+		const int n_second_elements = second->n_elements(), n_second_vertices = second->n_vertices();
+
+		first->append(second);
+		REQUIRE(first->n_elements() == n_first_elements + n_second_elements);
+		REQUIRE(first->n_vertices() == n_first_vertices + n_second_vertices);
+		for (int e = 0; e < first->n_elements(); ++e)
+			CHECK(first->get_body_id(e) == (e < n_first_elements ? 7 : 9));
+		CHECK(first->get_body_ids().size() == first->n_elements());
+
+		// Boundary ids: kept for the first mesh, defaults for the second one.
+		int n_checked = 0;
+		for (int b = 0; b < first->n_boundary_elements(); ++b)
+		{
+			const RowVectorNd center = dim == 2 ? first->edge_barycenter(b) : first->face_barycenter(b);
+			const bool boundary = dim == 2 ? first->is_boundary_edge(b) : first->is_boundary_face(b);
+			if (center[0] < 2)
+				CHECK(first->get_boundary_id(b) == (boundary ? 3 : -1));
+			else
+				CHECK(first->get_boundary_id(b) == (boundary ? std::numeric_limits<int>::max() : -1));
+			++n_checked;
+		}
+		CHECK(n_checked == first->n_boundary_elements());
+		CHECK(std::vector<int>(first_boundary_ids.begin(), first_boundary_ids.end()).size() == n_first_boundary);
+
+		// The second mesh's elements only touch its own vertices.
+		for (int e = n_first_elements; e < first->n_elements(); ++e)
+			for (const int v : first->element_vertices(e))
+				CHECK(first->point(v)[0] >= 5 - 1e-12);
+	}
+}

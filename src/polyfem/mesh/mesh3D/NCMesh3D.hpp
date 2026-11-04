@@ -121,7 +121,7 @@ namespace polyfem
 				Eigen::VectorXi vertices;
 
 				bool isboundary = false; // valid only after calling mark_boundary()
-				int boundary_id = 0;
+				int boundary_id = -1;
 
 				int leader = -1;            // if this edge/face lies on a larger edge/face
 				std::vector<int> followers; // followers of this edge/face
@@ -265,7 +265,11 @@ namespace polyfem
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
 
-			int get_boundary_id(const int primitive) const override { return faces[valid_to_all_face(primitive)].boundary_id; };
+			int get_boundary_id(const int primitive) const override
+			{
+				// Without boundary ids, use the Mesh defaults (boundary: max int, interior: -1).
+				return has_boundary_ids() ? faces[valid_to_all_face(primitive)].boundary_id : get_default_boundary_id(primitive);
+			};
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
 
 			// void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
