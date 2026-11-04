@@ -6,13 +6,17 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <geogram/mesh/mesh.h>
-#include <geogram/mesh/mesh_io.h>
 
 #include <igl/read_triangle_mesh.h>
 
 #include <algorithm>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
 #include <numeric>
 #include <set>
+#include <sstream>
+#include <string>
 
 namespace polyfem::mesh
 {
@@ -38,6 +42,82 @@ namespace polyfem::mesh
 				for (int d = 0; d < dimension; ++d)
 					vertices(i, d) = mesh.vertices.point(i)[d];
 			return vertices;
+		}
+
+		/// Builds MeshData from a polygon soup with 3D vertex positions. A planar
+		/// soup (z extent below 1e-5) is a 2D mesh whose polygons are the
+		/// elements; otherwise the polygons are the faces of a single polyhedron.
+		MeshData polygon_soup_to_mesh_data(
+			const Eigen::MatrixXd &vertices3d, const std::vector<std::vector<int>> &facets)
+		{
+			if (is_planar(vertices3d))
+				return MeshData(vertices3d.leftCols(2), padded_elements(facets));
+
+			if (facets.empty())
+				log_and_throw_error("Mesh contains neither cells nor facets.");
+			std::set<int> used_vertices;
+			for (const auto &face : facets)
+				used_vertices.insert(face.begin(), face.end());
+			std::vector<std::vector<int>> elements(1);
+			elements[0].assign(used_vertices.begin(), used_vertices.end());
+			MeshData data(vertices3d, padded_elements(elements));
+			data.faces = facets;
+			data.cell_faces.resize(1);
+			data.cell_faces[0].resize(data.faces.size());
+			std::iota(data.cell_faces[0].begin(), data.cell_faces[0].end(), 0);
+			data.cell_face_orientations = {std::vector<int>(data.faces.size(), 1)};
+			data.cell_is_hex = {false};
+			data.cell_kernel_points.resize(1, 3);
+			const int last = vertices3d.rows() - 1;
+			if (used_vertices.find(last) == used_vertices.end())
+				data.cell_kernel_points.row(0) = data.vertices.row(last);
+			else
+			{
+				data.cell_kernel_points.setZero();
+				for (const int vertex : elements[0])
+					data.cell_kernel_points.row(0) += data.vertices.row(vertex);
+				data.cell_kernel_points.row(0) /= elements[0].size();
+			}
+			return data;
+		}
+
+		/// Splits an OBJ line into whitespace-separated fields.
+		std::vector<std::string> split_fields(const std::string &line)
+		{
+			std::vector<std::string> fields;
+			size_t begin = line.find_first_not_of(" \t\r\n");
+			while (begin != std::string::npos)
+			{
+				const size_t end = line.find_first_of(" \t\r\n", begin);
+				fields.push_back(line.substr(begin, end == std::string::npos ? std::string::npos : end - begin));
+				begin = end == std::string::npos ? end : line.find_first_not_of(" \t\r\n", end);
+			}
+			return fields;
+		}
+
+		double parse_obj_double(const std::string &field, const int line, const std::string &description)
+		{
+			errno = 0;
+			char *end = nullptr;
+			const double value = std::strtod(field.c_str(), &end);
+			if (end == field.c_str() || *end != '\0' || errno != 0)
+				log_and_throw_error("{}:{}: invalid coordinate '{}'.", description, line, field);
+			return value;
+		}
+
+		/// Parses the vertex index of an OBJ face corner ("v", "v/vt", "v/vt/vn"
+		/// or "v//vn"). Negative indices are relative to the vertices read so far.
+		int parse_obj_corner(const std::string &field, const int n_vertices, const int line, const std::string &description)
+		{
+			errno = 0;
+			char *end = nullptr;
+			const long long index = std::strtoll(field.c_str(), &end, 10);
+			if (end == field.c_str() || (*end != '\0' && *end != '/') || errno != 0)
+				log_and_throw_error("{}:{}: invalid face corner '{}'.", description, line, field);
+			const long long vertex = index < 0 ? n_vertices + 1 + index : index;
+			if (vertex < 1 || vertex > n_vertices)
+				log_and_throw_error("{}:{}: face corner '{}' references an invalid vertex.", description, line, field);
+			return int(vertex - 1);
 		}
 
 		void finalize_surface(SurfaceMeshData &surface)
@@ -186,29 +266,60 @@ namespace polyfem::mesh
 		return data;
 	}
 
-	MeshData MeshReader::read_geogram(const std::filesystem::path &path)
+	MeshData MeshReader::read_obj(std::istream &input, const std::string &description)
 	{
-		GEO::Mesh mesh;
-		if (!GEO::mesh_load(path.string(), mesh))
-			log_and_throw_error("Unable to decode mesh {} with Geogram.", path.string());
-		return from_geogram(mesh);
+		// Mirrors the OBJ semantics of the reader previously used (geogram):
+		// "v" lines give three coordinates (missing ones are 0, extra ones are
+		// ignored), "f" lines give polygons with at least two corners, and
+		// every other statement (vt, vn, l, g, o, #, ...) is ignored. Lines that
+		// do not start with a printable character are skipped, and a trailing
+		// backslash continues a line.
+		std::vector<Eigen::RowVector3d> vertices;
+		std::vector<std::vector<int>> facets;
+		std::string line, next;
+		int line_number = 0;
+		while (std::getline(input, line))
+		{
+			++line_number;
+			if (line.empty() || !std::isprint(static_cast<unsigned char>(line[0])))
+				continue;
+			while (!line.empty() && line.back() == '\\' && std::getline(input, next))
+			{
+				++line_number;
+				line.back() = ' ';
+				line += next;
+			}
+
+			const std::vector<std::string> fields = split_fields(line);
+			if (fields.empty())
+				continue;
+			if (fields[0] == "v")
+			{
+				Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
+				for (int c = 0; c < 3 && c + 1 < fields.size(); ++c)
+					p[c] = parse_obj_double(fields[c + 1], line_number, description);
+				vertices.push_back(p);
+			}
+			else if (fields[0] == "f")
+			{
+				if (fields.size() < 3)
+					log_and_throw_error("{}:{}: facet has fewer than two corners.", description, line_number);
+				std::vector<int> facet(fields.size() - 1);
+				for (int i = 1; i < fields.size(); ++i)
+					facet[i - 1] = parse_obj_corner(fields[i], vertices.size(), line_number, description);
+				facets.push_back(std::move(facet));
+			}
+		}
+
+		Eigen::MatrixXd V(vertices.size(), 3);
+		for (int i = 0; i < V.rows(); ++i)
+			V.row(i) = vertices[i];
+		return polygon_soup_to_mesh_data(V, facets);
 	}
 
 	MeshData MeshReader::from_geogram(GEO::Mesh &mesh)
 	{
-		if (is_planar(mesh))
-		{
-			std::vector<std::vector<int>> elements(mesh.facets.nb());
-			for (int i = 0; i < elements.size(); ++i)
-			{
-				elements[i].resize(mesh.facets.nb_vertices(i));
-				for (int j = 0; j < elements[i].size(); ++j)
-					elements[i][j] = mesh.facets.vertex(i, j);
-			}
-			return MeshData(geogram_vertices(mesh, 2), padded_elements(elements));
-		}
-
-		if (mesh.cells.nb() != 0)
+		if (!is_planar(mesh) && mesh.cells.nb() != 0)
 		{
 			std::vector<std::vector<int>> elements(mesh.cells.nb());
 			for (int i = 0; i < elements.size(); ++i)
@@ -227,40 +338,17 @@ namespace polyfem::mesh
 			return MeshData(geogram_vertices(mesh, 3), padded_elements(elements));
 		}
 
-		if (mesh.facets.nb() == 0)
-			log_and_throw_error("Geogram mesh contains neither cells nor facets.");
-		std::vector<std::vector<int>> faces(mesh.facets.nb());
-		std::set<int> used_vertices;
-		for (int i = 0; i < faces.size(); ++i)
+		std::vector<std::vector<int>> facets(mesh.facets.nb());
+		for (int i = 0; i < facets.size(); ++i)
 		{
-			faces[i].resize(mesh.facets.nb_vertices(i));
-			for (int j = 0; j < faces[i].size(); ++j)
-			{
-				faces[i][j] = mesh.facets.vertex(i, j);
-				used_vertices.insert(faces[i][j]);
-			}
+			facets[i].resize(mesh.facets.nb_vertices(i));
+			for (int j = 0; j < facets[i].size(); ++j)
+				facets[i][j] = mesh.facets.vertex(i, j);
 		}
-		std::vector<std::vector<int>> elements(1);
-		elements[0].assign(used_vertices.begin(), used_vertices.end());
-		MeshData data(geogram_vertices(mesh, 3), padded_elements(elements));
-		data.faces = std::move(faces);
-		data.cell_faces.resize(1);
-		data.cell_faces[0].resize(data.faces.size());
-		std::iota(data.cell_faces[0].begin(), data.cell_faces[0].end(), 0);
-		data.cell_face_orientations = {std::vector<int>(data.faces.size(), 1)};
-		data.cell_is_hex = {false};
-		data.cell_kernel_points.resize(1, 3);
-		const int last = mesh.vertices.nb() - 1;
-		if (used_vertices.find(last) == used_vertices.end())
-			data.cell_kernel_points.row(0) = data.vertices.row(last);
-		else
-		{
-			data.cell_kernel_points.setZero();
-			for (const int vertex : elements[0])
-				data.cell_kernel_points.row(0) += data.vertices.row(vertex);
-			data.cell_kernel_points.row(0) /= elements[0].size();
-		}
-		return data;
+		const int dimension = std::min<int>(3, mesh.vertices.dimension());
+		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(mesh.vertices.nb(), 3);
+		vertices.leftCols(dimension) = geogram_vertices(mesh, dimension);
+		return polygon_soup_to_mesh_data(vertices, facets);
 	}
 
 	SurfaceMeshData MeshReader::read_msh_surface(const std::filesystem::path &path, const bool keep_volume)
@@ -319,28 +407,5 @@ namespace polyfem::mesh
 			return false;
 		finalize_surface(result);
 		return true;
-	}
-
-	SurfaceMeshData MeshReader::read_geogram_surface(const std::filesystem::path &path)
-	{
-		GEO::Mesh mesh;
-		if (!GEO::mesh_load(path.string(), mesh))
-			log_and_throw_error("Unable to decode surface {} with Geogram.", path.string());
-		if (mesh.facets.nb() == 0)
-			log_and_throw_error("Surface mesh {} contains no facets.", path.string());
-
-		SurfaceMeshData result;
-		result.vertices = geogram_vertices(mesh, is_planar(mesh) ? 2 : 3);
-		const int width = mesh.facets.nb_vertices(0);
-		result.faces.resize(mesh.facets.nb(), width);
-		for (int i = 0; i < result.faces.rows(); ++i)
-		{
-			if (mesh.facets.nb_vertices(i) != width)
-				log_and_throw_error("Surface mesh {} has mixed facet sizes.", path.string());
-			for (int j = 0; j < width; ++j)
-				result.faces(i, j) = mesh.facets.vertex(i, j);
-		}
-		finalize_surface(result);
-		return result;
 	}
 } // namespace polyfem::mesh

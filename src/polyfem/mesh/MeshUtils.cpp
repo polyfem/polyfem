@@ -41,6 +41,19 @@ bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
 	return fabs(diff) < tol;
 }
 
+bool polyfem::mesh::is_planar(const Eigen::MatrixXd &V, const double tol)
+{
+	if (V.cols() == 2)
+		return true;
+
+	assert(V.cols() == 3);
+	if (V.rows() == 0)
+		return false;
+	const double diff = V.col(2).maxCoeff() - V.col(2).minCoeff();
+
+	return fabs(diff) < tol;
+}
+
 GEO::vec3 polyfem::mesh::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 {
 	using GEO::index_t;

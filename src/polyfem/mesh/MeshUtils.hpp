@@ -171,6 +171,9 @@ namespace polyfem
 		/// Determine if the given mesh is planar (2D or tiny z-range).
 		bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
 
+		/// Determine if the given #V x (2|3) vertices are planar (2D or z-range below tol).
+		bool is_planar(const Eigen::MatrixXd &V, const double tol = 1e-5);
+
 		/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
 		int count_faces(const int dim, const Eigen::MatrixXi &cells);
 
