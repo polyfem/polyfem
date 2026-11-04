@@ -12,6 +12,9 @@
 #include "VarFormTestAccess.hpp"
 
 #include <catch2/catch_all.hpp>
+#include <h5pp/h5pp.h>
+
+#include <filesystem>
 
 #include <igl/readPLY.h>
 #include <igl/writePLY.h>
@@ -369,4 +372,36 @@ TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]"
 		REQUIRE(output_space.obstacle != nullptr);
 		check_obstacle_flags(*output_space.collision_mesh, output_space.obstacle->n_vertices());
 	}
+}
+
+TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
+{
+	namespace fs = std::filesystem;
+	const fs::path dir = fs::temp_directory_path() / "polyfem-proxy-weights";
+	fs::create_directories(dir);
+	const auto write = [&](const std::string &name, const std::array<long, 2> &shape, const std::vector<int> &cols) {
+		h5pp::File file((dir / name).string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::vector<double>(cols.size(), 1.0), "/weight_triplets/values");
+		file.writeDataset(std::vector<int>(cols.size(), 0), "/weight_triplets/rows");
+		file.writeDataset(cols, "/weight_triplets/cols");
+		file.writeAttribute(shape, "/weight_triplets", "shape");
+	};
+	write("good.hdf5", {{1, 3}}, {0, 2});
+	write("bad_shape.hdf5", {{2, 3}}, {0, 2});
+	write("bad_col.hdf5", {{1, 3}}, {0, 3});
+
+	const polyfem::io::FileSystemIO resources(dir);
+	const Eigen::VectorXi in_node_to_node = (Eigen::VectorXi(3) << 2, 0, 1).finished();
+	std::vector<Eigen::Triplet<double>> entries;
+	polyfem::mesh::load_collision_proxy_displacement_map(resources, "good.hdf5", in_node_to_node, 1, entries);
+	REQUIRE(entries.size() == 2);
+	CHECK(entries[0].col() == 2);
+	CHECK(entries[1].col() == 1);
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_shape.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("expected 1x3"));
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_col.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("outside the 1x3 matrix"));
+	fs::remove_all(dir);
 }
