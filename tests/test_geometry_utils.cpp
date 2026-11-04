@@ -12,6 +12,7 @@
 #include <polyfem/io/Checkpoint.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/MeshData.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -746,4 +747,53 @@ TEST_CASE("load_surface rejects faces with invalid vertices", "[geometry][mesh_u
 	CHECK(good.faces.rows() == 1);
 	CHECK(good.points == Eigen::VectorXi::Constant(1, 3));
 	fs::remove_all(dir);
+}
+
+TEST_CASE("obstacle displacements stay attached to their meshes", "[geometry][obstacle]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	Eigen::MatrixXd vertices(2, 2);
+	vertices << 0, 0, 1, 0;
+	Eigen::MatrixXi edges(1, 2);
+	edges << 0, 1;
+	const Eigen::VectorXi no_points;
+	const Eigen::MatrixXi no_faces;
+
+	SECTION("an empty obstacle mesh keeps its displacement slot")
+	{
+		Obstacle obstacle;
+		obstacle.append_mesh(Eigen::MatrixXd(0, 2), no_points, Eigen::MatrixXi(0, 2), no_faces, json{{"value", {7, 7}}}, resources);
+		obstacle.append_mesh(vertices, no_points, edges, no_faces, json{{"value", {1, 2}}}, resources);
+		Eigen::MatrixXd sol = Eigen::MatrixXd::Zero(4, 1);
+		obstacle.update_displacement(0, sol);
+		CHECK(sol == (Eigen::MatrixXd(4, 1) << 1, 2, 1, 2).finished());
+	}
+
+	SECTION("displacement values need one entry per dimension")
+	{
+		Obstacle obstacle;
+		REQUIRE_THROWS_WITH(
+			obstacle.append_mesh(vertices, no_points, edges, no_faces, json{{"value", {1}}}, resources),
+			Catch::Matchers::ContainsSubstring("one entry per dimension"));
+	}
+
+	SECTION("mesh sequences")
+	{
+		const Eigen::MatrixXd moved = vertices.array() + 1;
+		Obstacle obstacle;
+		obstacle.append_mesh_sequence({vertices, moved}, no_points, edges, no_faces, 1);
+		Eigen::MatrixXd sol = Eigen::MatrixXd::Zero(4, 1);
+		obstacle.update_displacement(-0.5, sol); // before the first frame
+		CHECK(sol.isZero());
+		obstacle.update_displacement(0.5, sol);
+		CHECK(sol.isApprox(Eigen::MatrixXd::Constant(4, 1, 0.5)));
+
+		Obstacle mismatched;
+		REQUIRE_THROWS_WITH(
+			mismatched.append_mesh_sequence({vertices, Eigen::MatrixXd::Zero(3, 2)}, no_points, edges, no_faces, 1),
+			Catch::Matchers::ContainsSubstring("frame 1"));
+	}
 }
