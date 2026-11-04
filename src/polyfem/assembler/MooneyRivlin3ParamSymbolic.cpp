@@ -177,6 +177,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+		if (energy_out)
+			energy_out->setZero(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -193,6 +195,9 @@ namespace polyfem::assembler
 				all.row(p) = fun(def_grad);
 				continue;
 			}
+
+			if (energy_out)
+				(*energy_out)(p, 0) = elastic_energy<double>(vals.val.row(p), vals.element_id, def_grad);
 
 			const double t = 0;
 			const double c1 = c1_(local_pts.row(p), t, vals.element_id);

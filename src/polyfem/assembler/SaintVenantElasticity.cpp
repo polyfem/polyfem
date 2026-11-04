@@ -147,6 +147,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+		if (energy_out)
+			energy_out->setZero(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -188,6 +190,9 @@ namespace polyfem::assembler
 					stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 1), stress(elasticity_tensor_, eps, 3),
 					stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
 			}
+
+			if (energy_out)
+				(*energy_out)(p, 0) = 0.5 * (stress_tensor * strain).trace();
 
 			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
 

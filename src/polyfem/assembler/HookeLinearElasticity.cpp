@@ -232,6 +232,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+		if (energy_out)
+			energy_out->setZero(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -286,6 +288,9 @@ namespace polyfem::assembler
 					elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 1), elasticity_tensor.compute_stress<6>(eps, 3),
 					elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
 			}
+
+			if (energy_out)
+				(*energy_out)(p, 0) = 0.5 * (sigma * strain).trace();
 
 			if (type == ElasticityTensorType::PK1)
 				sigma = pk1_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));

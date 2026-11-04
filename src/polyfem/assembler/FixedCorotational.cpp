@@ -250,6 +250,8 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+		if (energy_out)
+			energy_out->setZero(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -268,6 +270,9 @@ namespace polyfem::assembler
 
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+
+			if (energy_out)
+				(*energy_out)(p, 0) = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
 
 			Eigen::MatrixXd stress_tensor;
 			if (size() == 2)
