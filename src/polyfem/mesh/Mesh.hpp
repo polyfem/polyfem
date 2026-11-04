@@ -473,10 +473,10 @@ namespace polyfem
 			/// @return label of node
 			virtual int get_node_id(const int node_id) const
 			{
-				if (has_node_ids())
-					return node_ids_.at(node_id);
+				if (has_node_ids() && node_id >= 0 && node_id < node_ids_.size())
+					return node_ids_[node_id];
 				else
-					return -1; // default for no boundary
+					return -1; // default for no boundary (and for nodes without an id)
 			}
 
 			/// @brief Update the node ids to reorder them

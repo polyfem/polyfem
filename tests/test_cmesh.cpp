@@ -7,6 +7,9 @@
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/io/InputLoader.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <igl/PI.h>
 
@@ -998,4 +1001,56 @@ TEST_CASE("obstacle mesh sequence interpolates nodal displacement", "[mesh_test]
 	CHECK(sol(1, 0) == Catch::Approx(2.0));
 	CHECK(sol(2, 0) == Catch::Approx(1.0));
 	CHECK(sol(3, 0) == Catch::Approx(2.0));
+}
+
+TEST_CASE("node ids follow the FE node numbering", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+	auto mesh = Mesh::create(MeshData(vertices, cells));
+	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
+
+	// Higher-order numbering: vertex nodes interleaved with other nodes.
+	Eigen::VectorXi in_node_to_node(4);
+	in_node_to_node << 5, 0, 7, 2;
+	mesh->update_nodes(in_node_to_node);
+	CHECK(mesh->get_node_id(5) == 10);
+	CHECK(mesh->get_node_id(0) == 11);
+	CHECK(mesh->get_node_id(7) == 12);
+	CHECK(mesh->get_node_id(2) == 13);
+	for (const int other : {1, 3, 4, 6, 8, 100})
+		CHECK(mesh->get_node_id(other) == -1);
+
+	// Unreferenced input vertices map to -1.
+	auto mesh2 = Mesh::create(MeshData(vertices, cells));
+	mesh2->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
+	Eigen::VectorXi partial(4);
+	partial << 1, -1, 0, 2;
+	mesh2->update_nodes(partial);
+	CHECK(mesh2->get_node_id(0) == 12);
+	CHECK(mesh2->get_node_id(1) == 10);
+	CHECK(mesh2->get_node_id(2) == 13);
+}
+
+TEST_CASE("nodal boundary conditions with higher-order elements", "[mesh_test]")
+{
+	io::LoadedInput loaded = io::load_json_input(std::string(POLYFEM_DATA_DIR) + "/standard/laplace_nodal_neumann.json");
+	json args = loaded.config;
+	auto common_resources = utils::apply_common_params(args, *loaded.resources);
+	const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+	args["/geometry/n_refs"_json_pointer] = 0;
+	args["/space/discr_order"_json_pointer] = 2;
+	args["/output/log/level"_json_pointer] = "error";
+	args.erase("tests");
+
+	State state;
+	state.init(args, resources, true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	REQUIRE_NOTHROW(state.solve(sol));
+	CHECK(sol.size() > 0);
+	CHECK(sol.allFinite());
 }
