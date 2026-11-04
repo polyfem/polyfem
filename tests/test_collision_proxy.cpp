@@ -277,6 +277,17 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 		displacement_map_entries);
 
 	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);
+
+	// Lagrange bases reproduce linear fields: interpolating the node positions
+	// must give back the proxy vertices.
+	Eigen::MatrixXd node_positions(debug.n_bases, debug.mesh->dimension());
+	for (const auto &element_bases : *debug.bases)
+		for (const auto &basis : element_bases.bases)
+			node_positions.row(basis.global()[0].index) = basis.global()[0].node;
+	Eigen::MatrixXd interpolated = Eigen::MatrixXd::Zero(vertices.rows(), vertices.cols());
+	for (const auto &entry : displacement_map_entries)
+		interpolated.row(entry.row()) += entry.value() * node_positions.row(entry.col());
+	CHECK((interpolated - vertices).cwiseAbs().maxCoeff() < 1e-10);
 }
 
 TEST_CASE("spline contact builds a displacement map", "[build_collision_proxy]")
