@@ -186,8 +186,12 @@ namespace polyfem
 			bool is_conforming() const override { return false; }
 
 			int n_cells() const override { return n_elements; }
+			// The valid counts are the sizes of the valid -> all id maps while they
+			// are up to date (O(1)); otherwise they are counted (O(n)).
 			int n_faces() const override
 			{
+				if (index_prepared)
+					return valid_to_all_faceMap.size();
 				int n = 0;
 				for (const auto &face : faces)
 					if (face.n_elem())
@@ -196,6 +200,8 @@ namespace polyfem
 			}
 			int n_edges() const override
 			{
+				if (index_prepared)
+					return valid_to_all_edgeMap.size();
 				int n = 0;
 				for (const auto &edge : edges)
 					if (edge.n_elem())
@@ -204,6 +210,8 @@ namespace polyfem
 			}
 			int n_vertices() const override
 			{
+				if (index_prepared)
+					return valid_to_all_vertexMap.size();
 				int n = 0;
 				for (const auto &vert : vertices)
 					if (vert.n_elem())
