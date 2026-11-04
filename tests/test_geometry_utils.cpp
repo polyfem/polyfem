@@ -723,3 +723,27 @@ TEST_CASE("refinement keeps the label arrays consistent", "[geometry][mesh_test]
 		}
 	}
 }
+
+TEST_CASE("load_surface rejects faces with invalid vertices", "[geometry][mesh_utils]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	namespace fs = std::filesystem;
+
+	const fs::path dir = fs::temp_directory_path() / "polyfem-bad-surface";
+	fs::create_directories(dir);
+	std::ofstream(dir / "bad.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 9\n";
+	std::ofstream(dir / "bad.off") << "OFF\n3 1 0\n0 0 0\n1 0 0\n0 1 0\n3 0 1 7\n";
+	std::ofstream(dir / "good.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nv 5 5 5\nf 1 2 3\n";
+
+	const io::FileSystemIO resources(dir);
+	for (const std::string name : {"bad.obj", "bad.off"})
+	{
+		CAPTURE(name);
+		REQUIRE_THROWS_WITH(MeshLoader(resources).load_surface(name), Catch::Matchers::ContainsSubstring("invalid vertex"));
+	}
+	const SurfaceMesh good = MeshLoader(resources).load_surface("good.obj");
+	CHECK(good.faces.rows() == 1);
+	CHECK(good.points == Eigen::VectorXi::Constant(1, 3));
+	fs::remove_all(dir);
+}
