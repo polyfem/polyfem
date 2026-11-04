@@ -1,4 +1,5 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
+#include <polyfem/mesh/mesh3D/CellConnectivity.hpp>
 #include <polyfem/mesh/mesh3D/MeshProcessing3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
@@ -200,172 +201,111 @@ namespace polyfem
 			assert(in_ordered_faces_.size() > 0);
 		}
 
-		// Build the internal topology from the Geogram representation created from MeshData.
-		bool CMesh3D::build_storage_from_geogram(const GEO::Mesh &M)
+		// Build the internal topology from standard cells (tets, pyramids, prisms, hexes).
+		bool CMesh3D::build_storage_from_cells(const Eigen::MatrixXd &V, const std::vector<StandardCell> &cells)
 		{
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
 
-			assert(M.vertices.dimension() == 3);
+			assert(V.cols() == 3);
 
 			// Set vertices
-			const int nv = M.vertices.nb();
+			const int nv = V.rows();
 			mesh_.points.resize(3, nv);
 			mesh_.vertices.resize(nv);
 			for (int i = 0; i < nv; ++i)
 			{
-				mesh_.points(0, i) = M.vertices.point(i)[0];
-				mesh_.points(1, i) = M.vertices.point(i)[1];
-				mesh_.points(2, i) = M.vertices.point(i)[2];
+				mesh_.points(0, i) = V(i, 0);
+				mesh_.points(1, i) = V(i, 1);
+				mesh_.points(2, i) = V(i, 2);
 				Vertex v;
 				v.id = i;
 				mesh_.vertices[i] = v;
 			}
 
+			const bool all_tets = std::all_of(cells.begin(), cells.end(), [](const StandardCell &c) {
+				return c.type == StandardCellType::TET;
+			});
+
 			// Set cells
-			if (M.cells.nb() == 0)
+			if (cells.empty())
 			{
-
-				bool last_isolated = true;
-
-				// Set faces
-				mesh_.faces.resize(M.facets.nb());
-				for (int i = 0; i < (int)M.facets.nb(); ++i)
-				{
-					Face &face = mesh_.faces[i];
-					face.id = i;
-
-					face.vs.resize(M.facets.nb_vertices(i));
-					for (int j = 0; j < (int)M.facets.nb_vertices(i); ++j)
-					{
-						face.vs[j] = M.facets.vertex(i, j);
-						if ((int)face.vs[j] == nv - 1)
-						{
-							last_isolated = false;
-						}
-					}
-				}
-
-				// Assumes there is only 1 polyhedron described by a closed input surface
+				// Degenerate input without cells: a single empty element whose
+				// kernel is the last vertex.
+				mesh_.faces.resize(0);
 				mesh_.elements.resize(1);
-				for (int i = 0; i < 1; ++i)
-				{
-					Element &cell = mesh_.elements[i];
-					cell.id = i;
-
-					int nf = M.facets.nb();
-					cell.fs.resize(nf);
-
-					for (int j = 0; j < nf; ++j)
-					{
-						cell.fs[j] = j;
-					}
-
-					for (auto fid : cell.fs)
-					{
-						cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-					}
-					sort(cell.vs.begin(), cell.vs.end());
-					cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
-
-					for (int j = 0; j < nf; ++j)
-					{
-						cell.fs_flag.push_back(1);
-					}
-
-					if (last_isolated)
-					{
-						cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[0]);
-						cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[1]);
-						cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[2]);
-					}
-					else
-					{
-						// Compute a point in the kernel (assumes the barycenter is ok)
-						Eigen::RowVector3d p(0, 0, 0);
-						for (int v : cell.vs)
-						{
-							p += mesh_.points.col(v).transpose();
-						}
-						p /= cell.vs.size();
-						cell.v_in_Kernel.push_back(p[0]);
-						cell.v_in_Kernel.push_back(p[1]);
-						cell.v_in_Kernel.push_back(p[2]);
-					}
-				}
-
-				for (int i = 0; i < 1; ++i)
-				{
-					mesh_.elements[i].hex = false;
-				} // FIME me here!
-
-				mesh_.type = M.cells.are_simplices() ? MeshType::TET : MeshType::HYB;
+				Element &cell = mesh_.elements[0];
+				cell.id = 0;
+				cell.fs.resize(0);
+				std::sort(cell.vs.begin(), cell.vs.end());
+				cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+				cell.v_in_Kernel.push_back(V(nv - 1, 0));
+				cell.v_in_Kernel.push_back(V(nv - 1, 1));
+				cell.v_in_Kernel.push_back(V(nv - 1, 2));
+				mesh_.elements[0].hex = false;
+				mesh_.type = MeshType::TET;
 			}
 			else
 			{
+				const std::vector<std::array<int, 6>> adjacent = connect_cells(cells, nv);
+
+				// Index of the cell facets (c, lf).
+				std::vector<int> first_cell_facet(cells.size() + 1, 0);
+				for (int c = 0; c < cells.size(); ++c)
+					first_cell_facet[c + 1] = first_cell_facet[c] + cells[c].n_facets();
 
 				// Set faces
 				mesh_.faces.clear();
-				// for (int f = 0; f < (int) M.facets.nb(); ++f) {
-				// 	Face &face = mesh_.faces[f];
-				// 	face.id = -1;
-				// 	face.vs.clear();
-				// 	// face.id = f;
 
-				// 	// face.vs.resize(M.facets.nb_vertices(f));
-				// 	// for (int lv = 0; lv < (int) M.facets.nb_vertices(f); ++lv) {
-				// 	// 	face.vs[lv] = M.facets.vertex(f, lv);
-				// 	// }
-				// }
-
-				auto opposite_cell_facet = [&M](int c, int cf) {
-					GEO::index_t c2 = M.cell_facets.adjacent_cell(cf);
-					if (c2 == GEO::NO_FACET)
+				// Cell facet of the neighbor across (c, lf) that is glued to c.
+				auto opposite_cell_facet = [&](int c, int lf) {
+					const int c2 = adjacent[c][lf];
+					if (c2 == -1)
 					{
 						return -1;
 					}
-					for (int lf = 0; lf < (int)M.cells.nb_facets(c2); ++lf)
+					for (int lf2 = 0; lf2 < cells[c2].n_facets(); ++lf2)
 					{
-						if (c == (int)M.cells.adjacent(c2, lf))
+						if (c == adjacent[c2][lf2])
 						{
-							return (int)M.cells.facet(c2, lf);
+							return first_cell_facet[c2] + lf2;
 						}
 					}
 					assert(false);
 					return -1;
 				};
 
-				std::vector<int> cell_facet_to_facet(M.cell_facets.nb(), -1);
+				std::vector<int> cell_facet_to_facet(first_cell_facet.back(), -1);
 
 				// Creates 1 hex or polyhedral element for each cell of the input mesh
 				int facet_counter = 0;
-				mesh_.elements.resize(M.cells.nb());
+				mesh_.elements.resize(cells.size());
 				bool is_hex = true;
-				for (int c = 0; c < (int)M.cells.nb(); ++c)
+				for (int c = 0; c < (int)cells.size(); ++c)
 				{
 					Element &cell = mesh_.elements[c];
 					cell.id = c;
-					cell.hex = (M.cells.type(c) == GEO::MESH_HEX);
+					cell.hex = (cells[c].type == StandardCellType::HEX);
 
 					is_hex = is_hex && cell.hex;
 
-					int nf = M.cells.nb_facets(c);
+					int nf = cells[c].n_facets();
 					cell.fs.resize(nf);
 
 					for (int lf = 0; lf < nf; ++lf)
 					{
-						int cf = M.cells.facet(c, lf);
-						int cf2 = opposite_cell_facet(c, cf);
+						int cf = first_cell_facet[c] + lf;
+						int cf2 = opposite_cell_facet(c, lf);
 						if (cf2 < 0 || cell_facet_to_facet[cf2] < 0)
 						{
 							mesh_.faces.emplace_back();
 							Face &face = mesh_.faces[facet_counter];
 							assert(face.vs.empty());
-							face.vs.resize(M.cells.facet_nb_vertices(c, lf));
-							for (int lv = 0; lv < (int)M.cells.facet_nb_vertices(c, lf); ++lv)
+							face.vs.resize(cells[c].n_facet_vertices(lf));
+							for (int lv = 0; lv < cells[c].n_facet_vertices(lf); ++lv)
 							{
-								face.vs[lv] = M.cells.facet_vertex(c, lf, lv);
+								face.vs[lv] = cells[c].facet_vertex(lf, lv);
 							}
 							cell.fs_flag.push_back(0);
 							cell.fs[lf] = face.id = facet_counter;
@@ -379,9 +319,10 @@ namespace polyfem
 						}
 					}
 
-					cell.input_vs.resize(M.cells.nb_vertices(c));
-					for (int lv = 0; lv < (int)M.cells.nb_vertices(c); ++lv)
-						cell.input_vs[lv] = M.cells.vertex(c, lv);
+					const int n_cell_vertices = cells[c].descriptor().n_vertices;
+					cell.input_vs.resize(n_cell_vertices);
+					for (int lv = 0; lv < n_cell_vertices; ++lv)
+						cell.input_vs[lv] = cells[c].vertices[lv];
 
 					// Compute a point in the kernel (assumes the barycenter is ok)
 					Eigen::RowVector3d p(0, 0, 0);
@@ -394,7 +335,7 @@ namespace polyfem
 					mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 					mesh_.elements[c].v_in_Kernel.push_back(p[2]);
 				}
-				mesh_.type = is_hex ? MeshType::HEX : (M.cells.are_simplices() ? MeshType::TET : MeshType::HYB);
+				mesh_.type = is_hex ? MeshType::HEX : (all_tets ? MeshType::TET : MeshType::HYB);
 			}
 
 			Navigation3D::prepare_mesh(mesh_);
@@ -457,30 +398,24 @@ namespace polyfem
 			}
 			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
 
-			GEO::Mesh M;
-			M.vertices.create_vertices((int)V.rows());
-			for (int i = 0; i < (int)M.vertices.nb(); ++i)
-			{
-				GEO::vec3 &p = M.vertices.point(i);
-				p[0] = V(i, 0);
-				p[1] = V(i, 1);
-				p[2] = V(i, 2);
-			}
-
 			static const std::vector<int> permute_tet = {0, 1, 2, 3};
 			static const std::vector<int> permute_pyramid = {0, 1, 2, 3, 4};
 			static const std::vector<int> permute_prism = {0, 1, 2, 3, 4, 5};
-			// polyfem uses the msh file format for hexes ordering!
+			// MeshData uses the msh hex vertex ordering, the cell descriptors use
+			// geogram's (see CellConnectivity.hpp).
 			static const std::vector<int> permute_hex = {1, 0, 2, 3, 5, 4, 6, 7};
 
-			auto add_cell = [&](int c, GEO::MeshCellType t, int nv, const std::vector<int> &perm) {
-				GEO::index_t cid = M.cells.create_cells(1, t);
+			std::vector<StandardCell> cells;
+			cells.reserve(F.rows());
+			auto add_cell = [&](int c, StandardCellType t, int nv, const std::vector<int> &perm) {
+				StandardCell cell(t);
 				for (int lv = 0; lv < nv; ++lv)
 				{
 					int vi = F(c, perm[lv]);
 					assert(vi >= 0 && vi < V.rows());
-					M.cells.set_vertex(cid, lv, GEO::index_t(vi));
+					cell.vertices[lv] = vi;
 				}
+				cells.push_back(cell);
 			};
 
 			for (int c = 0; c < F.rows(); ++c)
@@ -499,19 +434,18 @@ namespace polyfem
 				}
 #endif
 				if (nV == 4)
-					add_cell(c, GEO::MESH_TET, 4, permute_tet);
+					add_cell(c, StandardCellType::TET, 4, permute_tet);
 				else if (nV == 5)
-					add_cell(c, GEO::MESH_PYRAMID, 5, permute_pyramid);
+					add_cell(c, StandardCellType::PYRAMID, 5, permute_pyramid);
 				else if (nV == 6)
-					add_cell(c, GEO::MESH_PRISM, 6, permute_prism);
+					add_cell(c, StandardCellType::PRISM, 6, permute_prism);
 				else if (nV == 8)
-					add_cell(c, GEO::MESH_HEX, 8, permute_hex);
+					add_cell(c, StandardCellType::HEX, 8, permute_hex);
 				else
 					log_and_throw_error(fmt::format("Invalid number of vertices {}", nV));
 			}
-			M.cells.connect();
 
-			return build_storage_from_geogram(M);
+			return build_storage_from_cells(V, cells);
 		}
 
 		void CMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
