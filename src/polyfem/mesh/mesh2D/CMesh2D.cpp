@@ -6,8 +6,6 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <geogram/mesh/mesh_geometry.h>
-
 #include <cassert>
 #include <array>
 #include <unordered_map>
@@ -47,18 +45,14 @@ namespace polyfem
 			filter_nodes(cell_nodes_);
 			filter_element_data(keep);
 
-			GEO::vector<GEO::index_t> to_delete(mesh_.facets.nb(), 0);
+			// All vertices are kept (as CMesh3D does), so vertex indices and the
+			// vertex-keyed maps above stay valid.
+			std::vector<bool> to_delete(mesh_.n_facets(), false);
 			for (int f = 0; f < keep.size(); ++f)
-				to_delete[f] = keep[f] ? 0 : 1;
-			mesh_.facets.delete_elements(to_delete);
+				to_delete[f] = !keep[f];
+			mesh_.delete_facets(to_delete);
 
-			c2e_.reset();
-			boundary_vertices_.reset();
-			boundary_edges_.reset();
 			Navigation::prepare_mesh(mesh_);
-			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 
 			if (!old_edge_ids.empty())
 			{
@@ -111,14 +105,9 @@ namespace polyfem
 
 			for (int i = 0; i < n_refinement; ++i)
 			{
-				GEO::Mesh mesh;
-				mesh.copy(mesh_);
+				PolygonMesh mesh = mesh_;
 
-				c2e_.reset();
-				boundary_vertices_.reset();
-				boundary_edges_.reset();
-
-				mesh_.clear(false, false);
+				mesh_.clear();
 
 				// TODO add tags to the refinement
 				if (all_simplicial)
@@ -135,27 +124,24 @@ namespace polyfem
 				}
 
 				Navigation::prepare_mesh(mesh_);
-				c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-				boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-				boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 			}
 
 			compute_elements_tag();
 			generate_edges(mesh_);
 
-			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(mesh_.vertices.nb(), 0, mesh_.vertices.nb() - 1);
+			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(mesh_.n_vertices(), 0, mesh_.n_vertices() - 1);
 			assert(in_ordered_vertices_[0] == 0);
 			assert(in_ordered_vertices_[1] == 1);
 			assert(in_ordered_vertices_[2] == 2);
-			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == mesh_.vertices.nb() - 1);
+			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == mesh_.n_vertices() - 1);
 
-			in_ordered_edges_.resize(mesh_.edges.nb(), 2);
+			in_ordered_edges_.resize(mesh_.n_edges(), 2);
 
-			for (int e = 0; e < (int)mesh_.edges.nb(); ++e)
+			for (int e = 0; e < mesh_.n_edges(); ++e)
 			{
 				for (int lv = 0; lv < 2; ++lv)
 				{
-					in_ordered_edges_(e, lv) = mesh_.edges.vertex(e, lv);
+					in_ordered_edges_(e, lv) = mesh_.edge_vertex(e, lv);
 				}
 				assert(in_ordered_edges_(e, 0) != in_ordered_edges_(e, 1));
 			}
@@ -172,36 +158,28 @@ namespace polyfem
 			face_nodes_.clear();
 			cell_nodes_.clear();
 
-			c2e_.reset();
-			boundary_vertices_.reset();
-			boundary_edges_.reset();
-
-			mesh_.clear(false, false);
-			mesh_.vertices.create_vertices(V.rows());
+			mesh_.clear();
+			mesh_.create_vertices(V.rows());
 			for (int i = 0; i < V.rows(); ++i)
 			{
-				GEO::vec3 &point = mesh_.vertices.point(i);
+				PolygonMesh::Point &point = mesh_.point(i);
 				point[0] = V(i, 0);
 				point[1] = V(i, 1);
 				point[2] = 0;
 			}
 			for (int i = 0; i < F.rows(); ++i)
 			{
-				std::vector<GEO::index_t> vertices;
+				std::vector<int> vertices;
 				vertices.reserve(F.cols());
 				for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
 					vertices.push_back(F(i, j));
 				if (vertices.size() < 3)
 					return false;
-				mesh_.facets.create_polygon(vertices.size(), vertices.data());
+				mesh_.create_polygon(vertices);
 			}
 
 			orient_normals_2d(mesh_);
 			Navigation::prepare_mesh(mesh_);
-
-			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 
 			compute_elements_tag();
 			return true;
@@ -322,9 +300,9 @@ namespace polyfem
 
 					{
 						auto &n = face_nodes_[f];
-						n.v1 = mesh_.facets.vertex(f, 0);
-						n.v2 = mesh_.facets.vertex(f, 1);
-						n.v3 = mesh_.facets.vertex(f, 2);
+						n.v1 = mesh_.facet_vertex(f, 0);
+						n.v2 = mesh_.facet_vertex(f, 1);
+						n.v3 = mesh_.facet_vertex(f, 2);
 						n.nodes.resize(1, 2);
 						n.nodes << V(nodes_ids[9], 0), V(nodes_ids[9], 1);
 						n.nodes_ids.push_back(nodes_ids[9]);
@@ -416,30 +394,30 @@ namespace polyfem
 
 		void CMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
 		{
-			GEO::vec3 min_corner, max_corner;
-			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+			PolygonMesh::Point min_corner, max_corner;
+			mesh_.bounding_box(min_corner, max_corner);
 			min.resize(2);
 			max.resize(2);
 
-			min(0) = min_corner.x;
-			min(1) = min_corner.y;
+			min(0) = min_corner[0];
+			min(1) = min_corner[1];
 
-			max(0) = max_corner.x;
-			max(1) = max_corner.y;
+			max(0) = max_corner[0];
+			max(1) = max_corner[1];
 		}
 
 		void CMesh2D::normalize()
 		{
 
-			GEO::vec3 min_corner, max_corner;
-			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-			GEO::vec3 extent = max_corner - min_corner;
+			PolygonMesh::Point min_corner, max_corner;
+			mesh_.bounding_box(min_corner, max_corner);
+			PolygonMesh::Point extent = max_corner - min_corner;
 			double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
-			// const GEO::vec3 origin = 0.5 * (min_corner + max_corner);
-			const GEO::vec3 origin = min_corner;
-			for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v)
+			// const PolygonMesh::Point origin = 0.5 * (min_corner + max_corner);
+			const PolygonMesh::Point origin = min_corner;
+			for (int v = 0; v < mesh_.n_vertices(); ++v)
 			{
-				mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
+				mesh_.point(v) = (mesh_.point(v) - origin) / scaling;
 			}
 			Eigen::RowVector2d shift;
 			shift << origin[0], origin[1];
@@ -463,7 +441,7 @@ namespace polyfem
 			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
 			logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
 			logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
-			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+			mesh_.bounding_box(min_corner, max_corner);
 			logger().debug("-- bbox after normalization:");
 			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
 			logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
@@ -480,24 +458,24 @@ namespace polyfem
 
 		double CMesh2D::edge_length(const int gid) const
 		{
-			const int v0 = mesh_.edges.vertex(gid, 0);
-			const int v1 = mesh_.edges.vertex(gid, 1);
+			const int v0 = mesh_.edge_vertex(gid, 0);
+			const int v1 = mesh_.edge_vertex(gid, 1);
 
 			return (point(v0) - point(v1)).norm();
 		}
 
 		void CMesh2D::set_point(const int global_index, const RowVectorNd &p)
 		{
-			mesh_.vertices.point(global_index).x = p(0);
-			mesh_.vertices.point(global_index).y = p(1);
+			mesh_.point(global_index)[0] = p(0);
+			mesh_.point(global_index)[1] = p(1);
 		}
 
 		RowVectorNd CMesh2D::point(const int global_index) const
 		{
-			const double *ptr = mesh_.vertices.point_ptr(global_index);
+			const PolygonMesh::Point &pt = mesh_.point(global_index);
 			RowVectorNd p(2);
-			p(0) = ptr[0];
-			p(1) = ptr[1];
+			p(0) = pt[0];
+			p(1) = pt[1];
 			return p;
 		}
 
@@ -590,8 +568,8 @@ namespace polyfem
 
 		RowVectorNd CMesh2D::edge_barycenter(const int index) const
 		{
-			const int v0 = mesh_.edges.vertex(index, 0);
-			const int v1 = mesh_.edges.vertex(index, 1);
+			const int v0 = mesh_.edge_vertex(index, 0);
+			const int v1 = mesh_.edge_vertex(index, 1);
 
 			return 0.5 * (point(v0) + point(v1));
 		}
@@ -632,33 +610,26 @@ namespace polyfem
 			const int n_v = n_vertices();
 			const int n_f = n_faces();
 
-			mesh_.vertices.create_vertices(mesh2d.n_vertices());
-			for (int i = n_v; i < (int)mesh_.vertices.nb(); ++i)
+			mesh_.create_vertices(mesh2d.n_vertices());
+			for (int i = n_v; i < mesh_.n_vertices(); ++i)
 			{
-				GEO::vec3 &p = mesh_.vertices.point(i);
 				set_point(i, mesh2d.point(i - n_v));
 			}
 
-			std::vector<GEO::index_t> indices;
+			std::vector<int> indices;
 			for (int i = 0; i < mesh2d.n_faces(); ++i)
 			{
 				indices.clear();
-				for (int j = 0; j < mesh2d.mesh_.facets.nb_vertices(i); ++j)
-					indices.push_back(mesh2d.mesh_.facets.vertex(i, j) + n_v);
+				for (int j = 0; j < mesh2d.mesh_.n_facet_vertices(i); ++j)
+					indices.push_back(mesh2d.mesh_.facet_vertex(i, j) + n_v);
 
-				mesh_.facets.create_polygon(indices.size(), &indices[0]);
+				mesh_.create_polygon(indices);
 			}
 
 			assert(n_vertices() == n_v + mesh2d.n_vertices());
 			assert(n_faces() == n_f + mesh2d.n_faces());
 
-			c2e_.reset();
-			boundary_vertices_.reset();
-			boundary_edges_.reset();
 			Navigation::prepare_mesh(mesh_);
-			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 		}
 
 		std::unique_ptr<Mesh> CMesh2D::copy() const

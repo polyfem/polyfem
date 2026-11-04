@@ -19,11 +19,6 @@
 
 #include <igl/PI.h>
 #include <geogram/mesh/mesh_geometry.h>
-#include <geogram/basic/geometry.h>
-#include <geogram/mesh/mesh_preprocessing.h>
-#include <geogram/mesh/mesh_topology.h>
-#include <geogram/mesh/mesh_geometry.h>
-#include <geogram/mesh/mesh_repair.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem::utils;
@@ -54,79 +49,52 @@ bool polyfem::mesh::is_planar(const Eigen::MatrixXd &V, const double tol)
 	return fabs(diff) < tol;
 }
 
-GEO::vec3 polyfem::mesh::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
+polyfem::mesh::PolygonMesh::Point polyfem::mesh::mesh_vertex(const PolygonMesh &M, int v)
 {
-	using GEO::index_t;
-	GEO::vec3 p(0, 0, 0);
-	for (index_t d = 0; d < std::min(3u, (index_t)M.vertices.dimension()); ++d)
-	{
-		if (M.vertices.double_precision())
-		{
-			p[d] = M.vertices.point_ptr(v)[d];
-		}
-		else
-		{
-			p[d] = M.vertices.single_precision_point_ptr(v)[d];
-		}
-	}
-	return p;
+	return M.point(v);
 }
 
 // -----------------------------------------------------------------------------
 
-GEO::vec3 polyfem::mesh::facet_barycenter(const GEO::Mesh &M, GEO::index_t f)
+polyfem::mesh::PolygonMesh::Point polyfem::mesh::facet_barycenter(const PolygonMesh &M, int f)
 {
-	using GEO::index_t;
-	GEO::vec3 p(0, 0, 0);
-	for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+	PolygonMesh::Point p(0, 0, 0);
+	for (int lv = 0; lv < M.n_facet_vertices(f); ++lv)
 	{
-		p += polyfem::mesh::mesh_vertex(M, M.facets.vertex(f, lv));
+		p += polyfem::mesh::mesh_vertex(M, M.facet_vertex(f, lv));
 	}
-	return p / M.facets.nb_vertices(f);
+	return p / double(M.n_facet_vertices(f));
 }
 
 // -----------------------------------------------------------------------------
 
-GEO::index_t polyfem::mesh::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p)
+int polyfem::mesh::mesh_create_vertex(PolygonMesh &M, const PolygonMesh::Point &p)
 {
-	using GEO::index_t;
-	auto v = M.vertices.create_vertex();
-	for (index_t d = 0; d < std::min(3u, (index_t)M.vertices.dimension()); ++d)
-	{
-		if (M.vertices.double_precision())
-		{
-			M.vertices.point_ptr(v)[d] = p[d];
-		}
-		else
-		{
-			M.vertices.single_precision_point_ptr(v)[d] = (float)p[d];
-		}
-	}
-	return v;
+	return M.create_vertex(p);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags)
+void polyfem::mesh::compute_element_tags(const PolygonMesh &M, std::vector<ElementType> &element_tags)
 {
-	using GEO::index_t;
+	using index_t = int;
 
 	std::vector<ElementType> old_tags = element_tags;
 
-	element_tags.resize(M.facets.nb());
+	element_tags.resize(M.n_facets());
 
 	// Step 0: Compute boundary vertices as true boundary + vertices incident to a polygon
-	GEO::Attribute<bool> is_boundary_vertex(M.vertices.attributes(), "boundary_vertex");
-	std::vector<bool> is_interface_vertex(M.vertices.nb(), false);
+	const std::vector<bool> &is_boundary_vertex = M.boundary_vertex;
+	std::vector<bool> is_interface_vertex(M.n_vertices(), false);
 	{
-		for (index_t f = 0; f < M.facets.nb(); ++f)
+		for (index_t f = 0; f < M.n_facets(); ++f)
 		{
-			if (M.facets.nb_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE))
+			if (M.n_facet_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE))
 			{
 				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as interface
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					is_interface_vertex[M.facets.vertex(f, lv)] = true;
+					is_interface_vertex[M.facet_vertex(f, lv)] = true;
 				}
 			}
 		}
@@ -136,21 +104,21 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	//
 	// Interior vertices are regular if they are incident to exactly 4 quads
 	// Boundary vertices are regular if they are incident to at most 2 quads, and no other facets
-	std::vector<int> degree(M.vertices.nb(), 0);
-	std::vector<bool> is_regular_vertex(M.vertices.nb());
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	std::vector<int> degree(M.n_vertices(), 0);
+	std::vector<bool> is_regular_vertex(M.n_vertices());
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		if (M.facets.nb_vertices(f) == 4)
+		if (M.n_facet_vertices(f) == 4)
 		{
 			// Only count incident quads for the degree
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				index_t v = M.facets.vertex(f, lv);
+				index_t v = M.facet_vertex(f, lv);
 				degree[v]++;
 			}
 		}
 	}
-	for (index_t v = 0; v < M.vertices.nb(); ++v)
+	for (index_t v = 0; v < M.n_vertices(); ++v)
 	{
 		// assert(degree[v] > 0); // We assume there are no isolated vertices here
 		if (is_boundary_vertex[v] || is_interface_vertex[v])
@@ -164,26 +132,26 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	}
 
 	// Step 2: Iterate over the facets and determine the type
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		assert(M.facets.nb_vertices(f) > 2);
+		assert(M.n_facet_vertices(f) > 2);
 		if (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE)
 			continue;
 
-		if (M.facets.nb_vertices(f) == 4)
+		if (M.n_facet_vertices(f) == 4)
 		{
 			// Quad facet
 
 			// a) Determine if it is on the mesh boundary
 			bool is_boundary_facet = false;
 			bool is_interface_facet = false;
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				if (is_boundary_vertex[M.facets.vertex(f, lv)])
+				if (is_boundary_vertex[M.facet_vertex(f, lv)])
 				{
 					is_boundary_facet = true;
 				}
-				if (is_interface_vertex[M.facets.vertex(f, lv)])
+				if (is_interface_vertex[M.facet_vertex(f, lv)])
 				{
 					is_interface_facet = true;
 				}
@@ -195,9 +163,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 				// A boundary quad is regular iff all its vertices are incident to at most 2 other quads
 				// We assume that non-boundary vertices of a boundary quads are always regular
 				bool is_singular = false;
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					index_t v = M.facets.vertex(f, lv);
+					index_t v = M.facet_vertex(f, lv);
 					if (is_boundary_vertex[v] || is_interface_vertex[v])
 					{
 						if (!is_regular_vertex[v])
@@ -233,9 +201,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 			{
 				// An interior quad is regular if all its vertices are singular
 				int nb_singulars = 0;
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					if (!is_regular_vertex[M.facets.vertex(f, lv)])
+					if (!is_regular_vertex[M.facet_vertex(f, lv)])
 					{
 						++nb_singulars;
 					}
@@ -261,10 +229,10 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 			// Note: In this function, we consider triangles as polygonal facets
 			ElementType tag = ElementType::INTERIOR_POLYTOPE;
-			GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			const std::vector<bool> &boundary_vertices = M.boundary_vertex;
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				if (boundary_vertices[M.facets.vertex(f, lv)])
+				if (boundary_vertices[M.facet_vertex(f, lv)])
 				{
 					tag = ElementType::BOUNDARY_POLYTOPE;
 					break;
@@ -277,9 +245,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 	// TODO what happens at the neighs?
 	// Override for simplices
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		if (M.facets.nb_vertices(f) == 3)
+		if (M.n_facet_vertices(f) == 3)
 		{
 			element_tags[f] = ElementType::SIMPLEX;
 		}
@@ -291,43 +259,54 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 namespace
 {
 
-	// Signed area of a polygonal facet
-	double signed_area(const GEO::Mesh &M, GEO::index_t f)
+	// Same expression shapes as geogram's det(vec2, vec2) and
+	// Geom::triangle_signed_area(vec2, vec2, vec2).
+	inline double det_2d(const double ax, const double ay, const double bx, const double by)
 	{
-		using namespace GEO;
+		return ax * by - ay * bx;
+	}
+
+	inline double triangle_signed_area_2d(
+		const polyfem::mesh::PolygonMesh::Point &p1,
+		const polyfem::mesh::PolygonMesh::Point &p2,
+		const polyfem::mesh::PolygonMesh::Point &p3)
+	{
+		return 0.5 * det_2d(p2[0] - p1[0], p2[1] - p1[1], p3[0] - p1[0], p3[1] - p1[1]);
+	}
+
+	// Signed area of a polygonal facet
+	double signed_area(const polyfem::mesh::PolygonMesh &M, int f)
+	{
 		double result = 0;
-		index_t v0 = M.facet_corners.vertex(M.facets.corners_begin(f));
-		const vec3 &p0 = Geom::mesh_vertex(M, v0);
-		for (index_t c =
-				 M.facets.corners_begin(f) + 1;
-			 c + 1 < M.facets.corners_end(f); c++)
+		int v0 = M.corner_vertex(M.corners_begin(f));
+		const polyfem::mesh::PolygonMesh::Point &p0 = M.point(v0);
+		for (int c = M.corners_begin(f) + 1; c + 1 < M.corners_end(f); c++)
 		{
-			index_t v1 = M.facet_corners.vertex(c);
-			const vec3 &p1 = polyfem::mesh::mesh_vertex(M, v1);
-			index_t v2 = M.facet_corners.vertex(c + 1);
-			const vec3 &p2 = polyfem::mesh::mesh_vertex(M, v2);
-			result += Geom::triangle_signed_area(vec2(&p0[0]), vec2(&p1[0]), vec2(&p2[0]));
+			int v1 = M.corner_vertex(c);
+			const polyfem::mesh::PolygonMesh::Point p1 = polyfem::mesh::mesh_vertex(M, v1);
+			int v2 = M.corner_vertex(c + 1);
+			const polyfem::mesh::PolygonMesh::Point p2 = polyfem::mesh::mesh_vertex(M, v2);
+			result += triangle_signed_area_2d(p0, p1, p2);
 		}
 		return result;
 	}
 
 } // anonymous namespace
 
-void polyfem::mesh::orient_normals_2d(GEO::Mesh &M)
+void polyfem::mesh::orient_normals_2d(PolygonMesh &M)
 {
-	using namespace GEO;
-	vector<index_t> component;
-	index_t nb_components = get_connected_components(M, component);
-	vector<double> comp_signed_volume(nb_components, 0.0);
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	std::vector<int> component;
+	int nb_components = M.connected_components(component);
+	std::vector<double> comp_signed_volume(nb_components, 0.0);
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
 		comp_signed_volume[component[f]] += signed_area(M, f);
 	}
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
 		if (comp_signed_volume[component[f]] < 0.0)
 		{
-			M.facets.flip(f);
+			M.flip_facet(f);
 		}
 	}
 }
@@ -773,72 +752,6 @@ namespace
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-
-void polyfem::mesh::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M)
-{
-	M.clear();
-	// Setup vertices
-	M.vertices.create_vertices((int)V.rows());
-	for (int i = 0; i < (int)M.vertices.nb(); ++i)
-	{
-		GEO::vec3 &p = M.vertices.point(i);
-		p[0] = V(i, 0);
-		p[1] = V(i, 1);
-		p[2] = V.cols() >= 3 ? V(i, 2) : 0;
-	}
-	// Setup faces
-	if (F.cols() == 3)
-	{
-		M.facets.create_triangles((int)F.rows());
-	}
-	else if (F.cols() == 4)
-	{
-		M.facets.create_quads((int)F.rows());
-	}
-	else
-	{
-		throw std::runtime_error("Mesh format not supported");
-	}
-	for (int c = 0; c < (int)M.facets.nb(); ++c)
-	{
-		for (int lv = 0; lv < F.cols(); ++lv)
-		{
-			M.facets.set_vertex(c, lv, F(c, lv));
-		}
-	}
-}
-
-// -----------------------------------------------------------------------------
-
-void polyfem::mesh::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
-{
-	V.resize(M.vertices.nb(), 3);
-	for (int i = 0; i < (int)M.vertices.nb(); ++i)
-	{
-		GEO::vec3 p = M.vertices.point(i);
-		V.row(i) << p[0], p[1], p[2];
-	}
-	assert(M.facets.are_simplices());
-	F.resize(M.facets.nb(), 3);
-	for (int c = 0; c < (int)M.facets.nb(); ++c)
-	{
-		for (int lv = 0; lv < 3; ++lv)
-		{
-			F(c, lv) = M.facets.vertex(c, lv);
-		}
-	}
-	assert(M.cells.are_simplices());
-	T.resize(M.cells.nb(), 4);
-	for (int c = 0; c < (int)M.cells.nb(); ++c)
-	{
-		for (int lv = 0; lv < 4; ++lv)
-		{
-			T(c, lv) = M.cells.vertex(c, lv);
-		}
-	}
-}
-
-// -----------------------------------------------------------------------------
 
 void polyfem::mesh::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 											 const Eigen::MatrixXd &P, Eigen::VectorXd &D)
@@ -1295,44 +1208,38 @@ int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 	return boundaries.size();
 }
 
-void polyfem::mesh::generate_edges(GEO::Mesh &M)
+void polyfem::mesh::generate_edges(PolygonMesh &M)
 {
-	using namespace GEO;
-	typedef std::pair<index_t, index_t> Edge;
+	typedef std::pair<int, int> Edge;
 
-	if (M.edges.nb() > 0)
+	if (M.n_edges() > 0)
 		return;
 
-	M.facets.connect();
-	M.cells.connect();
-	if (M.cells.nb() != 0 && M.facets.nb() == 0)
-	{
-		M.cells.compute_borders();
-	}
+	M.connect_facets();
 
-	// Compute a list of all the edges, and store edge index as a corner attribute
-	std::vector<std::pair<Edge, index_t>> e2c; // edge to corner id
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	// Compute a list of all the edges
+	std::vector<std::pair<Edge, int>> e2c; // edge to corner id
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
-		for (index_t c = M.facets.corners_begin(f); c < M.facets.corners_end(f); ++c)
+		for (int c = M.corners_begin(f); c < M.corners_end(f); ++c)
 		{
-			index_t v = M.facet_corners.vertex(c);
-			index_t c2 = M.facets.next_corner_around_facet(f, c);
-			index_t v2 = M.facet_corners.vertex(c2);
+			int v = M.corner_vertex(c);
+			int c2 = M.next_corner_around_facet(f, c);
+			int v2 = M.corner_vertex(c2);
 			e2c.emplace_back(std::make_pair(std::min(v, v2), std::max(v, v2)), c);
 		}
 	}
 	std::sort(e2c.begin(), e2c.end());
 
 	// Assign unique id to edges
-	M.edges.clear();
+	M.clear_edges();
 	Edge prev_e(-1, -1);
 	for (const auto &kv : e2c)
 	{
 		Edge e = kv.first;
 		if (e != prev_e)
 		{
-			M.edges.create_edge(e.first, e.second);
+			M.create_edge(e.first, e.second);
 			prev_e = e;
 		}
 	}

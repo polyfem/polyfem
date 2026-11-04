@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/mesh2D/PolygonMesh.hpp>
 #include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 #include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
@@ -16,16 +17,14 @@ namespace polyfem
 		class Mesh3D;
 
 		///
-		/// Retrieve a 3D vector with the position of a given vertex. Contrary to
-		/// geogram's version, this function works with both single and double precision
-		/// meshes, as well as 2D meshes too.
+		/// Retrieve a 3D vector with the position of a given vertex.
 		///
 		/// @param[in]  M      Input mesh
 		/// @param[in]  v      Vertex index whose position to retrieve
 		///
 		/// @return     Position of the given vertex in 3D
 		///
-		GEO::vec3 mesh_vertex(const GEO::Mesh &M, GEO::index_t v);
+		PolygonMesh::Point mesh_vertex(const PolygonMesh &M, int v);
 
 		// Compute facet barycenter.
 		//
@@ -34,7 +33,7 @@ namespace polyfem
 		//
 		// @return     Barycenter position in 3D
 		//
-		GEO::vec3 facet_barycenter(const GEO::Mesh &M, GEO::index_t f);
+		PolygonMesh::Point facet_barycenter(const PolygonMesh &M, int f);
 
 		// Create a new mesh vertex with given coordinates.
 		//
@@ -43,15 +42,15 @@ namespace polyfem
 		//
 		// @return     Index of the newly created vertex
 		//
-		GEO::index_t mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p);
+		int mesh_create_vertex(PolygonMesh &M, const PolygonMesh::Point &p);
 
 		///
 		/// @brief      Compute the type of each facet in a surface mesh.
 		///
-		/// @param[in]  M              Input surface mesh
+		/// @param[in]  M              Input surface mesh (with boundary flags, see Navigation::prepare_mesh)
 		/// @param[out] element_tags   Types of each facet element
 		///
-		void compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags);
+		void compute_element_tags(const PolygonMesh &M, std::vector<ElementType> &element_tags);
 
 		///
 		/// @brief         Orient facets of a 2D mesh so that each connected component
@@ -59,7 +58,7 @@ namespace polyfem
 		///
 		/// @param[in,out] M     Surface mesh to reorient
 		///
-		void orient_normals_2d(GEO::Mesh &M);
+		void orient_normals_2d(PolygonMesh &M);
 
 		///
 		/// @brief         Reorder vertices of a mesh using color tags, so that vertices are ordered by
@@ -86,26 +85,6 @@ namespace polyfem
 		///
 		void signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 									  const Eigen::MatrixXd &P, Eigen::VectorXd &D);
-
-		///
-		/// @brief      Converts a triangle mesh to a Geogram mesh
-		///
-		/// @param[in]  V      #V x 3 input mesh vertices
-		/// @param[in]  F      #F x 3 input mesh surface
-		/// @param[out] M      Output Geogram mesh
-		///
-		void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M);
-
-		///
-		/// @brief      Extract simplices from a Geogram mesh
-		///
-		/// @param[in]  M      Input Geogram mesh
-		/// @param[out] V      #V x 3 output mesh vertices
-		/// @param[out] F      #F x 3 output mesh faces
-		/// @param[out] T      #T x 4 output mesh tets
-		///
-		void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
-
 
 		///
 		/// @brief      Compute the signed volume of a surface mesh
@@ -177,8 +156,8 @@ namespace polyfem
 		/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
 		int count_faces(const int dim, const Eigen::MatrixXi &cells);
 
-		/// @brief      assing edges to M
-		/// @param[in/out]  M       geogram mesh to appen edges to
-		void generate_edges(GEO::Mesh &M);
+		/// @brief      Creates the edges of M (sorted by vertex pair) if it has none yet
+		/// @param[in/out]  M       mesh to append edges to
+		void generate_edges(PolygonMesh &M);
 	} // namespace mesh
 } // namespace polyfem

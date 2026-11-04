@@ -1,6 +1,6 @@
 #pragma once
 
-#include <geogram/mesh/mesh.h>
+#include <polyfem/mesh/mesh2D/PolygonMesh.hpp>
 #include <Eigen/Dense>
 #include <vector>
 
@@ -123,7 +123,7 @@ namespace polyfem
 		/// @param[out] M_out        Refined mesh
 		/// @param[in]  split_func   Functional used to split the new polygon interiors (boundary has already been split)
 		///
-		void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func);
+		void refine_polygonal_mesh(const PolygonMesh &M_in, PolygonMesh &M_out, Polygons::SplitFunction split_func);
 
 		///
 		/// Refine a triangle mesh. Each input triangle is split into 4 new triangles
@@ -131,10 +131,10 @@ namespace polyfem
 		/// @param[in]  M_in    Input surface mesh
 		/// @param[out] M_out   Output surface mesh
 		///
-		void refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out);
+		void refine_triangle_mesh(const PolygonMesh &M_in, PolygonMesh &M_out);
 
 		// Kept for compatibility
-		[[deprecated]] inline void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons = false, double t = 0.5)
+		[[deprecated]] inline void refine_polygonal_mesh(const PolygonMesh &M_in, PolygonMesh &M_out, bool refine_polygons = false, double t = 0.5)
 		{
 			if (refine_polygons == false)
 			{

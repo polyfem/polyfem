@@ -80,13 +80,29 @@ namespace
 		return Mesh::create(MeshData(vertices, cells));
 	}
 
-	double geogram_facet_signed_area(const GEO::Mesh &mesh, const int facet)
+	PolygonMesh make_polygon_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		PolygonMesh mesh;
+		mesh.create_vertices(V.rows());
+		for (int i = 0; i < V.rows(); ++i)
+			mesh.point(i) = PolygonMesh::Point(V(i, 0), V(i, 1), V.cols() >= 3 ? V(i, 2) : 0);
+		for (int f = 0; f < F.rows(); ++f)
+		{
+			std::vector<int> facet(F.cols());
+			for (int lv = 0; lv < F.cols(); ++lv)
+				facet[lv] = F(f, lv);
+			mesh.create_polygon(facet);
+		}
+		return mesh;
+	}
+
+	double polygon_signed_area(const PolygonMesh &mesh, const int facet)
 	{
 		double area = 0.0;
-		for (GEO::index_t lv = 0; lv < mesh.facets.nb_vertices(facet); ++lv)
+		for (int lv = 0; lv < mesh.n_facet_vertices(facet); ++lv)
 		{
-			const GEO::vec3 p0 = mesh_vertex(mesh, mesh.facets.vertex(facet, lv));
-			const GEO::vec3 p1 = mesh_vertex(mesh, mesh.facets.vertex(facet, (lv + 1) % mesh.facets.nb_vertices(facet)));
+			const PolygonMesh::Point p0 = mesh_vertex(mesh, mesh.facet_vertex(facet, lv));
+			const PolygonMesh::Point p1 = mesh_vertex(mesh, mesh.facet_vertex(facet, (lv + 1) % mesh.n_facet_vertices(facet)));
 			area += p0[0] * p1[1] - p1[0] * p0[1];
 		}
 		return 0.5 * area;
@@ -504,10 +520,8 @@ TEST_CASE("NCMesh3D tet refinement does not degenerate", "[mesh_test][refinement
 	}
 }
 
-TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test][mesh_utils]")
+TEST_CASE("mesh utilities polygon mesh and topology helpers", "[mesh_test][mesh_utils]")
 {
-	State state;
-
 	Eigen::MatrixXd vertices2d(4, 2);
 	vertices2d << 0, 0,
 		1, 0,
@@ -516,34 +530,32 @@ TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test]
 	Eigen::MatrixXi quad(1, 4);
 	quad << 0, 1, 2, 3;
 
-	GEO::Mesh geogram_quad;
-	to_geogram_mesh(vertices2d, quad, geogram_quad);
-	REQUIRE(geogram_quad.vertices.nb() == 4);
-	REQUIRE(geogram_quad.facets.nb() == 1);
-	CHECK(is_planar(geogram_quad));
+	PolygonMesh polygon_quad = make_polygon_mesh(vertices2d, quad);
+	REQUIRE(polygon_quad.n_vertices() == 4);
+	REQUIRE(polygon_quad.n_facets() == 1);
+	CHECK(is_planar(vertices2d));
 
-	const GEO::vec3 vertex = mesh_vertex(geogram_quad, 2);
+	const PolygonMesh::Point vertex = mesh_vertex(polygon_quad, 2);
 	CHECK(vertex[0] == Catch::Approx(1.0));
 	CHECK(vertex[1] == Catch::Approx(1.0));
 	CHECK(vertex[2] == Catch::Approx(0.0));
 
-	const GEO::vec3 barycenter = facet_barycenter(geogram_quad, 0);
+	const PolygonMesh::Point barycenter = facet_barycenter(polygon_quad, 0);
 	CHECK(barycenter[0] == Catch::Approx(0.5));
 	CHECK(barycenter[1] == Catch::Approx(0.5));
 	CHECK(barycenter[2] == Catch::Approx(0.0));
 
-	const GEO::index_t new_vertex = mesh_create_vertex(geogram_quad, GEO::vec3(2.0, 3.0, 4.0));
+	const int new_vertex = mesh_create_vertex(polygon_quad, PolygonMesh::Point(2.0, 3.0, 4.0));
 	REQUIRE(new_vertex == 4);
-	const GEO::vec3 created = mesh_vertex(geogram_quad, new_vertex);
+	const PolygonMesh::Point created = mesh_vertex(polygon_quad, new_vertex);
 	CHECK(created[0] == Catch::Approx(2.0));
 	CHECK(created[1] == Catch::Approx(3.0));
 	CHECK(created[2] == Catch::Approx(4.0));
 
-	GEO::Attribute<bool> boundary_vertex(geogram_quad.vertices.attributes(), "boundary_vertex");
-	for (GEO::index_t v = 0; v < geogram_quad.vertices.nb(); ++v)
-		boundary_vertex[v] = true;
+	for (int v = 0; v < polygon_quad.n_vertices(); ++v)
+		polygon_quad.boundary_vertex[v] = true;
 	std::vector<ElementType> element_tags;
-	compute_element_tags(geogram_quad, element_tags);
+	compute_element_tags(polygon_quad, element_tags);
 	REQUIRE(element_tags.size() == 1);
 	CHECK(element_tags[0] == ElementType::REGULAR_BOUNDARY_CUBE);
 
@@ -553,20 +565,14 @@ TEST_CASE("mesh utilities geogram conversion and topology helpers", "[mesh_test]
 		0, 1, 0.25;
 	Eigen::MatrixXi tri(1, 3);
 	tri << 0, 1, 2;
-	GEO::Mesh geogram_tri;
-	to_geogram_mesh(tri_vertices, tri, geogram_tri);
-	CHECK(is_planar(geogram_tri));
-	compute_element_tags(geogram_tri, element_tags);
+	PolygonMesh polygon_tri = make_polygon_mesh(tri_vertices, tri);
+	CHECK(is_planar(tri_vertices));
+	compute_element_tags(polygon_tri, element_tags);
 	REQUIRE(element_tags.size() == 1);
 	CHECK(element_tags[0] == ElementType::SIMPLEX);
 
 	tri_vertices(2, 2) = 2.0;
-	to_geogram_mesh(tri_vertices, tri, geogram_tri);
-	CHECK_FALSE(is_planar(geogram_tri));
-
-	Eigen::MatrixXi unsupported_faces(1, 5);
-	unsupported_faces << 0, 1, 2, 3, 4;
-	REQUIRE_THROWS_AS(to_geogram_mesh(vertices2d, unsupported_faces, geogram_tri), std::runtime_error);
+	CHECK_FALSE(is_planar(tri_vertices));
 
 	Eigen::MatrixXd reorder_vertices(4, 2);
 	reorder_vertices << 0, 0,
@@ -677,7 +683,6 @@ TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_uti
 	CHECK(surface_tris.maxCoeff() < surface_vertices.rows());
 	CHECK(surface_tris.minCoeff() >= 0);
 
-	GEO::Mesh geogram_tri;
 	Eigen::MatrixXd vertices2d(4, 2);
 	vertices2d << 0, 0,
 		1, 0,
@@ -686,20 +691,23 @@ TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_uti
 	Eigen::MatrixXi triangles(2, 3);
 	triangles << 0, 1, 2,
 		0, 2, 3;
-	to_geogram_mesh(vertices2d, triangles, geogram_tri);
-	CHECK(geogram_tri.edges.nb() == 0);
-	generate_edges(geogram_tri);
-	CHECK(geogram_tri.edges.nb() == 5);
-	generate_edges(geogram_tri);
-	CHECK(geogram_tri.edges.nb() == 5);
+	PolygonMesh polygon_tri = make_polygon_mesh(vertices2d, triangles);
+	CHECK(polygon_tri.n_edges() == 0);
+	generate_edges(polygon_tri);
+	CHECK(polygon_tri.n_edges() == 5);
+	generate_edges(polygon_tri);
+	CHECK(polygon_tri.n_edges() == 5);
 
-	GEO::Mesh clockwise_quad;
 	Eigen::MatrixXi clockwise_face(1, 4);
 	clockwise_face << 0, 3, 2, 1;
-	to_geogram_mesh(vertices2d, clockwise_face, clockwise_quad);
-	CHECK(geogram_facet_signed_area(clockwise_quad, 0) < 0);
+	PolygonMesh clockwise_quad = make_polygon_mesh(vertices2d, clockwise_face);
+	CHECK(polygon_signed_area(clockwise_quad, 0) < 0);
 	orient_normals_2d(clockwise_quad);
-	CHECK(geogram_facet_signed_area(clockwise_quad, 0) > 0);
+	CHECK(polygon_signed_area(clockwise_quad, 0) > 0);
+	CHECK(clockwise_quad.facet_vertex(0, 0) == 1);
+	CHECK(clockwise_quad.facet_vertex(0, 1) == 2);
+	CHECK(clockwise_quad.facet_vertex(0, 2) == 3);
+	CHECK(clockwise_quad.facet_vertex(0, 3) == 0);
 }
 
 TEST_CASE("append_2d", "[mesh_test]")

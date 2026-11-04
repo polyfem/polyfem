@@ -7,6 +7,8 @@ set(SOURCES
 	CMesh2D.hpp
 	Navigation.cpp
 	Navigation.hpp
+	PolygonMesh.cpp
+	PolygonMesh.hpp
 	PolygonUtils.cpp
 	PolygonUtils.hpp
 	Refinement.cpp
