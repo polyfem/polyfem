@@ -508,6 +508,8 @@ namespace polyfem
 
 		void NCMesh2D::build_index_mapping()
 		{
+			// Count the valid entities from the topology (not from the maps being rebuilt).
+			index_prepared = false;
 			all_to_valid_elemMap.assign(elements.size(), -1);
 			valid_to_all_elemMap.resize(n_elements);
 
