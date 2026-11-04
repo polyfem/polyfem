@@ -431,7 +431,22 @@ namespace polyfem
 					log_and_throw_error(fmt::format("Invalid number of vertices {}", nV));
 			}
 
-			return build_storage_from_cells(V, cells);
+			if (!build_storage_from_cells(V, cells))
+				return false;
+
+			// cell_vertex() (and therefore to_mesh_data(), checkpoints and the
+			// MSH writer) returns input_vs, which must be in the input (MeshData,
+			// i.e. Gmsh) order. Hex cells were permuted to the descriptor order
+			// above; restore their input order (the kernel point was already
+			// computed from the permuted order).
+			for (int c = 0; c < cells.size(); ++c)
+			{
+				if (cells[c].type != StandardCellType::HEX)
+					continue;
+				for (int lv = 0; lv < 8; ++lv)
+					mesh_.elements[c].input_vs[lv] = F(c, lv);
+			}
+			return true;
 		}
 
 		void CMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)

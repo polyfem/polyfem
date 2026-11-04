@@ -1104,3 +1104,31 @@ TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
 	CHECK_THROWS(bad.load_mesh());
 	fs::remove_all(dir);
 }
+
+TEST_CASE("hex meshes round-trip through MeshData", "[mesh_test][mesh_data]")
+{
+	Eigen::MatrixXd vertices(12, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1,
+		2, 0, 0, 2, 1, 0, 2, 0, 1, 2, 1, 1;
+	Eigen::MatrixXi cells(2, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7,
+		1, 8, 9, 2, 5, 10, 11, 6;
+
+	auto check_unit_edges = [](const Mesh &mesh) {
+		REQUIRE(mesh.n_elements() == 2);
+		CHECK(mesh.n_edges() == 20);
+		for (int e = 0; e < mesh.n_edges(); ++e)
+		{
+			const RowVectorNd edge = mesh.point(mesh.edge_vertex(e, 0)) - mesh.point(mesh.edge_vertex(e, 1));
+			CHECK(edge.norm() == Catch::Approx(1.0));
+		}
+	};
+
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	check_unit_edges(*mesh);
+	const MeshData data = mesh->to_mesh_data();
+	CHECK(data.elements == cells);
+	const auto restored = Mesh::create(data);
+	check_unit_edges(*restored);
+}
