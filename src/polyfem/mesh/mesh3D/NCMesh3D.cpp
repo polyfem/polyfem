@@ -100,7 +100,8 @@ namespace polyfem
 		bool NCMesh3D::is_boundary_element(const int element_global_id) const
 		{
 			assert(index_prepared);
-			for (int lv = 0; lv < n_cell_edges(element_global_id); lv++)
+			// A boundary face has boundary vertices, so checking the vertices is enough.
+			for (int lv = 0; lv < n_cell_vertices(element_global_id); lv++)
 				if (is_boundary_vertex(cell_vertex(element_global_id, lv)))
 					return true;
 
@@ -203,11 +204,10 @@ namespace polyfem
 		}
 		RowVectorNd NCMesh3D::cell_barycenter(const int c) const
 		{
-			const int v1 = face_vertex(c, 0);
-			const int v2 = face_vertex(c, 1);
-			const int v3 = face_vertex(c, 2);
-
-			return (point(v1) + point(v2) + point(v3)) / 3.;
+			RowVectorNd bary = RowVectorNd::Zero(3);
+			for (int lv = 0; lv < n_cell_vertices(c); ++lv)
+				bary += point(cell_vertex(c, lv));
+			return bary / n_cell_vertices(c);
 		}
 
 		void NCMesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const

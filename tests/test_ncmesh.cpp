@@ -22,6 +22,8 @@
 #include "VarFormTestAccess.hpp"
 
 #include <polyfem/mesh/MeshData.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <math.h>
 
@@ -342,4 +344,25 @@ TEST_CASE("non-conforming meshes accept n_refs with selections", "[ncmesh]")
 		++n_checked;
 	}
 	CHECK(n_checked > 0);
+}
+
+TEST_CASE("non-conforming tet meshes answer element queries like conforming ones", "[ncmesh][mesh_test]")
+{
+	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
+	const auto conforming = MeshLoader(resources).load_fem("contact/meshes/3D/simple/sphere/sphere1K.msh", false);
+	const auto nonconforming = MeshLoader(resources).load_fem("contact/meshes/3D/simple/sphere/sphere1K.msh", true);
+	REQUIRE(conforming->n_elements() == nonconforming->n_elements());
+	REQUIRE(conforming->n_vertices() == nonconforming->n_vertices());
+
+	int n_interior = 0;
+	for (int c = 0; c < conforming->n_elements(); ++c)
+	{
+		CAPTURE(c);
+		CHECK(nonconforming->is_boundary_element(c) == conforming->is_boundary_element(c));
+		n_interior += !conforming->is_boundary_element(c);
+		const RowVectorNd expected = conforming->cell_barycenter(c);
+		const RowVectorNd actual = nonconforming->cell_barycenter(c);
+		CHECK((expected - actual).norm() < 1e-12);
+	}
+	CHECK(n_interior > 0);
 }
