@@ -10,6 +10,8 @@
 
 #include <Eigen/Geometry>
 
+#include <algorithm>
+
 #include <igl/boundary_facets.h>
 #include <igl/oriented_facets.h>
 #include <igl/edges.h>
@@ -351,12 +353,19 @@ namespace polyfem::mesh
 			return;
 		}
 
-		const auto tmp = node_ids_;
+		// node_ids_ is indexed by input vertex; afterwards it is indexed by FE
+		// node: vertex nodes get the id of their vertex, the other nodes (edge,
+		// face and cell nodes, and nodes of unreferenced vertices) have none.
+		const int n = std::min<int>(n_vertices(), in_node_to_node.size());
+		int n_nodes = 0;
+		for (int v = 0; v < n; ++v)
+			n_nodes = std::max(n_nodes, in_node_to_node[v] + 1);
 
-		for (int n = 0; n < n_vertices(); ++n)
-		{
-			node_ids_[in_node_to_node[n]] = tmp[n];
-		}
+		std::vector<int> ids(n_nodes, -1);
+		for (int v = 0; v < n; ++v)
+			if (in_node_to_node[v] >= 0)
+				ids[in_node_to_node[v]] = node_ids_[v];
+		node_ids_ = std::move(ids);
 	}
 
 	void Mesh::compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
