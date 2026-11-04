@@ -29,15 +29,34 @@ The module supports the following 3 dimensional elements:
 * Spline (IGA) elements of degree 1 to 4 (`SplineBasis3d.hpp`)
 * Polygonal elements (`PolygonalBasis3d.hpp`)
 
-### Mesh data structure, Input/Output, and Navigation
+### Mesh data structures
 
-`polyfem::mesh` contains data structures and algorithms for simplicial and polygonal meshes.
+`polyfem::mesh` contains the meshes used to define the finite element spaces, the obstacles used for contact, and their input/output. A mesh is built in two steps:
 
-The interface is generic (`Mesh2D.hpp`, `Mesh3D.hpp`). There are two specializations: a conforming implementation that supports conforming polygonal meshes (`CMesh2D.hpp`, `CMesh3D.hpp`) without hanging nodes, and a non-conforming version (`CMesh2D.hpp`, `CMesh3D.hpp`) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.
+1. `MeshLoader` decodes a file (MSH, HYBRID or OBJ, through `MeshReader`) or an HDF5 group into a `MeshData`: vertices, element connectivity padded with `-1`, and optionally body/boundary/node/geometry ids and curved (higher-order) nodes.
+2. `Mesh::create(MeshData, non_conforming)` builds the runtime mesh: a conforming or non-conforming 2D or 3D mesh.
 
-Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).
+`GeometryLoader` implements the `geometry` section of the JSON input on top of this: for every entry it loads the mesh, normalizes and transforms it, refines it (`n_refs`), applies the volume/surface/point selections, and appends all the simulated meshes into one; obstacles (surfaces in MSH, OBJ or the triangle formats read by libigl) are collected into an `Obstacle`.
 
-In PolyFEM the mesh is used to define a collection of dofs (in case of linear elements, they correspond to the nodes of the mesh, but this is not the case for other elements). The mesh is then discarded and not used by other modules.
+| Class | Represents | Storage |
+|---|---|---|
+| `Mesh` | Abstract interface: entity counts, geometry, navigation, labels, curved geometry | Labels and curved nodes shared by all meshes |
+| `Mesh2D`, `Mesh3D` | Dimension-specific interface; 2D elements are faces, 3D elements are cells | - |
+| `CMesh2D` | Conforming mesh of arbitrary polygons | `PolygonMesh`: vertices, facets as ranges of corners, facet adjacency and edges |
+| `CMesh3D` | Conforming mesh of tetrahedra, hexahedra, prisms, pyramids and polyhedra | `Mesh3DStorage`: per-entity incidence lists, built from standard cells (`CellConnectivity`) by `MeshProcessing3D` |
+| `NCMesh2D`, `NCMesh3D` | Triangle/tetrahedral meshes with hanging nodes, for adaptive h-refinement | Refinement tree of elements, edges, faces and vertices |
+| `MeshNodes` | Finite element nodes (vertices, edge/face/cell nodes), created lazily | Packed primitive slots, one block per entity type |
+| `LocalBoundary` | Boundary primitives of one element, used to assemble boundary conditions | - |
+| `Obstacle` | Non-simulated geometry for contact: meshes with prescribed displacements, and planes | Concatenated vertices/edges/faces of all obstacles |
+| `CollisionProxy` | Separate (usually finer) surface used for contact instead of the FE boundary | Proxy mesh + sparse map from FE nodes to proxy vertices |
+
+**Numbering.** Every entity type is numbered from 0. In conforming meshes, vertices and elements keep the input order and edges are sorted by their vertex pair; 3D faces are numbered cell by cell. Non-conforming meshes keep every entity ever created ("all" ids) and number the current ones ("valid" ids) in the same order; the `Mesh` interface always uses valid ids.
+
+**Labels.** Body ids (per element, default 0) select materials, boundary ids (per boundary element: edges in 2D, faces in 3D; default max int on the boundary and -1 inside) select boundary conditions, node ids (per vertex, default -1) select nodal boundary conditions, and geometry ids (per element, default 0) identify the input geometry of each element. Refinement drops the labels of conforming meshes (the loader recomputes them from the selections) and passes the body/boundary ids of non-conforming meshes to the children; appending keeps the labels of both meshes.
+
+**Navigation.** `Navigation::Index` (2D) and `Navigation3D::Index` (3D) are flags of incident entities (vertex, edge, face, and in 3D element); the `switch_*` functions move to the flag that differs in one entity. Non-conforming meshes must be prepared (`prepare_mesh()`) after their topology changes and before they are queried.
+
+Meshes are written in VTU (the format used by paraview/VTK) by `polyfem::io`.
 
 ### Quadrature Rules
 

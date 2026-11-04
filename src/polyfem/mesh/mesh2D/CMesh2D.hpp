@@ -13,6 +13,13 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		/// Conforming 2D mesh of arbitrary polygons, stored in a PolygonMesh.
+		///
+		/// Numbering: vertices and faces follow the input (MeshData) order; edges
+		/// are sorted by (min, max) vertex id (see Navigation::prepare_mesh), so
+		/// appending a mesh keeps the edge ids of the receiving mesh. Element
+		/// tags (regular/singular quads, polygons, simplices) drive the choice of
+		/// spline, Lagrange or polygonal bases.
 		class CMesh2D : public Mesh2D
 		{
 		public:
