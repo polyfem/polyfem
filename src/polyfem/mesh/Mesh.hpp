@@ -669,10 +669,11 @@ namespace polyfem
 					append(*mesh);
 			}
 
-			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$.
+			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$
+			/// (and to every other stored position, e.g. higher-order nodes and polyhedra kernels).
 			/// @param[in] A Multiplicative matrix component of transformation
 			/// @param[in] b Additive translation component of transformation
-			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
+			virtual void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
 			/// Remove all top-dimensional elements whose mask entry is false.

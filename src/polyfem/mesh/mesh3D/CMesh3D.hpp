@@ -123,6 +123,10 @@ namespace polyfem
 
 			void append(const Mesh &mesh) override;
 
+			/// Also moves the kernel points of the elements, used by polyhedral
+			/// quadrature and refinement.
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override;
+
 			std::unique_ptr<Mesh> copy() const override;
 
 		protected:
