@@ -104,8 +104,7 @@ namespace polyfem
 
 			for (int i = 0; i < n_refinement; ++i)
 			{
-				PolygonMesh mesh = mesh_;
-
+				const PolygonMesh mesh = std::move(mesh_);
 				mesh_.clear();
 
 				// TODO add tags to the refinement
@@ -633,41 +632,7 @@ namespace polyfem
 
 		std::unique_ptr<Mesh> CMesh2D::copy() const
 		{
-			Eigen::MatrixXd vertices(n_vertices(), 2);
-			int max_face_size = 0;
-			for (int i = 0; i < n_vertices(); ++i)
-				vertices.row(i) = point(i);
-			for (int i = 0; i < n_faces(); ++i)
-				max_face_size = std::max(max_face_size, n_face_vertices(i));
-
-			Eigen::MatrixXi faces = Eigen::MatrixXi::Constant(n_faces(), max_face_size, -1);
-			for (int i = 0; i < n_faces(); ++i)
-				for (int j = 0; j < n_face_vertices(i); ++j)
-					faces(i, j) = face_vertex(i, j);
-
-			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
-			copy_mesh->build_topology(MeshData(std::move(vertices), std::move(faces)));
-
-			// Manually copy parent's data
-			copy_mesh->elements_tag_ = this->elements_tag_;
-			copy_mesh->node_ids_ = this->node_ids_;
-			copy_mesh->boundary_ids_ = this->boundary_ids_;
-			copy_mesh->body_ids_ = this->body_ids_;
-			copy_mesh->geometry_ids_ = this->geometry_ids_;
-			copy_mesh->orders_ = this->orders_;
-			copy_mesh->is_rational_ = this->is_rational_;
-			copy_mesh->edge_nodes_ = this->edge_nodes_;
-			copy_mesh->face_nodes_ = this->face_nodes_;
-			copy_mesh->cell_nodes_ = this->cell_nodes_;
-			copy_mesh->cell_weights_ = this->cell_weights_;
-			copy_mesh->has_explicit_polyhedral_topology_ = this->has_explicit_polyhedral_topology_;
-			copy_mesh->higher_order_nodes_ = this->higher_order_nodes_;
-			copy_mesh->higher_order_connectivity_ = this->higher_order_connectivity_;
-			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
-			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
-			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;
-
-			return copy_mesh;
+			return std::make_unique<CMesh2D>(*this);
 		}
 	} // namespace mesh
 } // namespace polyfem
