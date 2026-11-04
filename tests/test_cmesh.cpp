@@ -5,6 +5,7 @@
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
@@ -1273,4 +1274,32 @@ TEST_CASE("unsupported higher-order elements are rejected", "[mesh_test]")
 		const auto mesh = Mesh::create(data);
 		CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
 	}
+}
+
+TEST_CASE("mesh nodes place lazily created nodes at their primitive", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+
+	// Several node slots per edge and face, as for mixed-order spaces.
+	MeshNodes nodes(*mesh, false, true, 2, 3);
+	for (int e = mesh->n_edges() - 1; e >= 0; --e)
+	{
+		const int node = nodes.node_id_from_edge(e);
+		CHECK((nodes.node_position(node) - mesh->edge_barycenter(e)).norm() < 1e-14);
+		CHECK(nodes.edge_from_node_id(node) == e);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_edge(e)] == node);
+	}
+	for (int f = 0; f < mesh->n_faces(); ++f)
+	{
+		const int node = nodes.node_id_from_face(f);
+		CHECK((nodes.node_position(node) - mesh->face_barycenter(f)).norm() < 1e-14);
+		CHECK(nodes.face_from_node_id(node) == f);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_face(f)] == node);
+	}
+	CHECK(nodes.num_edge_nodes() == mesh->n_edges());
+	CHECK(nodes.num_face_nodes() == mesh->n_faces());
 }
