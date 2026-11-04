@@ -436,59 +436,6 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			hmi.HF(3, h.id) = h.fs[3];
 		}
 	}
-
-	// boundary flags for hybrid mesh
-	std::vector<bool> bv_flag(hmi.vertices.size(), false), be_flag(hmi.edges.size(), false), bf_flag(hmi.faces.size(), false);
-	for (auto f : hmi.faces)
-		if (f.boundary && hmi.elements[f.neighbor_hs[0]].hex)
-			bf_flag[f.id] = true;
-		else if (!f.boundary)
-		{
-			int ele0 = f.neighbor_hs[0], ele1 = f.neighbor_hs[1];
-			if ((hmi.elements[ele0].hex && !hmi.elements[ele1].hex) || (!hmi.elements[ele0].hex && hmi.elements[ele1].hex))
-				bf_flag[f.id] = true;
-		}
-	for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-		if (bf_flag[i])
-			for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j)
-			{
-				uint32_t eid = hmi.faces[i].es[j];
-				be_flag[eid] = true;
-				bv_flag[hmi.faces[i].vs[j]] = true;
-			}
-	// boundary_hex for hybrid mesh
-	for (auto &v : hmi.vertices)
-		v.boundary_hex = false;
-	for (auto &e : hmi.edges)
-		e.boundary_hex = false;
-	for (auto &f : hmi.faces)
-		f.boundary_hex = bf_flag[f.id];
-	for (auto &ele : hmi.elements)
-		if (ele.hex)
-		{
-			for (auto vid : ele.vs)
-			{
-				if (!bv_flag[vid])
-					continue;
-				int fn = 0;
-				for (auto nfid : hmi.vertices[vid].neighbor_fs)
-					if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end())
-						fn++;
-				if (fn == 3)
-					hmi.vertices[vid].boundary_hex = true;
-			}
-			for (auto eid : ele.es)
-			{
-				if (!be_flag[eid])
-					continue;
-				int fn = 0;
-				for (auto nfid : hmi.edges[eid].neighbor_fs)
-					if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end())
-						fn++;
-				if (fn == 2)
-					hmi.edges[eid].boundary_hex = true;
-			}
-		}
 }
 void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 {
