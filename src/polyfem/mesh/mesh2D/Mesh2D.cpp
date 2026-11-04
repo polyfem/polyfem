@@ -6,11 +6,6 @@
 
 #include <igl/barycentric_coordinates.h>
 
-#include <geogram/basic/file_system.h>
-#include <geogram/mesh/mesh_io.h>
-#include <geogram/mesh/mesh_geometry.h>
-#include <geogram/mesh/mesh_repair.h>
-
 #include <cassert>
 #include <array>
 

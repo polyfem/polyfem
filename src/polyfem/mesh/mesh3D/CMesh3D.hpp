@@ -119,7 +119,6 @@ namespace polyfem
 				std::cerr << "never user this function" << std::endl;
 				return mesh_;
 			}
-			static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 
 			void append(const Mesh &mesh) override;
 

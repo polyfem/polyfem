@@ -95,7 +95,6 @@ namespace polyfem
 		/// @param[out] M      Output Geogram mesh
 		///
 		void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M);
-		// void to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M);
 
 		///
 		/// @brief      Extract simplices from a Geogram mesh
@@ -107,13 +106,6 @@ namespace polyfem
 		///
 		void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
 
-		///
-		/// @brief      Converts a hex mesh to a Geogram mesh
-		///
-		/// @param[in]  mesh   Input mesh
-		/// @param[out] M      Output Geogram mesh
-		///
-		void to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M);
 
 		///
 		/// @brief      Compute the signed volume of a surface mesh
@@ -134,13 +126,6 @@ namespace polyfem
 		///
 		void orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive = true);
 
-		///
-		/// @brief      Extract polyhedra from a 3D volumetric mesh
-		///
-		/// @param[in]  mesh    Input volume mesh
-		/// @param[out] polys   Extracted polyhedral surfaces
-		///
-		void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated = false);
 
 		/// Pair coincident boundary edges, including nonconforming leader/follower edges.
 		std::vector<std::pair<Navigation::Index, Navigation::Index>> compute_mesh_interface(
@@ -150,19 +135,6 @@ namespace polyfem
 		std::vector<std::pair<Navigation3D::Index, Navigation3D::Index>> compute_mesh_interface(
 			const Mesh3D &first, const Mesh3D &second);
 
-		///
-		/// @brief      Samples points on a surface
-		///
-		/// @param[in]  V             #V x 3 input mesh vertices
-		/// @param[in]  F             #F x 3 input mesh facets
-		/// @param[in]  num_samples   Number of desired samples
-		/// @param[out] P             num_samples x 3 sample points positions
-		/// @param[out] N             num_samples x 3 of normals estimated from the original surface (optional argument)
-		/// @param[in]  num_lloyd     Number of Lloyd iterations
-		/// @param[in]  num_newton    Number of Newton iterations
-		///
-		void sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
-							Eigen::MatrixXd &P, Eigen::MatrixXd *N = nullptr, int num_lloyd = 10, int num_newton = 10);
 
 		///
 		/// @brief      Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate

@@ -6,7 +6,6 @@
 
 #include <igl/writeMESH.h>
 
-#include <geogram/mesh/mesh_io.h>
 #include <fstream>
 
 using namespace polyfem::utils;

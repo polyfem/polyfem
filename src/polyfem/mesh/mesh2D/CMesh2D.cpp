@@ -6,10 +6,7 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <geogram/basic/file_system.h>
-#include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
-#include <geogram/mesh/mesh_repair.h>
 
 #include <cassert>
 #include <array>
