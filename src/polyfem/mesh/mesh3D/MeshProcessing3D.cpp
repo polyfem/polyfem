@@ -622,18 +622,20 @@ double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Ve
 
 void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi)
 {
+	// Reorients the hexes (only) consistently: build a hex-only mesh, propagate
+	// the orientation across shared faces, and copy the vertex orders back.
+	if (std::none_of(hmi.elements.begin(), hmi.elements.end(), [](const Element &e) { return e.hex; }))
+		return;
+
+	// reorder_hex_mesh_propogation only uses the connectivity rebuilt below
+	// (vertex neighbors and face/element adjacency) and the points.
 	Mesh3DStorage mesh;
 	mesh.type = MeshType::HEX;
 	mesh.points = hmi.points;
 	mesh.vertices.resize(hmi.vertices.size());
-	for (const auto &v : hmi.vertices)
-	{
-		Vertex v_;
-		v_.id = v.id;
-		v_.v = v.v;
-		mesh.vertices[v.id] = v;
-	}
-	vector<int> Ele_map(hmi.elements.size(), -1), Ele_map_reverse;
+	for (uint32_t v = 0; v < hmi.vertices.size(); ++v)
+		mesh.vertices[v].id = v;
+	vector<int> Ele_map_reverse;
 	for (const auto &ele : hmi.elements)
 	{
 		if (!ele.hex)
@@ -641,11 +643,7 @@ void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi)
 		Element ele_;
 		ele_.id = mesh.elements.size();
 		ele_.vs = ele.vs;
-		for (auto vid : ele_.vs)
-			mesh.vertices[vid].neighbor_hs.push_back(ele_.id);
-		mesh.elements.push_back(ele_);
-
-		Ele_map[ele.id] = ele_.id;
+		mesh.elements.push_back(std::move(ele_));
 		Ele_map_reverse.push_back(ele.id);
 	}
 
