@@ -152,7 +152,7 @@ namespace polyfem
 				Eigen::VectorXi faces;
 				Eigen::VectorXi children;
 
-				int body_id;
+				int body_id = 0;
 
 				bool is_refined = false;
 				bool is_ghost = false;

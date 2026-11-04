@@ -298,3 +298,48 @@ TEST_CASE("non-conforming refinement leaves the mesh ready for queries", "[ncmes
 		CHECK_NOTHROW(stale->edge_vertex(0, 0));
 	}
 }
+
+TEST_CASE("non-conforming meshes accept n_refs with selections", "[ncmesh]")
+{
+	json in_args = R"(
+		{
+			"materials": {"type": "Laplacian"},
+			"geometry": [{
+				"mesh": "",
+				"n_refs": 1,
+				"surface_selection": [
+					{"id": 4, "box": [[-2, -2], [0, 2]]},
+					{"id": 5, "box": [[0, -2], [2, 2]]}
+				]
+			}],
+			"boundary_conditions": {
+				"dirichlet_boundary": [{"id": "all", "value": 0}]
+			}
+		})"_json;
+	in_args["geometry"][0]["mesh"] = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/circle/circle36.obj";
+
+	State state;
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+	state.init(in_args, true);
+	state.load_mesh(true);
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+
+	const auto debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
+	REQUIRE(debug.mesh != nullptr);
+	const Mesh &mesh = *debug.mesh;
+	REQUIRE(!mesh.is_conforming());
+	CHECK(mesh.n_elements() == 4 * 36);
+
+	int n_checked = 0;
+	for (int e = 0; e < mesh.n_edges(); ++e)
+	{
+		if (!mesh.is_boundary_edge(e))
+			continue;
+		const double x = mesh.edge_barycenter(e)[0];
+		if (std::abs(x) < 1e-8)
+			continue;
+		CHECK(mesh.get_boundary_id(e) == (x < 0 ? 4 : 5));
+		++n_checked;
+	}
+	CHECK(n_checked > 0);
+}
