@@ -378,48 +378,56 @@ namespace polyfem
 			// index map from vertices to valid ones, and its inverse
 			inline int all_to_valid_vertex(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return all_to_valid_vertexMap[id];
 			};
 			inline int valid_to_all_vertex(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return valid_to_all_vertexMap[id];
 			};
 
 			// index map from edges to valid ones, and its inverse
 			inline int all_to_valid_edge(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return all_to_valid_edgeMap[id];
 			};
 			inline int valid_to_all_edge(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return valid_to_all_edgeMap[id];
 			};
 
 			// index map from faces to valid ones, and its inverse
 			inline int all_to_valid_face(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return all_to_valid_faceMap[id];
 			};
 			inline int valid_to_all_face(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return valid_to_all_faceMap[id];
 			};
 
 			// index map from elements to valid ones, and its inverse
 			inline int all_to_valid_elem(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return all_to_valid_elemMap[id];
 			};
 			inline int valid_to_all_elem(const int id) const
 			{
-				assert(index_prepared);
+				if (!index_prepared)
+					stale_index_error();
 				return valid_to_all_elemMap[id];
 			};
 
@@ -457,8 +465,14 @@ namespace polyfem
 
 			int n_elements = 0;
 
+			/// Whether the valid <-> all id maps match the current topology. Every
+			/// topological edit (add/refine/coarsen element) clears it and
+			/// build_index_mapping() (called by prepare_mesh()) sets it again.
 			bool index_prepared = false;
 			bool adj_prepared = false;
+
+			/// Throws: the id maps are stale (prepare_mesh() was not called after editing the mesh).
+			[[noreturn]] void stale_index_error() const;
 
 			std::vector<ncElem> elements;
 			std::vector<ncVert> vertices;
