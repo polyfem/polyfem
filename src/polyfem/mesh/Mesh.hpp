@@ -121,6 +121,12 @@ namespace polyfem
 			///
 			/// @brief refine the mesh
 			///
+			/// Conforming meshes drop the data that cannot follow the refinement:
+			/// boundary, body, node and geometry ids and the higher-order geometry
+			/// (callers recompute the labels they need, see GeometryLoader).
+			/// Non-conforming meshes carry body and boundary ids to the children
+			/// and drop node and geometry ids.
+			///
 			/// @param[in] n_refinement number of refinements
 			/// @param[in] t position of the refinement location (0.5 for standard refinement)
 			virtual void refine(const int n_refinement, const double t) = 0;
@@ -680,6 +686,8 @@ namespace polyfem
 			virtual void remove_elements(const std::vector<bool> &keep) = 0;
 			void filter_element_data(const std::vector<bool> &keep);
 			void clear_higher_order_data();
+			/// Drop the labels and the higher-order geometry before a conforming refinement.
+			void clear_data_lost_by_refinement();
 			void transform_higher_order_data(const MatrixNd &A, const VectorNd &b);
 
 			/// list of element types

@@ -404,6 +404,10 @@ namespace polyfem
 
 			/// Throws: the id maps are stale (prepare_mesh() was not called after editing the mesh).
 			[[noreturn]] void stale_index_error() const;
+			/// After a refinement: rebuild the body/boundary id arrays from the
+			/// per-entity labels (inherited by the children) and drop node and
+			/// geometry ids.
+			void update_labels_after_refinement();
 
 			std::vector<ncElem> elements;
 			std::vector<ncVert> vertices;

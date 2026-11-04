@@ -90,6 +90,25 @@ namespace polyfem
 			// refine_element() invalidates the id maps: rebuild them so that the
 			// mesh can be queried right away (e.g. to apply selections).
 			prepare_mesh();
+			update_labels_after_refinement();
+		}
+
+		void NCMesh3D::update_labels_after_refinement()
+		{
+			node_ids_.clear();
+			geometry_ids_.clear();
+			if (has_body_ids())
+			{
+				body_ids_.resize(n_cells());
+				for (int e = 0; e < body_ids_.size(); ++e)
+					body_ids_[e] = elements[valid_to_all_elem(e)].body_id;
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int b = 0; b < boundary_ids_.size(); ++b)
+					boundary_ids_[b] = faces[valid_to_all_face(b)].boundary_id;
+			}
 		}
 
 		void NCMesh3D::stale_index_error() const
@@ -723,6 +742,7 @@ namespace polyfem
 				refine_element(i);
 
 			prepare_mesh();
+			update_labels_after_refinement();
 		}
 
 		void NCMesh3D::coarsen_element(int id_full)

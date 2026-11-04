@@ -9,6 +9,9 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/io/Checkpoint.hpp>
+#include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/mesh/MeshData.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -625,4 +628,98 @@ TEST_CASE("geometry loader obstacle geometry arrays and planes", "[geometry][geo
 		{"type", "invalid"}};
 	REQUIRE_THROWS(geometry_loader.load_obstacles(json::array({invalid}), {}, {}, 2));
 	REQUIRE_THROWS(geometry_loader.load_fem(json::array()));
+}
+
+TEST_CASE("geometry loader rejects stored point and geometry selections on refinement", "[geometry][hdf5]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	namespace fs = std::filesystem;
+
+	const fs::path path = fs::temp_directory_path() / "polyfem-refine-stored-labels.h5";
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+
+	const auto load = [&](const bool node_ids, const bool geometry_ids, const json &extra) {
+		MeshData data(vertices, cells);
+		if (node_ids)
+			data.node_ids = {1, 2, 3, 4};
+		if (geometry_ids)
+			data.geometry_ids = {5, 6};
+		{
+			io::CheckpointWriter writer(path, json::object(), io::CheckpointMetadata());
+			writer.write_mesh("/checkpoint/meshes/active", data);
+			writer.finalize();
+		}
+		const io::HDF5IO resources(path);
+		json args = fem_mesh_json("/checkpoint/meshes/active");
+		args["n_refs"] = 1;
+		args.merge_patch(extra);
+		return GeometryLoader(Units(), resources).load_fem_entry(args);
+	};
+
+	REQUIRE_THROWS_WITH(load(true, false, json::object()), Catch::Matchers::ContainsSubstring("stored point selections"));
+	REQUIRE_THROWS_WITH(load(false, true, json::object()), Catch::Matchers::ContainsSubstring("stored geometry selections"));
+
+	// With replacement selections, the labels are recomputed on the refined mesh.
+	const auto mesh = load(true, true, json{{"point_selection", 3}, {"geometry_selection", 4}});
+	REQUIRE(mesh != nullptr);
+	CHECK(mesh->n_elements() == 8);
+	CHECK(mesh->to_mesh_data().node_ids.size() == mesh->n_vertices());
+	CHECK(mesh->get_geometry_ids() == std::vector<int>(8, 4));
+	fs::remove(path);
+}
+
+TEST_CASE("refinement keeps the label arrays consistent", "[geometry][mesh_test]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+
+	for (const bool non_conforming : {false, true})
+	{
+		CAPTURE(non_conforming);
+		auto mesh = Mesh::create(MeshData(vertices, cells), non_conforming);
+		mesh->set_body_ids({7, 8});
+		mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+		mesh->compute_node_ids([](const size_t, const RowVectorNd &, bool) { return 2; });
+		mesh->set_geometry_ids({1, 1});
+
+		mesh->refine(1, 0.5);
+		CHECK(mesh->n_elements() == 8);
+		CHECK_FALSE(mesh->has_node_ids());
+		CHECK_FALSE(mesh->has_geometry_ids());
+		if (!non_conforming)
+		{
+			// Conforming refinement drops every label.
+			CHECK_FALSE(mesh->has_body_ids());
+			CHECK_FALSE(mesh->has_boundary_ids());
+			continue;
+		}
+
+		// Non-conforming children inherit the labels of their parents.
+		REQUIRE(mesh->get_body_ids().size() == mesh->n_elements());
+		Eigen::MatrixXd barycenters;
+		mesh->compute_element_barycenters(barycenters);
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int expected = barycenters(e, 0) > barycenters(e, 1) ? 7 : 8;
+			CHECK(mesh->get_body_id(e) == expected);
+			CHECK(mesh->get_body_ids()[e] == expected);
+		}
+		// The exported arrays match the per-entity labels.
+		const MeshData data = mesh->to_mesh_data();
+		REQUIRE(data.boundary_ids.size() == mesh->n_edges());
+		for (int e = 0; e < mesh->n_edges(); ++e)
+		{
+			CHECK(mesh->get_boundary_id(e) == (mesh->is_boundary_edge(e) ? 3 : -1));
+			CHECK(data.boundary_ids[e] == mesh->get_boundary_id(e));
+		}
+	}
 }

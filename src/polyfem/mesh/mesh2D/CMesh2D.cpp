@@ -94,8 +94,7 @@ namespace polyfem
 				return;
 			}
 
-			orders_.resize(0, 0);
-			clear_higher_order_data();
+			clear_data_lost_by_refinement();
 
 			bool all_simplicial = true;
 			for (int e = 0; e < n_elements(); ++e)
