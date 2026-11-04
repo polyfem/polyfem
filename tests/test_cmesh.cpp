@@ -10,6 +10,9 @@
 #include <polyfem/io/InputLoader.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/io/OutData.hpp>
+#include "VarFormTestAccess.hpp"
+#include <filesystem>
 
 #include <igl/PI.h>
 
@@ -1053,4 +1056,51 @@ TEST_CASE("nodal boundary conditions with higher-order elements", "[mesh_test]")
 	REQUIRE_NOTHROW(state.solve(sol));
 	CHECK(sol.size() > 0);
 	CHECK(sol.allFinite());
+}
+
+TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
+{
+	namespace fs = std::filesystem;
+	const fs::path dir = fs::temp_directory_path() / "polyfem-mesh-array-test";
+	fs::create_directories(dir);
+	{
+		// One edge (v1-v2) and two free points (v3, v4): 4 vertices, 2 points.
+		std::ofstream obj(dir / "edge_points.obj");
+		obj << "v 0 0 0\nv 0.1 0 0\nv 0 0.1 0\nv 0.1 0.1 0\nl 1 2\n";
+	}
+
+	json in_args = R"({
+		"materials": {"type": "NeoHookean", "E": 1e5, "nu": 0.3, "rho": 1e3},
+		"contact": {"enabled": true, "dhat": 1e-3},
+		"time": {"tend": 1, "time_steps": 1},
+		"geometry": [
+			{"mesh": "", "transformation": {"translation": [5, 5]}},
+			{"mesh": "", "type": "mesh_array", "is_obstacle": true,
+			 "array": {"offset": 1, "size": [3, 1]}}
+		],
+		"output": {"log": {"level": "error"}}
+	})"_json;
+	in_args["geometry"][0]["mesh"] = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/square.obj";
+	in_args["geometry"][1]["mesh"] = (dir / "edge_points.obj").string();
+
+	State state;
+	state.init(in_args, true);
+	state.load_mesh();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const io::OutputSpace output = state.variational_formulation->output_space();
+	REQUIRE(output.obstacle != nullptr);
+	const mesh::Obstacle &obstacle = *output.obstacle;
+	CHECK(obstacle.n_vertices() == 12);
+	const Eigen::VectorXi &points = obstacle.codim_v();
+	REQUIRE(points.size() == 6);
+	std::vector<int> sorted(points.data(), points.data() + points.size());
+	std::sort(sorted.begin(), sorted.end());
+	CHECK(sorted == std::vector<int>{2, 3, 6, 7, 10, 11});
+
+	// A size that does not match the dimension is rejected.
+	in_args["geometry"][1]["array"]["size"] = {3};
+	State bad;
+	bad.init(in_args, true);
+	CHECK_THROWS(bad.load_mesh());
+	fs::remove_all(dir);
 }
