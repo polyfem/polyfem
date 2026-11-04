@@ -366,3 +366,64 @@ TEST_CASE("non-conforming tet meshes answer element queries like conforming ones
 	}
 	CHECK(n_interior > 0);
 }
+
+TEST_CASE("non-conforming 2D navigation after refinement", "[ncmesh][mesh_test]")
+{
+	auto mesh = Mesh::create(nc_test_mesh(2), true);
+	auto &nc = dynamic_cast<NCMesh2D &>(*mesh);
+	nc.refine_elements({0}); // hanging nodes between the two original triangles
+	nc.refine(1, 0.5);
+
+	int n_interior = 0;
+	for (int f = 0; f < nc.n_faces(); ++f)
+	{
+		for (int lv = 0; lv < nc.n_face_vertices(f); ++lv)
+		{
+			const auto idx = nc.get_index_from_face(f, lv);
+			const auto other = nc.switch_face(idx);
+			if (other.face < 0)
+				continue;
+			++n_interior;
+			CAPTURE(f, lv, other.face);
+			REQUIRE(other.face < nc.n_faces());
+			// The neighbor across the edge contains that edge, and switching back returns f.
+			bool has_edge = false;
+			for (int le = 0; le < 3; ++le)
+				has_edge |= nc.face_edge(other.face, le) == idx.edge;
+			CHECK(has_edge);
+			CHECK(nc.switch_face(other).face == f);
+		}
+	}
+	CHECK(n_interior > 0);
+}
+
+TEST_CASE("non-conforming refinement after coarsening", "[ncmesh][mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		auto twice = Mesh::create(nc_test_mesh(dim), true);
+		auto once = Mesh::create(nc_test_mesh(dim), true);
+		if (dim == 2)
+		{
+			auto &nc = dynamic_cast<NCMesh2D &>(*twice);
+			nc.refine_element(0);
+			nc.coarsen_element(2); // first child of element 0 (full id)
+			nc.refine_element(0);
+			nc.prepare_mesh();
+			dynamic_cast<NCMesh2D &>(*once).refine_elements({0});
+			CHECK_THROWS(nc.coarsen_element(1)); // element 1 has no parent
+		}
+		else
+		{
+			auto &nc = dynamic_cast<NCMesh3D &>(*twice);
+			nc.refine_element(0);
+			nc.coarsen_element(2); // first child of element 0 (full id)
+			nc.refine_element(0);
+			nc.prepare_mesh();
+			dynamic_cast<NCMesh3D &>(*once).refine_elements({0});
+			CHECK_THROWS(nc.coarsen_element(1)); // element 1 has no parent
+		}
+		CHECK(query(*twice) == query(*once));
+	}
+}

@@ -257,7 +257,7 @@ namespace polyfem
 					child.is_ghost = false;
 					n_elements++;
 					for (int le = 0; le < child.edges.size(); le++)
-						edges[child.edges(le)].add_element(child.children(c));
+						edges[child.edges(le)].add_element(elem.children(c));
 					for (int i = 0; i < child.vertices.size(); i++)
 						vertices[child.vertices(i)].n_elem++;
 				}
@@ -313,6 +313,8 @@ namespace polyfem
 		void NCMesh2D::coarsen_element(int id_full)
 		{
 			const int parent_id = elements[id_full].parent;
+			if (parent_id < 0)
+				log_and_throw_error("NCMesh2D: cannot coarsen element {}, it has no parent.", id_full);
 			auto &parent = elements[parent_id];
 
 			for (int i = 0; i < parent.children.size(); i++)
@@ -667,6 +669,7 @@ namespace polyfem
 			Navigation::Index idx2;
 			idx2.face = idx.face;
 			idx2.vertex = idx.vertex;
+			idx2.edge = -1;
 			idx2.face_corner = -1;
 			const int full_vertex_id = valid_to_all_vertex(idx.vertex);
 
@@ -693,7 +696,7 @@ namespace polyfem
 
 			const auto &edge = edges[valid_to_all_edge(idx.edge)];
 			if (edge.n_elem() == 2)
-				idx2.face = (edge.find_opposite_element(valid_to_all_elem(idx.face)));
+				idx2.face = all_to_valid_elem(edge.find_opposite_element(valid_to_all_elem(idx.face)));
 			else
 				idx2.face = -1;
 

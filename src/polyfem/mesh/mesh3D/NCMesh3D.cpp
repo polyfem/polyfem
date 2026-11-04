@@ -728,6 +728,8 @@ namespace polyfem
 		void NCMesh3D::coarsen_element(int id_full)
 		{
 			const int parent_id = elements[id_full].parent;
+			if (parent_id < 0)
+				log_and_throw_error("NCMesh3D: cannot coarsen element {}, it has no parent.", id_full);
 			auto &parent = elements[parent_id];
 
 			for (int i = 0; i < parent.children.size(); i++)
