@@ -1,0 +1,63 @@
+{
+	"common": "common.json",
+	"time": {
+		"integrator": "ImplicitEuler",
+		"tend": 1,
+		"dt": 0.01
+	},
+	"space": {
+		"advanced": {
+			"bc_method": "sample"
+		}
+	},
+	"materials": {
+		"type": "NeoHookean",
+		"E": 1e10,
+		"nu": 0.1,
+		"rho": 100
+	},
+	"geometry": [{
+		"mesh": "../meshes/3D/simple/cube.msh",
+		"transformation": {
+			"translation": [8, 0.51099, 2],
+			"rotation": [0, 0, 0],
+			"rotation": [0, 45, 0]
+		},
+		"surface_selection": 1
+	}, {
+		"mesh": "../meshes/3D/simple/cube.msh",
+		"transformation": {
+			"translation": [2, 0.51099, 2],
+			"rotation": [0, 0, 0]
+		},
+		"surface_selection": 2
+	}, {
+		"mesh": "../meshes/3D/simple/cube.msh",
+		"transformation": {
+			"translation": [0, 0.51099, 8],
+			"translation": [5, 0.725, 8],
+			"rotation": [45, 0, 0]
+		},
+		"surface_selection": 3
+	}, {
+		"mesh": "../meshes/3D/obstacles/unit-plane-sub.obj",
+		"transformation": {
+			"scale": 10
+		},
+		"is_obstacle": true
+	}],
+	"boundary_conditions": {
+		"rhs": [0, 9.81, 0],
+		"neumann_boundary": [{
+			"id": 1,
+			"value": [-500,0,500]
+		}, {
+			"id": 2,
+			"value": [500,0,500]
+		}, {
+			"id": 3,
+			"value": [0,0,-200]
+		}]
+	}
+}
+

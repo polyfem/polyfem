@@ -312,6 +312,9 @@ namespace polyfem
 
 		bool GenericTensorProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
 		{
+			if (kind != BoundaryKind::Dirichlet && kind != BoundaryKind::Neumann)
+				return Problem::has_boundary(kind, tag, fe_space_id);
+
 			if (tag <= 0)
 				return false;
 
@@ -1294,6 +1297,9 @@ namespace polyfem
 
 		bool GenericScalarProblem::has_boundary(const BoundaryKind kind, const int tag, const int fe_space_id)
 		{
+			if (kind != BoundaryKind::Dirichlet && kind != BoundaryKind::Neumann)
+				return Problem::has_boundary(kind, tag, fe_space_id);
+
 			if (tag <= 0)
 				return false;
 			if (kind == BoundaryKind::Dirichlet)

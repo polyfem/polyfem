@@ -16,7 +16,7 @@
 #include <polyfem/optimization/var2sims/ShapeVariableToSimulation.hpp>
 
 #include <polyfem/io/MshWriter.hpp>
-#include <polyfem/mesh/remesh/MMGRemesh.hpp>
+#include <polyfem/mesh/MMGRemesh.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
 

@@ -1,0 +1,107 @@
+{
+    "common": "../../common.json",
+    "tests": {
+        "err_h1": 0.0,
+        "err_h1_semi": 0.0,
+        "err_l2": 0.0,
+        "err_linf": 0.0,
+        "err_linf_grad": 0.0,
+        "err_lp": 0.0
+    },
+    "geometry": [{
+        "mesh": "../../../meshes/3D/creatures/octocat.msh",
+        "transformation": {
+            "translation": [0, -0.2, 0],
+            "rotation": [-90, 0, 0],
+            "scale": 0.02
+        },
+        "volume_selection": 1
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [-1, 1.5, -1.5],
+            "rotation": [0, 0, -90],
+            "scale": 3
+        },
+        "surface_selection": 1000
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [1, 1.5, -1.5],
+            "rotation": [0, 0, -90],
+            "scale": 3
+        },
+        "surface_selection": 1001
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [-1.5, -1, -1.5],
+            "rotation": [0, 0, 0],
+            "scale": 3
+        },
+        "surface_selection": 1002
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [-1.5, 1, -1.5],
+            "rotation": [0, 0, 0],
+            "scale": 3
+        },
+        "surface_selection": 1003
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [-1.5, 1.5, -1],
+            "rotation": [90, 0, 0],
+            "scale": 3
+        },
+        "surface_selection": 1004
+    }, {
+        "mesh": "../../../meshes/3D/obstacles/unit-plane.obj",
+        "is_obstacle": true,
+        "transformation": {
+            "translation": [-1.5, 1.5, 1],
+            "rotation": [90, 0, 0],
+            "scale": 3
+        },
+        "surface_selection": 1005
+    }],
+    "boundary_conditions": {
+        "obstacle_displacements": [{
+            "id": 1000,
+            "value": ["-smooth_abs(t - 0.95, 5) + 0.95", 0, 0]
+        }, {
+            "id": 1001,
+            "value": ["smooth_abs(t - 0.95, 5) - 0.95", 0, 0]
+        }, {
+            "id": 1002,
+            "value": [0, "-smooth_abs(t - 0.95, 5) + 0.95", 0]
+        }, {
+            "id": 1003,
+            "value": [0, "smooth_abs(t - 0.95, 5) - 0.95", 0]
+        }, {
+            "id": 1004,
+            "value": [0, 0, "-smooth_abs(t - 0.95, 5) + 0.95"]
+        }, {
+            "id": 1005,
+            "value": [0, 0, "smooth_abs(t - 0.95, 5) - 0.95"]
+        }],
+        "rhs": [0, 0, 0]
+    },
+    "time": {
+        "tend": 2.5,
+        "dt": 0.01
+    },
+    "materials": [{
+        "id": 1,
+        "E": 10000,
+        "nu": 0.4,
+        "rho": 1000,
+        "type": "NeoHookean"
+    }]
+}

@@ -60,6 +60,13 @@ namespace polyfem::varform
 
 	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
+		for (const std::string field : {"pressure_boundary", "pressure_cavity"})
+		{
+			const json::json_pointer path("/boundary_conditions/" + field);
+			if (args.contains(path) && !args.at(path).empty())
+				log_and_throw_error("{} does not support boundary_conditions.{}.", formulation, field);
+		}
+
 		ElasticVarForm::init(formulation, units, args, out_path);
 		const json &discr_orders = args.at("space").at("discr_order");
 
@@ -191,7 +198,6 @@ namespace polyfem::varform
 		if (!space_.poly_edge_to_data.empty())
 			log_and_throw_error("Polygonal bases are not supported in mixed formulations!");
 
-		const auto &all_boundary = boundary_.total_local_boundary;
 		const int prev_bases = space_.n_bases;
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
@@ -225,26 +231,6 @@ namespace polyfem::varform
 			space_.basis_list()[i].compute_quadrature(b_quad);
 			(*pressure_space_.bases)[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
-
-		boundary_.clear_boundary_conditions();
-		for (const auto &lb : all_boundary)
-			boundary_.local_boundary.emplace_back(lb);
-		pressure_boundary_.clear_boundary_conditions();
-
-		problem->setup_bc(
-			mesh, space_.n_bases,
-			space_.basis_list(), space_.geometry_basis_list(), pressure_space_.basis_list(),
-			boundary_.local_boundary,
-			boundary_.boundary_nodes,
-			boundary_.local_neumann_boundary,
-			boundary_.local_pressure_boundary,
-			boundary_.local_pressure_cavity,
-			pressure_boundary_.boundary_nodes,
-			boundary_.dirichlet_nodes, boundary_.neumann_nodes);
-		pressure_boundary_.normalize_boundary_nodes();
-
-		rebuild_node_positions(space_.basis_list(), boundary_.dirichlet_nodes, boundary_.dirichlet_nodes_position);
-		rebuild_node_positions(space_.basis_list(), boundary_.neumann_nodes, boundary_.neumann_nodes_position);
 
 		for (int i = prev_bases; i < space_.n_bases; ++i)
 			for (int d = 0; d < mesh.dimension(); ++d)

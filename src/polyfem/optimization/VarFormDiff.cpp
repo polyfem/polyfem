@@ -14,7 +14,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
 // Below types in SolverData are forward declared, include them explicitly.
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>

@@ -7,11 +7,13 @@
 #include <polyfem/assembler/HookeLinearElasticity.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/basis/LagrangeBasis2d.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -95,6 +97,90 @@ json get_params()
 		{"k", k},
 		{"lambda", lambda},
 		{"mu", mu}};
+}
+
+TEST_CASE("boundary setup separates loads and constrained finite element spaces", "[problem][boundary]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	std::vector<ElementBases> bases;
+	std::vector<LocalBoundary> all_boundary;
+	std::map<int, InterfaceData> interfaces;
+	std::shared_ptr<MeshNodes> mesh_nodes;
+	const int n_bases = LagrangeBasis2d::build_bases(
+		dynamic_cast<const Mesh2D &>(*mesh), "Laplacian", -1, -1, 2,
+		false, false, false, false, false, bases, all_boundary, interfaces, mesh_nodes);
+	REQUIRE(n_bases == 6);
+	REQUIRE(all_boundary.size() == 1);
+	REQUIRE(all_boundary.front().size() == 3);
+
+	GenericTensorProblemAccess problem("GenericTensor");
+	problem.set_parameters(
+		{{"dirichlet_boundary", {{{"id", 1}, {"fe_space", 7}, {"value", {0, 0}}, {"dimension", {true, false}}, {"interpolation", json::array()}}, {{"id", 1}, {"fe_space", 8}, {"value", 0}, {"interpolation", json::array()}}, {{"id", 3}, {"fe_space", 8}, {"value", 0}, {"interpolation", json::array()}}}},
+		 {"neumann_boundary", {{{"id", 2}, {"fe_space", 7}, {"value", {1, 2}}, {"interpolation", json::array()}}}},
+		 {"pressure_boundary", {{{"id", 3}, {"value", 1}}}},
+		 {"pressure_cavity", {{{"id", 2}, {"value", 1}}, {{"id", 3}, {"value", 1}}}}},
+		test_resources());
+	std::vector<LocalBoundary> selected;
+	std::vector<int> nodes;
+	problem.setup_bc(*mesh, BoundaryKind::Dirichlet, 7, bases, all_boundary, selected, nodes, 2);
+	REQUIRE(selected.size() == 1);
+	CHECK(mesh->get_boundary_id(selected.front().global_primitive_id(0)) == 1);
+	REQUIRE(nodes.size() == 3);
+	for (const int node : nodes)
+		CHECK(node % 2 == 0);
+	problem.setup_bc(*mesh, BoundaryKind::Dirichlet, 9, bases, all_boundary, selected, nodes, 2);
+	CHECK(selected.empty());
+	CHECK(nodes.empty());
+
+	problem.setup_bc(*mesh, BoundaryKind::Neumann, 7, bases, all_boundary, selected, nodes, 2);
+	REQUIRE(selected.size() == 1);
+	REQUIRE(selected.front().size() == 1);
+	CHECK(mesh->get_boundary_id(selected.front().global_primitive_id(0)) == 2);
+	CHECK(nodes.empty());
+	problem.setup_bc(*mesh, BoundaryKind::NormalAlignedNeumann, 7, all_boundary, selected);
+	REQUIRE(selected.size() == 1);
+	REQUIRE(selected.front().size() == 1);
+	CHECK(mesh->get_boundary_id(selected.front().global_primitive_id(0)) == 3);
+	CHECK(nodes.empty());
+
+	std::unordered_map<int, std::vector<LocalBoundary>> cavities;
+	problem.setup_bc(*mesh, BoundaryKind::PressureCavity, 7, all_boundary, cavities);
+	REQUIRE(cavities.size() == 2);
+	REQUIRE(cavities.count(2) == 1);
+	REQUIRE(cavities.at(2).size() == 1);
+	CHECK(cavities.at(2).front().size() == 1);
+	REQUIRE(cavities.count(3) == 1);
+	REQUIRE(cavities.at(3).size() == 1);
+	CHECK(mesh->get_boundary_id(cavities.at(3).front().global_primitive_id(0)) == 3);
+
+	// The scalar pressure field uses ordinary Dirichlet BCs on its own FE space.
+	// Two quadratic edges share one node, giving five unique scalar DOFs.
+	problem.setup_bc(*mesh, BoundaryKind::Dirichlet, 8, bases, all_boundary, selected, nodes, 1);
+	REQUIRE(selected.size() == 1);
+	CHECK(selected.front().size() == 2);
+	REQUIRE(nodes.size() == 5);
+	CHECK(std::is_sorted(nodes.begin(), nodes.end()));
+	CHECK(std::adjacent_find(nodes.begin(), nodes.end()) == nodes.end());
+	CHECK(nodes.front() >= 0);
+	CHECK(nodes.back() < n_bases);
+	CHECK(all_boundary.front().size() == 3);
+}
+
+TEST_CASE("nodal boundary setup gives Dirichlet conditions precedence", "[problem][boundary]")
+{
+	const auto mesh = tagged_triangle_mesh();
+	GenericTensorProblemAccess problem("GenericTensor");
+	problem.set_parameters(
+		{{"dirichlet_boundary", {{{"id", 1}, {"fe_space", 7}, {"value", {0, 0}}, {"interpolation", json::array()}}}},
+		 {"nodal_neumann_boundary", {{{"id", 1}, {"fe_space", 7}, {"value", {1, 2}}, {"interpolation", json::array()}}, {{"id", 2}, {"fe_space", 7}, {"value", {1, 2}}, {"interpolation", json::array()}}}}},
+		test_resources());
+	std::vector<int> nodes;
+	problem.setup_nodal_bc(*mesh, BoundaryKind::Dirichlet, 7, 3, nodes);
+	CHECK(nodes == std::vector<int>{0});
+	problem.setup_nodal_bc(*mesh, BoundaryKind::Neumann, 7, 3, nodes);
+	CHECK(nodes == std::vector<int>{1});
+	problem.setup_nodal_bc(*mesh, BoundaryKind::Neumann, 8, 3, nodes);
+	CHECK(nodes.empty());
 }
 
 TEST_CASE("generic tensor problem selects finite element space data", "[problem]")

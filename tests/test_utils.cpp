@@ -12,10 +12,6 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
-#ifdef POLYFEM_WITH_ITR
-#include <wmtk/TriMesh.h>
-#endif
-
 #include <Eigen/Dense>
 
 #include <catch2/catch_test_macros.hpp>
@@ -588,13 +584,6 @@ TEST_CASE("boundary sampler quadrature dispatch for quads and 3d faces", "[utils
 	REQUIRE(normals.rows() == weights.size());
 	CHECK(weights.sum() == Catch::Approx(hex_mesh->quad_area(0)).margin(1e-12));
 }
-
-#ifdef POLYFEM_WITH_ITR
-TEST_CASE("wmtk_instantiation", "[utils]")
-{
-	wmtk::TriMesh mesh;
-}
-#endif
 
 TEST_CASE("expand_bc_sidecars", "[utils]")
 {

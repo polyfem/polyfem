@@ -177,6 +177,14 @@ namespace polyfem
 								  const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE);
 
 		///
+		/// @brief Boundary triangles of a tet mesh, indexing the tets' vertices.
+		///
+		/// @param[in]  tets   #T x 4 tet indices
+		/// @param[out] faces  #F x 3 boundary triangle indices
+		///
+		void find_triangle_surface_from_tets(const Eigen::MatrixXi &tets, Eigen::MatrixXi &faces);
+
+		///
 		/// @brief         			Extract triangular surface from a tetmesh
 		///
 		/// @param[in]     v,tets    tet mesh

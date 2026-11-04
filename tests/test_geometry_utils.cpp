@@ -71,6 +71,54 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("load_surface keeps a 3D msh's tets with keep_volume", "[geometry][mesh_utils]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/bar/bar-6.msh";
+	const SurfaceMesh volume = MeshLoader(resources).load_surface(path, /*keep_volume=*/true);
+
+	REQUIRE(volume.vertices.cols() == 3);
+	REQUIRE(volume.tets.cols() == 4);
+	REQUIRE(volume.tets.rows() > 0);
+	REQUIRE(volume.faces.cols() == 3);
+	REQUIRE(volume.faces.rows() > 0);
+
+	// Interior vertices are referenced by tets, not faces, but are not
+	// codimensional.
+	CHECK(volume.points.size() == 0);
+	CHECK(volume.edges.rows() == 0);
+
+	// Both index into the full vertex set: no remapping.
+	CHECK(volume.tets.minCoeff() >= 0);
+	CHECK(volume.tets.maxCoeff() < volume.vertices.rows());
+	CHECK(volume.faces.minCoeff() >= 0);
+	CHECK(volume.faces.maxCoeff() < volume.vertices.rows());
+
+	// The surface is a strict subset of the volume.
+	CHECK(volume.faces.rows() < 4 * volume.tets.rows());
+
+	// Without keep_volume the loader finds the same faces.
+	const SurfaceMesh surface = MeshLoader(resources).load_surface(path);
+	CHECK(surface.tets.rows() == 0);
+	CHECK(surface.faces.rows() == volume.faces.rows());
+}
+
+TEST_CASE("load_surface keeps no tets for a surface mesh", "[geometry][mesh_utils]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	const std::string path = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/obstacles/funnel.obj";
+	const SurfaceMesh loaded = MeshLoader(resources).load_surface(path, /*keep_volume=*/true);
+
+	CHECK(loaded.tets.rows() == 0);
+	CHECK(loaded.faces.rows() > 0);
+}
+
 TEST_CASE("geometry loader handles stored Gmsh surface selections", "[geometry][gmsh]")
 {
 	using namespace polyfem;

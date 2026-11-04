@@ -9,7 +9,10 @@
 #include <polyfem/varforms/VarForm.hpp>
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <iterator>
+#include <regex>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -88,6 +91,19 @@ TEST_CASE("full sim", "[.][full_sim]")
 
 	CHECK(std::filesystem::exists(outdir));
 	CHECK(std::filesystem::exists(outdir / "sim.pvd"));
+
+	int n_volume_files = 0;
+	for (const auto &entry : std::filesystem::directory_iterator(outdir))
+	{
+		if (!std::regex_match(entry.path().filename().string(), std::regex(R"(step_\d+\.vtu)")))
+			continue;
+		std::ifstream file(entry.path());
+		const std::string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		CAPTURE(entry.path().filename().string());
+		CHECK(contents.find("Name=\"solution\"") != std::string::npos);
+		++n_volume_files;
+	}
+	CHECK(n_volume_files > 0);
 
 	std::filesystem::remove_all(outdir);
 }
