@@ -382,23 +382,31 @@ namespace polyfem::mesh
 		const size_t num_proxy_vertices,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
-#ifndef NDEBUG
 		const size_t num_fe_nodes = in_node_to_node.size();
-#endif
 		auto read_group = [&](const io::ResourceIO &reader, const std::string &root) {
 			const auto child = [&](const std::string &path) {
 				return (std::filesystem::path(root) / path).lexically_normal().generic_string();
 			};
 			const std::array<long, 2> shape = reader.read_shape_attribute(child("weight_triplets"), "shape");
-			assert(shape[0] == num_proxy_vertices && shape[1] == num_fe_nodes);
+			if (shape[0] != long(num_proxy_vertices) || shape[1] != long(num_fe_nodes))
+				log_and_throw_error(
+					"Collision proxy weights {} are {}x{}, expected {}x{} (proxy vertices x FE nodes).",
+					weights_filename, shape[0], shape[1], num_proxy_vertices, num_fe_nodes);
 			const std::vector<double> value_data = reader.read_double_vector(child("weight_triplets/values"));
 			const std::vector<int> row_data = reader.read_int_vector(child("weight_triplets/rows"));
 			const std::vector<int> col_data = reader.read_int_vector(child("weight_triplets/cols"));
+			if (row_data.size() != value_data.size() || col_data.size() != value_data.size())
+				log_and_throw_error(
+					"Collision proxy weights {} have {} values, {} rows and {} columns.",
+					weights_filename, value_data.size(), row_data.size(), col_data.size());
 			Eigen::Map<const Eigen::VectorXd> values(value_data.data(), value_data.size());
 			Eigen::Map<const Eigen::VectorXi> rows(row_data.data(), row_data.size());
 			Eigen::Map<const Eigen::VectorXi> cols(col_data.data(), col_data.size());
-			assert(rows.maxCoeff() < num_proxy_vertices);
-			assert(cols.maxCoeff() < num_fe_nodes);
+			if (values.size() > 0
+				&& (rows.minCoeff() < 0 || rows.maxCoeff() >= long(num_proxy_vertices)
+					|| cols.minCoeff() < 0 || cols.maxCoeff() >= long(num_fe_nodes)))
+				log_and_throw_error("Collision proxy weights {} reference an entry outside the {}x{} matrix.",
+									weights_filename, num_proxy_vertices, num_fe_nodes);
 
 			// TODO: use these to build the in_node_to_node map
 
