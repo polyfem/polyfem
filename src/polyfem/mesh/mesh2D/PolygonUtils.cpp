@@ -1,18 +1,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonUtils.hpp"
 #include <polyfem/utils/ClipperUtils.hpp>
-#include <geogram/numerics/predicates.h>
 #include <igl/barycenter.h>
+#include <igl/predicates/exactinit.h>
+#include <igl/predicates/orient2d.h>
 #include <cassert>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
 
-	inline GEO::Sign point_is_in_half_plane(
+	enum Sign
+	{
+		NEGATIVE = -1,
+		ZERO = 0,
+		POSITIVE = 1
+	};
+
+	// Exact orientation of (q1, q2, p): POSITIVE if p lies to the left of q1->q2.
+	inline Sign point_is_in_half_plane(
 		const Eigen::RowVector2d &p, const Eigen::RowVector2d &q1, const Eigen::RowVector2d &q2)
 	{
-		return GEO::PCK::orient_2d(q1.data(), q2.data(), p.data());
+		igl::predicates::exactinit();
+		return Sign(static_cast<int>(igl::predicates::orient2d(q1, q2, p)));
 	}
 
 	inline bool intersect_segments(
@@ -51,7 +61,6 @@ namespace
 void polyfem::mesh::clip_polygon_by_half_plane(const Eigen::MatrixXd &P_in,
 											   const Eigen::RowVector2d &q1, const Eigen::RowVector2d &q2, Eigen::MatrixXd &P_out)
 {
-	using namespace GEO;
 	assert(P_in.cols() == 2);
 	std::vector<Eigen::RowVector2d> result;
 

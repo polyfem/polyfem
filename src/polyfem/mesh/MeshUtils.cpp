@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "MeshUtils.hpp"
 
+#include <polyfem/mesh/PointTriangleDistance.hpp>
+
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -10,6 +12,10 @@
 #include <unordered_set>
 #include <set>
 #include <tuple>
+#include <numeric>
+#include <array>
+#include <cmath>
+#include <limits>
 
 #include <igl/PI.h>
 #include <geogram/mesh/mesh_geometry.h>
@@ -18,7 +24,6 @@
 #include <geogram/mesh/mesh_topology.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/mesh/mesh_repair.h>
-#include <geogram/mesh/mesh_AABB.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem::utils;
@@ -361,18 +366,65 @@ void polyfem::mesh::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const E
 namespace
 {
 
-	void compute_unsigned_distance_field(const GEO::Mesh &M,
-										 const GEO::MeshFacetsAABB &aabb_tree, const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+	// Plain 3D vector whose arithmetic mirrors geogram's vec3 operation by
+	// operation (same expression shapes), so the helpers below round exactly
+	// like the geogram code they replace.
+	struct Vec3
 	{
-		assert(P.cols() == 3);
-		D.resize(P.rows());
-#pragma omp parallel for
-		for (int i = 0; i < P.rows(); ++i)
-		{
-			GEO::vec3 pos(P(i, 0), P(i, 1), P(i, 2));
-			double sq_dist = aabb_tree.squared_distance(pos);
-			D(i) = sq_dist;
-		}
+		double x, y, z;
+	};
+
+	inline Vec3 vec3(const double *p) { return {p[0], p[1], p[2]}; }
+	inline Vec3 operator-(const Vec3 &a, const Vec3 &b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+	inline Vec3 operator+(const Vec3 &a, const Vec3 &b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+	inline Vec3 operator*(double s, const Vec3 &v) { return {s * v.x, s * v.y, s * v.z}; }
+	inline double dot(const Vec3 &a, const Vec3 &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+	inline double length2(const Vec3 &v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+	inline Vec3 cross(const Vec3 &a, const Vec3 &b)
+	{
+		return {
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x};
+	}
+	inline double distance2(const Vec3 &a, const Vec3 &b)
+	{
+		const double dx = a.x - b.x;
+		const double dy = a.y - b.y;
+		const double dz = a.z - b.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+
+	inline double tetra_signed_volume(const Vec3 &p1, const Vec3 &p2, const Vec3 &p3, const Vec3 &p4)
+	{
+		return dot(p2 - p1, cross(p3 - p1, p4 - p1)) / 6.0;
+	}
+
+	double point_segment_squared_distance(const Vec3 &point, const Vec3 &v0, const Vec3 &v1)
+	{
+		const double l2 = distance2(v0, v1);
+		const double t = dot(point - v0, v1 - v0);
+		if (t <= 0.0 || l2 == 0.0)
+			return distance2(point, v0);
+		else if (t > l2)
+			return distance2(point, v1);
+		const double lambda1 = t / l2;
+		const double lambda0 = 1.0 - lambda1;
+		const Vec3 closest_point = lambda0 * v0 + lambda1 * v1;
+		return distance2(point, closest_point);
+	}
+
+	double cos_angle(const Vec3 &a, const Vec3 &b)
+	{
+		const double lab = std::sqrt(length2(a) * length2(b));
+		double result = (lab > 1e-50) ? (dot(a, b) / lab) : 1.0;
+		// Numerical precision problems may produce normalized dot products
+		// slightly outside [-1, 1].
+		if (result < -1.0)
+			result = -1.0;
+		else if (result > 1.0)
+			result = 1.0;
+		return result;
 	}
 
 	// calculate twice signed area of triangle (0,0)-(x1,y1)-(x2,y2)
@@ -423,7 +475,7 @@ namespace
 		if (signc != signa)
 			return false;
 		double sum = a + b + c;
-		geo_assert(sum != 0); // if the SOS signs match and are nonzero, there's no way all of a, b, and c are zero.
+		assert(sum != 0); // if the SOS signs match and are nonzero, there's no way all of a, b, and c are zero.
 		a /= sum;
 		b /= sum;
 		c /= sum;
@@ -432,31 +484,22 @@ namespace
 
 	// -----------------------------------------------------------------------------
 
-	// \brief Computes the (approximate) orientation predicate in 2d.
-	// \details Computes the sign of the (approximate) signed volume of
-	//  the triangle p0, p1, p2
-	// \param[in] p0 first vertex of the triangle
-	// \param[in] p1 second vertex of the triangle
-	// \param[in] p2 third vertex of the triangle
-	// \retval POSITIVE if the triangle is oriented positively
-	// \retval ZERO if the triangle is flat
-	// \retval NEGATIVE if the triangle is oriented negatively
-	// \todo check whether orientation is inverted as compared to
-	//   Shewchuk's version.
-	// Taken from geogram/src/lib/geogram/delaunay/delaunay_2d.cpp
-	inline GEO::Sign orient_2d_inexact(GEO::vec2 p0, GEO::vec2 p1, GEO::vec2 p2)
+	// Sign of the (approximate) signed area of the triangle p0, p1, p2.
+	// Originally taken from geogram/src/lib/geogram/delaunay/delaunay_2d.cpp
+	inline int orient_2d_inexact(
+		const double p0x, const double p0y,
+		const double p1x, const double p1y,
+		const double p2x, const double p2y)
 	{
-		double a11 = p1[0] - p0[0];
-		double a12 = p1[1] - p0[1];
+		double a11 = p1x - p0x;
+		double a12 = p1y - p0y;
 
-		double a21 = p2[0] - p0[0];
-		double a22 = p2[1] - p0[1];
+		double a21 = p2x - p0x;
+		double a22 = p2y - p0y;
 
-		double Delta = GEO::det2x2(
-			a11, a12,
-			a21, a22);
+		double Delta = a11 * a22 - a12 * a21;
 
-		return GEO::geo_sgn(Delta);
+		return (Delta > 0) ? 1 : ((Delta < 0) ? -1 : 0);
 	}
 
 	// -----------------------------------------------------------------------------
@@ -464,39 +507,27 @@ namespace
 	/**
 	 * @brief      { Intersect a vertical ray with a triangle }
 	 *
-	 * @param[in]  M     { Mesh containing the triangle to intersect }
-	 * @param[in]  f     { Index of the facet to intersect }
+	 * @param[in]  V     { Mesh vertices }
+	 * @param[in]  F     { Mesh triangles }
+	 * @param[in]  f     { Index of the triangle to intersect }
 	 * @param[in]  q     { Query point (only XY coordinates are used) }
 	 * @param[out] z     { Intersection }
 	 *
 	 * @return     { {-1,0,1} depending on the sign of the intersection. }
 	 */
 	template <int X = 0, int Y = 1, int Z = 2>
-	int intersect_ray_z(const GEO::Mesh &M, GEO::index_t f, const GEO::vec3 &q, double &z)
+	int intersect_ray_z(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int f, const Eigen::RowVector3d &q, double &z)
 	{
-		using namespace GEO;
-
-		index_t c = M.facets.corners_begin(f);
-		const vec3 &p1 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
-		const vec3 &p2 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
-		const vec3 &p3 = Geom::mesh_vertex(M, M.facet_corners.vertex(c));
+		const auto p1 = V.row(F(f, 0));
+		const auto p2 = V.row(F(f, 1));
+		const auto p3 = V.row(F(f, 2));
 
 		double u, v, w;
 		if (point_in_triangle_2d(
 				q[X], q[Y], p1[X], p1[Y], p2[X], p2[Y], p3[X], p3[Y], u, v, w))
 		{
 			z = u * p1[Z] + v * p2[Z] + w * p3[Z];
-			auto sign = orient_2d_inexact(vec2(p1[X], p1[Y]), vec2(p2[X], p2[Y]), vec2(p3[X], p3[Y]));
-			switch (sign)
-			{
-			case GEO::POSITIVE:
-				return 1;
-			case GEO::NEGATIVE:
-				return -1;
-			case GEO::ZERO:
-			default:
-				return 0;
-			}
+			return orient_2d_inexact(p1[X], p1[Y], p2[X], p2[Y], p3[X], p3[Y]);
 		}
 
 		return 0;
@@ -504,35 +535,199 @@ namespace
 
 	// -----------------------------------------------------------------------------
 
-	void compute_sign(const GEO::Mesh &M, const GEO::MeshFacetsAABB &aabb_tree,
+	// Bounding volume hierarchy over the triangles of (V, F), used to cull
+	// triangles in signed_squared_distances. Culling never changes a result:
+	// distances are the exact minimum of the same per-triangle values (a box is
+	// skipped only if it is farther than the current minimum by more than any
+	// rounding error), and the ray test visits exactly the triangles whose
+	// closed xy bounding box contains the query point, which are the triangles
+	// geogram's AABB box query used to report.
+	class TriangleBVH
+	{
+	public:
+		TriangleBVH(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+			: V_(V), F_(F), boxes_(F.rows()), order_(F.rows())
+		{
+			std::vector<std::array<double, 3>> centroids(F.rows());
+			for (int f = 0; f < F.rows(); ++f)
+			{
+				for (int d = 0; d < 3; ++d)
+				{
+					const double a = V(F(f, 0), d), b = V(F(f, 1), d), c = V(F(f, 2), d);
+					boxes_[f].min[d] = std::min(a, std::min(b, c));
+					boxes_[f].max[d] = std::max(a, std::max(b, c));
+					centroids[f][d] = (a + b + c) / 3;
+				}
+			}
+			std::iota(order_.begin(), order_.end(), 0);
+			nodes_.reserve(2 * F.rows());
+			if (F.rows() > 0)
+				build(0, F.rows(), centroids);
+		}
+
+		/// Calls fn(f) for every triangle f whose closed xy bounding box contains (x, y).
+		template <typename Fn>
+		void for_each_in_xy_column(const double x, const double y, Fn &&fn) const
+		{
+			if (nodes_.empty())
+				return;
+			std::vector<int> stack = {0};
+			while (!stack.empty())
+			{
+				const Node &node = nodes_[stack.back()];
+				stack.pop_back();
+				if (!contains_xy(node.box, x, y))
+					continue;
+				if (node.left < 0)
+				{
+					for (int i = node.begin; i < node.end; ++i)
+						if (contains_xy(boxes_[order_[i]], x, y))
+							fn(order_[i]);
+				}
+				else
+				{
+					stack.push_back(node.right);
+					stack.push_back(node.left);
+				}
+			}
+		}
+
+		/// Minimum over all triangles of point_triangle_squared_distance(p, triangle).
+		double min_squared_distance(const Eigen::RowVector3d &p, const double margin) const
+		{
+			double best = std::numeric_limits<double>::max();
+			if (nodes_.empty())
+				return best;
+			std::vector<int> stack = {0};
+			while (!stack.empty())
+			{
+				const Node &node = nodes_[stack.back()];
+				stack.pop_back();
+				if (box_squared_distance(node.box, p) > best + margin)
+					continue;
+				if (node.left < 0)
+				{
+					for (int i = node.begin; i < node.end; ++i)
+					{
+						const int f = order_[i];
+						const Eigen::RowVector3d v0 = V_.row(F_(f, 0)), v1 = V_.row(F_(f, 1)), v2 = V_.row(F_(f, 2));
+						const double d = polyfem::mesh::point_triangle_squared_distance(p.data(), v0.data(), v1.data(), v2.data());
+						if (d < best)
+							best = d;
+					}
+				}
+				else
+				{
+					// Visit the closest child first.
+					const double dl = box_squared_distance(nodes_[node.left].box, p);
+					const double dr = box_squared_distance(nodes_[node.right].box, p);
+					if (dl < dr)
+					{
+						stack.push_back(node.right);
+						stack.push_back(node.left);
+					}
+					else
+					{
+						stack.push_back(node.left);
+						stack.push_back(node.right);
+					}
+				}
+			}
+			return best;
+		}
+
+	private:
+		struct Box
+		{
+			std::array<double, 3> min, max;
+		};
+
+		struct Node
+		{
+			Box box;
+			int begin, end;
+			int left = -1, right = -1;
+		};
+
+		static bool contains_xy(const Box &box, const double x, const double y)
+		{
+			return box.min[0] <= x && x <= box.max[0] && box.min[1] <= y && y <= box.max[1];
+		}
+
+		static double box_squared_distance(const Box &box, const Eigen::RowVector3d &p)
+		{
+			double result = 0;
+			for (int d = 0; d < 3; ++d)
+			{
+				const double delta = std::max(0.0, std::max(box.min[d] - p[d], p[d] - box.max[d]));
+				result += delta * delta;
+			}
+			return result;
+		}
+
+		int build(const int begin, const int end, const std::vector<std::array<double, 3>> &centroids)
+		{
+			const int id = nodes_.size();
+			nodes_.emplace_back();
+			Box box = boxes_[order_[begin]];
+			for (int i = begin + 1; i < end; ++i)
+			{
+				for (int d = 0; d < 3; ++d)
+				{
+					box.min[d] = std::min(box.min[d], boxes_[order_[i]].min[d]);
+					box.max[d] = std::max(box.max[d], boxes_[order_[i]].max[d]);
+				}
+			}
+			nodes_[id].box = box;
+			nodes_[id].begin = begin;
+			nodes_[id].end = end;
+			if (end - begin <= 4)
+				return id;
+
+			int axis = 0;
+			for (int d = 1; d < 3; ++d)
+				if (box.max[d] - box.min[d] > box.max[axis] - box.min[axis])
+					axis = d;
+			const int mid = begin + (end - begin) / 2;
+			std::nth_element(order_.begin() + begin, order_.begin() + mid, order_.begin() + end,
+							 [&](const int a, const int b) { return centroids[a][axis] < centroids[b][axis]; });
+			const int left = build(begin, mid, centroids);
+			const int right = build(mid, end, centroids);
+			nodes_[id].left = left;
+			nodes_[id].right = right;
+			return id;
+		}
+
+		const Eigen::MatrixXd &V_;
+		const Eigen::MatrixXi &F_;
+		std::vector<Box> boxes_;
+		std::vector<int> order_;
+		std::vector<Node> nodes_;
+	};
+
+	// -----------------------------------------------------------------------------
+
+	// Flips the sign of D for every point inside the surface (V, F). The inside
+	// test casts a vertical ray from each point and counts the crossings below
+	// it, testing the triangles whose closed xy bounding box contains the point.
+	void compute_sign(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const TriangleBVH &bvh,
 					  const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 	{
 		assert(P.cols() == 3);
 		assert(D.size() == P.rows());
 
-		GEO::vec3 min_corner, max_corner;
-		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-
-#pragma omp parallel for
 		for (int k = 0; k < P.rows(); ++k)
 		{
-			GEO::vec3 center(P(k, 0), P(k, 1), P(k, 2));
-
-			GEO::Box box;
-			box.xyz_min[0] = box.xyz_max[0] = center[0];
-			box.xyz_min[1] = box.xyz_max[1] = center[1];
-			box.xyz_min[2] = min_corner[2];
-			box.xyz_max[2] = max_corner[2];
+			const Eigen::RowVector3d center = P.row(k);
 
 			std::vector<std::pair<double, int>> inter;
-			auto action = [&M, &inter, &center](GEO::index_t f) {
+			bvh.for_each_in_xy_column(center[0], center[1], [&](const int f) {
 				double z;
-				if (int s = intersect_ray_z(M, f, center, z))
+				if (int s = intersect_ray_z(V, F, f, center, z))
 				{
 					inter.emplace_back(z, s);
 				}
-			};
-			aabb_tree.compute_bbox_facet_bbox_intersections(box, action);
+			});
 			std::sort(inter.begin(), inter.end());
 
 			std::vector<double> reduced;
@@ -635,11 +830,26 @@ void polyfem::mesh::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Ei
 void polyfem::mesh::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 											 const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 {
-	GEO::Mesh M;
-	to_geogram_mesh(V, F, M);
-	GEO::MeshFacetsAABB aabb_tree(M);
-	compute_unsigned_distance_field(M, aabb_tree, P, D);
-	compute_sign(M, aabb_tree, P, D);
+	assert(V.cols() == 3);
+	assert(F.cols() == 3);
+	assert(P.cols() == 3);
+	const TriangleBVH bvh(V, F);
+
+	// Pruning slack, far above the rounding error of the distances (which is
+	// of the order of 1e-15 times the squared size of the scene).
+	double scale2 = 0;
+	if (V.rows() > 0 && P.rows() > 0)
+	{
+		const Eigen::RowVector3d lo = V.colwise().minCoeff().cwiseMin(P.colwise().minCoeff());
+		const Eigen::RowVector3d hi = V.colwise().maxCoeff().cwiseMax(P.colwise().maxCoeff());
+		scale2 = (hi - lo).squaredNorm();
+	}
+	const double margin = 1e-10 * scale2;
+
+	D.resize(P.rows());
+	for (int i = 0; i < P.rows(); ++i)
+		D(i) = bvh.min_squared_distance(P.row(i), margin);
+	compute_sign(V, F, bvh, P, D);
 }
 
 // -----------------------------------------------------------------------------
@@ -657,7 +867,7 @@ double polyfem::mesh::signed_volume(const Eigen::MatrixXd &V, const Eigen::Matri
 		{
 			t[lv] = V.row(F(f, lv));
 		}
-		double vol = GEO::Geom::tetra_signed_volume(t[0].data(), t[1].data(), t[2].data(), t[3].data());
+		double vol = tetra_signed_volume(vec3(t[0].data()), vec3(t[1].data()), vec3(t[2].data()), vec3(t[3].data()));
 		volume_total += vol;
 	}
 	return -volume_total;
@@ -898,11 +1108,10 @@ namespace
 
 	bool approx_aligned(const double *a_, const double *b_, const double *p_, const double *q_, double tol = 1e-6)
 	{
-		using namespace GEO;
-		vec3 a(a_), b(b_), p(p_), q(q_);
-		double da = std::sqrt(Geom::point_segment_squared_distance(a, p, q));
-		double db = std::sqrt(Geom::point_segment_squared_distance(b, p, q));
-		double cos_theta = Geom::cos_angle(b - a, p - q);
+		const Vec3 a = vec3(a_), b = vec3(b_), p = vec3(p_), q = vec3(q_);
+		double da = std::sqrt(point_segment_squared_distance(a, p, q));
+		double db = std::sqrt(point_segment_squared_distance(b, p, q));
+		double cos_theta = cos_angle(b - a, p - q);
 		return (da < tol && db < tol && std::abs(std::abs(cos_theta) - 1.0) < tol);
 	}
 
