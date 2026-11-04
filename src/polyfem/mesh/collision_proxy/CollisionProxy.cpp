@@ -267,7 +267,9 @@ namespace polyfem::mesh
 					Eigen::RowVector3d bc;
 					igl::barycentric_coordinates(
 						proxy_vertices.row(i), nodes.row(0), nodes.row(1), nodes.row(2), bc);
-					vhat = bc.head<2>();
+					// The P1 reference nodes are (0,0), (1,0), (0,1): the reference
+					// coordinates are the weights of nodes 1 and 2.
+					vhat = bc.tail<2>();
 				}
 				else
 				{
@@ -275,7 +277,8 @@ namespace polyfem::mesh
 					Eigen::RowVector4d bc;
 					igl::barycentric_coordinates(
 						proxy_vertices.row(i), nodes.row(0), nodes.row(1), nodes.row(2), nodes.row(3), bc);
-					vhat = bc.head<3>();
+					// The P1 reference nodes are (0,0,0), (1,0,0), (0,1,0), (0,0,1).
+					vhat = bc.tail<3>();
 				}
 				if (vhat.minCoeff() >= 0 && vhat.maxCoeff() <= 1 && vhat.sum() <= 1)
 				{
