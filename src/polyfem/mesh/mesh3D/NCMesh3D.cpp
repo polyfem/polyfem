@@ -75,17 +75,26 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
-			clear_higher_order_data();
-			std::vector<bool> refine_mask(elements.size(), false);
-			for (int i = 0; i < elements.size(); i++)
-				if (elements[i].is_valid())
-					refine_mask[i] = true;
+			for (int level = 0; level < n_refinement; ++level)
+			{
+				clear_higher_order_data();
+				std::vector<bool> refine_mask(elements.size(), false);
+				for (int i = 0; i < elements.size(); i++)
+					if (elements[i].is_valid())
+						refine_mask[i] = true;
 
-			for (int i = 0; i < refine_mask.size(); i++)
-				if (refine_mask[i])
-					refine_element(i);
+				for (int i = 0; i < refine_mask.size(); i++)
+					if (refine_mask[i])
+						refine_element(i);
+			}
+			// refine_element() invalidates the id maps: rebuild them so that the
+			// mesh can be queried right away (e.g. to apply selections).
+			prepare_mesh();
+		}
 
-			refine(n_refinement - 1, t);
+		void NCMesh3D::stale_index_error() const
+		{
+			log_and_throw_error("NCMesh3D: the mesh was modified without calling prepare_mesh().");
 		}
 
 		bool NCMesh3D::is_boundary_element(const int element_global_id) const
@@ -700,6 +709,9 @@ namespace polyfem
 			}
 
 			refineHistory.push_back(id_full);
+
+			index_prepared = false;
+			adj_prepared = false;
 		}
 		void NCMesh3D::refine_elements(const std::vector<int> &ids)
 		{
@@ -709,6 +721,8 @@ namespace polyfem
 
 			for (int i : full_ids)
 				refine_element(i);
+
+			prepare_mesh();
 		}
 
 		void NCMesh3D::coarsen_element(int id_full)
@@ -751,6 +765,9 @@ namespace polyfem
 				vertices[parent.vertices(v)].add_element(parent_id);
 
 			refineHistory.push_back(parent_id);
+
+			index_prepared = false;
+			adj_prepared = false;
 		}
 
 		void NCMesh3D::mark_boundary()
@@ -1180,6 +1197,9 @@ namespace polyfem
 
 			for (int i = 0; i < v.size(); i++)
 				vertices[v[i]].add_element(id);
+
+			index_prepared = false;
+			adj_prepared = false;
 
 			return id;
 		}
