@@ -1188,8 +1188,9 @@ TEST_CASE("appending a curved mesh to a linear one keeps its nodes aligned", "[m
 		const Mesh3D &source = second ? curved3d : linear3d;
 		for (int le = 0; le < 3; ++le)
 		{
-			const RowVectorNd node = merged3d.edge_node(index, 1, 0).first;
-			const RowVectorNd expected = source.edge_node(reference, 1, 0).first;
+			// The single node of a P2 edge (node indices start at 1).
+			const RowVectorNd node = merged3d.edge_node(index, 1, 1).first;
+			const RowVectorNd expected = source.edge_node(reference, 1, 1).first;
 			CHECK((node - expected).norm() < 1e-12);
 			const RowVectorNd midpoint = (merged->point(index.vertex) + merged->point(merged3d.switch_vertex(index).vertex)) / 2;
 			n_curved += (node - midpoint).norm() > 1e-10;
