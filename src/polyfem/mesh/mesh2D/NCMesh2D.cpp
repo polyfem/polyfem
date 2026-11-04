@@ -442,7 +442,7 @@ namespace polyfem
 			}
 		}
 
-		double line_weight(Eigen::Matrix<double, 2, 2> &e, Eigen::VectorXd &v)
+		double line_weight(const Eigen::Matrix<double, 2, 2> &e, const InlineVector<double, 3> &v)
 		{
 			assert(v.size() == 2);
 			double w1 = (v(0) - e(0, 0)) / (e(1, 0) - e(0, 0));

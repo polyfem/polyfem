@@ -905,8 +905,8 @@ namespace polyfem
 						ids[i] += off;
 				return ids;
 			};
-			const auto offset_set = [](const std::set<int> &ids, const int off) {
-				std::set<int> result;
+			const auto offset_set = [](const SortedIds &ids, const int off) {
+				SortedIds result;
 				for (const int id : ids)
 					result.insert(id + off);
 				return result;
