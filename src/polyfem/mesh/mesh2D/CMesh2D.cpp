@@ -193,7 +193,7 @@ namespace polyfem
 			edge_nodes_.resize(n_edges());
 			face_nodes_.resize(n_faces());
 
-			orders_.resize(n_faces(), 1);
+			orders_.setOnes(n_faces(), 1);
 
 			assert(nodes.size() == n_faces());
 
@@ -317,7 +317,7 @@ namespace polyfem
 				// unsupported
 				else
 				{
-					assert(false);
+					log_and_throw_error("Unsupported higher-order triangle with {} nodes (supported: 3, 6, 10).", nodes_ids.size());
 				}
 			}
 

@@ -458,7 +458,7 @@ namespace polyfem
 			face_nodes_.resize(n_faces());
 			cell_nodes_.resize(n_cells());
 
-			orders_.resize(n_cells(), 1);
+			orders_.setOnes(n_cells(), 1);
 
 			const auto attach_p2 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
 				auto &n = edge_nodes_[index.edge];
@@ -946,7 +946,7 @@ namespace polyfem
 				// unsupported
 				else
 				{
-					assert(false);
+					log_and_throw_error("Unsupported higher-order tetrahedron with {} nodes (supported: 4, 10, 20, 35).", nodes_ids.size());
 				}
 			}
 		}

@@ -1,4 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
+#include <numeric>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
@@ -1240,5 +1242,35 @@ TEST_CASE("refining mixed triangle and quad meshes keeps the triangles", "[mesh_
 		CHECK(n_triangles == 4);
 		CHECK(area == Catch::Approx(1.5));
 		CHECK(n_boundary == 10);
+	}
+}
+
+TEST_CASE("unsupported higher-order elements are rejected", "[mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		const int n_corners = dim + 1;
+		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(n_corners, dim);
+		for (int d = 0; d < dim; ++d)
+			vertices(d + 1, d) = 1;
+		Eigen::MatrixXi cells(1, n_corners);
+		for (int i = 0; i < n_corners; ++i)
+			cells(0, i) = i;
+
+		// One node more than the linear element.
+		MeshData data(vertices, cells);
+		data.higher_order_nodes.resize(n_corners + 1, dim);
+		data.higher_order_nodes.topRows(n_corners) = vertices;
+		data.higher_order_nodes.row(n_corners) = vertices.colwise().mean();
+		data.higher_order_connectivity = {std::vector<int>(n_corners + 1)};
+		std::iota(data.higher_order_connectivity[0].begin(), data.higher_order_connectivity[0].end(), 0);
+		REQUIRE_THROWS_WITH(Mesh::create(data), Catch::Matchers::ContainsSubstring("Unsupported higher-order"));
+
+		// The linear connectivity is accepted and gives linear orders.
+		data.higher_order_nodes = vertices;
+		data.higher_order_connectivity[0].pop_back();
+		const auto mesh = Mesh::create(data);
+		CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
 	}
 }
