@@ -870,26 +870,102 @@ namespace polyfem
 		void NCMesh3D::append(const Mesh &mesh)
 		{
 			assert(typeid(mesh) == typeid(NCMesh3D));
+			const NCMesh3D &other = dynamic_cast<const NCMesh3D &>(mesh);
+			const bool had_boundary_ids = has_boundary_ids(), other_has_boundary_ids = other.has_boundary_ids();
+			const bool had_body_ids = has_body_ids(), other_has_body_ids = other.has_body_ids();
+
 			Mesh::append(mesh);
 
-			const NCMesh3D &mesh3d = dynamic_cast<const NCMesh3D &>(mesh);
+			// Merge the whole structure of the other mesh (refinement hierarchy,
+			// hanging nodes and per-entity labels included), offsetting its ids.
+			const int v_off = vertices.size(), e_off = edges.size(), f_off = faces.size(), el_off = elements.size();
+			const auto offset = [](Eigen::VectorXi ids, const int off) {
+				for (int i = 0; i < ids.size(); ++i)
+					if (ids[i] >= 0)
+						ids[i] += off;
+				return ids;
+			};
+			const auto offset_set = [](const std::set<int> &ids, const int off) {
+				std::set<int> result;
+				for (const int id : ids)
+					result.insert(id + off);
+				return result;
+			};
+			const auto copy_boundaries = [&](const std::vector<ncBoundary> &from, std::vector<ncBoundary> &to) {
+				to.reserve(to.size() + from.size());
+				for (const ncBoundary &b : from)
+				{
+					ncBoundary copy = b;
+					copy.vertices = offset(b.vertices, v_off);
+					copy.elem_list = offset_set(b.elem_list, el_off);
+					copy.global_ids.clear();
+					to.push_back(std::move(copy)); // leaders/followers are rebuilt by prepare_mesh()
+				}
+			};
 
-			const int n_v = n_vertices();
-			const int n_f = n_cells();
-
-			vertices.reserve(n_v + mesh3d.n_vertices());
-			for (int i = 0; i < mesh3d.n_vertices(); i++)
+			vertices.reserve(v_off + other.vertices.size());
+			for (const ncVert &v : other.vertices)
 			{
-				vertices.emplace_back(mesh3d.vertices[i].pos);
+				vertices.push_back(v); // edge/face/weight are rebuilt by prepare_mesh()
+				vertices.back().elem_list = offset_set(v.elem_list, el_off);
 			}
-			for (int i = 0; i < mesh3d.n_cells(); i++)
+			copy_boundaries(other.edges, edges);
+			copy_boundaries(other.faces, faces);
+
+			elements.reserve(el_off + other.elements.size());
+			for (const ncElem &el : other.elements)
 			{
-				Eigen::Vector4i cell = mesh3d.elements[i].vertices;
-				cell = cell.array() + n_v;
-				add_element(cell, -1);
+				ncElem copy = el;
+				copy.geom_vertices = offset(el.geom_vertices, v_off);
+				copy.vertices = offset(el.vertices, v_off);
+				copy.edges = offset(el.edges, e_off);
+				copy.faces = offset(el.faces, f_off);
+				copy.children = offset(el.children, el_off);
+				if (copy.parent >= 0)
+					copy.parent += el_off;
+				elements.push_back(std::move(copy));
 			}
 
+			for (const auto &[key, value] : other.midpointMap)
+				midpointMap[Eigen::Vector2i(key.array() + v_off)] = value + v_off;
+			for (const auto &[key, value] : other.edgeMap)
+				edgeMap[Eigen::Vector2i(key.array() + v_off)] = value + e_off;
+			for (const auto &[key, value] : other.faceMap)
+				faceMap[Eigen::Vector3i(key.array() + v_off)] = value + f_off;
+			for (const int id : other.refineHistory)
+				refineHistory.push_back(id + el_off);
+			n_elements += other.n_elements;
+
+			index_prepared = false;
+			adj_prepared = false;
 			prepare_mesh();
+
+			// The per-entity labels are authoritative; entities of a mesh that had
+			// no labels get the defaults, and the base-class arrays mirror them.
+			if (had_boundary_ids || other_has_boundary_ids)
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					ncBoundary &face = faces[valid_to_all_face(f)];
+					const bool labeled = valid_to_all_face(f) < f_off ? had_boundary_ids : other_has_boundary_ids;
+					if (!labeled)
+						face.boundary_id = Mesh::get_default_boundary_id(f);
+					boundary_ids_[f] = face.boundary_id;
+				}
+			}
+			if (had_body_ids || other_has_body_ids)
+			{
+				body_ids_.resize(n_cells());
+				for (int c = 0; c < n_cells(); ++c)
+				{
+					ncElem &element = elements[valid_to_all_elem(c)];
+					const bool labeled = valid_to_all_elem(c) < el_off ? had_body_ids : other_has_body_ids;
+					if (!labeled)
+						element.body_id = 0;
+					body_ids_[c] = element.body_id;
+				}
+			}
 		}
 
 		std::unique_ptr<Mesh> NCMesh3D::copy() const

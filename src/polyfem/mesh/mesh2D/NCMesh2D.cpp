@@ -555,26 +555,89 @@ namespace polyfem
 		void NCMesh2D::append(const Mesh &mesh)
 		{
 			assert(typeid(mesh) == typeid(NCMesh2D));
+			const NCMesh2D &other = dynamic_cast<const NCMesh2D &>(mesh);
+			const bool had_boundary_ids = has_boundary_ids(), other_has_boundary_ids = other.has_boundary_ids();
+			const bool had_body_ids = has_body_ids(), other_has_body_ids = other.has_body_ids();
+
 			Mesh::append(mesh);
 
-			const NCMesh2D &mesh2d = dynamic_cast<const NCMesh2D &>(mesh);
+			// Merge the whole structure of the other mesh (refinement hierarchy,
+			// hanging nodes and per-entity labels included), offsetting its ids.
+			const int v_off = vertices.size(), e_off = edges.size(), el_off = elements.size();
+			const auto offset = [](Eigen::VectorXi ids, const int off) {
+				for (int i = 0; i < ids.size(); ++i)
+					if (ids[i] >= 0)
+						ids[i] += off;
+				return ids;
+			};
 
-			const int n_v = n_vertices();
-			const int n_f = n_faces();
+			vertices.reserve(v_off + other.vertices.size());
+			for (const ncVert &v : other.vertices)
+				vertices.push_back(v); // edge/weight are rebuilt by prepare_mesh()
 
-			vertices.reserve(n_v + mesh2d.n_vertices());
-			for (int i = 0; i < mesh2d.n_vertices(); i++)
+			edges.reserve(e_off + other.edges.size());
+			for (const ncBoundary &e : other.edges)
 			{
-				vertices.emplace_back(mesh2d.vertices[i].pos);
-			}
-			for (int i = 0; i < mesh2d.n_faces(); i++)
-			{
-				Eigen::Vector3i face = mesh2d.elements[i].vertices;
-				face = face.array() + n_v;
-				add_element(face, -1);
+				ncBoundary copy = e;
+				copy.vertices = offset(e.vertices, v_off);
+				copy.elem_list.clear();
+				for (const int el : e.elem_list)
+					copy.elem_list.insert(el + el_off);
+				copy.global_ids.clear();
+				edges.push_back(std::move(copy)); // leader/followers are rebuilt by prepare_mesh()
 			}
 
+			elements.reserve(el_off + other.elements.size());
+			for (const ncElem &el : other.elements)
+			{
+				ncElem copy = el;
+				copy.geom_vertices = offset(el.geom_vertices, v_off);
+				copy.vertices = offset(el.vertices, v_off);
+				copy.edges = offset(el.edges, e_off);
+				copy.children = offset(el.children, el_off);
+				if (copy.parent >= 0)
+					copy.parent += el_off;
+				elements.push_back(std::move(copy));
+			}
+
+			for (const auto &[key, value] : other.midpointMap)
+				midpointMap[Eigen::Vector2i(key.array() + v_off)] = value + v_off;
+			for (const auto &[key, value] : other.edgeMap)
+				edgeMap[Eigen::Vector2i(key.array() + v_off)] = value + e_off;
+			for (const int id : other.refineHistory)
+				refineHistory.push_back(id + el_off);
+			n_elements += other.n_elements;
+
+			index_prepared = false;
+			adj_prepared = false;
 			prepare_mesh();
+
+			// The per-entity labels are authoritative; entities of a mesh that had
+			// no labels get the defaults, and the base-class arrays mirror them.
+			if (had_boundary_ids || other_has_boundary_ids)
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					ncBoundary &edge = edges[valid_to_all_edge(e)];
+					const bool labeled = valid_to_all_edge(e) < e_off ? had_boundary_ids : other_has_boundary_ids;
+					if (!labeled)
+						edge.boundary_id = Mesh::get_default_boundary_id(e);
+					boundary_ids_[e] = edge.boundary_id;
+				}
+			}
+			if (had_body_ids || other_has_body_ids)
+			{
+				body_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					ncElem &element = elements[valid_to_all_elem(f)];
+					const bool labeled = valid_to_all_elem(f) < el_off ? had_body_ids : other_has_body_ids;
+					if (!labeled)
+						element.body_id = 0;
+					body_ids_[f] = element.body_id;
+				}
+			}
 		}
 
 		std::unique_ptr<Mesh> NCMesh2D::copy() const

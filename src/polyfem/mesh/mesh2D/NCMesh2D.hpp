@@ -260,7 +260,11 @@ namespace polyfem
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
 
-			int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; };
+			int get_boundary_id(const int primitive) const override
+			{
+				// Without boundary ids, use the Mesh defaults (boundary: max int, interior: -1).
+				return has_boundary_ids() ? edges[valid_to_all_edge(primitive)].boundary_id : get_default_boundary_id(primitive);
+			};
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
 
 			// Navigation wrapper
