@@ -132,6 +132,12 @@ namespace polyfem::mesh
 		{
 			if (mesh->has_boundary_ids() && surface_selections.empty())
 				log_and_throw_error("Unable to refine a mesh with stored surface selections; provide an explicit surface_selection to recompute them after refinement.");
+			if (mesh->has_node_ids() && !is_param_valid(j_mesh, "point_selection"))
+				log_and_throw_error("Unable to refine a mesh with stored point selections; provide an explicit point_selection to recompute them after refinement.");
+			if (mesh->has_geometry_ids() && !is_param_valid(j_mesh, "geometry_selection"))
+				log_and_throw_error("Unable to refine a mesh with stored geometry selections; provide an explicit geometry_selection to recompute them after refinement.");
+			if (mesh->orders().size() > 0 && mesh->orders().maxCoeff() > 1)
+				logger().warn("Refinement drops the higher-order geometry of the mesh; the refined mesh is linear.");
 
 			// Check if the stored volume selection is uniform.
 			assert(mesh->n_elements() > 0);

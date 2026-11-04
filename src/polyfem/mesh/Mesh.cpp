@@ -691,6 +691,19 @@ namespace polyfem::mesh
 		transform_higher_order_data(A, b);
 	}
 
+	void Mesh::clear_data_lost_by_refinement()
+	{
+		boundary_ids_.clear();
+		body_ids_.clear();
+		node_ids_.clear();
+		geometry_ids_.clear();
+		orders_.resize(0, 0);
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		clear_higher_order_data();
+	}
+
 	void Mesh::clear_higher_order_data()
 	{
 		higher_order_nodes_.resize(0, 0);

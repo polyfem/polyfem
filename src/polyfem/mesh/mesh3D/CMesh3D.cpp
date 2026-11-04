@@ -147,8 +147,7 @@ namespace polyfem
 			}
 
 			// TODO refine high order mesh!
-			orders_.resize(0, 0);
-			clear_higher_order_data();
+			clear_data_lost_by_refinement();
 			if (mesh_.type == MeshType::TET)
 			{
 				MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
