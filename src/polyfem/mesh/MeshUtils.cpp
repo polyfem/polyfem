@@ -1179,7 +1179,7 @@ int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 		else if (cells.cols() == 8) // hexahedron
 		{
 			insert({{cell(0), cell(1), cell(2), cell(3)}});
-			insert({{cell(1), cell(5), cell(6), cell(3)}});
+			insert({{cell(1), cell(5), cell(6), cell(2)}});
 			insert({{cell(5), cell(4), cell(7), cell(6)}});
 			insert({{cell(0), cell(4), cell(7), cell(3)}});
 			insert({{cell(0), cell(4), cell(5), cell(1)}});

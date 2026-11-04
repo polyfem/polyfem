@@ -639,6 +639,11 @@ TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_uti
 	Eigen::MatrixXi hex_cells(1, 8);
 	hex_cells << 0, 1, 2, 3, 4, 5, 6, 7;
 	CHECK(count_faces(3, hex_cells) == 6);
+	// Two hexes sharing the face (1, 2, 6, 5) of the first one.
+	Eigen::MatrixXi two_hex_cells(2, 8);
+	two_hex_cells << 0, 1, 2, 3, 4, 5, 6, 7,
+		1, 8, 9, 2, 5, 10, 11, 6;
+	CHECK(count_faces(3, two_hex_cells) == 11);
 
 	Eigen::MatrixXi unsupported_cells(1, 5);
 	unsupported_cells << 0, 1, 2, 3, 4;
@@ -1302,4 +1307,29 @@ TEST_CASE("mesh nodes place lazily created nodes at their primitive", "[mesh_tes
 	}
 	CHECK(nodes.num_edge_nodes() == mesh->n_edges());
 	CHECK(nodes.num_face_nodes() == mesh->n_faces());
+}
+
+TEST_CASE("element boxes of meshes with negative coordinates", "[mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(dim + 1, dim);
+		for (int d = 0; d < dim; ++d)
+			vertices(d + 1, d) = 1;
+		vertices.array() -= 5;
+		Eigen::MatrixXi cells(1, dim + 1);
+		for (int i = 0; i <= dim; ++i)
+			cells(0, i) = i;
+		const auto mesh = Mesh::create(MeshData(vertices, cells));
+
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes;
+		mesh->elements_boxes(boxes);
+		REQUIRE(boxes.size() == 1);
+		for (int d = 0; d < dim; ++d)
+		{
+			CHECK(boxes[0][0][d] == -5);
+			CHECK(boxes[0][1][d] == -4);
+		}
+	}
 }
