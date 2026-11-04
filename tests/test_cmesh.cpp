@@ -1205,3 +1205,40 @@ TEST_CASE("appending node ids gives the receiving mesh the default ids", "[mesh_
 	for (int v = 0; v < 6; ++v)
 		CHECK(first->get_node_id(v) == (v < 3 ? -1 : 5));
 }
+
+TEST_CASE("refining mixed triangle and quad meshes keeps the triangles", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(5, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1, 2, 0;
+	Eigen::MatrixXi cells(2, 4);
+	cells << 0, 1, 2, 3,
+		1, 4, 2, -1;
+
+	for (const double t : {0.0, 0.5})
+	{
+		CAPTURE(t);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
+		REQUIRE(mesh->n_elements() == 2);
+		mesh->refine(1, t);
+
+		CHECK(mesh->n_elements() == 8);
+		int n_triangles = 0, n_boundary = 0;
+		double area = 0;
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int n = mesh->n_face_vertices(e);
+			n_triangles += n == 3;
+			for (int j = 0; j < n; ++j)
+			{
+				const RowVectorNd a = mesh->point(mesh->face_vertex(e, j));
+				const RowVectorNd b = mesh->point(mesh->face_vertex(e, (j + 1) % n));
+				area += 0.5 * (a[0] * b[1] - a[1] * b[0]);
+			}
+		}
+		for (int e = 0; e < mesh->n_edges(); ++e)
+			n_boundary += mesh->is_boundary_edge(e);
+		CHECK(n_triangles == 4);
+		CHECK(area == Catch::Approx(1.5));
+		CHECK(n_boundary == 10);
+	}
+}
