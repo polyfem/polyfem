@@ -25,11 +25,10 @@ namespace polyfem
 		public:
 			CMesh2D() = default;
 			virtual ~CMesh2D() = default;
-			// CMesh2D is neither copied nor moved; use copy() to duplicate it.
-			CMesh2D(CMesh2D &&) = delete;
-			CMesh2D &operator=(CMesh2D &&) = delete;
-			CMesh2D(const CMesh2D &) = delete;
-			CMesh2D &operator=(const CMesh2D &) = delete;
+			CMesh2D(CMesh2D &&) = default;
+			CMesh2D &operator=(CMesh2D &&) = default;
+			CMesh2D(const CMesh2D &) = default;
+			CMesh2D &operator=(const CMesh2D &) = default;
 
 			void refine(const int n_refinement, const double t) override;
 
