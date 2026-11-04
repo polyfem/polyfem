@@ -8,6 +8,26 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		/// Non-conforming 2D triangle mesh with hanging nodes, for adaptive
+		/// h-refinement: refine_element() splits a triangle into 4, and the edges
+		/// of a refined neighbor become "followers" of the coarse "leader" edge.
+		///
+		/// The mesh keeps every entity ever created, together with the refinement
+		/// tree: a refined element stays in `elements` (is_refined) and points to
+		/// its children; removed elements become ghosts. Entities therefore have
+		/// two numberings:
+		/// - "all" (raw) ids index the internal arrays and never change;
+		/// - "valid" ids number the current entities (leaf elements and the
+		///   entities they use), in increasing raw-id order. The Mesh interface
+		///   always talks in valid ids; all_to_valid_*() / valid_to_all_*()
+		///   convert between the two.
+		///
+		/// The valid-id maps and the adjacency (hanging-node leaders/followers)
+		/// are rebuilt by prepare_mesh(). Low-level edits (refine_element,
+		/// coarsen_element) mark them stale and every query then throws until
+		/// prepare_mesh() is called; refine(), refine_elements() and append() call
+		/// it themselves. Body and boundary ids are stored per entity and passed
+		/// from a refined entity to its children.
 		class NCMesh2D : public Mesh2D
 		{
 		public:

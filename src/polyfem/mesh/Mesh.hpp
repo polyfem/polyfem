@@ -44,7 +44,34 @@ namespace polyfem
 			UNDEFINED,                     /// For invalid configurations
 		};
 
-		/// Abstract mesh class to capture 2d/3d conforming and non-conforming meshes
+		/// Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.
+		///
+		/// Entities are vertices, edges, faces and (3D) cells, each numbered
+		/// 0..n-1. The *elements* are the top-dimensional entities (faces in 2D,
+		/// cells in 3D) and the *boundary elements* are one dimension lower
+		/// (edges in 2D, faces in 3D). Navigation goes through the Index types of
+		/// Navigation (2D) and Navigation3D (3D).
+		///
+		/// Implementations: CMesh2D/CMesh3D (conforming, any polygon/polyhedron)
+		/// and NCMesh2D/NCMesh3D (simplices with hanging nodes, for adaptive
+		/// refinement). Build one with Mesh::create(MeshData); the entity
+		/// numbering of each implementation is documented on its class.
+		///
+		/// Besides the topology, a mesh stores per-entity labels:
+		/// - body ids (per element, default 0), used to select materials;
+		/// - boundary ids (per boundary element, default max int on the boundary
+		///   and -1 inside), used to select boundary conditions;
+		/// - node ids (per vertex, default -1; per FE node after update_nodes()),
+		///   used by nodal boundary conditions;
+		/// - geometry ids (per element, default 0), used to split multi-body meshes;
+		/// and the optional curved geometry: orders_ (geometric order per
+		/// element), edge/face/cell_nodes_ (extra nodes per entity) and the
+		/// rational weights. in_ordered_* map the current entities back to the
+		/// input vertices.
+		///
+		/// Contracts: prepare_mesh() must be called after modifying the topology
+		/// and before building bases; refine() and append() keep the labels
+		/// consistent as documented on them.
 		class Mesh
 		{
 		protected:
