@@ -285,24 +285,15 @@ TEST_CASE("HYBRID reader validates face vertex indices", "[mesh_test][mesh_data]
 	}
 }
 
-TEST_CASE("Geogram hex import preserves cube edges", "[mesh_test][mesh_data]")
+TEST_CASE("Gmsh-ordered hex import preserves cube edges", "[mesh_test][mesh_data]")
 {
-	State state; // Initialize Geogram.
 	Eigen::MatrixXd vertices(8, 3);
 	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
 		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
-	GEO::Mesh geogram;
-	geogram.vertices.create_vertices(8);
-	for (int i = 0; i < 8; ++i)
-		for (int d = 0; d < 3; ++d)
-			geogram.vertices.point(i)[d] = vertices(i, d);
-	const GEO::index_t cell = geogram.cells.create_cells(1, GEO::MESH_HEX);
-	const std::vector<int> native_corners{1, 0, 2, 3, 5, 4, 6, 7};
-	for (int i = 0; i < 8; ++i)
-		geogram.cells.set_vertex(cell, i, native_corners[i]);
-	geogram.cells.connect();
+	Eigen::MatrixXi cells(1, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7;
 
-	const auto mesh = Mesh::create(MeshReader::from_geogram(geogram));
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
 	REQUIRE(mesh != nullptr);
 	CHECK(mesh->n_elements() == 1);
 	CHECK(mesh->n_faces() == 6);
@@ -712,9 +703,6 @@ TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_uti
 
 TEST_CASE("append_2d", "[mesh_test]")
 {
-	// Used to init geogram
-	State state;
-
 	const std::string path = POLYFEM_DATA_DIR;
 	const io::FileSystemIO resources(POLYFEM_DATA_DIR);
 	auto m1 = MeshLoader(resources).load_fem("contact/meshes/2D/arch/largeArch.01.obj");

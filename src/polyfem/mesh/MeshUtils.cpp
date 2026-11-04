@@ -18,23 +18,9 @@
 #include <limits>
 
 #include <igl/PI.h>
-#include <geogram/mesh/mesh_geometry.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem::utils;
-
-bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
-{
-	if (M.vertices.dimension() == 2)
-		return true;
-
-	assert(M.vertices.dimension() == 3);
-	GEO::vec3 min_corner, max_corner;
-	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-	const double diff = (max_corner[2] - min_corner[2]);
-
-	return fabs(diff) < tol;
-}
 
 bool polyfem::mesh::is_planar(const Eigen::MatrixXd &V, const double tol)
 {

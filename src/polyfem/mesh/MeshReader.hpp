@@ -5,11 +5,6 @@
 #include <filesystem>
 #include <istream>
 
-namespace GEO
-{
-	class Mesh;
-}
-
 namespace polyfem::mesh
 {
 	class SurfaceMeshData
@@ -32,7 +27,6 @@ namespace polyfem::mesh
 		static MeshData read_hybrid(std::istream &input, const std::string &description);
 		/// Reads a 2D polygonal mesh (planar OBJ) or a single polyhedron given by its boundary (non-planar OBJ).
 		static MeshData read_obj(std::istream &input, const std::string &description);
-		static MeshData from_geogram(GEO::Mesh &mesh);
 
 		/// @param keep_volume For a 3D tet mesh, keep every vertex and the tets,
 		///        and index the boundary faces into the full vertex set.

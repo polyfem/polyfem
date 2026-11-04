@@ -5,8 +5,6 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <geogram/mesh/mesh.h>
-
 #include <igl/read_triangle_mesh.h>
 
 #include <algorithm>
@@ -33,15 +31,6 @@ namespace polyfem::mesh
 				for (int j = 0; j < elements[i].size(); ++j)
 					result(i, j) = elements[i][j];
 			return result;
-		}
-
-		Eigen::MatrixXd geogram_vertices(const GEO::Mesh &mesh, const int dimension)
-		{
-			Eigen::MatrixXd vertices(mesh.vertices.nb(), dimension);
-			for (int i = 0; i < vertices.rows(); ++i)
-				for (int d = 0; d < dimension; ++d)
-					vertices(i, d) = mesh.vertices.point(i)[d];
-			return vertices;
 		}
 
 		/// Builds MeshData from a polygon soup with 3D vertex positions. A planar
@@ -268,7 +257,7 @@ namespace polyfem::mesh
 
 	MeshData MeshReader::read_obj(std::istream &input, const std::string &description)
 	{
-		// Mirrors the OBJ semantics of the reader previously used (geogram):
+		// Same OBJ semantics as the reader previously used (geogram's):
 		// "v" lines give three coordinates (missing ones are 0, extra ones are
 		// ignored), "f" lines give polygons with at least two corners, and
 		// every other statement (vt, vn, l, g, o, #, ...) is ignored. Lines that
@@ -315,40 +304,6 @@ namespace polyfem::mesh
 		for (int i = 0; i < V.rows(); ++i)
 			V.row(i) = vertices[i];
 		return polygon_soup_to_mesh_data(V, facets);
-	}
-
-	MeshData MeshReader::from_geogram(GEO::Mesh &mesh)
-	{
-		if (!is_planar(mesh) && mesh.cells.nb() != 0)
-		{
-			std::vector<std::vector<int>> elements(mesh.cells.nb());
-			for (int i = 0; i < elements.size(); ++i)
-			{
-				elements[i].resize(mesh.cells.nb_vertices(i));
-				for (int j = 0; j < elements[i].size(); ++j)
-					elements[i][j] = mesh.cells.vertex(i, j);
-				if (mesh.cells.type(i) == GEO::MESH_HEX)
-				{
-					// MeshData uses Gmsh hex ordering; build_topology converts it
-					// back to Geogram ordering when constructing the runtime mesh.
-					std::swap(elements[i][0], elements[i][1]);
-					std::swap(elements[i][4], elements[i][5]);
-				}
-			}
-			return MeshData(geogram_vertices(mesh, 3), padded_elements(elements));
-		}
-
-		std::vector<std::vector<int>> facets(mesh.facets.nb());
-		for (int i = 0; i < facets.size(); ++i)
-		{
-			facets[i].resize(mesh.facets.nb_vertices(i));
-			for (int j = 0; j < facets[i].size(); ++j)
-				facets[i][j] = mesh.facets.vertex(i, j);
-		}
-		const int dimension = std::min<int>(3, mesh.vertices.dimension());
-		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(mesh.vertices.nb(), 3);
-		vertices.leftCols(dimension) = geogram_vertices(mesh, dimension);
-		return polygon_soup_to_mesh_data(vertices, facets);
 	}
 
 	SurfaceMeshData MeshReader::read_msh_surface(const std::filesystem::path &path, const bool keep_volume)

@@ -4,7 +4,6 @@
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/par_for.hpp>
-#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/optimization/Optimizations.hpp>
@@ -269,10 +268,7 @@ namespace polyfem
 	{
 	}
 
-	OptState::OptState()
-	{
-		utils::GeogramUtils::instance().initialize();
-	}
+	OptState::OptState() = default;
 
 	int OptState::run(json input_args, const bool strict_validation)
 	{
@@ -505,8 +501,6 @@ namespace polyfem
 		}
 
 		check_unsupported();
-
-		utils::GeogramUtils::instance().set_logger(adjoint_logger());
 	}
 
 	void OptState::check_unsupported() const

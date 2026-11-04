@@ -3,7 +3,6 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/mesh2D/PolygonMesh.hpp>
 #include <polyfem/mesh/mesh3D/Navigation3D.hpp>
-#include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>
 #include <memory>
@@ -146,9 +145,6 @@ namespace polyfem
 			const Eigen::MatrixXi &tets,
 			Eigen::MatrixXd &surface_vertices,
 			Eigen::MatrixXi &tris);
-
-		/// Determine if the given mesh is planar (2D or tiny z-range).
-		bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
 
 		/// Determine if the given #V x (2|3) vertices are planar (2D or z-range below tol).
 		bool is_planar(const Eigen::MatrixXd &V, const double tol = 1e-5);
