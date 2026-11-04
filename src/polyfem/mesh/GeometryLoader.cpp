@@ -349,6 +349,8 @@ namespace polyfem::mesh
 				const double offset = geometry["array"]["offset"];
 				const VectorNd dimensions = (bbox[1] - bbox[0]);
 				const VectorNi size = geometry["array"]["size"];
+				if (size.size() != dim)
+					log_and_throw_error("mesh_array: \"array/size\" needs one entry per dimension ({}), got {}.", dim, size.size());
 
 				for (int i = 0; i < size[0]; ++i)
 				{
@@ -528,6 +530,8 @@ namespace polyfem::mesh
 					const double offset = geometry["array"]["offset"];
 					const VectorNd dimensions = (bbox[1] - bbox[0]);
 					const VectorNi size = geometry["array"]["size"];
+					if (size.size() != dim)
+						log_and_throw_error("mesh_array: \"array/size\" needs one entry per dimension ({}), got {}.", dim, size.size());
 
 					const int N = size.head(dim).prod();
 					const int nV = vertices.rows(), nCV = codim_vertices.rows(), nCE = codim_edges.rows(), nF = faces.rows(), nT = tets.rows();
@@ -556,7 +560,7 @@ namespace polyfem::mesh
 
 								vertices.middleRows(n * nV, nV) = vertices.topRows(nV).rowwise() + translation;
 								if (nCV)
-									codim_vertices.segment(n * nV, nV) = codim_vertices.head(nV).array() + n * nV;
+									codim_vertices.segment(n * nCV, nCV) = codim_vertices.head(nCV).array() + n * nV;
 								if (nCE)
 									codim_edges.middleRows(n * nCE, nCE) = codim_edges.topRows(nCE).array() + n * nV;
 								if (nF)
