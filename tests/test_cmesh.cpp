@@ -1132,3 +1132,24 @@ TEST_CASE("hex meshes round-trip through MeshData", "[mesh_test][mesh_data]")
 	const auto restored = Mesh::create(data);
 	check_unit_edges(*restored);
 }
+
+TEST_CASE("affine transformations move element kernels", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+	Eigen::MatrixXi cells(1, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7;
+	auto mesh = Mesh::create(MeshData(vertices, cells));
+	auto &mesh3d = dynamic_cast<Mesh3D &>(*mesh);
+
+	MatrixNd A(3, 3);
+	A << 2, 0, 0, 0, 3, 0, 0, 0, 4;
+	VectorNd b(3);
+	b << 10, 20, 30;
+	mesh->apply_affine_transformation(A, b);
+
+	const RowVectorNd expected = (A * Eigen::Vector3d(0.5, 0.5, 0.5) + b).transpose();
+	CHECK((mesh3d.kernel(0) - expected).norm() < 1e-12);
+	CHECK((mesh3d.cell_barycenter(0) - expected).norm() < 1e-12);
+}

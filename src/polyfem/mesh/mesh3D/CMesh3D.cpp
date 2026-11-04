@@ -1180,6 +1180,21 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
+		{
+			Mesh::apply_affine_transformation(A, b);
+			for (auto &element : mesh_.elements)
+			{
+				if (element.v_in_Kernel.size() != 3)
+					continue;
+				VectorNd k(3);
+				k << element.v_in_Kernel[0], element.v_in_Kernel[1], element.v_in_Kernel[2];
+				k = A * k + b;
+				for (int d = 0; d < 3; ++d)
+					element.v_in_Kernel[d] = k[d];
+			}
+		}
+
 		void CMesh3D::set_point(const int global_index, const RowVectorNd &p)
 		{
 			mesh_.points.col(global_index) = p.transpose();
