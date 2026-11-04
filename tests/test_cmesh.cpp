@@ -1333,3 +1333,21 @@ TEST_CASE("element boxes of meshes with negative coordinates", "[mesh_test]")
 		}
 	}
 }
+
+TEST_CASE("boundary quads around an irregular interior vertex are not spline compatible", "[mesh_test]")
+{
+	// A triangle split into 3 quads: the center has valence 3.
+	Eigen::MatrixXd vertices(7, 2);
+	vertices << 0, 0, 1, 0, 0, 1, 0.5, 0, 0.5, 0.5, 0, 0.5, 1.0 / 3, 1.0 / 3;
+	Eigen::MatrixXi cells(3, 4);
+	cells << 0, 3, 6, 5,
+		1, 4, 6, 3,
+		2, 5, 6, 4;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	for (int e = 0; e < mesh->n_elements(); ++e)
+	{
+		CHECK(mesh->elements_tag()[e] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE);
+		CHECK(mesh->is_cube(e));
+		CHECK_FALSE(mesh->is_spline_compatible(e));
+	}
+}
