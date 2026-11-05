@@ -113,8 +113,8 @@ namespace polyfem::mesh
 			if (local_boundary.type() != BoundaryType::TRI)
 				log_and_throw_error("build_collision_proxy() is only implemented for tetrahedra!");
 
-			const basis::ElementBases elm = bases[local_boundary.element_id()];
-			const basis::ElementBases g = geom_bases[local_boundary.element_id()];
+			const basis::ElementBases &elm = bases[local_boundary.element_id()];
+			const basis::ElementBases &g = geom_bases[local_boundary.element_id()];
 			for (int fi = 0; fi < local_boundary.size(); fi++)
 			{
 				const int local_fid = local_boundary.local_primitive_id(fi);
