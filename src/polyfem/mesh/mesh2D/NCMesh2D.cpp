@@ -59,7 +59,6 @@ namespace polyfem
 
 		bool NCMesh2D::is_boundary_element(const int element_global_id) const
 		{
-			assert(index_prepared);
 			for (int le = 0; le < n_face_vertices(element_global_id); le++)
 				if (is_boundary_edge(face_edge(element_global_id, le)))
 					return true;
