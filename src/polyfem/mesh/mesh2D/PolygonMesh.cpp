@@ -149,10 +149,9 @@ namespace polyfem::mesh
 				if (corner_adjacent_facet_[c1] != -1)
 					continue;
 				const int v2 = corner_vertex_[next_corner_around_facet(f1, c1)];
+				// The chain only links each corner to earlier ones, so c2 != c1.
 				for (int c2 = next_corner_around_vertex[c1]; c2 != -1; c2 = next_corner_around_vertex[c2])
 				{
-					if (c2 == c1)
-						continue;
 					const int f2 = c2f[c2];
 					const int c3 = prev_corner_around_facet(f2, c2);
 					if (corner_vertex_[c3] == v2)

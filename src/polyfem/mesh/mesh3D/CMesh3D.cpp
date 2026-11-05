@@ -229,23 +229,9 @@ namespace polyfem
 			});
 
 			// Set cells
+			// MeshData guarantees at least one cell.
 			if (cells.empty())
-			{
-				// Degenerate input without cells: a single empty element whose
-				// kernel is the last vertex.
-				mesh_.faces.resize(0);
-				mesh_.elements.resize(1);
-				Element &cell = mesh_.elements[0];
-				cell.id = 0;
-				cell.fs.resize(0);
-				std::sort(cell.vs.begin(), cell.vs.end());
-				cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
-				cell.v_in_Kernel.push_back(V(nv - 1, 0));
-				cell.v_in_Kernel.push_back(V(nv - 1, 1));
-				cell.v_in_Kernel.push_back(V(nv - 1, 2));
-				mesh_.elements[0].hex = false;
-				mesh_.type = MeshType::TET;
-			}
+				log_and_throw_error("A volume mesh needs at least one cell.");
 			else
 			{
 				const std::vector<std::array<int, 6>> adjacent = connect_cells(cells, nv);
