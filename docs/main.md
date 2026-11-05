@@ -43,7 +43,7 @@ The module supports the following 3 dimensional elements:
 | `Mesh` | Abstract interface: entity counts, geometry, navigation, labels, curved geometry | Labels and curved nodes shared by all meshes |
 | `Mesh2D`, `Mesh3D` | Dimension-specific interface; 2D elements are faces, 3D elements are cells | - |
 | `CMesh2D` | Conforming mesh of arbitrary polygons | `PolygonMesh`: vertices, facets as ranges of corners, facet adjacency and edges |
-| `CMesh3D` | Conforming mesh of tetrahedra, hexahedra, prisms, pyramids and polyhedra | `Mesh3DStorage`: per-entity incidence lists, built from standard cells (`CellConnectivity`) by `MeshProcessing3D` |
+| `CMesh3D` | Conforming mesh of tetrahedra, hexahedra, prisms, pyramids and polyhedra | `Mesh3DStorage`: flat (compressed-row) incidence arrays, built from standard cells (`CellConnectivity`) by `MeshProcessing3D` |
 | `NCMesh2D`, `NCMesh3D` | Triangle/tetrahedral meshes with hanging nodes, for adaptive h-refinement | Refinement tree of elements, edges, faces and vertices |
 | `MeshNodes` | Finite element nodes (vertices, edge/face/cell nodes), created lazily | Packed primitive slots, one block per entity type |
 | `LocalBoundary` | Boundary primitives of one element, used to assemble boundary conditions | - |

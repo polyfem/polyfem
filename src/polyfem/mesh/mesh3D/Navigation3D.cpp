@@ -39,40 +39,40 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 		idx.vertex = M.FV(0, idx.face);
 		idx.edge = M.FE(0, idx.face);
 
-		if (M.elements[hi].fs_flag[idx.element_patch])
+		if (M.cell_fs_flag[hi][idx.element_patch])
 			idx.edge = M.FE(2, idx.face);
 		// get_index_from_element_face_time += timer.getElapsedTime();
 	}
-	else if (M.elements[hi].hex)
+	else if (M.cell_hex[hi])
 	{
 		idx.element = hi;
 		// idx.element_patch = 0;
-		// idx.face = M.elements[hi].fs[idx.element_patch];
+		// idx.face = M.cell_fs[hi][idx.element_patch];
 
-		// idx.vertex = M.elements[hi].vs[0];
+		// idx.vertex = M.cell_vs[hi][0];
 		// idx.face_corner = 0;
-		// idx.edge = M.faces[idx.face].es[0];
+		// idx.edge = M.face_es[idx.face][0];
 
 		vector<uint32_t> fvs, fvs_;
-		fvs.insert(fvs.end(), M.elements[hi].vs.begin(), M.elements[hi].vs.begin() + 4);
+		fvs.insert(fvs.end(), M.cell_vs[hi].begin(), M.cell_vs[hi].begin() + 4);
 		sort(fvs.begin(), fvs.end());
 		idx.element_patch = -1;
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
 			idx.element_patch = i;
-			fvs_ = M.faces[M.elements[hi].fs[i]].vs;
+			fvs_ = M.face_vs[M.cell_fs[hi][i]].to_vector();
 			sort(fvs_.begin(), fvs_.end());
 			if (std::equal(fvs.begin(), fvs.end(), fvs_.begin()))
 				break;
 		}
-		idx.face = M.elements[hi].fs[idx.element_patch];
+		idx.face = M.cell_fs[hi][idx.element_patch];
 
-		idx.vertex = M.elements[hi].vs[0];
-		idx.face_corner = find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
+		idx.vertex = M.cell_vs[hi][0];
+		idx.face_corner = find(M.face_vs[idx.face].begin(), M.face_vs[idx.face].end(), idx.vertex) - M.face_vs[idx.face].begin();
 
-		int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
-		const vector<uint32_t> &ves0 = M.vertices[v0].neighbor_es, &ves1 = M.vertices[v1].neighbor_es;
+		int v0 = idx.vertex, v1 = M.cell_vs[hi][1];
+		const auto ves0 = M.vertex_es[v0], ves1 = M.vertex_es[v1];
 		std::array<uint32_t, 2> sharedes;
 		int num = 1;
 		MeshProcessing3D::set_intersection_own(ves0, ves1, sharedes, num);
@@ -92,24 +92,24 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	// igl::Timer timer; timer.start();
 	Index idx;
 
-	if (hi >= M.elements.size())
-		hi = hi % M.elements.size();
+	if (hi >= M.n_cells())
+		hi = hi % M.n_cells();
 	idx.element = hi;
 
-	if (lf >= M.elements[hi].fs.size())
-		lf = lf % M.elements[hi].fs.size();
+	if (lf >= M.cell_fs[hi].size())
+		lf = lf % M.cell_fs[hi].size();
 	idx.element_patch = lf;
-	idx.face = M.elements[hi].fs[idx.element_patch];
+	idx.face = M.cell_fs[hi][idx.element_patch];
 
-	if (lv >= M.faces[idx.face].vs.size())
-		lv = lv % M.faces[idx.face].vs.size();
+	if (lv >= M.face_vs[idx.face].size())
+		lv = lv % M.face_vs[idx.face].size();
 	idx.face_corner = lv;
-	idx.vertex = M.faces[idx.face].vs[idx.face_corner];
+	idx.vertex = M.face_vs[idx.face][idx.face_corner];
 
 	int ei = idx.face_corner;
-	if (M.elements[hi].fs_flag[idx.element_patch])
-		ei = (idx.face_corner + M.faces[idx.face].vs.size() - 1) % M.faces[idx.face].vs.size();
-	idx.edge = M.faces[idx.face].es[ei];
+	if (M.cell_fs_flag[hi][idx.element_patch])
+		ei = (idx.face_corner + M.face_vs[idx.face].size() - 1) % M.face_vs[idx.face].size();
+	idx.edge = M.face_es[idx.face][ei];
 	// timer.stop();
 	//  get_index_from_element_face_time += timer.getElapsedTime();
 
@@ -158,20 +158,20 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	}
 	else
 	{
-		for (int i = 0; i < M.elements[hi].fs.size(); i++)
+		for (int i = 0; i < M.cell_fs[hi].size(); i++)
 		{
-			const auto &fid = M.elements[hi].fs[i];
-			for (int j = 0; j < M.faces[fid].es.size(); j++)
+			const auto &fid = M.cell_fs[hi][i];
+			for (int j = 0; j < M.face_es[fid].size(); j++)
 			{
-				const auto &eid = M.faces[fid].es[j];
-				assert(M.edges[eid].vs[0] < M.edges[eid].vs[1]);
-				if (M.edges[eid].vs[0] == v0 && M.edges[eid].vs[1] == v1)
+				const auto &eid = M.face_es[fid][j];
+				assert(M.edge_vs[eid][0] < M.edge_vs[eid][1]);
+				if (M.edge_vs[eid][0] == v0 && M.edge_vs[eid][1] == v1)
 				{
 					idx.element_patch = i;
 					idx.face = fid;
 					idx.edge = eid;
-					for (int k = 0; k < M.faces[fid].vs.size(); k++)
-						if (M.faces[fid].vs[k] == idx.vertex)
+					for (int k = 0; k < M.face_vs[fid].size(); k++)
+						if (M.face_vs[fid][k] == idx.vertex)
 							idx.face_corner = k;
 
 					assert(idx.vertex == v0i);
@@ -259,11 +259,11 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	}
 	else
 	{
-		assert(M.elements[idx.element].fs.size() == 4 || M.elements[idx.element].fs.size() == 5);
-		for (int i = 0; i < M.elements[idx.element].fs.size(); i++)
+		assert(M.cell_fs[idx.element].size() == 4 || M.cell_fs[idx.element].size() == 5);
+		for (int i = 0; i < M.cell_fs[idx.element].size(); i++)
 		{
-			const auto fid = M.elements[idx.element].fs[i];
-			const auto &fvid = M.faces[fid].vs;
+			const auto fid = M.cell_fs[idx.element][i];
+			const auto &fvid = M.face_vs[fid];
 			if (fvid.size() != 3)
 				continue;
 			int fv0 = fvid[0], fv1 = fvid[1], fv2 = fvid[2];
@@ -286,8 +286,8 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 
 			for (int j = 0; j < 3; j++)
 			{
-				const auto eid = M.faces[fid].es[j];
-				const auto &veid = M.edges[eid].vs;
+				const auto eid = M.face_es[fid][j];
+				const auto &veid = M.edge_vs[eid];
 				assert(veid[0] < veid[1]);
 				if (veid[0] == v0_ && veid[1] == v1_)
 				{
@@ -331,15 +331,15 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_vertex(co
 	}
 	else
 	{
-		if (idx.vertex == M.edges[idx.edge].vs[0])
-			idx.vertex = M.edges[idx.edge].vs[1];
+		if (idx.vertex == M.edge_vs[idx.edge][0])
+			idx.vertex = M.edge_vs[idx.edge][1];
 		else
-			idx.vertex = M.edges[idx.edge].vs[0];
+			idx.vertex = M.edge_vs[idx.edge][0];
 
-		int &corner = idx.face_corner, n = M.faces[idx.face].vs.size(), corner_1 = (corner - 1 + n) % n, corner1 = (corner + 1) % n;
-		if (M.faces[idx.face].vs[corner1] == idx.vertex)
+		int &corner = idx.face_corner, n = M.face_vs[idx.face].size(), corner_1 = (corner - 1 + n) % n, corner1 = (corner + 1) % n;
+		if (M.face_vs[idx.face][corner1] == idx.vertex)
 			idx.face_corner = corner1;
-		else if (M.faces[idx.face].vs[corner_1] == idx.vertex)
+		else if (M.face_vs[idx.face][corner_1] == idx.vertex)
 			idx.face_corner = corner_1;
 	}
 	// switch_vertex_time += timer.getElapsedTime();
@@ -359,11 +359,11 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_edge(cons
 	}
 	else
 	{
-		int n = M.faces[idx.face].vs.size();
-		if (idx.edge == M.faces[idx.face].es[idx.face_corner])
-			idx.edge = M.faces[idx.face].es[(idx.face_corner - 1 + n) % n];
+		int n = M.face_vs[idx.face].size();
+		if (idx.edge == M.face_es[idx.face][idx.face_corner])
+			idx.edge = M.face_es[idx.face][(idx.face_corner - 1 + n) % n];
 		else
-			idx.edge = M.faces[idx.face].es[idx.face_corner];
+			idx.edge = M.face_es[idx.face][idx.face_corner];
 	}
 	// switch_edge_time += timer.getElapsedTime();
 	return idx;
@@ -395,7 +395,8 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_face(cons
 	}
 	else
 	{
-		const vector<uint32_t> &efs = M.edges[idx.edge].neighbor_fs, &hfs = M.elements[idx.element].fs;
+		const auto efs = M.edge_fs[idx.edge];
+		const auto hfs = M.cell_fs[idx.element];
 		std::array<uint32_t, 2> sharedfs;
 		int num = 2;
 		MeshProcessing3D::set_intersection_own(efs, hfs, sharedfs, num);
@@ -410,7 +411,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_face(cons
 				break;
 			}
 
-		const vector<uint32_t> &fvs = M.faces[idx.face].vs;
+		const auto fvs = M.face_vs[idx.face];
 		for (int i = 0; i < fvs.size(); i++)
 			if (idx.vertex == fvs[i])
 			{
@@ -448,19 +449,19 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_element(c
 	}
 	else
 	{
-		if (M.faces[idx.face].neighbor_hs.size() == 1)
+		if (M.face_hs[idx.face].size() == 1)
 		{
 			idx.element = -1;
 			return idx;
 		}
 		else
 		{
-			if (M.faces[idx.face].neighbor_hs[0] == idx.element)
-				idx.element = M.faces[idx.face].neighbor_hs[1];
+			if (M.face_hs[idx.face][0] == idx.element)
+				idx.element = M.face_hs[idx.face][1];
 			else
-				idx.element = M.faces[idx.face].neighbor_hs[0];
+				idx.element = M.face_hs[idx.face][0];
 
-			const vector<uint32_t> &fs = M.elements[idx.element].fs;
+			const auto fs = M.cell_fs[idx.element];
 			for (int i = 0; i < fs.size(); i++)
 				if (idx.face == fs[i])
 				{
@@ -468,7 +469,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_element(c
 					break;
 				}
 		}
-		// const vector<uint32_t> &fvs = M.faces[idx.face].vs;
+		// const vector<uint32_t> &fvs = M.face_vs[idx.face];
 		// for(int i=0;i<fvs.size();i++) if(idx.vertex == fvs[i]){idx.face_corner=i; break;}
 	}
 
