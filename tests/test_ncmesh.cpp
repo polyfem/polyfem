@@ -493,8 +493,9 @@ TEST_CASE("stored labels follow unreferenced input vertices", "[ncmesh][mesh_tes
 	cells << 0, 2, 3;
 	MeshData data(vertices, cells);
 	data.node_ids = {10, 11, 12, 13};
-	data.boundary_elements = {{0, 2}, {2, 3}, {3, 0}};
-	data.boundary_ids = {5, 6, 7};
+	// The last side uses the unreferenced vertex: it is not an edge of the mesh.
+	data.boundary_elements = {{0, 2}, {2, 3}, {3, 0}, {1, 2}};
+	data.boundary_ids = {5, 6, 7, 9};
 
 	for (const bool non_conforming : {false, true})
 	{
@@ -516,5 +517,97 @@ TEST_CASE("stored labels follow unreferenced input vertices", "[ncmesh][mesh_tes
 			const int expected = c[1] == 0 ? 5 : (c[0] == 0 ? 7 : 6);
 			CHECK(mesh->get_boundary_id(e) == expected);
 		}
+	}
+}
+
+TEST_CASE("stale non-conforming meshes refuse every query", "[ncmesh][mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		auto mesh = Mesh::create(nc_test_mesh(dim), true);
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*mesh).refine_element(0);
+		else
+			dynamic_cast<NCMesh3D &>(*mesh).refine_element(0);
+		// refine_element is low level: the id maps are stale until prepare_mesh().
+		CHECK_THROWS(mesh->point(0));
+		CHECK_THROWS(mesh->edge_vertex(0, 0));
+		CHECK_THROWS(mesh->get_body_id(0));
+		if (dim == 3)
+			CHECK_THROWS(mesh->face_vertex(0, 0));
+		mesh->prepare_mesh();
+		CHECK_NOTHROW(mesh->point(0));
+	}
+}
+
+TEST_CASE("non-conforming 3D refinement keeps the label arrays consistent", "[ncmesh][mesh_test]")
+{
+	auto mesh = Mesh::create(nc_test_mesh(3), true);
+	mesh->set_body_ids({7, 8});
+	mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+	mesh->refine(1, 0.5);
+	REQUIRE(mesh->n_cells() == 16);
+	REQUIRE(mesh->get_body_ids().size() == mesh->n_cells());
+	for (int c = 0; c < mesh->n_cells(); ++c)
+		CHECK(mesh->get_body_ids()[c] == mesh->get_body_id(c));
+	const MeshData data = mesh->to_mesh_data();
+	REQUIRE(data.boundary_ids.size() == mesh->n_faces());
+	for (int f = 0; f < mesh->n_faces(); ++f)
+	{
+		CHECK(mesh->get_boundary_id(f) == (mesh->is_boundary_face(f) ? 3 : -1));
+		CHECK(data.boundary_ids[f] == mesh->get_boundary_id(f));
+	}
+}
+
+TEST_CASE("non-conforming append keeps the refinement hierarchy of the appended mesh", "[ncmesh][mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		auto first = Mesh::create(nc_test_mesh(dim), true);
+		first->set_body_ids(std::vector<int>(first->n_elements(), 7));
+		// The appended mesh is refined (hanging nodes) and has no body ids.
+		MeshData shifted = nc_test_mesh(dim);
+		shifted.vertices.col(0).array() += 5;
+		auto second = Mesh::create(shifted, true);
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*second).refine_elements({0});
+		else
+			dynamic_cast<NCMesh3D &>(*second).refine_elements({0});
+		const int n_first = first->n_elements(), n_second = second->n_elements();
+
+		first->append(second);
+		REQUIRE(first->n_elements() == n_first + n_second);
+		for (int e = 0; e < first->n_elements(); ++e)
+			CHECK(first->get_body_id(e) == (e < n_first ? 7 : 0));
+
+		// The children of the appended mesh still know their parent: coarsening
+		// one of them restores the unrefined appended mesh.
+		const int n_children = dim == 2 ? 4 : 8;
+		// Full ids: the 2 elements of the first mesh, the 2 roots of the appended
+		// one, then the children of its first root.
+		const int first_child = 4;
+		if (dim == 2)
+		{
+			auto &nc = dynamic_cast<NCMesh2D &>(*first);
+			nc.coarsen_element(first_child);
+			nc.prepare_mesh();
+		}
+		else
+		{
+			auto &nc = dynamic_cast<NCMesh3D &>(*first);
+			nc.coarsen_element(first_child);
+			nc.prepare_mesh();
+		}
+		CHECK(first->n_elements() == n_first + n_second - n_children + 1);
+		// Refining again uses the appended midpoints.
+		const int n_vertices = first->n_vertices();
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*first).refine_elements({n_first});
+		else
+			dynamic_cast<NCMesh3D &>(*first).refine_elements({n_first});
+		CHECK(first->n_elements() == n_first + n_second);
+		CHECK(first->n_vertices() == n_vertices + (dim == 2 ? 3 : 6));
 	}
 }

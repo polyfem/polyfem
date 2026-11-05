@@ -6,6 +6,7 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/mesh/NCMeshStorage.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
@@ -1111,6 +1112,14 @@ TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
 	State bad;
 	bad.init(in_args, true);
 	CHECK_THROWS(bad.load_mesh());
+
+	// The same for a simulated mesh array.
+	in_args["geometry"][1]["array"]["size"] = {3, 1};
+	in_args["geometry"][0]["type"] = "mesh_array";
+	in_args["geometry"][0]["array"] = {{"offset", 1}, {"size", {2}}};
+	State bad_fem;
+	bad_fem.init(in_args, true);
+	CHECK_THROWS_WITH(bad_fem.load_mesh(), Catch::Matchers::ContainsSubstring("one entry per dimension"));
 	fs::remove_all(dir);
 }
 
@@ -1368,4 +1377,40 @@ TEST_CASE("local boundaries remove the primitives of another one", "[mesh_test]"
 	CHECK(lb[0] == 0);
 	CHECK(lb[1] == 3);
 	CHECK(lb.global_primitive_id(1) == 13);
+}
+
+TEST_CASE("mesh nodes place cell nodes at their cell", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(5, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1;
+	Eigen::MatrixXi cells(2, 4);
+	cells << 0, 1, 2, 3, 1, 2, 3, 4;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	const auto &mesh3d = dynamic_cast<const Mesh3D &>(*mesh);
+
+	// Several slots per cell, as for mixed-order spaces.
+	MeshNodes nodes(*mesh, false, true, 1, 1, 2);
+	for (int c = mesh->n_cells() - 1; c >= 0; --c)
+	{
+		const int node = nodes.node_id_from_cell(c);
+		CHECK((nodes.node_position(node) - mesh3d.cell_barycenter(c)).norm() < 1e-14);
+		CHECK(nodes.cell_from_node_id(node) == c);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_cell(c)] == node);
+	}
+	CHECK(nodes.num_cell_nodes() == mesh->n_cells());
+}
+
+TEST_CASE("sorted id lists behave like sets", "[mesh_test][ncmesh]")
+{
+	SortedIds ids;
+	CHECK(ids.empty());
+	for (const int id : {5, 1, 3, 1})
+		ids.insert(id);
+	CHECK(ids.size() == 3);
+	CHECK(std::vector<int>(ids.cbegin(), ids.cend()) == std::vector<int>{1, 3, 5});
+	CHECK(ids.erase(2) == 0);
+	CHECK(ids.erase(3) == 1);
+	CHECK(std::vector<int>(ids.begin(), ids.end()) == std::vector<int>{1, 5});
+	ids.clear();
+	CHECK(ids.empty());
 }
