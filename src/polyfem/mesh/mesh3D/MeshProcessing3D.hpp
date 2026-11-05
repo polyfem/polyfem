@@ -47,7 +47,6 @@ namespace polyfem
 
 			void build_connectivity(Mesh3DStorage &hmi);
 			void reorder_hex_mesh_propogation(Mesh3DStorage &hmi);
-			bool scaled_jacobian(Mesh3DStorage &hmi, Mesh_Quality &mq);
 			double a_jacobian(Eigen::Vector3d &v0, Eigen::Vector3d &v1, Eigen::Vector3d &v2, Eigen::Vector3d &v3);
 
 			void global_orientation_hexes(Mesh3DStorage &hmi);

@@ -550,17 +550,6 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 	}
 }
 
-bool MeshProcessing3D::scaled_jacobian(Mesh3DStorage &hmi, Mesh_Quality &mq)
-{
-	if (hmi.type != MeshType::HEX)
-		return false;
-
-	std::vector<std::vector<uint32_t>> hexes(hmi.n_cells());
-	for (int c = 0; c < hmi.n_cells(); ++c)
-		hexes[c] = hmi.cell_vs[c].to_vector();
-	return hex_scaled_jacobian(hmi.points, hexes, mq);
-}
-
 double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3)
 {
 	Matrix3d Jacobian;
