@@ -11,6 +11,7 @@
 #include <Eigen/Geometry>
 
 #include <algorithm>
+#include <numeric>
 
 #include <igl/boundary_facets.h>
 #include <igl/oriented_facets.h>
@@ -249,8 +250,31 @@ namespace polyfem::mesh
 			set_body_ids(data.body_ids);
 		if (!data.geometry_ids.empty())
 			set_geometry_ids(data.geometry_ids);
+
+		// Mesh vertex of each input vertex. Conforming meshes keep the input
+		// vertices; non-conforming ones number only the referenced ones
+		// (in_ordered_vertices_ lists them in increasing order).
+		std::vector<int> input_to_vertex(data.vertices.rows());
+		if (is_conforming())
+			std::iota(input_to_vertex.begin(), input_to_vertex.end(), 0);
+		else
+		{
+			std::fill(input_to_vertex.begin(), input_to_vertex.end(), -1);
+			for (int v = 0; v < in_ordered_vertices_.size(); ++v)
+				input_to_vertex[in_ordered_vertices_[v]] = v;
+		}
+
 		if (!data.node_ids.empty())
-			node_ids_ = data.node_ids;
+		{
+			if (is_conforming())
+				node_ids_ = data.node_ids;
+			else
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = data.node_ids[in_ordered_vertices_[v]];
+			}
+		}
 
 		if (!data.boundary_ids.empty())
 		{
@@ -258,6 +282,14 @@ namespace polyfem::mesh
 			for (int i = 0; i < data.boundary_elements.size(); ++i)
 			{
 				std::vector<int> side = data.boundary_elements[i];
+				bool referenced = true;
+				for (int &v : side)
+				{
+					v = input_to_vertex[v];
+					referenced &= v >= 0;
+				}
+				if (!referenced)
+					continue;
 				std::sort(side.begin(), side.end());
 				const auto [it, inserted] = labels.emplace(std::move(side), data.boundary_ids[i]);
 				if (!inserted && it->second != data.boundary_ids[i])

@@ -483,3 +483,38 @@ TEST_CASE("non-conforming append merges structure and labels", "[ncmesh][mesh_te
 				CHECK(first->point(v)[0] >= 5 - 1e-12);
 	}
 }
+
+TEST_CASE("stored labels follow unreferenced input vertices", "[ncmesh][mesh_test]")
+{
+	// Vertex 1 is not used by any element.
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 9, 9, 1, 0, 0, 1;
+	Eigen::MatrixXi cells(1, 3);
+	cells << 0, 2, 3;
+	MeshData data(vertices, cells);
+	data.node_ids = {10, 11, 12, 13};
+	data.boundary_elements = {{0, 2}, {2, 3}, {3, 0}};
+	data.boundary_ids = {5, 6, 7};
+
+	for (const bool non_conforming : {false, true})
+	{
+		CAPTURE(non_conforming);
+		const auto mesh = Mesh::create(data, non_conforming);
+		for (int v = 0; v < mesh->n_vertices(); ++v)
+		{
+			const RowVectorNd p = mesh->point(v);
+			int input = -1;
+			for (int i = 0; i < vertices.rows(); ++i)
+				if (vertices.row(i) == p)
+					input = i;
+			REQUIRE(input >= 0);
+			CHECK(mesh->get_node_id(v) == data.node_ids[input]);
+		}
+		for (int e = 0; e < mesh->n_edges(); ++e)
+		{
+			const RowVectorNd c = mesh->edge_barycenter(e);
+			const int expected = c[1] == 0 ? 5 : (c[0] == 0 ? 7 : 6);
+			CHECK(mesh->get_boundary_id(e) == expected);
+		}
+	}
+}
