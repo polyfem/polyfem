@@ -104,7 +104,6 @@ namespace polyfem
 		///
 		void orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive = true);
 
-
 		/// Pair coincident boundary edges, including nonconforming leader/follower edges.
 		std::vector<std::pair<Navigation::Index, Navigation::Index>> compute_mesh_interface(
 			const Mesh2D &first, const Mesh2D &second);
@@ -112,7 +111,6 @@ namespace polyfem
 		/// Pair coincident boundary faces, including nonconforming leader/follower faces.
 		std::vector<std::pair<Navigation3D::Index, Navigation3D::Index>> compute_mesh_interface(
 			const Mesh3D &first, const Mesh3D &second);
-
 
 		///
 		/// @brief      Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate
