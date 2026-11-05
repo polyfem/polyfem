@@ -23,6 +23,7 @@ namespace polyfem
 		{
 			dim_ = 0;
 			v_.resize(0, 0);
+			codim_v_.resize(0);
 			f_.resize(0, 0);
 			e_.resize(0, 0);
 			tets_.resize(0, 0);
