@@ -118,7 +118,6 @@ namespace polyfem
 
 		bool NCMesh3D::is_boundary_element(const int element_global_id) const
 		{
-			assert(index_prepared);
 			// A boundary face has boundary vertices, so checking the vertices is enough.
 			for (int lv = 0; lv < n_cell_vertices(element_global_id); lv++)
 				if (is_boundary_vertex(cell_vertex(element_global_id, lv)))

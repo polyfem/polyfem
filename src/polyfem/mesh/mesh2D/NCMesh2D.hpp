@@ -264,7 +264,6 @@ namespace polyfem
 
 			RowVectorNd point(const int global_index) const override
 			{
-				assert(index_prepared);
 				return vertices[valid_to_all_vertex(global_index)].pos.transpose();
 			}
 			RowVectorNd edge_barycenter(const int index) const override;
