@@ -389,6 +389,14 @@ TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
 	write("good.hdf5", {{1, 3}}, {0, 2});
 	write("bad_shape.hdf5", {{2, 3}}, {0, 2});
 	write("bad_col.hdf5", {{1, 3}}, {0, 3});
+	{
+		// One more column than values and rows.
+		h5pp::File file((dir / "bad_length.hdf5").string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::vector<double>{1.0}, "/weight_triplets/values");
+		file.writeDataset(std::vector<int>{0}, "/weight_triplets/rows");
+		file.writeDataset(std::vector<int>{0, 1}, "/weight_triplets/cols");
+		file.writeAttribute(std::array<long, 2>{{1, 3}}, "/weight_triplets", "shape");
+	}
 
 	const polyfem::io::FileSystemIO resources(dir);
 	const Eigen::VectorXi in_node_to_node = (Eigen::VectorXi(3) << 2, 0, 1).finished();
@@ -403,5 +411,8 @@ TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
 	CHECK_THROWS_WITH(
 		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_col.hdf5", in_node_to_node, 1, entries),
 		Catch::Matchers::ContainsSubstring("outside the 1x3 matrix"));
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_length.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("1 values, 1 rows and 2 columns"));
 	fs::remove_all(dir);
 }

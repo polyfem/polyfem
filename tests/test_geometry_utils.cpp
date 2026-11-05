@@ -797,3 +797,16 @@ TEST_CASE("obstacle displacements stay attached to their meshes", "[geometry][ob
 			Catch::Matchers::ContainsSubstring("frame 1"));
 	}
 }
+
+TEST_CASE("geometry loader linearizes curved meshes it refines", "[geometry][geometry_loader]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	json args = fem_mesh_json(std::filesystem::path(POLYFEM_DATA_DIR) / "contact/meshes/3D/simple/sphere/coarse/P2.msh");
+	args["n_refs"] = 1;
+	const auto mesh = GeometryLoader(Units(), resources).load_fem_entry(args);
+	REQUIRE(mesh != nullptr);
+	CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
+}
