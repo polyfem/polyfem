@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <system_error>
 
 using namespace polyfem;
 using namespace polyfem::mesh;
@@ -21,10 +22,16 @@ namespace
 		explicit TempFiles(const std::string &name)
 			: dir_(std::filesystem::temp_directory_path() / name)
 		{
-			std::filesystem::remove_all(dir_);
+			std::error_code ec;
+			std::filesystem::remove_all(dir_, ec);
 			std::filesystem::create_directories(dir_);
 		}
-		~TempFiles() { std::filesystem::remove_all(dir_); }
+		~TempFiles()
+		{
+			// Never throw here: on Windows a file a reader left open cannot be removed.
+			std::error_code ec;
+			std::filesystem::remove_all(dir_, ec);
+		}
 
 		void write(const std::string &file, const std::string &content) const { std::ofstream(dir_ / file) << content; }
 		io::FileSystemIO resources() const { return io::FileSystemIO(dir_); }
