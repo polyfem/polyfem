@@ -1,5 +1,6 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3DStorage.hpp>
+#include <polyfem/mesh/mesh3D/MeshProcessing3D.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshData.hpp>
 #include <polyfem/io/ResourceIO.hpp>
@@ -7,6 +8,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <algorithm>
+#include <cmath>
 
 using namespace polyfem;
 using namespace polyfem::mesh;
@@ -269,4 +271,69 @@ TEST_CASE("3D mesh storage of hex grids and hex interfaces", "[mesh_test][mesh3d
 	CHECK(grid->is_simplex(n * n * n));
 	check_storage_invariants(*grid);
 	check_navigation(*grid);
+}
+
+TEST_CASE("3D mesh storage of an open surface", "[mesh_test][mesh3d_storage]")
+{
+	// A fan of six triangles around vertex 0: the spokes are interior edges,
+	// the rim edges and vertices are on the boundary.
+	Mesh3DStorage surface;
+	surface.type = MeshType::TRI;
+	surface.points.setZero(3, 7);
+	const double pi = std::acos(-1.0);
+	for (int k = 0; k < 6; ++k)
+	{
+		surface.points(0, k + 1) = std::cos(k * pi / 3);
+		surface.points(1, k + 1) = std::sin(k * pi / 3);
+		surface.face_vs.push_back({0u, uint32_t(k + 1), uint32_t(k + 1) % 6 + 1});
+	}
+	MeshProcessing3D::build_connectivity(surface);
+	REQUIRE(surface.n_edges() == 12);
+	for (int e = 0; e < surface.n_edges(); ++e)
+		CHECK(bool(surface.edge_boundary[e]) == (surface.edge_vs[e][0] != 0));
+	CHECK_FALSE(surface.vertex_boundary[0]);
+	for (int v = 1; v < 7; ++v)
+		CHECK(surface.vertex_boundary[v]);
+	for (int v = 0; v < 7; ++v)
+		CHECK(surface.vertex_fs.row_size(v) == (v == 0 ? 6 : 2));
+}
+
+TEST_CASE("3D mesh storage ignores hex flags on cells that are not hexes", "[mesh_test][mesh3d_storage]")
+{
+	// Two tets given with an explicit polyhedral topology, the first one
+	// wrongly flagged as a hex.
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1,
+		3, 0, 0, 4, 0, 0, 3, 1, 0, 3, 0, 1;
+	Eigen::MatrixXi tets(2, 4);
+	tets << 0, 1, 2, 3, 4, 5, 6, 7;
+	const auto tet_mesh = Mesh::create(MeshData(vertices, tets));
+	const auto &m = dynamic_cast<const Mesh3D &>(*tet_mesh);
+
+	MeshData data(vertices, tets);
+	data.faces.resize(m.n_faces());
+	for (int f = 0; f < m.n_faces(); ++f)
+		for (int j = 0; j < m.n_face_vertices(f); ++j)
+			data.faces[f].push_back(m.face_vertex(f, j));
+	data.cell_faces.resize(2);
+	data.cell_face_orientations.resize(2);
+	data.cell_kernel_points.resize(2, 3);
+	for (int c = 0; c < 2; ++c)
+	{
+		for (int j = 0; j < m.n_cell_faces(c); ++j)
+		{
+			data.cell_faces[c].push_back(m.cell_face(c, j));
+			data.cell_face_orientations[c].push_back(m.cell_face_orientation(c, j));
+		}
+		data.cell_kernel_points.row(c) = m.kernel(c);
+	}
+	data.cell_is_hex = {true, false};
+
+	auto mesh = Mesh::create(data);
+	REQUIRE(mesh->n_cells() == 2);
+	CHECK_FALSE(mesh->is_cube(0));
+	CHECK(mesh->is_simplex(0));
+	CHECK(mesh->is_simplex(1));
+	check_storage_invariants(*mesh);
+	check_navigation(*mesh);
 }
