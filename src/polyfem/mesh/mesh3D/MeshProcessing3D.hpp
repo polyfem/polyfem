@@ -50,7 +50,7 @@ namespace polyfem
 			double a_jacobian(Eigen::Vector3d &v0, Eigen::Vector3d &v1, Eigen::Vector3d &v2, Eigen::Vector3d &v3);
 
 			void global_orientation_hexes(Mesh3DStorage &hmi);
-			void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> &Parents);
+			void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> &Parents);
 			void refine_red_refinement_tet(Mesh3DStorage &M, int iter);
 
 			void orient_surface_mesh(Mesh3DStorage &hmi);

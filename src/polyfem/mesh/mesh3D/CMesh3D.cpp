@@ -172,9 +172,8 @@ namespace polyfem
 						mesh_.cell_hex[i] = false;
 				}
 
-				bool reverse_grow = false;
 				std::vector<int> parent_nodes;
-				MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, reverse_grow, parent_nodes);
+				MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, parent_nodes);
 			}
 
 			Navigation3D::prepare_mesh(mesh_);
