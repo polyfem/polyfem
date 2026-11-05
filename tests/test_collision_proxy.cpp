@@ -15,6 +15,7 @@
 #include <h5pp/h5pp.h>
 
 #include <filesystem>
+#include <system_error>
 
 #include <igl/readPLY.h>
 #include <igl/writePLY.h>
@@ -414,5 +415,6 @@ TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
 	CHECK_THROWS_WITH(
 		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_length.hdf5", in_node_to_node, 1, entries),
 		Catch::Matchers::ContainsSubstring("1 values, 1 rows and 2 columns"));
-	fs::remove_all(dir);
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
 }
