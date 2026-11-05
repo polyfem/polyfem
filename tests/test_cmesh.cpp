@@ -18,6 +18,7 @@
 #include <polyfem/io/OutData.hpp>
 #include "VarFormTestAccess.hpp"
 #include <filesystem>
+#include <system_error>
 
 #include <igl/PI.h>
 
@@ -1120,7 +1121,8 @@ TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
 	State bad_fem;
 	bad_fem.init(in_args, true);
 	CHECK_THROWS_WITH(bad_fem.load_mesh(), Catch::Matchers::ContainsSubstring("one entry per dimension"));
-	fs::remove_all(dir);
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
 }
 
 TEST_CASE("hex meshes round-trip through MeshData", "[mesh_test][mesh_data]")

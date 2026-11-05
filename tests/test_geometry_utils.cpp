@@ -15,6 +15,7 @@
 #include <polyfem/mesh/Obstacle.hpp>
 
 #include <filesystem>
+#include <system_error>
 #include <fstream>
 #include <set>
 
@@ -670,7 +671,8 @@ TEST_CASE("geometry loader rejects stored point and geometry selections on refin
 	CHECK(mesh->n_elements() == 8);
 	CHECK(mesh->to_mesh_data().node_ids.size() == mesh->n_vertices());
 	CHECK(mesh->get_geometry_ids() == std::vector<int>(8, 4));
-	fs::remove(path);
+	std::error_code ec;
+	fs::remove(path, ec);
 }
 
 TEST_CASE("refinement keeps the label arrays consistent", "[geometry][mesh_test]")
@@ -746,7 +748,8 @@ TEST_CASE("load_surface rejects faces with invalid vertices", "[geometry][mesh_u
 	const SurfaceMesh good = MeshLoader(resources).load_surface("good.obj");
 	CHECK(good.faces.rows() == 1);
 	CHECK(good.points == Eigen::VectorXi::Constant(1, 3));
-	fs::remove_all(dir);
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
 }
 
 TEST_CASE("obstacle displacements stay attached to their meshes", "[geometry][obstacle]")
