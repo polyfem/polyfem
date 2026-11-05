@@ -6,6 +6,7 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
@@ -1351,4 +1352,20 @@ TEST_CASE("boundary quads around an irregular interior vertex are not spline com
 		CHECK(mesh->is_cube(e));
 		CHECK_FALSE(mesh->is_spline_compatible(e));
 	}
+}
+
+TEST_CASE("local boundaries remove the primitives of another one", "[mesh_test]")
+{
+	LocalBoundary lb(0, BoundaryType::TRI);
+	for (int i = 0; i < 4; ++i)
+		lb.add_boundary_primitive(10 + i, i);
+	LocalBoundary other(0, BoundaryType::TRI);
+	other.add_boundary_primitive(11, 1);
+	other.add_boundary_primitive(12, 2);
+
+	lb.remove_from(other);
+	REQUIRE(lb.size() == 2);
+	CHECK(lb[0] == 0);
+	CHECK(lb[1] == 3);
+	CHECK(lb.global_primitive_id(1) == 13);
 }
