@@ -602,7 +602,7 @@ void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi)
 	}
 }
 
-void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> &Parents)
+void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> &Parents)
 {
 
 	for (int i = 0; i < iter; i++)
@@ -771,9 +771,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 			else
 			{
 				const std::array<double, 3> kernel = M.cell_kernel[c];
-				int level = Refinement_Levels[c];
-				if (reverse)
-					level = 1;
+				const int level = Refinement_Levels[c];
 				// local_V2V
 				std::vector<std::vector<int>> local_V2Vs;
 				std::map<int, int> local_vi_map;
@@ -786,11 +784,6 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						std::array<double, 3> p;
 						for (int j = 0; j < 3; j++)
 							p[j] = M_.points[vid][j] + (kernel[j] - M_.points[vid][j]) * (r + 1.0) / (double)(level + 1);
-						if (reverse)
-						{
-							for (int j = 0; j < 3; j++)
-								p[j] = M_.points[vid][j] + (M_.points[vid][j] - kernel[j]) * (r + 1.0) / (double)(level + 1);
-						}
 						v2v.push_back(add_vertex(p));
 					}
 					local_vi_map[vid] = local_V2Vs.size();
@@ -855,14 +848,6 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						vs[1] = local_V2Vs[local_vi_map[fvs[j]]][level];
 						vs[2] = local_E2Vs[local_ei_map[fes[j]]][level];
 						vs[3] = local_F2Vs[local_fi_map[fid]][level];
-
-						if (reverse)
-						{
-							vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][0];
-							vs[1] = local_V2Vs[local_vi_map[fvs[j]]][0];
-							vs[2] = local_E2Vs[local_ei_map[fes[j]]][0];
-							vs[3] = local_F2Vs[local_fi_map[fid]][0];
-						}
 
 						total_fs.push_back(vs);
 						std::sort(vs.begin(), vs.end());
