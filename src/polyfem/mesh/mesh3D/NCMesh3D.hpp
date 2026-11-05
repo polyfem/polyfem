@@ -406,61 +406,23 @@ namespace polyfem
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
 
-			// index map from vertices to valid ones, and its inverse
-			inline int all_to_valid_vertex(const int id) const
+			// Maps between the valid ids and the full ids (see the class comment).
+			// They are up to date only after prepare_mesh().
+			inline int all_to_valid_vertex(const int id) const { return map_id(all_to_valid_vertexMap, id); }
+			inline int valid_to_all_vertex(const int id) const { return map_id(valid_to_all_vertexMap, id); }
+			inline int all_to_valid_edge(const int id) const { return map_id(all_to_valid_edgeMap, id); }
+			inline int valid_to_all_edge(const int id) const { return map_id(valid_to_all_edgeMap, id); }
+			inline int all_to_valid_face(const int id) const { return map_id(all_to_valid_faceMap, id); }
+			inline int valid_to_all_face(const int id) const { return map_id(valid_to_all_faceMap, id); }
+			inline int all_to_valid_elem(const int id) const { return map_id(all_to_valid_elemMap, id); }
+			inline int valid_to_all_elem(const int id) const { return map_id(valid_to_all_elemMap, id); }
+			int map_id(const std::vector<int> &map, const int id) const
 			{
 				if (!index_prepared)
 					stale_index_error();
-				return all_to_valid_vertexMap[id];
-			};
-			inline int valid_to_all_vertex(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return valid_to_all_vertexMap[id];
-			};
-
-			// index map from edges to valid ones, and its inverse
-			inline int all_to_valid_edge(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return all_to_valid_edgeMap[id];
-			};
-			inline int valid_to_all_edge(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return valid_to_all_edgeMap[id];
-			};
-
-			// index map from faces to valid ones, and its inverse
-			inline int all_to_valid_face(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return all_to_valid_faceMap[id];
-			};
-			inline int valid_to_all_face(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return valid_to_all_faceMap[id];
-			};
-
-			// index map from elements to valid ones, and its inverse
-			inline int all_to_valid_elem(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return all_to_valid_elemMap[id];
-			};
-			inline int valid_to_all_elem(const int id) const
-			{
-				if (!index_prepared)
-					stale_index_error();
-				return valid_to_all_elemMap[id];
-			};
+				assert(id >= 0 && id < int(map.size()));
+				return map[id];
+			}
 
 			// find the mid-point of edge v[0]v[1], return -1 if not exists
 			int find_vertex(Eigen::Vector2i v) const;
