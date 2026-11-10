@@ -4,7 +4,7 @@
 
 namespace polyfem {
     namespace autogen {
-        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AMIPS3drest_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power) {
+        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AMIPS3drest_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power, const double normalization) {
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad(3,3);
             const double F00 = F(0, 0);
             const double F01 = F(0, 1);
@@ -25,7 +25,7 @@ const auto helper_5 = F10*F22;
 const auto helper_6 = F11*F20;
 const auto helper_7 = F00*helper_0 - F00*helper_1 + F01*helper_3 - F01*helper_5 + F02*helper_4 - F02*helper_6;
 const auto helper_8 = (1.0/3.0)*helper_2/helper_7;
-const auto helper_9 = 2*power*pow(helper_2/pow(helper_7, 2.0/3.0), power)/helper_2;
+const auto helper_9 = 2*power*pow(helper_2/(pow(helper_7, 2.0/3.0)*normalization), power)/helper_2;
 result_0[0] = helper_9*(F00 - helper_8*(helper_0 - helper_1));
 result_0[1] = helper_9*(F01 + helper_8*(-helper_3 + helper_5));
 result_0[2] = helper_9*(F02 - helper_8*(helper_4 - helper_6));
@@ -47,7 +47,7 @@ result_0[8] = helper_9*(F22 - helper_8*(F00*F11 - F01*F10));;
             return grad;
         }
 
-        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> AMIPS3drest_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power) {
+        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> AMIPS3drest_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power, const double normalization) {
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hess(9,9);
             std::array<double, 81> result_0;
             const double F00 = F(0, 0);
@@ -79,7 +79,7 @@ const auto helper_16 = helper_13 - helper_15;
 const auto helper_17 = helper_12*helper_16;
 const auto helper_18 = helper_12*power;
 const auto helper_19 = (2.0/9.0)*helper_18;
-const auto helper_20 = pow(helper_10/pow(helper_6, 2.0/3.0), power);
+const auto helper_20 = pow(helper_10/(pow(helper_6, 2.0/3.0)*normalization), power);
 const auto helper_21 = 2*helper_18*helper_20;
 const auto helper_22 = 6*F01;
 const auto helper_23 = -helper_1 + helper_4;

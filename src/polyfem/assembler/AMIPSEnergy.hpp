@@ -61,7 +61,8 @@ namespace polyfem::assembler
 			const T powJ = pow(det, power);
 			const double weight = weight_(p, t, el_id);
 			const T base_energy = (def_grad.transpose() * def_grad).trace() / powJ;
-			return T(weight) * pow(base_energy, power_(p, t, el_id));
+			const double normalization = normalized_(p, t, el_id) != 0 ? size() : 1;
+			return T(weight) * pow(base_energy / T(normalization), power_(p, t, el_id));
 		}
 
 	private:
@@ -69,6 +70,7 @@ namespace polyfem::assembler
 		GenericMatParam use_rest_pose_;
 		GenericMatParam weight_;
 		GenericMatParam power_{"power"};
+		GenericMatParam normalized_{"normalized"};
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

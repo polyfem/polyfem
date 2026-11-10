@@ -4,7 +4,7 @@
 
 namespace polyfem {
     namespace autogen {
-        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AMIPS2drest_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power) {
+        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AMIPS2drest_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power, const double normalization) {
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad(2,2);
             const double F00 = F(0, 0);
             const double F01 = F(0, 1);
@@ -13,7 +13,7 @@ namespace polyfem {
             std::array<double, 4> result_0;
             const auto helper_0 = pow(F00, 2) + pow(F01, 2) + pow(F10, 2) + pow(F11, 2);
 const auto helper_1 = helper_0/(F00*F11 - F01*F10);
-const auto helper_2 = pow(helper_1, power)*power/helper_0;
+const auto helper_2 = power*pow(helper_1/normalization, power)/helper_0;
 result_0[0] = helper_2*(2*F00 - F11*helper_1);
 result_0[1] = helper_2*(2*F01 + F10*helper_1);
 result_0[2] = helper_2*(F01*helper_1 + 2*F10);
@@ -25,7 +25,7 @@ result_0[3] = -helper_2*(F00*helper_1 - 2*F11);;
             return grad;
         }
 
-        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> AMIPS2drest_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power) {
+        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> AMIPS2drest_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F, const double power, const double normalization) {
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hess(4,4);
             std::array<double, 16> result_0;
             const double F00 = F(0, 0);
@@ -53,7 +53,7 @@ const auto helper_17 = helper_13*helper_15;
 const auto helper_18 = 2*helper_11/pow(helper_2, 2);
 const auto helper_19 = 4*helper_3;
 const auto helper_20 = -helper_0*helper_19 + 2;
-const auto helper_21 = pow(helper_12, power)*helper_16;
+const auto helper_21 = helper_16*pow(helper_12/normalization, power);
 const auto helper_22 = 2*F01;
 const auto helper_23 = F01*F11;
 const auto helper_24 = F00*F10;

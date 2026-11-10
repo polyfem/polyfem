@@ -13,9 +13,10 @@ class AMIPSEnergy:
         self.dim = dim
         # Keep the exponent symbolic so one generated kernel supports any power.
         self.power = sp.Symbol('power', real=True)
+        self.normalization = sp.Symbol('normalization', positive=True)
 
     def parameters(self):
-        return ["power"]
+        return ["power", "normalization"]
 
     def get_standard(self):
         if self.use_rest_pose:
@@ -51,7 +52,7 @@ class AMIPSEnergy:
         #     return sp.nan
 
         powJ = det**det_exponent
-        return ((def_grad.T @ def_grad).trace() / powJ) ** self.power
+        return ((def_grad.T @ def_grad).trace() / (powJ * self.normalization)) ** self.power
 
 
 class VolumePenaltyEnergy:

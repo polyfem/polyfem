@@ -431,6 +431,7 @@
             "use_rest_pose",
             "weight",
             "power",
+            "normalized",
             "id",
             "rho"
         ],
@@ -723,6 +724,12 @@
         "spec_file": "value1.json",
         "default": 1,
         "doc": "Scale factor for the AMIPS energy."
+    },
+    {
+        "pointer": "/normalized",
+        "type": "bool",
+        "default": false,
+        "doc": "Divide AMIPS by the spatial dimension before raising it to power."
     },
     {
         "pointer": "/power",

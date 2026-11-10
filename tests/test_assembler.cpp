@@ -556,6 +556,7 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	in_args["geometry"]["surface_selection"] = 7;
 	in_args["materials"] = {};
 	in_args["materials"]["type"] = "AMIPS";
+	in_args["materials"]["normalized"] = true;
 	const int discr_order = GENERATE(1, 2);
 	in_args["space"]["discr_order"] = discr_order;
 
@@ -671,15 +672,17 @@ TEST_CASE("AMIPS arbitrary power", "[assembler][amips][amips_power]")
 	const int dim = GENERATE(2, 3);
 	const bool use_rest_pose = GENERATE(false, true);
 	const int sample = GENERATE(0, 1, 2);
-	const double power = GENERATE(-1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0);
-	CAPTURE(dim, use_rest_pose, sample, power);
+	const double power = GENERATE(-1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 5.0);
+	const bool normalized = GENERATE(false, true);
+	const double normalization = normalized ? dim : 1;
+	CAPTURE(dim, use_rest_pose, sample, power, normalized);
 
 	using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
 	const RowVectorNd p = RowVectorNd::Zero(dim);
 	AMIPSEnergy powered;
 	powered.set_size(dim);
 	Units units;
-	powered.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1.7}, {"power", power}}, units, test_resources());
+	powered.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1.7}, {"power", power}, {"normalized", normalized}}, units, test_resources());
 	const auto gradient = [&](const Matrix &F) { return powered.gradient(p, 0, 0, F); };
 	const auto hessian = [&](const Matrix &F) { return powered.hessian(p, 0, 0, F); };
 
@@ -736,17 +739,19 @@ TEST_CASE("AMIPS arbitrary power", "[assembler][amips][amips_power]")
 			original_grad_flat(i * dim + j) = original_grad(i, j);
 
 	// Include a non-unit weight to verify it is applied after exponentiation.
-	REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(original_energy, power)).margin(1e-10));
-	require_approx_matrix(grad, 1.7 * power * std::pow(original_energy, power - 1) * original_grad, 1e-10);
+	REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(original_energy / normalization, power)).margin(1e-10));
+	const double scale = 1.7 * std::pow(normalization, -power);
+	require_approx_matrix(grad, scale * power * std::pow(original_energy, power - 1) * original_grad, 1e-10);
 	require_approx_matrix(hess,
-						  1.7 * (power * (power - 1) * std::pow(original_energy, power - 2) * original_grad_flat * original_grad_flat.transpose() + power * std::pow(original_energy, power - 1) * original_hess), 1e-9);
+						  scale * (power * (power - 1) * std::pow(original_energy, power - 2) * original_grad_flat * original_grad_flat.transpose() + power * std::pow(original_energy, power - 1) * original_hess), 1e-9);
 	if (sample == 0)
 	{
-		REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(dim, power)));
+		REQUIRE(energy(F) == Catch::Approx(1.7 * std::pow(dim / normalization, power)));
 		REQUIRE(grad.norm() < 1e-10);
 	}
 
 	const double step = 1e-6;
+	const double gradient_margin = 1e-7 * std::max(1.0, energy(F));
 	for (int i = 0; i < dim; ++i)
 		for (int j = 0; j < dim; ++j)
 		{
@@ -754,7 +759,7 @@ TEST_CASE("AMIPS arbitrary power", "[assembler][amips][amips_power]")
 			Matrix plus = F, minus = F;
 			plus(i, j) += step;
 			minus(i, j) -= step;
-			REQUIRE(grad(i, j) == Catch::Approx((energy(plus) - energy(minus)) / (2 * step)).margin(1e-7));
+			REQUIRE(grad(i, j) == Catch::Approx((energy(plus) - energy(minus)) / (2 * step)).margin(gradient_margin));
 			const Matrix fd_hess = (gradient(plus) - gradient(minus)) / (2 * step);
 			// The generator flattens F in row-major order, unlike Eigen's default storage.
 			for (int k = 0; k < dim; ++k)
