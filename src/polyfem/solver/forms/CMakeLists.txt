@@ -1,9 +1,19 @@
 set(SOURCES
 	Form.hpp
+	StackedForm.hpp
+	StackedForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
+	MixedAssemblerForm.hpp
+	MixedAssemblerForm.cpp
+	NavierStokesForm.hpp
+	NavierStokesForm.cpp
+	NavierStokesFSIForm.hpp
+	NavierStokesFSIForm.cpp
+	FSIInterfaceForm.hpp
+	FSIInterfaceForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp
@@ -24,8 +34,10 @@ set(SOURCES
 	TangentialAdhesionForm.hpp
 	BarrierContactForm.cpp
 	BarrierContactForm.hpp
-	SmoothContactForm.cpp
-	SmoothContactForm.hpp
+	ESPContactForm.cpp
+	ESPContactForm.hpp
+GCPContactForm.cpp
+	GCPContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
 	QuadraticPenaltyForm.cpp

@@ -1,0 +1,100 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "fe_space",
+            "time_reference",
+            "interpolation",
+            "dimension"
+        ],
+        "doc": "Dirichlet boundary condition."
+    },
+    {
+        "pointer": "/value/*",
+        "type": "list",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/value/*/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/fe_space",
+        "type": "int",
+        "default": -1,
+        "doc": "Finite element space ID for the Dirichlet boundary condition. If not specified, default to the all finite element spaces."
+    },
+    {
+        "pointer": "/dimension",
+        "type": "list",
+        "default": [
+            true,
+            true,
+            true
+        ],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
+    },
+    {
+        "pointer": "/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": "value"
+    },
+    {
+        "pointer": "/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the Dirichlet boundary condition is specified"
+    },
+    {
+        "pointer": "/time_reference/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for timestep"
+    },
+    {
+        "pointer": "/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID of boundary condition from surface selection."
+    },
+    {
+        "pointer": "/id",
+        "type": "string",
+        "options": [
+            "all"
+        ],
+        "doc": "select all ids."
+    },
+    {
+        "pointer": "/value",
+        "type": "list",
+        "doc": "Values of boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued PDEs depending on the dimension."
+    },
+    {
+        "pointer": "/value/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of boundary condition for each dimension as a function of $x,y,z,t$."
+    },
+    {
+        "pointer": "/interpolation",
+        "type": "list",
+        "default": [],
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/interpolation/*",
+        "type": "include",
+        "spec_file": "interpolation.json",
+        "doc": "interpolation of boundary condition"
+    }
+]

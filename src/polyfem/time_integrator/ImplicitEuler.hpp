@@ -13,7 +13,7 @@ namespace polyfem::time_integrator
 	class ImplicitEuler : public ImplicitTimeIntegrator
 	{
 	public:
-		ImplicitEuler() {}
+		ImplicitEuler(const DynamicOrder dynamic_order = DynamicOrder::Second);
 
 		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// \f[

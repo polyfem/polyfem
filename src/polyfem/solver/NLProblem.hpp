@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/solver/FullNLProblem.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 #include <polyfem/utils/Logger.hpp>
@@ -25,11 +24,11 @@ namespace polyfem::solver
 			const int full_size,
 			const std::vector<std::shared_ptr<Form>> &forms,
 			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-			const std::shared_ptr<polysolve::linear::Solver> &solver);
+			const std::shared_ptr<polysolve::linear::Solver> &solver,
+			const bool is_residual = false);
 
 	public:
 		NLProblem(const int full_size,
-				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
 				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
@@ -37,7 +36,8 @@ namespace polyfem::solver
 				  const double char_length,
 				  const double char_force,
 				  StiffnessMatrix lumped_mass,
-				  const int dimension);
+				  const int dimension,
+				  const bool is_residual = false);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -68,7 +68,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector full_to_reduced_diag(const TVector &full_diag) const;
-		TVector reduced_to_full(const TVector &reduced) const;
+		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
 
@@ -118,7 +118,7 @@ namespace polyfem::solver
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;
-		int num_penalty_constraints_;
+		int num_penalty_constraints_ = 0;
 
 		void setup_constraints();
 		void update_constraint_values();

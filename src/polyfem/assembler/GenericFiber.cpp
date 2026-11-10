@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/ActiveFiber.hpp>
+#include <polyfem/assembler/HGODispersion.hpp>
 
 namespace polyfem::assembler
 {
@@ -11,10 +12,10 @@ namespace polyfem::assembler
 	}
 
 	template <typename FiberModel>
-	void GenericFiber<FiberModel>::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void GenericFiber<FiberModel>::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
 		if (params.contains("fiber_direction"))
-			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length(), root_path);
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length(), resources);
 	}
 
 	template <typename FiberModel>
@@ -55,4 +56,5 @@ namespace polyfem::assembler
 
 	template class GenericFiber<HGOFiber>;
 	template class GenericFiber<ActiveFiber>;
+	template class GenericFiber<HGODispersion>;
 } // namespace polyfem::assembler

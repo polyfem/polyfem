@@ -200,14 +200,14 @@ namespace polyfem
 			return res;
 		}
 
-		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
 			val.setZero();
 		}
 
-		void KernelProblem::set_parameters(const json &params, const std::string &root_path)
+		void KernelProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (params.count("n_kernels") && !params["n_kernels"] > 0)
 				n_kernels_ = params["n_kernels"];
@@ -217,14 +217,14 @@ namespace polyfem
 
 			if (params.count("kernel_weights") && !params["kernel_weights"].empty())
 			{
-				std::ifstream in(params["kernel_weights"].get<std::string>());
+				auto in = resources.open(params["kernel_weights"].get<std::string>(), false);
 				std::string token;
-				in >> token;
+				*in >> token;
 				int n_weights;
-				in >> n_weights;
+				*in >> n_weights;
 				kernel_weights_.resize(n_weights);
 				for (int i = 0; i < n_weights; ++i)
-					in >> kernel_weights_(i);
+					*in >> kernel_weights_(i);
 			}
 		}
 

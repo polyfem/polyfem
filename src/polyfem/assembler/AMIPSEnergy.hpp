@@ -18,23 +18,18 @@ namespace polyfem::assembler
 	class AMIPSEnergy : public GenericElastic<AMIPSEnergy>
 	{
 	public:
-		AMIPSEnergy()
-		{
-			autodiff_type_ = AutodiffType::NONE;
-		}
+		AMIPSEnergy();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		std::string name() const override { return "AMIPS"; }
-		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool allow_inversion() const override { return false; }
 
-		bool real_def_grad(const int el_id) const override { return use_rest_pose(el_id); }
+		bool real_def_grad(const RowVectorNd &p, const double t, const int el_id) const override { return use_rest_pose(p, t, el_id); }
 
-		// weight * AMIPS^power at one quadrature point. With linear simplices and absolute mode an
-		// element carries weight * AMIPS(D_e)^power, the cubed AMIPS TetWild stores as quality at power 3.
 		template <typename T>
 		T elastic_energy(
 			const RowVectorNd &p,
@@ -42,23 +37,10 @@ namespace polyfem::assembler
 			const int el_id,
 			DefGradMatrix<T> &def_grad) const
 		{
-			const double weight = get_energy_weight(el_id);
-			const double power = get_power(el_id);
-			// At power 1 the weight multiplies inside amips, where it always has, so the energy is bit-identical.
-			if (power == 1)
-				return amips(el_id, weight, def_grad);
-			return T(weight) * pow(amips(el_id, 1., def_grad), power);
-		}
-
-	private:
-		// weight * AMIPS(def_grad). The autogen gradient and hessian differentiate AMIPS in the same def_grad.
-		template <typename T>
-		T amips(const int el_id, const double weight, DefGradMatrix<T> &def_grad) const
-		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
 			const double power = 2. / size();
-			const bool rest_pose = use_rest_pose(el_id);
+			const bool rest_pose = use_rest_pose(p, t, el_id);
 
 			AutoDiffGradMat standard;
 
@@ -77,21 +59,14 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
+			const double weight = weight_(p, t, el_id);
 			return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 		}
 
-		double get_energy_weight(const int el_id) const;
-		bool use_rest_pose(const int el_id) const;
-		double get_power(const int el_id) const;
-		std::vector<double> energy_weights_;
-		std::vector<bool> use_rest_pose_;
-		std::vector<double> powers_;
-
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> amips_gradient(
-			const RowVectorNd &p,
-			const double t,
-			const int el_id,
-			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const;
+	private:
+		bool use_rest_pose(const RowVectorNd &p, const double t, const int el_id) const;
+		GenericMatParam use_rest_pose_;
+		GenericMatParam weight_;
 
 		template <int dimt, class T>
 		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)

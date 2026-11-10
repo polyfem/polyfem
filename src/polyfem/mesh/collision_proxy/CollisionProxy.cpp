@@ -2,18 +2,18 @@
 
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/mesh/GeometryLoader.hpp>
+#include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-
-#include <fstream>
-#include <set>
-#include <sstream>
 
 #include <SimpleBVH/BVH.hpp>
 #include <igl/edges.h>
 #include <igl/barycentric_coordinates.h>
 #include <h5pp/h5pp.h>
+
+#include <sstream>
 // #include <fcpw/fcpw.h>
 
 namespace polyfem::mesh
@@ -316,62 +316,90 @@ namespace polyfem::mesh
 
 	// ========================================================================
 
-	namespace
+	void load_collision_proxy(
+		const io::ResourceIO &resources,
+		const std::string &mesh_filename,
+		const std::string &weights_filename,
+		const Eigen::VectorXi &in_node_to_node,
+		const json &transformation,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &edges,
+		Eigen::MatrixXi &faces,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
-		/// The proxy mesh from what read_surface_mesh returns, for both the file and the in-memory
-		/// route: the faces' edges followed by the codim edges, a third coordinate that is zero
-		/// everywhere dropped, and the geometry's transformation applied to the vertices.
-		void finish_collision_proxy_mesh(
-			const json &transformation,
-			const Eigen::MatrixXi &codim_edges,
-			const Eigen::MatrixXi &faces,
-			Eigen::MatrixXd &vertices,
-			Eigen::MatrixXi &edges)
+		load_collision_proxy_mesh(resources, mesh_filename, transformation, vertices, codim_vertices, edges, faces);
+		load_collision_proxy_displacement_map(resources, weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);
+	}
+
+	void load_collision_proxy_mesh(
+		const io::ResourceIO &resources,
+		const std::string &mesh_filename,
+		const json &transformation,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &edges,
+		Eigen::MatrixXi &faces)
+	{
+		SurfaceMesh surface = MeshLoader(resources).load_surface(mesh_filename);
+		vertices = std::move(surface.vertices);
+		codim_vertices = std::move(surface.points);
+		Eigen::MatrixXi codim_edges = std::move(surface.edges);
+		faces = std::move(surface.faces);
+
+		if (faces.size())
+			igl::edges(faces, edges);
+
+		utils::append_rows(edges, codim_edges);
+
+		// Transform the collision proxy
+		std::array<RowVectorNd, 2> bbox;
+		bbox[0] = vertices.colwise().minCoeff();
+		bbox[1] = vertices.colwise().maxCoeff();
+
+		if (vertices.cols() > 2 && bbox[0][2] == bbox[1][2] && bbox[0][2] == 0)
 		{
-			if (faces.size())
-				igl::edges(faces, edges);
-
-			utils::append_rows(edges, codim_edges);
-
-			// Transform the collision proxy
-			std::array<RowVectorNd, 2> bbox;
+			vertices = vertices.leftCols(2).eval();
 			bbox[0] = vertices.colwise().minCoeff();
 			bbox[1] = vertices.colwise().maxCoeff();
-
-			if (vertices.cols() > 2 && bbox[0][2] == bbox[1][2] && bbox[0][2] == 0)
-			{
-				vertices = vertices.leftCols(2).eval();
-				bbox[0] = vertices.colwise().minCoeff();
-				bbox[1] = vertices.colwise().maxCoeff();
-			}
-
-			MatrixNd A;
-			VectorNd b;
-			// TODO: pass correct unit scale
-			construct_affine_transformation(
-				/*unit_scale=*/1, transformation,
-				(bbox[1] - bbox[0]).cwiseAbs().transpose(),
-				A, b);
-			vertices = (vertices * A.transpose()).rowwise() + b.transpose();
 		}
 
-		/// The displacement map entries from the weight triplets, for both the file and the
-		/// in-memory route: the columns (FE input nodes) remapped to FE nodes.
-		void finish_collision_proxy_displacement_map(
-			const std::array<long, 2> &shape,
-			const Eigen::VectorXd &values,
-			const Eigen::VectorXi &rows,
-			const Eigen::VectorXi &cols,
-			const Eigen::VectorXi &in_node_to_node,
-			const size_t num_proxy_vertices,
-			std::vector<Eigen::Triplet<double>> &displacement_map_entries)
-		{
+		MatrixNd A;
+		VectorNd b;
+		// TODO: pass correct unit scale
+		GeometryLoader::construct_affine_transformation(
+			/*unit_scale=*/1, transformation,
+			(bbox[1] - bbox[0]).cwiseAbs().transpose(),
+			A, b);
+		vertices = (vertices * A.transpose()).rowwise() + b.transpose();
+	}
+
+	void load_collision_proxy_displacement_map(
+		const io::ResourceIO &resources,
+		const std::string &weights_filename,
+		const Eigen::VectorXi &in_node_to_node,
+		const size_t num_proxy_vertices,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
+	{
 #ifndef NDEBUG
-			const size_t num_fe_nodes = in_node_to_node.size();
+		const size_t num_fe_nodes = in_node_to_node.size();
 #endif
+		auto read_group = [&](const io::ResourceIO &reader, const std::string &root) {
+			const auto child = [&](const std::string &path) {
+				return (std::filesystem::path(root) / path).lexically_normal().generic_string();
+			};
+			const std::array<long, 2> shape = reader.read_shape_attribute(child("weight_triplets"), "shape");
 			assert(shape[0] == num_proxy_vertices && shape[1] == num_fe_nodes);
+			const std::vector<double> value_data = reader.read_double_vector(child("weight_triplets/values"));
+			const std::vector<int> row_data = reader.read_int_vector(child("weight_triplets/rows"));
+			const std::vector<int> col_data = reader.read_int_vector(child("weight_triplets/cols"));
+			Eigen::Map<const Eigen::VectorXd> values(value_data.data(), value_data.size());
+			Eigen::Map<const Eigen::VectorXi> rows(row_data.data(), row_data.size());
+			Eigen::Map<const Eigen::VectorXi> cols(col_data.data(), col_data.size());
 			assert(rows.maxCoeff() < num_proxy_vertices);
 			assert(cols.maxCoeff() < num_fe_nodes);
+
+			// TODO: use these to build the in_node_to_node map
 
 			displacement_map_entries.clear();
 			displacement_map_entries.reserve(values.size());
@@ -382,124 +410,46 @@ namespace polyfem::mesh
 				// Rearrange the columns based on the FEM mesh node order
 				displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
 			}
+		};
+
+		if (resources.is_group(weights_filename))
+			read_group(resources, weights_filename);
+		else
+		{
+			const io::HDF5IO weights(resources.materialize(weights_filename));
+			read_group(weights, "");
 		}
-	} // namespace
-
-	void load_collision_proxy(
-		const std::string &mesh_filename,
-		const std::string &weights_filename,
-		const Eigen::VectorXi &in_node_to_node,
-		const json &transformation,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &edges,
-		Eigen::MatrixXi &faces,
-		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
-	{
-		load_collision_proxy_mesh(mesh_filename, transformation, vertices, codim_vertices, edges, faces);
-		load_collision_proxy_displacement_map(weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);
-	}
-
-	void load_collision_proxy(
-		const CollisionProxyData &proxy,
-		const Eigen::VectorXi &in_node_to_node,
-		const json &transformation,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &edges,
-		Eigen::MatrixXi &faces,
-		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
-	{
-		vertices = proxy.vertices;
-		codim_vertices = proxy.codim_vertices;
-		faces = proxy.faces;
-		finish_collision_proxy_mesh(transformation, proxy.codim_edges, faces, vertices, edges);
-		finish_collision_proxy_displacement_map(
-			proxy.weight_shape, proxy.weight_values, proxy.weight_rows, proxy.weight_cols,
-			in_node_to_node, vertices.rows(), displacement_map_entries);
-	}
-
-	void load_collision_proxy_mesh(
-		const std::string &mesh_filename,
-		const json &transformation,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &edges,
-		Eigen::MatrixXi &faces)
-	{
-		Eigen::MatrixXi codim_edges;
-		read_surface_mesh(mesh_filename, vertices, codim_vertices, codim_edges, faces);
-		finish_collision_proxy_mesh(transformation, codim_edges, faces, vertices, edges);
-	}
-
-	void load_collision_proxy_displacement_map(
-		const std::string &weights_filename,
-		const Eigen::VectorXi &in_node_to_node,
-		const size_t num_proxy_vertices,
-		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
-	{
-		h5pp::File file(weights_filename, h5pp::FileAccess::READONLY);
-		const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
-		Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
-		Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
-		Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
-
-		// TODO: use these to build the in_node_to_node map
-		// const Eigen::VectorXi in_ordered_vertices = file.exist("ordered_vertices") ? H5Easy::load<Eigen::VectorXi>(file, "ordered_vertices") : mesh->in_ordered_vertices();
-		// const Eigen::MatrixXi in_ordered_edges = file.exist("ordered_edges") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_edges") : mesh->in_ordered_edges();
-		// const Eigen::MatrixXi in_ordered_faces = file.exist("ordered_faces") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_faces") : mesh->in_ordered_faces();
-
-		finish_collision_proxy_displacement_map(
-			shape, values, rows, cols, in_node_to_node, num_proxy_vertices, displacement_map_entries);
 	}
 
 	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
+		const io::ResourceIO &resources,
 		const std::string &filename,
 		const Eigen::MatrixXi &faces,
 		const size_t n_vertices)
 	{
-		std::ifstream in(filename);
-		if (!in.is_open())
+		if (!resources.exists(filename))
 			log_and_throw_error("Cannot open body IDs file: {}", filename);
+		const std::unique_ptr<std::istream> in = resources.open(filename, false);
 
-		// One list per non-empty line, for the first faces.rows() such lines; later lines are ignored.
-		std::vector<std::vector<int>> face_body_ids;
+		std::vector<std::set<int>> vertex_body_ids(n_vertices);
 		std::string line;
-		while (std::getline(in, line) && face_body_ids.size() < faces.rows())
+		int f = 0;
+		while (std::getline(*in, line) && f < faces.rows())
 		{
 			if (line.empty())
 				continue;
 			std::istringstream iss(line);
-			std::vector<int> ids;
+			std::set<int> face_id_set;
 			int id;
 			while (iss >> id)
-				ids.push_back(id);
-			face_body_ids.push_back(ids);
-		}
-		return load_collision_proxy_collision_body_ids(face_body_ids, faces, n_vertices);
-	}
-
-	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
-		const std::vector<std::vector<int>> &face_body_ids,
-		const Eigen::MatrixXi &faces,
-		const size_t n_vertices)
-	{
-		// The file overload reads at most faces.rows() lists, so only memory can have more.
-		if (face_body_ids.size() > faces.rows())
-			log_and_throw_error(
-				"Body IDs have more entries than faces ({} > {})",
-				face_body_ids.size(), faces.rows());
-
-		std::vector<std::set<int>> vertex_body_ids(n_vertices);
-		int f = 0;
-		for (; f < face_body_ids.size(); f++)
-		{
-			if (face_body_ids[f].empty())
+				face_id_set.insert(id);
+			if (face_id_set.empty())
 				log_and_throw_error(
 					"Body IDs file has no IDs on line {} (face {})", f, f);
 			for (int lv = 0; lv < faces.cols(); lv++)
 				vertex_body_ids[faces(f, lv)].insert(
-					face_body_ids[f].begin(), face_body_ids[f].end());
+					face_id_set.begin(), face_id_set.end());
+			f++;
 		}
 		if (f < faces.rows())
 			log_and_throw_error(

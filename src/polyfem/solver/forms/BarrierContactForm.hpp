@@ -7,6 +7,8 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
+#include <ipc/barrier/barrier.hpp>
 
 namespace polyfem::solver
 {
@@ -26,7 +28,11 @@ namespace polyfem::solver
 						   const bool enable_shape_derivatives,
 						   const ipc::BroadPhaseMethod broad_phase_method,
 						   const double ccd_tolerance,
-						   const int ccd_max_iterations);
+						   const int ccd_max_iterations,
+						   const double dhat_epsilon_scale,
+						   const ipc::NormalCollisions::CollisionSetType collision_set_type = ipc::NormalCollisions::CollisionSetType::IPC,
+						   const bool skip_obstacles = false,
+						   std::shared_ptr<ipc::Barrier> barrier = nullptr);
 
 		virtual std::string name() const override { return "barrier-contact"; }
 
@@ -76,13 +82,12 @@ namespace polyfem::solver
 
 		/// @brief Cached constraint set for the current solution
 		ipc::NormalCollisions collision_set_;
-		/// @brief Displaced surface that collision_set_ was last built from; a rebuild is skipped when
-		/// the next one is identical. A member, not a function-local static: a static is shared by every
-		/// form in the process and outlives the State, so a second solve starting where the previous one
-		/// ended matched the stale entry and ran with an empty collision set.
-		Eigen::MatrixXd cached_displaced_surface_;
 
 		/// @brief Contact potential
 		const ipc::BarrierPotential barrier_potential_;
+
+	private:
+		/// Per-form cache: identical positions in another state do not imply that this collision set is built.
+		Eigen::MatrixXd cached_displaced_surface_;
 	};
 } // namespace polyfem::solver

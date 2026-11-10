@@ -30,6 +30,7 @@ namespace polyfem
 			virtual int n_cell_edges(const int c_id) const = 0;
 			virtual int n_cell_faces(const int c_id) const = 0;
 			virtual int cell_face(const int c_id, const int lf_id) const = 0;
+			virtual int cell_face_orientation(const int c_id, const int lf_id) const = 0;
 			virtual int cell_edge(const int c_id, const int le_id) const = 0;
 
 			void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
@@ -43,6 +44,7 @@ namespace polyfem
 
 			std::pair<RowVectorNd, int> edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
 			std::pair<RowVectorNd, int> face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
+			std::pair<RowVectorNd, int> face_node(const Navigation3D::Index &index, const int n_new_nodes, const int n_new_nodesq, const int i, const int j) const;
 			std::pair<RowVectorNd, int> cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;

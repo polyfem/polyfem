@@ -6,11 +6,6 @@
 
 #include <Eigen/Core>
 
-namespace polyfem
-{
-	class State;
-}
-
 namespace polyfem::solver
 {
 	class ParametrizationForm : public AdjointForm

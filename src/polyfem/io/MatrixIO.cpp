@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <iomanip> // setprecision
+#include <limits>
 #include <vector>
 #include <filesystem>
 
@@ -82,8 +83,7 @@ namespace polyfem::io
 	template <typename T>
 	bool read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 	{
-		std::fstream file;
-		file.open(path.c_str());
+		std::ifstream file(path);
 
 		if (!file.good())
 		{
@@ -106,9 +106,20 @@ namespace polyfem::io
 
 			std::vector<T> &currentLine = matrix.back();
 
-			while (input >> temp)
+			while (true)
+			{
+				input >> std::ws;
+				if (input.eof())
+					break;
+				if (!(input >> temp))
+					return false; // Reject malformed or out-of-range values, not a partial row.
 				currentLine.push_back(temp);
+			}
+			if (currentLine.empty())
+				matrix.pop_back();
 		}
+		if (file.bad())
+			return false;
 
 		if (!igl::list_to_matrix(matrix, mat))
 		{
@@ -157,12 +168,23 @@ namespace polyfem::io
 		Index rows = 0, cols = 0;
 		in.read((char *)(&rows), sizeof(Index));
 		in.read((char *)(&cols), sizeof(Index));
+		if (!in || rows < 0 || cols < 0
+			|| (cols && rows > std::numeric_limits<Index>::max() / cols))
+			return false;
+		const uintmax_t count = uintmax_t(rows) * uintmax_t(cols);
+		if (count > (uintmax_t(std::numeric_limits<std::streamsize>::max()) - 2 * sizeof(Index)) / sizeof(T))
+			return false;
+		in.seekg(0, std::ios::end);
+		if (in.tellg() != std::streamoff(2 * sizeof(Index) + count * sizeof(T)))
+			return false;
+		in.seekg(2 * sizeof(Index));
 
 		mat.resize(rows, cols);
 		in.read((char *)mat.data(), rows * cols * sizeof(T));
+		const bool success = bool(in);
 		in.close();
 
-		return true;
+		return success;
 	}
 
 	template <typename Mat>
@@ -246,6 +268,7 @@ namespace polyfem::io
 	// template instantiation
 	template bool read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+	template bool read_matrix<long>(const std::string &, Eigen::Matrix<long, Eigen::Dynamic, Eigen::Dynamic> &);
 
 	template bool read_matrix<Eigen::MatrixXi>(const std::string &, const std::string &, Eigen::MatrixXi &);
 	template bool read_matrix<Eigen::MatrixXd>(const std::string &, const std::string &, Eigen::MatrixXd &);
@@ -262,6 +285,7 @@ namespace polyfem::io
 
 	template bool read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+	template bool read_matrix_ascii<long>(const std::string &, Eigen::Matrix<long, Eigen::Dynamic, Eigen::Dynamic> &);
 
 	template bool write_matrix_ascii<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
 	template bool write_matrix_ascii<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
@@ -270,6 +294,7 @@ namespace polyfem::io
 
 	template bool read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+	template bool read_matrix_binary<long>(const std::string &, Eigen::Matrix<long, Eigen::Dynamic, Eigen::Dynamic> &);
 
 	template bool write_matrix_binary<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
 	template bool write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);

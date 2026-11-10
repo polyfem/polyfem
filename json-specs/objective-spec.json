@@ -33,7 +33,7 @@
             "collision_barrier",
             "deformed_collision_barrier",
             "control_smoothing",
-            "material_smoothing",
+            "elastic_material_smoothing",
             "volume",
             "soft_constraint",
             "layer_thickness",
@@ -41,6 +41,7 @@
             "log",
             "AMIPS",
             "parametrized_product",
+            "gcp_force_norm",
             "smooth_contact_force_norm",
             "min_jacobian",
             "min-dist-target"
@@ -837,16 +838,17 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "material_smoothing",
+        "type_name": "elastic_material_smoothing",
         "required": [
-            "type"
+            "type",
+            "state"
         ],
         "optional": [
             "weight",
             "print_energy",
             "volume_selection"
         ],
-        "doc": "TODO"
+        "doc": "Penalize relative jumps in per-element Lamé parameters across adjacent selected elements."
     },
     {
         "pointer": "/",
@@ -1004,7 +1006,7 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "smooth_contact_force_norm",
+        "type_name": "gcp_force_norm",
         "required": [
             "state",
             "type"
@@ -1014,6 +1016,21 @@
             "weight",
             "print_energy"
         ]
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "smooth_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Deprecated alias for 'gcp_force_norm'."
     },
     {
         "pointer": "/",

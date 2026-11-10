@@ -43,6 +43,9 @@ namespace polyfem
 		struct Element
 		{
 			int id;
+			// Vertex order in the input mesh, when available. The `vs` array is
+			// reserved for the canonical ordering used by mesh navigation.
+			std::vector<uint32_t> input_vs;
 			std::vector<uint32_t> vs;
 			std::vector<uint32_t> es;
 			std::vector<uint32_t> fs;
@@ -149,6 +152,8 @@ namespace polyfem
 				{
 					auto tmp = c;
 					tmp.id += n_c;
+					for (auto &e : tmp.input_vs)
+						e += n_v;
 					for (auto &e : tmp.vs)
 						e += n_v;
 

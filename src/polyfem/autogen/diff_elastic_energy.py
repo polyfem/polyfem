@@ -36,11 +36,8 @@ class AMIPSEnergy:
         return standard
 
     def eval(self, p, t, el_id, def_grad):
-        if self.use_rest_pose:
-            power = 1 if self.dim == 2 else sp.Rational(2, 3)
-        else:
-            power = 2 if self.dim == 2 else sp.Rational(5, 3)
-
+        power = 1 if self.dim == 2 else sp.Rational(2, 3)
+        
         standard = self.get_standard()
 
         if not self.use_rest_pose:

@@ -1,12 +1,14 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/varforms/diff/DifferentiableVarForm.hpp>
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 
 #include <string>
 #include <memory>
@@ -15,38 +17,35 @@
 
 namespace polyfem::from_json
 {
-	// Build a single State from an in-memory JSON configuration.
-	// This mirrors the initialization done by build_states(), but does not load JSON from disk.
-	std::shared_ptr<State> build_state(
+	std::shared_ptr<varform::DifferentiableVarForm> build_differentiable_varform(
 		const json &args,
-		const size_t max_threads);
-
-	std::vector<std::shared_ptr<State>> build_states(
-		const std::string &root_path,
-		const json &args,
+		const io::ResourceIO &resources,
 		const size_t max_threads);
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<int> &variable_sizes);
 
-	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation(
+	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
-		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
-		const std::vector<int> &variable_sizes);
+		const std::vector<int> &variable_sizes,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 	std::shared_ptr<solver::AdjointForm> build_form(
 		const json &args,
 		const solver::VariableToSimulationGroup &var2sim,
-		const std::vector<std::shared_ptr<State>> &states,
-		const std::vector<std::shared_ptr<DiffCache>> &diff_caches);
+		const std::vector<std::shared_ptr<varform::DifferentiableVarForm>> &varforms,
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<std::reference_wrapper<const io::ResourceIO>> &resources);
 
 } // namespace polyfem::from_json

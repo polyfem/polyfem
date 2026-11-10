@@ -38,9 +38,9 @@ namespace polyfem::assembler
 			return autogen::VolumePenalty3d_hessian(p, t, el_id, F, k);
 	}
 
-	void VolumePenalty::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void VolumePenalty::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		k_.add_multimaterial(index, params, units.stress(), root_path);
+		k_.add_multimaterial(index, params, units.stress(), resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> VolumePenalty::parameters() const

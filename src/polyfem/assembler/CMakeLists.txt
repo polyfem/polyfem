@@ -13,8 +13,12 @@ set(SOURCES
 	Bilaplacian.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
-	GenericElastic.cpp
 	GenericElastic.hpp
+	GenericElasticMR.cpp
+	GenericElasticOgden.cpp
+	GenericElasticNH.cpp
+	GenericElasticFiber.cpp
+	GenericElasticOther.cpp
 	GenericFiber.cpp
 	GenericFiber.hpp
 	GenericProblem.cpp
@@ -33,6 +37,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	HGOFiber.cpp
 	HGOFiber.hpp
+	HGODispersion.cpp
+	HGODispersion.hpp
 	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
@@ -50,10 +56,14 @@ set(SOURCES
 	MultiModel.hpp
 	NavierStokes.cpp
 	NavierStokes.hpp
+	NavierStokesFSI.cpp
+	NavierStokesFSI.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
 	NeoHookeanElasticityAutodiff.cpp
 	NeoHookeanElasticityAutodiff.hpp
+	InversionBarrier.cpp
+	InversionBarrier.hpp
 	OgdenElasticity.cpp
 	OgdenElasticity.hpp
 	OgdenElasticity.tpp
@@ -65,6 +75,8 @@ set(SOURCES
 	SaintVenantElasticity.hpp
 	Stokes.cpp
 	Stokes.hpp
+	ThermoElasticity.cpp
+	ThermoElasticity.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
 	AMIPSEnergy.cpp
@@ -73,8 +85,6 @@ set(SOURCES
 	IsochoricNeoHookean.hpp
 	PressureAssembler.cpp
 	PressureAssembler.hpp
-	PeriodicBoundary.cpp
-	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
 	VolumePenalty.hpp

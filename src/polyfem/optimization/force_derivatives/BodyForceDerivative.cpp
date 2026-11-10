@@ -69,7 +69,7 @@ namespace polyfem::solver
 				io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
 
 				Eigen::MatrixXd rhs_function;
-				form.rhs_assembler_.problem().rhs(form.rhs_assembler_.assembler(), vals.val, t, rhs_function);
+				form.rhs_assembler_.problem().rhs(form.rhs_assembler_.assembler(), form.rhs_assembler_.mesh(), vals.element_id, vals.val, t, rhs_function);
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{

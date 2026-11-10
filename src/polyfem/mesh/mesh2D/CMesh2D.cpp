@@ -3,7 +3,6 @@
 
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
-#include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -14,14 +13,88 @@
 
 #include <cassert>
 #include <array>
+#include <unordered_map>
+#include <type_traits>
 
 namespace polyfem
 {
-	using namespace io;
 	using namespace utils;
 
 	namespace mesh
 	{
+		void CMesh2D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_faces());
+
+			std::unordered_map<std::pair<int, int>, int, utils::HashPair> old_edge_ids;
+			std::unordered_map<std::pair<int, int>, EdgeNodes, utils::HashPair> old_edge_nodes;
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+				if (has_boundary_ids())
+					old_edge_ids[key] = boundary_ids_[e];
+				if (e < edge_nodes_.size())
+					old_edge_nodes[key] = edge_nodes_[e];
+			}
+
+			auto filter_nodes = [&keep](auto &nodes) {
+				if (nodes.size() != keep.size())
+					return;
+				std::decay_t<decltype(nodes)> filtered;
+				for (int i = 0; i < keep.size(); ++i)
+					if (keep[i])
+						filtered.push_back(nodes[i]);
+				nodes = std::move(filtered);
+			};
+			filter_nodes(face_nodes_);
+			filter_nodes(cell_nodes_);
+			filter_element_data(keep);
+
+			GEO::vector<GEO::index_t> to_delete(mesh_.facets.nb(), 0);
+			for (int f = 0; f < keep.size(); ++f)
+				to_delete[f] = keep[f] ? 0 : 1;
+			mesh_.facets.delete_elements(to_delete);
+
+			c2e_.reset();
+			boundary_vertices_.reset();
+			boundary_edges_.reset();
+			Navigation::prepare_mesh(mesh_);
+			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
+			if (!old_edge_ids.empty())
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+					const auto it = old_edge_ids.find(key);
+					boundary_ids_[e] = it == old_edge_ids.end() ? get_default_boundary_id(e) : it->second;
+				}
+			}
+			else
+				boundary_ids_.clear();
+
+			edge_nodes_.clear();
+			if (!old_edge_nodes.empty())
+			{
+				edge_nodes_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
+				{
+					const std::pair<int, int> key = std::minmax(edge_vertex(e, 0), edge_vertex(e, 1));
+					const auto it = old_edge_nodes.find(key);
+					if (it != old_edge_nodes.end())
+						edge_nodes_[e] = it->second;
+				}
+			}
+
+			in_ordered_edges_.resize(n_edges(), 2);
+			for (int e = 0; e < n_edges(); ++e)
+				in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
+			compute_elements_tag();
+		}
+
 		void CMesh2D::refine(const int n_refinement, const double t)
 		{
 			// return;
@@ -31,6 +104,7 @@ namespace polyfem
 			}
 
 			orders_.resize(0, 0);
+			clear_higher_order_data();
 
 			bool all_simplicial = true;
 			for (int e = 0; e < n_elements(); ++e)
@@ -93,54 +167,10 @@ namespace polyfem
 			in_ordered_faces_.resize(0, 0);
 		}
 
-		bool CMesh2D::load(const std::string &path)
+		bool CMesh2D::build_topology(const MeshData &data)
 		{
-			// This method should be used for special loading, like hybrid in 3d
-
-			// edge_nodes_.clear();
-			// face_nodes_.clear();
-			// cell_nodes_.clear();
-			// order_ = 1;
-
-			// c2e_.reset();
-			// boundary_vertices_.reset();
-			// boundary_edges_.reset();
-
-			// mesh_.clear(false,false);
-
-			// if (!StringUtils::endswith(path, "msh"))
-			// {
-			// 	Eigen::MatrixXd vertices;
-			// 	Eigen::MatrixXi cells;
-			// 	std::vector<std::vector<int>> elements;
-			// 	std::vector<std::vector<double>> weights;
-
-			// 	if(!MshReader::load(path, vertices, cells, elements, weights))
-			// 		return false;
-
-			// 	build_from_matrices(vertices, cells);
-			// 	attach_higher_order_nodes(vertices, elements);
-			// 	cell_weights_ = weights;
-			// }
-			// else
-			// {
-			// 	if(!mesh_load(path, mesh_))
-			// 		return false;
-			// }
-
-			// orient_normals_2d(mesh_);
-			// Navigation::prepare_mesh(mesh_);
-			// c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			// boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			// boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
-
-			// compute_elements_tag();
-			assert(false);
-			return false;
-		}
-
-		bool CMesh2D::load(const GEO::Mesh &mesh)
-		{
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
@@ -150,38 +180,24 @@ namespace polyfem
 			boundary_edges_.reset();
 
 			mesh_.clear(false, false);
-			mesh_.copy(mesh);
-
-			orient_normals_2d(mesh_);
-			Navigation::prepare_mesh(mesh_);
-			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
-
-			compute_elements_tag();
-			return true;
-		}
-
-		bool CMesh2D::save(const std::string &path) const
-		{
-			if (!mesh_save(mesh_, path))
-				return false;
-
-			return true;
-		}
-
-		bool CMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			edge_nodes_.clear();
-			face_nodes_.clear();
-			cell_nodes_.clear();
-
-			c2e_.reset();
-			boundary_vertices_.reset();
-			boundary_edges_.reset();
-
-			mesh_.clear(false, false);
-			to_geogram_mesh(V, F, mesh_);
+			mesh_.vertices.create_vertices(V.rows());
+			for (int i = 0; i < V.rows(); ++i)
+			{
+				GEO::vec3 &point = mesh_.vertices.point(i);
+				point[0] = V(i, 0);
+				point[1] = V(i, 1);
+				point[2] = 0;
+			}
+			for (int i = 0; i < F.rows(); ++i)
+			{
+				std::vector<GEO::index_t> vertices;
+				vertices.reserve(F.cols());
+				for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
+					vertices.push_back(F(i, j));
+				if (vertices.size() < 3)
+					return false;
+				mesh_.facets.create_polygon(vertices.size(), vertices.data());
+			}
 
 			orient_normals_2d(mesh_);
 			Navigation::prepare_mesh(mesh_);
@@ -440,6 +456,11 @@ namespace polyfem
 				if (n.nodes.size() > 0)
 					n.nodes = (n.nodes.rowwise() - shift) / scaling;
 			}
+			Eigen::Vector2d normalization_translation;
+			normalization_translation << -origin[0] / scaling, -origin[1] / scaling;
+			transform_higher_order_data(
+				Eigen::Matrix2d::Identity() / scaling,
+				normalization_translation);
 
 			logger().debug("-- bbox before normalization:");
 			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
@@ -645,20 +666,36 @@ namespace polyfem
 
 		std::unique_ptr<Mesh> CMesh2D::copy() const
 		{
+			Eigen::MatrixXd vertices(n_vertices(), 2);
+			int max_face_size = 0;
+			for (int i = 0; i < n_vertices(); ++i)
+				vertices.row(i) = point(i);
+			for (int i = 0; i < n_faces(); ++i)
+				max_face_size = std::max(max_face_size, n_face_vertices(i));
+
+			Eigen::MatrixXi faces = Eigen::MatrixXi::Constant(n_faces(), max_face_size, -1);
+			for (int i = 0; i < n_faces(); ++i)
+				for (int j = 0; j < n_face_vertices(i); ++j)
+					faces(i, j) = face_vertex(i, j);
+
 			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
-			copy_mesh->load(this->mesh_);
+			copy_mesh->build_topology(MeshData(std::move(vertices), std::move(faces)));
 
 			// Manually copy parent's data
 			copy_mesh->elements_tag_ = this->elements_tag_;
 			copy_mesh->node_ids_ = this->node_ids_;
 			copy_mesh->boundary_ids_ = this->boundary_ids_;
 			copy_mesh->body_ids_ = this->body_ids_;
+			copy_mesh->geometry_ids_ = this->geometry_ids_;
 			copy_mesh->orders_ = this->orders_;
 			copy_mesh->is_rational_ = this->is_rational_;
 			copy_mesh->edge_nodes_ = this->edge_nodes_;
 			copy_mesh->face_nodes_ = this->face_nodes_;
 			copy_mesh->cell_nodes_ = this->cell_nodes_;
 			copy_mesh->cell_weights_ = this->cell_weights_;
+			copy_mesh->has_explicit_polyhedral_topology_ = this->has_explicit_polyhedral_topology_;
+			copy_mesh->higher_order_nodes_ = this->higher_order_nodes_;
+			copy_mesh->higher_order_connectivity_ = this->higher_order_connectivity_;
 			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
 			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
 			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;

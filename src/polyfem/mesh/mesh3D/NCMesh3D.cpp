@@ -15,6 +15,55 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		void NCMesh3D::remove_elements(const std::vector<bool> &keep)
+		{
+			assert(keep.size() == n_cells());
+
+			std::vector<int> old_node_ids(vertices.size(), -1);
+			if (has_node_ids())
+				for (int v = 0; v < n_vertices(); ++v)
+					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
+			std::vector<int> old_boundary_ids(faces.size(), -1);
+			if (has_boundary_ids())
+				for (int f = 0; f < n_faces(); ++f)
+					old_boundary_ids[valid_to_all_face(f)] = boundary_ids_[f];
+
+			for (int e = 0; e < keep.size(); ++e)
+			{
+				if (keep[e])
+					continue;
+				const int full_id = valid_to_all_elem(e);
+				auto &element = elements[full_id];
+				element.is_ghost = true;
+				for (const int face : element.faces)
+					faces[face].remove_element(full_id);
+				for (const int edge : element.edges)
+					edges[edge].remove_element(full_id);
+				for (const int vertex : element.vertices)
+					vertices[vertex].remove_element(full_id);
+				--n_elements;
+			}
+			filter_element_data(keep);
+			prepare_mesh();
+
+			if (has_node_ids())
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = old_node_ids[valid_to_all_vertex(v)];
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					const int old_id = old_boundary_ids[valid_to_all_face(f)];
+					boundary_ids_[f] = old_id < 0 ? get_default_boundary_id(f) : old_id;
+					faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
+				}
+			}
+		}
+
 		int NCMesh3D::face_edge(const int f_id, const int le_id) const
 		{
 			const int v0 = faces[valid_to_all_face(f_id)].vertices(le_id);
@@ -27,6 +76,7 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
+			clear_higher_order_data();
 			std::vector<bool> refine_mask(elements.size(), false);
 			for (int i = 0; i < elements.size(); i++)
 				if (elements[i].is_valid())
@@ -49,8 +99,14 @@ namespace polyfem
 			return false;
 		}
 
-		bool NCMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		bool NCMesh3D::build_topology(const MeshData &data)
 		{
+			if (data.has_polyhedral_topology())
+				return false;
+			const Eigen::MatrixXd &V = data.vertices;
+			const Eigen::MatrixXi &F = data.elements;
+			if (F.cols() != 4 || F.minCoeff() < 0)
+				return false;
 			n_elements = 0;
 			elements.clear();
 			vertices.clear();
@@ -199,6 +255,7 @@ namespace polyfem
 		void NCMesh3D::set_boundary_ids(const std::vector<int> &boundary_ids)
 		{
 			assert(boundary_ids.size() == n_faces());
+			Mesh::set_boundary_ids(boundary_ids);
 			for (int i = 0; i < boundary_ids.size(); i++)
 			{
 				faces[valid_to_all_face(i)].boundary_id = boundary_ids[i];
@@ -207,6 +264,7 @@ namespace polyfem
 		void NCMesh3D::set_body_ids(const std::vector<int> &body_ids)
 		{
 			assert(body_ids.size() == n_cells());
+			Mesh::set_body_ids(body_ids);
 			for (int i = 0; i < body_ids.size(); i++)
 			{
 				elements[valid_to_all_elem(i)].body_id = body_ids[i];
@@ -708,7 +766,7 @@ namespace polyfem
 
 			for (auto &face : faces)
 			{
-				if (face.leader >= 0)
+				if (face.leader >= 0 && face.n_elem() > 0 && faces[face.leader].n_elem() > 0)
 				{
 					face.isboundary = false;
 					faces[face.leader].isboundary = false;
@@ -817,50 +875,6 @@ namespace polyfem
 		std::unique_ptr<Mesh> NCMesh3D::copy() const
 		{
 			return std::make_unique<NCMesh3D>(*this);
-		}
-
-		bool NCMesh3D::load(const std::string &path)
-		{
-			if (!StringUtils::endswith(path, ".HYBRID"))
-			{
-				GEO::Mesh M;
-				GEO::mesh_load(path, M);
-				return load(M);
-			}
-			return false;
-		}
-		bool NCMesh3D::load(const GEO::Mesh &M)
-		{
-			assert(M.vertices.dimension() == 3);
-
-			Eigen::MatrixXd V(M.vertices.nb(), 2);
-			Eigen::MatrixXi C(M.cells.nb(), 4);
-
-			for (int v = 0; v < V.rows(); v++)
-				V.row(v) << M.vertices.point(v)[0], M.vertices.point(v)[1], M.vertices.point(v)[2];
-
-			for (int c = 0; c < C.rows(); c++)
-			{
-				if (M.cells.type(c) != GEO::MESH_TET)
-					throw std::runtime_error("NCMesh3D only supports tet mesh!");
-				for (int i = 0; i < C.cols(); i++)
-					C(c, i) = M.cells.vertex(c, i);
-			}
-
-			n_elements = 0;
-			vertices.reserve(V.rows());
-			for (int i = 0; i < V.rows(); i++)
-			{
-				vertices.emplace_back(V.row(i));
-			}
-			for (int i = 0; i < C.rows(); i++)
-			{
-				add_element(C.row(i), -1);
-			}
-
-			prepare_mesh();
-
-			return true;
 		}
 
 		int NCMesh3D::find_vertex(Eigen::Vector2i v) const

@@ -15,20 +15,13 @@ namespace polyfem
 		{
 		}
 
-		void NodeValues::load(const std::string &path)
+		void NodeValues::load(const io::ResourceIO &resources, const std::string &path)
 		{
-			std::fstream file;
-			file.open(path.c_str());
-
-			if (!file.good())
-			{
-				logger().error("Failed to open file: {}", path);
-				file.close();
-			}
+			auto file = resources.open(path, false);
 
 			std::string s;
 
-			while (getline(file, s))
+			while (getline(*file, s))
 			{
 				std::stringstream input(s);
 
@@ -47,8 +40,6 @@ namespace polyfem
 				while (input >> temp)
 					currentLine.push_back(temp);
 			}
-
-			file.close();
 		}
 
 		void NodeValues::init(const mesh::Mesh &mesh)
@@ -96,12 +87,12 @@ namespace polyfem
 			values_.init(mesh);
 		}
 
-		void NodeProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		}
 
-		void NodeProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -127,7 +118,7 @@ namespace polyfem
 			}
 		}
 
-		void NodeProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -146,9 +137,9 @@ namespace polyfem
 			}
 		}
 
-		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim) const
+		bool NodeProblem::is_dimension_dirichet(const int tag, const int dim, const int fe_space_id) const
 		{
-			if (all_dimensions_dirichlet())
+			if (all_dimensions_dirichlet(fe_space_id))
 				return true;
 
 			if (is_all_)
@@ -169,7 +160,7 @@ namespace polyfem
 			return true;
 		}
 
-		void NodeProblem::set_parameters(const json &params, const std::string &root_path)
+		void NodeProblem::set_parameters(const json &params, const io::ResourceIO &resources)
 		{
 			if (params.contains("rhs"))
 			{
@@ -179,7 +170,7 @@ namespace polyfem
 			if (params.contains("values"))
 			{
 				const std::string path = params["values"];
-				values_.load(path);
+				values_.load(resources, path);
 			}
 
 			if (params.contains("dirichlet_boundary"))

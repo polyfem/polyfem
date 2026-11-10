@@ -7,9 +7,14 @@
 
 #include <Eigen/Core>
 
-#include <array>
 #include <set>
+#include <string>
 #include <vector>
+
+namespace polyfem::io
+{
+	class ResourceIO;
+}
 
 namespace polyfem::mesh
 {
@@ -23,37 +28,6 @@ namespace polyfem::mesh
 		CollisionProxyTessellation,
 		{{CollisionProxyTessellation::REGULAR, "regular"},
 		 {CollisionProxyTessellation::IRREGULAR, "irregular"}});
-
-	/// @brief A collision proxy held in memory: exactly what its three files hold (the proxy mesh
-	/// file, the weights hdf5 file, and the body-id text file). The in-memory overloads of
-	/// load_collision_proxy and load_collision_proxy_collision_body_ids share all their code after
-	/// the reading with the file overloads, so a proxy here and in files give the same collision mesh.
-	struct CollisionProxyData
-	{
-		/// @brief The proxy mesh as read_surface_mesh returns it for the file: #V x 2 or #V x 3
-		/// positions (a third column that is all zero is dropped, as for a file), codimensional
-		/// vertices, codimensional edges, and triangles. A 2D proxy has no triangles; its edges are
-		/// codim_edges. The codimensional vertices are not stored in the file: read_surface_mesh
-		/// derives them as every vertex that no codim edge and no face uses, in increasing order,
-		/// and the caller fills this field by the same rule.
-		Eigen::MatrixXd vertices;
-		Eigen::VectorXi codim_vertices;
-		Eigen::MatrixXi codim_edges;
-		Eigen::MatrixXi faces;
-
-		/// @brief The displacement map as the weights file stores it (group "weight_triplets"):
-		/// entry k has weight weight_values[k] from FE input node weight_cols[k] to proxy vertex
-		/// weight_rows[k]; weight_shape is [#proxy vertices, #FE input nodes].
-		Eigen::VectorXd weight_values;
-		Eigen::VectorXi weight_rows;
-		Eigen::VectorXi weight_cols;
-		std::array<long, 2> weight_shape = {{0, 0}};
-
-		/// @brief Collision body ids as the body-id file stores them: one list per primitive
-		/// (triangle, or edge when the proxy has no triangles), in primitive order. Empty means no
-		/// body ids, like an absent file.
-		std::vector<std::vector<int>> collision_body_ids;
-	};
 
 	/// @brief Build a collision proxy mesh by upsampling a given mesh.
 	/// @param[in] bases Bases for elements
@@ -96,9 +70,9 @@ namespace polyfem::mesh
 		// NOTE: no need for proxy_faces
 		std::vector<Eigen::Triplet<double>> &displacement_map);
 
-	/// @brief Load a collision proxy mesh and displacement map from files.
-	/// @param[in] mesh_filename Mesh filename
-	/// @param[in] weights_filename Weights filename
+	/// @brief Load a collision proxy mesh and displacement map from resources.
+	/// @param[in] mesh_filename Mesh resource path
+	/// @param[in] weights_filename Weights resource path
 	/// @param[in] in_node_to_node Map from input node IDs to node IDs
 	/// @param[in] transformation Transformation to apply to the mesh
 	/// @param[out] vertices Output vertices of the proxy mesh
@@ -107,6 +81,7 @@ namespace polyfem::mesh
 	/// @param[out] faces Output faces of the proxy mesh
 	/// @param[out] displacement_map_entries Output displacement map entries
 	void load_collision_proxy(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
@@ -117,34 +92,15 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
-	/// @brief Load a collision proxy mesh and displacement map from memory; the same as the file
-	/// overload above from the read arrays on.
-	/// @param[in] proxy Collision proxy (its collision_body_ids are not used here)
-	/// @param[in] in_node_to_node Map from input node IDs to node IDs
-	/// @param[in] transformation Transformation to apply to the mesh
-	/// @param[out] vertices Output vertices of the proxy mesh
-	/// @param[out] codim_vertices Output codimension vertices of the proxy mesh
-	/// @param[out] edges Output edges of the proxy mesh
-	/// @param[out] faces Output faces of the proxy mesh
-	/// @param[out] displacement_map_entries Output displacement map entries
-	void load_collision_proxy(
-		const CollisionProxyData &proxy,
-		const Eigen::VectorXi &in_node_to_node,
-		const json &transformation,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &edges,
-		Eigen::MatrixXi &faces,
-		std::vector<Eigen::Triplet<double>> &displacement_map_entries);
-
-	/// @brief Load a collision proxy mesh from a file.
-	/// @param[in] mesh_filename Mesh filename
+	/// @brief Load a collision proxy mesh from a resource.
+	/// @param[in] mesh_filename Mesh resource path
 	/// @param[in] transformation Transformation to apply to the mesh
 	/// @param[out] vertices Output vertices of the proxy mesh
 	/// @param[out] codim_vertices Output codimension vertices of the proxy mesh
 	/// @param[out] edges Output edges of the proxy mesh
 	/// @param[out] faces Output faces of the proxy mesh
 	void load_collision_proxy_mesh(
+		const io::ResourceIO &resources,
 		const std::string &mesh_filename,
 		const json &transformation,
 		Eigen::MatrixXd &vertices,
@@ -152,36 +108,27 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &edges,
 		Eigen::MatrixXi &faces);
 
-	/// @brief Load a collision proxy displacement map from files.
-	/// @param[in] weights_filename Weights filename
+	/// @brief Load a collision proxy displacement map from a resource.
+	/// @param[in] weights_filename Weights resource path
 	/// @param[in] in_node_to_node Map from input node IDs to node IDs
 	/// @param[out] displacement_map_entries Output displacement map entries
 	void load_collision_proxy_displacement_map(
+		const io::ResourceIO &resources,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
 		const size_t num_proxy_vertices,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
-	/// @brief Load per-face collision body IDs from a text file (one integer per line)
-	/// and expand to per-vertex sets. Vertices shared between faces of different
-	/// IDs accumulate all of those IDs.
-	/// @param[in] filename Path to the collision body IDs file (n_faces lines)
-	/// @param[in] faces Face connectivity matrix (n_faces x 3)
-	/// @param[in] n_vertices Number of vertices
+	/// @brief Load per-face collision body IDs from a text resource and expand them to per-vertex
+	/// sets. Line f lists the IDs of face f (edge f in 2D), one or more integers separated by spaces;
+	/// empty lines are skipped. A vertex shared by faces of different IDs carries all of them.
+	/// @param[in] filename Body IDs resource path (one line per face)
+	/// @param[in] faces Face (2D: edge) connectivity of the collision proxy
+	/// @param[in] n_vertices Number of collision proxy vertices
 	/// @return Per-vertex sets of collision body IDs
 	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
+		const io::ResourceIO &resources,
 		const std::string &filename,
-		const Eigen::MatrixXi &faces,
-		const size_t n_vertices);
-
-	/// @brief Expand per-face collision body IDs held in memory (one list per face, as the file
-	/// holds them) to per-vertex sets; the same as the file overload above from the read lists on.
-	/// @param[in] face_body_ids One list of IDs per face (n_faces lists)
-	/// @param[in] faces Face connectivity matrix (n_faces x 3)
-	/// @param[in] n_vertices Number of vertices
-	/// @return Per-vertex sets of collision body IDs
-	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
-		const std::vector<std::vector<int>> &face_body_ids,
 		const Eigen::MatrixXi &faces,
 		const size_t n_vertices);
 } // namespace polyfem::mesh

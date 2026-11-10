@@ -8,4 +8,9 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-CPMAddPackage("gh:wildmeshing/ipc-toolkit#626e27e11ac64c68f1e00859fec86c4688fde51c")
+CPMAddPackage(
+	NAME "ipc-toolkit"
+	GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
+	GIT_TAG "dff05854"
+	OPTIONS "IPC_TOOLKIT_WITH_CUDA OFF"
+)

@@ -9,6 +9,7 @@
 #include <queue>
 #include <iterator>
 #include <cassert>
+#include <limits>
 
 using namespace polyfem::mesh;
 using namespace polyfem;
@@ -1230,10 +1231,23 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 				if (shared_edge(v0, v1, e))
 					edges[i] = e;
 			}
-			// the longest edge
-			int lv0 = E2V[edges[0]], lv1 = E2V[edges[5]];
-			e_flag[edges[0]] = true;
-			e_flag[edges[5]] = true;
+			// cut the inner octahedron along its shortest diagonal, which joins the midpoints
+			// of two opposite edges (k, 5 - k). A fixed choice of diagonal makes the tets
+			// degenerate under repeated refinement, since build_connectivity sorts ele.vs.
+			int diag = 0;
+			double min_length = std::numeric_limits<double>::max();
+			for (int k = 0; k < 3; ++k)
+			{
+				const double length = (Map<const Vector3d>(M_.vertices[E2V[edges[k]]].v.data()) - Map<const Vector3d>(M_.vertices[E2V[edges[5 - k]]].v.data())).squaredNorm();
+				if (length < min_length)
+				{
+					min_length = length;
+					diag = k;
+				}
+			}
+			int lv0 = E2V[edges[diag]], lv1 = E2V[edges[5 - diag]];
+			e_flag[edges[diag]] = true;
+			e_flag[edges[5 - diag]] = true;
 			for (short i = 0; i < 4; i++)
 			{ // four faces
 				Element ele_;
@@ -1264,7 +1278,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 
 				M_.elements.push_back(ele_);
 			}
-			e_flag[edges[0]] = e_flag[edges[5]] = false;
+			e_flag[edges[diag]] = e_flag[edges[5 - diag]] = false;
 		}
 
 		M_.points.resize(3, M_.vertices.size());

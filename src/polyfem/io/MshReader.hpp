@@ -24,6 +24,28 @@ namespace polyfem::io
 			std::vector<std::vector<int>> &elements,
 			std::vector<std::vector<double>> &weights,
 			std::vector<int> &body_ids,
+			std::vector<std::vector<int>> &boundary_elements,
+			std::vector<int> &boundary_ids);
+
+		static bool load(
+			const std::string &path,
+			Eigen::MatrixXd &vertices,
+			Eigen::MatrixXi &cells,
+			std::vector<std::vector<int>> &elements,
+			std::vector<std::vector<double>> &weights,
+			std::vector<int> &body_ids,
+			std::vector<std::string> &node_data_name,
+			std::vector<std::vector<double>> &node_data);
+
+		static bool load(
+			const std::string &path,
+			Eigen::MatrixXd &vertices,
+			Eigen::MatrixXi &cells,
+			std::vector<std::vector<int>> &elements,
+			std::vector<std::vector<double>> &weights,
+			std::vector<int> &body_ids,
+			std::vector<std::vector<int>> &boundary_elements,
+			std::vector<int> &boundary_ids,
 			std::vector<std::string> &node_data_name,
 			std::vector<std::vector<double>> &node_data);
 	};

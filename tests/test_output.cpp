@@ -4,10 +4,15 @@
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
+#include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <iterator>
+#include <regex>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -15,6 +20,26 @@ using namespace polyfem::assembler;
 using namespace polyfem::utils;
 
 bool load_json(const std::string &json_file, json &out);
+
+TEST_CASE("output statistics are initialized", "[output]")
+{
+	io::OutRuntimeData timings;
+	CHECK(timings.total_time() == 0);
+	CHECK(timings.loading_mesh_time == 0);
+	CHECK(timings.assigning_rhs_time == 0);
+	timings.building_basis_time = 1;
+	timings.loading_mesh_time = 2;
+	timings.assigning_rhs_time = 3;
+	timings.solving_time = 4;
+	CHECK(timings.total_time() == 10);
+
+	io::OutStatsData stats;
+	CHECK(stats.spectrum.isZero());
+	CHECK(stats.mesh_size == 0);
+	CHECK(stats.min_edge_length == 0);
+	CHECK(stats.nn_zero == 0);
+	CHECK(stats.simplex_count == 0);
+}
 
 #ifdef NDEBUG
 TEST_CASE("full sim", "[full_sim]")
@@ -59,26 +84,26 @@ TEST_CASE("full sim", "[.][full_sim]")
 	state.init(args, true);
 	state.load_mesh();
 
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		FAIL();
-	}
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
-
-	state.compute_errors(sol);
+	state.solve(sol);
+	state.variational_formulation->compute_errors(sol);
 
 	CHECK(std::filesystem::exists(outdir));
 	CHECK(std::filesystem::exists(outdir / "sim.pvd"));
+
+	int n_volume_files = 0;
+	for (const auto &entry : std::filesystem::directory_iterator(outdir))
+	{
+		if (!std::regex_match(entry.path().filename().string(), std::regex(R"(step_\d+\.vtu)")))
+			continue;
+		std::ifstream file(entry.path());
+		const std::string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		CAPTURE(entry.path().filename().string());
+		CHECK(contents.find("Name=\"solution\"") != std::string::npos);
+		++n_volume_files;
+	}
+	CHECK(n_volume_files > 0);
 
 	std::filesystem::remove_all(outdir);
 }

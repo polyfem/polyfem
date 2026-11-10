@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 namespace polyfem::solver
 {

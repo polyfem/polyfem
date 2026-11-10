@@ -1,0 +1,37 @@
+set(SOURCES
+    VarForm.cpp
+    VarFormFactory.hpp
+    VarFormFactory.cpp
+    VarFormUtils.hpp
+    FESpace.hpp
+    diff/DifferentiableVarForm.hpp
+    diff/DifferentiableVarForm.cpp
+    diff/DifferentiableScalarVarForm.hpp
+    diff/DifferentiableScalarVarForm.cpp
+    diff/DifferentiableLinearElasticVarForm.hpp
+    diff/DifferentiableLinearElasticVarForm.cpp
+    diff/DifferentiableNonlinearElasticVarForm.hpp
+    diff/DifferentiableNonlinearElasticVarForm.cpp
+    ElasticVarForm.hpp
+    ElasticVarForm.cpp
+    LinearElasticVarForm.hpp
+    LinearElasticVarForm.cpp
+    ScalarVarForm.hpp
+    ScalarVarForm.cpp
+    NonlinearElasticVarForm.hpp
+    NonlinearElasticVarForm.cpp
+    ThermoElasticVarForm.hpp
+    ThermoElasticVarForm.cpp
+    FluidVarForm.hpp
+    FluidVarForm.cpp
+	NavierStokesFSIVarForm.hpp
+	NavierStokesFSIVarForm.cpp
+    OperatorSplittingVarForm.hpp
+    OperatorSplittingVarForm.cpp
+    IncompressibleElasticVarForm.hpp
+    IncompressibleElasticVarForm.cpp
+    BilaplacianVarForm.hpp
+    BilaplacianVarForm.cpp
+)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "VarForms" FILES ${SOURCES})
+target_sources(polyfem PRIVATE ${SOURCES})
