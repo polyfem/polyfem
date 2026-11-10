@@ -24,8 +24,6 @@ namespace polyfem::assembler
 		weight_.add_multimaterial(index, params, "", resources);
 
 		json power_params = params;
-		if (!power_params.contains("power"))
-			power_params["power"] = 1.0;
 		power_.add_multimaterial(index, power_params, "", resources);
 
 		normalized_.add_multimaterial(index, params.contains("normalized") ? params : json{{"normalized", false}}, "", resources);
