@@ -218,6 +218,13 @@ namespace polyfem::varform
 		const json &args,
 		const std::string &out_path)
 	{
+		for (const std::string field : {"pressure_boundary", "pressure_cavity"})
+		{
+			const json::json_pointer path("/boundary_conditions/" + field);
+			if (args.contains(path) && !args.at(path).empty())
+				log_and_throw_error("{} does not support boundary_conditions.{}.", formulation, field);
+		}
+
 		VarForm::init(formulation, units, args, out_path);
 		read_material_space_ids(args);
 

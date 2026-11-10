@@ -89,6 +89,13 @@ namespace polyfem::varform
 
 	void FluidVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
+		for (const std::string field : {"pressure_boundary", "pressure_cavity"})
+		{
+			const json::json_pointer path("/boundary_conditions/" + field);
+			if (args.contains(path) && !args.at(path).empty())
+				log_and_throw_error("{} does not support boundary_conditions.{}.", formulation, field);
+		}
+
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 		const json &discr_orders = args.at("space").at("discr_order");
@@ -483,21 +490,26 @@ namespace polyfem::varform
 		}
 
 		boundary_.clear_boundary_conditions();
-		for (const auto &lb : all_boundary)
-			boundary_.local_boundary.emplace_back(lb);
-		pressure_boundary_.clear_boundary_conditions();
-
 		problem->setup_bc(
-			mesh, space_.n_bases,
-			space_.basis_list(), space_.geometry_basis_list(), pressure_space_.basis_list(),
-			boundary_.local_boundary,
-			boundary_.boundary_nodes,
-			boundary_.local_neumann_boundary,
-			boundary_.local_pressure_boundary,
-			boundary_.local_pressure_cavity,
-			pressure_boundary_.boundary_nodes,
-			boundary_.dirichlet_nodes, boundary_.neumann_nodes);
-		pressure_boundary_.normalize_boundary_nodes();
+			mesh, assembler::BoundaryKind::Dirichlet, velocity_space_id_,
+			space_.basis_list(), boundary_.total_local_boundary,
+			boundary_.local_boundary, boundary_.boundary_nodes, mesh.dimension());
+		problem->setup_bc(
+			mesh, assembler::BoundaryKind::Neumann, velocity_space_id_,
+			boundary_.total_local_boundary, boundary_.local_neumann_boundary);
+
+		problem->setup_nodal_bc(
+			mesh, assembler::BoundaryKind::Dirichlet, velocity_space_id_, space_.n_bases, boundary_.dirichlet_nodes);
+		problem->setup_nodal_bc(
+			mesh, assembler::BoundaryKind::Neumann, velocity_space_id_, space_.n_bases, boundary_.neumann_nodes);
+
+		for (const int n_id : boundary_.dirichlet_nodes)
+		{
+			const int tag = mesh.get_node_id(n_id);
+			for (int d = 0; d < mesh.dimension(); ++d)
+				if (problem->is_nodal_dimension_dirichlet(n_id, tag, d, velocity_space_id_))
+					boundary_.boundary_nodes.push_back(n_id * mesh.dimension() + d);
+		}
 
 		rebuild_node_positions(space_.basis_list(), boundary_.dirichlet_nodes, boundary_.dirichlet_nodes_position);
 		rebuild_node_positions(space_.basis_list(), boundary_.neumann_nodes, boundary_.neumann_nodes_position);
