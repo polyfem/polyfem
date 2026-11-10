@@ -494,8 +494,7 @@ TEST_CASE("2D spline max-order collision sampling preserves standard extraction"
 		{"geometry", {{{"mesh", ""}}}},
 		{"materials", {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1e3}}},
 		{"space", {{"basis_type", "Spline"}}},
-		{"contact", {{"enabled", true}, {"dhat", 0.01},
-			{"collision_mesh", {{"enabled", true}, {"tessellation_type", "max_order"}}}}},
+		{"contact", {{"enabled", true}, {"dhat", 0.01}, {"collision_mesh", {{"enabled", true}, {"tessellation_type", "max_order"}}}}},
 		{"output", {{"log", {{"level", "warning"}}}}}};
 	polyfem::State state;
 	state.init(args, true);
@@ -515,7 +514,8 @@ TEST_CASE("2D spline max-order collision sampling preserves standard extraction"
 	double perimeter = 0;
 	for (int i = 0; i < collision.num_edges(); ++i)
 		perimeter += (collision.rest_positions().row(collision.edges()(i, 0))
-			- collision.rest_positions().row(collision.edges()(i, 1))).norm();
+					  - collision.rest_positions().row(collision.edges()(i, 1)))
+						 .norm();
 	const auto debug = polyfem::test::VarFormTestAccess::debug_data(*state.variational_formulation);
 	Eigen::MatrixXd expected_vertices;
 	Eigen::MatrixXi expected_edges, expected_faces;
@@ -526,7 +526,8 @@ TEST_CASE("2D spline max-order collision sampling preserves standard extraction"
 	double expected_perimeter = 0;
 	for (int i = 0; i < expected_edges.rows(); ++i)
 		expected_perimeter += (expected_vertices.row(expected_edges(i, 0))
-			- expected_vertices.row(expected_edges(i, 1))).norm();
+							   - expected_vertices.row(expected_edges(i, 1)))
+								  .norm();
 	CHECK(collision.num_edges() == expected_edges.rows());
 	CHECK(perimeter == Catch::Approx(expected_perimeter));
 }
@@ -593,7 +594,8 @@ TEST_CASE("Bernstein 3D collision mesh evaluates a watertight sampled surface", 
 		for (size_t k = 0; k < original.bases.size(); ++k)
 		{
 			const auto &p = original.bases[k].global().front().node;
-			const double sign = p.norm() < 1e-12 ? -1 : (p - Eigen::RowVector3d(1, 0, 0)).norm() < 1e-12 ? 1 : 0;
+			const double sign = p.norm() < 1e-12 ? -1 : (p - Eigen::RowVector3d(1, 0, 0)).norm() < 1e-12 ? 1
+																										 : 0;
 			values[k].val.col(0).array() += sign * 0.2 * physical_points.col(0).array() * physical_points.col(1).array();
 		}
 	});

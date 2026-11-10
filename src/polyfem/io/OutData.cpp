@@ -447,7 +447,7 @@ namespace polyfem::io
 		{
 			logger().warn("Sampled 2D collision mesh requires triangle or quadrilateral elements; falling back to the standard boundary extraction");
 			extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
-				node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+								  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 			return;
 		}
 		if (sampling_order > 0)
@@ -493,9 +493,9 @@ namespace polyfem::io
 					for (int i = 0; i <= sampling_order; ++i)
 					{
 						// Share corners topologically, not by coordinate tolerance.
-						const std::array<int, 3> key = i == 0 ? std::array<int, 3>{{0, v0, 0}}
-							: i == sampling_order ? std::array<int, 3>{{0, v1, 0}}
-							: std::array<int, 3>{{1, eid, i}};
+						const std::array<int, 3> key = i == 0                ? std::array<int, 3>{{0, v0, 0}}
+													   : i == sampling_order ? std::array<int, 3>{{0, v1, 0}}
+																			 : std::array<int, 3>{{1, eid, i}};
 						const auto [it, inserted] = sample_ids.emplace(key, int(vertices.size()));
 						const int row = it->second;
 						if (inserted)
@@ -526,7 +526,7 @@ namespace polyfem::io
 		}
 
 		extract_boundary_mesh(mesh, n_bases, bases, total_local_boundary,
-			node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+							  node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		// Keep the nodal boundary connectivity, but evaluate the FE field at
 		// those reference nodes instead of treating its coefficients as values.
