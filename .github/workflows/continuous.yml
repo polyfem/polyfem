@@ -23,7 +23,7 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
@@ -109,7 +109,7 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 3
       CTEST_PARALLEL_LEVEL: 3
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
@@ -188,7 +188,7 @@ jobs:
       SCCACHE_IDLE_TIMEOUT: "12000"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false

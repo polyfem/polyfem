@@ -90,10 +90,6 @@ namespace polyfem
 			const Eigen::MatrixXi &F = data.elements;
 			if (F.cols() != 3 || F.minCoeff() < 0)
 				return false;
-			GEO::Mesh mesh_;
-			mesh_.clear(false, false);
-			to_geogram_mesh(V, F, mesh_);
-			orient_normals_2d(mesh_);
 
 			n_elements = 0;
 			elements.clear();

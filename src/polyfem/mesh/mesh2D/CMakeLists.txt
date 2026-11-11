@@ -7,12 +7,12 @@ set(SOURCES
 	CMesh2D.hpp
 	Navigation.cpp
 	Navigation.hpp
+	PolygonMesh.cpp
+	PolygonMesh.hpp
 	PolygonUtils.cpp
 	PolygonUtils.hpp
 	Refinement.cpp
 	Refinement.hpp
-	Singularities.cpp
-	Singularities.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

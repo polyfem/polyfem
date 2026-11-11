@@ -7,6 +7,8 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+#include <set>
+
 namespace polyfem
 {
 	namespace assembler
