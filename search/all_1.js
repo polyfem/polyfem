@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['a_0',['a',['../structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html#af27767e6018b556f068a8d670c35c4ae',1,'polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping::A'],['../structpolyfem_1_1solver_1_1_stacked_form_1_1_term.html#ac04d09ba9fcb52adabe593faab9476ce',1,'polyfem::solver::StackedForm::Term::a']]],
+  ['a_0',['a',['../structpolyfem_1_1solver_1_1_stacked_form_1_1_term.html#ac04d09ba9fcb52adabe593faab9476ce',1,'polyfem::solver::StackedForm::Term::a'],['../structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html#af27767e6018b556f068a8d670c35c4ae',1,'polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping::A']]],
   ['a_20stand_20alone_20executable_1',['Building PolyFEM as a stand-alone executable',['../index.html#autotoc_md20',1,'']]],
   ['a_20static_20library_2',['Building PolyFEM as a static library',['../index.html#autotoc_md21',1,'']]],
   ['a_5f_3',['a_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#afdf395b5aef8344c72af0cf477885366',1,'polyfem::solver::AugmentedLagrangianForm::A_'],['../classpolyfem_1_1solver_1_1_quadratic_penalty_form.html#aa2c8199a6f19acc314c85fd11c81fdb1',1,'polyfem::solver::QuadraticPenaltyForm::A_']]],

@@ -23,6 +23,8 @@ var dir_15d4893607df4bf7106bb9ed16128612 =
     [ "MMGRemesh.hpp", "_m_m_g_remesh_8hpp.html", null ],
     [ "Obstacle.cpp", "_obstacle_8cpp.html", null ],
     [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ],
+    [ "PointTriangleDistance.cpp", "_point_triangle_distance_8cpp.html", "_point_triangle_distance_8cpp" ],
+    [ "PointTriangleDistance.hpp", "_point_triangle_distance_8hpp.html", "_point_triangle_distance_8hpp" ],
     [ "SlimSmooth.cpp", "_slim_smooth_8cpp.html", "_slim_smooth_8cpp" ],
     [ "SlimSmooth.hpp", "_slim_smooth_8hpp.html", "_slim_smooth_8hpp" ]
 ];

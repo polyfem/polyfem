@@ -25,9 +25,8 @@ var searchData=
   ['genericscalarproblem_22',['GenericScalarProblem',['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html',1,'polyfem::assembler']]],
   ['genericscalarproblemexact_23',['GenericScalarProblemExact',['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html',1,'polyfem::problem']]],
   ['generictensorproblem_24',['GenericTensorProblem',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html',1,'polyfem::assembler']]],
-  ['geogramutils_25',['GeogramUtils',['../classpolyfem_1_1utils_1_1_geogram_utils.html',1,'polyfem::utils']]],
-  ['geometryloader_26',['GeometryLoader',['../classpolyfem_1_1mesh_1_1_geometry_loader.html',1,'polyfem::mesh']]],
-  ['geometrymapping_27',['GeometryMapping',['../classpolyfem_1_1varform_1_1_geometry_mapping.html',1,'polyfem::varform']]],
-  ['givensrotation_28',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
-  ['gravityproblem_29',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
+  ['geometryloader_25',['GeometryLoader',['../classpolyfem_1_1mesh_1_1_geometry_loader.html',1,'polyfem::mesh']]],
+  ['geometrymapping_26',['GeometryMapping',['../classpolyfem_1_1varform_1_1_geometry_mapping.html',1,'polyfem::varform']]],
+  ['givensrotation_27',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
+  ['gravityproblem_28',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
 ];

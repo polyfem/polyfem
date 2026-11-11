@@ -126,13 +126,13 @@ $(document).ready(function(){initNavTree('_refinement_8hpp.html',''); initResiza
   <div class="headertitle"><div class="title">Refinement.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;geogram/mesh/mesh.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_polygon_mesh_8hpp_source.html">polyfem/mesh/mesh2D/PolygonMesh.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Refinement.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_refinement_8hpp__incl.svg" width="396" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_refinement_8hpp__incl.svg" width="364" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -184,14 +184,14 @@ Functions</h2></td></tr>
 <tr class="separator:af2a60f57e7713591462bc94ed733c21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8860e137e145e42b463efa89442b4ece" id="r_a8860e137e145e42b463efa89442b4ece"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a3f1754102d92ff3ac4ee842b732dcc69">SplitFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a8860e137e145e42b463efa89442b4ece">polyfem::mesh::Polygons::no_split_func</a> ()</td></tr>
 <tr class="separator:a8860e137e145e42b463efa89442b4ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2511254531ec745f412fc383ba050d" id="r_acc2511254531ec745f412fc383ba050d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d">polyfem::mesh::refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, <a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a3f1754102d92ff3ac4ee842b732dcc69">Polygons::SplitFunction</a> split_func)</td></tr>
-<tr class="memdesc:acc2511254531ec745f412fc383ba050d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a polygonal mesh.  <br /></td></tr>
-<tr class="separator:acc2511254531ec745f412fc383ba050d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ba258a79feeaaadcd741cd4fa889ca9" id="r_a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9">polyfem::mesh::refine_triangle_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out)</td></tr>
-<tr class="memdesc:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle mesh.  <br /></td></tr>
-<tr class="separator:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9edb1ab6286b5c93e9f2a564ea072559" id="r_a9edb1ab6286b5c93e9f2a564ea072559"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559">polyfem::mesh::refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, bool refine_polygons=false, double t=0.5)</td></tr>
-<tr class="separator:a9edb1ab6286b5c93e9f2a564ea072559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0520d751993ea1dccc80daad30fed3f7" id="r_a0520d751993ea1dccc80daad30fed3f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0520d751993ea1dccc80daad30fed3f7">polyfem::mesh::refine_polygonal_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_in, <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_out, <a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a3f1754102d92ff3ac4ee842b732dcc69">Polygons::SplitFunction</a> split_func)</td></tr>
+<tr class="memdesc:a0520d751993ea1dccc80daad30fed3f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a polygonal mesh.  <br /></td></tr>
+<tr class="separator:a0520d751993ea1dccc80daad30fed3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0239f485970311cb8cb1c6e0ce6a25f1" id="r_a0239f485970311cb8cb1c6e0ce6a25f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0239f485970311cb8cb1c6e0ce6a25f1">polyfem::mesh::refine_triangle_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_in, <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_out)</td></tr>
+<tr class="memdesc:a0239f485970311cb8cb1c6e0ce6a25f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle mesh.  <br /></td></tr>
+<tr class="separator:a0239f485970311cb8cb1c6e0ce6a25f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c420b5e0be3c794014d222906f7cbca" id="r_a8c420b5e0be3c794014d222906f7cbca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a8c420b5e0be3c794014d222906f7cbca">polyfem::mesh::refine_polygonal_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_in, <a class="el" href="classpolyfem_1_1mesh_1_1_polygon_mesh.html">PolygonMesh</a> &amp;M_out, bool refine_polygons=false, double t=0.5)</td></tr>
+<tr class="separator:a8c420b5e0be3c794014d222906f7cbca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

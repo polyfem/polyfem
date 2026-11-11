@@ -8,10 +8,10 @@ var dir_0dea85a4cc0a13ac5889fb898e038943 =
     [ "Navigation.hpp", "_navigation_8hpp.html", "_navigation_8hpp" ],
     [ "NCMesh2D.cpp", "_n_c_mesh2_d_8cpp.html", "_n_c_mesh2_d_8cpp" ],
     [ "NCMesh2D.hpp", "_n_c_mesh2_d_8hpp.html", "_n_c_mesh2_d_8hpp" ],
+    [ "PolygonMesh.cpp", "_polygon_mesh_8cpp.html", null ],
+    [ "PolygonMesh.hpp", "_polygon_mesh_8hpp.html", "_polygon_mesh_8hpp" ],
     [ "PolygonUtils.cpp", "_polygon_utils_8cpp.html", null ],
     [ "PolygonUtils.hpp", "_polygon_utils_8hpp.html", "_polygon_utils_8hpp" ],
     [ "Refinement.cpp", "_refinement_8cpp.html", null ],
-    [ "Refinement.hpp", "_refinement_8hpp.html", "_refinement_8hpp" ],
-    [ "Singularities.cpp", "_singularities_8cpp.html", null ],
-    [ "Singularities.hpp", "_singularities_8hpp.html", "_singularities_8hpp" ]
+    [ "Refinement.hpp", "_refinement_8hpp.html", "_refinement_8hpp" ]
 ];

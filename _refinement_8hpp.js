@@ -11,8 +11,8 @@ var _refinement_8hpp =
     [ "no_split_func", "_refinement_8hpp.html#a8860e137e145e42b463efa89442b4ece", null ],
     [ "polar_split", "_refinement_8hpp.html#a189a52f2c610b304fb40efeb1abc5306", null ],
     [ "polar_split_func", "_refinement_8hpp.html#ac31ff909dfd5103385f00a7c4ad2fcd4", null ],
-    [ "refine_polygonal_mesh", "_refinement_8hpp.html#a9edb1ab6286b5c93e9f2a564ea072559", null ],
-    [ "refine_polygonal_mesh", "_refinement_8hpp.html#acc2511254531ec745f412fc383ba050d", null ],
+    [ "refine_polygonal_mesh", "_refinement_8hpp.html#a8c420b5e0be3c794014d222906f7cbca", null ],
+    [ "refine_polygonal_mesh", "_refinement_8hpp.html#a0520d751993ea1dccc80daad30fed3f7", null ],
     [ "refine_quad_mesh", "_refinement_8hpp.html#a4a98f8d68f49e3a96c2948a812d03521", null ],
-    [ "refine_triangle_mesh", "_refinement_8hpp.html#a1ba258a79feeaaadcd741cd4fa889ca9", null ]
+    [ "refine_triangle_mesh", "_refinement_8hpp.html#a0239f485970311cb8cb1c6e0ce6a25f1", null ]
 ];

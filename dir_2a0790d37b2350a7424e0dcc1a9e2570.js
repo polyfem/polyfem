@@ -1,5 +1,7 @@
 var dir_2a0790d37b2350a7424e0dcc1a9e2570 =
 [
+    [ "CellConnectivity.cpp", "_cell_connectivity_8cpp.html", "_cell_connectivity_8cpp" ],
+    [ "CellConnectivity.hpp", "_cell_connectivity_8hpp.html", "_cell_connectivity_8hpp" ],
     [ "CMesh3D.cpp", "_c_mesh3_d_8cpp.html", null ],
     [ "CMesh3D.hpp", "_c_mesh3_d_8hpp.html", "_c_mesh3_d_8hpp" ],
     [ "Mesh3D.cpp", "_mesh3_d_8cpp.html", null ],

@@ -166,6 +166,7 @@ var annotated_dup =
         [ "Navigation3D", "namespacepolyfem_1_1mesh_1_1_navigation3_d.html", [
           [ "Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index" ]
         ] ],
+        [ "CellDescriptor", "structpolyfem_1_1mesh_1_1_cell_descriptor.html", "structpolyfem_1_1mesh_1_1_cell_descriptor" ],
         [ "CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_c_mesh2_d" ],
         [ "CMesh3D", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_c_mesh3_d" ],
         [ "Edge", "structpolyfem_1_1mesh_1_1_edge.html", "structpolyfem_1_1mesh_1_1_edge" ],
@@ -187,6 +188,8 @@ var annotated_dup =
         [ "NCMesh2D", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d" ],
         [ "NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d" ],
         [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
+        [ "PolygonMesh", "classpolyfem_1_1mesh_1_1_polygon_mesh.html", "classpolyfem_1_1mesh_1_1_polygon_mesh" ],
+        [ "StandardCell", "structpolyfem_1_1mesh_1_1_standard_cell.html", "structpolyfem_1_1mesh_1_1_standard_cell" ],
         [ "SurfaceMeshData", "classpolyfem_1_1mesh_1_1_surface_mesh_data.html", "classpolyfem_1_1mesh_1_1_surface_mesh_data" ],
         [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ]
       ] ],
@@ -402,7 +405,6 @@ var annotated_dup =
         [ "EqualUnorderedArray", "structpolyfem_1_1utils_1_1_equal_unordered_array.html", "structpolyfem_1_1utils_1_1_equal_unordered_array" ],
         [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
         [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
-        [ "GeogramUtils", "classpolyfem_1_1utils_1_1_geogram_utils.html", "classpolyfem_1_1utils_1_1_geogram_utils" ],
         [ "HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", "structpolyfem_1_1utils_1_1_hash_matrix" ],
         [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
         [ "HashUnorderedArray", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", "structpolyfem_1_1utils_1_1_hash_unordered_array" ],

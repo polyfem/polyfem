@@ -8,7 +8,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh3_d =
     [ "attach_higher_order_nodes", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9945a67c5e35cdc4c0834a3ac5cdc148", null ],
     [ "barycentric_coords", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af0cab3e6ad660070a58592009b5d131f", null ],
     [ "bounding_box", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9f390ce28801520a1328bb4cd910604a", null ],
-    [ "build_storage_from_geogram", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#afc0e82a7b0b71fabe5f58a96ea3577df", null ],
+    [ "build_storage_from_cells", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aa79c8b6d23170fadcb33f3befd31f965", null ],
     [ "build_topology", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a39550fd755b9ceae4d75181290b0cbaa", null ],
     [ "cell_barycenter", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a0da98e55cc5ffa1d7418ae1a727ade58", null ],
     [ "cell_edge", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3a26e81950e88f18e58e9f1502688d6c", null ],

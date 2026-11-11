@@ -121,7 +121,6 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_c_mesh3_d.htm
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -536,15 +535,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a82c1d573c9697269c01b0ec07f108887 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply an affine transformation \(Ax+b\) to the vertex positions \(x\).  <br /></td></tr>
 <tr class="separator:a82c1d573c9697269c01b0ec07f108887 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3021d435556b2a47a5cec5e0627fc3cc" id="r_a3021d435556b2a47a5cec5e0627fc3cc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3021d435556b2a47a5cec5e0627fc3cc">geomesh_2_mesh_storage</a> (const GEO::Mesh &amp;gm, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d_storage.html">Mesh3DStorage</a> &amp;m)</td></tr>
-<tr class="separator:a3021d435556b2a47a5cec5e0627fc3cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classpolyfem_1_1mesh_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td></tr>
-<tr class="memitem:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ab6e0ed8a8fc1f156fa62eb527e0f502a"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab6e0ed8a8fc1f156fa62eb527e0f502a">create</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh_data.html">MeshData</a> data, bool non_conforming=false)</td></tr>
-<tr class="memdesc:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a runtime mesh from format-independent decoded data.  <br /></td></tr>
-<tr class="separator:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae5f4e7e034d42b27cbf76f9b6ba34bfb" id="r_ae5f4e7e034d42b27cbf76f9b6ba34bfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ae5f4e7e034d42b27cbf76f9b6ba34bfb">remove_elements</a> (const std::vector&lt; bool &gt; &amp;keep) override</td></tr>
@@ -563,8 +553,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:afc0e82a7b0b71fabe5f58a96ea3577df" id="r_afc0e82a7b0b71fabe5f58a96ea3577df"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#afc0e82a7b0b71fabe5f58a96ea3577df">build_storage_from_geogram</a> (const GEO::Mesh &amp;mesh)</td></tr>
-<tr class="separator:afc0e82a7b0b71fabe5f58a96ea3577df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa79c8b6d23170fadcb33f3befd31f965" id="r_aa79c8b6d23170fadcb33f3befd31f965"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aa79c8b6d23170fadcb33f3befd31f965">build_storage_from_cells</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const std::vector&lt; <a class="el" href="structpolyfem_1_1mesh_1_1_standard_cell.html">StandardCell</a> &gt; &amp;cells)</td></tr>
+<tr class="separator:aa79c8b6d23170fadcb33f3befd31f965"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -573,6 +563,10 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classpolyfem_1_1mesh_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td></tr>
+<tr class="memitem:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ab6e0ed8a8fc1f156fa62eb527e0f502a"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab6e0ed8a8fc1f156fa62eb527e0f502a">create</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh_data.html">MeshData</a> data, bool non_conforming=false)</td></tr>
+<tr class="memdesc:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a runtime mesh from format-independent decoded data.  <br /></td></tr>
+<tr class="separator:ab6e0ed8a8fc1f156fa62eb527e0f502a inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1mesh_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td></tr>
 <tr class="memitem:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a1575362bfcf4556fb8f862f012e9278c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">ElementType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c">elements_tag_</a></td></tr>
 <tr class="memdesc:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of element types  <br /></td></tr>
@@ -627,7 +621,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00018">18</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00019">19</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a08a9bc2754b8621e28975e600fad1200" name="a08a9bc2754b8621e28975e600fad1200"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a08a9bc2754b8621e28975e600fad1200">&#9670;&#160;</a></span>CMesh3D() <span class="overload">[1/3]</span></h2>
@@ -766,9 +760,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01611">1611</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01490">1490</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00456">polyfem::mesh::Mesh::append()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00081">polyfem::mesh::Mesh3DStorage::append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00456">polyfem::mesh::Mesh::append()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00081">polyfem::mesh::Mesh3DStorage::append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -822,9 +816,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad1cc49ad1ae481001afbf52721dcfe49">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">517</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">437</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00705">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">cell_vertex()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00701">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00703">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">face_vertex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00405">polyfem::mesh::Mesh::faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00080">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00097">next_around_face()</a>, <a class="el" href="_mesh_8hpp_source.html#l00696">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">switch_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">switch_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00090">switch_vertex()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00019">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00704">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00042">cell_vertex()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00700">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00702">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">face_vertex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00405">polyfem::mesh::Mesh::faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00098">next_around_face()</a>, <a class="el" href="_mesh_8hpp_source.html#l00695">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">switch_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">switch_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">switch_vertex()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00019">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -886,9 +880,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a399b7b652be1ffcc392b46a6d1572fec">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01597">1597</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01476">1476</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_8cpp_source.html#l00528">polyfem::mesh::Mesh3D::get_ordered_vertices_from_tet()</a>, <a class="el" href="_mesh_8cpp_source.html#l00374">polyfem::mesh::Mesh::is_simplex()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_8cpp_source.html#l00527">polyfem::mesh::Mesh3D::get_ordered_vertices_from_tet()</a>, <a class="el" href="_mesh_8cpp_source.html#l00374">polyfem::mesh::Mesh::is_simplex()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -942,11 +936,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01020">1020</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00940">940</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01027">normalize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00947">normalize()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -955,8 +949,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="afc0e82a7b0b71fabe5f58a96ea3577df" name="afc0e82a7b0b71fabe5f58a96ea3577df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc0e82a7b0b71fabe5f58a96ea3577df">&#9670;&#160;</a></span>build_storage_from_geogram()</h2>
+<a id="aa79c8b6d23170fadcb33f3befd31f965" name="aa79c8b6d23170fadcb33f3befd31f965"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79c8b6d23170fadcb33f3befd31f965">&#9670;&#160;</a></span>build_storage_from_cells()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -965,11 +959,21 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool polyfem::mesh::CMesh3D::build_storage_from_geogram </td>
+          <td class="memname">bool polyfem::mesh::CMesh3D::build_storage_from_cells </td>
           <td>(</td>
-          <td class="paramtype">const GEO::Mesh &amp;&#160;</td>
-          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structpolyfem_1_1mesh_1_1_standard_cell.html">StandardCell</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -979,20 +983,20 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00204">204</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00205">205</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00705">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00701">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00703">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00051">polyfem::mesh::Element::fs</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00052">polyfem::mesh::Element::fs_flag</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00053">polyfem::mesh::Element::hex</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b">polyfem::mesh::HEX</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4">polyfem::mesh::HYB</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00013">polyfem::mesh::Vertex::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00035">polyfem::mesh::Face::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00045">polyfem::mesh::Element::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00048">polyfem::mesh::Element::input_vs</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa268c4b76ec894ec6ad3c119ad7cc2170">polyfem::mesh::TET</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00054">polyfem::mesh::Element::v_in_Kernel</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00036">polyfem::mesh::Face::vs</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00049">polyfem::mesh::Element::vs</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00704">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_cell_connectivity_8cpp_source.html#l00204">polyfem::mesh::connect_cells()</a>, <a class="el" href="_mesh_8hpp_source.html#l00700">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00702">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00051">polyfem::mesh::Element::fs</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00052">polyfem::mesh::Element::fs_flag</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a63966cc3b264d69466ca689522aabfbba58c9566f3c750ce7147b045fdd14202b">polyfem::mesh::HEX</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00053">polyfem::mesh::Element::hex</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4">polyfem::mesh::HYB</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00013">polyfem::mesh::Vertex::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00035">polyfem::mesh::Face::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00045">polyfem::mesh::Element::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00048">polyfem::mesh::Element::input_vs</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">n_cell_vertices()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa268c4b76ec894ec6ad3c119ad7cc2170">polyfem::mesh::TET</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00036">polyfem::mesh::Face::vs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00408">build_topology()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00335">build_topology()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_afc0e82a7b0b71fabe5f58a96ea3577df_cgraph.svg" width="100%" height="412"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_aa79c8b6d23170fadcb33f3befd31f965_cgraph.svg" width="100%" height="546"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_afc0e82a7b0b71fabe5f58a96ea3577df_icgraph.svg" width="471" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_aa79c8b6d23170fadcb33f3befd31f965_icgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1026,13 +1030,13 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a90a17facb1b8575dac0e480c8f437fa4">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00408">408</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00335">335</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh3_d_8cpp_source.html#l00204">build_storage_from_geogram()</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00040">polyfem::mesh::MeshData::cell_face_orientations</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00039">polyfem::mesh::MeshData::cell_faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00041">polyfem::mesh::MeshData::cell_is_hex</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00042">polyfem::mesh::MeshData::cell_kernel_points</a>, <a class="el" href="_mesh_8hpp_source.html#l00705">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00701">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00022">polyfem::mesh::MeshData::elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00025">polyfem::mesh::MeshData::elements_are_ordered</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mesh_8hpp_source.html#l00703">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00038">polyfem::mesh::MeshData::faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00019">polyfem::mesh::MeshData::has_polyhedral_topology()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b">polyfem::mesh::HEX</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4">polyfem::mesh::HYB</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>, and <a class="el" href="_mesh_data_8hpp_source.html#l00021">polyfem::mesh::MeshData::vertices</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh3_d_8cpp_source.html#l00205">build_storage_from_cells()</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00040">polyfem::mesh::MeshData::cell_face_orientations</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00039">polyfem::mesh::MeshData::cell_faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00041">polyfem::mesh::MeshData::cell_is_hex</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00042">polyfem::mesh::MeshData::cell_kernel_points</a>, <a class="el" href="_mesh_8hpp_source.html#l00704">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00700">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00022">polyfem::mesh::MeshData::elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00025">polyfem::mesh::MeshData::elements_are_ordered</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mesh_8hpp_source.html#l00702">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00038">polyfem::mesh::MeshData::faces</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00019">polyfem::mesh::MeshData::has_polyhedral_topology()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b">polyfem::mesh::HEX</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4">polyfem::mesh::HYB</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a63966cc3b264d69466ca689522aabfbba25608df56c02f9fc6854a3de6a51822a">polyfem::mesh::PRISM</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a63966cc3b264d69466ca689522aabfbbacd996d3184761601a0e44e587a012d4f">polyfem::mesh::PYRAMID</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a63966cc3b264d69466ca689522aabfbba268c4b76ec894ec6ad3c119ad7cc2170">polyfem::mesh::TET</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, <a class="el" href="_cell_connectivity_8hpp_source.html#l00044">polyfem::mesh::StandardCell::vertices</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>, and <a class="el" href="_mesh_data_8hpp_source.html#l00021">polyfem::mesh::MeshData::vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_a39550fd755b9ceae4d75181290b0cbaa_cgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_a39550fd755b9ceae4d75181290b0cbaa_cgraph.svg" width="100%" height="595"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1072,11 +1076,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01520">1520</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01440">1440</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_cell_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">n_cell_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01236">compute_body_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01156">compute_body_ids()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1126,7 +1130,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a3ff76dbfc406b591c3fa82bd6c6269e7">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00048">48</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">49</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -1168,7 +1172,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00046">46</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00047">47</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -1210,7 +1214,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a25a6b59e45c3ed1607ebb6807a3c8683">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00047">47</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00048">48</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -1262,11 +1266,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0424129f0b565f3f3b1743ee3ccffbe">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">41</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00042">42</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01575">elements_boxes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01454">elements_boxes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1309,9 +1313,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aef0a4a659699cafe4305044e5dd55c57">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01236">1236</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01156">1156</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00692">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01520">cell_barycenter()</a>, <a class="el" href="_mesh_8hpp_source.html#l00216">polyfem::mesh::Mesh::element_vertices()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00148">polyfem::mesh::Mesh::n_elements()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00691">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01440">cell_barycenter()</a>, <a class="el" href="_mesh_8hpp_source.html#l00215">polyfem::mesh::Mesh::element_vertices()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00147">polyfem::mesh::Mesh::n_elements()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1354,9 +1358,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a2a4475f23ee7fda09d4f1da0a90c4c76">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">1218</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">1138</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00690">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01506">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">face_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">n_face_vertices()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_faces()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00689">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01426">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">face_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00058">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_face_vertices()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_faces()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1392,11 +1396,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">1272</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">1192</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965">polyfem::mesh::BOUNDARY_POLYTOPE</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00686">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1">polyfem::mesh::INTERFACE_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a">polyfem::mesh::INTERIOR_POLYTOPE</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a16296527365f66f9abb8e41bd6e83c2d">polyfem::mesh::MULTI_SINGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a31e4ef24e79a7f6f42adc39e066d9521">polyfem::mesh::MULTI_SINGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a">polyfem::mesh::PRISM</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2acd996d3184761601a0e44e587a012d4f">polyfem::mesh::PYRAMID</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a15d5722ae72faa6e963405389543bafa">polyfem::mesh::REGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a06a31270a48e44a5e035df59c8731fcf">polyfem::mesh::REGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ade6243a674d768aba43e703f85cfcabd">polyfem::mesh::SIMPLE_SINGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a50cb75a4050af11bcddde17556ccd160">polyfem::mesh::SIMPLE_SINGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965">polyfem::mesh::BOUNDARY_POLYTOPE</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00685">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1">polyfem::mesh::INTERFACE_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a">polyfem::mesh::INTERIOR_POLYTOPE</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a16296527365f66f9abb8e41bd6e83c2d">polyfem::mesh::MULTI_SINGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a31e4ef24e79a7f6f42adc39e066d9521">polyfem::mesh::MULTI_SINGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a">polyfem::mesh::PRISM</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2acd996d3184761601a0e44e587a012d4f">polyfem::mesh::PYRAMID</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a15d5722ae72faa6e963405389543bafa">polyfem::mesh::REGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a06a31270a48e44a5e035df59c8731fcf">polyfem::mesh::REGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ade6243a674d768aba43e703f85cfcabd">polyfem::mesh::SIMPLE_SINGULAR_BOUNDARY_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a50cb75a4050af11bcddde17556ccd160">polyfem::mesh::SIMPLE_SINGULAR_INTERIOR_CUBE</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01611">append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00204">build_storage_from_geogram()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00408">build_topology()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00141">refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01490">append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00205">build_storage_from_cells()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00335">build_topology()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00142">refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1433,7 +1437,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9de3fd9e41a943ab65fbc3d5c1c5fdf3">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01623">1623</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01502">1502</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 </div>
 </div>
@@ -1472,7 +1476,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01499">1499</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01419">1419</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 
@@ -1504,7 +1508,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a8bae5d8ae2745f6f2a599d2d6a75d6a4">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00087">87</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00088">88</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -1556,11 +1560,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9b0565e52cac4ce041bbe6d359e2c73f">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">50</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00051">51</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1603,9 +1607,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01575">1575</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01454">1454</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">cell_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_cell_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00148">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00042">cell_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">n_cell_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00147">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1649,11 +1653,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01506">1506</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01426">1426</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">compute_boundary_ids()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1713,60 +1717,15 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">49</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">50</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_a576869589c66ade663856a21689d91bd_icgraph.svg" width="456" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="a3021d435556b2a47a5cec5e0627fc3cc" name="a3021d435556b2a47a5cec5e0627fc3cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3021d435556b2a47a5cec5e0627fc3cc">&#9670;&#160;</a></span>geomesh_2_mesh_storage()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::mesh::CMesh3D::geomesh_2_mesh_storage </td>
-          <td>(</td>
-          <td class="paramtype">const GEO::Mesh &amp;&#160;</td>
-          <td class="paramname"><em>gm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d_storage.html">Mesh3DStorage</a> &amp;&#160;</td>
-          <td class="paramname"><em>m</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01534">1534</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa0d27639ad8f1ffe40d0211c0a744ac47">polyfem::mesh::H_SUR</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00013">polyfem::mesh::Vertex::id</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa81128dad787fcaea5ad558e1276cd310">polyfem::mesh::QUA</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa38b464161bf5019798797584babd0433">polyfem::mesh::TRI</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00014">polyfem::mesh::Vertex::v</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_a3021d435556b2a47a5cec5e0627fc3cc_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1807,7 +1766,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a28637adc0a06c3787149499711181af1">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00104">104</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00105">105</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -1839,7 +1798,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#af93fa061f0b2cbae9302397653ea654d">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">81</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00082">82</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navigation3_d_8cpp_source.html#l00028">polyfem::mesh::Navigation3D::get_index_from_element_face()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 <div class="dynheader">
@@ -1892,11 +1851,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00080">80</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">81</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navigation3_d_8cpp_source.html#l00028">polyfem::mesh::Navigation3D::get_index_from_element_face()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1952,7 +1911,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00083">83</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00084">84</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navigation3_d_8cpp_source.html#l00118">polyfem::mesh::Navigation3D::get_index_from_element_edge()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 <div class="dynheader">
@@ -2011,7 +1970,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aee466a14dafa19538b169d77e49ccff1">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00084">84</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00085">85</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navigation3_d_8cpp_source.html#l00191">polyfem::mesh::Navigation3D::get_index_from_element_tri()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 <div class="dynheader">
@@ -2058,7 +2017,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ad30a8601ac4bea1d116791aff536f891">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00099">99</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00100">100</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
 
@@ -2099,7 +2058,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00056">56</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">57</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -2140,9 +2099,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01197">1197</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01117">1117</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00055">is_boundary_vertex()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00058">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00056">is_boundary_vertex()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2186,11 +2145,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">57</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00058">58</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01197">is_boundary_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01117">is_boundary_element()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2234,11 +2193,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a621933dae34168bbcde32aba1aae763c">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00055">55</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00056">56</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01197">is_boundary_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01117">is_boundary_element()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2275,7 +2234,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00028">28</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00029">29</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 </div>
 </div>
@@ -2305,7 +2264,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a401ef2460066f72c227da977938377d2">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01265">1265</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01185">1185</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -2334,7 +2293,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00117">117</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00118">118</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -2366,7 +2325,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a3edb2fef89f899c90e7bb68df80505cc">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">39</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00040">40</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -2398,7 +2357,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00040">40</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">41</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
@@ -2439,15 +2398,15 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af8681d00e208c5075fa415a49e42471d">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">38</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">39</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01520">cell_barycenter()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01575">elements_boxes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00205">build_storage_from_cells()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01440">cell_barycenter()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l01454">elements_boxes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_aebe4d4e4cda1ed7fa7402bf9f1e5d9e3_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_c_mesh3_d_aebe4d4e4cda1ed7fa7402bf9f1e5d9e3_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2480,11 +2439,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">32</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">33</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01027">normalize()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00947">normalize()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2521,11 +2480,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">34</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">35</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2569,11 +2528,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">37</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">38</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">compute_boundary_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01506">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01478">quad_area()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">compute_boundary_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01426">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01398">quad_area()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2610,11 +2569,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">33</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">34</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01218">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01138">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2651,11 +2610,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">35</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">36</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01520">cell_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01506">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01478">quad_area()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00141">refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01440">cell_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01426">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01398">quad_area()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00142">refine()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2690,7 +2649,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aae474e9bb4c3a280b8157e1ae8ed1450">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00096">96</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00097">97</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00044">polyfem::mesh::Navigation3D::next_around_3Dedge()</a>.</p>
 <div class="dynheader">
@@ -2727,11 +2686,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00097">97</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00098">98</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00040">polyfem::mesh::Navigation3D::next_around_2Dface()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2772,9 +2731,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6a0669fa090fe02438840545e6da8dc1">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01027">1027</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00947">947</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh3_d_8cpp_source.html#l01020">bounding_box()</a>, <a class="el" href="_mesh_8hpp_source.html#l00705">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00701">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00703">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00033">polyfem::mesh::Mesh3D::get_edges()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">n_cells()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_mesh_8cpp_source.html#l00693">polyfem::mesh::Mesh::transform_higher_order_data()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, and <a class="el" href="_assembler_8cpp_source.html#l00090">val</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh3_d_8cpp_source.html#l00940">bounding_box()</a>, <a class="el" href="_mesh_8hpp_source.html#l00704">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00700">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00702">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00032">polyfem::mesh::Mesh3D::get_edges()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_cells()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, <a class="el" href="_mesh_8cpp_source.html#l00693">polyfem::mesh::Mesh::transform_higher_order_data()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2870,7 +2829,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01259">1259</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01179">1179</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>.</p>
 
@@ -2911,9 +2870,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a65cc4b375ec05193348b3bfb8c09c581">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01478">1478</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01398">1398</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">n_vertices()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2967,9 +2926,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a89e26cedb9d73a8a68b54fc1a33491">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00141">141</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00142">142</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965">polyfem::mesh::BOUNDARY_POLYTOPE</a>, <a class="el" href="_mesh_8cpp_source.html#l00685">polyfem::mesh::Mesh::clear_higher_order_data()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00411">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_8hpp_source.html#l00720">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00718">polyfem::mesh::Mesh::in_ordered_vertices_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a">polyfem::mesh::INTERIOR_POLYTOPE</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00696">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00711">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01117">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa268c4b76ec894ec6ad3c119ad7cc2170">polyfem::mesh::TET</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965">polyfem::mesh::BOUNDARY_POLYTOPE</a>, <a class="el" href="_mesh_8cpp_source.html#l00685">polyfem::mesh::Mesh::clear_higher_order_data()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">polyfem::mesh::Mesh3DStorage::edges</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00410">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_8hpp_source.html#l00719">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00721">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00717">polyfem::mesh::Mesh::in_ordered_vertices_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a">polyfem::mesh::INTERIOR_POLYTOPE</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00695">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00711">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01117">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa268c4b76ec894ec6ad3c119ad7cc2170">polyfem::mesh::TET</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">polyfem::mesh::Mesh3DStorage::type</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3006,9 +2965,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa9be7fa638e1bd283d4f72da1ed93661">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">17</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">18</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00690">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00705">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00701">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">edge_vertex()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00703">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">face_vertex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00405">polyfem::mesh::Mesh::faces()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_8cpp_source.html#l00046">polyfem::mesh::Mesh::filter_element_data()</a>, <a class="el" href="_mesh_8hpp_source.html#l00454">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00528">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00720">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_faces()</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00689">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00704">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00700">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00051">edge_vertex()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">polyfem::mesh::Mesh3DStorage::elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00702">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">face_vertex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00405">polyfem::mesh::Mesh::faces()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">polyfem::mesh::Mesh3DStorage::faces</a>, <a class="el" href="_mesh_8cpp_source.html#l00046">polyfem::mesh::Mesh::filter_element_data()</a>, <a class="el" href="_mesh_8hpp_source.html#l00453">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00527">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00719">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00721">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_faces()</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00020">polyfem::mesh::Navigation3D::prepare_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3062,7 +3021,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a499a0ccaf891a28ab3563d45a184a124">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01248">1248</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8cpp_source.html#l01168">1168</a> of file <a class="el" href="_c_mesh3_d_8cpp_source.html">CMesh3D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">polyfem::mesh::Mesh3DStorage::points</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
 
@@ -3094,11 +3053,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">91</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">92</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00349">polyfem::mesh::Navigation3D::switch_edge()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3138,7 +3097,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">93</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00094">94</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00427">polyfem::mesh::Navigation3D::switch_element()</a>.</p>
 <div class="dynheader">
@@ -3175,11 +3134,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">92</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">93</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00372">polyfem::mesh::Navigation3D::switch_face()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3219,11 +3178,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00090">90</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">91</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_navigation3_d_8cpp_source.html#l00314">polyfem::mesh::Navigation3D::switch_vertex()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00517">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00437">attach_higher_order_nodes()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3263,7 +3222,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ac2300c979e5771bac8ffa2b2e40eeb65">polyfem::mesh::Mesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00086">86</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00087">87</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">mesh_</a>, and <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00072">polyfem::mesh::Mesh3DStorage::vertices</a>.</p>
 
@@ -3292,7 +3251,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh3_d_8hpp_source.html#l00133">133</a> of file <a class="el" href="_c_mesh3_d_8hpp_source.html">CMesh3D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01611">append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01020">bounding_box()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00204">build_storage_from_geogram()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00408">build_topology()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01520">cell_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00048">cell_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00046">cell_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00047">cell_face_orientation()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">cell_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01272">compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01499">edge_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00087">edge_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">edge_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01506">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">face_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00104">get_edge_elements_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00080">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00083">get_index_from_element_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00084">get_index_from_element_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00099">get_vertex_elements_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00056">is_boundary_edge()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01197">is_boundary_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00055">is_boundary_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01265">kernel()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00117">mesh_storge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">n_cell_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00040">n_cell_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_cell_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00096">next_around_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00097">next_around_face()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01027">normalize()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01259">point()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01478">quad_area()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00141">refine()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00017">remove_elements()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01248">set_point()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">switch_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">switch_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">switch_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00090">switch_vertex()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00086">vertex_neighs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l01490">append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00940">bounding_box()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00205">build_storage_from_cells()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00335">build_topology()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01440">cell_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00049">cell_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00047">cell_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00048">cell_face_orientation()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00042">cell_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01192">compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01419">edge_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00088">edge_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00051">edge_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01426">face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">face_vertex()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00105">get_edge_elements_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00082">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">get_index_from_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00084">get_index_from_element_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00085">get_index_from_element_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00100">get_vertex_elements_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00057">is_boundary_edge()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01117">is_boundary_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00058">is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00056">is_boundary_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01185">kernel()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00118">mesh_storge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00040">n_cell_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">n_cell_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">n_cell_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">n_cells()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">n_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">n_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00036">n_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00097">next_around_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00098">next_around_face()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00947">normalize()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01179">point()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01398">quad_area()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00142">refine()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">remove_elements()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01168">set_point()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00092">switch_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00094">switch_element()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">switch_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00091">switch_vertex()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00087">vertex_neighs()</a>.</p>
 
 </div>
 </div>

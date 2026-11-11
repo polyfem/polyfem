@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 816;
+var viewWidth = 773;
 var viewHeight = 146;
 var sectionId = 'dynsection-23';
 </script>
@@ -58,10 +58,10 @@ var sectionId = 'dynsection-23';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="808,-71 672,-71 672,-30 808,-30 808,-71"/>
-<text text-anchor="start" x="680" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh3D</text>
-<text text-anchor="start" x="680" y="-48" font-family="Helvetica,sans-Serif" font-size="10.00">::get_ordered_vertices</text>
-<text text-anchor="middle" x="740" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">_from_hex</text>
+<polygon fill="#999999" stroke="#666666" points="765,-95 629,-95 629,-54 765,-54 765,-95"/>
+<text text-anchor="start" x="637" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh3D</text>
+<text text-anchor="start" x="637" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">::get_ordered_vertices</text>
+<text text-anchor="middle" x="697" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">_from_hex</text>
 </a>
 </g>
 </g>
@@ -69,10 +69,10 @@ var sectionId = 'dynsection-23';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a336d832fe4c64d04653ff8cf96fdf3f6" target="_top" xlink:title="extracts a collision proxy sampling every boundary face on a uniform lattice of the globally maximal ...">
-<polygon fill="white" stroke="#666666" points="614.5,-95 470.5,-95 470.5,-54 614.5,-54 614.5,-95"/>
-<text text-anchor="start" x="478.5" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
-<text text-anchor="start" x="478.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">Data::extract_boundary</text>
-<text text-anchor="middle" x="542.5" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">_mesh_sampled</text>
+<polygon fill="white" stroke="#666666" points="593,-95 449,-95 449,-54 593,-54 593,-95"/>
+<text text-anchor="start" x="457" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
+<text text-anchor="start" x="457" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">Data::extract_boundary</text>
+<text text-anchor="middle" x="521" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">_mesh_sampled</text>
 </a>
 </g>
 </g>
@@ -80,26 +80,8 @@ var sectionId = 'dynsection-23';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M661.9,-59.96C646.36,-61.87 630.09,-63.87 614.76,-65.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="662.49,-63.42 671.99,-58.73 661.64,-56.47 662.49,-63.42"/>
-</a>
-</g>
-</g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda" target="_top" xlink:title="Converts a hex mesh to a Geogram mesh.">
-<polygon fill="white" stroke="#666666" points="636,-36 449,-36 449,-17 636,-17 636,-36"/>
-<text text-anchor="middle" x="542.5" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::to_geogram_mesh</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge6_Node000001_Node000007" class="edge">
-<title>Node1&#45;&gt;Node7</title>
-<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M661.88,-41.03C648.5,-39.39 634.58,-37.68 621.19,-36.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="661.64,-44.53 671.99,-42.27 662.49,-37.58 661.64,-44.53"/>
+<path fill="none" stroke="#63b8ff" d="M618.51,-74.5C610.06,-74.5 601.49,-74.5 593.13,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="618.73,-78 628.73,-74.5 618.73,-71 618.73,-78"/>
 </a>
 </g>
 </g>
@@ -117,8 +99,8 @@ var sectionId = 'dynsection-23';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M459.95,-74.5C444.79,-74.5 428.81,-74.5 413.22,-74.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="460.3,-78 470.3,-74.5 460.3,-71 460.3,-78"/>
+<path fill="none" stroke="#63b8ff" d="M438.64,-74.5C430.24,-74.5 421.65,-74.5 413.11,-74.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="438.76,-78 448.76,-74.5 438.76,-71 438.76,-78"/>
 </a>
 </g>
 </g>

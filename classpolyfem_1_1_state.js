@@ -13,7 +13,6 @@ var classpolyfem_1_1_state =
     [ "set_log_level", "classpolyfem_1_1_state.html#a81d50ae65a097daec8f46b732d057151", null ],
     [ "set_max_threads", "classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365", null ],
     [ "set_mesh", "classpolyfem_1_1_state.html#a58d8f0cfdd99d81c03a2ec834f2efe03", null ],
-    [ "set_mesh", "classpolyfem_1_1_state.html#a40b607ad76d9815e35aba1d723a283b6", null ],
     [ "solve", "classpolyfem_1_1_state.html#a407b2d656854310a3e0cbd5d55338df8", null ],
     [ "args", "classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99", null ],
     [ "checkpoint_", "classpolyfem_1_1_state.html#a76cad526ecb78af40343653b40dbaf3e", null ],
