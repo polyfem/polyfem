@@ -16,6 +16,18 @@ namespace polyfem
 	{
 		struct StandardCell;
 
+		/// Conforming 3D mesh of tetrahedra, hexahedra, prisms, pyramids and
+		/// general polyhedra, stored in a Mesh3DStorage.
+		///
+		/// Numbering: vertices and cells follow the input order; faces are
+		/// created cell by cell (local facet order of CellConnectivity) and keep
+		/// the vertex order of the lower-id cell; edges are sorted by (min, max)
+		/// vertex id. cell_vertex() returns the input vertex order of a cell (the
+		/// order of MeshData::elements); the topology uses the descriptor order.
+		/// Hex meshes are reoriented so that neighboring hexes agree (needed by
+		/// the spline bases), and every cell has a kernel point (a point from
+		/// which the cell is star-shaped) used by the polyhedral quadrature and
+		/// by the polyhedral refinement.
 		class CMesh3D : public Mesh3D
 		{
 		public:
@@ -30,32 +42,30 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
-			int n_cells() const override { return int(mesh_.elements.size()); }
-			int n_faces() const override { return int(mesh_.faces.size()); }
-			int n_edges() const override { return int(mesh_.edges.size()); }
+			int n_cells() const override { return int(mesh_.n_cells()); }
+			int n_faces() const override { return int(mesh_.n_faces()); }
+			int n_edges() const override { return int(mesh_.n_edges()); }
 			int n_vertices() const override { return int(mesh_.points.cols()); }
 
-			inline int n_face_vertices(const int f_id) const override { return mesh_.faces[f_id].vs.size(); }
-			inline int n_cell_vertices(const int c_id) const override { return mesh_.elements[c_id].vs.size(); }
-			inline int n_cell_edges(const int c_id) const override { return mesh_.elements[c_id].es.size(); }
-			inline int n_cell_faces(const int c_id) const override { return mesh_.elements[c_id].fs.size(); }
+			inline int n_face_vertices(const int f_id) const override { return mesh_.face_vs[f_id].size(); }
+			inline int n_cell_vertices(const int c_id) const override { return mesh_.cell_vs[c_id].size(); }
+			inline int n_cell_edges(const int c_id) const override { return mesh_.cell_es[c_id].size(); }
+			inline int n_cell_faces(const int c_id) const override { return mesh_.cell_fs[c_id].size(); }
 			inline int cell_vertex(const int c_id, const int lv_id) const override
 			{
-				const auto &element = mesh_.elements[c_id];
-				return element.input_vs.empty() ? element.vs[lv_id] : element.input_vs[lv_id];
+				return mesh_.cell_input_vs.row_size(c_id) == 0 ? mesh_.cell_vs[c_id][lv_id] : mesh_.cell_input_vs[c_id][lv_id];
 			}
-			inline int cell_face(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs[lf_id]; }
-			inline int cell_face_orientation(const int c_id, const int lf_id) const override { return mesh_.elements[c_id].fs_flag[lf_id]; }
-			inline int cell_edge(const int c_id, const int le_id) const override { return mesh_.elements[c_id].es[le_id]; }
-			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.faces[f_id].vs[lv_id]; }
-			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edges[e_id].vs[lv_id]; }
+			inline int cell_face(const int c_id, const int lf_id) const override { return mesh_.cell_fs[c_id][lf_id]; }
+			inline int cell_face_orientation(const int c_id, const int lf_id) const override { return mesh_.cell_fs_flag[c_id][lf_id]; }
+			inline int cell_edge(const int c_id, const int le_id) const override { return mesh_.cell_es[c_id][le_id]; }
+			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.face_vs[f_id][lv_id]; }
+			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edge_vs[e_id][lv_id]; }
 
-			void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
 			void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
 
-			bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
-			bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
-			bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
+			bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertex_boundary[vertex_global_id]; }
+			bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edge_boundary[edge_global_id]; }
+			bool is_boundary_face(const int face_global_id) const override { return mesh_.face_boundary[face_global_id]; }
 			bool is_boundary_element(const int element_global_id) const override;
 
 			bool build_topology(const MeshData &data) override;
@@ -84,8 +94,8 @@ namespace polyfem
 			Navigation3D::Index get_index_from_element_edge(int hi, int v0, int v1) const override { return Navigation3D::get_index_from_element_edge(mesh_, hi, v0, v1); }
 			Navigation3D::Index get_index_from_element_face(int hi, int v0, int v1, int v2) const override { return Navigation3D::get_index_from_element_tri(mesh_, hi, v0, v1, v2); }
 
-			inline std::vector<uint32_t> vertex_neighs(const int v_gid) const override { return mesh_.vertices[v_gid].neighbor_hs; }
-			inline std::vector<uint32_t> edge_neighs(const int e_gid) const override { return mesh_.edges[e_gid].neighbor_hs; }
+			inline std::vector<uint32_t> vertex_neighs(const int v_gid) const override { return mesh_.vertex_hs[v_gid].to_vector(); }
+			inline std::vector<uint32_t> edge_neighs(const int e_gid) const override { return mesh_.edge_hs[e_gid].to_vector(); }
 
 			// Navigation in a surface mesh
 			Navigation3D::Index switch_vertex(Navigation3D::Index idx) const override { return Navigation3D::switch_vertex(mesh_, idx); }
@@ -100,12 +110,12 @@ namespace polyfem
 			void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const override
 			{
 				ids.clear();
-				ids.insert(ids.begin(), mesh_.vertices[v_id].neighbor_hs.begin(), mesh_.vertices[v_id].neighbor_hs.end());
+				ids.insert(ids.begin(), mesh_.vertex_hs[v_id].begin(), mesh_.vertex_hs[v_id].end());
 			}
 			void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const override
 			{
 				ids.clear();
-				ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end());
+				ids.insert(ids.begin(), mesh_.edge_hs[e_id].begin(), mesh_.edge_hs[e_id].end());
 			}
 
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
@@ -122,6 +132,10 @@ namespace polyfem
 			}
 
 			void append(const Mesh &mesh) override;
+
+			/// Also moves the kernel points of the elements, used by polyhedral
+			/// quadrature and refinement.
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override;
 
 			std::unique_ptr<Mesh> copy() const override;
 

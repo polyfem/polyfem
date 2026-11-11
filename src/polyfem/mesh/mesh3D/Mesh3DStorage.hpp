@@ -1,57 +1,133 @@
 #pragma once
 
-#include <vector>
 #include <Eigen/Dense>
+
+#include <array>
 #include <cassert>
+#include <cstdint>
+#include <initializer_list>
+#include <iterator>
+#include <limits>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace polyfem
 {
 	namespace mesh
 	{
-		struct Vertex
+		/// Contiguous view of one row of a JaggedArray (like std::span).
+		template <typename T>
+		class ArrayRow
 		{
-			int id;
-			std::vector<double> v;
-			std::vector<uint32_t> neighbor_vs;
-			std::vector<uint32_t> neighbor_es;
-			std::vector<uint32_t> neighbor_fs;
-			std::vector<uint32_t> neighbor_hs;
+		public:
+			ArrayRow(T *begin, T *end) : begin_(begin), end_(end) {}
 
-			bool boundary;
-			bool boundary_hex;
-		};
-		struct Edge
-		{
-			int id;
-			std::vector<uint32_t> vs;
-			std::vector<uint32_t> neighbor_fs;
-			std::vector<uint32_t> neighbor_hs;
+			T *begin() const { return begin_; }
+			T *end() const { return end_; }
+			size_t size() const { return end_ - begin_; }
+			bool empty() const { return begin_ == end_; }
+			T &operator[](const size_t i) const
+			{
+				assert(i < size());
+				return begin_[i];
+			}
+			T &front() const { return *begin_; }
+			T &back() const { return *(end_ - 1); }
 
-			bool boundary;
-			bool boundary_hex;
-		};
-		struct Face
-		{
-			int id;
-			std::vector<uint32_t> vs;
-			std::vector<uint32_t> es;
-			std::vector<uint32_t> neighbor_hs;
-			bool boundary;
-			bool boundary_hex;
+			/// Copy of the row.
+			std::vector<std::remove_const_t<T>> to_vector() const { return {begin_, end_}; }
+
+		private:
+			T *begin_;
+			T *end_;
 		};
 
-		struct Element
+		/// Rows of different lengths stored contiguously (compressed rows): row i
+		/// is data[offsets[i], offsets[i + 1]).
+		template <typename T>
+		class JaggedArray
 		{
-			int id;
-			// Vertex order in the input mesh, when available. The `vs` array is
-			// reserved for the canonical ordering used by mesh navigation.
-			std::vector<uint32_t> input_vs;
-			std::vector<uint32_t> vs;
-			std::vector<uint32_t> es;
-			std::vector<uint32_t> fs;
-			std::vector<bool> fs_flag;
-			bool hex = false;
-			std::vector<double> v_in_Kernel;
+		public:
+			/// Number of rows.
+			int size() const { return int(offsets_.size()) - 1; }
+			bool empty() const { return size() == 0; }
+			/// Total number of entries.
+			size_t n_entries() const { return data_.size(); }
+
+			ArrayRow<T> operator[](const int i)
+			{
+				assert(i >= 0 && i < size());
+				return {data_.data() + offsets_[i], data_.data() + offsets_[i + 1]};
+			}
+			ArrayRow<const T> operator[](const int i) const
+			{
+				assert(i >= 0 && i < size());
+				return {data_.data() + offsets_[i], data_.data() + offsets_[i + 1]};
+			}
+			int row_size(const int i) const { return int(offsets_[i + 1] - offsets_[i]); }
+
+			void clear()
+			{
+				offsets_.assign(1, 0);
+				data_.clear();
+			}
+			void reserve(const size_t n_rows, const size_t n_entries)
+			{
+				offsets_.reserve(n_rows + 1);
+				data_.reserve(n_entries);
+			}
+
+			/// Appends a row.
+			template <typename It>
+			void push_back(It begin, It end)
+			{
+				data_.insert(data_.end(), begin, end);
+				push_offset();
+			}
+			template <typename Range>
+			void push_back(const Range &row) { push_back(std::begin(row), std::end(row)); }
+			void push_back(std::initializer_list<T> row) { push_back(row.begin(), row.end()); }
+			/// Appends a row of n copies of value.
+			void push_back_filled(const size_t n, const T &value)
+			{
+				data_.resize(data_.size() + n, value);
+				push_offset();
+			}
+
+			/// Replaces the content with rows of the given sizes, filled with value.
+			void assign_sizes(const std::vector<uint32_t> &sizes, const T &value = T())
+			{
+				offsets_.resize(sizes.size() + 1);
+				offsets_[0] = 0;
+				for (size_t i = 0; i < sizes.size(); ++i)
+					offsets_[i + 1] = offsets_[i] + sizes[i];
+				data_.assign(offsets_.back(), value);
+			}
+
+			/// Appends the rows of other, adding shift to every entry.
+			void append(const JaggedArray &other, const T shift)
+			{
+				const uint32_t n = data_.size();
+				offsets_.reserve(offsets_.size() + other.size());
+				for (int i = 0; i < other.size(); ++i)
+					offsets_.push_back(n + other.offsets_[i + 1]);
+				data_.reserve(n + other.data_.size());
+				for (const T &v : other.data_)
+					data_.push_back(v + shift);
+			}
+
+			size_t memory() const { return offsets_.capacity() * sizeof(uint32_t) + data_.capacity() * sizeof(T); }
+
+		private:
+			void push_offset()
+			{
+				assert(data_.size() <= std::numeric_limits<uint32_t>::max());
+				offsets_.push_back(data_.size());
+			}
+
+			std::vector<uint32_t> offsets_ = {0};
+			std::vector<T> data_;
 		};
 
 		enum class MeshType
@@ -64,141 +140,72 @@ namespace polyfem
 			HEX
 		};
 
+		/// Topology of a conforming 3D mesh (used by CMesh3D), stored as flat
+		/// arrays indexed by entity id.
+		///
+		/// The input topology is: points, face_vs (vertices of each face, in order
+		/// around it), cell_fs and cell_fs_flag (faces of each cell and whether
+		/// each one is oriented inward), cell_hex, cell_input_vs and cell_kernel
+		/// (and cell_vs for the HEX type). MeshProcessing3D::build_connectivity
+		/// derives everything else:
+		/// - edges sorted by (min, max) vertex id, edge_vs = (min, max);
+		/// - face_es[f][j] = edge (face_vs[f][j], face_vs[f][j + 1]);
+		/// - cell_vs: hexes in navigation order (a face, then the opposite
+		///   vertices), other cells sorted; cell_es sorted;
+		/// - every incidence list (vertex_*, edge_fs/hs, face_hs) sorted by id,
+		///   vertex_vs[v][k] being the other vertex of the edge vertex_es[v][k];
+		/// - the boundary flags.
+		/// Face ids are the creation order and are never renumbered.
 		class Mesh3DStorage
 		{
 		public:
-			MeshType type;
+			MeshType type = MeshType::HYB;
+			/// Vertex positions, 3 x #vertices.
 			Eigen::MatrixXd points;
-			std::vector<Vertex> vertices;
-			std::vector<Edge> edges;
-			std::vector<Face> faces;
-			std::vector<Element> elements;
 
-			Eigen::MatrixXi EV;              // EV(2, ne)
-			Eigen::MatrixXi FV, FE, FH, FHi; // FV (3, nf), FE(3, nf), FH (2, nf), FHi(2, nf)
-			Eigen::MatrixXi HV, HF;          // HV(4, nh), HE(6, nh), HF(4, nh)
+			// Vertices: incident vertices, edges, faces and cells.
+			JaggedArray<uint32_t> vertex_vs, vertex_es, vertex_fs, vertex_hs;
+			std::vector<uint8_t> vertex_boundary;
 
-			void append(const Mesh3DStorage &other)
-			{
-				if (other.type != type)
-					type = MeshType::HYB;
+			// Edges: endpoints (min, max), incident faces and cells.
+			std::vector<std::array<uint32_t, 2>> edge_vs;
+			JaggedArray<uint32_t> edge_fs, edge_hs;
+			std::vector<uint8_t> edge_boundary;
 
-				const int n_v = points.cols();
-				const int n_e = edges.size();
-				const int n_f = faces.size();
-				const int n_c = elements.size();
-				assert(n_v == vertices.size());
+			// Faces: vertices in order, edges aligned with them, incident cells and
+			// the local index of the face in each of these cells.
+			JaggedArray<uint32_t> face_vs, face_es, face_hs;
+			JaggedArray<uint8_t> face_hs_slot;
+			std::vector<uint8_t> face_boundary;
 
-				assert(points.rows() == other.points.rows());
-				points.conservativeResize(points.rows(), n_v + other.points.cols());
-				points.rightCols(other.points.cols()) = other.points;
+			// Cells.
+			JaggedArray<uint32_t> cell_vs;       ///< navigation order (see above)
+			JaggedArray<uint32_t> cell_input_vs; ///< input order (rows may be empty)
+			JaggedArray<uint32_t> cell_es, cell_fs;
+			JaggedArray<uint8_t> cell_fs_flag;
+			std::vector<uint8_t> cell_hex;
+			/// A point from which the cell is star-shaped.
+			std::vector<std::array<double, 3>> cell_kernel;
 
-				for (const auto &v : other.vertices)
-				{
-					auto tmp = v;
-					tmp.id += n_v;
-					for (auto &e : tmp.neighbor_vs)
-						e += n_v;
+			int n_vertices() const { return points.cols(); }
+			int n_edges() const { return edge_vs.size(); }
+			int n_faces() const { return face_vs.size(); }
+			int n_cells() const { return cell_fs.size(); }
 
-					for (auto &e : tmp.neighbor_es)
-						e += n_e;
+			// Fixed-size accessors used by the tetrahedral navigation.
+			int EV(const int k, const int e) const { return edge_vs[e][k]; }
+			int FV(const int k, const int f) const { return face_vs[f][k]; }
+			int FE(const int k, const int f) const { return face_es[f][k]; }
+			int HF(const int k, const int c) const { return cell_fs[c][k]; }
+			int FH(const int k, const int f) const { return k < face_hs.row_size(f) ? int(face_hs[f][k]) : -1; }
+			int FHi(const int k, const int f) const { return k < face_hs.row_size(f) ? int(face_hs_slot[f][k]) : -1; }
 
-					for (auto &e : tmp.neighbor_fs)
-						e += n_f;
+			/// Appends the input topology of other (shifting its ids). The
+			/// connectivity must then be rebuilt (Navigation3D::prepare_mesh).
+			void append(const Mesh3DStorage &other);
 
-					for (auto &e : tmp.neighbor_hs)
-						e += n_c;
-
-					vertices.push_back(tmp);
-				}
-				assert(points.cols() == vertices.size());
-				assert(vertices.size() == n_v + other.vertices.size());
-
-				for (const auto &e : other.edges)
-				{
-					auto tmp = e;
-					tmp.id += n_e;
-					for (auto &e : tmp.vs)
-						e += n_v;
-
-					for (auto &e : tmp.neighbor_fs)
-						e += n_f;
-
-					for (auto &e : tmp.neighbor_hs)
-						e += n_c;
-
-					edges.push_back(tmp);
-				}
-				assert(edges.size() == n_e + other.edges.size());
-
-				for (const auto &f : other.faces)
-				{
-					auto tmp = f;
-					tmp.id += n_f;
-					for (auto &e : tmp.vs)
-						e += n_v;
-
-					for (auto &e : tmp.es)
-						e += n_e;
-
-					for (auto &e : tmp.neighbor_hs)
-						e += n_c;
-
-					faces.push_back(tmp);
-				}
-				assert(faces.size() == n_f + other.faces.size());
-
-				for (const auto &c : other.elements)
-				{
-					auto tmp = c;
-					tmp.id += n_c;
-					for (auto &e : tmp.input_vs)
-						e += n_v;
-					for (auto &e : tmp.vs)
-						e += n_v;
-
-					for (auto &e : tmp.es)
-						e += n_e;
-
-					for (auto &e : tmp.fs)
-						e += n_f;
-
-					elements.push_back(tmp);
-				}
-				assert(elements.size() == n_c + other.elements.size());
-				EV.resize(0, 0);
-				// assert(EV.size() == 0 || EV.rows() == other.EV.rows());
-				// EV.conservativeResize(std::max(EV.rows(), other.EV.rows()), other.EV.cols() + EV.cols());
-				// EV.rightCols(other.EV.cols()) = other.EV.array() + n_v;
-
-				// //////////////////
-				FV.resize(0, 0);
-				// assert(FV.size() == 0 || FV.rows() == other.FV.rows());
-				// FV.conservativeResize(std::max(FV.rows(), other.FV.rows()), other.FV.cols() + FV.cols());
-				// FV.rightCols(other.FV.cols()) = other.FV.array() + n_v;
-				FE.resize(0, 0);
-				// assert(FE.size() == 0 || FE.rows() == other.FE.rows());
-				// FE.conservativeResize(std::max(FE.rows(), other.FE.rows()), other.FE.cols() + FE.cols());
-				// FE.rightCols(other.FE.cols()) = other.FE.array() + n_e;
-				FH.resize(0, 0);
-				// assert(FH.size() == 0 || FH.rows() == other.FH.rows());
-				// FH.conservativeResize(std::max(FH.rows(), other.FH.rows()), other.FH.cols() + FH.cols());
-				// FH.rightCols(other.FH.cols()) = other.FH.array() + n_c;
-				FHi.resize(0, 0);
-				// assert(FHi.size() == 0 || FHi.rows() == other.FHi.rows());
-				// FHi.conservativeResize(std::max(FHi.rows(), other.FHi.rows()), other.FHi.cols() + FHi.cols());
-				// FHi.rightCols(other.FHi.cols()) = other.FHi.array();
-
-				// /////////////////
-				HV.resize(0, 0);
-				// assert(HV.size() == 0 || HV.rows() == other.HV.rows());
-				// HV.conservativeResize(std::max(HV.rows(), other.HV.rows()), other.HV.cols() + HV.cols());
-				// HV.rightCols(other.HV.cols()) = other.HV.array() + n_v;
-				HF.resize(0, 0);
-				// assert(HF.size() == 0 || HF.rows() == other.HF.rows());
-				// HF.conservativeResize(std::max(HF.rows(), other.HF.rows()), other.HF.cols() + HF.cols());
-				// HF.rightCols(other.HF.cols()) = other.HF.array() + n_f;
-			}
+			/// Bytes allocated by the storage.
+			size_t memory() const;
 		};
 
 		struct Mesh_Quality

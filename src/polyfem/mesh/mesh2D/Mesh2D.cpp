@@ -121,7 +121,7 @@ namespace polyfem
 			{
 				auto &box = boxes[i];
 				box[0] << std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0;
-				box[1] << std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), 0;
+				box[1] << std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), 0;
 
 				auto index = get_index_from_face(i);
 

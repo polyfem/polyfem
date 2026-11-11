@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <set>
 #include <queue>
@@ -16,254 +17,318 @@ using namespace polyfem;
 using namespace std;
 using namespace Eigen;
 
-void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
+namespace
 {
-	hmi.edges.clear();
-	if (hmi.type == MeshType::TRI || hmi.type == MeshType::QUA || hmi.type == MeshType::H_SUR)
+	/// Fills rows (n_rows of them) with the (row, value) pairs passed to the
+	/// callback by visit(callback), keeping the order in which they come.
+	/// visit is called twice: once to count, once to fill.
+	template <typename T, typename Visit>
+	void fill_rows(JaggedArray<T> &rows, const int n_rows, const Visit &visit)
+	{
+		std::vector<uint32_t> counts(n_rows, 0);
+		visit([&](const int r, const T &) { ++counts[r]; });
+		rows.assign_sizes(counts);
+		std::fill(counts.begin(), counts.end(), 0);
+		visit([&](const int r, const T &value) { rows[r][counts[r]++] = value; });
+	}
+
+	/// A mesh under construction by the refinement: vertex positions, faces and
+	/// cells; the connectivity is built afterwards.
+	struct RefinedMesh
+	{
+		struct Cell
+		{
+			std::vector<uint32_t> vs;
+			std::vector<uint32_t> fs;
+			std::vector<uint8_t> fs_flag;
+			bool hex = false;
+			std::array<double, 3> kernel;
+		};
+
+		MeshType type;
+		std::vector<std::array<double, 3>> points;
+		std::vector<std::vector<uint32_t>> faces;
+		std::vector<Cell> cells;
+
+		Mesh3DStorage to_storage() const
+		{
+			Mesh3DStorage M;
+			M.type = type;
+			M.points.resize(3, points.size());
+			for (size_t v = 0; v < points.size(); ++v)
+				for (int j = 0; j < 3; j++)
+					M.points(j, v) = points[v][j];
+			for (const auto &f : faces)
+				M.face_vs.push_back(f);
+			for (const auto &c : cells)
+			{
+				M.cell_vs.push_back(c.vs);
+				M.cell_input_vs.push_back_filled(0, 0);
+				M.cell_fs.push_back(c.fs);
+				M.cell_fs_flag.push_back(c.fs_flag);
+				M.cell_hex.push_back(c.hex);
+				M.cell_kernel.push_back(c.kernel);
+			}
+			return M;
+		}
+	};
+
+	/// Scaled Jacobian quality of hexes given by their 8 vertices.
+	bool hex_scaled_jacobian(const Eigen::MatrixXd &points, const std::vector<std::vector<uint32_t>> &hexes, Mesh_Quality &mq)
+	{
+		using namespace MeshProcessing3D;
+		mq.ave_Jacobian = 0;
+		mq.min_Jacobian = 1;
+		mq.deviation_Jacobian = 0;
+		mq.V_Js.resize(hexes.size() * 8);
+		mq.V_Js.setZero();
+		mq.H_Js.resize(hexes.size());
+		mq.H_Js.setZero();
+
+		for (uint32_t i = 0; i < hexes.size(); i++)
+		{
+			double hex_minJ = 1;
+			for (uint32_t j = 0; j < 8; j++)
+			{
+				uint32_t v0, v1, v2, v3;
+				v0 = hex_tetra_table[j][0];
+				v1 = hex_tetra_table[j][1];
+				v2 = hex_tetra_table[j][2];
+				v3 = hex_tetra_table[j][3];
+
+				Vector3d c0 = points.col(hexes[i][v0]);
+				Vector3d c1 = points.col(hexes[i][v1]);
+				Vector3d c2 = points.col(hexes[i][v2]);
+				Vector3d c3 = points.col(hexes[i][v3]);
+
+				double jacobian_value = a_jacobian(c0, c1, c2, c3);
+
+				if (hex_minJ > jacobian_value)
+					hex_minJ = jacobian_value;
+
+				uint32_t id = 8 * i + j;
+				mq.V_Js[id] = jacobian_value;
+			}
+			mq.H_Js[i] = hex_minJ;
+			mq.ave_Jacobian += hex_minJ;
+			if (mq.min_Jacobian > hex_minJ)
+				mq.min_Jacobian = hex_minJ;
+		}
+		mq.ave_Jacobian /= hexes.size();
+		for (int i = 0; i < mq.H_Js.size(); i++)
+			mq.deviation_Jacobian += (mq.H_Js[i] - mq.ave_Jacobian) * (mq.H_Js[i] - mq.ave_Jacobian);
+		mq.deviation_Jacobian /= hexes.size();
+
+		return true;
+	}
+
+	/// Builds the edges of the faces: edge_vs (sorted by (min, max)) and
+	/// face_es. With mark_boundary, the edges of a single face are boundary;
+	/// otherwise every edge starts as interior.
+	void build_edges(Mesh3DStorage &hmi, const bool mark_boundary)
 	{
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t>> temp;
-		temp.reserve(hmi.faces.size() * 3);
-		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
+		temp.reserve(hmi.face_vs.n_entries());
+		std::vector<uint32_t> face_sizes(hmi.n_faces());
+		for (uint32_t i = 0; i < hmi.n_faces(); ++i)
 		{
-			int vn = hmi.faces[i].vs.size();
+			const auto fvs = hmi.face_vs[i];
+			const int vn = fvs.size();
 			for (uint32_t j = 0; j < vn; ++j)
 			{
-				uint32_t v0 = hmi.faces[i].vs[j], v1 = hmi.faces[i].vs[(j + 1) % vn];
+				uint32_t v0 = fvs[j], v1 = fvs[(j + 1) % vn];
 				if (v0 > v1)
 					std::swap(v0, v1);
 				temp.push_back(std::make_tuple(v0, v1, i, j));
 			}
-			hmi.faces[i].es.resize(vn);
+			face_sizes[i] = vn;
 		}
+		hmi.face_es.assign_sizes(face_sizes);
 		std::sort(temp.begin(), temp.end());
-		hmi.edges.reserve(temp.size() / 2);
+
+		hmi.edge_vs.clear();
+		hmi.edge_vs.reserve(temp.size() / 2);
+		hmi.edge_boundary.clear();
+		hmi.edge_boundary.reserve(temp.size() / 2);
 		uint32_t E_num = 0;
-		Edge e;
-		e.boundary = true;
-		e.vs.resize(2);
 		for (uint32_t i = 0; i < temp.size(); ++i)
 		{
 			if (i == 0 || (i != 0 && (std::get<0>(temp[i]) != std::get<0>(temp[i - 1]) || std::get<1>(temp[i]) != std::get<1>(temp[i - 1]))))
 			{
-				e.id = E_num;
 				E_num++;
-				e.vs[0] = std::get<0>(temp[i]);
-				e.vs[1] = std::get<1>(temp[i]);
-				hmi.edges.push_back(e);
+				hmi.edge_vs.push_back({{std::get<0>(temp[i]), std::get<1>(temp[i])}});
+				hmi.edge_boundary.push_back(mark_boundary);
 			}
-			else if (i != 0 && (std::get<0>(temp[i]) == std::get<0>(temp[i - 1]) && std::get<1>(temp[i]) == std::get<1>(temp[i - 1])))
-				hmi.edges[E_num - 1].boundary = false;
+			else if (mark_boundary)
+				hmi.edge_boundary[E_num - 1] = false;
 
-			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
+			hmi.face_es[std::get<2>(temp[i])][std::get<3>(temp[i])] = E_num - 1;
 		}
+	}
+} // namespace
+
+void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
+{
+	const int n_vertices = hmi.n_vertices();
+	if (hmi.type == MeshType::TRI || hmi.type == MeshType::QUA || hmi.type == MeshType::H_SUR)
+	{
+		build_edges(hmi, true);
 		// boundary
-		for (auto &v : hmi.vertices)
-			v.boundary = false;
-		for (uint32_t i = 0; i < hmi.edges.size(); ++i)
-			if (hmi.edges[i].boundary)
-			{
-				hmi.vertices[hmi.edges[i].vs[0]].boundary = hmi.vertices[hmi.edges[i].vs[1]].boundary = true;
-			}
+		hmi.vertex_boundary.assign(n_vertices, false);
+		for (uint32_t i = 0; i < hmi.n_edges(); ++i)
+			if (hmi.edge_boundary[i])
+				hmi.vertex_boundary[hmi.edge_vs[i][0]] = hmi.vertex_boundary[hmi.edge_vs[i][1]] = true;
 	}
 	else if (hmi.type == MeshType::HEX)
 	{
-
-		std::vector<std::vector<uint32_t>> total_fs(hmi.elements.size() * 6);
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF(hmi.elements.size() * 6);
-		std::vector<uint32_t> vs(4);
-		for (uint32_t i = 0; i < hmi.elements.size(); ++i)
+		// Faces from the hexes (cell_vs in navigation order).
+		const int n_cells = hmi.cell_vs.size();
+		std::vector<std::array<uint32_t, 4>> total_fs(n_cells * 6);
+		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF(n_cells * 6);
+		std::array<uint32_t, 4> vs;
+		for (uint32_t i = 0; i < n_cells; ++i)
 		{
+			const auto hvs = hmi.cell_vs[i];
 			for (short j = 0; j < 6; j++)
 			{
 				for (short k = 0; k < 4; k++)
-					vs[k] = hmi.elements[i].vs[hex_face_table[j][k]];
+					vs[k] = hvs[hex_face_table[j][k]];
 				uint32_t id = 6 * i + j;
 				total_fs[id] = vs;
 				std::sort(vs.begin(), vs.end());
 				tempF[id] = std::make_tuple(vs[0], vs[1], vs[2], vs[3], id, i, j);
 			}
-			hmi.elements[i].fs.resize(6);
 		}
+		hmi.cell_fs.assign_sizes(std::vector<uint32_t>(n_cells, 6));
 		std::sort(tempF.begin(), tempF.end());
-		hmi.faces.reserve(tempF.size() / 3);
-		Face f;
-		f.boundary = true;
+		hmi.face_vs.clear();
+		hmi.face_vs.reserve(tempF.size() / 3, 4 * (tempF.size() / 3));
+		hmi.face_boundary.clear();
 		uint32_t F_num = 0;
 		for (uint32_t i = 0; i < tempF.size(); ++i)
 		{
 			if (i == 0 || (i != 0 && (std::get<0>(tempF[i]) != std::get<0>(tempF[i - 1]) || std::get<1>(tempF[i]) != std::get<1>(tempF[i - 1]) || std::get<2>(tempF[i]) != std::get<2>(tempF[i - 1]) || std::get<3>(tempF[i]) != std::get<3>(tempF[i - 1]))))
 			{
-				f.id = F_num;
 				F_num++;
-				f.vs = total_fs[std::get<4>(tempF[i])];
-				hmi.faces.push_back(f);
+				hmi.face_vs.push_back(total_fs[std::get<4>(tempF[i])]);
+				hmi.face_boundary.push_back(true);
 			}
-			else if (i != 0 && (std::get<0>(tempF[i]) == std::get<0>(tempF[i - 1]) && std::get<1>(tempF[i]) == std::get<1>(tempF[i - 1]) && std::get<2>(tempF[i]) == std::get<2>(tempF[i - 1]) && std::get<3>(tempF[i]) == std::get<3>(tempF[i - 1])))
-				hmi.faces[F_num - 1].boundary = false;
+			else
+				hmi.face_boundary[F_num - 1] = false;
 
-			hmi.elements[std::get<5>(tempF[i])].fs[std::get<6>(tempF[i])] = F_num - 1;
+			hmi.cell_fs[std::get<5>(tempF[i])][std::get<6>(tempF[i])] = F_num - 1;
 		}
 
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t>> temp(hmi.faces.size() * 4);
-		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-		{
-			for (uint32_t j = 0; j < 4; ++j)
-			{
-				uint32_t v0 = hmi.faces[i].vs[j], v1 = hmi.faces[i].vs[(j + 1) % 4];
-				if (v0 > v1)
-					std::swap(v0, v1);
-				temp[4 * i + j] = std::make_tuple(v0, v1, i, j);
-			}
-			hmi.faces[i].es.resize(4);
-		}
-		std::sort(temp.begin(), temp.end());
-		hmi.edges.reserve(temp.size() / 2);
-		uint32_t E_num = 0;
-		Edge e;
-		e.boundary = false;
-		e.vs.resize(2);
-		for (uint32_t i = 0; i < temp.size(); ++i)
-		{
-			if (i == 0 || (i != 0 && (std::get<0>(temp[i]) != std::get<0>(temp[i - 1]) || std::get<1>(temp[i]) != std::get<1>(temp[i - 1]))))
-			{
-				e.id = E_num;
-				E_num++;
-				e.vs[0] = std::get<0>(temp[i]);
-				e.vs[1] = std::get<1>(temp[i]);
-				hmi.edges.push_back(e);
-			}
-			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
-		}
+		build_edges(hmi, false);
 		// boundary
-		for (auto &v : hmi.vertices)
-			v.boundary = false;
-		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-			if (hmi.faces[i].boundary)
+		hmi.vertex_boundary.assign(n_vertices, false);
+		for (uint32_t i = 0; i < hmi.n_faces(); ++i)
+			if (hmi.face_boundary[i])
 				for (uint32_t j = 0; j < 4; ++j)
 				{
-					uint32_t eid = hmi.faces[i].es[j];
-					hmi.edges[eid].boundary = true;
-					hmi.vertices[hmi.edges[eid].vs[0]].boundary = hmi.vertices[hmi.edges[eid].vs[1]].boundary = true;
+					uint32_t eid = hmi.face_es[i][j];
+					hmi.edge_boundary[eid] = true;
+					hmi.vertex_boundary[hmi.edge_vs[eid][0]] = hmi.vertex_boundary[hmi.edge_vs[eid][1]] = true;
 				}
 	}
 	else if (hmi.type == MeshType::HYB || hmi.type == MeshType::TET)
 	{
-		vector<bool> bf_flag(hmi.faces.size(), false);
-		for (auto h : hmi.elements)
-			for (auto f : h.fs)
-				bf_flag[f] = !bf_flag[f];
-		for (auto &f : hmi.faces)
-			f.boundary = bf_flag[f.id];
+		// A face is on the boundary if it belongs to a single cell.
+		hmi.face_boundary.assign(hmi.n_faces(), false);
+		for (int c = 0; c < hmi.n_cells(); ++c)
+			for (const auto f : hmi.cell_fs[c])
+				hmi.face_boundary[f] = !hmi.face_boundary[f];
 
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t>> temp;
-		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-		{
-			int fl = hmi.faces[i].vs.size();
-			for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j)
-			{
-				uint32_t v0 = hmi.faces[i].vs[j], v1 = hmi.faces[i].vs[(j + 1) % fl];
-				if (v0 > v1)
-					std::swap(v0, v1);
-				temp.push_back(std::make_tuple(v0, v1, i, j));
-			}
-			hmi.faces[i].es.resize(fl);
-		}
-		std::sort(temp.begin(), temp.end());
-		hmi.edges.reserve(temp.size() / 2);
-		uint32_t E_num = 0;
-		Edge e;
-		e.boundary = false;
-		e.vs.resize(2);
-		for (uint32_t i = 0; i < temp.size(); ++i)
-		{
-			if (i == 0 || (i != 0 && (std::get<0>(temp[i]) != std::get<0>(temp[i - 1]) || std::get<1>(temp[i]) != std::get<1>(temp[i - 1]))))
-			{
-				e.id = E_num;
-				E_num++;
-				e.vs[0] = std::get<0>(temp[i]);
-				e.vs[1] = std::get<1>(temp[i]);
-				hmi.edges.push_back(e);
-			}
-			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
-		}
+		build_edges(hmi, false);
 		// boundary
-		for (auto &v : hmi.vertices)
-			v.boundary = false;
-		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-			if (hmi.faces[i].boundary)
-				for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j)
+		hmi.vertex_boundary.assign(n_vertices, false);
+		for (uint32_t i = 0; i < hmi.n_faces(); ++i)
+			if (hmi.face_boundary[i])
+				for (uint32_t j = 0; j < hmi.face_vs.row_size(i); ++j)
 				{
-					uint32_t eid = hmi.faces[i].es[j];
-					hmi.edges[eid].boundary = true;
-					hmi.vertices[hmi.faces[i].vs[j]].boundary = true;
+					uint32_t eid = hmi.face_es[i][j];
+					hmi.edge_boundary[eid] = true;
+					hmi.vertex_boundary[hmi.face_vs[i][j]] = true;
 				}
 	}
-	// f_nhs;
-	for (auto &f : hmi.faces)
-		f.neighbor_hs.clear();
-	for (uint32_t i = 0; i < hmi.elements.size(); i++)
-	{
-		for (uint32_t j = 0; j < hmi.elements[i].fs.size(); j++)
-		{
-			hmi.faces[hmi.elements[i].fs[j]].neighbor_hs.push_back(i);
-		}
-	}
+
+	const int n_edges = hmi.n_edges(), n_faces = hmi.n_faces(), n_cells = hmi.n_cells();
+
+	// f_nhs
+	fill_rows(hmi.face_hs, n_faces, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_cells; i++)
+			for (const auto f : hmi.cell_fs[i])
+				emit(f, i);
+	});
 	// e_nfs, v_nfs
-	for (auto &e : hmi.edges)
-		e.neighbor_fs.clear();
-	for (auto &v : hmi.vertices)
-		v.neighbor_fs.clear();
-	for (uint32_t i = 0; i < hmi.faces.size(); i++)
-	{
-		for (uint32_t j = 0; j < hmi.faces[i].es.size(); j++)
-			hmi.edges[hmi.faces[i].es[j]].neighbor_fs.push_back(i);
-		for (uint32_t j = 0; j < hmi.faces[i].vs.size(); j++)
-			hmi.vertices[hmi.faces[i].vs[j]].neighbor_fs.push_back(i);
-	}
+	fill_rows(hmi.edge_fs, n_edges, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_faces; i++)
+			for (const auto e : hmi.face_es[i])
+				emit(e, i);
+	});
+	fill_rows(hmi.vertex_fs, n_vertices, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_faces; i++)
+			for (const auto v : hmi.face_vs[i])
+				emit(v, i);
+	});
 	// v_nes, v_nvs
-	for (auto &v : hmi.vertices)
-	{
-		v.neighbor_es.clear();
-		v.neighbor_vs.clear();
-	}
-	for (uint32_t i = 0; i < hmi.edges.size(); i++)
-	{
-		uint32_t v0 = hmi.edges[i].vs[0], v1 = hmi.edges[i].vs[1];
-		hmi.vertices[v0].neighbor_es.push_back(i);
-		hmi.vertices[v1].neighbor_es.push_back(i);
-		hmi.vertices[v0].neighbor_vs.push_back(v1);
-		hmi.vertices[v1].neighbor_vs.push_back(v0);
-	}
-	// e_nhs
-	for (auto &e : hmi.edges)
-		e.neighbor_hs.clear();
-	for (auto &ele : hmi.elements)
-		ele.es.clear();
-	for (uint32_t i = 0; i < hmi.edges.size(); i++)
-	{
-		std::vector<uint32_t> nhs;
-		for (uint32_t j = 0; j < hmi.edges[i].neighbor_fs.size(); j++)
+	fill_rows(hmi.vertex_es, n_vertices, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_edges; i++)
 		{
-			uint32_t nfid = hmi.edges[i].neighbor_fs[j];
-			nhs.insert(nhs.end(), hmi.faces[nfid].neighbor_hs.begin(), hmi.faces[nfid].neighbor_hs.end());
+			emit(hmi.edge_vs[i][0], i);
+			emit(hmi.edge_vs[i][1], i);
 		}
+	});
+	fill_rows(hmi.vertex_vs, n_vertices, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_edges; i++)
+		{
+			emit(hmi.edge_vs[i][0], hmi.edge_vs[i][1]);
+			emit(hmi.edge_vs[i][1], hmi.edge_vs[i][0]);
+		}
+	});
+	// e_nhs
+	hmi.edge_hs.clear();
+	hmi.edge_hs.reserve(n_edges, 6 * n_edges);
+	std::vector<uint32_t> nhs;
+	for (uint32_t i = 0; i < n_edges; i++)
+	{
+		nhs.clear();
+		for (const auto nfid : hmi.edge_fs[i])
+			nhs.insert(nhs.end(), hmi.face_hs[nfid].begin(), hmi.face_hs[nfid].end());
 		std::sort(nhs.begin(), nhs.end());
 		nhs.erase(std::unique(nhs.begin(), nhs.end()), nhs.end());
-		hmi.edges[i].neighbor_hs = nhs;
-		for (auto nhid : nhs)
-			hmi.elements[nhid].es.push_back(i);
+		hmi.edge_hs.push_back(nhs);
 	}
+	fill_rows(hmi.cell_es, n_cells, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_edges; i++)
+			for (const auto c : hmi.edge_hs[i])
+				emit(c, i);
+	});
+
+	// Local index of each face in its cells (aligned with face_hs).
+	const auto build_face_slots = [&]() {
+		fill_rows(hmi.face_hs_slot, n_faces, [&](const auto &emit) {
+			for (uint32_t i = 0; i < n_cells; i++)
+				for (uint32_t j = 0; j < hmi.cell_fs.row_size(i); j++)
+					emit(hmi.cell_fs[i][j], uint8_t(j));
+		});
+	};
+
 	// v_nhs; ordering fs for hex
 	if (hmi.type != MeshType::HYB && hmi.type != MeshType::TET)
-		return;
-
-	for (auto &v : hmi.vertices)
-		v.neighbor_hs.clear();
-	for (uint32_t i = 0; i < hmi.elements.size(); i++)
 	{
-		vector<uint32_t> vs;
-		for (auto fid : hmi.elements[i].fs)
-			vs.insert(vs.end(), hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end());
+		build_face_slots();
+		return;
+	}
+
+	JaggedArray<uint32_t> cell_vs;
+	cell_vs.reserve(n_cells, hmi.cell_input_vs.n_entries());
+	vector<uint32_t> vs, new_vs;
+	for (uint32_t i = 0; i < n_cells; i++)
+	{
+		vs.clear();
+		for (const auto fid : hmi.cell_fs[i])
+			vs.insert(vs.end(), hmi.face_vs[fid].begin(), hmi.face_vs[fid].end());
 		sort(vs.begin(), vs.end());
 		vs.erase(unique(vs.begin(), vs.end()), vs.end());
 
@@ -271,7 +336,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		for (auto vid : vs)
 		{
 			int nv = 0;
-			for (auto nvid : hmi.vertices[vid].neighbor_vs)
+			for (auto nvid : hmi.vertex_vs[vid])
 				if (find(vs.begin(), vs.end(), nvid) != vs.end())
 					nv++;
 			if (nv != 3)
@@ -281,41 +346,40 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			}
 		}
 
-		if (hmi.elements[i].hex && (vs.size() != 8 || !degree3))
-			hmi.elements[i].hex = false;
+		if (hmi.cell_hex[i] && (vs.size() != 8 || !degree3))
+			hmi.cell_hex[i] = false;
 
-		hmi.elements[i].vs.clear();
-
-		if (hmi.elements[i].hex)
+		if (hmi.cell_hex[i])
 		{
-			int top_fid = hmi.elements[i].fs[0];
-			hmi.elements[i].vs = hmi.faces[top_fid].vs;
+			const auto hfs = hmi.cell_fs[i];
+			const auto hfs_flag = hmi.cell_fs_flag[i];
+			int top_fid = hfs[0];
+			new_vs = hmi.face_vs[top_fid].to_vector();
 
 			std::set<uint32_t> s_model(vs.begin(), vs.end());
-			std::set<uint32_t> s_pattern(hmi.faces[top_fid].vs.begin(), hmi.faces[top_fid].vs.end());
+			std::set<uint32_t> s_pattern(hmi.face_vs[top_fid].begin(), hmi.face_vs[top_fid].end());
 			vector<uint32_t> vs_left;
 			std::set_difference(s_model.begin(), s_model.end(), s_pattern.begin(), s_pattern.end(), std::back_inserter(vs_left));
 
-			for (auto vid : hmi.faces[top_fid].vs)
-				for (auto nvid : hmi.vertices[vid].neighbor_vs)
+			for (auto vid : hmi.face_vs[top_fid])
+				for (auto nvid : hmi.vertex_vs[vid])
 					if (find(vs_left.begin(), vs_left.end(), nvid) != vs_left.end())
 					{
-						hmi.elements[i].vs.push_back(nvid);
+						new_vs.push_back(nvid);
 						break;
 					}
 
 			function<int(vector<uint32_t> &, int &)> WHICH_F = [&](vector<uint32_t> &vs0, int &f_flag) -> int {
 				int which_f = -1;
 				sort(vs0.begin(), vs0.end());
-				bool found_f = false;
-				for (uint32_t j = 0; j < hmi.elements[i].fs.size(); j++)
+				for (uint32_t j = 0; j < hfs.size(); j++)
 				{
-					auto fid = hmi.elements[i].fs[j];
-					vector<uint32_t> vs1 = hmi.faces[fid].vs;
+					auto fid = hfs[j];
+					vector<uint32_t> vs1 = hmi.face_vs[fid].to_vector();
 					sort(vs1.begin(), vs1.end());
 					if (vs0.size() == vs1.size() && std::equal(vs0.begin(), vs0.end(), vs1.begin()))
 					{
-						f_flag = hmi.elements[i].fs_flag[j];
+						f_flag = hfs_flag[j];
 						which_f = fid;
 						break;
 					}
@@ -324,176 +388,62 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			};
 
 			vector<uint32_t> fs;
-			vector<bool> fs_flag;
-			fs_flag.push_back(hmi.elements[i].fs_flag[0]);
+			vector<uint8_t> fs_flag;
+			fs_flag.push_back(hfs_flag[0]);
 			fs.push_back(top_fid);
 			vector<uint32_t> vs_temp;
 
-			vs_temp.insert(vs_temp.end(), hmi.elements[i].vs.begin() + 4, hmi.elements[i].vs.end());
+			vs_temp.insert(vs_temp.end(), new_vs.begin() + 4, new_vs.end());
 			int f_flag = -1;
 			int bottom_fid = WHICH_F(vs_temp, f_flag);
 			fs_flag.push_back(f_flag);
 			fs.push_back(bottom_fid);
 
-			vs_temp.clear();
-			vs_temp.push_back(hmi.elements[i].vs[0]);
-			vs_temp.push_back(hmi.elements[i].vs[1]);
-			vs_temp.push_back(hmi.elements[i].vs[4]);
-			vs_temp.push_back(hmi.elements[i].vs[5]);
+			vs_temp = {new_vs[0], new_vs[1], new_vs[4], new_vs[5]};
 			f_flag = -1;
 			int front_fid = WHICH_F(vs_temp, f_flag);
 			fs_flag.push_back(f_flag);
 			fs.push_back(front_fid);
 
-			vs_temp.clear();
-			vs_temp.push_back(hmi.elements[i].vs[2]);
-			vs_temp.push_back(hmi.elements[i].vs[3]);
-			vs_temp.push_back(hmi.elements[i].vs[6]);
-			vs_temp.push_back(hmi.elements[i].vs[7]);
+			vs_temp = {new_vs[2], new_vs[3], new_vs[6], new_vs[7]};
 			f_flag = -1;
 			int back_fid = WHICH_F(vs_temp, f_flag);
 			fs_flag.push_back(f_flag);
 			fs.push_back(back_fid);
 
-			vs_temp.clear();
-			vs_temp.push_back(hmi.elements[i].vs[1]);
-			vs_temp.push_back(hmi.elements[i].vs[2]);
-			vs_temp.push_back(hmi.elements[i].vs[5]);
-			vs_temp.push_back(hmi.elements[i].vs[6]);
+			vs_temp = {new_vs[1], new_vs[2], new_vs[5], new_vs[6]};
 			f_flag = -1;
 			int left_fid = WHICH_F(vs_temp, f_flag);
 			fs_flag.push_back(f_flag);
 			fs.push_back(left_fid);
 
-			vs_temp.clear();
-			vs_temp.push_back(hmi.elements[i].vs[3]);
-			vs_temp.push_back(hmi.elements[i].vs[0]);
-			vs_temp.push_back(hmi.elements[i].vs[7]);
-			vs_temp.push_back(hmi.elements[i].vs[4]);
+			vs_temp = {new_vs[3], new_vs[0], new_vs[7], new_vs[4]};
 			f_flag = -1;
 			int right_fid = WHICH_F(vs_temp, f_flag);
 			fs_flag.push_back(f_flag);
 			fs.push_back(right_fid);
 
-			hmi.elements[i].fs = fs;
-			hmi.elements[i].fs_flag = fs_flag;
+			assert(fs.size() == hfs.size());
+			std::copy(fs.begin(), fs.end(), hfs.begin());
+			std::copy(fs_flag.begin(), fs_flag.end(), hfs_flag.begin());
+			cell_vs.push_back(new_vs);
 		}
 		else
-			hmi.elements[i].vs = vs;
-		for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++)
-			hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);
+			cell_vs.push_back(vs);
 	}
-	// matrix representation of tet mesh
-	if (hmi.type == MeshType::TET)
-	{
-		hmi.EV.resize(2, hmi.edges.size());
-		for (const auto &e : hmi.edges)
-		{
-			hmi.EV(0, e.id) = e.vs[0];
-			hmi.EV(1, e.id) = e.vs[1];
-		}
-		hmi.FV.resize(3, hmi.faces.size());
-		hmi.FE.resize(3, hmi.faces.size());
-		hmi.FH.resize(2, hmi.faces.size());
-		hmi.FHi.resize(2, hmi.faces.size());
-		for (const auto &f : hmi.faces)
-		{
-			hmi.FV(0, f.id) = f.vs[0];
-			hmi.FV(1, f.id) = f.vs[1];
-			hmi.FV(2, f.id) = f.vs[2];
-
-			hmi.FE(0, f.id) = f.es[0];
-			hmi.FE(1, f.id) = f.es[1];
-			hmi.FE(2, f.id) = f.es[2];
-
-			hmi.FH(0, f.id) = f.neighbor_hs[0];
-			for (int i = 0; i < hmi.elements[f.neighbor_hs[0]].fs.size(); i++)
-				if (f.id == hmi.elements[f.neighbor_hs[0]].fs[i])
-					hmi.FHi(0, f.id) = i;
-
-			hmi.FH(1, f.id) = -1;
-			hmi.FHi(1, f.id) = -1;
-			if (f.neighbor_hs.size() == 2)
-			{
-				hmi.FH(1, f.id) = f.neighbor_hs[1];
-				for (int i = 0; i < hmi.elements[f.neighbor_hs[1]].fs.size(); i++)
-					if (f.id == hmi.elements[f.neighbor_hs[1]].fs[i])
-						hmi.FHi(1, f.id) = i;
-			}
-		}
-		hmi.HV.resize(4, hmi.elements.size());
-		hmi.HF.resize(4, hmi.elements.size());
-		for (const auto &h : hmi.elements)
-		{
-			hmi.HV(0, h.id) = h.vs[0];
-			hmi.HV(1, h.id) = h.vs[1];
-			hmi.HV(2, h.id) = h.vs[2];
-			hmi.HV(3, h.id) = h.vs[3];
-
-			hmi.HF(0, h.id) = h.fs[0];
-			hmi.HF(1, h.id) = h.fs[1];
-			hmi.HF(2, h.id) = h.fs[2];
-			hmi.HF(3, h.id) = h.fs[3];
-		}
-	}
-
-	// boundary flags for hybrid mesh
-	std::vector<bool> bv_flag(hmi.vertices.size(), false), be_flag(hmi.edges.size(), false), bf_flag(hmi.faces.size(), false);
-	for (auto f : hmi.faces)
-		if (f.boundary && hmi.elements[f.neighbor_hs[0]].hex)
-			bf_flag[f.id] = true;
-		else if (!f.boundary)
-		{
-			int ele0 = f.neighbor_hs[0], ele1 = f.neighbor_hs[1];
-			if ((hmi.elements[ele0].hex && !hmi.elements[ele1].hex) || (!hmi.elements[ele0].hex && hmi.elements[ele1].hex))
-				bf_flag[f.id] = true;
-		}
-	for (uint32_t i = 0; i < hmi.faces.size(); ++i)
-		if (bf_flag[i])
-			for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j)
-			{
-				uint32_t eid = hmi.faces[i].es[j];
-				be_flag[eid] = true;
-				bv_flag[hmi.faces[i].vs[j]] = true;
-			}
-	// boundary_hex for hybrid mesh
-	for (auto &v : hmi.vertices)
-		v.boundary_hex = false;
-	for (auto &e : hmi.edges)
-		e.boundary_hex = false;
-	for (auto &f : hmi.faces)
-		f.boundary_hex = bf_flag[f.id];
-	for (auto &ele : hmi.elements)
-		if (ele.hex)
-		{
-			for (auto vid : ele.vs)
-			{
-				if (!bv_flag[vid])
-					continue;
-				int fn = 0;
-				for (auto nfid : hmi.vertices[vid].neighbor_fs)
-					if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end())
-						fn++;
-				if (fn == 3)
-					hmi.vertices[vid].boundary_hex = true;
-			}
-			for (auto eid : ele.es)
-			{
-				if (!be_flag[eid])
-					continue;
-				int fn = 0;
-				for (auto nfid : hmi.edges[eid].neighbor_fs)
-					if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end())
-						fn++;
-				if (fn == 2)
-					hmi.edges[eid].boundary_hex = true;
-			}
-		}
+	hmi.cell_vs = std::move(cell_vs);
+	fill_rows(hmi.vertex_hs, n_vertices, [&](const auto &emit) {
+		for (uint32_t i = 0; i < n_cells; i++)
+			for (const auto v : hmi.cell_vs[i])
+				emit(v, i);
+	});
+	build_face_slots();
 }
+
 void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 {
 	// connected components
-	vector<bool> H_tag(hmi.elements.size(), false);
+	vector<bool> H_tag(hmi.n_cells(), false);
 	vector<vector<uint32_t>> Groups;
 	while (true)
 	{
@@ -518,24 +468,24 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 				vector<vector<uint32_t>> Fvs(6), fvs_sorted;
 				for (uint32_t i = 0; i < 6; i++)
 					for (uint32_t j = 0; j < 4; j++)
-						Fvs[i].push_back(hmi.elements[hid].vs[hex_face_table[i][j]]);
+						Fvs[i].push_back(hmi.cell_vs[hid][hex_face_table[i][j]]);
 				fvs_sorted = Fvs;
 				for (auto &vs : fvs_sorted)
 					sort(vs.begin(), vs.end());
 
-				for (auto fid : hmi.elements[hid].fs)
-					if (!hmi.faces[fid].boundary)
+				for (auto fid : hmi.cell_fs[hid])
+					if (!hmi.face_boundary[fid])
 					{
-						int nhid = hmi.faces[fid].neighbor_hs[0];
+						int nhid = hmi.face_hs[fid][0];
 						if (nhid == hid)
-							nhid = hmi.faces[fid].neighbor_hs[1];
+							nhid = hmi.face_hs[fid][1];
 
 						if (!H_tag[nhid])
 						{
 							pool.push_back(nhid);
 							H_tag[nhid] = true;
 
-							vector<uint32_t> fvs = hmi.faces[fid].vs;
+							vector<uint32_t> fvs = hmi.face_vs[fid].to_vector();
 							sort(fvs.begin(), fvs.end());
 
 							int f_ind = -1;
@@ -545,14 +495,13 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 									f_ind = i;
 									break;
 								}
-							vector<uint32_t> hvs = hmi.elements[nhid].vs;
-							hmi.elements[nhid].vs.clear();
+							vector<uint32_t> hvs = hmi.cell_vs[nhid].to_vector();
 							vector<uint32_t> topvs = Fvs[f_ind];
 							std::reverse(topvs.begin(), topvs.end());
 							vector<uint32_t> bottomvs;
 							for (uint32_t i = 0; i < 4; i++)
 							{
-								for (auto nvid : hmi.vertices[topvs[i]].neighbor_vs)
+								for (auto nvid : hmi.vertex_vs[topvs[i]])
 									if (nvid != topvs[(i + 3) % 4] && nvid != topvs[(i + 1) % 4]
 										&& std::find(hvs.begin(), hvs.end(), nvid) != hvs.end())
 									{
@@ -560,8 +509,9 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 										break;
 									}
 							}
-							hmi.elements[nhid].vs = topvs;
-							hmi.elements[nhid].vs.insert(hmi.elements[nhid].vs.end(), bottomvs.begin(), bottomvs.end());
+							const auto new_vs = hmi.cell_vs[nhid];
+							assert(topvs.size() + bottomvs.size() == new_vs.size());
+							std::copy(bottomvs.begin(), bottomvs.end(), std::copy(topvs.begin(), topvs.end(), new_vs.begin()));
 						}
 					}
 			}
@@ -569,7 +519,6 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 			{
 				group_ = pool;
 				group.insert(group.end(), pool.begin(), pool.end());
-				pool.size();
 			}
 			else
 				break;
@@ -577,81 +526,30 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 		Groups.push_back(group);
 	}
 	// direction
-	for (auto group : Groups)
+	for (const auto &group : Groups)
 	{
 		Mesh_Quality mq1, mq2;
-		Mesh3DStorage m1, m2;
-		m2.type = m1.type = MeshType::HEX;
-
-		m2.points = m1.points = hmi.points;
+		std::vector<std::vector<uint32_t>> hexes;
+		hexes.reserve(group.size());
 		for (auto hid : group)
-			m1.elements.push_back(hmi.elements[hid]);
-		scaled_jacobian(m1, mq1);
+			hexes.push_back(hmi.cell_vs[hid].to_vector());
+		hex_scaled_jacobian(hmi.points, hexes, mq1);
 		if (mq1.min_Jacobian > 0)
 			continue;
-		m2.elements = m1.elements;
-		for (auto &h : m2.elements)
+		for (auto &h : hexes)
 		{
-			swap(h.vs[1], h.vs[3]);
-			swap(h.vs[5], h.vs[7]);
+			swap(h[1], h[3]);
+			swap(h[5], h[7]);
 		}
-		scaled_jacobian(m2, mq2);
+		hex_scaled_jacobian(hmi.points, hexes, mq2);
 		if (mq2.ave_Jacobian > mq1.ave_Jacobian)
 		{
-			for (auto &h : m2.elements)
-				hmi.elements[h.id] = h;
+			for (size_t k = 0; k < group.size(); ++k)
+				std::copy(hexes[k].begin(), hexes[k].end(), hmi.cell_vs[group[k]].begin());
 		}
 	}
 }
-bool MeshProcessing3D::scaled_jacobian(Mesh3DStorage &hmi, Mesh_Quality &mq)
-{
-	if (hmi.type != MeshType::HEX)
-		return false;
 
-	mq.ave_Jacobian = 0;
-	mq.min_Jacobian = 1;
-	mq.deviation_Jacobian = 0;
-	mq.V_Js.resize(hmi.elements.size() * 8);
-	mq.V_Js.setZero();
-	mq.H_Js.resize(hmi.elements.size());
-	mq.H_Js.setZero();
-
-	for (uint32_t i = 0; i < hmi.elements.size(); i++)
-	{
-		double hex_minJ = 1;
-		for (uint32_t j = 0; j < 8; j++)
-		{
-			uint32_t v0, v1, v2, v3;
-			v0 = hex_tetra_table[j][0];
-			v1 = hex_tetra_table[j][1];
-			v2 = hex_tetra_table[j][2];
-			v3 = hex_tetra_table[j][3];
-
-			Vector3d c0 = hmi.points.col(hmi.elements[i].vs[v0]);
-			Vector3d c1 = hmi.points.col(hmi.elements[i].vs[v1]);
-			Vector3d c2 = hmi.points.col(hmi.elements[i].vs[v2]);
-			Vector3d c3 = hmi.points.col(hmi.elements[i].vs[v3]);
-
-			double jacobian_value = a_jacobian(c0, c1, c2, c3);
-
-			if (hex_minJ > jacobian_value)
-				hex_minJ = jacobian_value;
-
-			uint32_t id = 8 * i + j;
-			mq.V_Js[id] = jacobian_value;
-		}
-		mq.H_Js[i] = hex_minJ;
-		mq.ave_Jacobian += hex_minJ;
-		if (mq.min_Jacobian > hex_minJ)
-			mq.min_Jacobian = hex_minJ;
-	}
-	mq.ave_Jacobian /= hmi.elements.size();
-	for (int i = 0; i < mq.H_Js.size(); i++)
-		mq.deviation_Jacobian += (mq.H_Js[i] - mq.ave_Jacobian) * (mq.H_Js[i] - mq.ave_Jacobian);
-	mq.deviation_Jacobian /= hmi.elements.size();
-
-	return true;
-}
 double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3)
 {
 	Matrix3d Jacobian;
@@ -675,40 +573,36 @@ double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Ve
 
 void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi)
 {
+	// Reorients the hexes (only) consistently: build a hex-only mesh, propagate
+	// the orientation across shared faces, and copy the vertex orders back.
+	if (std::none_of(hmi.cell_hex.begin(), hmi.cell_hex.end(), [](const uint8_t hex) { return hex; }))
+		return;
+
+	// reorder_hex_mesh_propogation only uses the connectivity rebuilt below
+	// (vertex neighbors and face/element adjacency) and the points.
 	Mesh3DStorage mesh;
 	mesh.type = MeshType::HEX;
 	mesh.points = hmi.points;
-	mesh.vertices.resize(hmi.vertices.size());
-	for (const auto &v : hmi.vertices)
+	vector<int> Ele_map_reverse;
+	for (int c = 0; c < hmi.n_cells(); ++c)
 	{
-		Vertex v_;
-		v_.id = v.id;
-		v_.v = v.v;
-		mesh.vertices[v.id] = v;
-	}
-	vector<int> Ele_map(hmi.elements.size(), -1), Ele_map_reverse;
-	for (const auto &ele : hmi.elements)
-	{
-		if (!ele.hex)
+		if (!hmi.cell_hex[c])
 			continue;
-		Element ele_;
-		ele_.id = mesh.elements.size();
-		ele_.vs = ele.vs;
-		for (auto vid : ele_.vs)
-			mesh.vertices[vid].neighbor_hs.push_back(ele_.id);
-		mesh.elements.push_back(ele_);
-
-		Ele_map[ele.id] = ele_.id;
-		Ele_map_reverse.push_back(ele.id);
+		mesh.cell_vs.push_back(hmi.cell_vs[c]);
+		Ele_map_reverse.push_back(c);
 	}
 
 	build_connectivity(mesh);
 	reorder_hex_mesh_propogation(mesh);
 
-	for (const auto &ele : mesh.elements)
-		hmi.elements[Ele_map_reverse[ele.id]].vs = ele.vs;
+	for (int c = 0; c < mesh.cell_vs.size(); ++c)
+	{
+		const auto vs = mesh.cell_vs[c];
+		std::copy(vs.begin(), vs.end(), hmi.cell_vs[Ele_map_reverse[c]].begin());
+	}
 }
-void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> &Parents)
+
+void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> &Parents)
 {
 
 	for (int i = 0; i < iter; i++)
@@ -717,87 +611,65 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 		std::vector<int> Refinement_Levels;
 		ele_subdivison_levels(M, Refinement_Levels);
 
-		Mesh3DStorage M_;
+		RefinedMesh M_;
 		M_.type = MeshType::HYB;
 
-		vector<int> E2V(M.edges.size()), F2V(M.faces.size()), Ele2V(M.elements.size());
+		vector<int> E2V(M.n_edges()), F2V(M.n_faces()), Ele2V(M.n_cells());
 
-		int vn = 0;
-		for (auto v : M.vertices)
+		const auto add_vertex = [&](const std::array<double, 3> &p) {
+			M_.points.push_back(p);
+			return int(M_.points.size()) - 1;
+		};
+
+		for (int v = 0; v < M.n_vertices(); ++v)
+			add_vertex({{M.points(0, v), M.points(1, v), M.points(2, v)}});
+
+		for (int e = 0; e < M.n_edges(); ++e)
 		{
-			Vertex v_;
-			v_.id = vn++;
-			v_.v.resize(3);
-			for (int j = 0; j < 3; j++)
-				v_.v[j] = M.points(j, v.id);
-			M_.vertices.push_back(v_);
-		}
-
-		for (auto e : M.edges)
-		{
-			Vertex v;
-			v.id = vn++;
-			v.v.resize(3);
-
 			Vector3d center;
 			center.setZero();
-			for (auto vid : e.vs)
+			for (auto vid : M.edge_vs[e])
 				center += M.points.col(vid);
-			center /= e.vs.size();
-			for (int j = 0; j < 3; j++)
-				v.v[j] = center[j];
-
-			M_.vertices.push_back(v);
-			E2V[e.id] = v.id;
+			center /= M.edge_vs[e].size();
+			E2V[e] = add_vertex({{center[0], center[1], center[2]}});
 		}
-		for (auto f : M.faces)
+		for (int f = 0; f < M.n_faces(); ++f)
 		{
-			Vertex v;
-			v.id = vn++;
-			v.v.resize(3);
-
 			Vector3d center;
 			center.setZero();
-			for (auto vid : f.vs)
+			for (auto vid : M.face_vs[f])
 				center += M.points.col(vid);
-			center /= f.vs.size();
-			for (int j = 0; j < 3; j++)
-				v.v[j] = center[j];
-
-			M_.vertices.push_back(v);
-			F2V[f.id] = v.id;
+			center /= M.face_vs[f].size();
+			F2V[f] = add_vertex({{center[0], center[1], center[2]}});
 		}
-		for (auto ele : M.elements)
+		for (int c = 0; c < M.n_cells(); ++c)
 		{
-			if (!ele.hex)
+			if (!M.cell_hex[c])
 				continue;
-			Vertex v;
-			v.id = vn++;
-			v.v = ele.v_in_Kernel;
-
-			M_.vertices.push_back(v);
-			Ele2V[ele.id] = v.id;
+			Ele2V[c] = add_vertex(M.cell_kernel[c]);
 		}
 		// new elements
-		std::vector<std::vector<uint32_t>> total_fs;
-		total_fs.reserve(M.elements.size() * 8 * 6);
+		std::vector<std::array<uint32_t, 4>> total_fs;
+		total_fs.reserve(M.n_cells() * 8 * 6);
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
-		tempF.reserve(M.elements.size() * 8 * 6);
-		std::vector<uint32_t> vs(4);
+		tempF.reserve(M.n_cells() * 8 * 6);
+		std::array<uint32_t, 4> vs;
 
 		int elen = 0, fn = 0;
-		for (auto ele : M.elements)
+		for (int c = 0; c < M.n_cells(); ++c)
 		{
-			if (ele.hex)
+			const auto ele_vs_in = M.cell_vs[c];
+			const auto ele_fs = M.cell_fs[c];
+			if (M.cell_hex[c])
 			{
-				for (auto vid : ele.vs)
+				for (auto vid : ele_vs_in)
 				{
 					// top 4 vs
 					vector<int> top_vs(4);
 					top_vs[0] = vid;
 					int fid = -1;
-					for (auto nfid : M.vertices[vid].neighbor_fs)
-						if (find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end())
+					for (auto nfid : M.vertex_fs[vid])
+						if (find(ele_fs.begin(), ele_fs.end(), nfid) != ele_fs.end())
 						{
 							fid = nfid;
 							break;
@@ -805,22 +677,22 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					assert(fid != -1);
 					top_vs[2] = F2V[fid];
 
-					int v_ind = find(M.faces[fid].vs.begin(), M.faces[fid].vs.end(), vid) - M.faces[fid].vs.begin();
-					int e_pre = M.faces[fid].es[(v_ind - 1 + 4) % 4];
-					int e_aft = M.faces[fid].es[v_ind];
+					int v_ind = find(M.face_vs[fid].begin(), M.face_vs[fid].end(), vid) - M.face_vs[fid].begin();
+					int e_pre = M.face_es[fid][(v_ind - 1 + 4) % 4];
+					int e_aft = M.face_es[fid][v_ind];
 					top_vs[1] = E2V[e_pre];
 					top_vs[3] = E2V[e_aft];
 					// bottom 4 vs
 					vector<int> bottom_vs(4);
 
-					auto nvs = M.vertices[vid].neighbor_vs;
+					const auto nvs = M.vertex_vs[vid];
 					int e_per = -1;
 					for (auto nvid : nvs)
-						if (find(ele.vs.begin(), ele.vs.end(), nvid) != ele.vs.end())
+						if (find(ele_vs_in.begin(), ele_vs_in.end(), nvid) != ele_vs_in.end())
 						{
-							if (nvid != M.edges[e_pre].vs[0] && nvid != M.edges[e_pre].vs[1] && nvid != M.edges[e_aft].vs[0] && nvid != M.edges[e_aft].vs[1])
+							if (nvid != M.edge_vs[e_pre][0] && nvid != M.edge_vs[e_pre][1] && nvid != M.edge_vs[e_aft][0] && nvid != M.edge_vs[e_aft][1])
 							{
-								vector<uint32_t> sharedes, es0 = M.vertices[vid].neighbor_es, es1 = M.vertices[nvid].neighbor_es;
+								vector<uint32_t> sharedes, es0 = M.vertex_es[vid].to_vector(), es1 = M.vertex_es[nvid].to_vector();
 								sort(es0.begin(), es0.end());
 								sort(es1.begin(), es1.end());
 								set_intersection(es0.begin(), es0.end(), es1.begin(), es1.end(), back_inserter(sharedes));
@@ -832,15 +704,15 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 
 					assert(e_per != -1);
 					bottom_vs[0] = E2V[e_per];
-					bottom_vs[2] = Ele2V[ele.id];
+					bottom_vs[2] = Ele2V[c];
 
 					int f_pre = -1;
-					vector<uint32_t> sharedfs, fs0 = M.edges[e_pre].neighbor_fs, fs1 = M.edges[e_per].neighbor_fs;
+					vector<uint32_t> sharedfs, fs0 = M.edge_fs[e_pre].to_vector(), fs1 = M.edge_fs[e_per].to_vector();
 					sort(fs0.begin(), fs0.end());
 					sort(fs1.begin(), fs1.end());
 					set_intersection(fs0.begin(), fs0.end(), fs1.begin(), fs1.end(), back_inserter(sharedfs));
 					for (auto sfid : sharedfs)
-						if (find(ele.fs.begin(), ele.fs.end(), sfid) != ele.fs.end())
+						if (find(ele_fs.begin(), ele_fs.end(), sfid) != ele_fs.end())
 						{
 							f_pre = sfid;
 							break;
@@ -849,13 +721,13 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 
 					int f_aft = -1;
 					sharedfs.clear();
-					fs0 = M.edges[e_aft].neighbor_fs;
-					fs1 = M.edges[e_per].neighbor_fs;
+					fs0 = M.edge_fs[e_aft].to_vector();
+					fs1 = M.edge_fs[e_per].to_vector();
 					sort(fs0.begin(), fs0.end());
 					sort(fs1.begin(), fs1.end());
 					set_intersection(fs0.begin(), fs0.end(), fs1.begin(), fs1.end(), back_inserter(sharedfs));
 					for (auto sfid : sharedfs)
-						if (find(ele.fs.begin(), ele.fs.end(), sfid) != ele.fs.end())
+						if (find(ele_fs.begin(), ele_fs.end(), sfid) != ele_fs.end())
 						{
 							f_aft = sfid;
 							break;
@@ -877,62 +749,50 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
 					}
 					// new ele
-					Element ele_;
-					ele_.id = elen++;
+					RefinedMesh::Cell ele_;
+					elen++;
 					ele_.fs.resize(6, -1);
 					ele_.fs_flag.resize(6, 1);
-
 					ele_.hex = true;
-					ele_.v_in_Kernel.resize(3);
 
 					Vector3d center;
 					center.setZero();
 					for (auto evid : ele_vs)
 						for (int j = 0; j < 3; j++)
-							center[j] += M_.vertices[evid].v[j];
+							center[j] += M_.points[evid][j];
 					center /= ele_vs.size();
 					for (int j = 0; j < 3; j++)
-						ele_.v_in_Kernel[j] = center[j];
+						ele_.kernel[j] = center[j];
 
-					M_.elements.push_back(ele_);
-					Parents.push_back(ele.id);
+					M_.cells.push_back(std::move(ele_));
+					Parents.push_back(c);
 				}
 			}
 			else
 			{
-				int level = Refinement_Levels[ele.id];
-				if (reverse)
-					level = 1;
+				const std::array<double, 3> kernel = M.cell_kernel[c];
+				const int level = Refinement_Levels[c];
 				// local_V2V
 				std::vector<std::vector<int>> local_V2Vs;
 				std::map<int, int> local_vi_map;
-				for (auto vid : ele.vs)
+				for (auto vid : ele_vs_in)
 				{
 					std::vector<int> v2v;
 					v2v.push_back(vid);
 					for (int r = 0; r < level; r++)
 					{
-						Vertex v_;
-						v_.id = vn++;
-						v_.v.resize(3);
-
+						std::array<double, 3> p;
 						for (int j = 0; j < 3; j++)
-							v_.v[j] = M_.vertices[vid].v[j] + (ele.v_in_Kernel[j] - M_.vertices[vid].v[j]) * (r + 1.0) / (double)(level + 1);
-						if (reverse)
-						{
-							for (int j = 0; j < 3; j++)
-								v_.v[j] = M_.vertices[vid].v[j] + (M_.vertices[vid].v[j] - ele.v_in_Kernel[j]) * (r + 1.0) / (double)(level + 1);
-						}
-						M_.vertices.push_back(v_);
-						v2v.push_back(v_.id);
+							p[j] = M_.points[vid][j] + (kernel[j] - M_.points[vid][j]) * (r + 1.0) / (double)(level + 1);
+						v2v.push_back(add_vertex(p));
 					}
 					local_vi_map[vid] = local_V2Vs.size();
 					local_V2Vs.push_back(v2v);
 				}
 				// local_E2V
 				vector<uint32_t> es;
-				for (auto fid : ele.fs)
-					es.insert(es.end(), M.faces[fid].es.begin(), M.faces[fid].es.end());
+				for (auto fid : ele_fs)
+					es.insert(es.end(), M.face_es[fid].begin(), M.face_es[fid].end());
 				sort(es.begin(), es.end());
 				es.erase(unique(es.begin(), es.end()), es.end());
 
@@ -944,21 +804,13 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					e2v.push_back(E2V[eid]);
 					for (int r = 0; r < level; r++)
 					{
-						Vertex v_;
-						v_.id = vn++;
-						v_.v.resize(3);
-
 						Vector3d center;
 						center.setZero();
-						for (auto vid : M.edges[eid].vs)
+						for (auto vid : M.edge_vs[eid])
 							for (int j = 0; j < 3; j++)
-								center[j] += M_.vertices[local_V2Vs[local_vi_map[vid]][r + 1]].v[j];
-						center /= M.edges[eid].vs.size();
-						for (int j = 0; j < 3; j++)
-							v_.v[j] = center[j];
-
-						M_.vertices.push_back(v_);
-						e2v.push_back(v_.id);
+								center[j] += M_.points[local_V2Vs[local_vi_map[vid]][r + 1]][j];
+						center /= M.edge_vs[eid].size();
+						e2v.push_back(add_vertex({{center[0], center[1], center[2]}}));
 					}
 					local_ei_map[eid] = local_E2Vs.size();
 					local_E2Vs.push_back(e2v);
@@ -966,38 +818,30 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 				// local_F2V
 				std::vector<std::vector<int>> local_F2Vs;
 				std::map<int, int> local_fi_map;
-				for (auto fid : ele.fs)
+				for (auto fid : ele_fs)
 				{
 					std::vector<int> f2v;
 					f2v.push_back(F2V[fid]);
 					for (int r = 0; r < level; r++)
 					{
-						Vertex v_;
-						v_.id = vn++;
-						v_.v.resize(3);
-
 						Vector3d center;
 						center.setZero();
-						for (auto vid : M.faces[fid].vs)
+						for (auto vid : M.face_vs[fid])
 							for (int j = 0; j < 3; j++)
-								center[j] += M_.vertices[local_V2Vs[local_vi_map[vid]][r + 1]].v[j];
-						center /= M.faces[fid].vs.size();
-						for (int j = 0; j < 3; j++)
-							v_.v[j] = center[j];
-
-						M_.vertices.push_back(v_);
-						f2v.push_back(v_.id);
+								center[j] += M_.points[local_V2Vs[local_vi_map[vid]][r + 1]][j];
+						center /= M.face_vs[fid].size();
+						f2v.push_back(add_vertex({{center[0], center[1], center[2]}}));
 					}
 					local_fi_map[fid] = local_F2Vs.size();
 					local_F2Vs.push_back(f2v);
 				}
 				// polyhedron fs
 				int local_fn = 0;
-				for (auto fid : ele.fs)
+				for (auto fid : ele_fs)
 				{
-					auto &fvs = M.faces[fid].vs;
-					auto &fes = M.faces[fid].es;
-					int fvn = M.faces[fid].vs.size();
+					const auto fvs = M.face_vs[fid];
+					const auto fes = M.face_es[fid];
+					int fvn = fvs.size();
 					for (uint32_t j = 0; j < fvn; j++)
 					{
 						vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][level];
@@ -1005,37 +849,28 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						vs[2] = local_E2Vs[local_ei_map[fes[j]]][level];
 						vs[3] = local_F2Vs[local_fi_map[fid]][level];
 
-						if (reverse)
-						{
-							vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][0];
-							vs[1] = local_V2Vs[local_vi_map[fvs[j]]][0];
-							vs[2] = local_E2Vs[local_ei_map[fes[j]]][0];
-							vs[3] = local_F2Vs[local_fi_map[fid]][0];
-						}
-
 						total_fs.push_back(vs);
 						std::sort(vs.begin(), vs.end());
 						tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, local_fn++));
 					}
 				}
 				// polyhedron
-				Element ele_;
-				ele_.id = elen++;
+				RefinedMesh::Cell ele_;
+				elen++;
 				ele_.fs.resize(local_fn, -1);
 				ele_.fs_flag.resize(local_fn, 1);
-
 				ele_.hex = false;
-				ele_.v_in_Kernel = ele.v_in_Kernel;
-				M_.elements.push_back(ele_);
-				Parents.push_back(ele.id);
+				ele_.kernel = kernel;
+				M_.cells.push_back(std::move(ele_));
+				Parents.push_back(c);
 				// hex
 				for (int r = 0; r < level; r++)
 				{
-					for (auto fid : ele.fs)
+					for (auto fid : ele_fs)
 					{
-						auto &fvs = M.faces[fid].vs;
-						auto &fes = M.faces[fid].es;
-						int fvn = M.faces[fid].vs.size();
+						const auto fvs = M.face_vs[fid];
+						const auto fes = M.face_es[fid];
+						int fvn = fvs.size();
 						for (uint32_t j = 0; j < fvn; j++)
 						{
 							vector<int> ele_vs(8);
@@ -1059,23 +894,22 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 								tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
 							}
 							// hex
-							Element ele_;
-							ele_.id = elen++;
-							ele_.fs.resize(6, -1);
-							ele_.fs_flag.resize(6, 1);
-							ele_.hex = true;
-							ele_.v_in_Kernel.resize(3);
+							RefinedMesh::Cell hex;
+							elen++;
+							hex.fs.resize(6, -1);
+							hex.fs_flag.resize(6, 1);
+							hex.hex = true;
 
 							Vector3d center;
 							center.setZero();
 							for (auto vid : ele_vs)
 								for (int j = 0; j < 3; j++)
-									center[j] += M_.vertices[vid].v[j];
+									center[j] += M_.points[vid][j];
 							center /= ele_vs.size();
 							for (int j = 0; j < 3; j++)
-								ele_.v_in_Kernel[j] = center[j];
-							M_.elements.push_back(ele_);
-							Parents.push_back(ele.id);
+								hex.kernel[j] = center[j];
+							M_.cells.push_back(std::move(hex));
+							Parents.push_back(c);
 						}
 					}
 				}
@@ -1084,161 +918,127 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 		// Fs
 		std::sort(tempF.begin(), tempF.end());
 		M_.faces.reserve(tempF.size() / 3);
-		Face f;
-		f.boundary = true;
 		uint32_t F_num = 0;
 		for (uint32_t i = 0; i < tempF.size(); ++i)
 		{
 			if (i == 0 || (i != 0 && (std::get<0>(tempF[i]) != std::get<0>(tempF[i - 1]) || std::get<1>(tempF[i]) != std::get<1>(tempF[i - 1]) || std::get<2>(tempF[i]) != std::get<2>(tempF[i - 1]) || std::get<3>(tempF[i]) != std::get<3>(tempF[i - 1]))))
 			{
-				f.id = F_num;
 				F_num++;
-				f.vs = total_fs[std::get<4>(tempF[i])];
-				M_.faces.push_back(f);
+				const auto &fvs = total_fs[std::get<4>(tempF[i])];
+				M_.faces.emplace_back(fvs.begin(), fvs.end());
 			}
-			else if (i != 0 && (std::get<0>(tempF[i]) == std::get<0>(tempF[i - 1]) && std::get<1>(tempF[i]) == std::get<1>(tempF[i - 1]) && std::get<2>(tempF[i]) == std::get<2>(tempF[i - 1]) && std::get<3>(tempF[i]) == std::get<3>(tempF[i - 1])))
-				M_.faces[F_num - 1].boundary = false;
 
-			M_.elements[std::get<5>(tempF[i])].fs[std::get<6>(tempF[i])] = F_num - 1;
+			M_.cells[std::get<5>(tempF[i])].fs[std::get<6>(tempF[i])] = F_num - 1;
 		}
 
-		M_.points.resize(3, M_.vertices.size());
-		for (auto v : M_.vertices)
-			for (int j = 0; j < 3; j++)
-				M_.points(j, v.id) = v.v[j];
+		Mesh3DStorage refined = M_.to_storage();
+		build_connectivity(refined);
+		orient_volume_mesh(refined);
+		build_connectivity(refined);
 
-		build_connectivity(M_);
-		orient_volume_mesh(M_);
-		build_connectivity(M_);
-
-		M = M_;
+		M = std::move(refined);
 	}
 }
+
 void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 {
 	for (int i = 0; i < iter; i++)
 	{
-
-		Mesh3DStorage M_;
+		RefinedMesh M_;
 		M_.type = MeshType::TET;
 
-		vector<int> E2V(M.edges.size());
+		vector<int> E2V(M.n_edges());
 
-		int vn = 0;
-		for (const auto &v : M.vertices)
+		M_.points.reserve(M.n_vertices() + M.n_edges());
+		for (int v = 0; v < M.n_vertices(); ++v)
+			M_.points.push_back({{M.points(0, v), M.points(1, v), M.points(2, v)}});
+
+		for (int e = 0; e < M.n_edges(); ++e)
 		{
-			Vertex v_;
-			v_.id = vn++;
-			v_.v.resize(3);
-			for (int j = 0; j < 3; j++)
-				v_.v[j] = M.points(j, v.id);
-			M_.vertices.push_back(v_);
-		}
-
-		for (const auto &e : M.edges)
-		{
-			Vertex v;
-			v.id = vn++;
-			v.v.resize(3);
-
 			Vector3d center;
 			center.setZero();
-			for (auto vid : e.vs)
+			for (auto vid : M.edge_vs[e])
 				center += M.points.col(vid);
-			center /= e.vs.size();
-			for (int j = 0; j < 3; j++)
-				v.v[j] = center[j];
-
-			M_.vertices.push_back(v);
-			E2V[e.id] = v.id;
+			center /= M.edge_vs[e].size();
+			M_.points.push_back({{center[0], center[1], center[2]}});
+			E2V[e] = M_.points.size() - 1;
 		}
-		// for (const auto &ele : M.elements) {
-		// 	Element ele_;
-		// 	ele_.id = M_.elements.size();
-		// 	ele_.fs.resize(4, -1);
-		// 	ele_.fs_flag.resize(4, 1);
-		// 	ele_.vs = ele.vs;
 
-		// 	ele_.hex = false;
-		// 	ele_.v_in_Kernel.resize(3);
-
-		// 	Vector3d center;
-		// 	center.setZero();
-		// 	for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
-		// 	center /= ele_.vs.size();
-		// 	for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
-
-		// 	M_.elements.push_back(ele_);
-		// }
-
+		// The edge shared by two vertices (the edges around a vertex are sorted).
 		auto shared_edge = [&](int v0, int v1, int &e) -> bool {
-			auto &es0 = M.vertices[v0].neighbor_es, &es1 = M.vertices[v1].neighbor_es;
-			std::sort(es0.begin(), es0.end());
-			std::sort(es1.begin(), es1.end());
-			std::vector<uint32_t> es;
-			std::set_intersection(es0.begin(), es0.end(), es1.begin(), es1.end(), back_inserter(es));
-			if (es.size())
+			const auto es0 = M.vertex_es[v0], es1 = M.vertex_es[v1];
+			auto it0 = es0.begin(), it1 = es1.begin();
+			while (it0 != es0.end() && it1 != es1.end())
 			{
-				e = es[0];
-				return true;
+				if (*it0 < *it1)
+					++it0;
+				else if (*it1 < *it0)
+					++it1;
+				else
+				{
+					e = *it0;
+					return true;
+				}
 			}
 			return false;
 		};
 
-		std::vector<bool> e_flag(M.edges.size(), false);
+		const auto kernel_of = [&](const std::vector<uint32_t> &vs) {
+			Vector3d center;
+			center.setZero();
+			for (const auto &evid : vs)
+				for (int j = 0; j < 3; j++)
+					center[j] += M_.points[evid][j];
+			center /= vs.size();
+			return std::array<double, 3>{{center[0], center[1], center[2]}};
+		};
 
-		for (const auto &ele : M.elements)
+		std::vector<bool> e_flag(M.n_edges(), false);
+
+		M_.cells.reserve(8 * M.n_cells());
+		for (int c = 0; c < M.n_cells(); ++c)
 		{ // 1 --> 8
+			const auto ele_vs = M.cell_vs[c];
+			const auto ele_fs = M.cell_fs[c];
 
 			for (short i = 0; i < 4; i++)
 			{ // four corners
-				Element ele_;
-				ele_.id = M_.elements.size();
+				RefinedMesh::Cell ele_;
 				ele_.fs.resize(4, -1);
 				ele_.fs_flag.resize(4, 1);
-
 				ele_.hex = false;
-				ele_.v_in_Kernel.resize(3);
 
-				ele_.vs.push_back(ele.vs[i]);
+				ele_.vs.push_back(ele_vs[i]);
 				for (short j = 0; j < 4; j++)
 				{
 					if (j == i)
 						continue;
-					int v0 = ele.vs[i], v1 = ele.vs[j];
+					int v0 = ele_vs[i], v1 = ele_vs[j];
 					int e = -1;
 					if (shared_edge(v0, v1, e))
 						ele_.vs.push_back(E2V[e]);
 				}
-				Vector3d center;
-				center.setZero();
-				for (const auto &evid : ele_.vs)
-					for (int j = 0; j < 3; j++)
-						center[j] += M_.vertices[evid].v[j];
-				center /= ele_.vs.size();
-				for (int j = 0; j < 3; j++)
-					ele_.v_in_Kernel[j] = center[j];
-
-				M_.elements.push_back(ele_);
+				ele_.kernel = kernel_of(ele_.vs);
+				M_.cells.push_back(std::move(ele_));
 			}
 
 			// 6 edges
 			std::vector<int> edges(6);
 			for (int i = 0; i < 6; i++)
 			{
-				int v0 = ele.vs[tet_edges[i][0]], v1 = ele.vs[tet_edges[i][1]];
+				int v0 = ele_vs[tet_edges[i][0]], v1 = ele_vs[tet_edges[i][1]];
 				int e = -1;
 				if (shared_edge(v0, v1, e))
 					edges[i] = e;
 			}
-			// cut the inner octahedron along its shortest diagonal, which joins the midpoints
+			// Split the inner octahedron along its shortest diagonal, i.e. between the midpoints
 			// of two opposite edges (k, 5 - k). A fixed choice of diagonal makes the tets
 			// degenerate under repeated refinement, since build_connectivity sorts ele.vs.
 			int diag = 0;
 			double min_length = std::numeric_limits<double>::max();
 			for (int k = 0; k < 3; ++k)
 			{
-				const double length = (Map<const Vector3d>(M_.vertices[E2V[edges[k]]].v.data()) - Map<const Vector3d>(M_.vertices[E2V[edges[5 - k]]].v.data())).squaredNorm();
+				const double length = (Map<const Vector3d>(M_.points[E2V[edges[k]]].data()) - Map<const Vector3d>(M_.points[E2V[edges[5 - k]]].data())).squaredNorm();
 				if (length < min_length)
 				{
 					min_length = length;
@@ -1250,69 +1050,56 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 			e_flag[edges[5 - diag]] = true;
 			for (short i = 0; i < 4; i++)
 			{ // four faces
-				Element ele_;
-				ele_.id = M_.elements.size();
+				RefinedMesh::Cell ele_;
 				ele_.fs.resize(4, -1);
 				ele_.fs_flag.resize(4, 1);
-
 				ele_.hex = false;
-				ele_.v_in_Kernel.resize(3);
 
 				ele_.vs.push_back(lv0);
 				ele_.vs.push_back(lv1);
 				for (short j = 0; j < 3; j++)
 				{
-					int c_e = M.faces[ele.fs[i]].es[j];
+					int c_e = M.face_es[ele_fs[i]][j];
 					if (e_flag[c_e])
 						continue;
 					ele_.vs.push_back(E2V[c_e]);
 				}
-				Vector3d center;
-				center.setZero();
-				for (const auto &evid : ele_.vs)
-					for (int j = 0; j < 3; j++)
-						center[j] += M_.vertices[evid].v[j];
-				center /= ele_.vs.size();
-				for (int j = 0; j < 3; j++)
-					ele_.v_in_Kernel[j] = center[j];
-
-				M_.elements.push_back(ele_);
+				ele_.kernel = kernel_of(ele_.vs);
+				M_.cells.push_back(std::move(ele_));
 			}
 			e_flag[edges[diag]] = e_flag[edges[5 - diag]] = false;
 		}
 
-		M_.points.resize(3, M_.vertices.size());
-		for (auto v : M_.vertices)
-			for (int j = 0; j < 3; j++)
-				M_.points(j, v.id) = v.v[j];
+		const auto point = [&](const uint32_t v) { return Vector3d(M_.points[v][0], M_.points[v][1], M_.points[v][2]); };
 
 		// orient tets
-		const auto &t = M.elements[0].vs;
+		const auto t = M.cell_vs[0];
 		Vector3d c0 = M.points.col(t[0]);
 		Vector3d c1 = M.points.col(t[1]);
 		Vector3d c2 = M.points.col(t[2]);
 		Vector3d c3 = M.points.col(t[3]);
 		bool signed_volume = a_jacobian(c0, c1, c2, c3) > 0 ? true : false;
 
-		for (auto &ele : M_.elements)
+		for (auto &ele : M_.cells)
 		{
-			c0 = M_.points.col(ele.vs[0]);
-			c1 = M_.points.col(ele.vs[1]);
-			c2 = M_.points.col(ele.vs[2]);
-			c3 = M_.points.col(ele.vs[3]);
+			c0 = point(ele.vs[0]);
+			c1 = point(ele.vs[1]);
+			c2 = point(ele.vs[2]);
+			c3 = point(ele.vs[3]);
 			bool sign = a_jacobian(c0, c1, c2, c3) > 0 ? true : false;
 			if (sign != signed_volume)
 				std::swap(ele.vs[1], ele.vs[3]);
 		}
 
 		// Fs
-		std::vector<std::vector<uint32_t>> total_fs;
-		total_fs.reserve(M.elements.size() * 4);
+		std::vector<std::array<uint32_t, 3>> total_fs;
+		total_fs.reserve(M_.cells.size() * 4);
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
-		tempF.reserve(M.elements.size() * 4);
-		std::vector<uint32_t> vs(3);
-		for (const auto &ele : M_.elements)
+		tempF.reserve(M_.cells.size() * 4);
+		std::array<uint32_t, 3> vs;
+		for (uint32_t c = 0; c < M_.cells.size(); ++c)
 		{
+			const auto &ele = M_.cells[c];
 			for (int i = 0; i < 4; i++)
 			{
 				vs[0] = ele.vs[tet_faces[i][0]];
@@ -1320,177 +1107,37 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 				vs[2] = ele.vs[tet_faces[i][2]];
 				total_fs.push_back(vs);
 				std::sort(vs.begin(), vs.end());
-				tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], ele.id * 4 + i, ele.id, i));
+				tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], c * 4 + i, c, i));
 			}
 		}
 		std::sort(tempF.begin(), tempF.end());
 		M_.faces.reserve(tempF.size() / 3);
-		Face f;
-		f.boundary = true;
 		uint32_t F_num = 0;
 		for (uint32_t i = 0; i < tempF.size(); ++i)
 		{
 			if (i == 0 || (i != 0 && (std::get<0>(tempF[i]) != std::get<0>(tempF[i - 1]) || std::get<1>(tempF[i]) != std::get<1>(tempF[i - 1]) || std::get<2>(tempF[i]) != std::get<2>(tempF[i - 1]))))
 			{
-				f.id = F_num;
 				F_num++;
-				f.vs = total_fs[std::get<3>(tempF[i])];
-				M_.faces.push_back(f);
+				const auto &fvs = total_fs[std::get<3>(tempF[i])];
+				M_.faces.emplace_back(fvs.begin(), fvs.end());
 			}
-			else if (i != 0 && (std::get<0>(tempF[i]) == std::get<0>(tempF[i - 1]) && std::get<1>(tempF[i]) == std::get<1>(tempF[i - 1]) && std::get<2>(tempF[i]) == std::get<2>(tempF[i - 1])))
-				M_.faces[F_num - 1].boundary = false;
 
-			M_.elements[std::get<4>(tempF[i])].fs[std::get<5>(tempF[i])] = F_num - 1;
+			M_.cells[std::get<4>(tempF[i])].fs[std::get<5>(tempF[i])] = F_num - 1;
 		}
 
-		build_connectivity(M_);
-		orient_volume_mesh(M_);
-		build_connectivity(M_);
+		Mesh3DStorage refined = M_.to_storage();
+		build_connectivity(refined);
+		orient_volume_mesh(refined);
+		build_connectivity(refined);
 
-		M = M_;
-
-		double hmin = 10000, hmax = 0, havg = 0;
-		for (const auto &e : M.edges)
-		{
-			Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
-			double len = (v0 - v1).norm();
-			if (len < hmin)
-				hmin = len;
-			if (len > hmax)
-				hmax = len;
-			havg += len;
-		}
-		havg /= M.edges.size();
+		M = std::move(refined);
 	}
-}
-void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo)
-{
-	if (sweep_coord > 2 || sweep_coord < 0)
-	{
-		logger().error("invalid sweeping direction!");
-		return;
-	}
-	if (Mi.type != MeshType::H_SUR && Mi.type != MeshType::TRI && Mi.type != MeshType::QUA)
-	{
-		logger().error("invalid planar surface!");
-		return;
-	}
-	if (height <= 0 || nlayer < 1)
-	{
-		logger().error("invalid height or number of layers!");
-		return;
-	}
-
-	Mo.points.resize(3, 0);
-	Mo.vertices.clear();
-	Mo.edges.clear();
-	Mo.faces.clear();
-	Mo.elements.clear();
-	Mo.type = MeshType::HYB;
-	// v, layers
-	std::vector<std::vector<int>> Vlayers(nlayer + 1);
-	std::vector<double> interval(3, 0);
-	interval[sweep_coord] = height / nlayer;
-
-	for (int i = 0; i < nlayer + 1; i++)
-	{
-		std::vector<int> a_layer;
-		for (auto v : Mi.vertices)
-		{
-			Vertex v_;
-			v_.id = Mo.vertices.size();
-			v_.v.resize(3);
-			for (int j = 0; j < 3; j++)
-				v_.v[j] = v.v[j] + i * interval[j];
-
-			Mo.vertices.push_back(v_);
-			a_layer.push_back(v_.id);
-		}
-		Vlayers[i] = a_layer;
-	}
-	// f
-	std::vector<std::vector<int>> Flayers(nlayer + 1);
-	for (int i = 0; i < nlayer + 1; i++)
-	{
-		std::vector<int> a_layer;
-		for (auto f : Mi.faces)
-		{
-			Face f_;
-			f_.id = Mo.faces.size();
-			for (auto vid : f.vs)
-				f_.vs.push_back(Vlayers[i][vid]);
-
-			Mo.faces.push_back(f_);
-			a_layer.push_back(f_.id);
-		}
-		Flayers[i] = a_layer;
-	}
-	// ef
-	std::vector<std::vector<int>> EFlayers(nlayer);
-	for (int i = 0; i < nlayer; i++)
-	{
-		std::vector<int> a_layer;
-		for (auto e : Mi.edges)
-		{
-			Face f_;
-			f_.id = Mo.faces.size();
-			int v0 = e.vs[0], v1 = e.vs[1];
-			f_.vs.push_back(Vlayers[i][v0]);
-			f_.vs.push_back(Vlayers[i][v1]);
-			f_.vs.push_back(Vlayers[i + 1][v1]);
-			f_.vs.push_back(Vlayers[i + 1][v0]);
-
-			Mo.faces.push_back(f_);
-			a_layer.push_back(f_.id);
-		}
-		EFlayers[i] = a_layer;
-	}
-	// ele
-	for (int i = 0; i < nlayer; i++)
-	{
-		for (auto f : Mi.faces)
-		{
-			Element ele;
-			ele.id = Mo.elements.size();
-			ele.hex = (f.vs.size() == 4);
-
-			ele.fs.push_back(Flayers[i][f.id]);
-			ele.fs.push_back(Flayers[i + 1][f.id]);
-			for (auto eid : f.es)
-				ele.fs.push_back(EFlayers[i][eid]);
-
-			ele.fs_flag.resize(ele.fs.size(), false);
-
-			ele.v_in_Kernel.resize(3, 0);
-			int nv = 0;
-			for (int j = 0; j < 2; j++)
-			{
-				nv += Mo.faces[ele.fs[j]].vs.size();
-				for (auto vid : Mo.faces[ele.fs[j]].vs)
-					for (int k = 0; k < 3; k++)
-						ele.v_in_Kernel[k] += Mo.vertices[vid].v[k];
-			}
-			for (int k = 0; k < 3; k++)
-				ele.v_in_Kernel[k] /= nv;
-
-			Mo.elements.push_back(ele);
-		}
-	}
-
-	Mo.points.resize(3, Mo.vertices.size());
-	for (auto v : Mo.vertices)
-		for (int j = 0; j < 3; j++)
-			Mo.points(j, v.id) = v.v[j];
-
-	build_connectivity(Mo);
-	orient_volume_mesh(Mo);
-	build_connectivity(Mo);
 }
 
 void MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi)
 {
 
-	vector<bool> flag(hmi.faces.size(), true);
+	vector<bool> flag(hmi.n_faces(), true);
 	flag[0] = false;
 
 	std::queue<uint32_t> pf_temp;
@@ -1499,23 +1146,25 @@ void MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi)
 	{
 		uint32_t fid = pf_temp.front();
 		pf_temp.pop();
-		for (auto eid : hmi.faces[fid].es)
-			for (auto nfid : hmi.edges[eid].neighbor_fs)
+		const auto fvs = hmi.face_vs[fid];
+		for (auto eid : hmi.face_es[fid])
+			for (auto nfid : hmi.edge_fs[eid])
 			{
 				if (!flag[nfid])
 					continue;
-				uint32_t v0 = hmi.edges[eid].vs[0], v1 = hmi.edges[eid].vs[1];
-				int32_t v0_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v0) - hmi.faces[fid].vs.begin();
-				int32_t v1_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v1) - hmi.faces[fid].vs.begin();
+				uint32_t v0 = hmi.edge_vs[eid][0], v1 = hmi.edge_vs[eid][1];
+				int32_t v0_pos = std::find(fvs.begin(), fvs.end(), v0) - fvs.begin();
+				int32_t v1_pos = std::find(fvs.begin(), fvs.end(), v1) - fvs.begin();
 
-				if ((v0_pos + 1) % hmi.faces[fid].vs.size() != v1_pos)
+				if ((v0_pos + 1) % fvs.size() != v1_pos)
 					swap(v0, v1);
 
-				int32_t v0_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v0) - hmi.faces[nfid].vs.begin();
-				int32_t v1_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v1) - hmi.faces[nfid].vs.begin();
+				const auto nfvs = hmi.face_vs[nfid];
+				int32_t v0_pos_ = std::find(nfvs.begin(), nfvs.end(), v0) - nfvs.begin();
+				int32_t v1_pos_ = std::find(nfvs.begin(), nfvs.end(), v1) - nfvs.begin();
 
-				if ((v0_pos_ + 1) % hmi.faces[nfid].vs.size() == v1_pos_)
-					std::reverse(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end());
+				if ((v0_pos_ + 1) % nfvs.size() == v1_pos_)
+					std::reverse(nfvs.begin(), nfvs.end());
 
 				pf_temp.push(nfid);
 				flag[nfid] = false;
@@ -1524,9 +1173,9 @@ void MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi)
 	double res = 0;
 	Vector3d ori;
 	ori.setZero();
-	for (auto f : hmi.faces)
+	for (int f = 0; f < hmi.n_faces(); ++f)
 	{
-		auto &fvs = f.vs;
+		const auto fvs = hmi.face_vs[f];
 		Vector3d center;
 		center.setZero();
 		for (auto vid : fvs)
@@ -1541,67 +1190,64 @@ void MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi)
 	}
 	if (res > 0)
 	{
-		for (uint32_t i = 0; i < hmi.faces.size(); i++)
-			std::reverse(hmi.faces[i].vs.begin(), hmi.faces[i].vs.end());
+		for (uint32_t i = 0; i < hmi.n_faces(); i++)
+		{
+			const auto fvs = hmi.face_vs[i];
+			std::reverse(fvs.begin(), fvs.end());
+		}
 	}
 }
+
 void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 {
 	// surface orienting
 	Mesh3DStorage M_sur;
 	M_sur.type = MeshType::H_SUR;
 	int bvn = 0;
-	for (auto v : hmi.vertices)
-		if (v.boundary)
+	for (int v = 0; v < hmi.n_vertices(); ++v)
+		if (hmi.vertex_boundary[v])
 			bvn++;
 	M_sur.points.resize(3, bvn);
 	bvn = 0;
-	vector<int> V_map(hmi.vertices.size(), -1), V_map_reverse;
-	for (auto v : hmi.vertices)
-		if (v.boundary)
+	vector<int> V_map(hmi.n_vertices(), -1), V_map_reverse;
+	for (int v = 0; v < hmi.n_vertices(); ++v)
+		if (hmi.vertex_boundary[v])
 		{
-			M_sur.points.col(bvn++) = hmi.points.col(v.id);
-			Vertex v_;
-			v_.id = M_sur.vertices.size();
-			M_sur.vertices.push_back(v_);
-
-			V_map[v.id] = v_.id;
-			V_map_reverse.push_back(v.id);
+			M_sur.points.col(bvn++) = hmi.points.col(v);
+			V_map[v] = V_map_reverse.size();
+			V_map_reverse.push_back(v);
 		}
-	for (auto f : hmi.faces)
-		if (f.boundary)
+	std::vector<uint32_t> boundary_fvs;
+	for (int f = 0; f < hmi.n_faces(); ++f)
+		if (hmi.face_boundary[f])
 		{
-			for (int j = 0; j < f.vs.size(); j++)
-			{
-				f.id = M_sur.faces.size();
-				f.es.clear();
-				f.neighbor_hs.clear();
-				f.vs[j] = V_map[f.vs[j]];
-				M_sur.vertices[f.vs[j]].neighbor_fs.push_back(f.id);
-			}
-			M_sur.faces.push_back(f);
+			boundary_fvs.clear();
+			for (const auto v : hmi.face_vs[f])
+				boundary_fvs.push_back(V_map[v]);
+			M_sur.face_vs.push_back(boundary_fvs);
 		}
 	build_connectivity(M_sur);
 	orient_surface_mesh(M_sur);
 
 	int fn_ = 0;
-	for (auto &f : hmi.faces)
-		if (f.boundary)
+	for (int f = 0; f < hmi.n_faces(); ++f)
+		if (hmi.face_boundary[f])
 		{
-			for (int j = 0; j < f.vs.size(); j++)
-				f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
+			const auto fvs = hmi.face_vs[f];
+			for (int j = 0; j < fvs.size(); j++)
+				fvs[j] = V_map_reverse[M_sur.face_vs[fn_][j]];
 			fn_++;
 		}
 	// volume orienting
-	vector<bool> F_tag(hmi.faces.size(), true);
-	std::vector<short> F_visit(hmi.faces.size(), 0); // 0 un-visited, 1 visited once, 2 visited twice
-	for (uint32_t j = 0; j < hmi.faces.size(); j++)
-		if (hmi.faces[j].boundary)
+	vector<bool> F_tag(hmi.n_faces(), true);
+	std::vector<short> F_visit(hmi.n_faces(), 0); // 0 un-visited, 1 visited once, 2 visited twice
+	for (uint32_t j = 0; j < hmi.n_faces(); j++)
+		if (hmi.face_boundary[j])
 		{
 			F_visit[j]++;
 		}
-	std::vector<bool> F_state(hmi.faces.size(), false); // false is the reverse direction, true is the same direction
-	std::vector<bool> P_visit(hmi.elements.size(), false);
+	std::vector<bool> F_state(hmi.n_faces(), false); // false is the reverse direction, true is the same direction
+	std::vector<bool> P_visit(hmi.n_cells(), false);
 	while (true)
 	{
 		std::vector<uint32_t> candidates;
@@ -1614,15 +1260,15 @@ void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 		{
 			if (F_visit[ca] == 2)
 				continue;
-			uint32_t pid = hmi.faces[ca].neighbor_hs[0];
+			uint32_t pid = hmi.face_hs[ca][0];
 			if (P_visit[pid])
-				if (hmi.faces[ca].neighbor_hs.size() == 2)
-					pid = hmi.faces[ca].neighbor_hs[1];
+				if (hmi.face_hs.row_size(ca) == 2)
+					pid = hmi.face_hs[ca][1];
 			if (P_visit[pid])
 			{
 				logger().error("bug");
 			}
-			auto &fs = hmi.elements[pid].fs;
+			const auto fs = hmi.cell_fs[pid];
 			for (auto fid : fs)
 				F_tag[fid] = false;
 
@@ -1640,32 +1286,34 @@ void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 			{
 				uint32_t fid = pf_temp.front();
 				pf_temp.pop();
-				for (auto eid : hmi.faces[fid].es)
-					for (auto nfid : hmi.edges[eid].neighbor_fs)
+				const auto fvs = hmi.face_vs[fid];
+				for (auto eid : hmi.face_es[fid])
+					for (auto nfid : hmi.edge_fs[eid])
 					{
 
 						if (F_tag[nfid])
 							continue;
-						uint32_t v0 = hmi.edges[eid].vs[0], v1 = hmi.edges[eid].vs[1];
-						int32_t v0_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v0) - hmi.faces[fid].vs.begin();
-						int32_t v1_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v1) - hmi.faces[fid].vs.begin();
+						uint32_t v0 = hmi.edge_vs[eid][0], v1 = hmi.edge_vs[eid][1];
+						int32_t v0_pos = std::find(fvs.begin(), fvs.end(), v0) - fvs.begin();
+						int32_t v1_pos = std::find(fvs.begin(), fvs.end(), v1) - fvs.begin();
 
-						if ((v0_pos + 1) % hmi.faces[fid].vs.size() != v1_pos)
+						if ((v0_pos + 1) % fvs.size() != v1_pos)
 							std::swap(v0, v1);
 
-						int32_t v0_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v0) - hmi.faces[nfid].vs.begin();
-						int32_t v1_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v1) - hmi.faces[nfid].vs.begin();
+						const auto nfvs = hmi.face_vs[nfid];
+						int32_t v0_pos_ = std::find(nfvs.begin(), nfvs.end(), v0) - nfvs.begin();
+						int32_t v1_pos_ = std::find(nfvs.begin(), nfvs.end(), v1) - nfvs.begin();
 
 						if (F_state[fid])
 						{
-							if ((v0_pos_ + 1) % hmi.faces[nfid].vs.size() == v1_pos_)
+							if ((v0_pos_ + 1) % nfvs.size() == v1_pos_)
 								F_state[nfid] = false;
 							else
 								F_state[nfid] = true;
 						}
 						else if (!F_state[fid])
 						{
-							if ((v0_pos_ + 1) % hmi.faces[nfid].vs.size() == v1_pos_)
+							if ((v0_pos_ + 1) % nfvs.size() == v1_pos_)
 								F_state[nfid] = true;
 							else
 								F_state[nfid] = false;
@@ -1678,24 +1326,26 @@ void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 					}
 			}
 			P_visit[pid] = true;
+			const auto fs_flag = hmi.cell_fs_flag[pid];
 			for (uint32_t j = 0; j < fs.size(); j++)
-				hmi.elements[pid].fs_flag[j] = F_state[fs[j]];
+				fs_flag[j] = F_state[fs[j]];
 		}
 	}
 }
+
 void MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vector<int> &Ls)
 {
 
 	Ls.clear();
-	Ls.resize(hmi.elements.size(), 1);
-	std::vector<double> volumes(hmi.elements.size(), 0);
+	Ls.resize(hmi.n_cells(), 1);
+	std::vector<double> volumes(hmi.n_cells(), 0);
 
 	auto compute_volume = [&](const int id, double &vol) {
 		Vector3d ori;
 		ori.setZero();
-		for (auto f : hmi.elements[id].fs)
+		for (auto f : hmi.cell_fs[id])
 		{
-			auto &fvs = hmi.faces[f].vs;
+			const auto fvs = hmi.face_vs[f];
 			Vector3d center;
 			center.setZero();
 			for (auto vid : fvs)
@@ -1711,15 +1361,15 @@ void MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vect
 		vol = std::abs(vol);
 	};
 
-	for (const auto &ele : hmi.elements)
-		compute_volume(ele.id, volumes[ele.id]);
+	for (int c = 0; c < hmi.n_cells(); ++c)
+		compute_volume(c, volumes[c]);
 
 	double ave_volume = 0;
 	for (const auto &v : volumes)
 		ave_volume += v;
 	ave_volume /= volumes.size();
 	for (int i = 0; i < Ls.size(); i++)
-		if (!hmi.elements[i].hex)
+		if (!hmi.cell_hex[i])
 		{
 			Ls[i] = volumes[i] / ave_volume;
 			if (Ls[i] < 1)
@@ -1727,25 +1377,36 @@ void MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vect
 		}
 }
 
-// template<typename T>
-// void MeshProcessing3D::set_intersection_own(const std::vector<T> &A, const std::vector<T> &B, std::vector<T> &C, const int &num){
-void MeshProcessing3D::set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::array<uint32_t, 2> &C, int &num)
+void Mesh3DStorage::append(const Mesh3DStorage &other)
 {
-	// void MeshProcessing3D::set_intersection_own( std::vector<uint32_t> &A,  std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num)
-	//  C.resize(num);
-	int n = 0;
-	for (auto &a : A)
-	{
-		for (auto &b : B)
-		{
-			if (a == b)
-			{
-				C[n++] = a;
-				if (n == num)
-					break;
-			}
-		}
-		if (n == num)
-			break;
-	}
+	if (other.type != type)
+		type = MeshType::HYB;
+
+	const int n_v = n_vertices();
+	const int n_f = n_faces();
+
+	assert(points.rows() == other.points.rows());
+	points.conservativeResize(points.rows(), n_v + other.points.cols());
+	points.rightCols(other.points.cols()) = other.points;
+
+	face_vs.append(other.face_vs, n_v);
+	face_boundary.insert(face_boundary.end(), other.face_boundary.begin(), other.face_boundary.end());
+
+	cell_vs.append(other.cell_vs, n_v);
+	cell_input_vs.append(other.cell_input_vs, n_v);
+	cell_fs.append(other.cell_fs, n_f);
+	cell_fs_flag.append(other.cell_fs_flag, 0);
+	cell_hex.insert(cell_hex.end(), other.cell_hex.begin(), other.cell_hex.end());
+	cell_kernel.insert(cell_kernel.end(), other.cell_kernel.begin(), other.cell_kernel.end());
+}
+
+size_t Mesh3DStorage::memory() const
+{
+	return points.size() * sizeof(double)
+		   + vertex_vs.memory() + vertex_es.memory() + vertex_fs.memory() + vertex_hs.memory()
+		   + vertex_boundary.capacity()
+		   + edge_vs.capacity() * sizeof(std::array<uint32_t, 2>) + edge_fs.memory() + edge_hs.memory() + edge_boundary.capacity()
+		   + face_vs.memory() + face_es.memory() + face_hs.memory() + face_hs_slot.memory() + face_boundary.capacity()
+		   + cell_vs.memory() + cell_input_vs.memory() + cell_es.memory() + cell_fs.memory() + cell_fs_flag.memory()
+		   + cell_hex.capacity() + cell_kernel.capacity() * sizeof(std::array<double, 3>);
 }

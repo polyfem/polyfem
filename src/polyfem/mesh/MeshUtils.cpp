@@ -146,27 +146,16 @@ void polyfem::mesh::compute_element_tags(const PolygonMesh &M, std::vector<Eleme
 			// b) Determine if it is regular or not
 			if (is_boundary_facet || is_interface_facet)
 			{
-				// A boundary quad is regular iff all its vertices are incident to at most 2 other quads
-				// We assume that non-boundary vertices of a boundary quads are always regular
+				// A boundary quad is regular iff its boundary vertices are incident to
+				// at most 2 quads and its interior vertices to exactly 4; otherwise it
+				// is singular (still a cube, but not spline compatible).
 				bool is_singular = false;
 				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					index_t v = M.facet_vertex(f, lv);
-					if (is_boundary_vertex[v] || is_interface_vertex[v])
+					if (!is_regular_vertex[M.facet_vertex(f, lv)])
 					{
-						if (!is_regular_vertex[v])
-						{
-							is_singular = true;
-							break;
-						}
-					}
-					else
-					{
-						if (!is_regular_vertex[v])
-						{
-							element_tags[f] = ElementType::UNDEFINED;
-							break;
-						}
+						is_singular = true;
+						break;
 					}
 				}
 
@@ -1179,7 +1168,7 @@ int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 		else if (cells.cols() == 8) // hexahedron
 		{
 			insert({{cell(0), cell(1), cell(2), cell(3)}});
-			insert({{cell(1), cell(5), cell(6), cell(3)}});
+			insert({{cell(1), cell(5), cell(6), cell(2)}});
 			insert({{cell(5), cell(4), cell(7), cell(6)}});
 			insert({{cell(0), cell(4), cell(7), cell(3)}});
 			insert({{cell(0), cell(4), cell(5), cell(1)}});

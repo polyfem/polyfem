@@ -57,38 +57,48 @@ namespace polyfem
 			}
 			filter_element_data(keep);
 
-			std::vector<bool> used_faces(mesh_.faces.size(), false);
+			std::vector<bool> used_faces(mesh_.n_faces(), false);
 			for (int c = 0; c < keep.size(); ++c)
 				if (keep[c])
-					for (const int f : mesh_.elements[c].fs)
+					for (const int f : mesh_.cell_fs[c])
 						used_faces[f] = true;
 
-			std::vector<int> old_to_new_face(mesh_.faces.size(), -1);
-			std::vector<Face> faces;
-			faces.reserve(std::count(used_faces.begin(), used_faces.end(), true));
+			std::vector<int> old_to_new_face(mesh_.n_faces(), -1);
+			JaggedArray<uint32_t> face_vs;
 			for (int f = 0; f < used_faces.size(); ++f)
 			{
 				if (!used_faces[f])
 					continue;
-				old_to_new_face[f] = faces.size();
-				faces.push_back(mesh_.faces[f]);
-				faces.back().id = faces.size() - 1;
+				old_to_new_face[f] = face_vs.size();
+				face_vs.push_back(mesh_.face_vs[f]);
 			}
 
-			std::vector<Element> elements;
-			elements.reserve(std::count(keep.begin(), keep.end(), true));
+			JaggedArray<uint32_t> cell_vs, cell_input_vs, cell_fs;
+			JaggedArray<uint8_t> cell_fs_flag;
+			std::vector<uint8_t> cell_hex;
+			std::vector<std::array<double, 3>> cell_kernel;
+			std::vector<uint32_t> fs;
 			for (int c = 0; c < keep.size(); ++c)
 			{
 				if (!keep[c])
 					continue;
-				elements.push_back(mesh_.elements[c]);
-				auto &element = elements.back();
-				element.id = elements.size() - 1;
-				for (auto &f : element.fs)
-					f = old_to_new_face[f];
+				cell_vs.push_back(mesh_.cell_vs[c]);
+				cell_input_vs.push_back(mesh_.cell_input_vs[c]);
+				fs.clear();
+				for (const auto f : mesh_.cell_fs[c])
+					fs.push_back(old_to_new_face[f]);
+				cell_fs.push_back(fs);
+				cell_fs_flag.push_back(mesh_.cell_fs_flag[c]);
+				cell_hex.push_back(mesh_.cell_hex[c]);
+				cell_kernel.push_back(mesh_.cell_kernel[c]);
 			}
-			mesh_.faces = std::move(faces);
-			mesh_.elements = std::move(elements);
+			mesh_.face_vs = std::move(face_vs);
+			mesh_.cell_vs = std::move(cell_vs);
+			mesh_.cell_input_vs = std::move(cell_input_vs);
+			mesh_.cell_fs = std::move(cell_fs);
+			mesh_.cell_fs_flag = std::move(cell_fs_flag);
+			mesh_.cell_hex = std::move(cell_hex);
+			mesh_.cell_kernel = std::move(cell_kernel);
 
 			Navigation3D::prepare_mesh(mesh_);
 
@@ -131,7 +141,9 @@ namespace polyfem
 			in_ordered_edges_.resize(n_edges(), 2);
 			for (int e = 0; e < n_edges(); ++e)
 				in_ordered_edges_.row(e) << edge_vertex(e, 0), edge_vertex(e, 1);
-			const int max_face_size = n_faces() == 0 ? 0 : std::max_element(mesh_.faces.begin(), mesh_.faces.end(), [](const Face &a, const Face &b) { return a.vs.size() < b.vs.size(); })->vs.size();
+			int max_face_size = 0;
+			for (int f = 0; f < n_faces(); ++f)
+				max_face_size = std::max(max_face_size, n_face_vertices(f));
 			in_ordered_faces_.setConstant(n_faces(), max_face_size, -1);
 			for (int f = 0; f < n_faces(); ++f)
 				for (int lv = 0; lv < n_face_vertices(f); ++lv)
@@ -147,8 +159,7 @@ namespace polyfem
 			}
 
 			// TODO refine high order mesh!
-			orders_.resize(0, 0);
-			clear_higher_order_data();
+			clear_data_lost_by_refinement();
 			if (mesh_.type == MeshType::TET)
 			{
 				MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
@@ -158,12 +169,11 @@ namespace polyfem
 				for (size_t i = 0; i < elements_tag().size(); ++i)
 				{
 					if (elements_tag()[i] == ElementType::INTERIOR_POLYTOPE || elements_tag()[i] == ElementType::BOUNDARY_POLYTOPE)
-						mesh_.elements[i].hex = false;
+						mesh_.cell_hex[i] = false;
 				}
 
-				bool reverse_grow = false;
 				std::vector<int> parent_nodes;
-				MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, reverse_grow, parent_nodes);
+				MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, parent_nodes);
 			}
 
 			Navigation3D::prepare_mesh(mesh_);
@@ -175,27 +185,27 @@ namespace polyfem
 			assert(in_ordered_vertices_[2] == 2);
 			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == n_vertices() - 1);
 
-			in_ordered_edges_.resize(mesh_.edges.size(), 2);
+			in_ordered_edges_.resize(mesh_.n_edges(), 2);
 
-			for (int e = 0; e < (int)mesh_.edges.size(); ++e)
+			for (int e = 0; e < (int)mesh_.n_edges(); ++e)
 			{
-				assert(mesh_.edges[e].vs.size() == 2);
+				assert(mesh_.edge_vs[e].size() == 2);
 				for (int lv = 0; lv < 2; ++lv)
 				{
-					in_ordered_edges_(e, lv) = mesh_.edges[e].vs[lv];
+					in_ordered_edges_(e, lv) = mesh_.edge_vs[e][lv];
 				}
 			}
 			assert(in_ordered_edges_.size() > 0);
 
-			in_ordered_faces_.resize(mesh_.faces.size(), mesh_.faces[0].vs.size());
+			in_ordered_faces_.resize(mesh_.n_faces(), mesh_.face_vs[0].size());
 
-			for (int f = 0; f < (int)mesh_.faces.size(); ++f)
+			for (int f = 0; f < (int)mesh_.n_faces(); ++f)
 			{
-				assert(in_ordered_faces_.cols() == mesh_.faces[f].vs.size());
+				assert(in_ordered_faces_.cols() == mesh_.face_vs[f].size());
 
 				for (int lv = 0; lv < in_ordered_faces_.cols(); ++lv)
 				{
-					in_ordered_faces_(f, lv) = mesh_.faces[f].vs[lv];
+					in_ordered_faces_(f, lv) = mesh_.face_vs[f][lv];
 				}
 			}
 			assert(in_ordered_faces_.size() > 0);
@@ -212,16 +222,13 @@ namespace polyfem
 
 			// Set vertices
 			const int nv = V.rows();
+			mesh_ = Mesh3DStorage();
 			mesh_.points.resize(3, nv);
-			mesh_.vertices.resize(nv);
 			for (int i = 0; i < nv; ++i)
 			{
 				mesh_.points(0, i) = V(i, 0);
 				mesh_.points(1, i) = V(i, 1);
 				mesh_.points(2, i) = V(i, 2);
-				Vertex v;
-				v.id = i;
-				mesh_.vertices[i] = v;
 			}
 
 			const bool all_tets = std::all_of(cells.begin(), cells.end(), [](const StandardCell &c) {
@@ -240,9 +247,6 @@ namespace polyfem
 				std::vector<int> first_cell_facet(cells.size() + 1, 0);
 				for (int c = 0; c < cells.size(); ++c)
 					first_cell_facet[c + 1] = first_cell_facet[c] + cells[c].n_facets();
-
-				// Set faces
-				mesh_.faces.clear();
 
 				// Cell facet of the neighbor across (c, lf) that is glued to c.
 				auto opposite_cell_facet = [&](int c, int lf) {
@@ -266,18 +270,20 @@ namespace polyfem
 
 				// Creates 1 hex or polyhedral element for each cell of the input mesh
 				int facet_counter = 0;
-				mesh_.elements.resize(cells.size());
 				bool is_hex = true;
+				mesh_.cell_hex.reserve(cells.size());
+				mesh_.cell_kernel.reserve(cells.size());
+				std::vector<uint32_t> fs, face_vs, input_vs;
+				std::vector<uint8_t> fs_flag;
 				for (int c = 0; c < (int)cells.size(); ++c)
 				{
-					Element &cell = mesh_.elements[c];
-					cell.id = c;
-					cell.hex = (cells[c].type == StandardCellType::HEX);
-
-					is_hex = is_hex && cell.hex;
+					const bool hex = (cells[c].type == StandardCellType::HEX);
+					mesh_.cell_hex.push_back(hex);
+					is_hex = is_hex && hex;
 
 					int nf = cells[c].n_facets();
-					cell.fs.resize(nf);
+					fs.assign(nf, 0);
+					fs_flag.clear();
 
 					for (int lf = 0; lf < nf; ++lf)
 					{
@@ -285,41 +291,41 @@ namespace polyfem
 						int cf2 = opposite_cell_facet(c, lf);
 						if (cf2 < 0 || cell_facet_to_facet[cf2] < 0)
 						{
-							mesh_.faces.emplace_back();
-							Face &face = mesh_.faces[facet_counter];
-							assert(face.vs.empty());
-							face.vs.resize(cells[c].n_facet_vertices(lf));
+							face_vs.resize(cells[c].n_facet_vertices(lf));
 							for (int lv = 0; lv < cells[c].n_facet_vertices(lf); ++lv)
 							{
-								face.vs[lv] = cells[c].facet_vertex(lf, lv);
+								face_vs[lv] = cells[c].facet_vertex(lf, lv);
 							}
-							cell.fs_flag.push_back(0);
-							cell.fs[lf] = face.id = facet_counter;
+							mesh_.face_vs.push_back(face_vs);
+							fs_flag.push_back(0);
+							fs[lf] = facet_counter;
 							cell_facet_to_facet[cf] = facet_counter;
 							++facet_counter;
 						}
 						else
 						{
-							cell.fs[lf] = cell_facet_to_facet[cf2];
-							cell.fs_flag.push_back(1);
+							fs[lf] = cell_facet_to_facet[cf2];
+							fs_flag.push_back(1);
 						}
 					}
+					mesh_.cell_fs.push_back(fs);
+					mesh_.cell_fs_flag.push_back(fs_flag);
+					mesh_.cell_vs.push_back_filled(0, 0); // built by prepare_mesh
 
 					const int n_cell_vertices = cells[c].descriptor().n_vertices;
-					cell.input_vs.resize(n_cell_vertices);
+					input_vs.resize(n_cell_vertices);
 					for (int lv = 0; lv < n_cell_vertices; ++lv)
-						cell.input_vs[lv] = cells[c].vertices[lv];
+						input_vs[lv] = cells[c].vertices[lv];
+					mesh_.cell_input_vs.push_back(input_vs);
 
 					// Compute a point in the kernel (assumes the barycenter is ok)
 					Eigen::RowVector3d p(0, 0, 0);
-					for (int v : cell.input_vs)
+					for (int v : input_vs)
 					{
 						p += mesh_.points.col(v).transpose();
 					}
-					p /= cell.input_vs.size();
-					mesh_.elements[c].v_in_Kernel.push_back(p[0]);
-					mesh_.elements[c].v_in_Kernel.push_back(p[1]);
-					mesh_.elements[c].v_in_Kernel.push_back(p[2]);
+					p /= input_vs.size();
+					mesh_.cell_kernel.push_back({{p[0], p[1], p[2]}});
 				}
 				mesh_.type = is_hex ? MeshType::HEX : (all_tets ? MeshType::TET : MeshType::HYB);
 			}
@@ -342,40 +348,37 @@ namespace polyfem
 
 			if (data.has_polyhedral_topology())
 			{
+				mesh_ = Mesh3DStorage();
 				mesh_.points = V.transpose();
-				mesh_.vertices.resize(V.rows());
-				for (int i = 0; i < V.rows(); ++i)
-					mesh_.vertices[i].id = i;
 
-				mesh_.faces.resize(data.faces.size());
 				for (int i = 0; i < data.faces.size(); ++i)
-				{
-					mesh_.faces[i].id = i;
-					mesh_.faces[i].vs.assign(data.faces[i].begin(), data.faces[i].end());
-				}
+					mesh_.face_vs.push_back(data.faces[i]);
 
-				mesh_.elements.resize(F.rows());
 				bool all_hex = true;
+				std::vector<uint32_t> input_vs, vs;
+				std::vector<uint8_t> fs_flag;
 				for (int i = 0; i < F.rows(); ++i)
 				{
-					auto &element = mesh_.elements[i];
-					element.id = i;
-					element.fs.assign(data.cell_faces[i].begin(), data.cell_faces[i].end());
-					element.fs_flag.assign(
-						data.cell_face_orientations[i].begin(), data.cell_face_orientations[i].end());
-					element.hex = data.cell_is_hex[i];
-					all_hex &= element.hex;
+					mesh_.cell_fs.push_back(data.cell_faces[i]);
+					fs_flag.clear();
+					for (const int o : data.cell_face_orientations[i])
+						fs_flag.push_back(o != 0);
+					mesh_.cell_fs_flag.push_back(fs_flag);
+					mesh_.cell_hex.push_back(data.cell_is_hex[i]);
+					all_hex &= data.cell_is_hex[i];
+					input_vs.clear();
 					if (data.elements_are_ordered)
 						for (int j = 0; j < F.cols() && F(i, j) >= 0; ++j)
-							element.input_vs.push_back(F(i, j));
-					for (const int face : element.fs)
-						element.vs.insert(
-							element.vs.end(), mesh_.faces[face].vs.begin(), mesh_.faces[face].vs.end());
-					std::sort(element.vs.begin(), element.vs.end());
-					element.vs.erase(std::unique(element.vs.begin(), element.vs.end()), element.vs.end());
-					element.v_in_Kernel.resize(data.cell_kernel_points.cols());
-					for (int d = 0; d < data.cell_kernel_points.cols(); ++d)
-						element.v_in_Kernel[d] = data.cell_kernel_points(i, d);
+							input_vs.push_back(F(i, j));
+					mesh_.cell_input_vs.push_back(input_vs);
+					vs.clear();
+					for (const int face : data.cell_faces[i])
+						vs.insert(vs.end(), mesh_.face_vs[face].begin(), mesh_.face_vs[face].end());
+					std::sort(vs.begin(), vs.end());
+					vs.erase(std::unique(vs.begin(), vs.end()), vs.end());
+					mesh_.cell_vs.push_back(vs);
+					assert(data.cell_kernel_points.cols() == 3);
+					mesh_.cell_kernel.push_back({{data.cell_kernel_points(i, 0), data.cell_kernel_points(i, 1), data.cell_kernel_points(i, 2)}});
 				}
 				mesh_.type = all_hex ? MeshType::HEX : MeshType::HYB;
 				Navigation3D::prepare_mesh(mesh_);
@@ -431,7 +434,22 @@ namespace polyfem
 					log_and_throw_error(fmt::format("Invalid number of vertices {}", nV));
 			}
 
-			return build_storage_from_cells(V, cells);
+			if (!build_storage_from_cells(V, cells))
+				return false;
+
+			// cell_vertex() (and therefore to_mesh_data(), checkpoints and the
+			// MSH writer) returns input_vs, which must be in the input (MeshData,
+			// i.e. Gmsh) order. Hex cells were permuted to the descriptor order
+			// above; restore their input order (the kernel point was already
+			// computed from the permuted order).
+			for (int c = 0; c < cells.size(); ++c)
+			{
+				if (cells[c].type != StandardCellType::HEX)
+					continue;
+				for (int lv = 0; lv < 8; ++lv)
+					mesh_.cell_input_vs[c][lv] = F(c, lv);
+			}
+			return true;
 		}
 
 		void CMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
@@ -444,7 +462,7 @@ namespace polyfem
 			face_nodes_.resize(n_faces());
 			cell_nodes_.resize(n_cells());
 
-			orders_.resize(n_cells(), 1);
+			orders_.setOnes(n_cells(), 1);
 
 			const auto attach_p2 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
 				auto &n = edge_nodes_[index.edge];
@@ -932,7 +950,7 @@ namespace polyfem
 				// unsupported
 				else
 				{
-					assert(false);
+					log_and_throw_error("Unsupported higher-order tetrahedron with {} nodes (supported: 4, 10, 20, 35).", nodes_ids.size());
 				}
 			}
 		}
@@ -957,8 +975,8 @@ namespace polyfem
 			{
 				for (int d = 0; d < 3; ++d)
 				{
-					auto val = mesh_.elements[i].v_in_Kernel[d];
-					mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
+					auto val = mesh_.cell_kernel[i][d];
+					mesh_.cell_kernel[i][d] = (val - shift(d)) * scaling;
 				}
 			}
 
@@ -995,7 +1013,7 @@ namespace polyfem
 
 			// for(int i = 0; i < n_cells(); ++i)
 			// {
-			// 	mesh_.elements[i].v_in_Kernel[1] /= 100.;
+			// 	mesh_.cell_kernel[i][1] /= 100.;
 			// }
 
 			Eigen::MatrixXd p0, p1, p;
@@ -1011,8 +1029,8 @@ namespace polyfem
 		// {
 		// 	ranges.clear();
 
-		// 	std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
-		// 	std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
+		// 	std::vector<Eigen::MatrixXi> local_tris(mesh_.n_cells());
+		// 	std::vector<Eigen::MatrixXd> local_pts(mesh_.n_cells());
 		// 	Eigen::MatrixXi tets;
 
 		// 	int total_tris = 0;
@@ -1026,7 +1044,7 @@ namespace polyfem
 		// 	Eigen::MatrixXd cell_barys;
 		// 	cell_barycenters(cell_barys);
 
-		// 	for (std::size_t e = 0; e < mesh_.elements.size(); ++e)
+		// 	for (std::size_t e = 0; e < mesh_.n_cells(); ++e)
 		// 	{
 		// 		const Element &el = mesh_.elements[e];
 
@@ -1116,7 +1134,7 @@ namespace polyfem
 
 		bool CMesh3D::is_boundary_element(const int element_global_id) const
 		{
-			const auto &fs = mesh_.elements[element_global_id].fs;
+			const auto &fs = mesh_.cell_fs[element_global_id];
 
 			for (auto f_id : fs)
 			{
@@ -1124,7 +1142,7 @@ namespace polyfem
 					return true;
 			}
 
-			const auto &vs = mesh_.elements[element_global_id].vs;
+			const auto &vs = mesh_.cell_vs[element_global_id];
 
 			for (auto v_id : vs)
 			{
@@ -1165,15 +1183,22 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
+		{
+			Mesh::apply_affine_transformation(A, b);
+			for (auto &kernel : mesh_.cell_kernel)
+			{
+				VectorNd k(3);
+				k << kernel[0], kernel[1], kernel[2];
+				k = A * k + b;
+				for (int d = 0; d < 3; ++d)
+					kernel[d] = k[d];
+			}
+		}
+
 		void CMesh3D::set_point(const int global_index, const RowVectorNd &p)
 		{
 			mesh_.points.col(global_index) = p.transpose();
-			if (mesh_.vertices[global_index].v.size() == 3)
-			{
-				mesh_.vertices[global_index].v[0] = p[0];
-				mesh_.vertices[global_index].v[1] = p[1];
-				mesh_.vertices[global_index].v[2] = p[2];
-			}
 		}
 
 		RowVectorNd CMesh3D::point(const int global_index) const
@@ -1185,7 +1210,7 @@ namespace polyfem
 		RowVectorNd CMesh3D::kernel(const int c) const
 		{
 			RowVectorNd pt(3);
-			pt << mesh_.elements[c].v_in_Kernel[0], mesh_.elements[c].v_in_Kernel[1], mesh_.elements[c].v_in_Kernel[2];
+			pt << mesh_.cell_kernel[c][0], mesh_.cell_kernel[c][1], mesh_.cell_kernel[c][2];
 			return pt;
 		}
 
@@ -1194,45 +1219,47 @@ namespace polyfem
 			std::vector<ElementType> &ele_tag = elements_tag_;
 			ele_tag.clear();
 
-			ele_tag.resize(mesh_.elements.size());
+			ele_tag.resize(mesh_.n_cells());
 			for (auto &t : ele_tag)
 				t = ElementType::REGULAR_INTERIOR_CUBE;
 
 			// boundary flags
-			std::vector<bool> bv_flag(mesh_.vertices.size(), false), be_flag(mesh_.edges.size(), false), bf_flag(mesh_.faces.size(), false);
-			for (auto f : mesh_.faces)
-				if (f.boundary)
-					bf_flag[f.id] = true;
+			std::vector<bool> bv_flag(mesh_.n_vertices(), false), be_flag(mesh_.n_edges(), false), bf_flag(mesh_.n_faces(), false);
+			for (int f = 0; f < mesh_.n_faces(); ++f)
+				if (mesh_.face_boundary[f])
+					bf_flag[f] = true;
 				else
 				{
-					for (auto nhid : f.neighbor_hs)
-						if (!mesh_.elements[nhid].hex)
-							bf_flag[f.id] = true;
+					for (auto nhid : mesh_.face_hs[f])
+						if (!mesh_.cell_hex[nhid])
+							bf_flag[f] = true;
 				}
-			for (uint32_t i = 0; i < mesh_.faces.size(); ++i)
+			for (uint32_t i = 0; i < mesh_.n_faces(); ++i)
 				if (bf_flag[i])
-					for (uint32_t j = 0; j < mesh_.faces[i].vs.size(); ++j)
+					for (uint32_t j = 0; j < mesh_.face_vs[i].size(); ++j)
 					{
-						uint32_t eid = mesh_.faces[i].es[j];
+						uint32_t eid = mesh_.face_es[i][j];
 						be_flag[eid] = true;
-						bv_flag[mesh_.faces[i].vs[j]] = true;
+						bv_flag[mesh_.face_vs[i][j]] = true;
 					}
 
-			for (auto &ele : mesh_.elements)
+			for (int c = 0; c < mesh_.n_cells(); ++c)
 			{
-				if (ele.hex)
+				const auto ele_vs = mesh_.cell_vs[c];
+				const auto ele_es = mesh_.cell_es[c];
+				if (mesh_.cell_hex[c])
 				{
 					bool attaching_non_hex = false, on_boundary = false;
 					;
-					for (auto vid : ele.vs)
+					for (auto vid : ele_vs)
 					{
-						for (auto eleid : mesh_.vertices[vid].neighbor_hs)
-							if (!mesh_.elements[eleid].hex)
+						for (auto eleid : mesh_.vertex_hs[vid])
+							if (!mesh_.cell_hex[eleid])
 							{
 								attaching_non_hex = true;
 								break;
 							}
-						if (mesh_.vertices[vid].boundary)
+						if (mesh_.vertex_boundary[vid])
 						{
 							on_boundary = true;
 							break;
@@ -1242,32 +1269,32 @@ namespace polyfem
 					}
 					if (attaching_non_hex)
 					{
-						ele_tag[ele.id] = ElementType::INTERFACE_CUBE;
+						ele_tag[c] = ElementType::INTERFACE_CUBE;
 						continue;
 					}
 
 					if (on_boundary)
 					{
-						ele_tag[ele.id] = ElementType::MULTI_SINGULAR_BOUNDARY_CUBE;
+						ele_tag[c] = ElementType::MULTI_SINGULAR_BOUNDARY_CUBE;
 						// has no boundary edge--> singular
 						bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
 						int n_interior_edge_singular = 0;
-						for (auto eid : ele.es)
+						for (auto eid : ele_es)
 						{
 							int en = 0;
 							if (be_flag[eid])
 							{
 								boundary_edge = true;
-								for (auto nhid : mesh_.edges[eid].neighbor_hs)
-									if (mesh_.elements[nhid].hex)
+								for (auto nhid : mesh_.edge_hs[eid])
+									if (mesh_.cell_hex[nhid])
 										en++;
 								if (en > 2)
 									boundary_edge_singular = true;
 							}
 							else
 							{
-								for (auto nhid : mesh_.edges[eid].neighbor_hs)
-									if (mesh_.elements[nhid].hex)
+								for (auto nhid : mesh_.edge_hs[eid])
+									if (mesh_.cell_hex[nhid])
 										en++;
 								if (en != 4)
 								{
@@ -1281,14 +1308,14 @@ namespace polyfem
 
 						bool has_singular_v = false, has_iregular_v = false;
 						int n_in_irregular_v = 0;
-						for (auto vid : ele.vs)
+						for (auto vid : ele_vs)
 						{
 							int vn = 0;
 							if (bv_flag[vid])
 							{
 								int nh = 0;
-								for (auto nhid : mesh_.vertices[vid].neighbor_hs)
-									if (mesh_.elements[nhid].hex)
+								for (auto nhid : mesh_.vertex_hs[vid])
+									if (mesh_.cell_hex[nhid])
 										nh++;
 								if (nh > 4)
 									has_iregular_v = true;
@@ -1296,12 +1323,12 @@ namespace polyfem
 							}
 							else
 							{
-								if (mesh_.vertices[vid].neighbor_hs.size() != 8)
+								if (mesh_.vertex_hs[vid].size() != 8)
 									n_in_irregular_v++;
 								int n_irregular_e = 0;
-								for (auto eid : mesh_.vertices[vid].neighbor_es)
+								for (auto eid : mesh_.vertex_es[vid])
 								{
-									if (mesh_.edges[eid].neighbor_hs.size() != 4)
+									if (mesh_.edge_hs[eid].size() != 4)
 										n_irregular_e++;
 								}
 								if (n_irregular_e != 0 && n_irregular_e != 2)
@@ -1312,8 +1339,8 @@ namespace polyfem
 							}
 						}
 						int n_irregular_e = 0;
-						for (auto eid : ele.es)
-							if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
+						for (auto eid : ele_es)
+							if (!be_flag[eid] && mesh_.edge_hs[eid].size() != 4)
 								n_irregular_e++;
 						if (has_singular_v)
 							continue;
@@ -1321,10 +1348,10 @@ namespace polyfem
 						{
 							if (n_irregular_e == 1)
 							{
-								ele_tag[ele.id] = ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
+								ele_tag[c] = ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
 							}
 							else if (n_irregular_e == 0 && n_in_irregular_v == 0 && !has_iregular_v)
-								ele_tag[ele.id] = ElementType::REGULAR_BOUNDARY_CUBE;
+								ele_tag[c] = ElementType::REGULAR_BOUNDARY_CUBE;
 							else
 								continue;
 						}
@@ -1333,28 +1360,28 @@ namespace polyfem
 
 					// type 1
 					bool has_irregular_v = false;
-					for (auto vid : ele.vs)
-						if (mesh_.vertices[vid].neighbor_hs.size() != 8)
+					for (auto vid : ele_vs)
+						if (mesh_.vertex_hs[vid].size() != 8)
 						{
 							has_irregular_v = true;
 							break;
 						}
 					if (!has_irregular_v)
 					{
-						ele_tag[ele.id] = ElementType::REGULAR_INTERIOR_CUBE;
+						ele_tag[c] = ElementType::REGULAR_INTERIOR_CUBE;
 						continue;
 					}
 					// type 2
 					bool has_singular_v = false;
 					int n_irregular_v = 0;
-					for (auto vid : ele.vs)
+					for (auto vid : ele_vs)
 					{
-						if (mesh_.vertices[vid].neighbor_hs.size() != 8)
+						if (mesh_.vertex_hs[vid].size() != 8)
 							n_irregular_v++;
 						int n_irregular_e = 0;
-						for (auto eid : mesh_.vertices[vid].neighbor_es)
+						for (auto eid : mesh_.vertex_es[vid])
 						{
-							if (mesh_.edges[eid].neighbor_hs.size() != 4)
+							if (mesh_.edge_hs[eid].size() != 4)
 								n_irregular_e++;
 						}
 						if (n_irregular_e != 0 && n_irregular_e != 2)
@@ -1365,33 +1392,34 @@ namespace polyfem
 					}
 					if (!has_singular_v && n_irregular_v == 2)
 					{
-						ele_tag[ele.id] = ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
+						ele_tag[c] = ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
 						continue;
 					}
 
-					ele_tag[ele.id] = ElementType::MULTI_SINGULAR_INTERIOR_CUBE;
+					ele_tag[c] = ElementType::MULTI_SINGULAR_INTERIOR_CUBE;
 				}
 				else
 				{
-					ele_tag[ele.id] = ElementType::INTERIOR_POLYTOPE;
-					for (auto fid : ele.fs)
-						if (mesh_.faces[fid].boundary)
+					ele_tag[c] = ElementType::INTERIOR_POLYTOPE;
+					for (auto fid : mesh_.cell_fs[c])
+						if (mesh_.face_boundary[fid])
 						{
-							ele_tag[ele.id] = ElementType::BOUNDARY_POLYTOPE;
+							ele_tag[c] = ElementType::BOUNDARY_POLYTOPE;
 							break;
 						}
 				}
 			}
 
 			// TODO correct?
-			for (auto &ele : mesh_.elements)
+			for (int c = 0; c < mesh_.n_cells(); ++c)
 			{
-				if (ele.vs.size() == 4)
-					ele_tag[ele.id] = ElementType::SIMPLEX;
-				else if (ele.vs.size() == 5)
-					ele_tag[ele.id] = ElementType::PYRAMID;
-				else if (ele.vs.size() == 6)
-					ele_tag[ele.id] = ElementType::PRISM;
+				const int nv = mesh_.cell_vs.row_size(c);
+				if (nv == 4)
+					ele_tag[c] = ElementType::SIMPLEX;
+				else if (nv == 5)
+					ele_tag[c] = ElementType::PYRAMID;
+				else if (nv == 6)
+					ele_tag[c] = ElementType::PRISM;
 			}
 		}
 
@@ -1400,7 +1428,7 @@ namespace polyfem
 			const int n_vertices = n_face_vertices(gid);
 			assert(n_vertices == 4);
 
-			const auto &vertices = mesh_.faces[gid].vs;
+			const auto &vertices = mesh_.face_vs[gid];
 
 			const auto v1 = point(vertices[0]);
 			const auto v2 = point(vertices[1]);
@@ -1418,8 +1446,8 @@ namespace polyfem
 
 		RowVectorNd CMesh3D::edge_barycenter(const int e) const
 		{
-			const int v0 = mesh_.edges[e].vs[0];
-			const int v1 = mesh_.edges[e].vs[1];
+			const int v0 = mesh_.edge_vs[e][0];
+			const int v1 = mesh_.edge_vs[e][1];
 			return 0.5 * (point(v0) + point(v1));
 		}
 
@@ -1429,7 +1457,7 @@ namespace polyfem
 			RowVectorNd bary(3);
 			bary.setZero();
 
-			const auto &vertices = mesh_.faces[f].vs;
+			const auto &vertices = mesh_.face_vs[f];
 			for (int lv = 0; lv < n_vertices; ++lv)
 			{
 				bary += point(vertices[lv]);
@@ -1443,34 +1471,12 @@ namespace polyfem
 			RowVectorNd bary(3);
 			bary.setZero();
 
-			const auto &vertices = mesh_.elements[c].vs;
+			const auto &vertices = mesh_.cell_vs[c];
 			for (int lv = 0; lv < n_vertices; ++lv)
 			{
 				bary += point(vertices[lv]);
 			}
 			return bary / n_vertices;
-		}
-
-		void CMesh3D::elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const
-		{
-			boxes.resize(n_elements());
-
-			for (int i = 0; i < n_elements(); ++i)
-			{
-				auto &box = boxes[i];
-				box[0].setConstant(std::numeric_limits<double>::max());
-				box[1].setConstant(std::numeric_limits<double>::min());
-
-				for (int j = 0; j < n_cell_vertices(i); ++j)
-				{
-					const int v_id = cell_vertex(i, j);
-					for (int d = 0; d < 3; ++d)
-					{
-						box[0][d] = std::min(box[0][d], point(v_id)[d]);
-						box[1][d] = std::max(box[1][d], point(v_id)[d]);
-					}
-				}
-			}
 		}
 
 		void CMesh3D::barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const

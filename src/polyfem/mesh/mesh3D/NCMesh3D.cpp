@@ -75,23 +75,51 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
-			clear_higher_order_data();
-			std::vector<bool> refine_mask(elements.size(), false);
-			for (int i = 0; i < elements.size(); i++)
-				if (elements[i].is_valid())
-					refine_mask[i] = true;
+			for (int level = 0; level < n_refinement; ++level)
+			{
+				clear_higher_order_data();
+				std::vector<bool> refine_mask(elements.size(), false);
+				for (int i = 0; i < elements.size(); i++)
+					if (elements[i].is_valid())
+						refine_mask[i] = true;
 
-			for (int i = 0; i < refine_mask.size(); i++)
-				if (refine_mask[i])
-					refine_element(i);
+				for (int i = 0; i < refine_mask.size(); i++)
+					if (refine_mask[i])
+						refine_element(i);
+			}
+			// refine_element() invalidates the id maps: rebuild them so that the
+			// mesh can be queried right away (e.g. to apply selections).
+			prepare_mesh();
+			update_labels_after_refinement();
+		}
 
-			refine(n_refinement - 1, t);
+		void NCMesh3D::update_labels_after_refinement()
+		{
+			node_ids_.clear();
+			geometry_ids_.clear();
+			if (has_body_ids())
+			{
+				body_ids_.resize(n_cells());
+				for (int e = 0; e < body_ids_.size(); ++e)
+					body_ids_[e] = elements[valid_to_all_elem(e)].body_id;
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_faces());
+				for (int b = 0; b < boundary_ids_.size(); ++b)
+					boundary_ids_[b] = faces[valid_to_all_face(b)].boundary_id;
+			}
+		}
+
+		void NCMesh3D::stale_index_error() const
+		{
+			log_and_throw_error("NCMesh3D: the mesh was modified without calling prepare_mesh().");
 		}
 
 		bool NCMesh3D::is_boundary_element(const int element_global_id) const
 		{
-			assert(index_prepared);
-			for (int lv = 0; lv < n_cell_edges(element_global_id); lv++)
+			// A boundary face has boundary vertices, so checking the vertices is enough.
+			for (int lv = 0; lv < n_cell_vertices(element_global_id); lv++)
 				if (is_boundary_vertex(cell_vertex(element_global_id, lv)))
 					return true;
 
@@ -194,11 +222,10 @@ namespace polyfem
 		}
 		RowVectorNd NCMesh3D::cell_barycenter(const int c) const
 		{
-			const int v1 = face_vertex(c, 0);
-			const int v2 = face_vertex(c, 1);
-			const int v3 = face_vertex(c, 2);
-
-			return (point(v1) + point(v2) + point(v3)) / 3.;
+			RowVectorNd bary = RowVectorNd::Zero(3);
+			for (int lv = 0; lv < n_cell_vertices(c); ++lv)
+				bary += point(cell_vertex(c, lv));
+			return bary / n_cell_vertices(c);
 		}
 
 		void NCMesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
@@ -700,6 +727,9 @@ namespace polyfem
 			}
 
 			refineHistory.push_back(id_full);
+
+			index_prepared = false;
+			adj_prepared = false;
 		}
 		void NCMesh3D::refine_elements(const std::vector<int> &ids)
 		{
@@ -709,11 +739,16 @@ namespace polyfem
 
 			for (int i : full_ids)
 				refine_element(i);
+
+			prepare_mesh();
+			update_labels_after_refinement();
 		}
 
 		void NCMesh3D::coarsen_element(int id_full)
 		{
 			const int parent_id = elements[id_full].parent;
+			if (parent_id < 0)
+				log_and_throw_error("NCMesh3D: cannot coarsen element {}, it has no parent.", id_full);
 			auto &parent = elements[parent_id];
 
 			for (int i = 0; i < parent.children.size(); i++)
@@ -751,6 +786,9 @@ namespace polyfem
 				vertices[parent.vertices(v)].add_element(parent_id);
 
 			refineHistory.push_back(parent_id);
+
+			index_prepared = false;
+			adj_prepared = false;
 		}
 
 		void NCMesh3D::mark_boundary()
@@ -794,6 +832,8 @@ namespace polyfem
 
 		void NCMesh3D::build_index_mapping()
 		{
+			// Count the valid entities from the topology (not from the maps being rebuilt).
+			index_prepared = false;
 			all_to_valid_elemMap.assign(elements.size(), -1);
 			valid_to_all_elemMap.resize(n_elements);
 
@@ -849,26 +889,102 @@ namespace polyfem
 		void NCMesh3D::append(const Mesh &mesh)
 		{
 			assert(typeid(mesh) == typeid(NCMesh3D));
+			const NCMesh3D &other = dynamic_cast<const NCMesh3D &>(mesh);
+			const bool had_boundary_ids = has_boundary_ids(), other_has_boundary_ids = other.has_boundary_ids();
+			const bool had_body_ids = has_body_ids(), other_has_body_ids = other.has_body_ids();
+
 			Mesh::append(mesh);
 
-			const NCMesh3D &mesh3d = dynamic_cast<const NCMesh3D &>(mesh);
+			// Merge the whole structure of the other mesh (refinement hierarchy,
+			// hanging nodes and per-entity labels included), offsetting its ids.
+			const int v_off = vertices.size(), e_off = edges.size(), f_off = faces.size(), el_off = elements.size();
+			const auto offset = [](Eigen::VectorXi ids, const int off) {
+				for (int i = 0; i < ids.size(); ++i)
+					if (ids[i] >= 0)
+						ids[i] += off;
+				return ids;
+			};
+			const auto offset_set = [](const SortedIds &ids, const int off) {
+				SortedIds result;
+				for (const int id : ids)
+					result.insert(id + off);
+				return result;
+			};
+			const auto copy_boundaries = [&](const std::vector<ncBoundary> &from, std::vector<ncBoundary> &to) {
+				to.reserve(to.size() + from.size());
+				for (const ncBoundary &b : from)
+				{
+					ncBoundary copy = b;
+					copy.vertices = offset(b.vertices, v_off);
+					copy.elem_list = offset_set(b.elem_list, el_off);
+					copy.global_ids.clear();
+					to.push_back(std::move(copy)); // leaders/followers are rebuilt by prepare_mesh()
+				}
+			};
 
-			const int n_v = n_vertices();
-			const int n_f = n_cells();
-
-			vertices.reserve(n_v + mesh3d.n_vertices());
-			for (int i = 0; i < mesh3d.n_vertices(); i++)
+			vertices.reserve(v_off + other.vertices.size());
+			for (const ncVert &v : other.vertices)
 			{
-				vertices.emplace_back(mesh3d.vertices[i].pos);
+				vertices.push_back(v); // edge/face/weight are rebuilt by prepare_mesh()
+				vertices.back().elem_list = offset_set(v.elem_list, el_off);
 			}
-			for (int i = 0; i < mesh3d.n_cells(); i++)
+			copy_boundaries(other.edges, edges);
+			copy_boundaries(other.faces, faces);
+
+			elements.reserve(el_off + other.elements.size());
+			for (const ncElem &el : other.elements)
 			{
-				Eigen::Vector4i cell = mesh3d.elements[i].vertices;
-				cell = cell.array() + n_v;
-				add_element(cell, -1);
+				ncElem copy = el;
+				copy.geom_vertices = offset(el.geom_vertices, v_off);
+				copy.vertices = offset(el.vertices, v_off);
+				copy.edges = offset(el.edges, e_off);
+				copy.faces = offset(el.faces, f_off);
+				copy.children = offset(el.children, el_off);
+				if (copy.parent >= 0)
+					copy.parent += el_off;
+				elements.push_back(std::move(copy));
 			}
 
+			for (const auto &[key, value] : other.midpointMap)
+				midpointMap[Eigen::Vector2i(key.array() + v_off)] = value + v_off;
+			for (const auto &[key, value] : other.edgeMap)
+				edgeMap[Eigen::Vector2i(key.array() + v_off)] = value + e_off;
+			for (const auto &[key, value] : other.faceMap)
+				faceMap[Eigen::Vector3i(key.array() + v_off)] = value + f_off;
+			for (const int id : other.refineHistory)
+				refineHistory.push_back(id + el_off);
+			n_elements += other.n_elements;
+
+			index_prepared = false;
+			adj_prepared = false;
 			prepare_mesh();
+
+			// The per-entity labels are authoritative; entities of a mesh that had
+			// no labels get the defaults, and the base-class arrays mirror them.
+			if (had_boundary_ids || other_has_boundary_ids)
+			{
+				boundary_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
+				{
+					ncBoundary &face = faces[valid_to_all_face(f)];
+					const bool labeled = valid_to_all_face(f) < f_off ? had_boundary_ids : other_has_boundary_ids;
+					if (!labeled)
+						face.boundary_id = Mesh::get_default_boundary_id(f);
+					boundary_ids_[f] = face.boundary_id;
+				}
+			}
+			if (had_body_ids || other_has_body_ids)
+			{
+				body_ids_.resize(n_cells());
+				for (int c = 0; c < n_cells(); ++c)
+				{
+					ncElem &element = elements[valid_to_all_elem(c)];
+					const bool labeled = valid_to_all_elem(c) < el_off ? had_body_ids : other_has_body_ids;
+					if (!labeled)
+						element.body_id = 0;
+					body_ids_[c] = element.body_id;
+				}
+			}
 		}
 
 		std::unique_ptr<Mesh> NCMesh3D::copy() const
@@ -1180,6 +1296,9 @@ namespace polyfem
 
 			for (int i = 0; i < v.size(); i++)
 				vertices[v[i]].add_element(id);
+
+			index_prepared = false;
+			adj_prepared = false;
 
 			return id;
 		}

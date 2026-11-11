@@ -36,8 +36,9 @@ namespace polyfem::mesh
 			}
 		}
 
-		for (int j : to_remove)
-			remove_tag_for_index(j);
+		// Erase from the back so that the remaining indices stay valid.
+		for (auto it = to_remove.rbegin(); it != to_remove.rend(); ++it)
+			remove_tag_for_index(*it);
 	}
 
 	void LocalBoundary::remove_tag_for_index(const int index)

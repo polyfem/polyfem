@@ -660,6 +660,24 @@ void polyfem::mesh::refine_polygonal_mesh(const PolygonMesh &M_in, PolygonMesh &
 				M_out.create_polygon({v1, v12, vf, v01});
 			}
 		}
+		else if (nv == 3)
+		{
+			// Split triangles into 4 triangles (as refine_triangle_mesh does), so
+			// mixed meshes keep their triangles; the edge midpoints are shared
+			// with the neighbors.
+			std::array<index_t, 3> mid;
+			for (index_t lv = 0; lv < 3; ++lv)
+			{
+				idx = Navigation::get_index_from_face(M_in, f, lv);
+				const int v1 = idx.vertex;
+				const int v12 = edge_to_midpoint[idx.edge];
+				const int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
+				assert(v12 != -1 && v01 != -1);
+				M_out.create_polygon({v1, v12, v01});
+				mid[lv] = v12;
+			}
+			M_out.create_polygon({mid[0], mid[1], mid[2]});
+		}
 	}
 
 	// Step 2: Create polygonal faces following vertices around holes

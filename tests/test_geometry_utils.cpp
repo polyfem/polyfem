@@ -9,8 +9,13 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/io/Checkpoint.hpp>
+#include <polyfem/io/ResourceIO.hpp>
+#include <polyfem/mesh/MeshData.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 
 #include <filesystem>
+#include <system_error>
 #include <fstream>
 #include <set>
 
@@ -625,4 +630,186 @@ TEST_CASE("geometry loader obstacle geometry arrays and planes", "[geometry][geo
 		{"type", "invalid"}};
 	REQUIRE_THROWS(geometry_loader.load_obstacles(json::array({invalid}), {}, {}, 2));
 	REQUIRE_THROWS(geometry_loader.load_fem(json::array()));
+}
+
+TEST_CASE("geometry loader rejects stored point and geometry selections on refinement", "[geometry][hdf5]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	namespace fs = std::filesystem;
+
+	const fs::path path = fs::temp_directory_path() / "polyfem-refine-stored-labels.h5";
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+
+	const auto load = [&](const bool node_ids, const bool geometry_ids, const json &extra) {
+		MeshData data(vertices, cells);
+		if (node_ids)
+			data.node_ids = {1, 2, 3, 4};
+		if (geometry_ids)
+			data.geometry_ids = {5, 6};
+		{
+			io::CheckpointWriter writer(path, json::object(), io::CheckpointMetadata());
+			writer.write_mesh("/checkpoint/meshes/active", data);
+			writer.finalize();
+		}
+		const io::HDF5IO resources(path);
+		json args = fem_mesh_json("/checkpoint/meshes/active");
+		args["n_refs"] = 1;
+		args.merge_patch(extra);
+		return GeometryLoader(Units(), resources).load_fem_entry(args);
+	};
+
+	REQUIRE_THROWS_WITH(load(true, false, json::object()), Catch::Matchers::ContainsSubstring("stored point selections"));
+	REQUIRE_THROWS_WITH(load(false, true, json::object()), Catch::Matchers::ContainsSubstring("stored geometry selections"));
+
+	// With replacement selections, the labels are recomputed on the refined mesh.
+	const auto mesh = load(true, true, json{{"point_selection", 3}, {"geometry_selection", 4}});
+	REQUIRE(mesh != nullptr);
+	CHECK(mesh->n_elements() == 8);
+	CHECK(mesh->to_mesh_data().node_ids.size() == mesh->n_vertices());
+	CHECK(mesh->get_geometry_ids() == std::vector<int>(8, 4));
+	std::error_code ec;
+	fs::remove(path, ec);
+}
+
+TEST_CASE("refinement keeps the label arrays consistent", "[geometry][mesh_test]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+
+	for (const bool non_conforming : {false, true})
+	{
+		CAPTURE(non_conforming);
+		auto mesh = Mesh::create(MeshData(vertices, cells), non_conforming);
+		mesh->set_body_ids({7, 8});
+		mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+		mesh->compute_node_ids([](const size_t, const RowVectorNd &, bool) { return 2; });
+		mesh->set_geometry_ids({1, 1});
+
+		mesh->refine(1, 0.5);
+		CHECK(mesh->n_elements() == 8);
+		CHECK_FALSE(mesh->has_node_ids());
+		CHECK_FALSE(mesh->has_geometry_ids());
+		if (!non_conforming)
+		{
+			// Conforming refinement drops every label.
+			CHECK_FALSE(mesh->has_body_ids());
+			CHECK_FALSE(mesh->has_boundary_ids());
+			continue;
+		}
+
+		// Non-conforming children inherit the labels of their parents.
+		REQUIRE(mesh->get_body_ids().size() == mesh->n_elements());
+		Eigen::MatrixXd barycenters;
+		mesh->compute_element_barycenters(barycenters);
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int expected = barycenters(e, 0) > barycenters(e, 1) ? 7 : 8;
+			CHECK(mesh->get_body_id(e) == expected);
+			CHECK(mesh->get_body_ids()[e] == expected);
+		}
+		// The exported arrays match the per-entity labels.
+		const MeshData data = mesh->to_mesh_data();
+		REQUIRE(data.boundary_ids.size() == mesh->n_edges());
+		for (int e = 0; e < mesh->n_edges(); ++e)
+		{
+			CHECK(mesh->get_boundary_id(e) == (mesh->is_boundary_edge(e) ? 3 : -1));
+			CHECK(data.boundary_ids[e] == mesh->get_boundary_id(e));
+		}
+	}
+}
+
+TEST_CASE("load_surface rejects faces with invalid vertices", "[geometry][mesh_utils]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+	namespace fs = std::filesystem;
+
+	const fs::path dir = fs::temp_directory_path() / "polyfem-bad-surface";
+	fs::create_directories(dir);
+	std::ofstream(dir / "bad.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 9\n";
+	std::ofstream(dir / "bad.off") << "OFF\n3 1 0\n0 0 0\n1 0 0\n0 1 0\n3 0 1 7\n";
+	std::ofstream(dir / "good.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nv 5 5 5\nf 1 2 3\n";
+
+	const io::FileSystemIO resources(dir);
+	for (const std::string name : {"bad.obj", "bad.off"})
+	{
+		CAPTURE(name);
+		REQUIRE_THROWS_WITH(MeshLoader(resources).load_surface(name), Catch::Matchers::ContainsSubstring("invalid vertex"));
+	}
+	const SurfaceMesh good = MeshLoader(resources).load_surface("good.obj");
+	CHECK(good.faces.rows() == 1);
+	CHECK(good.points == Eigen::VectorXi::Constant(1, 3));
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
+}
+
+TEST_CASE("obstacle displacements stay attached to their meshes", "[geometry][obstacle]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	Eigen::MatrixXd vertices(2, 2);
+	vertices << 0, 0, 1, 0;
+	Eigen::MatrixXi edges(1, 2);
+	edges << 0, 1;
+	const Eigen::VectorXi no_points;
+	const Eigen::MatrixXi no_faces;
+
+	SECTION("an empty obstacle mesh keeps its displacement slot")
+	{
+		Obstacle obstacle;
+		obstacle.append_mesh(Eigen::MatrixXd(0, 2), no_points, Eigen::MatrixXi(0, 2), no_faces, json{{"value", {7, 7}}}, resources);
+		obstacle.append_mesh(vertices, no_points, edges, no_faces, json{{"value", {1, 2}}}, resources);
+		Eigen::MatrixXd sol = Eigen::MatrixXd::Zero(4, 1);
+		obstacle.update_displacement(0, sol);
+		CHECK(sol == (Eigen::MatrixXd(4, 1) << 1, 2, 1, 2).finished());
+	}
+
+	SECTION("displacement values need one entry per dimension")
+	{
+		Obstacle obstacle;
+		REQUIRE_THROWS_WITH(
+			obstacle.append_mesh(vertices, no_points, edges, no_faces, json{{"value", {1}}}, resources),
+			Catch::Matchers::ContainsSubstring("one entry per dimension"));
+	}
+
+	SECTION("mesh sequences")
+	{
+		const Eigen::MatrixXd moved = vertices.array() + 1;
+		Obstacle obstacle;
+		obstacle.append_mesh_sequence({vertices, moved}, no_points, edges, no_faces, 1);
+		Eigen::MatrixXd sol = Eigen::MatrixXd::Zero(4, 1);
+		obstacle.update_displacement(-0.5, sol); // before the first frame
+		CHECK(sol.isZero());
+		obstacle.update_displacement(0.5, sol);
+		CHECK(sol.isApprox(Eigen::MatrixXd::Constant(4, 1, 0.5)));
+
+		Obstacle mismatched;
+		REQUIRE_THROWS_WITH(
+			mismatched.append_mesh_sequence({vertices, Eigen::MatrixXd::Zero(3, 2)}, no_points, edges, no_faces, 1),
+			Catch::Matchers::ContainsSubstring("frame 1"));
+	}
+}
+
+TEST_CASE("geometry loader linearizes curved meshes it refines", "[geometry][geometry_loader]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	const io::FileSystemIO resources(".");
+	json args = fem_mesh_json(std::filesystem::path(POLYFEM_DATA_DIR) / "contact/meshes/3D/simple/sphere/coarse/P2.msh");
+	args["n_refs"] = 1;
+	const auto mesh = GeometryLoader(Units(), resources).load_fem_entry(args);
+	REQUIRE(mesh != nullptr);
+	CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
 }

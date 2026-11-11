@@ -673,7 +673,8 @@ namespace polyfem::varform
 		for (auto v : tmp)
 			max_tmp = std::max(max_tmp, v);
 
-		space_in_node_to_node.resize(max_tmp + 1);
+		// Input vertices that are not FE nodes (unreferenced vertices) map to -1.
+		space_in_node_to_node.setConstant(max_tmp + 1, -1);
 		for (int i = 0; i < tmp.size(); ++i)
 		{
 			if (tmp[i] >= 0)

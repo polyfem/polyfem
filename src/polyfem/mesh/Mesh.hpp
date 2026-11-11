@@ -44,7 +44,34 @@ namespace polyfem
 			UNDEFINED,                     /// For invalid configurations
 		};
 
-		/// Abstract mesh class to capture 2d/3d conforming and non-conforming meshes
+		/// Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.
+		///
+		/// Entities are vertices, edges, faces and (3D) cells, each numbered
+		/// 0..n-1. The *elements* are the top-dimensional entities (faces in 2D,
+		/// cells in 3D) and the *boundary elements* are one dimension lower
+		/// (edges in 2D, faces in 3D). Navigation goes through the Index types of
+		/// Navigation (2D) and Navigation3D (3D).
+		///
+		/// Implementations: CMesh2D/CMesh3D (conforming, any polygon/polyhedron)
+		/// and NCMesh2D/NCMesh3D (simplices with hanging nodes, for adaptive
+		/// refinement). Build one with Mesh::create(MeshData); the entity
+		/// numbering of each implementation is documented on its class.
+		///
+		/// Besides the topology, a mesh stores per-entity labels:
+		/// - body ids (per element, default 0), used to select materials;
+		/// - boundary ids (per boundary element, default max int on the boundary
+		///   and -1 inside), used to select boundary conditions;
+		/// - node ids (per vertex, default -1; per FE node after update_nodes()),
+		///   used by nodal boundary conditions;
+		/// - geometry ids (per element, default 0), used to split multi-body meshes;
+		/// and the optional curved geometry: orders_ (geometric order per
+		/// element), edge/face/cell_nodes_ (extra nodes per entity) and the
+		/// rational weights. in_ordered_* map the current entities back to the
+		/// input vertices.
+		///
+		/// Contracts: prepare_mesh() must be called after modifying the topology
+		/// and before building bases; refine() and append() keep the labels
+		/// consistent as documented on them.
 		class Mesh
 		{
 		protected:
@@ -52,7 +79,7 @@ namespace polyfem
 			class EdgeNodes
 			{
 			public:
-				int v1, v2;
+				int v1 = -1, v2 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
@@ -61,7 +88,7 @@ namespace polyfem
 			class FaceNodes
 			{
 			public:
-				int v1, v2, v3;
+				int v1 = -1, v2 = -1, v3 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
@@ -70,7 +97,7 @@ namespace polyfem
 			class CellNodes
 			{
 			public:
-				int v1, v2, v3, v4;
+				int v1 = -1, v2 = -1, v3 = -1, v4 = -1;
 				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
@@ -120,6 +147,12 @@ namespace polyfem
 
 			///
 			/// @brief refine the mesh
+			///
+			/// Conforming meshes drop the data that cannot follow the refinement:
+			/// boundary, body, node and geometry ids and the higher-order geometry
+			/// (callers recompute the labels they need, see GeometryLoader).
+			/// Non-conforming meshes carry body and boundary ids to the children
+			/// and drop node and geometry ids.
 			///
 			/// @param[in] n_refinement number of refinements
 			/// @param[in] t position of the refinement location (0.5 for standard refinement)
@@ -473,10 +506,10 @@ namespace polyfem
 			/// @return label of node
 			virtual int get_node_id(const int node_id) const
 			{
-				if (has_node_ids())
-					return node_ids_.at(node_id);
+				if (has_node_ids() && node_id >= 0 && node_id < node_ids_.size())
+					return node_ids_[node_id];
 				else
-					return -1; // default for no boundary
+					return -1; // default for no boundary (and for nodes without an id)
 			}
 
 			/// @brief Update the node ids to reorder them
@@ -669,16 +702,19 @@ namespace polyfem
 					append(*mesh);
 			}
 
-			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$.
+			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$
+			/// (and to every other stored position, e.g. higher-order nodes and polyhedra kernels).
 			/// @param[in] A Multiplicative matrix component of transformation
 			/// @param[in] b Additive translation component of transformation
-			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
+			virtual void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
 			/// Remove all top-dimensional elements whose mask entry is false.
 			virtual void remove_elements(const std::vector<bool> &keep) = 0;
 			void filter_element_data(const std::vector<bool> &keep);
 			void clear_higher_order_data();
+			/// Drop the labels and the higher-order geometry before a conforming refinement.
+			void clear_data_lost_by_refinement();
 			void transform_higher_order_data(const MatrixNd &A, const VectorNd &b);
 
 			/// list of element types

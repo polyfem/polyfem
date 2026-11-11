@@ -1,12 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
+#include <numeric>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/MeshLoader.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/mesh/NCMeshStorage.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/MeshReader.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/io/InputLoader.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/io/OutData.hpp>
+#include "VarFormTestAccess.hpp"
+#include <filesystem>
+#include <system_error>
 
 #include <igl/PI.h>
 
@@ -630,6 +642,11 @@ TEST_CASE("mesh utilities surfaces edges and orientation", "[mesh_test][mesh_uti
 	Eigen::MatrixXi hex_cells(1, 8);
 	hex_cells << 0, 1, 2, 3, 4, 5, 6, 7;
 	CHECK(count_faces(3, hex_cells) == 6);
+	// Two hexes sharing the face (1, 2, 6, 5) of the first one.
+	Eigen::MatrixXi two_hex_cells(2, 8);
+	two_hex_cells << 0, 1, 2, 3, 4, 5, 6, 7,
+		1, 8, 9, 2, 5, 10, 11, 6;
+	CHECK(count_faces(3, two_hex_cells) == 11);
 
 	Eigen::MatrixXi unsupported_cells(1, 5);
 	unsupported_cells << 0, 1, 2, 3, 4;
@@ -998,4 +1015,404 @@ TEST_CASE("obstacle mesh sequence interpolates nodal displacement", "[mesh_test]
 	CHECK(sol(1, 0) == Catch::Approx(2.0));
 	CHECK(sol(2, 0) == Catch::Approx(1.0));
 	CHECK(sol(3, 0) == Catch::Approx(2.0));
+}
+
+TEST_CASE("node ids follow the FE node numbering", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+	auto mesh = Mesh::create(MeshData(vertices, cells));
+	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
+
+	// Higher-order numbering: vertex nodes interleaved with other nodes.
+	Eigen::VectorXi in_node_to_node(4);
+	in_node_to_node << 5, 0, 7, 2;
+	mesh->update_nodes(in_node_to_node);
+	CHECK(mesh->get_node_id(5) == 10);
+	CHECK(mesh->get_node_id(0) == 11);
+	CHECK(mesh->get_node_id(7) == 12);
+	CHECK(mesh->get_node_id(2) == 13);
+	for (const int other : {1, 3, 4, 6, 8, 100})
+		CHECK(mesh->get_node_id(other) == -1);
+
+	// Unreferenced input vertices map to -1.
+	auto mesh2 = Mesh::create(MeshData(vertices, cells));
+	mesh2->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
+	Eigen::VectorXi partial(4);
+	partial << 1, -1, 0, 2;
+	mesh2->update_nodes(partial);
+	CHECK(mesh2->get_node_id(0) == 12);
+	CHECK(mesh2->get_node_id(1) == 10);
+	CHECK(mesh2->get_node_id(2) == 13);
+}
+
+TEST_CASE("nodal boundary conditions with higher-order elements", "[mesh_test]")
+{
+	io::LoadedInput loaded = io::load_json_input(std::string(POLYFEM_DATA_DIR) + "/standard/laplace_nodal_neumann.json");
+	json args = loaded.config;
+	auto common_resources = utils::apply_common_params(args, *loaded.resources);
+	const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+	args["/geometry/n_refs"_json_pointer] = 0;
+	args["/space/discr_order"_json_pointer] = 2;
+	args["/output/log/level"_json_pointer] = "error";
+	args.erase("tests");
+
+	State state;
+	state.init(args, resources, true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	REQUIRE_NOTHROW(state.solve(sol));
+	CHECK(sol.size() > 0);
+	CHECK(sol.allFinite());
+}
+
+TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
+{
+	namespace fs = std::filesystem;
+	const fs::path dir = fs::temp_directory_path() / "polyfem-mesh-array-test";
+	fs::create_directories(dir);
+	{
+		// One edge (v1-v2) and two free points (v3, v4): 4 vertices, 2 points.
+		std::ofstream obj(dir / "edge_points.obj");
+		obj << "v 0 0 0\nv 0.1 0 0\nv 0 0.1 0\nv 0.1 0.1 0\nl 1 2\n";
+	}
+
+	json in_args = R"({
+		"materials": {"type": "NeoHookean", "E": 1e5, "nu": 0.3, "rho": 1e3},
+		"contact": {"enabled": true, "dhat": 1e-3},
+		"time": {"tend": 1, "time_steps": 1},
+		"geometry": [
+			{"mesh": "", "transformation": {"translation": [5, 5]}},
+			{"mesh": "", "type": "mesh_array", "is_obstacle": true,
+			 "array": {"offset": 1, "size": [3, 1]}}
+		],
+		"output": {"log": {"level": "error"}}
+	})"_json;
+	in_args["geometry"][0]["mesh"] = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/square.obj";
+	in_args["geometry"][1]["mesh"] = (dir / "edge_points.obj").string();
+
+	State state;
+	state.init(in_args, true);
+	state.load_mesh();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
+	const io::OutputSpace output = state.variational_formulation->output_space();
+	REQUIRE(output.obstacle != nullptr);
+	const mesh::Obstacle &obstacle = *output.obstacle;
+	CHECK(obstacle.n_vertices() == 12);
+	const Eigen::VectorXi &points = obstacle.codim_v();
+	REQUIRE(points.size() == 6);
+	std::vector<int> sorted(points.data(), points.data() + points.size());
+	std::sort(sorted.begin(), sorted.end());
+	CHECK(sorted == std::vector<int>{2, 3, 6, 7, 10, 11});
+
+	// A size that does not match the dimension is rejected.
+	in_args["geometry"][1]["array"]["size"] = {3};
+	State bad;
+	bad.init(in_args, true);
+	CHECK_THROWS(bad.load_mesh());
+
+	// The same for a simulated mesh array.
+	in_args["geometry"][1]["array"]["size"] = {3, 1};
+	in_args["geometry"][0]["type"] = "mesh_array";
+	in_args["geometry"][0]["array"] = {{"offset", 1}, {"size", {2}}};
+	State bad_fem;
+	bad_fem.init(in_args, true);
+	CHECK_THROWS_WITH(bad_fem.load_mesh(), Catch::Matchers::ContainsSubstring("one entry per dimension"));
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
+}
+
+TEST_CASE("hex meshes round-trip through MeshData", "[mesh_test][mesh_data]")
+{
+	Eigen::MatrixXd vertices(12, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1,
+		2, 0, 0, 2, 1, 0, 2, 0, 1, 2, 1, 1;
+	Eigen::MatrixXi cells(2, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7,
+		1, 8, 9, 2, 5, 10, 11, 6;
+
+	auto check_unit_edges = [](const Mesh &mesh) {
+		REQUIRE(mesh.n_elements() == 2);
+		CHECK(mesh.n_edges() == 20);
+		for (int e = 0; e < mesh.n_edges(); ++e)
+		{
+			const RowVectorNd edge = mesh.point(mesh.edge_vertex(e, 0)) - mesh.point(mesh.edge_vertex(e, 1));
+			CHECK(edge.norm() == Catch::Approx(1.0));
+		}
+	};
+
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	check_unit_edges(*mesh);
+	const MeshData data = mesh->to_mesh_data();
+	CHECK(data.elements == cells);
+	const auto restored = Mesh::create(data);
+	check_unit_edges(*restored);
+}
+
+TEST_CASE("affine transformations move element kernels", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+	Eigen::MatrixXi cells(1, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7;
+	auto mesh = Mesh::create(MeshData(vertices, cells));
+	auto &mesh3d = dynamic_cast<Mesh3D &>(*mesh);
+
+	MatrixNd A(3, 3);
+	A << 2, 0, 0, 0, 3, 0, 0, 0, 4;
+	VectorNd b(3);
+	b << 10, 20, 30;
+	mesh->apply_affine_transformation(A, b);
+
+	const RowVectorNd expected = (A * Eigen::Vector3d(0.5, 0.5, 0.5) + b).transpose();
+	CHECK((mesh3d.kernel(0) - expected).norm() < 1e-12);
+	CHECK((mesh3d.cell_barycenter(0) - expected).norm() < 1e-12);
+}
+
+TEST_CASE("appending a curved mesh to a linear one keeps its nodes aligned", "[mesh_test]")
+{
+	const std::string dir = std::string(POLYFEM_DATA_DIR) + "/contact/meshes/3D/simple/sphere/coarse/";
+	const io::FileSystemIO resources(dir);
+	// A linear mesh built from plain vertices and cells has no curved-node slots.
+	const MeshData p1 = MeshLoader(resources).load_fem("P1.msh")->to_mesh_data();
+	auto merged = Mesh::create(MeshData(p1.vertices, p1.elements));
+	const auto linear = Mesh::create(MeshData(p1.vertices, p1.elements));
+	const auto curved = MeshLoader(resources).load_fem("P2.msh");
+	REQUIRE(curved->orders().maxCoeff() == 2);
+	merged->append(curved);
+
+	const auto &merged3d = dynamic_cast<const Mesh3D &>(*merged);
+	const auto &curved3d = dynamic_cast<const Mesh3D &>(*curved);
+	const auto &linear3d = dynamic_cast<const Mesh3D &>(*linear);
+	REQUIRE(merged->n_cells() == linear->n_cells() + curved->n_cells());
+	const int n_shift = linear->n_cells();
+	int n_curved = 0;
+	for (int c = 0; c < merged->n_cells(); ++c)
+	{
+		auto index = merged3d.get_index_from_element(c);
+		const bool second = c >= n_shift;
+		auto reference = second ? curved3d.get_index_from_element(c - n_shift) : linear3d.get_index_from_element(c);
+		const Mesh3D &source = second ? curved3d : linear3d;
+		for (int le = 0; le < 3; ++le)
+		{
+			// The single node of a P2 edge (node indices start at 1).
+			const RowVectorNd node = merged3d.edge_node(index, 1, 1).first;
+			const RowVectorNd expected = source.edge_node(reference, 1, 1).first;
+			CHECK((node - expected).norm() < 1e-12);
+			const RowVectorNd midpoint = (merged->point(index.vertex) + merged->point(merged3d.switch_vertex(index).vertex)) / 2;
+			n_curved += (node - midpoint).norm() > 1e-10;
+			index = merged3d.next_around_face(index);
+			reference = source.next_around_face(reference);
+		}
+	}
+	CHECK(n_curved > 0);
+}
+
+TEST_CASE("appending node ids gives the receiving mesh the default ids", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi cells(1, 3);
+	cells << 0, 1, 2;
+	auto first = Mesh::create(MeshData(vertices, cells));
+	auto second = Mesh::create(MeshData(vertices, cells));
+	second->compute_node_ids([](const size_t, const RowVectorNd &, bool) { return 5; });
+	first->append(second);
+	for (int v = 0; v < 6; ++v)
+		CHECK(first->get_node_id(v) == (v < 3 ? -1 : 5));
+}
+
+TEST_CASE("refining mixed triangle and quad meshes keeps the triangles", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(5, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1, 2, 0;
+	Eigen::MatrixXi cells(2, 4);
+	cells << 0, 1, 2, 3,
+		1, 4, 2, -1;
+
+	for (const double t : {0.0, 0.5})
+	{
+		CAPTURE(t);
+		auto mesh = Mesh::create(MeshData(vertices, cells));
+		REQUIRE(mesh->n_elements() == 2);
+		mesh->refine(1, t);
+
+		CHECK(mesh->n_elements() == 8);
+		int n_triangles = 0, n_boundary = 0;
+		double area = 0;
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int n = mesh->n_face_vertices(e);
+			n_triangles += n == 3;
+			for (int j = 0; j < n; ++j)
+			{
+				const RowVectorNd a = mesh->point(mesh->face_vertex(e, j));
+				const RowVectorNd b = mesh->point(mesh->face_vertex(e, (j + 1) % n));
+				area += 0.5 * (a[0] * b[1] - a[1] * b[0]);
+			}
+		}
+		for (int e = 0; e < mesh->n_edges(); ++e)
+			n_boundary += mesh->is_boundary_edge(e);
+		CHECK(n_triangles == 4);
+		CHECK(area == Catch::Approx(1.5));
+		CHECK(n_boundary == 10);
+	}
+}
+
+TEST_CASE("unsupported higher-order elements are rejected", "[mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		const int n_corners = dim + 1;
+		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(n_corners, dim);
+		for (int d = 0; d < dim; ++d)
+			vertices(d + 1, d) = 1;
+		Eigen::MatrixXi cells(1, n_corners);
+		for (int i = 0; i < n_corners; ++i)
+			cells(0, i) = i;
+
+		// One node more than the linear element.
+		MeshData data(vertices, cells);
+		data.higher_order_nodes.resize(n_corners + 1, dim);
+		data.higher_order_nodes.topRows(n_corners) = vertices;
+		data.higher_order_nodes.row(n_corners) = vertices.colwise().mean();
+		data.higher_order_connectivity = {std::vector<int>(n_corners + 1)};
+		std::iota(data.higher_order_connectivity[0].begin(), data.higher_order_connectivity[0].end(), 0);
+		REQUIRE_THROWS_WITH(Mesh::create(data), Catch::Matchers::ContainsSubstring("Unsupported higher-order"));
+
+		// The linear connectivity is accepted and gives linear orders.
+		data.higher_order_nodes = vertices;
+		data.higher_order_connectivity[0].pop_back();
+		const auto mesh = Mesh::create(data);
+		CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
+	}
+}
+
+TEST_CASE("mesh nodes place lazily created nodes at their primitive", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(4, 2);
+	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXi cells(2, 3);
+	cells << 0, 1, 2, 0, 2, 3;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+
+	// Several node slots per edge and face, as for mixed-order spaces.
+	MeshNodes nodes(*mesh, false, true, 2, 3);
+	for (int e = mesh->n_edges() - 1; e >= 0; --e)
+	{
+		const int node = nodes.node_id_from_edge(e);
+		CHECK((nodes.node_position(node) - mesh->edge_barycenter(e)).norm() < 1e-14);
+		CHECK(nodes.edge_from_node_id(node) == e);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_edge(e)] == node);
+	}
+	for (int f = 0; f < mesh->n_faces(); ++f)
+	{
+		const int node = nodes.node_id_from_face(f);
+		CHECK((nodes.node_position(node) - mesh->face_barycenter(f)).norm() < 1e-14);
+		CHECK(nodes.face_from_node_id(node) == f);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_face(f)] == node);
+	}
+	CHECK(nodes.num_edge_nodes() == mesh->n_edges());
+	CHECK(nodes.num_face_nodes() == mesh->n_faces());
+}
+
+TEST_CASE("element boxes of meshes with negative coordinates", "[mesh_test]")
+{
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(dim + 1, dim);
+		for (int d = 0; d < dim; ++d)
+			vertices(d + 1, d) = 1;
+		vertices.array() -= 5;
+		Eigen::MatrixXi cells(1, dim + 1);
+		for (int i = 0; i <= dim; ++i)
+			cells(0, i) = i;
+		const auto mesh = Mesh::create(MeshData(vertices, cells));
+
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes;
+		mesh->elements_boxes(boxes);
+		REQUIRE(boxes.size() == 1);
+		for (int d = 0; d < dim; ++d)
+		{
+			CHECK(boxes[0][0][d] == -5);
+			CHECK(boxes[0][1][d] == -4);
+		}
+	}
+}
+
+TEST_CASE("boundary quads around an irregular interior vertex are not spline compatible", "[mesh_test]")
+{
+	// A triangle split into 3 quads: the center has valence 3.
+	Eigen::MatrixXd vertices(7, 2);
+	vertices << 0, 0, 1, 0, 0, 1, 0.5, 0, 0.5, 0.5, 0, 0.5, 1.0 / 3, 1.0 / 3;
+	Eigen::MatrixXi cells(3, 4);
+	cells << 0, 3, 6, 5,
+		1, 4, 6, 3,
+		2, 5, 6, 4;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	for (int e = 0; e < mesh->n_elements(); ++e)
+	{
+		CHECK(mesh->elements_tag()[e] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE);
+		CHECK(mesh->is_cube(e));
+		CHECK_FALSE(mesh->is_spline_compatible(e));
+	}
+}
+
+TEST_CASE("local boundaries remove the primitives of another one", "[mesh_test]")
+{
+	LocalBoundary lb(0, BoundaryType::TRI);
+	for (int i = 0; i < 4; ++i)
+		lb.add_boundary_primitive(10 + i, i);
+	LocalBoundary other(0, BoundaryType::TRI);
+	other.add_boundary_primitive(11, 1);
+	other.add_boundary_primitive(12, 2);
+
+	lb.remove_from(other);
+	REQUIRE(lb.size() == 2);
+	CHECK(lb[0] == 0);
+	CHECK(lb[1] == 3);
+	CHECK(lb.global_primitive_id(1) == 13);
+}
+
+TEST_CASE("mesh nodes place cell nodes at their cell", "[mesh_test]")
+{
+	Eigen::MatrixXd vertices(5, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1;
+	Eigen::MatrixXi cells(2, 4);
+	cells << 0, 1, 2, 3, 1, 2, 3, 4;
+	const auto mesh = Mesh::create(MeshData(vertices, cells));
+	const auto &mesh3d = dynamic_cast<const Mesh3D &>(*mesh);
+
+	// Several slots per cell, as for mixed-order spaces.
+	MeshNodes nodes(*mesh, false, true, 1, 1, 2);
+	for (int c = mesh->n_cells() - 1; c >= 0; --c)
+	{
+		const int node = nodes.node_id_from_cell(c);
+		CHECK((nodes.node_position(node) - mesh3d.cell_barycenter(c)).norm() < 1e-14);
+		CHECK(nodes.cell_from_node_id(node) == c);
+		CHECK(nodes.primitive_to_node()[nodes.primitive_from_cell(c)] == node);
+	}
+	CHECK(nodes.num_cell_nodes() == mesh->n_cells());
+}
+
+TEST_CASE("sorted id lists behave like sets", "[mesh_test][ncmesh]")
+{
+	SortedIds ids;
+	CHECK(ids.empty());
+	for (const int id : {5, 1, 3, 1})
+		ids.insert(id);
+	CHECK(ids.size() == 3);
+	CHECK(std::vector<int>(ids.cbegin(), ids.cend()) == std::vector<int>{1, 3, 5});
+	CHECK(ids.erase(2) == 0);
+	CHECK(ids.erase(3) == 1);
+	CHECK(std::vector<int>(ids.begin(), ids.end()) == std::vector<int>{1, 5});
+	ids.clear();
+	CHECK(ids.empty());
 }

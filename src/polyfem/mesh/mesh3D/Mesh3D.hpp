@@ -14,6 +14,10 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		/// 3D mesh interface: the elements are the cells (tetrahedra, hexahedra,
+		/// prisms, pyramids or general polyhedra) and the boundary elements are
+		/// the faces. Navigation3D::Index is a (vertex, edge, face, element) flag;
+		/// switch_vertex/edge/face/element move it to the adjacent flag.
 		class Mesh3D : public Mesh
 		{
 		public:

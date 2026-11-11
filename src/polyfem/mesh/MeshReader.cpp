@@ -109,9 +109,16 @@ namespace polyfem::mesh
 			return int(vertex - 1);
 		}
 
-		void finalize_surface(SurfaceMeshData &surface)
+		/// Validates the connectivity and lists the vertices used by no edge or face.
+		void finalize_surface(SurfaceMeshData &surface, const std::string &description)
 		{
-			std::vector<bool> used(surface.vertices.rows(), false);
+			const int n_vertices = surface.vertices.rows();
+			for (const Eigen::MatrixXi *ids : {&surface.edges, &surface.faces})
+				if (ids->size() > 0 && (ids->minCoeff() < 0 || ids->maxCoeff() >= n_vertices))
+					log_and_throw_error("{} references an invalid vertex: expected indices in [0, {}), got [{}, {}].",
+										description, n_vertices, ids->minCoeff(), ids->maxCoeff());
+
+			std::vector<bool> used(n_vertices, false);
 			for (int i = 0; i < surface.edges.rows(); ++i)
 				for (int j = 0; j < surface.edges.cols(); ++j)
 					used[surface.edges(i, j)] = true;
@@ -340,7 +347,7 @@ namespace polyfem::mesh
 		else
 			log_and_throw_error("Unsupported MSH surface cell type in {}.", path.string());
 
-		finalize_surface(result);
+		finalize_surface(result, path.string());
 		return result;
 	}
 
@@ -349,7 +356,7 @@ namespace polyfem::mesh
 		SurfaceMeshData result;
 		if (!io::OBJReader::read(path.string(), result.vertices, result.edges, result.faces))
 			log_and_throw_error("Unable to decode OBJ surface {}.", path.string());
-		finalize_surface(result);
+		finalize_surface(result, path.string());
 		return result;
 	}
 
@@ -360,7 +367,7 @@ namespace polyfem::mesh
 		result = SurfaceMeshData();
 		if (!igl::read_triangle_mesh(path.string(), result.vertices, result.faces))
 			return false;
-		finalize_surface(result);
+		finalize_surface(result, path.string());
 		return true;
 	}
 } // namespace polyfem::mesh

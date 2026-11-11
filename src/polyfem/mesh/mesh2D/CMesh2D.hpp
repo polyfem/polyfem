@@ -13,16 +13,22 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		/// Conforming 2D mesh of arbitrary polygons, stored in a PolygonMesh.
+		///
+		/// Numbering: vertices and faces follow the input (MeshData) order; edges
+		/// are sorted by (min, max) vertex id (see Navigation::prepare_mesh), so
+		/// appending a mesh keeps the edge ids of the receiving mesh. Element
+		/// tags (regular/singular quads, polygons, simplices) drive the choice of
+		/// spline, Lagrange or polygonal bases.
 		class CMesh2D : public Mesh2D
 		{
 		public:
 			CMesh2D() = default;
 			virtual ~CMesh2D() = default;
-			// CMesh2D is neither copied nor moved; use copy() to duplicate it.
-			CMesh2D(CMesh2D &&) = delete;
-			CMesh2D &operator=(CMesh2D &&) = delete;
-			CMesh2D(const CMesh2D &) = delete;
-			CMesh2D &operator=(const CMesh2D &) = delete;
+			CMesh2D(CMesh2D &&) = default;
+			CMesh2D &operator=(CMesh2D &&) = default;
+			CMesh2D(const CMesh2D &) = default;
+			CMesh2D &operator=(const CMesh2D &) = default;
 
 			void refine(const int n_refinement, const double t) override;
 

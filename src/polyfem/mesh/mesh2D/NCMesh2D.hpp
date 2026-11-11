@@ -2,12 +2,33 @@
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 
+#include <polyfem/mesh/NCMeshStorage.hpp>
 #include <set>
 
 namespace polyfem
 {
 	namespace mesh
 	{
+		/// Non-conforming 2D triangle mesh with hanging nodes, for adaptive
+		/// h-refinement: refine_element() splits a triangle into 4, and the edges
+		/// of a refined neighbor become "followers" of the coarse "leader" edge.
+		///
+		/// The mesh keeps every entity ever created, together with the refinement
+		/// tree: a refined element stays in `elements` (is_refined) and points to
+		/// its children; removed elements become ghosts. Entities therefore have
+		/// two numberings:
+		/// - "all" (raw) ids index the internal arrays and never change;
+		/// - "valid" ids number the current entities (leaf elements and the
+		///   entities they use), in increasing raw-id order. The Mesh interface
+		///   always talks in valid ids; all_to_valid_*() / valid_to_all_*()
+		///   convert between the two.
+		///
+		/// The valid-id maps and the adjacency (hanging-node leaders/followers)
+		/// are rebuilt by prepare_mesh(). Low-level edits (refine_element,
+		/// coarsen_element) mark them stale and every query then throws until
+		/// prepare_mesh() is called; refine(), refine_elements() and append() call
+		/// it themselves. Body and boundary ids are stored per entity and passed
+		/// from a refined entity to its children.
 		class NCMesh2D : public Mesh2D
 		{
 		public:
@@ -40,10 +61,9 @@ namespace polyfem
 
 			struct ncVert
 			{
-				ncVert(const Eigen::VectorXd pos_) : pos(pos_) {};
-				~ncVert() {};
+				ncVert(const Eigen::VectorXd &pos_) : pos(pos_) {};
 
-				Eigen::VectorXd pos;
+				InlineVector<double, 3> pos;
 				bool isboundary = false;
 
 				int edge = -1; // only used if the vertex is on the interior of an edge
@@ -56,11 +76,10 @@ namespace polyfem
 
 			struct ncBoundary
 			{
-				ncBoundary(const Eigen::VectorXi vert) : vertices(vert)
+				ncBoundary(const Eigen::VectorXi &vert) : vertices(vert)
 				{
 					weights.setConstant(-1);
 				};
-				~ncBoundary() {};
 
 				int n_elem() const
 				{
@@ -101,8 +120,8 @@ namespace polyfem
 					return oppo;
 				}
 
-				std::set<int> elem_list; // elements that contain this edge/face
-				Eigen::VectorXi vertices;
+				SortedIds elem_list; // elements that contain this edge/face
+				InlineVector<int, 2> vertices;
 
 				bool isboundary = false; // valid only after calling mark_boundary()
 				int boundary_id = -1;
@@ -120,7 +139,7 @@ namespace polyfem
 
 			struct ncElem
 			{
-				ncElem(const int dim_, const Eigen::VectorXi vertices_, const int level_, const int parent_) : dim(dim_), level(level_), parent(parent_), geom_vertices(vertices_)
+				ncElem(const int dim_, const Eigen::VectorXi &vertices_, const int level_, const int parent_) : dim(dim_), level(level_), parent(parent_), geom_vertices(vertices_)
 				{
 					vertices = geom_vertices;
 
@@ -129,7 +148,6 @@ namespace polyfem
 					faces.setConstant(4 * (dim - 2), 1, -1);
 					children.setConstant(std::round(pow(2, dim)), 1, -1);
 				};
-				~ncElem() {};
 
 				bool is_valid() const
 				{
@@ -144,15 +162,15 @@ namespace polyfem
 				int dim;
 				int level; // level of refinement
 				int parent;
-				Eigen::VectorXi geom_vertices;
+				InlineVector<int, 3> geom_vertices;
 
-				Eigen::VectorXi vertices; // geom_vertices with a different order that used in polyfem
+				InlineVector<int, 3> vertices; // geom_vertices with a different order that used in polyfem
 
-				Eigen::VectorXi edges;
-				Eigen::VectorXi faces;
-				Eigen::VectorXi children;
+				InlineVector<int, 3> edges;
+				InlineVector<int, 1> faces; // unused in 2D
+				InlineVector<int, 4> children;
 
-				int body_id;
+				int body_id = 0;
 
 				bool is_refined = false;
 				bool is_ghost = false;
@@ -168,8 +186,12 @@ namespace polyfem
 			bool is_conforming() const override { return false; }
 
 			int n_faces() const override { return n_elements; }
+			// The valid counts are the sizes of the valid -> all id maps while they
+			// are up to date (O(1)); otherwise they are counted (O(n)).
 			int n_edges() const override
 			{
+				if (index_prepared)
+					return valid_to_all_edgeMap.size();
 				int n = 0;
 				for (const auto &edge : edges)
 					if (edge.n_elem())
@@ -178,6 +200,8 @@ namespace polyfem
 			}
 			int n_vertices() const override
 			{
+				if (index_prepared)
+					return valid_to_all_vertexMap.size();
 				int n_verts = 0;
 				for (const auto &vert : vertices)
 					if (vert.n_elem)
@@ -240,7 +264,6 @@ namespace polyfem
 
 			RowVectorNd point(const int global_index) const override
 			{
-				assert(index_prepared);
 				return vertices[valid_to_all_vertex(global_index)].pos.transpose();
 			}
 			RowVectorNd edge_barycenter(const int index) const override;
@@ -254,7 +277,11 @@ namespace polyfem
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
 
-			int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; };
+			int get_boundary_id(const int primitive) const override
+			{
+				// Without boundary ids, use the Mesh defaults (boundary: max int, interior: -1).
+				return has_boundary_ids() ? edges[valid_to_all_edge(primitive)].boundary_id : get_default_boundary_id(primitive);
+			};
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
 
 			// Navigation wrapper
@@ -267,11 +294,14 @@ namespace polyfem
 
 			// void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
-			// refine
+			/// Refines one element (full id). Low-level: leaves the id maps stale,
+			/// call prepare_mesh() before querying the mesh.
 			void refine_element(int id_full);
+			/// Refines the given elements (valid ids) and prepares the mesh.
 			void refine_elements(const std::vector<int> &ids);
 
-			// coarsen
+			/// Coarsens the parent of one element (full id). Low-level: leaves the id
+			/// maps stale, call prepare_mesh() before querying the mesh.
 			void coarsen_element(int id_full);
 
 			// mark the true boundary vertices
@@ -309,43 +339,21 @@ namespace polyfem
 		protected:
 			void remove_elements(const std::vector<bool> &keep) override;
 
-			// index map from vertices to valid ones, and its inverse
-			inline int all_to_valid_vertex(const int id) const
+			// Maps between the valid ids and the full ids (see the class comment).
+			// They are up to date only after prepare_mesh().
+			inline int all_to_valid_vertex(const int id) const { return map_id(all_to_valid_vertexMap, id); }
+			inline int valid_to_all_vertex(const int id) const { return map_id(valid_to_all_vertexMap, id); }
+			inline int all_to_valid_edge(const int id) const { return map_id(all_to_valid_edgeMap, id); }
+			inline int valid_to_all_edge(const int id) const { return map_id(valid_to_all_edgeMap, id); }
+			inline int all_to_valid_elem(const int id) const { return map_id(all_to_valid_elemMap, id); }
+			inline int valid_to_all_elem(const int id) const { return map_id(valid_to_all_elemMap, id); }
+			int map_id(const std::vector<int> &map, const int id) const
 			{
-				assert(index_prepared);
-				return all_to_valid_vertexMap[id];
-			};
-			inline int valid_to_all_vertex(const int id) const
-			{
-				assert(index_prepared);
-				return valid_to_all_vertexMap[id];
-			};
-
-			// index map from edges to valid ones, and its inverse
-			inline int all_to_valid_edge(const int id) const
-			{
-				assert(index_prepared);
-				assert(id < all_to_valid_edgeMap.size());
-				return all_to_valid_edgeMap[id];
-			};
-			inline int valid_to_all_edge(const int id) const
-			{
-				assert(index_prepared);
-				assert(id < valid_to_all_edgeMap.size());
-				return valid_to_all_edgeMap[id];
-			};
-
-			// index map from elements to valid ones, and its inverse
-			inline int all_to_valid_elem(const int id) const
-			{
-				assert(index_prepared);
-				return all_to_valid_elemMap[id];
-			};
-			inline int valid_to_all_elem(const int id) const
-			{
-				assert(index_prepared);
-				return valid_to_all_elemMap[id];
-			};
+				if (!index_prepared)
+					stale_index_error();
+				assert(id >= 0 && id < int(map.size()));
+				return map[id];
+			}
 
 			// find the mid-point of edge v[0]v[1], return -1 if not exists
 			int find_vertex(Eigen::Vector2i v) const;
@@ -377,8 +385,18 @@ namespace polyfem
 
 			int n_elements = 0;
 
+			/// Whether the valid <-> all id maps match the current topology. Every
+			/// topological edit (add/refine/coarsen element) clears it and
+			/// build_index_mapping() (called by prepare_mesh()) sets it again.
 			bool index_prepared = false;
 			bool adj_prepared = false;
+
+			/// Throws: the id maps are stale (prepare_mesh() was not called after editing the mesh).
+			[[noreturn]] void stale_index_error() const;
+			/// After a refinement: rebuild the body/boundary id arrays from the
+			/// per-entity labels (inherited by the children) and drop node and
+			/// geometry ids.
+			void update_labels_after_refinement();
 
 			std::vector<ncElem> elements;
 			std::vector<ncVert> vertices;

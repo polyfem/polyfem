@@ -12,6 +12,10 @@
 #include "VarFormTestAccess.hpp"
 
 #include <catch2/catch_all.hpp>
+#include <h5pp/h5pp.h>
+
+#include <filesystem>
+#include <system_error>
 
 #include <igl/readPLY.h>
 #include <igl/writePLY.h>
@@ -277,6 +281,59 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 		displacement_map_entries);
 
 	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);
+
+	// Lagrange bases reproduce linear fields: interpolating the node positions
+	// must give back the proxy vertices.
+	Eigen::MatrixXd node_positions(debug.n_bases, debug.mesh->dimension());
+	for (const auto &element_bases : *debug.bases)
+		for (const auto &basis : element_bases.bases)
+			node_positions.row(basis.global()[0].index) = basis.global()[0].node;
+	Eigen::MatrixXd interpolated = Eigen::MatrixXd::Zero(vertices.rows(), vertices.cols());
+	for (const auto &entry : displacement_map_entries)
+		interpolated.row(entry.row()) += entry.value() * node_positions.row(entry.col());
+	CHECK((interpolated - vertices).cwiseAbs().maxCoeff() < 1e-10);
+}
+
+TEST_CASE("build collision proxy displacement map in 2D", "[build_collision_proxy]")
+{
+	const int discr_order = GENERATE(1, 2, 3);
+	const int n_nodes_per_element = (std::array<int, 3>{{3, 6, 10}})[discr_order - 1];
+
+	const auto state = get_state(std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/circle/circle36.obj", discr_order);
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state->variational_formulation);
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.mesh->dimension() == 2);
+
+	// Proxy vertices at asymmetric barycentric coordinates inside every
+	// element: a wrong reference point would not interpolate back to them.
+	const std::array<Eigen::RowVector3d, 2> weights = {{Eigen::RowVector3d(0.2, 0.3, 0.5), Eigen::RowVector3d(0.6, 0.1, 0.3)}};
+	Eigen::MatrixXd vertices(debug.geometry_bases->size() * weights.size(), 2);
+	int row = 0;
+	for (const auto &element_bases : *debug.geometry_bases)
+	{
+		const Eigen::MatrixXd nodes = element_bases.nodes();
+		REQUIRE(nodes.rows() == 3);
+		for (const auto &w : weights)
+			vertices.row(row++) = w * nodes;
+	}
+
+	std::vector<Eigen::Triplet<double>> displacement_map_entries;
+	polyfem::mesh::build_collision_proxy_displacement_map(
+		*debug.bases, *debug.geometry_bases, *debug.total_local_boundary,
+		debug.n_bases, debug.mesh->dimension(), vertices,
+		displacement_map_entries);
+
+	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);
+
+	Eigen::MatrixXd node_positions(debug.n_bases, 2);
+	for (const auto &element_bases : *debug.bases)
+		for (const auto &basis : element_bases.bases)
+			node_positions.row(basis.global()[0].index) = basis.global()[0].node;
+	Eigen::MatrixXd interpolated = Eigen::MatrixXd::Zero(vertices.rows(), 2);
+	for (const auto &entry : displacement_map_entries)
+		interpolated.row(entry.row()) += entry.value() * node_positions.row(entry.col());
+	CHECK((interpolated - vertices).cwiseAbs().maxCoeff() < 1e-10);
 }
 
 TEST_CASE("spline contact builds a displacement map", "[build_collision_proxy]")
@@ -358,4 +415,48 @@ TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]"
 		REQUIRE(output_space.obstacle != nullptr);
 		check_obstacle_flags(*output_space.collision_mesh, output_space.obstacle->n_vertices());
 	}
+}
+
+TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
+{
+	namespace fs = std::filesystem;
+	const fs::path dir = fs::temp_directory_path() / "polyfem-proxy-weights";
+	fs::create_directories(dir);
+	const auto write = [&](const std::string &name, const std::array<long, 2> &shape, const std::vector<int> &cols) {
+		h5pp::File file((dir / name).string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::vector<double>(cols.size(), 1.0), "/weight_triplets/values");
+		file.writeDataset(std::vector<int>(cols.size(), 0), "/weight_triplets/rows");
+		file.writeDataset(cols, "/weight_triplets/cols");
+		file.writeAttribute(shape, "/weight_triplets", "shape");
+	};
+	write("good.hdf5", {{1, 3}}, {0, 2});
+	write("bad_shape.hdf5", {{2, 3}}, {0, 2});
+	write("bad_col.hdf5", {{1, 3}}, {0, 3});
+	{
+		// One more column than values and rows.
+		h5pp::File file((dir / "bad_length.hdf5").string(), h5pp::FileAccess::REPLACE);
+		file.writeDataset(std::vector<double>{1.0}, "/weight_triplets/values");
+		file.writeDataset(std::vector<int>{0}, "/weight_triplets/rows");
+		file.writeDataset(std::vector<int>{0, 1}, "/weight_triplets/cols");
+		file.writeAttribute(std::array<long, 2>{{1, 3}}, "/weight_triplets", "shape");
+	}
+
+	const polyfem::io::FileSystemIO resources(dir);
+	const Eigen::VectorXi in_node_to_node = (Eigen::VectorXi(3) << 2, 0, 1).finished();
+	std::vector<Eigen::Triplet<double>> entries;
+	polyfem::mesh::load_collision_proxy_displacement_map(resources, "good.hdf5", in_node_to_node, 1, entries);
+	REQUIRE(entries.size() == 2);
+	CHECK(entries[0].col() == 2);
+	CHECK(entries[1].col() == 1);
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_shape.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("expected 1x3"));
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_col.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("outside the 1x3 matrix"));
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_length.hdf5", in_node_to_node, 1, entries),
+		Catch::Matchers::ContainsSubstring("1 values, 1 rows and 2 columns"));
+	std::error_code ec; // files a reader left open cannot be removed on Windows
+	fs::remove_all(dir, ec);
 }
