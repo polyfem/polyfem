@@ -574,15 +574,15 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	const RowVectorNd origin = RowVectorNd::Zero(2);
 	AMIPSEnergy amips;
 	amips.set_size(2);
-	amips.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, test_resources());
-	amips.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, test_resources());
+	amips.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1, "power": 1.0})"_json, units, test_resources());
+	amips.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1, "power": 1.0})"_json, units, test_resources());
 	REQUIRE(amips.real_def_grad(origin, 0, 0));
 	REQUIRE(!amips.real_def_grad(origin, 0, 1));
 
 	// An expression selects the mode per point: rest pose where x > 1.
 	AMIPSEnergy amips_expr;
 	amips_expr.set_size(2);
-	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)", "weight": 1})json"_json, units, test_resources());
+	amips_expr.add_multimaterial(0, R"json({"use_rest_pose": "if(x-1, 1, 0)", "weight": 1, "power": 1.0})json"_json, units, test_resources());
 	RowVectorNd right(2);
 	right << 2, 0;
 	REQUIRE(amips_expr.real_def_grad(right, 0, 0));
@@ -652,8 +652,8 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	};
 	StressAutodiffAMIPS amips_ad;
 	amips_ad.set_size(2);
-	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, test_resources());
-	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, test_resources());
+	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1, "power": 1.0})"_json, units, test_resources());
+	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1, "power": 1.0})"_json, units, test_resources());
 	REQUIRE((amips_ad.assemble_gradient(data) - grad).norm() <= 1e-10 * grad.norm());
 	REQUIRE((amips_ad.assemble_hessian(data) - hess).norm() <= 1e-10 * hess.norm());
 
@@ -728,7 +728,7 @@ TEST_CASE("AMIPS arbitrary power", "[assembler][amips][amips_power]")
 	// Compare with the chain rule applied to the unweighted power-one energy.
 	AMIPSEnergy original;
 	original.set_size(dim);
-	original.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1}}, units, test_resources());
+	original.add_multimaterial(0, json{{"use_rest_pose", use_rest_pose}, {"weight", 1}, {"power", 1.0}}, units, test_resources());
 	Matrix original_F = F; // elastic_energy applies the reference transform in place.
 	const double original_energy = original.elastic_energy(p, 0, 0, original_F);
 	const Matrix original_grad = original.gradient(p, 0, 0, F);
@@ -1738,13 +1738,8 @@ TEST_CASE("amips_power_default", "[assembler]")
 	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
 	in_args["geometry"]["surface_selection"] = 7;
 
-	in_args["preset_problem"] = {};
-	in_args["preset_problem"]["type"] = "ElasticExact";
-
 	in_args["materials"] = {};
-	in_args["materials"]["type"] = "NeoHookean";
-	in_args["materials"]["E"] = 1e5;
-	in_args["materials"]["nu"] = 0.3;
+	in_args["materials"]["type"] = "AMIPS";
 
 	State state;
 	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
@@ -1759,7 +1754,9 @@ TEST_CASE("amips_power_default", "[assembler]")
 	no_power.set_size(2);
 	with_power.set_size(2);
 
-	json params_no_power = {{"type", "AMIPS"}, {"weight", 1.0}};
+	// Input validation supplies the schema default before direct assembler setup.
+	json params_no_power = state.args["materials"];
+	REQUIRE(params_no_power["power"] == 1.0);
 	json params_with_power = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
 
 	no_power.add_multimaterial(0, params_no_power, units, test_resources());
@@ -1791,7 +1788,7 @@ TEST_CASE("amips_power_squared", "[assembler]")
 	base_amips.set_size(2);
 	power2_amips.set_size(2);
 
-	json params_base = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params_base = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
 	json params_power2 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 2.0}};
 
 	Units units;
@@ -1889,7 +1886,7 @@ TEST_CASE("amips_power_multi_element", "[assembler]")
 	AMIPSEnergy amips;
 	amips.set_size(2);
 
-	json params0 = {{"type", "AMIPS"}, {"weight", 1.0}};
+	json params0 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
 	json params1 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 1.0}};
 	json params2 = {{"type", "AMIPS"}, {"weight", 1.0}, {"power", 2.0}};
 
