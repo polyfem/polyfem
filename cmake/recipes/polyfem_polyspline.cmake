@@ -15,7 +15,7 @@ ExternalProject_Add(
     PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-polyspline
     SOURCE_DIR ${POLYFEM_POLYSPLINE_DIR}
     GIT_REPOSITORY https://github.com/polyfem/Poly-Spline-Finite-Element-Method
-    GIT_TAG e413c27a1aaab9fccf521e608d390453d4c4ceb7
+    GIT_TAG b0724e4ef4e4f8441d1f1ee2a6abb27db0fc3bb4
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
