@@ -6,7 +6,6 @@
 
 #include <igl/barycentric_coordinates.h>
 
-#include <geogram/mesh/mesh_io.h>
 #include <fstream>
 
 namespace polyfem

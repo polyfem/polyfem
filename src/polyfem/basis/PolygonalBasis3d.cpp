@@ -32,8 +32,6 @@ namespace polyfem
 		namespace
 		{
 
-			const int max_num_kernels = 300;
-
 			// -----------------------------------------------------------------------------
 
 			std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
@@ -168,15 +166,8 @@ namespace polyfem
 				orient_closed_surface(KV, KF);
 				double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
 
-				if (true || KV.rows() < max_num_kernels)
-				{
-					igl::per_vertex_normals(KV, KF, KN);
-					kernel_centers = KV;
-				}
-				else
-				{
-					polyfem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
-				}
+				igl::per_vertex_normals(KV, KF, KN);
+				kernel_centers = KV;
 				kernel_centers += eps * volume * KN;
 
 				// std::default_random_engine gen;
@@ -272,7 +263,6 @@ namespace polyfem
 				// Compute kernel centers
 				compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
 									   evalFuncGeom, getAdjLocalEdge);
-				// if (KV.rows() >= max_num_kernels) { n_samples_per_edge = 5; }
 
 				// Compute collocation points
 				Eigen::MatrixXd PV, UV;

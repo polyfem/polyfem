@@ -2,6 +2,8 @@
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 
+#include <set>
+
 namespace polyfem
 {
 	namespace mesh

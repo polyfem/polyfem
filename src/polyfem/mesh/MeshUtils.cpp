@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "MeshUtils.hpp"
 
+#include <polyfem/mesh/PointTriangleDistance.hpp>
+
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -10,107 +12,75 @@
 #include <unordered_set>
 #include <set>
 #include <tuple>
+#include <numeric>
+#include <array>
+#include <cmath>
+#include <limits>
 
 #include <igl/PI.h>
-#include <geogram/mesh/mesh_geometry.h>
-#include <geogram/basic/geometry.h>
-#include <geogram/mesh/mesh_preprocessing.h>
-#include <geogram/mesh/mesh_topology.h>
-#include <geogram/mesh/mesh_geometry.h>
-#include <geogram/mesh/mesh_repair.h>
-#include <geogram/mesh/mesh_AABB.h>
-#include <geogram/voronoi/CVT.h>
-#include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem::utils;
 
-bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
+bool polyfem::mesh::is_planar(const Eigen::MatrixXd &V, const double tol)
 {
-	if (M.vertices.dimension() == 2)
+	if (V.cols() == 2)
 		return true;
 
-	assert(M.vertices.dimension() == 3);
-	GEO::vec3 min_corner, max_corner;
-	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-	const double diff = (max_corner[2] - min_corner[2]);
+	assert(V.cols() == 3);
+	if (V.rows() == 0)
+		return false;
+	const double diff = V.col(2).maxCoeff() - V.col(2).minCoeff();
 
 	return fabs(diff) < tol;
 }
 
-GEO::vec3 polyfem::mesh::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
+polyfem::mesh::PolygonMesh::Point polyfem::mesh::mesh_vertex(const PolygonMesh &M, int v)
 {
-	using GEO::index_t;
-	GEO::vec3 p(0, 0, 0);
-	for (index_t d = 0; d < std::min(3u, (index_t)M.vertices.dimension()); ++d)
-	{
-		if (M.vertices.double_precision())
-		{
-			p[d] = M.vertices.point_ptr(v)[d];
-		}
-		else
-		{
-			p[d] = M.vertices.single_precision_point_ptr(v)[d];
-		}
-	}
-	return p;
+	return M.point(v);
 }
 
 // -----------------------------------------------------------------------------
 
-GEO::vec3 polyfem::mesh::facet_barycenter(const GEO::Mesh &M, GEO::index_t f)
+polyfem::mesh::PolygonMesh::Point polyfem::mesh::facet_barycenter(const PolygonMesh &M, int f)
 {
-	using GEO::index_t;
-	GEO::vec3 p(0, 0, 0);
-	for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+	PolygonMesh::Point p(0, 0, 0);
+	for (int lv = 0; lv < M.n_facet_vertices(f); ++lv)
 	{
-		p += polyfem::mesh::mesh_vertex(M, M.facets.vertex(f, lv));
+		p += polyfem::mesh::mesh_vertex(M, M.facet_vertex(f, lv));
 	}
-	return p / M.facets.nb_vertices(f);
+	return p / double(M.n_facet_vertices(f));
 }
 
 // -----------------------------------------------------------------------------
 
-GEO::index_t polyfem::mesh::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p)
+int polyfem::mesh::mesh_create_vertex(PolygonMesh &M, const PolygonMesh::Point &p)
 {
-	using GEO::index_t;
-	auto v = M.vertices.create_vertex();
-	for (index_t d = 0; d < std::min(3u, (index_t)M.vertices.dimension()); ++d)
-	{
-		if (M.vertices.double_precision())
-		{
-			M.vertices.point_ptr(v)[d] = p[d];
-		}
-		else
-		{
-			M.vertices.single_precision_point_ptr(v)[d] = (float)p[d];
-		}
-	}
-	return v;
+	return M.create_vertex(p);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags)
+void polyfem::mesh::compute_element_tags(const PolygonMesh &M, std::vector<ElementType> &element_tags)
 {
-	using GEO::index_t;
+	using index_t = int;
 
 	std::vector<ElementType> old_tags = element_tags;
 
-	element_tags.resize(M.facets.nb());
+	element_tags.resize(M.n_facets());
 
 	// Step 0: Compute boundary vertices as true boundary + vertices incident to a polygon
-	GEO::Attribute<bool> is_boundary_vertex(M.vertices.attributes(), "boundary_vertex");
-	std::vector<bool> is_interface_vertex(M.vertices.nb(), false);
+	const std::vector<bool> &is_boundary_vertex = M.boundary_vertex;
+	std::vector<bool> is_interface_vertex(M.n_vertices(), false);
 	{
-		for (index_t f = 0; f < M.facets.nb(); ++f)
+		for (index_t f = 0; f < M.n_facets(); ++f)
 		{
-			if (M.facets.nb_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE))
+			if (M.n_facet_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE))
 			{
 				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as interface
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					is_interface_vertex[M.facets.vertex(f, lv)] = true;
+					is_interface_vertex[M.facet_vertex(f, lv)] = true;
 				}
 			}
 		}
@@ -120,21 +90,21 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	//
 	// Interior vertices are regular if they are incident to exactly 4 quads
 	// Boundary vertices are regular if they are incident to at most 2 quads, and no other facets
-	std::vector<int> degree(M.vertices.nb(), 0);
-	std::vector<bool> is_regular_vertex(M.vertices.nb());
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	std::vector<int> degree(M.n_vertices(), 0);
+	std::vector<bool> is_regular_vertex(M.n_vertices());
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		if (M.facets.nb_vertices(f) == 4)
+		if (M.n_facet_vertices(f) == 4)
 		{
 			// Only count incident quads for the degree
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				index_t v = M.facets.vertex(f, lv);
+				index_t v = M.facet_vertex(f, lv);
 				degree[v]++;
 			}
 		}
 	}
-	for (index_t v = 0; v < M.vertices.nb(); ++v)
+	for (index_t v = 0; v < M.n_vertices(); ++v)
 	{
 		// assert(degree[v] > 0); // We assume there are no isolated vertices here
 		if (is_boundary_vertex[v] || is_interface_vertex[v])
@@ -148,26 +118,26 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	}
 
 	// Step 2: Iterate over the facets and determine the type
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		assert(M.facets.nb_vertices(f) > 2);
+		assert(M.n_facet_vertices(f) > 2);
 		if (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE)
 			continue;
 
-		if (M.facets.nb_vertices(f) == 4)
+		if (M.n_facet_vertices(f) == 4)
 		{
 			// Quad facet
 
 			// a) Determine if it is on the mesh boundary
 			bool is_boundary_facet = false;
 			bool is_interface_facet = false;
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				if (is_boundary_vertex[M.facets.vertex(f, lv)])
+				if (is_boundary_vertex[M.facet_vertex(f, lv)])
 				{
 					is_boundary_facet = true;
 				}
-				if (is_interface_vertex[M.facets.vertex(f, lv)])
+				if (is_interface_vertex[M.facet_vertex(f, lv)])
 				{
 					is_interface_facet = true;
 				}
@@ -179,9 +149,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 				// A boundary quad is regular iff all its vertices are incident to at most 2 other quads
 				// We assume that non-boundary vertices of a boundary quads are always regular
 				bool is_singular = false;
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					index_t v = M.facets.vertex(f, lv);
+					index_t v = M.facet_vertex(f, lv);
 					if (is_boundary_vertex[v] || is_interface_vertex[v])
 					{
 						if (!is_regular_vertex[v])
@@ -217,9 +187,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 			{
 				// An interior quad is regular if all its vertices are singular
 				int nb_singulars = 0;
-				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+				for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 				{
-					if (!is_regular_vertex[M.facets.vertex(f, lv)])
+					if (!is_regular_vertex[M.facet_vertex(f, lv)])
 					{
 						++nb_singulars;
 					}
@@ -245,10 +215,10 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 			// Note: In this function, we consider triangles as polygonal facets
 			ElementType tag = ElementType::INTERIOR_POLYTOPE;
-			GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
-			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
+			const std::vector<bool> &boundary_vertices = M.boundary_vertex;
+			for (index_t lv = 0; lv < M.n_facet_vertices(f); ++lv)
 			{
-				if (boundary_vertices[M.facets.vertex(f, lv)])
+				if (boundary_vertices[M.facet_vertex(f, lv)])
 				{
 					tag = ElementType::BOUNDARY_POLYTOPE;
 					break;
@@ -261,9 +231,9 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 	// TODO what happens at the neighs?
 	// Override for simplices
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (index_t f = 0; f < M.n_facets(); ++f)
 	{
-		if (M.facets.nb_vertices(f) == 3)
+		if (M.n_facet_vertices(f) == 3)
 		{
 			element_tags[f] = ElementType::SIMPLEX;
 		}
@@ -275,43 +245,54 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 namespace
 {
 
-	// Signed area of a polygonal facet
-	double signed_area(const GEO::Mesh &M, GEO::index_t f)
+	// Same expression shapes as geogram's det(vec2, vec2) and
+	// Geom::triangle_signed_area(vec2, vec2, vec2).
+	inline double det_2d(const double ax, const double ay, const double bx, const double by)
 	{
-		using namespace GEO;
+		return ax * by - ay * bx;
+	}
+
+	inline double triangle_signed_area_2d(
+		const polyfem::mesh::PolygonMesh::Point &p1,
+		const polyfem::mesh::PolygonMesh::Point &p2,
+		const polyfem::mesh::PolygonMesh::Point &p3)
+	{
+		return 0.5 * det_2d(p2[0] - p1[0], p2[1] - p1[1], p3[0] - p1[0], p3[1] - p1[1]);
+	}
+
+	// Signed area of a polygonal facet
+	double signed_area(const polyfem::mesh::PolygonMesh &M, int f)
+	{
 		double result = 0;
-		index_t v0 = M.facet_corners.vertex(M.facets.corners_begin(f));
-		const vec3 &p0 = Geom::mesh_vertex(M, v0);
-		for (index_t c =
-				 M.facets.corners_begin(f) + 1;
-			 c + 1 < M.facets.corners_end(f); c++)
+		int v0 = M.corner_vertex(M.corners_begin(f));
+		const polyfem::mesh::PolygonMesh::Point &p0 = M.point(v0);
+		for (int c = M.corners_begin(f) + 1; c + 1 < M.corners_end(f); c++)
 		{
-			index_t v1 = M.facet_corners.vertex(c);
-			const vec3 &p1 = polyfem::mesh::mesh_vertex(M, v1);
-			index_t v2 = M.facet_corners.vertex(c + 1);
-			const vec3 &p2 = polyfem::mesh::mesh_vertex(M, v2);
-			result += Geom::triangle_signed_area(vec2(&p0[0]), vec2(&p1[0]), vec2(&p2[0]));
+			int v1 = M.corner_vertex(c);
+			const polyfem::mesh::PolygonMesh::Point p1 = polyfem::mesh::mesh_vertex(M, v1);
+			int v2 = M.corner_vertex(c + 1);
+			const polyfem::mesh::PolygonMesh::Point p2 = polyfem::mesh::mesh_vertex(M, v2);
+			result += triangle_signed_area_2d(p0, p1, p2);
 		}
 		return result;
 	}
 
 } // anonymous namespace
 
-void polyfem::mesh::orient_normals_2d(GEO::Mesh &M)
+void polyfem::mesh::orient_normals_2d(PolygonMesh &M)
 {
-	using namespace GEO;
-	vector<index_t> component;
-	index_t nb_components = get_connected_components(M, component);
-	vector<double> comp_signed_volume(nb_components, 0.0);
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	std::vector<int> component;
+	int nb_components = M.connected_components(component);
+	std::vector<double> comp_signed_volume(nb_components, 0.0);
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
 		comp_signed_volume[component[f]] += signed_area(M, f);
 	}
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
 		if (comp_signed_volume[component[f]] < 0.0)
 		{
-			M.facets.flip(f);
+			M.flip_facet(f);
 		}
 	}
 }
@@ -363,18 +344,65 @@ void polyfem::mesh::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const E
 namespace
 {
 
-	void compute_unsigned_distance_field(const GEO::Mesh &M,
-										 const GEO::MeshFacetsAABB &aabb_tree, const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+	// Plain 3D vector whose arithmetic mirrors geogram's vec3 operation by
+	// operation (same expression shapes), so the helpers below round exactly
+	// like the geogram code they replace.
+	struct Vec3
 	{
-		assert(P.cols() == 3);
-		D.resize(P.rows());
-#pragma omp parallel for
-		for (int i = 0; i < P.rows(); ++i)
-		{
-			GEO::vec3 pos(P(i, 0), P(i, 1), P(i, 2));
-			double sq_dist = aabb_tree.squared_distance(pos);
-			D(i) = sq_dist;
-		}
+		double x, y, z;
+	};
+
+	inline Vec3 vec3(const double *p) { return {p[0], p[1], p[2]}; }
+	inline Vec3 operator-(const Vec3 &a, const Vec3 &b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+	inline Vec3 operator+(const Vec3 &a, const Vec3 &b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+	inline Vec3 operator*(double s, const Vec3 &v) { return {s * v.x, s * v.y, s * v.z}; }
+	inline double dot(const Vec3 &a, const Vec3 &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+	inline double length2(const Vec3 &v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+	inline Vec3 cross(const Vec3 &a, const Vec3 &b)
+	{
+		return {
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x};
+	}
+	inline double distance2(const Vec3 &a, const Vec3 &b)
+	{
+		const double dx = a.x - b.x;
+		const double dy = a.y - b.y;
+		const double dz = a.z - b.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+
+	inline double tetra_signed_volume(const Vec3 &p1, const Vec3 &p2, const Vec3 &p3, const Vec3 &p4)
+	{
+		return dot(p2 - p1, cross(p3 - p1, p4 - p1)) / 6.0;
+	}
+
+	double point_segment_squared_distance(const Vec3 &point, const Vec3 &v0, const Vec3 &v1)
+	{
+		const double l2 = distance2(v0, v1);
+		const double t = dot(point - v0, v1 - v0);
+		if (t <= 0.0 || l2 == 0.0)
+			return distance2(point, v0);
+		else if (t > l2)
+			return distance2(point, v1);
+		const double lambda1 = t / l2;
+		const double lambda0 = 1.0 - lambda1;
+		const Vec3 closest_point = lambda0 * v0 + lambda1 * v1;
+		return distance2(point, closest_point);
+	}
+
+	double cos_angle(const Vec3 &a, const Vec3 &b)
+	{
+		const double lab = std::sqrt(length2(a) * length2(b));
+		double result = (lab > 1e-50) ? (dot(a, b) / lab) : 1.0;
+		// Numerical precision problems may produce normalized dot products
+		// slightly outside [-1, 1].
+		if (result < -1.0)
+			result = -1.0;
+		else if (result > 1.0)
+			result = 1.0;
+		return result;
 	}
 
 	// calculate twice signed area of triangle (0,0)-(x1,y1)-(x2,y2)
@@ -425,7 +453,7 @@ namespace
 		if (signc != signa)
 			return false;
 		double sum = a + b + c;
-		geo_assert(sum != 0); // if the SOS signs match and are nonzero, there's no way all of a, b, and c are zero.
+		assert(sum != 0); // if the SOS signs match and are nonzero, there's no way all of a, b, and c are zero.
 		a /= sum;
 		b /= sum;
 		c /= sum;
@@ -434,31 +462,22 @@ namespace
 
 	// -----------------------------------------------------------------------------
 
-	// \brief Computes the (approximate) orientation predicate in 2d.
-	// \details Computes the sign of the (approximate) signed volume of
-	//  the triangle p0, p1, p2
-	// \param[in] p0 first vertex of the triangle
-	// \param[in] p1 second vertex of the triangle
-	// \param[in] p2 third vertex of the triangle
-	// \retval POSITIVE if the triangle is oriented positively
-	// \retval ZERO if the triangle is flat
-	// \retval NEGATIVE if the triangle is oriented negatively
-	// \todo check whether orientation is inverted as compared to
-	//   Shewchuk's version.
-	// Taken from geogram/src/lib/geogram/delaunay/delaunay_2d.cpp
-	inline GEO::Sign orient_2d_inexact(GEO::vec2 p0, GEO::vec2 p1, GEO::vec2 p2)
+	// Sign of the (approximate) signed area of the triangle p0, p1, p2.
+	// Originally taken from geogram/src/lib/geogram/delaunay/delaunay_2d.cpp
+	inline int orient_2d_inexact(
+		const double p0x, const double p0y,
+		const double p1x, const double p1y,
+		const double p2x, const double p2y)
 	{
-		double a11 = p1[0] - p0[0];
-		double a12 = p1[1] - p0[1];
+		double a11 = p1x - p0x;
+		double a12 = p1y - p0y;
 
-		double a21 = p2[0] - p0[0];
-		double a22 = p2[1] - p0[1];
+		double a21 = p2x - p0x;
+		double a22 = p2y - p0y;
 
-		double Delta = GEO::det2x2(
-			a11, a12,
-			a21, a22);
+		double Delta = a11 * a22 - a12 * a21;
 
-		return GEO::geo_sgn(Delta);
+		return (Delta > 0) ? 1 : ((Delta < 0) ? -1 : 0);
 	}
 
 	// -----------------------------------------------------------------------------
@@ -466,39 +485,27 @@ namespace
 	/**
 	 * @brief      { Intersect a vertical ray with a triangle }
 	 *
-	 * @param[in]  M     { Mesh containing the triangle to intersect }
-	 * @param[in]  f     { Index of the facet to intersect }
+	 * @param[in]  V     { Mesh vertices }
+	 * @param[in]  F     { Mesh triangles }
+	 * @param[in]  f     { Index of the triangle to intersect }
 	 * @param[in]  q     { Query point (only XY coordinates are used) }
 	 * @param[out] z     { Intersection }
 	 *
 	 * @return     { {-1,0,1} depending on the sign of the intersection. }
 	 */
 	template <int X = 0, int Y = 1, int Z = 2>
-	int intersect_ray_z(const GEO::Mesh &M, GEO::index_t f, const GEO::vec3 &q, double &z)
+	int intersect_ray_z(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int f, const Eigen::RowVector3d &q, double &z)
 	{
-		using namespace GEO;
-
-		index_t c = M.facets.corners_begin(f);
-		const vec3 &p1 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
-		const vec3 &p2 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
-		const vec3 &p3 = Geom::mesh_vertex(M, M.facet_corners.vertex(c));
+		const auto p1 = V.row(F(f, 0));
+		const auto p2 = V.row(F(f, 1));
+		const auto p3 = V.row(F(f, 2));
 
 		double u, v, w;
 		if (point_in_triangle_2d(
 				q[X], q[Y], p1[X], p1[Y], p2[X], p2[Y], p3[X], p3[Y], u, v, w))
 		{
 			z = u * p1[Z] + v * p2[Z] + w * p3[Z];
-			auto sign = orient_2d_inexact(vec2(p1[X], p1[Y]), vec2(p2[X], p2[Y]), vec2(p3[X], p3[Y]));
-			switch (sign)
-			{
-			case GEO::POSITIVE:
-				return 1;
-			case GEO::NEGATIVE:
-				return -1;
-			case GEO::ZERO:
-			default:
-				return 0;
-			}
+			return orient_2d_inexact(p1[X], p1[Y], p2[X], p2[Y], p3[X], p3[Y]);
 		}
 
 		return 0;
@@ -506,35 +513,199 @@ namespace
 
 	// -----------------------------------------------------------------------------
 
-	void compute_sign(const GEO::Mesh &M, const GEO::MeshFacetsAABB &aabb_tree,
+	// Bounding volume hierarchy over the triangles of (V, F), used to cull
+	// triangles in signed_squared_distances. Culling never changes a result:
+	// distances are the exact minimum of the same per-triangle values (a box is
+	// skipped only if it is farther than the current minimum by more than any
+	// rounding error), and the ray test visits exactly the triangles whose
+	// closed xy bounding box contains the query point, which are the triangles
+	// geogram's AABB box query used to report.
+	class TriangleBVH
+	{
+	public:
+		TriangleBVH(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+			: V_(V), F_(F), boxes_(F.rows()), order_(F.rows())
+		{
+			std::vector<std::array<double, 3>> centroids(F.rows());
+			for (int f = 0; f < F.rows(); ++f)
+			{
+				for (int d = 0; d < 3; ++d)
+				{
+					const double a = V(F(f, 0), d), b = V(F(f, 1), d), c = V(F(f, 2), d);
+					boxes_[f].min[d] = std::min(a, std::min(b, c));
+					boxes_[f].max[d] = std::max(a, std::max(b, c));
+					centroids[f][d] = (a + b + c) / 3;
+				}
+			}
+			std::iota(order_.begin(), order_.end(), 0);
+			nodes_.reserve(2 * F.rows());
+			if (F.rows() > 0)
+				build(0, F.rows(), centroids);
+		}
+
+		/// Calls fn(f) for every triangle f whose closed xy bounding box contains (x, y).
+		template <typename Fn>
+		void for_each_in_xy_column(const double x, const double y, Fn &&fn) const
+		{
+			if (nodes_.empty())
+				return;
+			std::vector<int> stack = {0};
+			while (!stack.empty())
+			{
+				const Node &node = nodes_[stack.back()];
+				stack.pop_back();
+				if (!contains_xy(node.box, x, y))
+					continue;
+				if (node.left < 0)
+				{
+					for (int i = node.begin; i < node.end; ++i)
+						if (contains_xy(boxes_[order_[i]], x, y))
+							fn(order_[i]);
+				}
+				else
+				{
+					stack.push_back(node.right);
+					stack.push_back(node.left);
+				}
+			}
+		}
+
+		/// Minimum over all triangles of point_triangle_squared_distance(p, triangle).
+		double min_squared_distance(const Eigen::RowVector3d &p, const double margin) const
+		{
+			double best = std::numeric_limits<double>::max();
+			if (nodes_.empty())
+				return best;
+			std::vector<int> stack = {0};
+			while (!stack.empty())
+			{
+				const Node &node = nodes_[stack.back()];
+				stack.pop_back();
+				if (box_squared_distance(node.box, p) > best + margin)
+					continue;
+				if (node.left < 0)
+				{
+					for (int i = node.begin; i < node.end; ++i)
+					{
+						const int f = order_[i];
+						const Eigen::RowVector3d v0 = V_.row(F_(f, 0)), v1 = V_.row(F_(f, 1)), v2 = V_.row(F_(f, 2));
+						const double d = polyfem::mesh::point_triangle_squared_distance(p.data(), v0.data(), v1.data(), v2.data());
+						if (d < best)
+							best = d;
+					}
+				}
+				else
+				{
+					// Visit the closest child first.
+					const double dl = box_squared_distance(nodes_[node.left].box, p);
+					const double dr = box_squared_distance(nodes_[node.right].box, p);
+					if (dl < dr)
+					{
+						stack.push_back(node.right);
+						stack.push_back(node.left);
+					}
+					else
+					{
+						stack.push_back(node.left);
+						stack.push_back(node.right);
+					}
+				}
+			}
+			return best;
+		}
+
+	private:
+		struct Box
+		{
+			std::array<double, 3> min, max;
+		};
+
+		struct Node
+		{
+			Box box;
+			int begin, end;
+			int left = -1, right = -1;
+		};
+
+		static bool contains_xy(const Box &box, const double x, const double y)
+		{
+			return box.min[0] <= x && x <= box.max[0] && box.min[1] <= y && y <= box.max[1];
+		}
+
+		static double box_squared_distance(const Box &box, const Eigen::RowVector3d &p)
+		{
+			double result = 0;
+			for (int d = 0; d < 3; ++d)
+			{
+				const double delta = std::max(0.0, std::max(box.min[d] - p[d], p[d] - box.max[d]));
+				result += delta * delta;
+			}
+			return result;
+		}
+
+		int build(const int begin, const int end, const std::vector<std::array<double, 3>> &centroids)
+		{
+			const int id = nodes_.size();
+			nodes_.emplace_back();
+			Box box = boxes_[order_[begin]];
+			for (int i = begin + 1; i < end; ++i)
+			{
+				for (int d = 0; d < 3; ++d)
+				{
+					box.min[d] = std::min(box.min[d], boxes_[order_[i]].min[d]);
+					box.max[d] = std::max(box.max[d], boxes_[order_[i]].max[d]);
+				}
+			}
+			nodes_[id].box = box;
+			nodes_[id].begin = begin;
+			nodes_[id].end = end;
+			if (end - begin <= 4)
+				return id;
+
+			int axis = 0;
+			for (int d = 1; d < 3; ++d)
+				if (box.max[d] - box.min[d] > box.max[axis] - box.min[axis])
+					axis = d;
+			const int mid = begin + (end - begin) / 2;
+			std::nth_element(order_.begin() + begin, order_.begin() + mid, order_.begin() + end,
+							 [&](const int a, const int b) { return centroids[a][axis] < centroids[b][axis]; });
+			const int left = build(begin, mid, centroids);
+			const int right = build(mid, end, centroids);
+			nodes_[id].left = left;
+			nodes_[id].right = right;
+			return id;
+		}
+
+		const Eigen::MatrixXd &V_;
+		const Eigen::MatrixXi &F_;
+		std::vector<Box> boxes_;
+		std::vector<int> order_;
+		std::vector<Node> nodes_;
+	};
+
+	// -----------------------------------------------------------------------------
+
+	// Flips the sign of D for every point inside the surface (V, F). The inside
+	// test casts a vertical ray from each point and counts the crossings below
+	// it, testing the triangles whose closed xy bounding box contains the point.
+	void compute_sign(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const TriangleBVH &bvh,
 					  const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 	{
 		assert(P.cols() == 3);
 		assert(D.size() == P.rows());
 
-		GEO::vec3 min_corner, max_corner;
-		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-
-#pragma omp parallel for
 		for (int k = 0; k < P.rows(); ++k)
 		{
-			GEO::vec3 center(P(k, 0), P(k, 1), P(k, 2));
-
-			GEO::Box box;
-			box.xyz_min[0] = box.xyz_max[0] = center[0];
-			box.xyz_min[1] = box.xyz_max[1] = center[1];
-			box.xyz_min[2] = min_corner[2];
-			box.xyz_max[2] = max_corner[2];
+			const Eigen::RowVector3d center = P.row(k);
 
 			std::vector<std::pair<double, int>> inter;
-			auto action = [&M, &inter, &center](GEO::index_t f) {
+			bvh.for_each_in_xy_column(center[0], center[1], [&](const int f) {
 				double z;
-				if (int s = intersect_ray_z(M, f, center, z))
+				if (int s = intersect_ray_z(V, F, f, center, z))
 				{
 					inter.emplace_back(z, s);
 				}
-			};
-			aabb_tree.compute_bbox_facet_bbox_intersections(box, action);
+			});
 			std::sort(inter.begin(), inter.end());
 
 			std::vector<double> reduced;
@@ -568,108 +739,29 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M)
-{
-	M.clear();
-	// Setup vertices
-	M.vertices.create_vertices((int)V.rows());
-	for (int i = 0; i < (int)M.vertices.nb(); ++i)
-	{
-		GEO::vec3 &p = M.vertices.point(i);
-		p[0] = V(i, 0);
-		p[1] = V(i, 1);
-		p[2] = V.cols() >= 3 ? V(i, 2) : 0;
-	}
-	// Setup faces
-	if (F.cols() == 3)
-	{
-		M.facets.create_triangles((int)F.rows());
-	}
-	else if (F.cols() == 4)
-	{
-		M.facets.create_quads((int)F.rows());
-	}
-	else
-	{
-		throw std::runtime_error("Mesh format not supported");
-	}
-	for (int c = 0; c < (int)M.facets.nb(); ++c)
-	{
-		for (int lv = 0; lv < F.cols(); ++lv)
-		{
-			M.facets.set_vertex(c, lv, F(c, lv));
-		}
-	}
-}
-
-// void polyfem::mesh::to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M) {
-// 	M.clear();
-// 	// Setup vertices
-// 	M.vertices.create_vertices((int) V.rows());
-// 	assert(V.cols() == 3);
-// 	for (int i = 0; i < (int) M.vertices.nb(); ++i) {
-// 		GEO::vec3 &p = M.vertices.point(i);
-// 		p[0] = V(i, 0);
-// 		p[1] = V(i, 1);
-// 		p[2] = V(i, 2);
-// 	}
-
-// 	if(C.cols() == 4)
-// 		M.cells.create_tets((int) C.rows());
-// 	else if(C.cols() == 8)
-// 		M.cells.create_hexes((int) C.rows());
-// 	else
-// 		assert(false);
-
-// 	for (int c = 0; c < (int) M.cells.nb(); ++c) {
-// 		for (int lv = 0; lv < C.cols(); ++lv) {
-// 			M.cells.set_vertex(c, lv, C(c, lv));
-// 		}
-// 	}
-// 	M.cells.connect();
-// 	// GEO::mesh_reorient(M);
-// }
-
-// -----------------------------------------------------------------------------
-
-void polyfem::mesh::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
-{
-	V.resize(M.vertices.nb(), 3);
-	for (int i = 0; i < (int)M.vertices.nb(); ++i)
-	{
-		GEO::vec3 p = M.vertices.point(i);
-		V.row(i) << p[0], p[1], p[2];
-	}
-	assert(M.facets.are_simplices());
-	F.resize(M.facets.nb(), 3);
-	for (int c = 0; c < (int)M.facets.nb(); ++c)
-	{
-		for (int lv = 0; lv < 3; ++lv)
-		{
-			F(c, lv) = M.facets.vertex(c, lv);
-		}
-	}
-	assert(M.cells.are_simplices());
-	T.resize(M.cells.nb(), 4);
-	for (int c = 0; c < (int)M.cells.nb(); ++c)
-	{
-		for (int lv = 0; lv < 4; ++lv)
-		{
-			T(c, lv) = M.cells.vertex(c, lv);
-		}
-	}
-}
-
-// -----------------------------------------------------------------------------
-
 void polyfem::mesh::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 											 const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 {
-	GEO::Mesh M;
-	to_geogram_mesh(V, F, M);
-	GEO::MeshFacetsAABB aabb_tree(M);
-	compute_unsigned_distance_field(M, aabb_tree, P, D);
-	compute_sign(M, aabb_tree, P, D);
+	assert(V.cols() == 3);
+	assert(F.cols() == 3);
+	assert(P.cols() == 3);
+	const TriangleBVH bvh(V, F);
+
+	// Pruning slack, far above the rounding error of the distances (which is
+	// of the order of 1e-15 times the squared size of the scene).
+	double scale2 = 0;
+	if (V.rows() > 0 && P.rows() > 0)
+	{
+		const Eigen::RowVector3d lo = V.colwise().minCoeff().cwiseMin(P.colwise().minCoeff());
+		const Eigen::RowVector3d hi = V.colwise().maxCoeff().cwiseMax(P.colwise().maxCoeff());
+		scale2 = (hi - lo).squaredNorm();
+	}
+	const double margin = 1e-10 * scale2;
+
+	D.resize(P.rows());
+	for (int i = 0; i < P.rows(); ++i)
+		D(i) = bvh.min_squared_distance(P.row(i), margin);
+	compute_sign(V, F, bvh, P, D);
 }
 
 // -----------------------------------------------------------------------------
@@ -687,7 +779,7 @@ double polyfem::mesh::signed_volume(const Eigen::MatrixXd &V, const Eigen::Matri
 		{
 			t[lv] = V.row(F(f, lv));
 		}
-		double vol = GEO::Geom::tetra_signed_volume(t[0].data(), t[1].data(), t[2].data(), t[3].data());
+		double vol = tetra_signed_volume(vec3(t[0].data()), vec3(t[1].data()), vec3(t[2].data()), vec3(t[3].data()));
 		volume_total += vol;
 	}
 	return -volume_total;
@@ -921,203 +1013,6 @@ polyfem::mesh::compute_mesh_interface(const Mesh3D &first, const Mesh3D &second)
 	return result;
 }
 
-void polyfem::mesh::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated)
-{
-	std::vector<int> vertex_g2l(mesh.n_vertices() + mesh.n_faces(), -1);
-	std::vector<int> vertex_l2g;
-	for (int c = 0; c < mesh.n_cells(); ++c)
-	{
-		if (!mesh.is_polytope(c))
-		{
-			continue;
-		}
-		auto poly = std::make_unique<GEO::Mesh>();
-		int nv = mesh.n_cell_vertices(c);
-		int nf = mesh.n_cell_faces(c);
-		poly->vertices.create_vertices((triangulated ? nv + nf : nv) + 1);
-		vertex_l2g.clear();
-		vertex_l2g.reserve(nv);
-		for (int lf = 0; lf < nf; ++lf)
-		{
-			GEO::vector<GEO::index_t> facet_vertices;
-			auto index = mesh.get_index_from_element(c, lf, 0);
-			for (int lv = 0; lv < mesh.n_face_vertices(index.face); ++lv)
-			{
-				Eigen::RowVector3d p = mesh.point(index.vertex);
-				if (vertex_g2l[index.vertex] < 0)
-				{
-					vertex_g2l[index.vertex] = vertex_l2g.size();
-					vertex_l2g.push_back(index.vertex);
-				}
-				int v1 = vertex_g2l[index.vertex];
-				facet_vertices.push_back(v1);
-				poly->vertices.point(v1) = GEO::vec3(p.data());
-				index = mesh.next_around_face(index);
-			}
-			if (triangulated)
-			{
-				GEO::vec3 p(0, 0, 0);
-				for (GEO::index_t lv = 0; lv < facet_vertices.size(); ++lv)
-				{
-					p += poly->vertices.point(facet_vertices[lv]);
-				}
-				p /= facet_vertices.size();
-				int v0 = vertex_l2g.size();
-				vertex_l2g.push_back(0);
-				poly->vertices.point(v0) = p;
-				for (GEO::index_t lv = 0; lv < facet_vertices.size(); ++lv)
-				{
-					int v1 = facet_vertices[lv];
-					int v2 = facet_vertices[(lv + 1) % facet_vertices.size()];
-					poly->facets.create_triangle(v0, v1, v2);
-				}
-			}
-			else
-			{
-				poly->facets.create_polygon(facet_vertices);
-			}
-		}
-		{
-			Eigen::RowVector3d p = mesh.kernel(c);
-			poly->vertices.point(nv) = GEO::vec3(p.data());
-		}
-		assert(vertex_l2g.size() == size_t(triangulated ? nv + nf : nv));
-
-		for (int v : vertex_l2g)
-		{
-			vertex_g2l[v] = -1;
-		}
-
-		poly->facets.compute_borders();
-		poly->facets.connect();
-
-		polys.emplace_back(std::move(poly));
-	}
-}
-
-// -----------------------------------------------------------------------------
-
-// In Geogram, local vertices of a hex are numbered as follows:
-//
-//   v5────v7
-//   ╱┆    ╱│
-// v1─┼──v3 │
-//  │v4┄┄┄┼v6
-//  │╱    │╱
-// v0────v2
-//
-// However, `get_ordered_vertices_from_hex()` retrieves the local vertices in
-// this order:
-//
-//   v7────v6
-//   ╱┆    ╱│
-// v4─┼──v5 │
-//  │v3┄┄┄┼v2
-//  │╱    │╱
-// v0────v1
-//
-
-void polyfem::mesh::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M)
-{
-	M.clear();
-	// Convert vertices
-	M.vertices.create_vertices((int)mesh.n_vertices());
-	for (int i = 0; i < (int)M.vertices.nb(); ++i)
-	{
-		auto pt = mesh.point(i);
-		GEO::vec3 &p = M.vertices.point(i);
-		p[0] = pt[0];
-		p[1] = pt[1];
-		p[2] = pt[2];
-	}
-	// Convert faces
-	for (int f = 0, lf = 0; f < mesh.n_faces(); ++f)
-	{
-		if (mesh.is_boundary_face(f))
-		{
-			int nv = mesh.n_face_vertices(f);
-			M.facets.create_polygon(nv);
-			for (int lv = 0; lv < nv; ++lv)
-			{
-				M.facets.set_vertex(lf, lv, mesh.face_vertex(f, lv));
-			}
-			++lf;
-		}
-	}
-	// Convert cells
-	typedef std::array<int, 8> Vector8i;
-	Vector8i g2p = {{0, 4, 1, 5, 3, 7, 2, 6}};
-	for (int c = 0; c < mesh.n_cells(); ++c)
-	{
-		if (mesh.is_cube(c))
-		{
-			Vector8i lvp = mesh.get_ordered_vertices_from_hex(c);
-			Vector8i lvg;
-			for (size_t k = 0; k < 8; ++k)
-			{
-				lvg[k] = lvp[g2p[k]];
-			}
-			std::reverse(lvg.begin(), lvg.end());
-			M.cells.create_hex(
-				lvg[0], lvg[1], lvg[2], lvg[3],
-				lvg[4], lvg[5], lvg[6], lvg[7]);
-		}
-		else
-		{
-			// TODO: Support conversion of tets as well!
-		}
-	}
-	M.facets.connect();
-	M.cells.connect();
-	// M.cells.compute_borders();
-	GEO::mesh_reorient(M);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void polyfem::mesh::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
-								   Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
-{
-	assert(num_samples > 3);
-	GEO::Mesh M;
-	to_geogram_mesh(V, F, M);
-	GEO::CentroidalVoronoiTesselation CVT(&M);
-	// GEO::mesh_save(M, "foo.obj");
-	bool was_quiet = GEO::Logger::instance()->is_quiet();
-	GEO::Logger::instance()->set_quiet(true);
-	CVT.compute_initial_sampling(num_samples);
-	GEO::Logger::instance()->set_quiet(was_quiet);
-
-	if (num_lloyd > 0)
-	{
-		CVT.Lloyd_iterations(num_lloyd);
-	}
-
-	if (num_newton > 0)
-	{
-		CVT.Newton_iterations(num_newton);
-	}
-
-	P.resize(3, num_samples);
-	std::copy_n(CVT.embedding(0), 3 * num_samples, P.data());
-	P.transposeInPlace();
-
-	if (N)
-	{
-		GEO::MeshFacetsAABB aabb(M);
-		N->resizeLike(P);
-		for (int i = 0; i < num_samples; ++i)
-		{
-			GEO::vec3 p(P(i, 0), P(i, 1), P(i, 2));
-			GEO::vec3 nearest_point;
-			double sq_dist;
-			auto f = aabb.nearest_facet(p, nearest_point, sq_dist);
-			GEO::vec3 n = normalize(GEO::Geom::mesh_facet_normal(M, f));
-			N->row(i) << n[0], n[1], n[2];
-		}
-	}
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
@@ -1125,11 +1020,10 @@ namespace
 
 	bool approx_aligned(const double *a_, const double *b_, const double *p_, const double *q_, double tol = 1e-6)
 	{
-		using namespace GEO;
-		vec3 a(a_), b(b_), p(p_), q(q_);
-		double da = std::sqrt(Geom::point_segment_squared_distance(a, p, q));
-		double db = std::sqrt(Geom::point_segment_squared_distance(b, p, q));
-		double cos_theta = Geom::cos_angle(b - a, p - q);
+		const Vec3 a = vec3(a_), b = vec3(b_), p = vec3(p_), q = vec3(q_);
+		double da = std::sqrt(point_segment_squared_distance(a, p, q));
+		double db = std::sqrt(point_segment_squared_distance(b, p, q));
+		double cos_theta = cos_angle(b - a, p - q);
 		return (da < tol && db < tol && std::abs(std::abs(cos_theta) - 1.0) < tol);
 	}
 
@@ -1300,44 +1194,38 @@ int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 	return boundaries.size();
 }
 
-void polyfem::mesh::generate_edges(GEO::Mesh &M)
+void polyfem::mesh::generate_edges(PolygonMesh &M)
 {
-	using namespace GEO;
-	typedef std::pair<index_t, index_t> Edge;
+	typedef std::pair<int, int> Edge;
 
-	if (M.edges.nb() > 0)
+	if (M.n_edges() > 0)
 		return;
 
-	M.facets.connect();
-	M.cells.connect();
-	if (M.cells.nb() != 0 && M.facets.nb() == 0)
-	{
-		M.cells.compute_borders();
-	}
+	M.connect_facets();
 
-	// Compute a list of all the edges, and store edge index as a corner attribute
-	std::vector<std::pair<Edge, index_t>> e2c; // edge to corner id
-	for (index_t f = 0; f < M.facets.nb(); ++f)
+	// Compute a list of all the edges
+	std::vector<std::pair<Edge, int>> e2c; // edge to corner id
+	for (int f = 0; f < M.n_facets(); ++f)
 	{
-		for (index_t c = M.facets.corners_begin(f); c < M.facets.corners_end(f); ++c)
+		for (int c = M.corners_begin(f); c < M.corners_end(f); ++c)
 		{
-			index_t v = M.facet_corners.vertex(c);
-			index_t c2 = M.facets.next_corner_around_facet(f, c);
-			index_t v2 = M.facet_corners.vertex(c2);
+			int v = M.corner_vertex(c);
+			int c2 = M.next_corner_around_facet(f, c);
+			int v2 = M.corner_vertex(c2);
 			e2c.emplace_back(std::make_pair(std::min(v, v2), std::max(v, v2)), c);
 		}
 	}
 	std::sort(e2c.begin(), e2c.end());
 
 	// Assign unique id to edges
-	M.edges.clear();
+	M.clear_edges();
 	Edge prev_e(-1, -1);
 	for (const auto &kv : e2c)
 	{
 		Edge e = kv.first;
 		if (e != prev_e)
 		{
-			M.edges.create_edge(e.first, e.second);
+			M.create_edge(e.first, e.second);
 			prev_e = e;
 		}
 	}

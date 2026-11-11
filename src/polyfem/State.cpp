@@ -11,7 +11,6 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
@@ -194,10 +193,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	State::State()
-	{
-		GeogramUtils::instance().initialize();
-	}
+	State::State() = default;
 
 	void State::init_logger(
 		const std::string &log_file,
@@ -236,7 +232,6 @@ namespace polyfem
 		const spdlog::level::level_enum log_level)
 	{
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-		GeogramUtils::instance().set_logger(logger());
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
@@ -432,39 +427,6 @@ namespace polyfem
 	void State::set_max_threads(const int max_threads)
 	{
 		NThread::get().set_num_threads(max_threads);
-	}
-
-	void State::set_mesh(
-		GEO::Mesh &meshin,
-		const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker,
-		bool non_conforming,
-		bool skip_boundary_sideset)
-	{
-		igl::Timer timer;
-		timer.start();
-		logger().info("Loading mesh...");
-
-		std::unique_ptr<Mesh> mesh = Mesh::create(
-			mesh::MeshReader::from_geogram(meshin), non_conforming);
-		if (!mesh)
-		{
-			logger().error("Unable to load the mesh");
-			return;
-		}
-
-		RowVectorNd min, max;
-		mesh->bounding_box(min, max);
-
-		logger().info("mesh bb min [{}], max [{}]", min, max);
-
-		if (!skip_boundary_sideset)
-			mesh->compute_boundary_ids(boundary_marker);
-
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
-
-		assert(variational_formulation != nullptr);
-		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
 	void State::load_mesh(const bool non_conforming)
