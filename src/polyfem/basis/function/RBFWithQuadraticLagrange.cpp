@@ -5,6 +5,8 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/io/MatrixIO.hpp>
+#include <cstdlib>
 
 #include <igl/Timer.h>
 #include <Eigen/Dense>
@@ -88,6 +90,18 @@ RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
 {
 	// centers_.resize(0, centers.cols());
 	compute_weights(assembler, collocation_points, local_basis_integral, quadr, rhs, with_constraints);
+	if (std::getenv("POLYFEM_RBF_DIAGNOSTICS") != nullptr)
+	{
+		static int fit_index = 0;
+		const std::string prefix = "RBFWithQuadraticLagrange-" + std::to_string(fit_index++);
+		io::write_matrix(prefix + "-centers.txt", centers_);
+		io::write_matrix(prefix + "-samples.txt", collocation_points);
+		io::write_matrix(prefix + "-integrals.txt", local_basis_integral);
+		io::write_matrix(prefix + "-quadrature-points.txt", quadr.points);
+		io::write_matrix(prefix + "-quadrature-weights.txt", quadr.weights);
+		io::write_matrix(prefix + "-rhs.txt", rhs);
+		io::write_matrix(prefix + "-weights.txt", weights_);
+	}
 }
 
 // -----------------------------------------------------------------------------
