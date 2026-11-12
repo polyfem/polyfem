@@ -52,14 +52,19 @@ namespace
 
 TEST_CASE("problem time dependence matches time configuration", "[varform][init]")
 {
-	const std::string name = GENERATE("Franke", "FrankeOld", "TimeDependentScalar");
+	const std::string name = GENERATE("Franke", "FrankeOld", "ElasticExact", "TimeDependentScalar");
 	const bool has_time = GENERATE(false, true);
 	const bool transient_problem = name == "TimeDependentScalar";
 	CAPTURE(name, has_time);
 
 	json args;
 	args["geometry"] = {{"mesh", std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/square.obj"}};
-	args["materials"] = {{"type", "Laplacian"}};
+	args["materials"] = {{"type", name == "ElasticExact" ? "LinearElasticity" : "Laplacian"}};
+	if (name == "ElasticExact")
+	{
+		args["materials"]["E"] = 1e5;
+		args["materials"]["nu"] = 0.3;
+	}
 	args["preset_problem"] = {{"type", name}};
 	if (has_time)
 		args["time"] = {{"tend", 1}, {"dt", 1}};

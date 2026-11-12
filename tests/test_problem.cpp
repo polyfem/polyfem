@@ -627,9 +627,9 @@ TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[proble
 	std::filesystem::remove(nodal_neumann_path);
 }
 
-TEST_CASE("franke is independent of time", "[problem]")
+TEST_CASE("static exact problems are independent of time", "[problem]")
 {
-	const auto name = GENERATE("Franke", "FrankeOld");
+	const auto name = GENERATE("Franke", "FrankeOld", "ElasticExact");
 	const int dimension = GENERATE(2, 3);
 	const double time = GENERATE(0.0, 0.37, 2.0);
 	CAPTURE(name, dimension, time);
@@ -641,9 +641,13 @@ TEST_CASE("franke is independent of time", "[problem]")
 		pts.col(2) << 0.4, 0.7, 0.2;
 
 	const auto problem = ProblemFactory::factory().get_problem(name);
-	Laplacian laplacian;
-	laplacian.set_size(dimension);
-	laplacian.add_multimaterial(0, get_params(), Units(), test_resources());
+	std::unique_ptr<Assembler> assembler;
+	if (problem->is_scalar())
+		assembler = std::make_unique<Laplacian>();
+	else
+		assembler = std::make_unique<LinearElasticity>();
+	assembler->set_size(dimension);
+	assembler->add_multimaterial(0, get_params(), Units(), test_resources());
 
 	Eigen::MatrixXd expected, actual;
 	problem->exact(pts, 1, expected);
@@ -656,9 +660,9 @@ TEST_CASE("franke is independent of time", "[problem]")
 	problem->exact_grad(pts, time, actual);
 	CHECK(actual.isApprox(expected, 1e-12));
 
-	problem->rhs(laplacian, pts, 1, expected);
+	problem->rhs(*assembler, pts, 1, expected);
 	REQUIRE(expected.norm() > 0);
-	problem->rhs(laplacian, pts, time, actual);
+	problem->rhs(*assembler, pts, time, actual);
 	CHECK(actual.isApprox(expected, 1e-12));
 }
 
