@@ -95,6 +95,19 @@ jobs:
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
 
+      - name: Collect polyspline diagnostics
+        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
+        continue-on-error: true
+        run: python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics
+
+      - name: Upload polyspline diagnostics
+        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: polyspline-diagnostics-${{ runner.os }}
+          path: build/polyspline-diagnostics
+          retention-days: 7
+
       # - name: Setup tmate session
       #   if: ${{ failure() }}
       #   uses: mxschmitt/action-tmate@v3
@@ -177,6 +190,19 @@ jobs:
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
+
+      - name: Collect polyspline diagnostics
+        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
+        continue-on-error: true
+        run: python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics
+
+      - name: Upload polyspline diagnostics
+        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: polyspline-diagnostics-${{ runner.os }}
+          path: build/polyspline-diagnostics
+          retention-days: 7
 
   ####################
   # Windows
