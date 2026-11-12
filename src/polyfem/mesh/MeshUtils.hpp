@@ -70,6 +70,11 @@ namespace polyfem
 		///
 		void reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R);
 
+		/// Offset along area-weighted surface normals, using the direction away
+		/// from an interior point where incident normals cancel.
+		void offset_surface_vertices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+									 const Eigen::RowVector3d &interior_point, double distance, Eigen::MatrixXd &offset);
+
 		///
 		/// @brief      Computes the signed squared distance from a list of points to a triangle mesh. This
 		///             function build a AABB tree of the input mesh, computes the distance for each query

@@ -18,6 +18,7 @@
 #include <limits>
 
 #include <igl/PI.h>
+#include <Eigen/Geometry>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem::utils;
@@ -336,6 +337,39 @@ void polyfem::mesh::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const E
 		{
 			F(f, lv) = remap(F(f, lv));
 		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void polyfem::mesh::offset_surface_vertices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+											const Eigen::RowVector3d &interior_point, const double distance, Eigen::MatrixXd &offset)
+{
+	Eigen::MatrixXd normals = Eigen::MatrixXd::Zero(V.rows(), 3);
+	Eigen::VectorXd incident_area = Eigen::VectorXd::Zero(V.rows());
+	for (int f = 0; f < F.rows(); ++f)
+	{
+		const Eigen::RowVector3d a = V.row(F(f, 1)) - V.row(F(f, 0));
+		const Eigen::RowVector3d b = V.row(F(f, 2)) - V.row(F(f, 0));
+		const Eigen::RowVector3d normal = a.cross(b);
+		const double area = normal.norm();
+		for (int j = 0; j < 3; ++j)
+		{
+			normals.row(F(f, j)) += normal;
+			incident_area(F(f, j)) += area;
+		}
+	}
+
+	offset = V;
+	for (int v = 0; v < V.rows(); ++v)
+	{
+		Eigen::RowVector3d direction = normals.row(v);
+		// Normalizing a cancellation residual gives an arbitrary direction.
+		if (direction.norm() <= 64 * std::numeric_limits<double>::epsilon() * incident_area(v))
+			direction = V.row(v) - interior_point;
+		const double length = direction.norm();
+		if (length > 0)
+			offset.row(v) += (distance / length) * direction;
 	}
 }
 
