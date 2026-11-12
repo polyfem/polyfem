@@ -92,22 +92,6 @@ jobs:
           path: ${{ env.CACHE_PATH }}
           key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
-      - name: Collect polyspline diagnostics
-        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
-        continue-on-error: true
-        run: |
-          python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics/cube_twist
-          python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics/penguin --scene penguin
-
-      - name: Upload polyspline diagnostics
-        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: polyspline-diagnostics-${{ runner.os }}
-          path: build/polyspline-diagnostics
-          retention-days: 7
-
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
 
@@ -190,22 +174,6 @@ jobs:
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ steps.cache-build.outputs.cache-primary-key }}
-
-      - name: Collect polyspline diagnostics
-        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
-        continue-on-error: true
-        run: |
-          python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics/cube_twist
-          python tests/collect_polyspline_diagnostics.py --binary build/PolyFEM_bin --output-dir build/polyspline-diagnostics/penguin --scene penguin
-
-      - name: Upload polyspline diagnostics
-        if: ${{ !cancelled() && matrix.config == 'Release' && steps.build.outcome == 'success' }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: polyspline-diagnostics-${{ runner.os }}
-          path: build/polyspline-diagnostics
-          retention-days: 7
 
       - name: Tests
         run: ctest --test-dir build --verbose --output-on-failure
