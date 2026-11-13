@@ -12,6 +12,7 @@ set(SOURCES
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
 	EnableWarnings.hpp
+	ExactMapCache.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
 	GeometryUtils.cpp

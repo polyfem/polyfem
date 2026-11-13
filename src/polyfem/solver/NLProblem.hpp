@@ -3,6 +3,7 @@
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+#include <polyfem/utils/ExactMapCache.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polysolve::linear
@@ -12,6 +13,8 @@ namespace polysolve::linear
 
 namespace polyfem::solver
 {
+	class BarrierContactNonsmoothTerm;
+
 	class NLProblem : public FullNLProblem
 	{
 	public:
@@ -52,8 +55,18 @@ namespace polyfem::solver
 
 		void solution_changed(const TVector &new_x) override;
 
+		void init(const TVector &x) override;
 		void init_lagging(const TVector &x) override;
 		void update_lagging(const TVector &x, const int iter_num) override;
+
+		/// @brief True once per time step: for the friction block of the first B (BarrierContactNonsmoothTerm::hessian with
+		/// project_to_psd) of the first solve since init_lagging, which takes it at the velocities of the previous step
+		bool take_friction_b_lag()
+		{
+			const bool r = friction_b_lag_pending_;
+			friction_b_lag_pending_ = false;
+			return r;
+		}
 
 		// --------------------------------------------------------------------
 
@@ -64,15 +77,52 @@ namespace polyfem::solver
 
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
+		bool uses_full_size() const { return current_size_ == CurrentSize::FULL_SIZE; }
 
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector full_to_reduced_diag(const TVector &full_diag) const;
+		/// @brief True when every reduced dof is exactly one full dof with weight 1 (the reduced space selects full dofs);
+		/// then red_of_full[f] is the reduced index of full dof f, or -1 for an eliminated dof
+		bool reduction_is_selection(std::vector<int> &red_of_full) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
 
 		double normalize_forms() override;
+
+		/// @brief Add the gradient / Hessian of the augmented Lagrangian penalty at the full-size x (no-op in the reduced
+		/// size, where the constraints are projected out)
+		void add_penalty_gradient(const TVector &x, TVector &grad);
+		void add_penalty_hessian(const TVector &x, THessian &hessian);
+
+		// --- nonsmooth term (polysolve NonsmoothNewton): available with a term installed ---
+
+		/// @brief Install (or remove with null) the nonsmooth term of the solves that follow: the reduced solve, or the
+		/// full-size augmented Lagrangian subproblems
+		void set_nonsmooth_term(const std::shared_ptr<BarrierContactNonsmoothTerm> &term) { nonsmooth_term_ = term; }
+		const std::shared_ptr<BarrierContactNonsmoothTerm> &nonsmooth_term() const { return nonsmooth_term_; }
+
+		bool has_nonsmooth_term() const override;
+		void smooth_gradient(const TVector &x, TVector &grad) override;
+		void smooth_hessian(const TVector &x, const bool project_to_psd, THessian &hessian) override;
+		double smooth_valid_fraction(const TVector &x, const TVector &a, const TVector &b) override;
+		/// @brief Element volume ratios for the Jacobian limits (BarrierContactNonsmoothTerm::min_jacobian(s)); NaN without
+		/// a term or without the fast element validity table (all P1 tets with a NeoHookean material)
+		double smooth_min_jacobian(const TVector &x) override;
+		void smooth_min_jacobians(const TVector &x, const TVector &y, const bool want_min, const bool want_ratio, double &min_j, double &min_ratio) override;
+		void metric_diagonal(TVector &diag) override;
+		void nonsmooth_update(const TVector &y) override;
+		double nonsmooth_value(const TVector &y) override;
+		void nonsmooth_gradient(const TVector &y, TVector &grad) override;
+		void nonsmooth_hessian(const TVector &y, const bool project_to_psd, THessian &hessian) override;
+		bool nonsmooth_hessian_blocks(const TVector &y, TVector &grad, std::vector<polysolve::nonlinear::HessianBlock> &blocks) override;
+		int nonsmooth_active_size() override;
+		void nonsmooth_active_distances(const TVector &a, const TVector &b, TVector &distance, TVector &rate) override;
+		double nonsmooth_step_length(const TVector &a, const TVector &b) override;
+		double nonsmooth_length_scale() override;
+		double nonsmooth_activation_distance() override;
+		void nonsmooth_segment_begin(const TVector &a, const TVector &b) override;
 
 		virtual double grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
 		virtual double step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
@@ -115,10 +165,16 @@ namespace polyfem::solver
 		StiffnessMatrix R1_;                                         ///< R1 block of the QR decomposition of the constraints matrix
 		Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P_; ///< Permutation matrix of the QR decomposition of the constraints matrix
 		TVector Q1R1iTb_;                                            ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
+		utils::ExactMapCache<TVector> r2f_cache_;                    ///< last results of reduced_to_full (cleared where Q2_ or Q1R1iTb_ change)
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;
+		std::shared_ptr<BarrierContactNonsmoothTerm> nonsmooth_term_;
+		BarrierContactNonsmoothTerm &term() const;
 		int num_penalty_constraints_ = 0;
+
+		int solves_in_step_ = 0;              ///< solves (init calls) since the last init_lagging
+		bool friction_b_lag_pending_ = false; ///< see take_friction_b_lag
 
 		void setup_constraints();
 		void update_constraint_values();

@@ -57,7 +57,8 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return collision_mesh_.displace_vertices(utils::unflatten(x, collision_mesh_.dim()));
+		// the CCD, the broad phase and the NonsmoothNewton term map the same points many times: the last results are kept
+		return displaced_cache_.get(x, [&]() { return collision_mesh_.displace_vertices(utils::unflatten(x, collision_mesh_.dim())); });
 	}
 
 	void ContactForm::solution_changed(const Eigen::VectorXd &new_x)

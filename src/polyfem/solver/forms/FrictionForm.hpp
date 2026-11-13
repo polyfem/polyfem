@@ -85,6 +85,16 @@ namespace polyfem::solver
 		/// @brief Compute the derivative of the velocities wrt x
 		double dv_dx() const;
 
+		// --- the form as part of the NonsmoothNewton contact term (BarrierContactNonsmoothTerm); the state is not touched ---
+
+		/// @brief Surface velocities at the end of the previous time step (velocity of the time integrator)
+		Eigen::MatrixXd previous_surface_velocities() const;
+		/// @brief Weighted Hessian at the given surface velocities, as second_derivative but with the PSD projection given
+		/// by the caller instead of the form's flag
+		void hessian_at_velocities(const Eigen::MatrixXd &velocities, const bool project_to_psd, StiffnessMatrix &hessian) const;
+		/// @brief Factor of the weighted value and derivatives (weight / scale)
+		double derivative_factor() const { return weight() / scale(); }
+
 		double mu() const { return mu_; }
 		double epsv() const { return epsv_; }
 		const ipc::TangentialCollisions &friction_collision_set() const { return friction_collision_set_; }
