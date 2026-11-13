@@ -37,7 +37,7 @@ namespace polyfem::solver
 	/// size, a plain selection reduced <- full map and a collision mesh whose vertices each follow exactly one FE node
 	/// with weight 1 (checked once from the dof map and the collision displacement map). max_step_size on a segment with
 	/// cached candidates goes through BilateralSegmentCertifier (same result as the form's max_step_size); element
-	/// validity through FastTetValidity where applicable.
+	/// validity and the element volume ratios of the Jacobian limits through FastTetValidity where applicable.
 	class BarrierContactNonsmoothTerm
 	{
 	public:
@@ -71,6 +71,13 @@ namespace polyfem::solver
 		void smooth_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
 		void smooth_hessian(const Eigen::VectorXd &x, const bool project_to_psd, StiffnessMatrix &hessian);
 		double smooth_valid_fraction(const Eigen::VectorXd &x, const Eigen::VectorXd &a, const Eigen::VectorXd &b);
+		/// @brief Smallest element volume ratio det F at x (NaN without the fast element validity table)
+		double min_jacobian(const Eigen::VectorXd &x) const;
+		/// @brief min_jacobian(y) (if want_min) and the smallest det F(y) / det F(x) of an element (if want_ratio) in one
+		/// sweep; NaN where not requested or without the fast element validity table. The determinants at x are kept for
+		/// the next calls with the same full point x.
+		void min_jacobians(const Eigen::VectorXd &x, const Eigen::VectorXd &y, const bool want_min, const bool want_ratio,
+						   double &min_j, double &min_ratio);
 		void metric_diagonal(Eigen::VectorXd &diag) const;
 		void update(const Eigen::VectorXd &y);
 		double value(const Eigen::VectorXd &y);
@@ -112,6 +119,8 @@ namespace polyfem::solver
 		std::unique_ptr<BilateralSegmentCertifier> certifier_;
 		struct AnchorHolder;
 		std::unique_ptr<AnchorHolder> anchor_;
+		Eigen::VectorXd jdet_key_; ///< full point of jdet_ (empty: none)
+		Eigen::VectorXd jdet_;     ///< det D per tet at jdet_key_ (min_jacobians)
 		double h_edge_;
 		bool local_ok_ = false;
 		std::vector<int> red_of_full_;

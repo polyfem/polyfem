@@ -96,6 +96,10 @@ namespace polyfem::solver
 		void smooth_gradient(const TVector &x, TVector &grad) override;
 		void smooth_hessian(const TVector &x, const bool project_to_psd, THessian &hessian) override;
 		double smooth_valid_fraction(const TVector &x, const TVector &a, const TVector &b) override;
+		/// @brief Element volume ratios for the Jacobian limits (BarrierContactNonsmoothTerm::min_jacobian(s)); NaN without
+		/// a term or without the fast element validity table (all P1 tets with a NeoHookean material)
+		double smooth_min_jacobian(const TVector &x) override;
+		void smooth_min_jacobians(const TVector &x, const TVector &y, const bool want_min, const bool want_ratio, double &min_j, double &min_ratio) override;
 		void metric_diagonal(TVector &diag) override;
 		void nonsmooth_update(const TVector &y) override;
 		double nonsmooth_value(const TVector &y) override;

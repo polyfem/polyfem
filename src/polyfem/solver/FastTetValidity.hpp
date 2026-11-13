@@ -45,11 +45,24 @@ namespace polyfem::solver
 
 		int n_tets() const { return int(tets_.rows()); }
 
+		// --- element volume ratios J = det F = det D(u) / det D(0) (Jacobian limits of NonsmoothNewton) ---
+
+		/// @brief Smallest J over the tets at the full displacement uf
+		double min_jacobian(const Eigen::VectorXd &uf) const;
+		/// @brief det D per tet (oriented as the rest configuration) at the full displacement uf, for min_jacobians
+		Eigen::VectorXd dets(const Eigen::VectorXd &uf) const;
+		/// @brief In one sweep over the tets at the full displacement yf: the smallest J (if want_min, as min_jacobian(yf))
+		/// and the smallest ratio det D(yf) / det_x of a tet's determinant to its entry of det_x = dets(xf) (if want_ratio,
+		/// the smallest J_e(yf) / J_e(xf)); NaN where not requested
+		void min_jacobians(const Eigen::VectorXd &det_x, const Eigen::VectorXd &yf, const bool want_min, const bool want_ratio,
+						   double &min_j, double &min_ratio) const;
+
 	private:
 		double tet_det(int e, const Eigen::VectorXd &uf) const;
 
 		Eigen::MatrixXi tets_;     ///< 4 FE node ids per tet
 		Eigen::MatrixXd nodes_;    ///< rest node positions
 		Eigen::VectorXd tet_sign_; ///< sign of each tet's rest determinant
+		Eigen::VectorXd rest_det_; ///< det D per tet at the zero displacement (the denominator of J)
 	};
 } // namespace polyfem::solver

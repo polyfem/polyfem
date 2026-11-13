@@ -22,6 +22,7 @@
 #include <igl/cat.h>
 #include <igl/Timer.h>
 
+#include <limits>
 #include <set>
 
 /*
@@ -885,6 +886,21 @@ namespace polyfem::solver
 	void NLProblem::smooth_gradient(const TVector &x, TVector &grad) { term().smooth_gradient(x, grad); }
 	void NLProblem::smooth_hessian(const TVector &x, const bool project_to_psd, THessian &hessian) { term().smooth_hessian(x, project_to_psd, hessian); }
 	double NLProblem::smooth_valid_fraction(const TVector &x, const TVector &a, const TVector &b) { return term().smooth_valid_fraction(x, a, b); }
+	double NLProblem::smooth_min_jacobian(const TVector &x)
+	{
+		return has_nonsmooth_term() ? term().min_jacobian(x) : std::numeric_limits<double>::quiet_NaN();
+	}
+
+	void NLProblem::smooth_min_jacobians(const TVector &x, const TVector &y, const bool want_min, const bool want_ratio, double &min_j, double &min_ratio)
+	{
+		if (!has_nonsmooth_term())
+		{
+			min_j = min_ratio = std::numeric_limits<double>::quiet_NaN();
+			return;
+		}
+		term().min_jacobians(x, y, want_min, want_ratio, min_j, min_ratio);
+	}
+
 	void NLProblem::metric_diagonal(TVector &diag) { term().metric_diagonal(diag); }
 	void NLProblem::nonsmooth_update(const TVector &y) { term().update(y); }
 	double NLProblem::nonsmooth_value(const TVector &y) { return term().value(y); }

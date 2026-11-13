@@ -7,6 +7,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/solver/BarrierContactNonsmoothTerm.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/varforms/VarForm.hpp>
@@ -18,6 +19,7 @@
 
 #include <ipc/ipc.hpp>
 
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -91,7 +93,12 @@ namespace
 		int fe_nodes() const { return space_.n_bases; }
 	};
 
-	Eigen::MatrixXd run(const json &args, std::shared_ptr<CheckedTransientVarForm> *checked = nullptr)
+	using CheckedFactory = std::function<std::shared_ptr<CheckedTransientVarForm>(const io::ResourceIO &)>;
+
+	/// @param checked if not null: the formulation is a CheckedTransientVarForm (or the subclass made by `make`) of the
+	///                single material `formulation` of the scene
+	Eigen::MatrixXd run(const json &args, std::shared_ptr<CheckedTransientVarForm> *checked = nullptr,
+						const CheckedFactory &make = nullptr, const std::string &formulation = "NeoHookean")
 	{
 		// resources of State::init: root_path, then the root of the common parameter file
 		const io::FileSystemIO cwd_resources(std::filesystem::current_path());
@@ -106,13 +113,12 @@ namespace
 		state.init(args, /*strict_validation=*/true);
 		if (checked)
 		{
-			// same construction as State::init, with the checking subclass (the formulation is the single material of
-			// the five cubes scene)
+			// same construction as State::init, with the checking subclass
 			Units units;
 			units.init(state.args["units"]);
-			*checked = std::make_shared<CheckedTransientVarForm>(*resources);
+			*checked = make ? make(*resources) : std::make_shared<CheckedTransientVarForm>(*resources);
 			state.args["contact"]["_dhat_was_explicit"] = args.contains("/contact/dhat"_json_pointer);
-			(*checked)->init("NeoHookean", units, state.args, state.args["output"]["directory"].get<std::string>());
+			(*checked)->init(formulation, units, state.args, state.args["output"]["directory"].get<std::string>());
 			state.args["contact"].erase("_dhat_was_explicit");
 			state.variational_formulation = *checked;
 		}
@@ -170,7 +176,11 @@ TEST_CASE("nonsmooth_newton_contact_options", "[nonsmooth_newton]")
 {
 	using polysolve::nonlinear::NonsmoothNewton;
 	const auto d = NonsmoothNewton::Options::from_json(json::object());
-	CHECK(d.max_inner == 10);
+	// the paper configuration: K_max 40, Jacobian bound and floor, hand-back after a slow chain step
+	CHECK(d.max_inner == 40);
+	CHECK(d.jacobian_bound == Catch::Approx(0.6));
+	CHECK(d.jacobian_floor == Catch::Approx(0.1));
+	CHECK(d.hand_back);
 	CHECK(d.relative_stop == Catch::Approx(1e-3));
 	CHECK(d.ftb_tau == Catch::Approx(0.2));
 	CHECK(d.guard);
@@ -344,6 +354,133 @@ TEST_CASE("nonsmooth_newton_contact_al_subproblems", NONSMOOTH_NEWTON_SIM_TAGS)
 	const json o_native = read(out_native);
 	CHECK(count(o_native, "al", "contact_term") == 0);
 	CHECK(count(o_native, "rc", "contact_term") > 0);
+}
+
+namespace
+{
+	/// at the end of step `at`: the element volume ratios J = det F that the Jacobian limits of NonsmoothNewton read
+	/// through Problem::smooth_min_jacobian(s), without and with a contact term installed
+	class JacobianCheckVarForm : public CheckedTransientVarForm
+	{
+	public:
+		using CheckedTransientVarForm::CheckedTransientVarForm;
+
+		int at = -1;
+		bool table = true; ///< the scene has the fast element validity table (all P1 tets, NeoHookean)
+		bool checked = false;
+
+	protected:
+		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool init_lagging = true) override
+		{
+			CheckedTransientVarForm::solve_tensor_nonlinear(step, sol, init_lagging);
+			if (step != at)
+				return;
+			using Vec = Eigen::VectorXd;
+			solver::NLProblem &nl = *solve_data_.nl_problem;
+			const Vec y = nl.full_to_reduced(Vec(sol));
+			const Vec rest = nl.full_to_reduced(Vec::Zero(sol.size()));
+			REQUIRE((nl.reduced_to_full(rest).array() == 0).all()); // no Dirichlet dofs in the five cubes scene
+			double min_j, min_ratio;
+
+			// no term installed: no data
+			CHECK(std::isnan(nl.smooth_min_jacobian(y)));
+			nl.smooth_min_jacobians(rest, y, true, true, min_j, min_ratio);
+			CHECK(std::isnan(min_j));
+			CHECK(std::isnan(min_ratio));
+
+			nl.set_nonsmooth_term(make_nonsmooth_term(args["solver"]["nonlinear"]));
+			const double j = nl.smooth_min_jacobian(y);
+			if (table)
+			{
+				CHECK(nl.smooth_min_jacobian(rest) == 1.0);
+				// the stack rests on the plane: compressed, not inverted
+				CHECK(j > 0);
+				CHECK(j < 1);
+				// one sweep: the same smallest J, and the ratios to the rest configuration (J_e(y) / 1) or to y itself
+				nl.smooth_min_jacobians(rest, y, true, true, min_j, min_ratio);
+				CHECK(min_j == j);
+				CHECK(min_ratio == j);
+				nl.smooth_min_jacobians(y, y, true, true, min_j, min_ratio);
+				CHECK(min_j == j);
+				CHECK(min_ratio == 1.0);
+				// only what is asked for
+				nl.smooth_min_jacobians(rest, y, false, true, min_j, min_ratio);
+				CHECK(std::isnan(min_j));
+				CHECK(min_ratio == j);
+				nl.smooth_min_jacobians(rest, y, true, false, min_j, min_ratio);
+				CHECK(min_j == j);
+				CHECK(std::isnan(min_ratio));
+			}
+			else
+			{
+				CHECK(std::isnan(j));
+				nl.smooth_min_jacobians(rest, y, true, true, min_j, min_ratio);
+				CHECK(std::isnan(min_j));
+				CHECK(std::isnan(min_ratio));
+			}
+			nl.set_nonsmooth_term(nullptr);
+			checked = true;
+		}
+	};
+} // namespace
+
+TEST_CASE("nonsmooth_newton_contact_jacobian_limits", NONSMOOTH_NEWTON_SIM_TAGS)
+{
+	// the Jacobian limits of NonsmoothNewton get the element volume ratios from the fast element validity table (P1 tets,
+	// NeoHookean); the other scenes give NaN and the limits are not applied. Strict limits (0.99) act on every outer
+	// iteration that compresses an element by more than 1%, as at the impact of the stack on the plane (step 8).
+	const int steps = 12;
+	const auto read = [](const std::string &path) {
+		json o;
+		std::ifstream f(path);
+		REQUIRE(f.is_open());
+		f >> o;
+		return o;
+	};
+	const auto limits = [](json args, const double bound, const double floor) {
+		args["/solver/nonlinear/NonsmoothNewton/jacobian"_json_pointer] = json{{"bound", bound}, {"floor", floor}};
+		return args;
+	};
+	const auto checking = [](const bool table) {
+		return [table](const io::ResourceIO &resources) {
+			auto vf = std::make_shared<JacobianCheckVarForm>(resources);
+			vf->at = 10;
+			vf->table = table;
+			return vf;
+		};
+	};
+	const std::string out = (std::filesystem::temp_directory_path() / "nonsmooth_newton_contact_jacobian_limits.json").string();
+
+	SECTION("NeoHookean P1 tets")
+	{
+		std::shared_ptr<CheckedTransientVarForm> checked;
+		const Eigen::MatrixXd sol = run(limits(five_cubes(steps, "NonsmoothNewton", out), 0.99, 0), &checked, checking(true));
+		REQUIRE(sol.allFinite());
+		CHECK(std::static_pointer_cast<JacobianCheckVarForm>(checked)->checked);
+		CHECK(!checked->intersecting);
+		const json o = read(out);
+		CHECK(sum_stat(o, "jacobian_bound_hits") > 0);
+		CHECK(sum_stat(o, "jacobian_floor_hits") == 0);
+
+		const Eigen::MatrixXd sol_floor = run(limits(five_cubes(steps, "NonsmoothNewton", out), 0, 0.99));
+		REQUIRE(sol_floor.allFinite());
+		const json of = read(out);
+		CHECK(sum_stat(of, "jacobian_floor_hits") > 0);
+		CHECK(sum_stat(of, "jacobian_bound_hits") == 0);
+	}
+	SECTION("no fast element validity table")
+	{
+		json args = limits(five_cubes(steps, "NonsmoothNewton", out), 0.99, 0.99);
+		args["/materials/0/type"_json_pointer] = "FixedCorotational";
+		std::shared_ptr<CheckedTransientVarForm> checked;
+		const Eigen::MatrixXd sol = run(args, &checked, checking(false), "FixedCorotational");
+		REQUIRE(sol.allFinite());
+		CHECK(std::static_pointer_cast<JacobianCheckVarForm>(checked)->checked);
+		const json o = read(out);
+		CHECK(sum_stat(o, "path_iterations") > 0);
+		CHECK(sum_stat(o, "jacobian_bound_hits") == 0);
+		CHECK(sum_stat(o, "jacobian_floor_hits") == 0);
+	}
 }
 
 TEST_CASE("nonsmooth_newton_contact_rejects_unsupported", "[nonsmooth_newton]")

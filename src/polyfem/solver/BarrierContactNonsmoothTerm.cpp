@@ -244,6 +244,31 @@ namespace polyfem::solver
 		return fast_validity_->valid_fraction(anchor_->anchor, a, b, [this](const Vec &y) { return problem_.reduced_to_full(y); });
 	}
 
+	double BarrierContactNonsmoothTerm::min_jacobian(const Vec &x) const
+	{
+		if (!fast_validity_)
+			return NaN;
+		return fast_validity_->min_jacobian(problem_.reduced_to_full(x));
+	}
+
+	void BarrierContactNonsmoothTerm::min_jacobians(const Vec &x, const Vec &y, const bool want_min, const bool want_ratio, double &min_j, double &min_ratio)
+	{
+		min_j = min_ratio = NaN;
+		if (!fast_validity_ || !(want_min || want_ratio))
+			return;
+		if (want_ratio)
+		{
+			// x is the outer iterate of all trial points of an inner loop
+			const Vec xf = problem_.reduced_to_full(x);
+			if (!(jdet_key_.size() == xf.size() && jdet_key_ == xf))
+			{
+				jdet_ = fast_validity_->dets(xf);
+				jdet_key_ = xf;
+			}
+		}
+		fast_validity_->min_jacobians(jdet_, problem_.reduced_to_full(y), want_min, want_ratio, min_j, min_ratio);
+	}
+
 	/// Native validity shortening (cf. polysolve compute_nan_free_step_size): halve until the step is valid and the
 	/// smooth energy is finite. Returns the fraction.
 	double BarrierContactNonsmoothTerm::valid_fraction_native(const Vec &a, const Vec &b)

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace polyfem::solver
 {
@@ -53,7 +54,45 @@ namespace polyfem::solver
 		logger().info("[NonsmoothNewton] fast validity {}: NeoHookean {}, P1 tets {} ({} tets)", p1 ? "on" : "off (native check used)", neo, p1, v->tets_.rows());
 		if (!p1)
 			return nullptr;
+		// rest determinants as tet_det evaluates them at the zero displacement
+		const Eigen::VectorXd zero = Eigen::VectorXd::Zero(3 * n_bases);
+		v->rest_det_.resize(v->tets_.rows());
+		for (int e = 0; e < v->tets_.rows(); ++e)
+			v->rest_det_[e] = v->tet_det(e, zero);
 		return v;
+	}
+
+	double FastTetValidity::min_jacobian(const Eigen::VectorXd &uf) const
+	{
+		double m = std::numeric_limits<double>::infinity();
+		for (int e = 0; e < n_tets(); ++e)
+			m = std::min(m, tet_det(e, uf) / rest_det_[e]);
+		return m;
+	}
+
+	Eigen::VectorXd FastTetValidity::dets(const Eigen::VectorXd &uf) const
+	{
+		Eigen::VectorXd d(n_tets());
+		for (int e = 0; e < n_tets(); ++e)
+			d[e] = tet_det(e, uf);
+		return d;
+	}
+
+	void FastTetValidity::min_jacobians(const Eigen::VectorXd &det_x, const Eigen::VectorXd &yf, const bool want_min, const bool want_ratio,
+										double &min_j, double &min_ratio) const
+	{
+		constexpr double inf = std::numeric_limits<double>::infinity();
+		double mj = inf, mr = inf;
+		for (int e = 0; e < n_tets(); ++e)
+		{
+			const double dy = tet_det(e, yf);
+			if (want_min)
+				mj = std::min(mj, dy / rest_det_[e]);
+			if (want_ratio)
+				mr = std::min(mr, dy / det_x[e]);
+		}
+		min_j = want_min ? mj : std::numeric_limits<double>::quiet_NaN();
+		min_ratio = want_ratio ? mr : std::numeric_limits<double>::quiet_NaN();
 	}
 
 	double FastTetValidity::tet_det(int e, const Eigen::VectorXd &uf) const
