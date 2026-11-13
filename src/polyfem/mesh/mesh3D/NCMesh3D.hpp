@@ -188,6 +188,9 @@ namespace polyfem
 			int n_cells() const override { return n_elements; }
 			int n_faces() const override
 			{
+				if (counts_cached)
+					return n_valid_faces;
+
 				int n = 0;
 				for (const auto &face : faces)
 					if (face.n_elem())
@@ -196,6 +199,9 @@ namespace polyfem
 			}
 			int n_edges() const override
 			{
+				if (counts_cached)
+					return n_valid_edges;
+
 				int n = 0;
 				for (const auto &edge : edges)
 					if (edge.n_elem())
@@ -204,6 +210,9 @@ namespace polyfem
 			}
 			int n_vertices() const override
 			{
+				if (counts_cached)
+					return n_valid_vertices;
+
 				int n = 0;
 				for (const auto &vert : vertices)
 					if (vert.n_elem())
@@ -459,6 +468,12 @@ namespace polyfem
 
 			bool index_prepared = false;
 			bool adj_prepared = false;
+			// number of valid primitives, cached by build_index_mapping so that n_vertices() etc. are O(1)
+			// instead of a scan over all (also invalid) primitives; invalidated whenever elements change
+			bool counts_cached = false;
+			int n_valid_vertices = 0;
+			int n_valid_edges = 0;
+			int n_valid_faces = 0;
 
 			std::vector<ncElem> elements;
 			std::vector<ncVert> vertices;

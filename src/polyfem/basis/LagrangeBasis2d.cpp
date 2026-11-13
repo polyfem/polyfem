@@ -182,9 +182,6 @@ namespace
 
 	void tri_local_to_global(const bool is_geom_bases, const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &edge_orders, std::vector<int> &res, MeshNodes &nodes, std::vector<std::vector<int>> &edge_virtual_nodes)
 	{
-		int edge_offset = mesh.n_vertices();
-		int face_offset = edge_offset + mesh.n_edges();
-
 		const int n_edge_nodes = p > 1 ? ((p - 1) * 3) : 0;
 		const int nn = p > 2 ? (p - 2) : 0;
 		const int n_face_nodes = nn * (nn + 1) / 2;
@@ -311,9 +308,6 @@ namespace
 
 	void quad_local_to_global(const bool serendipity, const int q, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
 	{
-		int edge_offset = mesh.n_vertices();
-		int face_offset = edge_offset + mesh.n_edges();
-
 		const int nn = q > 1 ? (q - 1) : 0;
 		const int n_edge_nodes = nn * 4;
 		const int n_face_nodes = serendipity ? 0 : nn * nn;
