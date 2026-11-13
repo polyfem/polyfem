@@ -8,6 +8,7 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <ipc/candidates/candidates.hpp>
 #include <ipc/collision_mesh.hpp>
@@ -388,26 +389,28 @@ namespace polyfem::solver
 		const auto &Fc = mesh_.faces();
 		const double w = contact_->weight();
 		grad = Vec::Zero(y.size());
+		const size_t nb = cs.size(), nf = friction_ ? friction_->friction_collision_set().size() : 0;
 		blocks.clear();
-		blocks.reserve(cs.size() + (friction_ ? friction_->friction_collision_set().size() : 0));
-		for (size_t i = 0; i < cs.size(); ++i)
-		{
-			const auto &col = cs[i];
-			const ipc::VectorMax12d xc = col.dof(V, E, Fc);
-			const auto ids = col.vertex_ids(E, Fc);
-			polysolve::nonlinear::HessianBlock &b = blocks.emplace_back();
-			b.size = int(xc.size());
-			const ipc::VectorMax12d g = w * bp.gradient(col, xc);
-			b.H.topLeftCorner(b.size, b.size) = w * bp.hessian(col, xc, ipc::PSDProjectionMethod::NONE);
+		blocks.resize(nb + nf);
+		// the blocks and their gradients per pair in parallel; the gradients are added below in pair order
+		std::vector<ipc::VectorMax12d> gb(nb + nf);
+		const auto set_indices = [&](const auto &ids, polysolve::nonlinear::HessianBlock &b) {
 			for (int a = 0; a < b.size / 3; ++a)
 				for (int d = 0; d < 3; ++d)
-				{
-					const int r = ids[a] >= 0 ? red_of_full_[3 * node_of_vertex_[ids[a]] + d] : -1;
-					b.indices[3 * a + d] = r;
-					if (r >= 0)
-						grad[r] += g[3 * a + d];
-				}
-		}
+					b.indices[3 * a + d] = ids[a] >= 0 ? red_of_full_[3 * node_of_vertex_[ids[a]] + d] : -1;
+		};
+		utils::maybe_parallel_for(int(nb), [&](int start, int end, int /*thread_id*/) {
+			for (size_t i = start; i < size_t(end); ++i)
+			{
+				const auto &col = cs[i];
+				const ipc::VectorMax12d xc = col.dof(V, E, Fc);
+				polysolve::nonlinear::HessianBlock &b = blocks[i];
+				b.size = int(xc.size());
+				gb[i] = w * bp.gradient(col, xc);
+				b.H.topLeftCorner(b.size, b.size) = w * bp.hessian(col, xc, ipc::PSDProjectionMethod::NONE);
+				set_indices(col.vertex_ids(E, Fc), b);
+			}
+		});
 		if (friction_)
 		{
 			// one block per lagged friction pair, at the surface velocities of y (unprojected; gradient wrt x = weighted
@@ -416,24 +419,25 @@ namespace polyfem::solver
 			const auto &fcs = friction_->friction_collision_set();
 			const auto &fp = friction_->friction_potential();
 			const double cf = friction_->derivative_factor(), dvdx = friction_->dv_dx();
-			for (size_t i = 0; i < fcs.size(); ++i)
-			{
-				const auto &col = fcs[i];
-				const ipc::VectorMax12d vc = col.dof(Vv, E, Fc);
-				const auto ids = col.vertex_ids(E, Fc);
-				polysolve::nonlinear::HessianBlock &b = blocks.emplace_back();
-				b.size = int(vc.size());
-				const ipc::VectorMax12d g = cf * fp.gradient(col, vc);
-				b.H.topLeftCorner(b.size, b.size) = (cf * dvdx) * fp.hessian(col, vc, ipc::PSDProjectionMethod::NONE);
-				for (int a = 0; a < b.size / 3; ++a)
-					for (int d = 0; d < 3; ++d)
-					{
-						const int r = ids[a] >= 0 ? red_of_full_[3 * node_of_vertex_[ids[a]] + d] : -1;
-						b.indices[3 * a + d] = r;
-						if (r >= 0)
-							grad[r] += g[3 * a + d];
-					}
-			}
+			utils::maybe_parallel_for(int(nf), [&](int start, int end, int /*thread_id*/) {
+				for (size_t i = start; i < size_t(end); ++i)
+				{
+					const auto &col = fcs[i];
+					const ipc::VectorMax12d vc = col.dof(Vv, E, Fc);
+					polysolve::nonlinear::HessianBlock &b = blocks[nb + i];
+					b.size = int(vc.size());
+					gb[nb + i] = cf * fp.gradient(col, vc);
+					b.H.topLeftCorner(b.size, b.size) = (cf * dvdx) * fp.hessian(col, vc, ipc::PSDProjectionMethod::NONE);
+					set_indices(col.vertex_ids(E, Fc), b);
+				}
+			});
+		}
+		for (size_t i = 0; i < nb + nf; ++i)
+		{
+			const auto &b = blocks[i];
+			for (int j = 0; j < b.size; ++j)
+				if (const int r = b.indices[j]; r >= 0)
+					grad[r] += gb[i][j];
 		}
 		return true;
 	}
@@ -451,20 +455,33 @@ namespace polyfem::solver
 		const auto &cs = contact_->collision_set();
 		const auto &Em = mesh_.edges();
 		const auto &Fm = mesh_.faces();
+		// per pair in parallel, then the pairs with a positive distance in order
+		const size_t n = cs.size();
+		std::vector<double> d_all(n), r_all(n);
+		std::vector<char> positive(n, 0);
+		utils::maybe_parallel_for(int(n), [&](int start, int end, int /*thread_id*/) {
+			for (size_t i = start; i < size_t(end); ++i)
+			{
+				const auto &c = cs[i];
+				const Vec xa = c.dof(Va, Em, Fm), xb = c.dof(Vb, Em, Fm);
+				const double d2 = c.compute_distance(xa);
+				if (!(d2 > 0))
+					continue;
+				const double dist = std::sqrt(d2);
+				d_all[i] = dist;
+				r_all[i] = c.compute_distance_gradient(xa).dot(xb - xa) / (2 * dist); // d'(0) along the segment
+				positive[i] = 1;
+			}
+		});
 		std::vector<double> dv, rv;
-		dv.reserve(cs.size());
-		rv.reserve(cs.size());
-		for (size_t i = 0; i < cs.size(); ++i)
-		{
-			const auto &c = cs[i];
-			const Vec xa = c.dof(Va, Em, Fm), xb = c.dof(Vb, Em, Fm);
-			const double d2 = c.compute_distance(xa);
-			if (!(d2 > 0))
-				continue;
-			const double dist = std::sqrt(d2);
-			dv.push_back(dist);
-			rv.push_back(c.compute_distance_gradient(xa).dot(xb - xa) / (2 * dist)); // d'(0) along the segment
-		}
+		dv.reserve(n);
+		rv.reserve(n);
+		for (size_t i = 0; i < n; ++i)
+			if (positive[i])
+			{
+				dv.push_back(d_all[i]);
+				rv.push_back(r_all[i]);
+			}
 		distance = Eigen::Map<const Vec>(dv.data(), Eigen::Index(dv.size()));
 		rate = Eigen::Map<const Vec>(rv.data(), Eigen::Index(rv.size()));
 	}
