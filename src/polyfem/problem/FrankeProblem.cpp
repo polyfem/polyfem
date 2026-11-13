@@ -74,9 +74,9 @@ namespace polyfem
 			VectorNd res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 
@@ -88,9 +88,9 @@ namespace polyfem
 			AutodiffGradPt res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 
@@ -102,9 +102,9 @@ namespace polyfem
 			AutodiffHessianPt res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 
@@ -123,9 +123,9 @@ namespace polyfem
 			VectorNd res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun_old(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 
@@ -137,9 +137,9 @@ namespace polyfem
 			AutodiffGradPt res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun_old(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 
@@ -151,9 +151,9 @@ namespace polyfem
 			AutodiffHessianPt res(1);
 
 			if (pt.size() == 2)
-				res(0) = franke_fun(pt(0), pt(1)) * t;
+				res(0) = franke_fun(pt(0), pt(1));
 			else if (pt.size() == 3)
-				res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
+				res(0) = franke_fun_old(pt(0), pt(1), pt(2));
 			else
 				assert(false);
 

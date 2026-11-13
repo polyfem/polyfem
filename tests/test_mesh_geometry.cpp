@@ -5,6 +5,7 @@
 #include <polyfem/mesh/PointTriangleDistance.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/PolygonMesh.hpp>
+#include <polyfem/mesh/mesh2D/PolygonUtils.hpp>
 #include <polyfem/io/ResourceIO.hpp>
 
 #include <catch2/catch_approx.hpp>
@@ -18,6 +19,65 @@
 
 using namespace polyfem;
 using namespace polyfem::mesh;
+
+TEST_CASE("surface offsets are stable when incident normals cancel", "[mesh_geometry]")
+{
+	const Eigen::RowVector3d interior(0.25, 0.25, -1);
+	const double distance = 0.1;
+	const Eigen::RowVector3d expected = distance * (-interior).normalized();
+	for (const double perturbation : {-1e-16, 0.0, 1e-16})
+	{
+		Eigen::MatrixXd vertices(5, 3);
+		vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, perturbation, 1, 0, 0;
+		Eigen::MatrixXi faces(2, 3);
+		faces << 0, 1, 2, 0, 3, 4;
+		Eigen::MatrixXd offset;
+		offset_surface_vertices(vertices, faces, interior, distance, offset);
+		CHECK(offset.allFinite());
+		CHECK((offset.row(0) - expected).norm() < 1e-14);
+		CHECK((offset.row(1) - vertices.row(1) - Eigen::RowVector3d(0, 0, distance)).norm() < 1e-14);
+	}
+}
+
+TEST_CASE("visibility kernel center is independent of redundant corners", "[mesh_geometry]")
+{
+	Eigen::MatrixXd polygon(5, 2);
+	polygon << 0, 0, 3, 0, 2, 1, 1, 1, 0, 1;
+	const Eigen::RowVector3d expected(19.0 / 15, 7.0 / 15, 0);
+	for (int start = 0; start < polygon.rows(); ++start)
+	{
+		Eigen::MatrixXd reordered(polygon.rows(), 2);
+		for (int i = 0; i < polygon.rows(); ++i)
+			reordered.row(i) = polygon.row((start + i) % polygon.rows());
+		Eigen::RowVector3d center;
+		REQUIRE(is_star_shaped(reordered, center));
+		CHECK((center - expected).norm() < 1e-12);
+	}
+}
+
+TEST_CASE("polygon sampling is stable under collinear subdivisions", "[mesh_geometry]")
+{
+	Eigen::MatrixXd square(4, 2);
+	square << 0, 0, 1, 0, 1, 1, 0, 1;
+	Eigen::MatrixXd expected;
+	sample_polygon(square, 11, expected);
+	for (const double perturbation : {-1e-16, 0.0, 1e-16})
+	{
+		Eigen::MatrixXd subdivided(8, 2);
+		subdivided << 0, 0, 0.25, perturbation, 0.75, perturbation, 1, 0,
+			1, 1, 0, 1, perturbation, 0.75, perturbation, 0.25;
+		for (int start = 0; start < subdivided.rows(); ++start)
+		{
+			const Eigen::RowVector2d translation(10 * start, 20 * start);
+			Eigen::MatrixXd reordered(subdivided.rows(), 2);
+			for (int i = 0; i < subdivided.rows(); ++i)
+				reordered.row(i) = subdivided.row((start + i) % subdivided.rows()) + translation;
+			Eigen::MatrixXd samples;
+			sample_polygon(reordered, 11, samples);
+			CHECK(((samples.rowwise() - translation) - expected).cwiseAbs().maxCoeff() < 1e-13);
+		}
+	}
+}
 
 TEST_CASE("point-triangle distance of degenerate triangles", "[mesh_geometry]")
 {

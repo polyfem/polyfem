@@ -205,7 +205,8 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 		// Solve the system
 		const int num_kernels = centers_.rows();
 		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
-		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
+		// Factor the design matrix directly to avoid squaring its condition number.
+		weights_ = A.colPivHouseholderQr().solve(rhs);
 		logger().trace("-- Solved!");
 
 		return;
@@ -277,6 +278,7 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 
 	// Solve the system
 	logger().trace("-- Solving system of size {}x{}", L.cols(), L.cols());
-	weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
+	const Eigen::MatrixXd reduced = A * L;
+	weights_ += L * reduced.colPivHouseholderQr().solve(rhs);
 	logger().trace("-- Solved!");
 }

@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonUtils.hpp"
 #include <polyfem/utils/ClipperUtils.hpp>
-#include <igl/barycenter.h>
 #include <igl/predicates/exactinit.h>
 #include <igl/predicates/orient2d.h>
 #include <cassert>
+#include <limits>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
@@ -165,16 +165,24 @@ bool polyfem::mesh::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d
 	}
 	else
 	{
-		Eigen::MatrixXi F(1, OV.rows());
-		for (int i = 0; i < OV.rows(); ++i)
-		{
-			F(0, i) = i;
-		}
-		Eigen::MatrixXd BC;
-		igl::barycenter(OV, F, BC);
-		int n = std::min(3, (int)BC.cols());
 		bary.setZero();
-		bary.head(n) = BC.row(0).head(n);
+		const Eigen::RowVector2d origin = OV.row(0);
+		Eigen::RowVector2d moment = Eigen::RowVector2d::Zero();
+		double twice_area = 0;
+		for (int i = 1; i + 1 < OV.rows(); ++i)
+		{
+			const Eigen::RowVector2d a = OV.row(i) - origin;
+			const Eigen::RowVector2d b = OV.row(i + 1) - origin;
+			const double cross = a.x() * b.y() - a.y() * b.x();
+			twice_area += cross;
+			moment += cross * (a + b);
+		}
+		// Clipping can repeat corners or insert collinear vertices. Their
+		// multiplicity must not change the point used for refinement.
+		if (twice_area != 0)
+			bary.head<2>() = origin + moment / (3 * twice_area);
+		else
+			bary.head<2>() = OV.colwise().mean();
 		return true;
 	}
 }
@@ -276,26 +284,29 @@ void polyfem::mesh::sample_polygon(const Eigen::MatrixXd &poly, int num_samples,
 		return (poly.row(i) - poly.row((i + 1) % n)).norm();
 	};
 
-	// Step 1: compute starting edge + total length of the polygon
+	// Start at the lexicographically smallest vertex. A longest-edge midpoint
+	// changes when clipping inserts or removes collinear vertices.
 	int i0 = 0;
-	double max_length = 0;
 	double total_length = 0;
+	const double coordinate_tolerance = 64 * std::numeric_limits<double>::epsilon() * poly.cwiseAbs().maxCoeff();
 	for (int i = 0; i < n; ++i)
 	{
-		double len = length(i);
-		total_length += len;
-		if (len > max_length)
+		total_length += length(i);
+		for (int d = 0; d < poly.cols(); ++d)
 		{
-			max_length = len;
-			i0 = i;
+			const double difference = poly(i, d) - poly(i0, d);
+			if (std::abs(difference) <= coordinate_tolerance)
+				continue;
+			if (difference < 0)
+				i0 = i;
+			break;
 		}
 	}
 
-	// Step 2: place a sample at regular intervals along the polygon,
-	// starting from the middle of edge i0
+	// Place samples at the midpoints of equal arclength intervals.
 	S.resize(num_samples, poly.cols());
 	double spacing = total_length / num_samples; // sampling distance
-	double offset = length(i0) / 2.0;            // distance from first sample to vertex i0
+	double offset = spacing / 2.0;               // distance from first sample to vertex i0
 	double distance_to_next = length(i0);
 	for (int s = 0, i = i0; s < num_samples; ++s)
 	{

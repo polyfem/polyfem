@@ -9,9 +9,9 @@ namespace polyfem
 	namespace basis
 	{
 		// See `RBFWithQuadratic.cpp` for a detail commented version of the code.
-		// This class implements the same consistency constraints, but uses Lagrange
-		// multipliers to solve the constrained least-square system, instead of
-		// eliminating the constraints explicitly from the system.
+		// This class implements the same consistency constraints, using
+		// an orthonormal null space of the full constraint matrix to solve the
+		// constrained least-square system.
 		class RBFWithQuadraticLagrange
 		{
 		public:

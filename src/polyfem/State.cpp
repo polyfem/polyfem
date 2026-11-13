@@ -399,6 +399,8 @@ namespace polyfem
 		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
 		variational_formulation->init(formulation, units, args, output_dir);
 		args["contact"].erase("_dhat_was_explicit");
+
+		variational_formulation->validate_time_dependence();
 	}
 
 	void State::init(const io::CheckpointReader &checkpoint, const bool strict_validation)
