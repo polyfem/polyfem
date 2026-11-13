@@ -3,6 +3,7 @@
 #include "Form.hpp"
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/ExactMapCache.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
@@ -137,6 +138,8 @@ namespace polyfem::solver
 
 		/// @brief Collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
+		/// @brief Last results of compute_displaced_surface (the collision mesh does not change during the form's life)
+		utils::ExactMapCache<Eigen::MatrixXd> displaced_cache_;
 
 		/// @brief Barrier activation distance
 		const double dhat_;

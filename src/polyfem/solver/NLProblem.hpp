@@ -3,6 +3,7 @@
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+#include <polyfem/utils/ExactMapCache.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polysolve::linear
@@ -164,6 +165,7 @@ namespace polyfem::solver
 		StiffnessMatrix R1_;                                         ///< R1 block of the QR decomposition of the constraints matrix
 		Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P_; ///< Permutation matrix of the QR decomposition of the constraints matrix
 		TVector Q1R1iTb_;                                            ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
+		utils::ExactMapCache<TVector> r2f_cache_;                    ///< last results of reduced_to_full (cleared where Q2_ or Q1R1iTb_ change)
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;

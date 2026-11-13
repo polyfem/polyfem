@@ -270,6 +270,7 @@ namespace polyfem::solver
 		{
 			Q2_ = penalty_forms_.front()->constraint_projection_matrix();
 			Q2t_ = Q2_.transpose();
+			r2f_cache_.clear();
 
 			reduced_size_ = Q2_.cols();
 			if (reduced_size_ == 0)
@@ -422,6 +423,7 @@ namespace polyfem::solver
 
 		Q2_ = Q.rightCols(reduced_size_);
 		Q2t_ = Q2_.transpose();
+		r2f_cache_.clear();
 
 		assert(Q2_.rows() == full_size_);
 		assert(Q2_.cols() == reduced_size_);
@@ -480,6 +482,7 @@ namespace polyfem::solver
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
+			r2f_cache_.clear();
 			return;
 		}
 
@@ -544,6 +547,7 @@ namespace polyfem::solver
 		assert((R1_.transpose() * sol - constraint_values).norm() < 1e-10);
 
 		Q1R1iTb_ = Q1_ * sol;
+		r2f_cache_.clear();
 
 		timer.stop();
 		logger().debug("Computing Q1R1iTb took: {}", timer.getElapsedTime());
@@ -847,18 +851,20 @@ namespace polyfem::solver
 		}
 
 		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
-
-		const TVector full = Q1R1iTb_ + Q2_ * reduced;
+		// NonsmoothNewton lifts the same reduced points many times per inner step: the last results are kept
+		return r2f_cache_.get(reduced, [&]() {
+			const TVector full = Q1R1iTb_ + Q2_ * reduced;
 
 #ifndef NDEBUG
-		for (const auto &f : penalty_forms_)
-		{
-			// std::cout << f->compute_error(full) << std::endl;
-			assert(f->compute_error(full) < 1e-8);
-		}
+			for (const auto &f : penalty_forms_)
+			{
+				// std::cout << f->compute_error(full) << std::endl;
+				assert(f->compute_error(full) < 1e-8);
+			}
 #endif
 
-		return full;
+			return full;
+		});
 	}
 
 	void NLProblem::full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const
