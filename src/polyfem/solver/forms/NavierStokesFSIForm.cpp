@@ -74,24 +74,28 @@ namespace polyfem::solver
 
 		for (int e = 0; e < int(geom_bases_.size()); ++e)
 		{
-			assembler::ElementAssemblyValues pressure_vals, displacement_vals;
-			pressure_cache_.compute(e, is_volume_, pressure_bases_[e], geom_bases_[e], pressure_vals);
-			mesh_displacement_cache_.compute(e, is_volume_, mesh_displacement_bases_[e], geom_bases_[e], displacement_vals);
+			assembler::ElementAssemblyValues pressure_scratch, displacement_scratch;
+			const auto *pressure_values = &pressure_cache_.get_or_compute(e, is_volume_, pressure_bases_[e], geom_bases_[e], pressure_scratch);
+			const auto *displacement_values = &mesh_displacement_cache_.get_or_compute(e, is_volume_, mesh_displacement_bases_[e], geom_bases_[e], displacement_scratch);
 
 			const quadrature::Quadrature quadrature =
-				pressure_vals.quadrature.weights.size() >= displacement_vals.quadrature.weights.size()
-					? pressure_vals.quadrature
-					: displacement_vals.quadrature;
-			if (!same_quadrature(pressure_vals.quadrature, quadrature))
+				pressure_values->quadrature.weights.size() >= displacement_values->quadrature.weights.size()
+					? pressure_values->quadrature
+					: displacement_values->quadrature;
+			if (!same_quadrature(pressure_values->quadrature, quadrature))
 			{
-				pressure_vals.compute(e, is_volume_, quadrature.points, pressure_bases_[e], geom_bases_[e]);
-				pressure_vals.quadrature = quadrature;
+				pressure_scratch.compute(e, is_volume_, quadrature.points, pressure_bases_[e], geom_bases_[e]);
+				pressure_scratch.quadrature = quadrature;
+				pressure_values = &pressure_scratch;
 			}
-			if (!same_quadrature(displacement_vals.quadrature, quadrature))
+			if (!same_quadrature(displacement_values->quadrature, quadrature))
 			{
-				displacement_vals.compute(e, is_volume_, quadrature.points, mesh_displacement_bases_[e], geom_bases_[e]);
-				displacement_vals.quadrature = quadrature;
+				displacement_scratch.compute(e, is_volume_, quadrature.points, mesh_displacement_bases_[e], geom_bases_[e]);
+				displacement_scratch.quadrature = quadrature;
+				displacement_values = &displacement_scratch;
 			}
+			const auto &pressure_vals = *pressure_values;
+			const auto &displacement_vals = *displacement_values;
 
 			Eigen::VectorXd local_displacement = Eigen::VectorXd::Zero(
 				int(displacement_vals.basis_values.size()) * dim_);
@@ -243,26 +247,29 @@ namespace polyfem::solver
 		x_prev_ = Eigen::VectorXd::Zero(total_size_);
 	}
 
-	void NavierStokesFSIForm::compute_element_values(
-		const int element, SpaceValues &vals, QuadratureVector &da) const
+	NavierStokesFSIForm::SpaceValues NavierStokesFSIForm::compute_element_values(
+		const int element, std::array<assembler::ElementAssemblyValues, 3> &scratch, QuadratureVector &da) const
 	{
+		SpaceValues vals;
 		for (int s = 0; s < 3; ++s)
-			caches_[s].get().compute(element, is_volume_, bases_[s].get()[element], geom_bases_[element], vals[s]);
+			vals[s] = &caches_[s].get().get_or_compute(element, is_volume_, bases_[s].get()[element], geom_bases_[element], scratch[s]);
 
 		int selected = 0;
 		for (int s = 1; s < 3; ++s)
-			if (vals[s].quadrature.weights.size() > vals[selected].quadrature.weights.size())
+			if (vals[s]->quadrature.weights.size() > vals[selected]->quadrature.weights.size())
 				selected = s;
-		const quadrature::Quadrature quadrature = vals[selected].quadrature;
+		const quadrature::Quadrature quadrature = vals[selected]->quadrature;
 		for (int s = 0; s < 3; ++s)
 		{
-			if (!same_quadrature(vals[s].quadrature, quadrature))
+			if (!same_quadrature(vals[s]->quadrature, quadrature))
 			{
-				vals[s].compute(element, is_volume_, quadrature.points, bases_[s].get()[element], geom_bases_[element]);
-				vals[s].quadrature = quadrature;
+				scratch[s].compute(element, is_volume_, quadrature.points, bases_[s].get()[element], geom_bases_[element]);
+				scratch[s].quadrature = quadrature;
+				vals[s] = &scratch[s];
 			}
 		}
-		da = vals[0].det.array() * quadrature.weights.array();
+		da = vals[0]->det.array() * quadrature.weights.array();
+		return vals;
 	}
 
 	Eigen::VectorXd NavierStokesFSIForm::gather(
@@ -288,7 +295,7 @@ namespace polyfem::solver
 		const Eigen::VectorXd &mesh_velocity) const
 	{
 		using Data = assembler::NavierStokesFSIAssemblerData;
-		Data::Values value_refs = {std::cref(vals[0]), std::cref(vals[1]), std::cref(vals[2])};
+		Data::Values value_refs = {std::cref(*vals[0]), std::cref(*vals[1]), std::cref(*vals[2])};
 		Data::Coefficients x_refs = {std::cref(x[0]), std::cref(x[1]), std::cref(x[2])};
 		Data::Coefficients prev_refs = {std::cref(x_prev[0]), std::cref(x_prev[1]), std::cref(x_prev[2])};
 		return Data(
@@ -306,11 +313,11 @@ namespace polyfem::solver
 		int local_offset = 0;
 		for (int s = 0; s < 3; ++s)
 		{
-			for (int i = 0; i < int(vals[s].basis_values.size()); ++i)
+			for (int i = 0; i < int(vals[s]->basis_values.size()); ++i)
 				for (int c = 0; c < components_[s]; ++c)
-					for (const auto &mapping : vals[s].basis_values[i].global)
+					for (const auto &mapping : vals[s]->basis_values[i].global)
 						global(global_offsets_[s] + mapping.index * components_[s] + c) += mapping.val * local(local_offset + i * components_[s] + c);
-			local_offset += int(vals[s].basis_values.size()) * components_[s];
+			local_offset += int(vals[s]->basis_values.size()) * components_[s];
 		}
 	}
 
@@ -323,18 +330,18 @@ namespace polyfem::solver
 	{
 		const int row_components = components_[row_space];
 		const int col_components = components_[col_space];
-		assert(local.rows() == int(vals[row_space].basis_values.size()) * row_components);
-		assert(local.cols() == int(vals[col_space].basis_values.size()) * col_components);
-		for (int i = 0; i < int(vals[row_space].basis_values.size()); ++i)
+		assert(local.rows() == int(vals[row_space]->basis_values.size()) * row_components);
+		assert(local.cols() == int(vals[col_space]->basis_values.size()) * col_components);
+		for (int i = 0; i < int(vals[row_space]->basis_values.size()); ++i)
 			for (int rc = 0; rc < row_components; ++rc)
-				for (int j = 0; j < int(vals[col_space].basis_values.size()); ++j)
+				for (int j = 0; j < int(vals[col_space]->basis_values.size()); ++j)
 					for (int cc = 0; cc < col_components; ++cc)
 					{
 						const double value = local(i * row_components + rc, j * col_components + cc);
 						if (value == 0)
 							continue;
-						for (const auto &row : vals[row_space].basis_values[i].global)
-							for (const auto &col : vals[col_space].basis_values[j].global)
+						for (const auto &row : vals[row_space]->basis_values[i].global)
+							for (const auto &col : vals[col_space]->basis_values[j].global)
 								entries.emplace_back(
 									global_offsets_[row_space] + row.index * row_components + rc,
 									global_offsets_[col_space] + col.index * col_components + cc,
@@ -362,17 +369,17 @@ namespace polyfem::solver
 
 		for (int e = 0; e < int(geom_bases_.size()); ++e)
 		{
-			SpaceValues vals;
+			std::array<assembler::ElementAssemblyValues, 3> scratch;
 			QuadratureVector da;
-			compute_element_values(e, vals, da);
+			const SpaceValues vals = compute_element_values(e, scratch, da);
 			LocalCoefficients local_x, local_prev;
 			for (int s = 0; s < 3; ++s)
 			{
-				local_x[s] = gather(x, vals[s], components_[s], global_offsets_[s]);
-				local_prev[s] = gather(x_prev_, vals[s], components_[s], global_offsets_[s]);
+				local_x[s] = gather(x, *vals[s], components_[s], global_offsets_[s]);
+				local_prev[s] = gather(x_prev_, *vals[s], components_[s], global_offsets_[s]);
 			}
-			const Eigen::VectorXd local_velocity_tilde = gather(velocity_tilde, vals[0], dim_, 0);
-			const Eigen::VectorXd local_mesh_velocity = gather(mesh_velocity, vals[2], dim_, 0);
+			const Eigen::VectorXd local_velocity_tilde = gather(velocity_tilde, *vals[0], dim_, 0);
+			const Eigen::VectorXd local_mesh_velocity = gather(mesh_velocity, *vals[2], dim_, 0);
 			const auto data = make_data(vals, local_x, local_prev, da, local_velocity_tilde, local_mesh_velocity);
 			Eigen::VectorXd local_residual = Eigen::VectorXd::Zero(
 				local_x[0].size() + local_x[1].size() + local_x[2].size());
@@ -409,17 +416,17 @@ namespace polyfem::solver
 
 		for (int e = 0; e < int(geom_bases_.size()); ++e)
 		{
-			SpaceValues vals;
+			std::array<assembler::ElementAssemblyValues, 3> scratch;
 			QuadratureVector da;
-			compute_element_values(e, vals, da);
+			const SpaceValues vals = compute_element_values(e, scratch, da);
 			LocalCoefficients local_x, local_prev;
 			for (int s = 0; s < 3; ++s)
 			{
-				local_x[s] = gather(x, vals[s], components_[s], global_offsets_[s]);
-				local_prev[s] = gather(x_prev_, vals[s], components_[s], global_offsets_[s]);
+				local_x[s] = gather(x, *vals[s], components_[s], global_offsets_[s]);
+				local_prev[s] = gather(x_prev_, *vals[s], components_[s], global_offsets_[s]);
 			}
-			const Eigen::VectorXd local_velocity_tilde = gather(velocity_tilde, vals[0], dim_, 0);
-			const Eigen::VectorXd local_mesh_velocity = gather(mesh_velocity, vals[2], dim_, 0);
+			const Eigen::VectorXd local_velocity_tilde = gather(velocity_tilde, *vals[0], dim_, 0);
+			const Eigen::VectorXd local_mesh_velocity = gather(mesh_velocity, *vals[2], dim_, 0);
 			const auto data = make_data(vals, local_x, local_prev, da, local_velocity_tilde, local_mesh_velocity);
 
 			for (const int row_space : {0, 1})
@@ -448,16 +455,16 @@ namespace polyfem::solver
 	{
 		for (int e = 0; e < int(geom_bases_.size()); ++e)
 		{
-			SpaceValues vals;
+			std::array<assembler::ElementAssemblyValues, 3> scratch;
 			QuadratureVector da;
-			compute_element_values(e, vals, da);
-			const Eigen::VectorXd local_d = gather(x, vals[2], dim_, global_offsets_[2]);
+			const SpaceValues vals = compute_element_values(e, scratch, da);
+			const Eigen::VectorXd local_d = gather(x, *vals[2], dim_, global_offsets_[2]);
 			for (int q = 0; q < da.size(); ++q)
 			{
 				Eigen::MatrixXd F = Eigen::MatrixXd::Identity(dim_, dim_);
-				for (int a = 0; a < int(vals[2].basis_values.size()); ++a)
+				for (int a = 0; a < int(vals[2]->basis_values.size()); ++a)
 				{
-					const Eigen::RowVectorXd grad = vals[2].basis_values[a].grad.row(q) * vals[2].jac_it[q];
+					const Eigen::RowVectorXd grad = vals[2]->basis_values[a].grad.row(q) * vals[2]->jac_it[q];
 					for (int c = 0; c < dim_; ++c)
 						F.row(c) += local_d(a * dim_ + c) * grad;
 				}

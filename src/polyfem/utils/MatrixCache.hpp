@@ -77,6 +77,19 @@ namespace polyfem::utils
 		inline bool is_sparse() const override { return true; }
 		inline size_t mapping_size() const { return mapping_.size(); }
 
+		struct CachedElementWriter
+		{
+			double *values;
+			const int *positions;
+
+			void add(double value) { values[*positions++] += value; }
+		};
+
+		CachedElementWriter cached_element_writer(int element)
+		{
+			return {values_.data(), second_cache()[element].data()};
+		}
+
 		/// e = element_index, i = global row_index, j = global column_index, value = value to add to matrix
 		/// if the cache is yet to be constructed, save the row, column, and value to be added to the second cache
 		///     in this case, modifies_ entries_ and second_cache_entries_

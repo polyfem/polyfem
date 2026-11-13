@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <set>
+#include <utility>
 
 namespace polyfem::assembler
 {
@@ -134,7 +135,7 @@ namespace polyfem::assembler
 			split_mixed_solution(split_solution, x, phi_ndof, psi_ndof, x_phi, x_psi);
 		}
 
-		void compute_mixed_element_values(
+		std::pair<const ElementAssemblyValues &, const ElementAssemblyValues &> compute_mixed_element_values(
 			const int el_index,
 			const bool is_volume,
 			const ElementBases &psi_basis,
@@ -142,39 +143,42 @@ namespace polyfem::assembler
 			const ElementBases &gbasis,
 			const AssemblyValsCache &psi_cache,
 			const AssemblyValsCache &phi_cache,
-			ElementAssemblyValues &psi_vals,
-			ElementAssemblyValues &phi_vals)
+			ElementAssemblyValues &psi_scratch,
+			ElementAssemblyValues &phi_scratch)
 		{
-			psi_cache.compute(el_index, is_volume, psi_basis, gbasis, psi_vals);
-			phi_cache.compute(el_index, is_volume, phi_basis, gbasis, phi_vals);
+			const auto *psi_vals = &psi_cache.get_or_compute(el_index, is_volume, psi_basis, gbasis, psi_scratch);
+			const auto *phi_vals = &phi_cache.get_or_compute(el_index, is_volume, phi_basis, gbasis, phi_scratch);
 
 			const auto same_quadrature = [&]() {
-				if (psi_vals.quadrature.weights.size() != phi_vals.quadrature.weights.size())
+				if (psi_vals->quadrature.weights.size() != phi_vals->quadrature.weights.size())
 					return false;
-				if (psi_vals.quadrature.points.rows() != phi_vals.quadrature.points.rows()
-					|| psi_vals.quadrature.points.cols() != phi_vals.quadrature.points.cols())
+				if (psi_vals->quadrature.points.rows() != phi_vals->quadrature.points.rows()
+					|| psi_vals->quadrature.points.cols() != phi_vals->quadrature.points.cols())
 					return false;
-				return (psi_vals.quadrature.points - phi_vals.quadrature.points).cwiseAbs().maxCoeff() < 1e-14;
+				return (psi_vals->quadrature.points - phi_vals->quadrature.points).cwiseAbs().maxCoeff() < 1e-14;
 			};
 
 			if (same_quadrature())
-				return;
+				return {*psi_vals, *phi_vals};
 
-			if (phi_vals.quadrature.weights.size() >= psi_vals.quadrature.weights.size())
+			if (phi_vals->quadrature.weights.size() >= psi_vals->quadrature.weights.size())
 			{
-				const Quadrature quadrature = phi_vals.quadrature;
-				psi_vals.compute(el_index, is_volume, quadrature.points, psi_basis, gbasis);
-				psi_vals.quadrature = quadrature;
+				const Quadrature quadrature = phi_vals->quadrature;
+				psi_scratch.compute(el_index, is_volume, quadrature.points, psi_basis, gbasis);
+				psi_scratch.quadrature = quadrature;
+				psi_vals = &psi_scratch;
 			}
 			else
 			{
-				const Quadrature quadrature = psi_vals.quadrature;
-				phi_vals.compute(el_index, is_volume, quadrature.points, phi_basis, gbasis);
-				phi_vals.quadrature = quadrature;
+				const Quadrature quadrature = psi_vals->quadrature;
+				phi_scratch.compute(el_index, is_volume, quadrature.points, phi_basis, gbasis);
+				phi_scratch.quadrature = quadrature;
+				phi_vals = &phi_scratch;
 			}
 
-			assert(psi_vals.quadrature.weights.size() == phi_vals.quadrature.weights.size());
-			assert(psi_vals.quadrature.points.rows() == phi_vals.quadrature.points.rows());
+			assert(psi_vals->quadrature.weights.size() == phi_vals->quadrature.weights.size());
+			assert(psi_vals->quadrature.points.rows() == phi_vals->quadrature.points.rows());
+			return {*psi_vals, *phi_vals};
 		}
 	} // namespace
 
@@ -277,13 +281,7 @@ namespace polyfem::assembler
 
 				for (int e = start; e < end; ++e)
 				{
-					ElementAssemblyValues &vals = local_storage.vals;
-					// igl::Timer timer; timer.start();
-					// vals.compute(e, is_volume, bases[e], gbases[e]);
-
-					// compute geometric mapping
-					// evaluate and store basis functions/their gradients at quadrature points
-					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+					const ElementAssemblyValues &vals = cache.get_or_compute(e, is_volume, bases[e], gbases[e], local_storage.vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
@@ -502,14 +500,12 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues psi_vals, phi_vals;
+			ElementAssemblyValues psi_scratch, phi_scratch;
 
 			for (int e = start; e < end; ++e)
 			{
-				// psi_vals.compute(e, is_volume, psi_bases[e], gbases[e]);
-				// phi_vals.compute(e, is_volume, phi_bases[e], gbases[e]);
-				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				const ElementAssemblyValues &psi_vals = psi_cache.get_or_compute(e, is_volume, psi_bases[e], gbases[e], psi_scratch);
+				const ElementAssemblyValues &phi_vals = phi_cache.get_or_compute(e, is_volume, phi_bases[e], gbases[e], phi_scratch);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 
@@ -610,16 +606,15 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &phi_vals = local_storage.vals;
-			ElementAssemblyValues psi_vals;
+			ElementAssemblyValues psi_scratch;
 
 			for (int e = start; e < end; ++e)
 			{
-				compute_mixed_element_values(
+				const auto [psi_vals, phi_vals] = compute_mixed_element_values(
 					e, is_volume,
 					psi_bases[e], phi_bases[e], gbases[e],
 					psi_cache, phi_cache,
-					psi_vals, phi_vals);
+					psi_scratch, local_storage.vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -671,16 +666,15 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &phi_vals = local_storage.vals;
-			ElementAssemblyValues psi_vals;
+			ElementAssemblyValues psi_scratch;
 
 			for (int e = start; e < end; ++e)
 			{
-				compute_mixed_element_values(
+				const auto [psi_vals, phi_vals] = compute_mixed_element_values(
 					e, is_volume,
 					psi_bases[e], phi_bases[e], gbases[e],
 					psi_cache, phi_cache,
-					psi_vals, phi_vals);
+					psi_scratch, local_storage.vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -740,16 +734,15 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &phi_vals = local_storage.vals;
-			ElementAssemblyValues psi_vals;
+			ElementAssemblyValues psi_scratch;
 
 			for (int e = start; e < end; ++e)
 			{
-				compute_mixed_element_values(
+				const auto [psi_vals, phi_vals] = compute_mixed_element_values(
 					e, is_volume,
 					psi_bases[e], phi_bases[e], gbases[e],
 					psi_cache, phi_cache,
-					psi_vals, phi_vals);
+					psi_scratch, local_storage.vals);
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -835,16 +828,17 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &phi_vals = local_storage.vals;
-			ElementAssemblyValues psi_vals;
+			ElementAssemblyValues psi_scratch;
 
 			for (int e = start; e < end; ++e)
 			{
-				compute_mixed_element_values(
+				const auto element_values = compute_mixed_element_values(
 					e, is_volume,
 					psi_bases[e], phi_bases[e], gbases[e],
 					psi_cache, phi_cache,
-					psi_vals, phi_vals);
+					psi_scratch, local_storage.vals);
+				const auto &psi_vals = element_values.first;
+				const auto &phi_vals = element_values.second;
 
 				const Quadrature &quadrature = phi_vals.quadrature;
 				assert(psi_vals.quadrature.weights.size() == quadrature.weights.size());
@@ -954,11 +948,10 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &vals = local_storage.vals;
 
 			for (int e = start; e < end; ++e)
 			{
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+				const ElementAssemblyValues &vals = cache.get_or_compute(e, is_volume, bases[e], gbases[e], local_storage.vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -993,11 +986,10 @@ namespace polyfem::assembler
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &vals = local_storage.vals;
 
 			for (int e = start; e < end; ++e)
 			{
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+				const ElementAssemblyValues &vals = cache.get_or_compute(e, is_volume, bases[e], gbases[e], local_storage.vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -1044,9 +1036,7 @@ namespace polyfem::assembler
 			{
 				// igl::Timer timer; timer.start();
 
-				ElementAssemblyValues &vals = local_storage.vals;
-				// vals.compute(e, is_volume, bases[e], gbases[e]);
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+				const ElementAssemblyValues &vals = cache.get_or_compute(e, is_volume, bases[e], gbases[e], local_storage.vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -1110,31 +1100,32 @@ namespace polyfem::assembler
 		// hess.resize(n_basis * size(), n_basis * size());
 		// hess.setZero();
 
+		const auto *sparse_cache = dynamic_cast<const SparseMatrixCache *>(&mat_cache);
+		const bool cached = sparse_cache && sparse_cache->mapping_size() > 0;
+
 		mat_cache.init(n_basis * size());
 		mat_cache.set_zero();
 
 		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
 
 		const int n_bases = int(bases.size());
+		const bool has_basis_cache = cache.is_initialized();
 		igl::Timer timer;
 		timer.start();
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			auto *cached_worker = cached ? dynamic_cast<SparseMatrixCache *>(local_storage.cache.get()) : nullptr;
 
 			for (int e = start; e < end; ++e)
 			{
-				// Thread-owned scratch: keep `vals`/`da` local to this loop body
-				// rather than aliasing the shared per-thread `local_storage`.
-				// The reused `local_storage.vals` was the site of a cross-thread
-				// use-after-free: its <Dynamic,3> basis-gradient buffers get
-				// resized as element types change on hybrid meshes (tet 10 /
-				// pyramid 14 / prism 18), so one worker could free/realloc a
-				// buffer another was still reading.  Only the accumulation cache
-				// needs to persist per thread.
-				ElementAssemblyValues vals;
+				// Keep the uncached element data local to this iteration.
+				ElementAssemblyValues uncached_values;
+				if (!has_basis_cache)
+					cache.compute(e, is_volume, bases[e], gbases[e], uncached_values);
+				const ElementAssemblyValues &vals =
+					has_basis_cache ? cache.cached_values(e) : uncached_values;
 				QuadratureVector da;
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -1165,46 +1156,55 @@ namespace polyfem::assembler
 				// 	break;
 				// }
 
-				for (int i = 0; i < n_loc_bases; ++i)
-				{
-					const auto &global_i = vals.basis_values[i].global;
-
-					for (int j = 0; j < n_loc_bases; ++j)
-					// for(int j = 0; j <= i; ++j)
+				// Visit contributions in the same order used to build the sparse mapping.
+				const auto scatter_element = [&](auto add_value) {
+					for (int i = 0; i < n_loc_bases; ++i)
 					{
-						const auto &global_j = vals.basis_values[j].global;
+						const auto &global_i = vals.basis_values[i].global;
 
-						for (int n = 0; n < size(); ++n)
+						for (int j = 0; j < n_loc_bases; ++j)
+						// for(int j = 0; j <= i; ++j)
 						{
-							for (int m = 0; m < size(); ++m)
+							const auto &global_j = vals.basis_values[j].global;
+
+							for (int n = 0; n < size(); ++n)
 							{
-								const double local_value = stiffness_val(i * size() + m, j * size() + n);
-
-								for (size_t ii = 0; ii < global_i.size(); ++ii)
+								for (int m = 0; m < size(); ++m)
 								{
-									const auto gi = global_i[ii].index * size() + m;
-									const auto wi = global_i[ii].val;
+									const double local_value = stiffness_val(i * size() + m, j * size() + n);
 
-									for (size_t jj = 0; jj < global_j.size(); ++jj)
+									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
-										const auto gj = global_j[jj].index * size() + n;
-										const auto wj = global_j[jj].val;
+										const auto gi = global_i[ii].index * size() + m;
+										const auto wi = global_i[ii].val;
 
-										local_storage.cache->add_value(e, gi, gj, local_value * wi * wj);
-										// if (j < i) {
-										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-										// }
-
-										if (local_storage.cache->entries_size() >= max_triplets_size)
+										for (size_t jj = 0; jj < global_j.size(); ++jj)
 										{
-											local_storage.cache->prune();
-											logger().debug("cleaning memory...");
+											const auto gj = global_j[jj].index * size() + n;
+											const auto wj = global_j[jj].val;
+
+											add_value(gi, gj, local_value * wi * wj);
 										}
 									}
 								}
 							}
 						}
 					}
+				};
+				if (cached_worker)
+				{
+					scatter_element([writer = cached_worker->cached_element_writer(e)](int, int, double value) mutable { writer.add(value); });
+				}
+				else
+				{
+					scatter_element([&](int gi, int gj, double value) {
+						local_storage.cache->add_value(e, gi, gj, value);
+						if (local_storage.cache->entries_size() >= max_triplets_size)
+						{
+							local_storage.cache->prune();
+							logger().debug("cleaning memory...");
+						}
+					});
 				}
 			}
 		});

@@ -108,10 +108,10 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &jacobian) const override;
 
 	private:
-		using SpaceValues = std::array<assembler::ElementAssemblyValues, 3>;
+		using SpaceValues = std::array<const assembler::ElementAssemblyValues *, 3>;
 		using LocalCoefficients = std::array<Eigen::VectorXd, 3>;
 
-		void compute_element_values(int element, SpaceValues &vals, QuadratureVector &da) const;
+		SpaceValues compute_element_values(int element, std::array<assembler::ElementAssemblyValues, 3> &scratch, QuadratureVector &da) const;
 		Eigen::VectorXd gather(const Eigen::VectorXd &x, const assembler::ElementAssemblyValues &vals, int components, int global_offset) const;
 		void scatter_local_residual(const SpaceValues &vals, const Eigen::VectorXd &local, Eigen::VectorXd &global) const;
 		void scatter_local_block(
