@@ -2,6 +2,7 @@
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <ipc/candidates/candidates.hpp>
 #include <ipc/candidates/edge_edge.hpp>
@@ -89,31 +90,44 @@ namespace polyfem::solver
 		// EE [a0 a1 | b0 b1], FV [v | f0 f1 f2]; vv / ev / pv candidates are not certified (always CCD).
 		const size_t begin_ee = C.vv_candidates.size() + C.ev_candidates.size(), begin_fv = begin_ee + C.ee_candidates.size(),
 					 end_fv = begin_fv + C.fv_candidates.size();
-		for (size_t i = 0; i < C.size(); ++i)
+		// the certificate and the dedupe test of a candidate do not depend on the other candidates or on the earliest time
+		// of impact: in parallel, flagging the candidates left for Tight Inclusion
+		const size_t nC = C.size();
+		std::vector<char> to_ti(nC, 0);
+		utils::maybe_parallel_for(int(nC), [&](int start, int end, int /*thread_id*/) {
+			for (size_t i = start; i < size_t(end); ++i)
+			{
+				if (i >= begin_ee && i < end_fv)
+				{
+					const ipc::CollisionStencil &s = C[i];
+					const ipc::VectorMax12d xa = s.dof(V0, E, Fc), xb = s.dof(V1, E, Fc);
+					const int na = i >= begin_fv ? 1 : 2;
+					double utr, gap;
+					bounds(xa, xb, na, utr, gap);
+					if (gap >= (utr + margin) / cert_c)
+					{
+						if (dedupe_ && gap - utr >= far_thr)
+							keep[i] = 0;
+						continue;
+					}
+					const double Da = std::sqrt(s.compute_distance(xa));
+					if (dedupe_ && Da - utr >= far_thr)
+						keep[i] = 0; // farther than dhat on the whole segment: never active, never colliding
+					if (utr <= cert_c * Da - margin)
+						continue;
+				}
+				to_ti[i] = 1;
+			}
+		});
+		// the certified candidates: the edge-edge and face-vertex candidates not left for Tight Inclusion
+		n_certified += long(std::count(to_ti.begin() + begin_ee, to_ti.begin() + end_fv, char(0)));
+		// Tight Inclusion in candidate order, each with the earliest time of impact so far as its tmax
+		for (size_t i = 0; i < nC; ++i)
 		{
+			if (!to_ti[i])
+				continue;
 			const ipc::CollisionStencil &s = C[i];
 			const ipc::VectorMax12d xa = s.dof(V0, E, Fc), xb = s.dof(V1, E, Fc);
-			const int na = i >= begin_fv ? 1 : 2;
-			if (i >= begin_ee && i < end_fv)
-			{
-				double utr, gap;
-				bounds(xa, xb, na, utr, gap);
-				if (gap >= (utr + margin) / cert_c)
-				{
-					++n_certified;
-					if (dedupe_ && gap - utr >= far_thr)
-						keep[i] = 0;
-					continue;
-				}
-				const double Da = std::sqrt(s.compute_distance(xa));
-				if (dedupe_ && Da - utr >= far_thr)
-					keep[i] = 0; // farther than dhat on the whole segment: never active, never colliding
-				if (utr <= cert_c * Da - margin)
-				{
-					++n_certified;
-					continue;
-				}
-			}
 			double toi = 1;
 			++n_ti;
 			if (s.ccd(xa, xb, toi, 0.0, earliest, ti))
