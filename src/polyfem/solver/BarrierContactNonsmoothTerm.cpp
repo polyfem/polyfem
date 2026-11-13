@@ -6,6 +6,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/Form.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <ipc/candidates/candidates.hpp>
@@ -91,6 +92,8 @@ namespace polyfem::solver
 		: problem_(problem), mesh_(collision_mesh), displacement_map_(displacement_map), fast_validity_(fast_validity),
 		  opts_(opts), mass_full_(mass_full), anchor_(std::make_unique<AnchorHolder>())
 	{
+		// the step bound of the certified narrow phase combines all other forms (friction included), as without the term
+		std::vector<std::shared_ptr<Form>> not_contact;
 		for (const auto &f : forms)
 		{
 			if (auto c = std::dynamic_pointer_cast<BarrierContactForm>(f))
@@ -100,11 +103,19 @@ namespace polyfem::solver
 				contact_ = c;
 				continue;
 			}
+			not_contact.push_back(f);
+			if (auto fr = std::dynamic_pointer_cast<FrictionForm>(f))
+			{
+				if (friction_)
+					log_and_throw_error("NonsmoothNewton: more than one friction form");
+				friction_ = fr;
+				continue;
+			}
 			other_.push_back(f);
 		}
 		if (!contact_)
 			log_and_throw_error("NonsmoothNewton: the problem has no barrier contact form");
-		certifier_ = std::make_unique<BilateralSegmentCertifier>(problem_, contact_, other_, mesh_, opts_.dedupe);
+		certifier_ = std::make_unique<BilateralSegmentCertifier>(problem_, contact_, not_contact, mesh_, opts_.dedupe);
 		const auto &Vr = mesh_.rest_positions();
 		const auto &Ed = mesh_.edges();
 		double sum = 0;
@@ -320,13 +331,23 @@ namespace polyfem::solver
 
 	double BarrierContactNonsmoothTerm::value(const Vec &y)
 	{
-		return contact_->value(problem_.reduced_to_full(y));
+		const Vec yf = problem_.reduced_to_full(y);
+		if (!friction_)
+			return contact_->value(yf);
+		return contact_->value(yf) + friction_->value(yf);
 	}
 
 	void BarrierContactNonsmoothTerm::gradient(const Vec &y, Vec &grad)
 	{
+		const Vec yf = problem_.reduced_to_full(y);
 		Vec g;
-		contact_->first_derivative(problem_.reduced_to_full(y), g);
+		contact_->first_derivative(yf, g);
+		if (friction_)
+		{
+			Vec gf;
+			friction_->first_derivative(yf, gf);
+			g += gf;
+		}
 		grad = to_reduced(g);
 	}
 
@@ -334,7 +355,23 @@ namespace polyfem::solver
 	{
 		contact_->set_project_to_psd(project_to_psd);
 		StiffnessMatrix K;
-		contact_->second_derivative(problem_.reduced_to_full(y), K);
+		const Vec yf = problem_.reduced_to_full(y);
+		contact_->second_derivative(yf, K);
+		if (friction_)
+		{
+			// the friction block is never projected (PSD for mu_s = mu_k) and leaves the form's own projection flag alone;
+			// B (project_to_psd) of the first solve of a time step takes it at the velocities of the previous step
+			const bool at_lag = project_to_psd && problem_.take_friction_b_lag();
+			const Eigen::MatrixXd V = at_lag ? friction_->previous_surface_velocities() : friction_->compute_surface_velocities(yf);
+			StiffnessMatrix Kf;
+			friction_->hessian_at_velocities(V, false, Kf);
+			K += Kf;
+			if (project_to_psd)
+			{
+				++b_assemblies_;
+				b_at_lag_ += at_lag;
+			}
+		}
 		to_reduced(K);
 		hessian = std::move(K);
 	}
@@ -343,7 +380,8 @@ namespace polyfem::solver
 	{
 		if (!(opts_.local_blocks && local_ok_) || problem_.uses_full_size())
 			return false; // the local blocks map to the reduced dofs
-		const auto V = contact_->compute_displaced_surface(problem_.reduced_to_full(y));
+		const Vec yf = problem_.reduced_to_full(y);
+		const auto V = contact_->compute_displaced_surface(yf);
 		const auto &cs = contact_->collision_set();
 		const auto &bp = contact_->barrier_potential();
 		const auto &E = mesh_.edges();
@@ -351,7 +389,7 @@ namespace polyfem::solver
 		const double w = contact_->weight();
 		grad = Vec::Zero(y.size());
 		blocks.clear();
-		blocks.reserve(cs.size());
+		blocks.reserve(cs.size() + (friction_ ? friction_->friction_collision_set().size() : 0));
 		for (size_t i = 0; i < cs.size(); ++i)
 		{
 			const auto &col = cs[i];
@@ -370,12 +408,40 @@ namespace polyfem::solver
 						grad[r] += g[3 * a + d];
 				}
 		}
+		if (friction_)
+		{
+			// one block per lagged friction pair, at the surface velocities of y (unprojected; gradient wrt x = weighted
+			// gradient wrt v, Hessian wrt x = dv/dx times the weighted Hessian wrt v)
+			const Eigen::MatrixXd Vv = friction_->compute_surface_velocities(yf);
+			const auto &fcs = friction_->friction_collision_set();
+			const auto &fp = friction_->friction_potential();
+			const double cf = friction_->derivative_factor(), dvdx = friction_->dv_dx();
+			for (size_t i = 0; i < fcs.size(); ++i)
+			{
+				const auto &col = fcs[i];
+				const ipc::VectorMax12d vc = col.dof(Vv, E, Fc);
+				const auto ids = col.vertex_ids(E, Fc);
+				polysolve::nonlinear::HessianBlock &b = blocks.emplace_back();
+				b.size = int(vc.size());
+				const ipc::VectorMax12d g = cf * fp.gradient(col, vc);
+				b.H.topLeftCorner(b.size, b.size) = (cf * dvdx) * fp.hessian(col, vc, ipc::PSDProjectionMethod::NONE);
+				for (int a = 0; a < b.size / 3; ++a)
+					for (int d = 0; d < 3; ++d)
+					{
+						const int r = ids[a] >= 0 ? red_of_full_[3 * node_of_vertex_[ids[a]] + d] : -1;
+						b.indices[3 * a + d] = r;
+						if (r >= 0)
+							grad[r] += g[3 * a + d];
+					}
+			}
+		}
 		return true;
 	}
 
 	int BarrierContactNonsmoothTerm::active_size() const
 	{
-		return int(contact_->collision_set().size());
+		// lagged friction pairs are active terms too (a path is taken with friction even without barrier contacts)
+		return int(contact_->collision_set().size()) + (friction_ ? int(friction_->friction_collision_set().size()) : 0);
 	}
 
 	void BarrierContactNonsmoothTerm::active_distances(const Vec &a, const Vec &b, Vec &distance, Vec &rate)
@@ -434,8 +500,15 @@ namespace polyfem::solver
 
 	json BarrierContactNonsmoothTerm::stats() const
 	{
-		return {{"certified_pairs", certifier_->n_certified},
-				{"ti_pairs", certifier_->n_ti},
-				{"local_contact_blocks", local_ok_}};
+		json s = {{"certified_pairs", certifier_->n_certified},
+				  {"ti_pairs", certifier_->n_ti},
+				  {"local_contact_blocks", local_ok_}};
+		if (friction_)
+		{
+			s["friction_pairs"] = friction_->friction_collision_set().size();
+			s["friction_b_assemblies"] = b_assemblies_;
+			s["friction_b_at_lag"] = b_at_lag_;
+		}
+		return s;
 	}
 } // namespace polyfem::solver

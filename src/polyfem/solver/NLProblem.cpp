@@ -549,8 +549,18 @@ namespace polyfem::solver
 		logger().debug("Computing Q1R1iTb took: {}", timer.getElapsedTime());
 	}
 
+	void NLProblem::init(const TVector &x)
+	{
+		FullNLProblem::init(x);
+		// solves of the time step (augmented Lagrangian subproblems, the reduced solve, the re-solves of the lagging loop)
+		++solves_in_step_;
+		friction_b_lag_pending_ = solves_in_step_ == 1;
+	}
+
 	void NLProblem::init_lagging(const TVector &x)
 	{
+		solves_in_step_ = 0;
+		friction_b_lag_pending_ = false;
 		FullNLProblem::init_lagging(reduced_to_full(x));
 
 		if (penalty_problem_ && full_size() == current_size())

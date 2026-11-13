@@ -1341,8 +1341,12 @@ namespace polyfem::varform
 			log_and_throw_error("{}: only transient problems are supported (the subspace metric is the lumped mass)", name);
 		if (mesh_->dimension() != 3)
 			log_and_throw_error("{}: only 3D problems are supported", name);
-		if (solve_data_.nl_problem == nullptr || solve_data_.nl_problem->uses_lagging())
-			log_and_throw_error("{}: lagged forms (friction, tangential adhesion) are not supported", name);
+		if (solve_data_.nl_problem == nullptr)
+			log_and_throw_error("{}: needs the nonlinear problem", name);
+		// friction is part of the nonsmooth term; any other lagged form is not supported
+		for (const auto &f : forms)
+			if (f->uses_lagging() && !std::dynamic_pointer_cast<solver::FrictionForm>(f))
+				log_and_throw_error("{}: lagged forms other than friction (tangential adhesion, Rayleigh damping) are not supported", name);
 		int n_barrier = 0;
 		for (const auto &f : forms)
 		{
@@ -1519,7 +1523,20 @@ namespace polyfem::varform
 			nl_problem.init(sol);
 			solve_data_.update_barrier_stiffness(sol);
 			nl_problem.normalize_forms();
-			nl_solver->minimize(nl_problem, tmp_sol);
+			// the re-solve uses the solver of the augmented Lagrangian parameters: with NonsmoothNewton it gets the
+			// nonsmooth term like the other solves
+			if (al_nonsmooth)
+				nl_problem.set_nonsmooth_term(make_nonsmooth_term(al_nonlinear_params));
+			try
+			{
+				nl_solver->minimize(nl_problem, tmp_sol);
+			}
+			catch (...)
+			{
+				nl_problem.set_nonsmooth_term(nullptr);
+				throw;
+			}
+			nl_problem.set_nonsmooth_term(nullptr);
 			nl_problem.finish();
 			prev_sol = sol;
 			sol = nl_problem.reduced_to_full(tmp_sol);

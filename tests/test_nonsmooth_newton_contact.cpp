@@ -8,6 +8,7 @@
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/solver/BarrierContactNonsmoothTerm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/varforms/VarForm.hpp>
@@ -19,11 +20,13 @@
 
 #include <ipc/ipc.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <limits>
+#include <random>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -498,6 +501,12 @@ TEST_CASE("nonsmooth_newton_contact_rejects_unsupported", "[nonsmooth_newton]")
 		args.erase("time");
 		CHECK_THROWS_WITH(run(args), ContainsSubstring("transient"));
 	}
+	SECTION("lagged form other than friction")
+	{
+		json args = five_cubes(2, "NonsmoothNewton", "");
+		args["/solver/rayleigh_damping"_json_pointer] = json::array({json{{"form", "elasticity"}, {"stiffness_ratio", 0.1}}});
+		CHECK_THROWS_WITH(run(args), ContainsSubstring("lagged forms other than friction"));
+	}
 	SECTION("homogenization")
 	{
 		json args = five_cubes(2, "NonsmoothNewton", "");
@@ -506,4 +515,181 @@ TEST_CASE("nonsmooth_newton_contact_rejects_unsupported", "[nonsmooth_newton]")
 		args["/constraints/macro_displacement_gradient/value"_json_pointer] = json::array({json::array({0, 0, 0}), json::array({0, 0, 0}), json::array({0, 0, 0})});
 		CHECK_THROWS_WITH(run(args), ContainsSubstring("macro strain"));
 	}
+}
+
+namespace
+{
+	/// five_cubes_pushed with friction (part of the nonsmooth term) and up to three lagging iterations
+	json five_cubes_friction(const int steps, const std::string &out_json)
+	{
+		json args = five_cubes_pushed(steps, "NonsmoothNewton", out_json);
+		args["/contact/friction_coefficient"_json_pointer] = 0.3;
+		args["/solver/contact/friction_iterations"_json_pointer] = 3;
+		return args;
+	}
+
+	/// per lagged friction pair: 1 if the pair slips at the surface velocities V (|u| > eps_v, the dynamic zone of the
+	/// friction potential), 0 if it sticks
+	std::vector<char> slip_state(const solver::FrictionForm &fr, const ipc::CollisionMesh &mesh, const Eigen::MatrixXd &V)
+	{
+		const auto &E = mesh.edges();
+		const auto &F = mesh.faces();
+		const auto &fcs = fr.friction_collision_set();
+		std::vector<char> slip(fcs.size());
+		for (size_t i = 0; i < fcs.size(); ++i)
+		{
+			const auto &c = fcs[i];
+			const ipc::VectorMax2d u = c.tangent_basis.transpose() * c.relative_velocity(c.dof(V, E, F));
+			slip[i] = c.mu_aniso.head(u.size()).cwiseProduct(u).norm() > fr.epsv();
+		}
+		return slip;
+	}
+
+	/// at the end of step `at`: finite-difference check of the nonsmooth term (barrier + friction) at the solution
+	class FrictionCheckVarForm : public CheckedTransientVarForm
+	{
+	public:
+		using CheckedTransientVarForm::CheckedTransientVarForm;
+
+		int at = -1;
+		long pairs = -1, stick = -1, slip = -1, redraws = 0;
+		double h = 0;
+		double err_grad = -1, err_hess = -1, err_block_grad = -1, err_block_hess = -1;
+		double err_grad_cd_h = -1, err_grad_cd_2h = -1; // plain central differences (diagnostic: truncation ~ h^2)
+
+	protected:
+		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, bool init_lagging = true) override
+		{
+			CheckedTransientVarForm::solve_tensor_nonlinear(step, sol, init_lagging);
+			if (step != at)
+				return;
+			using Vec = Eigen::VectorXd;
+			solver::NLProblem &nl = *solve_data_.nl_problem;
+			const auto term = make_nonsmooth_term(args["solver"]["nonlinear"]);
+			REQUIRE(term->friction() != nullptr);
+			pairs = long(term->friction()->friction_collision_set().size());
+			const Vec y = nl.full_to_reduced(Vec(sol));
+			const auto fr = term->friction();
+			auto state = [&](const Vec &z) { return slip_state(*fr, collision_mesh_, fr->compute_surface_velocities(nl.reduced_to_full(z))); };
+			// step on the scale of one time step at the speed eps_v (the size of the stick zone in displacement);
+			// Richardson-extrapolated central differences, and no pair may change its stick/slip state among the points
+			h = 1e-3 * fr->epsv() / fr->dv_dx();
+			const std::vector<char> s0 = state(y);
+			slip = long(std::count(s0.begin(), s0.end(), 1));
+			stick = long(s0.size()) - slip;
+			std::mt19937_64 rng(7);
+			std::normal_distribution<double> nd;
+			Vec d(y.size());
+			for (;; ++redraws)
+			{
+				for (int i = 0; i < d.size(); ++i)
+					d[i] = nd(rng);
+				d /= d.cwiseAbs().maxCoeff();
+				bool crossing = false;
+				for (const double t : {-2.0, -1.0, 1.0, 2.0})
+					crossing = crossing || state(y + t * h * d) != s0;
+				if (!crossing || redraws >= 50)
+					break;
+			}
+			auto value = [&](const Vec &z) {
+				term->update(z);
+				return term->value(z);
+			};
+			auto gradient = [&](const Vec &z) {
+				term->update(z);
+				Vec g;
+				term->gradient(z, g);
+				return g;
+			};
+			term->update(y);
+			Vec g, gb;
+			term->gradient(y, g);
+			StiffnessMatrix K;
+			term->hessian(y, false, K);
+			std::vector<polysolve::nonlinear::HessianBlock> blocks;
+			REQUIRE(term->hessian_blocks(y, gb, blocks));
+			Vec bd = Vec::Zero(y.size());
+			for (const auto &b : blocks)
+				for (int i = 0; i < b.size; ++i)
+					for (int j = 0; j < b.size; ++j)
+						if (b.indices[i] >= 0 && b.indices[j] >= 0)
+							bd[b.indices[i]] += b.H(i, j) * d[b.indices[j]];
+			const Vec Kd = K * d;
+			const double fd1 = (value(y + h * d) - value(y - h * d)) / (2 * h);
+			const double fd2 = (value(y + 2 * h * d) - value(y - 2 * h * d)) / (4 * h);
+			const Vec gfd1 = (gradient(y + h * d) - gradient(y - h * d)) / (2 * h);
+			const Vec gfd2 = (gradient(y + 2 * h * d) - gradient(y - 2 * h * d)) / (4 * h);
+			const double gd = g.dot(d);
+			err_grad = std::abs(gd - (4 * fd1 - fd2) / 3) / std::abs(gd);
+			err_grad_cd_h = std::abs(gd - fd1) / std::abs(gd);
+			err_grad_cd_2h = std::abs(gd - fd2) / std::abs(gd);
+			err_hess = (Kd - (4 * gfd1 - gfd2) / 3).norm() / Kd.norm();
+			err_block_grad = (gb - g).norm() / g.norm();
+			err_block_hess = (bd - Kd).norm() / Kd.norm();
+			term->update(y);
+		}
+	};
+} // namespace
+
+TEST_CASE("nonsmooth_newton_contact_friction", NONSMOOTH_NEWTON_SIM_TAGS)
+{
+	// the friction form is part of the nonsmooth term in the reduced solves, the augmented Lagrangian subproblems and the
+	// re-solves of the lagging loop (friction_iterations 3); the friction block of B of the first solve of a step is
+	// taken at the velocities of the previous step
+	const int steps = 8;
+	const std::string out = (std::filesystem::temp_directory_path() / "nonsmooth_newton_contact_friction.json").string();
+	std::shared_ptr<CheckedTransientVarForm> checked;
+	const Eigen::MatrixXd sol = run(five_cubes_friction(steps, out), &checked);
+	REQUIRE(sol.allFinite());
+	CHECK(checked->frames == steps);
+	CHECK(!checked->intersecting);
+	json o;
+	{
+		std::ifstream f(out);
+		REQUIRE(f.is_open());
+		f >> o;
+	}
+	long pairs = 0, b_assemblies = 0, b_at_lag = 0, al = 0, lag_paths = 0, lag_solves = 0;
+	for (const auto &e : o["solver_info"])
+	{
+		const json &t = block(e, "contact_term");
+		pairs += t.value("friction_pairs", 0L);
+		b_assemblies += t.value("friction_b_assemblies", 0L);
+		b_at_lag += t.value("friction_b_at_lag", 0L);
+		al += e.value("type", "") == "al" && t.contains("friction_pairs");
+		if (e.contains("lag_i"))
+		{
+			++lag_solves;
+			lag_paths += block(e, "NonsmoothNewton").value("path_iterations", 0L);
+		}
+	}
+	CHECK(pairs > 0);
+	CHECK(b_assemblies > 0);
+	CHECK(b_at_lag > 0);
+	CHECK(al > 0);
+	// the re-solves of the lagging loop take the protected path (the term is installed there)
+	if (lag_solves > 0)
+		CHECK(lag_paths > 0);
+}
+
+TEST_CASE("nonsmooth_newton_contact_friction_derivatives", NONSMOOTH_NEWTON_SIM_TAGS)
+{
+	// gradient and Hessian of the nonsmooth term with friction against central differences, and the per-collision blocks
+	// against the global assembly, at the solution of a step with friction pairs
+	std::shared_ptr<CheckedTransientVarForm> checked;
+	run(five_cubes_friction(10, ""), &checked, [](const io::ResourceIO &resources) {
+		auto vf = std::make_shared<FrictionCheckVarForm>(resources);
+		vf->at = 10;
+		return vf;
+	});
+	const auto vf = std::static_pointer_cast<FrictionCheckVarForm>(checked);
+	REQUIRE(vf->pairs > 0);
+	WARN("pairs " << vf->pairs << " (stick " << vf->stick << ", slip " << vf->slip << "), h " << vf->h << ", redraws " << vf->redraws
+				  << "; value/gradient: plain CD h " << vf->err_grad_cd_h << ", 2h " << vf->err_grad_cd_2h << ", Richardson " << vf->err_grad
+				  << "; gradient/Hessian Richardson " << vf->err_hess);
+	CHECK(vf->redraws < 50);
+	CHECK(vf->err_grad < 1e-6);
+	CHECK(vf->err_hess < 1e-6);
+	CHECK(vf->err_block_grad < 1e-10);
+	CHECK(vf->err_block_hess < 1e-10);
 }

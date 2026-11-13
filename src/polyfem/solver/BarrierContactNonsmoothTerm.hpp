@@ -19,6 +19,7 @@ namespace ipc
 namespace polyfem::solver
 {
 	class Form;
+	class FrictionForm;
 	class NLProblem;
 	class BarrierContactForm;
 	class BilateralSegmentCertifier;
@@ -27,12 +28,15 @@ namespace polyfem::solver
 	/// @brief True if the nonlinear solver parameters select polysolve's NonsmoothNewton strategy
 	bool selects_nonsmooth_newton(const json &nonlinear_params);
 
-	/// @brief The barrier contact form as the nonsmooth term of an NLProblem (polysolve Problem::nonsmooth_*), in its
-	/// current size: the reduced problem, or the full-size augmented Lagrangian subproblems.
+	/// @brief The barrier contact form (with the friction form, if any) as the nonsmooth term of an NLProblem (polysolve
+	/// Problem::nonsmooth_*), in its current size: the reduced problem, or the full-size augmented Lagrangian subproblems.
 	///
 	/// Smooth part: all other forms (plus the augmented Lagrangian penalty in the full size); nonsmooth term: the (single)
-	/// BarrierContactForm. The state of the term is the collision set of the form; nonsmooth_update rebuilds it at the
-	/// trial point (new and vanished collisions included). With local blocks the contact derivatives are formed per
+	/// BarrierContactForm and the FrictionForm, if any. The state of the term is the collision set of the contact form;
+	/// nonsmooth_update rebuilds it at the trial point (new and vanished collisions included). The friction form keeps
+	/// its lagged pairs (fixed during a solve); its energy is evaluated exactly at the trial points, its Hessian is not
+	/// projected, and in B of the first solve of a time step it is taken at the velocities of the previous step
+	/// (NLProblem::take_friction_b_lag). With local blocks the contact (and friction) derivatives are formed per
 	/// collision (12-vector gradient, 12x12 unprojected Hessian) and scattered to reduced dofs; this needs the reduced
 	/// size, a plain selection reduced <- full map and a collision mesh whose vertices each follow exactly one FE node
 	/// with weight 1 (checked once from the dof map and the collision displacement map). max_step_size on a segment with
@@ -53,7 +57,7 @@ namespace polyfem::solver
 			static Options from_json(const json &nonlinear_params);
 		};
 
-		/// @param forms all forms of the problem (exactly one BarrierContactForm)
+		/// @param forms all forms of the problem (exactly one BarrierContactForm, at most one FrictionForm)
 		/// @param mass_full lumped mass per full dof
 		/// @param displacement_map collision full vertex <- FE node map of collision_mesh (null or empty: the collision full
 		///                         vertices are the FE nodes)
@@ -97,8 +101,12 @@ namespace polyfem::solver
 
 		bool local_ok() const { return local_ok_; }
 
-		/// @brief Problem-side counters (certified pairs, TI pairs, local blocks in use)
+		/// @brief Problem-side counters (certified pairs, TI pairs, local blocks in use; with friction: lagged pairs, friction
+		/// blocks of B and how many of them were taken at the previous velocities)
 		json stats() const;
+
+		/// @brief The friction form of the term (null: the problem has no friction)
+		const std::shared_ptr<FrictionForm> &friction() const { return friction_; }
 
 	private:
 		Eigen::VectorXd to_reduced(const Eigen::VectorXd &full) const;
@@ -110,6 +118,7 @@ namespace polyfem::solver
 
 		NLProblem &problem_;
 		std::shared_ptr<BarrierContactForm> contact_;
+		std::shared_ptr<FrictionForm> friction_; ///< friction form of the term (null without friction)
 		std::vector<std::shared_ptr<Form>> other_;
 		const ipc::CollisionMesh &mesh_;
 		const Eigen::SparseMatrix<double> *displacement_map_;
@@ -125,5 +134,7 @@ namespace polyfem::solver
 		bool local_ok_ = false;
 		std::vector<int> red_of_full_;
 		std::vector<int> node_of_vertex_; ///< collision vertex -> FE node
+		long b_assemblies_ = 0;           ///< friction blocks assembled for B (hessian with project_to_psd)
+		long b_at_lag_ = 0;               ///< of which at the velocities of the previous time step
 	};
 } // namespace polyfem::solver

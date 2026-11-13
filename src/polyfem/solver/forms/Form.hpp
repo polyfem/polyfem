@@ -142,6 +142,8 @@ namespace polyfem::solver
 		/// @brief sets the scale for the form
 		/// @param scale
 		void virtual set_scale(const double scale) { scale_ = scale; }
+		/// @brief Scale of the form (the weighted quantities carry weight() / scale())
+		double scale() const { return scale_; }
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite

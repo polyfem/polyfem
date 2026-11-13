@@ -54,8 +54,18 @@ namespace polyfem::solver
 
 		void solution_changed(const TVector &new_x) override;
 
+		void init(const TVector &x) override;
 		void init_lagging(const TVector &x) override;
 		void update_lagging(const TVector &x, const int iter_num) override;
+
+		/// @brief True once per time step: for the friction block of the first B (BarrierContactNonsmoothTerm::hessian with
+		/// project_to_psd) of the first solve since init_lagging, which takes it at the velocities of the previous step
+		bool take_friction_b_lag()
+		{
+			const bool r = friction_b_lag_pending_;
+			friction_b_lag_pending_ = false;
+			return r;
+		}
 
 		// --------------------------------------------------------------------
 
@@ -160,6 +170,9 @@ namespace polyfem::solver
 		std::shared_ptr<BarrierContactNonsmoothTerm> nonsmooth_term_;
 		BarrierContactNonsmoothTerm &term() const;
 		int num_penalty_constraints_ = 0;
+
+		int solves_in_step_ = 0;              ///< solves (init calls) since the last init_lagging
+		bool friction_b_lag_pending_ = false; ///< see take_friction_b_lag
 
 		void setup_constraints();
 		void update_constraint_values();
