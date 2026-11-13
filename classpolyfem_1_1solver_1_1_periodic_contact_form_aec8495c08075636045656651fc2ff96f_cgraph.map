@@ -1,33 +1,33 @@
 <map id="polyfem::solver::PeriodicContactForm::update_barrier_stiffness" name="polyfem::solver::PeriodicContactForm::update_barrier_stiffness">
-<area shape="rect" id="Node000001" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="5,163,213,218"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a5b9b21aa68c20cc0695f9d02b7b1719b" title=" " alt="" coords="261,135,469,175"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,173,247,169,248,174,214,179"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ad76cf24b971189c7b9e1f1c967df599c" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="261,199,469,254"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="214,203,248,208,247,213,213,208"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440" title="Get the current barrier stiffness." alt="" coords="549,5,732,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="452,197,467,185,480,169,486,153,490,121,494,88,502,71,516,55,535,42,538,46,519,59,506,74,499,90,495,121,491,154,484,172,471,189,456,201"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="546,70,735,125"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="446,197,468,184,482,172,491,160,501,148,516,135,532,126,535,131,519,140,504,151,495,163,486,176,471,189,449,201"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="551,149,730,189"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="469,202,537,188,538,193,470,208"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="852,185,977,210"/>
-<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="469,218,838,199,838,204,470,224"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#adab280a7922660b0785c53f54bb761f6" title="Update the cached candidate set for the current solution." alt="" coords="517,264,764,304"/>
-<area shape="poly" id="edge9_Node000003_Node000009" title=" " alt="" coords="470,246,531,259,530,264,469,251"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e" title="Get use_adaptive_barrier_stiffness." alt="" coords="541,329,741,383"/>
-<area shape="poly" id="edge10_Node000003_Node000010" title=" " alt="" coords="409,252,460,283,518,314,536,321,534,326,516,318,458,288,406,257"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a606c55c3f2f191b47815e9279618641b" title="Get use_convergent_formulation." alt="" coords="533,407,749,462"/>
-<area shape="poly" id="edge11_Node000003_Node000011" title=" " alt="" coords="387,253,441,323,478,360,519,392,529,399,527,403,516,397,474,364,437,326,383,256"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="825,85,1004,110"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="735,95,812,95,812,100,735,100"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="730,176,839,187,838,192,730,181"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a6c757fe204d5b21527c9b088dc1c9ab1" title="Get use_area_weighting." alt="" coords="827,329,1003,383"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="736,405,813,382,814,388,737,410"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a0c662347d206bb3f05221707821f5bea" title="Get use_improved_max_operator." alt="" coords="812,407,1017,462"/>
-<area shape="poly" id="edge14_Node000011_Node000014" title=" " alt="" coords="749,432,798,432,798,437,749,437"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae84c35d545e46f50fa9b410c2c1d9df9" title="Get use_physical_barrier." alt="" coords="816,486,1013,541"/>
-<area shape="poly" id="edge16_Node000011_Node000015" title=" " alt="" coords="737,460,806,479,805,485,736,465"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#aa7fc50a04a7d499cdb525b26e41e19e6" title=" " alt="" coords="1065,376,1260,416"/>
-<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="1003,368,1052,375,1051,381,1002,373"/>
-<area shape="poly" id="edge15_Node000014_Node000013" title=" " alt="" coords="1017,416,1051,411,1052,416,1018,421"/>
+<area shape="rect" id="Node000001" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="5,173,213,234"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a5b9b21aa68c20cc0695f9d02b7b1719b" title=" " alt="" coords="261,143,468,187"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,186,247,181,243,185,215,190"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ad76cf24b971189c7b9e1f1c967df599c" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="261,212,468,273"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="212,217,248,223,243,226,214,222"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440" title="Get the current barrier stiffness." alt="" coords="548,5,729,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="453,209,466,198,479,181,485,164,488,130,492,95,500,78,514,60,537,47,532,51,518,64,505,80,497,97,494,130,490,165,483,183,470,201,457,213"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="544,74,733,136"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="448,209,466,198,481,185,490,172,499,159,514,145,533,137,528,141,518,150,503,162,494,175,485,188,470,202,451,213"/>
+<area shape="rect" id="Node000007" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="550,160,728,205"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="467,217,537,204,532,206,469,222"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="849,198,974,226"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="468,234,836,214,831,218,469,239"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#adab280a7922660b0785c53f54bb761f6" title="Update the cached candidate set for the current solution." alt="" coords="516,280,761,325"/>
+<area shape="poly" id="edge9_Node000003_Node000009" title=" " alt="" coords="468,262,522,276,516,277,469,268"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e" title="Get use_adaptive_barrier_stiffness." alt="" coords="539,349,738,410"/>
+<area shape="poly" id="edge10_Node000003_Node000010" title=" " alt="" coords="410,271,461,304,517,335,531,342,525,343,515,339,458,308,409,276"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a606c55c3f2f191b47815e9279618641b" title="Get use_convergent_formulation." alt="" coords="531,434,746,496"/>
+<area shape="poly" id="edge11_Node000003_Node000011" title=" " alt="" coords="385,271,440,346,476,386,518,420,524,426,519,426,514,424,473,390,436,350,384,276"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="823,91,1000,119"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="733,102,810,104,804,106,734,108"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="728,189,836,203,831,204,729,195"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a6c757fe204d5b21527c9b088dc1c9ab1" title="Get use_area_weighting." alt="" coords="824,349,999,410"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="739,431,807,412,812,411,740,436"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a0c662347d206bb3f05221707821f5bea" title="Get use_improved_max_operator." alt="" coords="809,434,1014,496"/>
+<area shape="poly" id="edge14_Node000011_Node000014" title=" " alt="" coords="747,462,797,465,791,465,747,468"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae84c35d545e46f50fa9b410c2c1d9df9" title="Get use_physical_barrier." alt="" coords="813,520,1010,581"/>
+<area shape="poly" id="edge16_Node000011_Node000015" title=" " alt="" coords="740,494,801,515,796,515,739,499"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#aa7fc50a04a7d499cdb525b26e41e19e6" title=" " alt="" coords="1062,400,1255,445"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="1000,392,1049,403,1044,403,1000,397"/>
+<area shape="poly" id="edge15_Node000014_Node000013" title=" " alt="" coords="1014,445,1044,442,1049,441,1015,450"/>
 </map>

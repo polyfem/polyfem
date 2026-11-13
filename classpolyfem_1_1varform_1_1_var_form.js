@@ -53,6 +53,7 @@ var classpolyfem_1_1varform_1_1_var_form =
     [ "solve", "classpolyfem_1_1varform_1_1_var_form.html#a31aaf862de7e19aad7250cf2ace8c431", null ],
     [ "solve_problem", "classpolyfem_1_1varform_1_1_var_form.html#a9b461af2bb4fe5af89f4b6976d3d798a", null ],
     [ "validate_checkpoint_solution", "classpolyfem_1_1varform_1_1_var_form.html#ac3744e6457d1e0a07caddf995830c423", null ],
+    [ "validate_time_dependence", "classpolyfem_1_1varform_1_1_var_form.html#aac77d01a957c67fc3a43888475dbb8d1", null ],
     [ "write_checkpoint_ordering", "classpolyfem_1_1varform_1_1_var_form.html#a2f84682b868c0d47a81ff9c34e86258e", null ],
     [ "polyfem::test::VarFormTestAccess", "classpolyfem_1_1varform_1_1_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62", null ],
     [ "args", "classpolyfem_1_1varform_1_1_var_form.html#ac0b26aef4fc50f8ce54ab37cdd5fd7f1", null ],

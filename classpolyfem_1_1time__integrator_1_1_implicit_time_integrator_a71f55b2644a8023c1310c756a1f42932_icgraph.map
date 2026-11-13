@@ -1,71 +1,71 @@
 <map id="polyfem::time_integrator::ImplicitTimeIntegrator::dt" name="polyfem::time_integrator::ImplicitTimeIntegrator::dt">
-<area shape="rect" id="Node000001" title="Access the time step size." alt="" coords="1153,578,1351,618"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="593,50,790,90"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1244,564,1229,447,1200,291,1181,213,1158,144,1133,88,1118,68,1104,53,1061,28,1014,14,965,9,914,10,865,17,818,27,741,52,740,47,817,22,864,12,914,5,965,3,1015,9,1063,23,1107,49,1123,64,1137,86,1163,142,1186,212,1205,290,1234,446,1250,563"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a680898bf6872548e340fead0a3b3fc69" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="890,64,1090,118"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1247,564,1241,478,1232,423,1220,362,1201,300,1176,239,1144,182,1103,132,1089,119,1092,115,1107,128,1149,179,1181,237,1206,299,1225,361,1238,422,1246,477,1253,564"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="875,142,1105,197"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1245,565,1234,492,1209,398,1191,347,1167,298,1138,252,1103,212,1088,199,1091,195,1107,208,1143,249,1172,296,1196,345,1214,396,1239,491,1250,564"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="897,222,1083,262"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1243,565,1228,502,1202,424,1184,384,1161,344,1135,308,1104,276,1081,262,1084,257,1107,272,1139,304,1166,341,1189,381,1207,422,1233,501,1248,563"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8091df0cb5b72962c3b9d71edb19c5d8" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="897,286,1083,341"/>
-<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="1237,566,1218,519,1190,462,1152,404,1129,378,1104,354,1081,340,1084,336,1107,350,1133,374,1156,401,1194,459,1223,517,1242,564"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="887,444,1093,498"/>
-<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1209,572,1160,542,1104,512,1078,501,1080,496,1106,507,1162,537,1212,568"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a0a1cbc1f511599091c4743a7ce089b94" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="897,365,1083,420"/>
-<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="1229,568,1177,500,1142,464,1104,433,1082,421,1084,416,1107,429,1146,460,1181,496,1233,564"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="887,522,1093,577"/>
-<area shape="poly" id="edge17_Node000001_Node000015" title=" " alt="" coords="1139,580,1093,571,1094,566,1140,575"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a3d8041c1c701fedf188002c0fdab97a6" title=" " alt="" coords="895,626,1085,666"/>
-<area shape="poly" id="edge19_Node000001_Node000016" title=" " alt="" coords="1140,621,1086,631,1085,626,1139,616"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="597,626,786,666"/>
-<area shape="poly" id="edge25_Node000001_Node000017" title=" " alt="" coords="1214,628,1164,657,1106,680,1061,689,1015,694,924,693,838,683,766,668,767,663,839,677,924,687,1015,688,1061,684,1105,675,1162,652,1211,623"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a537267d9973bf52946af383ce03ac314" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="897,740,1083,780"/>
-<area shape="poly" id="edge24_Node000001_Node000018" title=" " alt="" coords="1224,630,1172,677,1107,724,1065,743,1063,738,1104,719,1169,673,1221,626"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#abaa6901fd045c5f9624d92453641633e" title="Initialize the time integrator with the previous values for , , and ." alt="" coords="887,804,1093,844"/>
-<area shape="poly" id="edge26_Node000001_Node000019" title=" " alt="" coords="1237,632,1216,670,1187,714,1150,757,1107,795,1085,806,1083,802,1104,790,1146,754,1182,711,1211,667,1232,629"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" title="Get the stiffness of the form." alt="" coords="895,868,1085,908"/>
-<area shape="poly" id="edge28_Node000001_Node000021" title=" " alt="" coords="1244,632,1226,682,1197,743,1158,805,1134,834,1107,858,1087,871,1084,866,1104,854,1130,830,1154,802,1193,741,1221,680,1239,630"/>
-<area shape="rect" id="Node000029" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="897,932,1083,972"/>
-<area shape="poly" id="edge36_Node000001_Node000029" title=" " alt="" coords="1248,632,1233,694,1207,772,1188,813,1166,853,1139,890,1107,922,1084,937,1081,932,1104,918,1135,887,1161,850,1184,811,1202,770,1228,692,1243,631"/>
-<area shape="rect" id="Node000030" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="897,996,1083,1036"/>
-<area shape="poly" id="edge37_Node000001_Node000030" title=" " alt="" coords="1251,632,1240,705,1216,801,1197,851,1173,900,1144,946,1107,986,1084,1002,1081,997,1104,982,1139,943,1169,898,1192,849,1211,799,1235,704,1245,631"/>
-<area shape="rect" id="Node000031" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="893,1060,1087,1100"/>
-<area shape="poly" id="edge38_Node000001_Node000031" title=" " alt="" coords="1253,631,1246,715,1237,770,1224,828,1206,888,1181,947,1148,1002,1107,1050,1089,1064,1086,1059,1104,1046,1144,999,1176,945,1201,886,1219,827,1232,769,1240,715,1247,631"/>
-<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="885,218,873,210,857,195,847,180,839,164,825,148,781,116,737,92,740,88,784,112,828,144,843,161,852,177,861,192,876,206,888,213"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="587,158,795,198"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="883,222,785,200,786,195,885,216"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="599,222,784,262"/>
-<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="883,244,784,244,784,239,883,239"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="599,286,784,326"/>
-<area shape="poly" id="edge10_Node000005_Node000009" title=" " alt="" coords="884,267,785,288,784,283,883,262"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="316,190,501,230"/>
-<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="574,194,502,202,501,197,574,188"/>
-<area shape="poly" id="edge9_Node000008_Node000007" title=" " alt="" coords="585,232,501,223,502,217,585,227"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="599,358,784,413"/>
-<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="884,342,785,366,784,361,883,337"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="594,482,789,537"/>
-<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="873,489,789,500,789,494,873,483"/>
-<area shape="poly" id="edge16_Node000014_Node000011" title=" " alt="" coords="883,393,784,390,784,385,883,387"/>
-<area shape="poly" id="edge18_Node000015_Node000013" title=" " alt="" coords="873,537,789,525,789,520,873,531"/>
-<area shape="poly" id="edge20_Node000016_Node000016" title=" " alt="" coords="1035,614,1019,607,990,604,965,606,949,611,944,617,947,624,942,626,939,616,946,607,964,601,990,599,1020,602,1037,609"/>
-<area shape="poly" id="edge21_Node000016_Node000017" title=" " alt="" coords="881,657,786,657,786,651,881,652"/>
-<area shape="poly" id="edge22_Node000017_Node000016" title=" " alt="" coords="800,634,895,635,895,640,800,640"/>
-<area shape="poly" id="edge23_Node000017_Node000017" title=" " alt="" coords="740,614,723,607,691,604,664,606,647,611,641,617,644,624,639,626,636,616,644,607,663,601,691,599,724,602,742,609"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a878a050f75c73fc971604f9498b4896d" title=" " alt="" coords="599,704,784,758"/>
-<area shape="poly" id="edge27_Node000019_Node000020" title=" " alt="" coords="898,803,874,795,826,773,783,759,785,754,828,769,876,790,900,798"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1c36fda333a6ed5b32d89a5eac0f0016" title=" " alt="" coords="597,783,786,823"/>
-<area shape="poly" id="edge29_Node000021_Node000022" title=" " alt="" coords="898,867,874,859,826,838,786,826,787,820,828,833,876,854,900,862"/>
-<area shape="rect" id="Node000025" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167" title="Compute the first derivative of the value wrt x." alt="" coords="581,848,801,902"/>
-<area shape="poly" id="edge32_Node000021_Node000025" title=" " alt="" coords="881,886,802,883,802,877,882,881"/>
-<area shape="rect" id="Node000026" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a649b6b14431218d34be498a9cb107093" title="Construct a new Lagged Regularization Form object." alt="" coords="556,927,827,967"/>
-<area shape="poly" id="edge33_Node000021_Node000026" title=" " alt="" coords="882,912,794,930,793,924,881,907"/>
-<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc" title="Compute the second derivative of the value wrt x." alt="" coords="571,992,812,1046"/>
-<area shape="poly" id="edge34_Node000021_Node000027" title=" " alt="" coords="887,916,876,922,861,936,853,951,844,966,828,981,805,994,803,989,825,977,840,963,848,948,857,933,873,918,884,912"/>
-<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92" title="Compute the value of the form." alt="" coords="571,1071,812,1111"/>
-<area shape="poly" id="edge35_Node000021_Node000028" title=" " alt="" coords="885,916,877,922,863,939,857,955,854,990,850,1025,843,1042,828,1060,809,1073,806,1069,825,1056,838,1040,845,1023,848,989,851,954,859,936,873,918,881,911"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_solve_data.html#add0d37ff6f5449695df9ad16b992b366" title="Initialize the forms and return a vector of pointers to them." alt="" coords="309,783,508,823"/>
-<area shape="poly" id="edge30_Node000022_Node000023" title=" " alt="" coords="583,806,508,806,508,800,583,800"/>
-<area shape="rect" id="Node000024" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4" title=" " alt="" coords="5,783,261,823"/>
-<area shape="poly" id="edge31_Node000023_Node000024" title=" " alt="" coords="296,806,262,806,262,800,296,800"/>
+<area shape="rect" id="Node000001" title="Access the time step size." alt="" coords="1151,618,1347,663"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="592,50,788,95"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1242,601,1227,476,1200,308,1181,225,1158,150,1131,91,1117,69,1101,53,1060,29,1014,14,966,9,917,10,869,17,823,27,747,51,744,47,822,22,868,11,917,5,967,3,1016,9,1062,24,1104,49,1121,66,1136,88,1163,149,1186,224,1205,307,1232,475,1247,603"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a680898bf6872548e340fead0a3b3fc69" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="888,63,1088,124"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1245,602,1239,511,1231,451,1219,387,1201,320,1176,255,1143,193,1101,138,1088,126,1088,121,1105,134,1147,190,1181,253,1206,319,1224,386,1237,450,1245,510,1250,604"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="873,148,1103,210"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1242,601,1232,524,1208,423,1190,370,1166,317,1137,267,1101,223,1089,213,1089,207,1105,220,1141,264,1171,314,1195,368,1213,422,1237,523,1247,603"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="896,234,1080,279"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1240,602,1226,536,1201,453,1183,409,1160,367,1133,327,1101,293,1081,279,1080,273,1104,289,1137,324,1165,364,1188,407,1206,451,1232,535,1245,604"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8091df0cb5b72962c3b9d71edb19c5d8" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="896,303,1080,364"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="1234,602,1215,553,1187,493,1149,432,1126,403,1101,378,1081,364,1081,358,1104,374,1130,400,1153,428,1192,490,1220,551,1239,604"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="885,473,1091,535"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1201,609,1155,579,1101,549,1078,538,1078,533,1104,545,1157,575,1207,609"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a0a1cbc1f511599091c4743a7ce089b94" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="896,388,1080,450"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="1224,604,1174,535,1140,497,1101,464,1081,451,1081,446,1104,459,1143,493,1178,531,1230,605"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="885,559,1091,620"/>
+<area shape="poly" id="edge17_Node000001_Node000015" title=" " alt="" coords="1133,619,1092,612,1091,607,1138,618"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a3d8041c1c701fedf188002c0fdab97a6" title=" " alt="" coords="894,669,1082,713"/>
+<area shape="poly" id="edge19_Node000001_Node000016" title=" " alt="" coords="1133,663,1083,675,1082,670,1138,661"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="596,669,784,713"/>
+<area shape="poly" id="edge25_Node000001_Node000017" title=" " alt="" coords="1210,671,1160,705,1103,728,1060,737,1016,742,927,741,843,731,772,716,771,711,844,726,927,736,1015,737,1059,732,1102,723,1158,700,1205,673"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a537267d9973bf52946af383ce03ac314" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="896,789,1080,833"/>
+<area shape="poly" id="edge24_Node000001_Node000018" title=" " alt="" coords="1219,672,1168,725,1104,772,1065,791,1063,786,1101,767,1164,721,1215,675"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#abaa6901fd045c5f9624d92453641633e" title="Initialize the time integrator with the previous values for , , and ." alt="" coords="886,858,1090,903"/>
+<area shape="poly" id="edge26_Node000001_Node000019" title=" " alt="" coords="1233,675,1212,718,1184,763,1147,809,1104,848,1084,860,1082,855,1101,843,1143,805,1179,760,1208,715,1229,679"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" title="Get the stiffness of the form." alt="" coords="894,927,1082,972"/>
+<area shape="poly" id="edge28_Node000001_Node000021" title=" " alt="" coords="1240,676,1223,732,1195,796,1156,861,1132,891,1104,917,1084,930,1082,925,1101,913,1128,887,1152,858,1190,793,1218,730,1236,680"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="896,997,1080,1041"/>
+<area shape="poly" id="edge36_Node000001_Node000029" title=" " alt="" coords="1244,676,1231,744,1205,827,1187,870,1164,912,1137,952,1104,986,1082,1002,1079,997,1101,982,1133,948,1160,910,1182,868,1200,825,1226,743,1240,680"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="896,1066,1080,1111"/>
+<area shape="poly" id="edge37_Node000001_Node000030" title=" " alt="" coords="1247,676,1238,756,1215,857,1196,911,1172,963,1142,1012,1104,1056,1081,1072,1079,1067,1101,1052,1138,1009,1168,961,1191,909,1210,856,1233,755,1244,680"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="891,1135,1085,1180"/>
+<area shape="poly" id="edge38_Node000001_Node000031" title=" " alt="" coords="1249,676,1244,768,1236,826,1224,888,1205,952,1180,1014,1147,1073,1105,1125,1086,1139,1084,1134,1101,1121,1142,1070,1175,1012,1200,950,1219,887,1231,825,1239,768,1246,680"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="880,228,872,224,855,207,846,189,838,172,823,154,782,122,741,98,740,93,785,118,827,150,842,169,851,187,859,203,875,219,885,227"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="586,165,794,209"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="878,232,790,212,788,207,883,230"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="598,234,782,279"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="878,257,784,259,782,254,882,255"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="598,303,782,348"/>
+<area shape="poly" id="edge10_Node000005_Node000009" title=" " alt="" coords="878,283,784,306,782,302,883,280"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="316,199,500,244"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="569,203,502,213,499,208,573,200"/>
+<area shape="poly" id="edge9_Node000008_Node000007" title=" " alt="" coords="580,244,501,235,499,230,585,242"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="598,380,782,442"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="879,363,784,389,782,385,883,360"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="593,508,787,570"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="867,519,789,530,787,525,871,517"/>
+<area shape="poly" id="edge16_Node000014_Node000011" title=" " alt="" coords="878,417,784,416,782,411,883,415"/>
+<area shape="poly" id="edge18_Node000015_Node000013" title=" " alt="" coords="867,570,788,558,787,553,872,569"/>
+<area shape="poly" id="edge20_Node000016_Node000016" title=" " alt="" coords="1029,654,1015,650,988,647,964,649,948,654,942,660,944,669,939,667,937,658,945,649,962,644,988,642,1016,644,1034,653"/>
+<area shape="poly" id="edge21_Node000016_Node000017" title=" " alt="" coords="875,700,785,702,784,697,881,699"/>
+<area shape="poly" id="edge22_Node000017_Node000016" title=" " alt="" coords="799,680,896,682,891,683,801,685"/>
+<area shape="poly" id="edge23_Node000017_Node000017" title=" " alt="" coords="735,654,719,650,690,647,664,649,647,654,640,660,642,669,637,667,635,658,644,649,663,644,690,642,720,644,740,653"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a878a050f75c73fc971604f9498b4896d" title=" " alt="" coords="598,751,782,812"/>
+<area shape="poly" id="edge27_Node000019_Node000020" title=" " alt="" coords="891,853,872,848,824,827,783,812,783,806,826,822,874,843,896,853"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1c36fda333a6ed5b32d89a5eac0f0016" title=" " alt="" coords="596,837,784,881"/>
+<area shape="poly" id="edge29_Node000021_Node000022" title=" " alt="" coords="891,922,872,917,824,896,785,884,785,878,826,891,874,912,896,922"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167" title="Compute the first derivative of the value wrt x." alt="" coords="580,905,800,967"/>
+<area shape="poly" id="edge32_Node000021_Node000025" title=" " alt="" coords="875,945,801,944,800,938,881,944"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a649b6b14431218d34be498a9cb107093" title="Construct a new Lagged Regularization Form object." alt="" coords="555,991,825,1036"/>
+<area shape="poly" id="edge33_Node000021_Node000026" title=" " alt="" coords="876,974,798,993,797,988,881,972"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc" title="Compute the second derivative of the value wrt x." alt="" coords="570,1060,810,1122"/>
+<area shape="poly" id="edge34_Node000021_Node000027" title=" " alt="" coords="883,978,875,986,860,1002,852,1017,843,1034,827,1050,808,1062,806,1057,824,1046,839,1031,847,1015,855,998,872,982,878,980"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92" title="Compute the value of the form." alt="" coords="570,1146,810,1191"/>
+<area shape="poly" id="edge35_Node000021_Node000028" title=" " alt="" coords="883,976,875,986,861,1004,855,1022,852,1059,850,1098,842,1117,827,1135,811,1148,809,1143,823,1132,838,1114,845,1096,847,1059,849,1021,857,1001,871,982,879,979"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_solve_data.html#add0d37ff6f5449695df9ad16b992b366" title="Initialize the forms and return a vector of pointers to them." alt="" coords="309,837,507,881"/>
+<area shape="poly" id="edge30_Node000022_Node000023" title=" " alt="" coords="578,860,508,861,507,856,583,858"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4" title=" " alt="" coords="5,837,261,881"/>
+<area shape="poly" id="edge31_Node000023_Node000024" title=" " alt="" coords="291,860,262,861,260,856,295,858"/>
 </map>

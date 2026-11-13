@@ -1,48 +1,48 @@
 <map id="polyfem::assembler::MassMatrixAssembler::assemble_cross" name="polyfem::assembler::MassMatrixAssembler::assemble_cross">
-<area shape="rect" id="Node000001" title="Assembles the cross mass matrix between to function spaces." alt="" coords="5,441,180,495"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064" title="Compute barycentric coordinates for point p with respect to a simplex." alt="" coords="241,101,434,141"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,440,107,380,131,303,148,262,169,221,195,184,226,151,232,147,235,151,230,155,199,187,174,224,153,264,136,304,112,381,100,441"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3" title="Clip a tetrahedron using tetrahedron." alt="" coords="239,165,436,205"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="101,439,119,396,146,342,182,286,226,235,264,209,267,214,230,239,186,289,151,345,124,398,106,441"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="511,197,707,237"/>
-<area shape="poly" id="edge23_Node000001_Node000006" title=" " alt="" coords="111,438,160,381,191,351,227,326,293,292,363,265,433,245,497,231,498,236,434,250,365,270,295,297,229,330,195,356,163,385,116,442"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de" title="Clip a triangle using triangle." alt="" coords="252,340,423,380"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="155,438,277,383,279,388,157,443"/>
-<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="781,399,988,425"/>
-<area shape="poly" id="edge24_Node000001_Node000014" title=" " alt="" coords="180,461,425,447,724,425,767,421,768,427,724,431,425,452,180,466"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523" title="Map the sample positions in the parametric domain to the object domain (if the element has no paramet..." alt="" coords="228,476,447,516"/>
-<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="180,475,215,479,214,485,180,481"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="500,505,719,545"/>
-<area shape="poly" id="edge19_Node000001_Node000018" title=" " alt="" coords="143,493,184,512,229,525,294,536,361,540,486,537,487,542,361,545,293,541,227,531,182,517,141,498"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1quadrature_1_1_tet_quadrature.html#a808092d0512b96cb368edea456574261" title=" " alt="" coords="260,591,415,646"/>
-<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="127,494,174,532,229,570,254,583,252,588,227,574,170,536,123,498"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1quadrature_1_1_tri_quadrature.html#a85485e705bb0fa392400786863496e85" title=" " alt="" coords="260,670,415,725"/>
-<area shape="poly" id="edge21_Node000001_Node000021" title=" " alt="" coords="109,494,128,531,155,574,189,618,230,657,249,669,246,673,226,661,185,622,151,577,123,533,104,497"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1basis_1_1_element_bases.html#a71f1ea2b92e799be2985c5fdf25364bf" title="Assemble the global nodal positions of the bases." alt="" coords="228,749,447,789"/>
-<area shape="poly" id="edge22_Node000001_Node000022" title=" " alt="" coords="102,495,117,546,142,611,179,678,203,709,230,735,236,740,233,744,226,739,199,712,175,681,137,613,112,548,97,496"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784" title=" " alt="" coords="533,5,685,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="427,163,445,151,456,140,462,129,468,105,474,80,481,67,493,55,519,40,522,44,496,59,486,71,479,82,473,106,467,131,460,143,448,155,430,167"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a8923adbbe8fdbd039c1fe634d506bd3e" title=" " alt="" coords="495,69,724,109"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="416,163,445,151,469,135,493,119,511,111,514,116,496,124,472,139,448,156,418,168"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="437,194,498,202,498,207,436,200"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a9b3e63c6e8fe11d489f9e28bf5158ee0" title=" " alt="" coords="504,133,715,173"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="436,171,490,165,491,170,437,176"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#ab6f39a9cfed378809714309da6270212" title="Clip a polygon using convex polygon." alt="" coords="497,261,722,301"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="404,337,494,311,522,303,524,308,495,316,406,342"/>
-<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1utils.html#aadc2ec9bb2733534462ec65e99bbe9d9" title="Convert a convex polygon to a list of triangles fanned around the first vertex." alt="" coords="510,326,709,351"/>
-<area shape="poly" id="edge11_Node000008_Node000012" title=" " alt="" coords="423,351,496,345,497,350,423,356"/>
-<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211" title="Reorder the vertices of a triangle so they are in clockwise order." alt="" coords="524,376,695,416"/>
-<area shape="poly" id="edge12_Node000008_Node000013" title=" " alt="" coords="423,369,511,380,510,386,422,374"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#aded9e0642bd7eadfbb0af09f88a0bbe1" title=" " alt="" coords="772,245,997,285"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="722,272,758,270,758,275,723,277"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#a9de239868084d24f48a3309f97ffa58e" title=" " alt="" coords="772,309,997,349"/>
-<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="723,298,759,305,758,310,722,304"/>
-<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="695,398,768,403,767,408,695,404"/>
-<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262" title="Compute the signed area of a 2D triangle defined by three points." alt="" coords="1045,360,1216,400"/>
-<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="982,397,1031,390,1032,395,983,402"/>
-<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1045,424,1216,464"/>
-<area shape="poly" id="edge15_Node000014_Node000016" title=" " alt="" coords="983,422,1032,429,1031,434,982,427"/>
-<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="447,505,487,509,486,515,447,510"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="775,505,994,545"/>
-<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="719,523,762,523,762,528,719,528"/>
+<area shape="rect" id="Node000001" title="Assembles the cross mass matrix between to function spaces." alt="" coords="5,469,180,530"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064" title="Compute barycentric coordinates for point p with respect to a simplex." alt="" coords="241,79,433,123"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,468,104,400,126,310,143,262,165,216,192,172,226,134,232,131,229,135,230,138,197,175,169,218,148,265,131,312,109,401,99,469"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3" title="Clip a tetrahedron using tetrahedron." alt="" coords="239,148,435,193"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="103,467,150,366,184,306,226,250,253,223,286,200,283,204,257,227,230,253,189,309,154,368,108,469"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="510,213,706,258"/>
+<area shape="poly" id="edge23_Node000001_Node000006" title=" " alt="" coords="112,467,160,407,191,376,226,349,292,314,361,287,431,266,497,252,493,255,432,271,363,292,294,319,229,354,195,380,164,411,117,470"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de" title="Clip a triangle using triangle." alt="" coords="252,364,422,409"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="159,466,275,414,271,418,162,470"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="780,428,985,456"/>
+<area shape="poly" id="edge24_Node000001_Node000014" title=" " alt="" coords="179,493,424,479,722,457,767,455,762,456,723,462,424,484,181,498"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523" title="Map the sample positions in the parametric domain to the object domain (if the element has no paramet..." alt="" coords="228,507,446,551"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="179,508,215,513,210,515,181,513"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="499,537,717,582"/>
+<area shape="poly" id="edge19_Node000001_Node000018" title=" " alt="" coords="145,528,186,547,228,561,293,572,359,576,486,574,481,576,359,582,292,577,227,566,184,552,146,534"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1quadrature_1_1_tet_quadrature.html#a808092d0512b96cb368edea456574261" title=" " alt="" coords="260,626,414,688"/>
+<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="128,528,176,567,229,605,250,618,245,619,226,610,172,572,128,534"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1quadrature_1_1_tri_quadrature.html#a85485e705bb0fa392400786863496e85" title=" " alt="" coords="260,712,414,773"/>
+<area shape="poly" id="edge21_Node000001_Node000021" title=" " alt="" coords="108,528,129,568,156,613,189,658,229,698,248,712,243,712,226,702,185,661,151,616,124,570,107,534"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1basis_1_1_element_bases.html#a71f1ea2b92e799be2985c5fdf25364bf" title="Assemble the global nodal positions of the bases." alt="" coords="228,797,446,842"/>
+<area shape="poly" id="edge22_Node000001_Node000022" title=" " alt="" coords="100,528,117,585,141,653,178,723,202,755,229,783,235,789,230,788,226,787,198,758,174,726,137,655,112,586,99,533"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784" title=" " alt="" coords="532,5,684,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="425,146,444,134,460,116,467,98,475,79,492,60,520,46,517,50,496,64,480,82,472,100,464,119,448,138,429,149"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a8923adbbe8fdbd039c1fe634d506bd3e" title=" " alt="" coords="494,75,722,119"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="421,145,510,122,506,126,424,150"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="432,191,500,208,495,210,433,196"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a9b3e63c6e8fe11d489f9e28bf5158ee0" title=" " alt="" coords="503,144,713,189"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="434,166,490,167,485,169,437,171"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#ab6f39a9cfed378809714309da6270212" title="Clip a polygon using convex polygon." alt="" coords="496,283,720,327"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="413,361,519,331,514,334,415,366"/>
+<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1utils.html#aadc2ec9bb2733534462ec65e99bbe9d9" title="Convert a convex polygon to a list of triangles fanned around the first vertex." alt="" coords="510,351,707,379"/>
+<area shape="poly" id="edge11_Node000008_Node000012" title=" " alt="" coords="421,377,496,373,492,375,423,382"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211" title="Reorder the vertices of a triangle so they are in clockwise order." alt="" coords="524,403,693,447"/>
+<area shape="poly" id="edge12_Node000008_Node000013" title=" " alt="" coords="422,396,510,410,506,412,423,401"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#aded9e0642bd7eadfbb0af09f88a0bbe1" title=" " alt="" coords="770,265,995,310"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="720,295,758,295,753,297,722,300"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1utils_1_1_polygon_clipping.html#a9de239868084d24f48a3309f97ffa58e" title=" " alt="" coords="770,335,995,379"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="720,324,758,332,752,333,721,329"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="693,428,767,434,762,436,694,433"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262" title="Compute the signed area of a 2D triangle defined by three points." alt="" coords="1043,385,1212,430"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="984,425,1030,421,1025,423,985,430"/>
+<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1043,455,1212,499"/>
+<area shape="poly" id="edge15_Node000014_Node000016" title=" " alt="" coords="985,454,1030,463,1024,463,985,459"/>
+<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="446,539,486,545,481,546,447,544"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="773,537,992,582"/>
+<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="717,557,761,559,755,560,718,562"/>
 </map>

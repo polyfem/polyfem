@@ -134,12 +134,12 @@ $(document).ready(function(){initNavTree('_mesh_utils_8hpp.html',''); initResiza
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for MeshUtils.hpp:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_mesh_utils_8hpp__incl.svg" width="100%" height="580"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_mesh_utils_8hpp__incl.svg" width="100%" height="594"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_mesh_utils_8hpp__dep__incl.svg" width="100%" height="459"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_mesh_utils_8hpp__dep__incl.svg" width="100%" height="468"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_mesh_utils_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -169,6 +169,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a37d707ded3f8dcf2686648b6d2c4aee3" id="r_a37d707ded3f8dcf2686648b6d2c4aee3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a37d707ded3f8dcf2686648b6d2c4aee3">polyfem::mesh::reorder_mesh</a> (Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::VectorXi &amp;C, Eigen::VectorXi &amp;R)</td></tr>
 <tr class="memdesc:a37d707ded3f8dcf2686648b6d2c4aee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reorder vertices of a mesh using color tags, so that vertices are ordered by increasing colors.  <br /></td></tr>
 <tr class="separator:a37d707ded3f8dcf2686648b6d2c4aee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d54f55dd701139fa274cf8a8f37889" id="r_a34d54f55dd701139fa274cf8a8f37889"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a34d54f55dd701139fa274cf8a8f37889">polyfem::mesh::offset_surface_vertices</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::RowVector3d &amp;interior_point, double distance, Eigen::MatrixXd &amp;offset)</td></tr>
+<tr class="memdesc:a34d54f55dd701139fa274cf8a8f37889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset along area-weighted surface normals, using the direction away from an interior point where incident normals cancel.  <br /></td></tr>
+<tr class="separator:a34d54f55dd701139fa274cf8a8f37889"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a816bc73f845b5cd77603ab5804e15356" id="r_a816bc73f845b5cd77603ab5804e15356"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356">polyfem::mesh::signed_squared_distances</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::MatrixXd &amp;P, Eigen::VectorXd &amp;D)</td></tr>
 <tr class="memdesc:a816bc73f845b5cd77603ab5804e15356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the signed squared distance from a list of points to a triangle mesh.  <br /></td></tr>
 <tr class="separator:a816bc73f845b5cd77603ab5804e15356"><td class="memSeparator" colspan="2">&#160;</td></tr>

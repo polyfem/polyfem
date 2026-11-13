@@ -1,35 +1,35 @@
 <map id="polyfem::mesh::build_collision_proxy" name="polyfem::mesh::build_collision_proxy">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,347,165,387"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="213,175,456,215"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,344,292,221,295,225,117,349"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="749,289,927,329"/>
-<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="165,351,213,345,496,323,735,310,735,316,497,328,214,351,166,357"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92" title="Compute the maximum edge length of a triangle mesh (V, F)" alt="" coords="1241,143,1399,183"/>
-<area shape="poly" id="edge16_Node000001_Node000007" title=" " alt="" coords="166,364,594,364,839,364,942,370,1024,377,1062,376,1102,370,1144,356,1192,332,1230,303,1261,267,1285,229,1303,194,1307,197,1290,231,1265,270,1233,307,1195,337,1146,361,1103,375,1063,382,1024,382,942,375,839,369,594,369,166,369"/>
-<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1mesh.html#a9d79697c151a12917ccb7a8b871fe7b7" title="Compute the barycentric coordinates of a regular grid of triangles." alt="" coords="239,405,430,459"/>
-<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="163,384,227,401,225,406,162,389"/>
-<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1mesh.html#ad36edbb969d1772884b1a67bb4037510" title="Stitch a triangle mesh (V, F) together by removing duplicate vertices." alt="" coords="231,507,438,533"/>
-<area shape="poly" id="edge18_Node000001_Node000014" title=" " alt="" coords="108,385,155,427,215,470,281,500,278,505,212,474,152,431,105,389"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="504,175,687,215"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="456,192,490,192,490,197,456,197"/>
-<area shape="poly" id="edge14_Node000002_Node000007" title=" " alt="" coords="375,172,441,141,529,105,630,71,734,45,864,20,968,4,1018,3,1070,9,1128,23,1194,45,1226,62,1254,84,1298,130,1294,133,1251,88,1223,66,1192,50,1127,28,1069,14,1017,9,968,10,865,25,735,51,632,76,531,110,444,146,377,177"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784" title=" " alt="" coords="762,175,914,215"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="687,192,748,192,748,197,687,197"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="631,212,736,268,768,282,766,287,734,273,629,217"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="670,212,735,224,864,240,966,251,1014,251,1066,247,1125,239,1193,224,1237,208,1276,187,1279,192,1239,213,1194,229,1126,244,1067,253,1015,256,965,256,864,246,734,229,669,217"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length." alt="" coords="755,60,921,100"/>
-<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="624,172,674,141,734,110,751,102,754,107,736,114,677,145,627,177"/>
-<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="735,125,941,150"/>
-<area shape="poly" id="edge11_Node000003_Node000010" title=" " alt="" coords="680,172,770,151,771,156,681,177"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1029,297,1154,322"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="927,307,1015,307,1015,312,927,312"/>
-<area shape="poly" id="edge7_Node000007_Node000007" title=" " alt="" coords="1278,143,1275,133,1282,124,1297,118,1320,116,1346,119,1361,126,1358,131,1345,124,1320,121,1298,123,1285,128,1280,134,1283,142"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" title="Refine an edge (a, b) so each refined edge has length at most max_edge_length." alt="" coords="989,61,1193,86"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="921,75,976,74,976,79,921,80"/>
-<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="1153,83,1194,96,1273,133,1271,138,1192,101,1152,88"/>
-<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262" title="Compute the signed area of a 2D triangle defined by three points." alt="" coords="1006,175,1177,215"/>
-<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="896,147,993,170,992,175,894,153"/>
-<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1006,111,1177,151"/>
-<area shape="poly" id="edge13_Node000010_Node000012" title=" " alt="" coords="942,132,992,131,992,136,942,137"/>
-<area shape="poly" id="edge19_Node000014_Node000014" title=" " alt="" coords="294,509,286,499,290,489,307,483,335,481,370,485,380,489,383,495,379,498,376,493,368,490,335,486,308,488,294,493,291,498,298,505"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,362,165,406"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="213,182,454,226"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="116,359,289,233,289,238,119,363"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="746,302,924,346"/>
+<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="164,369,212,363,493,339,733,327,728,329,494,344,213,368,166,374"/>
+<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92" title="Compute the maximum edge length of a triangle mesh (V, F)" alt="" coords="1237,147,1393,192"/>
+<area shape="poly" id="edge16_Node000001_Node000007" title=" " alt="" coords="165,381,592,381,836,381,939,387,1021,394,1059,393,1098,386,1140,371,1188,347,1225,317,1256,280,1280,240,1298,207,1302,204,1285,243,1261,283,1229,321,1190,352,1142,376,1099,391,1060,398,1021,399,939,392,836,387,592,387,165,387"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1mesh.html#a9d79697c151a12917ccb7a8b871fe7b7" title="Compute the barycentric coordinates of a regular grid of triangles." alt="" coords="238,421,428,483"/>
+<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="165,403,226,421,221,423,165,408"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1mesh.html#ad36edbb969d1772884b1a67bb4037510" title="Stitch a triangle mesh (V, F) together by removing duplicate vertices." alt="" coords="230,531,436,559"/>
+<area shape="poly" id="edge18_Node000001_Node000014" title=" " alt="" coords="108,404,156,448,214,492,277,525,272,525,211,497,152,452,107,409"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="502,182,684,226"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="454,201,489,203,484,205,455,207"/>
+<area shape="poly" id="edge14_Node000002_Node000007" title=" " alt="" coords="376,179,443,146,530,108,629,73,732,47,861,20,965,4,1015,3,1067,9,1124,23,1190,47,1221,64,1249,86,1293,135,1287,134,1245,90,1218,68,1188,52,1123,29,1066,15,1014,9,965,10,862,25,733,52,631,78,532,113,445,151,379,183"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784" title=" " alt="" coords="759,182,911,226"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="684,201,746,203,741,205,685,207"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="632,224,734,280,763,295,757,295,731,285,631,229"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="671,224,733,236,861,254,963,264,1011,265,1063,261,1121,252,1188,236,1231,220,1268,201,1273,199,1233,225,1190,241,1122,257,1063,266,1011,270,962,270,861,259,732,241,672,230"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length." alt="" coords="753,62,917,106"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="625,179,674,147,731,116,748,111,744,114,734,121,677,152,628,183"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2" title="Compute the signed area of a triangle defined by three points." alt="" coords="732,130,938,158"/>
+<area shape="poly" id="edge11_Node000003_Node000010" title=" " alt="" coords="684,179,732,167,764,161,759,163,733,172,686,184"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1025,310,1150,338"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="924,321,1012,324,1007,324,925,327"/>
+<area shape="poly" id="edge7_Node000007_Node000007" title=" " alt="" coords="1272,145,1270,137,1278,128,1293,122,1315,120,1340,123,1356,132,1351,132,1338,128,1315,126,1294,128,1281,132,1275,138,1276,148"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" title="Refine an edge (a, b) so each refined edge has length at most max_edge_length." alt="" coords="986,61,1189,88"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="917,78,973,78,968,80,918,84"/>
+<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="1156,86,1190,98,1268,139,1263,139,1188,102,1156,92"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262" title="Compute the signed area of a 2D triangle defined by three points." alt="" coords="1003,182,1172,226"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="896,156,990,180,985,181,896,161"/>
+<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746" title="Compute the area of a 3D triangle defined by three points." alt="" coords="1003,112,1172,157"/>
+<area shape="poly" id="edge13_Node000010_Node000012" title=" " alt="" coords="938,138,990,138,985,139,939,143"/>
+<area shape="poly" id="edge19_Node000014_Node000014" title=" " alt="" coords="291,530,284,523,290,513,306,507,333,505,362,507,380,516,374,516,361,512,333,510,307,512,293,517,289,522,296,532"/>
 </map>

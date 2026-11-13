@@ -1,19 +1,19 @@
 <map id="polyfem::assembler::ElementAssemblyValues::compute" name="polyfem::assembler::ElementAssemblyValues::compute">
-<area shape="rect" id="Node000001" title="computes quadrature points for given element then calls above (overloaded) compute function" alt="" coords="5,134,196,189"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="244,134,435,189"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,159,230,159,230,164,196,164"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="483,5,701,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="370,132,420,92,481,55,497,48,499,53,484,60,423,97,373,136"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="483,69,701,109"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="434,132,507,111,508,116,436,137"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="497,134,687,189"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="435,159,483,159,483,164,435,164"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="497,213,687,267"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="429,186,491,206,490,211,427,191"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="497,291,687,346"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="370,187,421,233,484,278,494,283,492,288,481,282,417,237,366,191"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="749,5,968,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="701,23,735,23,735,28,701,28"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="749,69,968,109"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="701,87,735,87,735,92,701,92"/>
+<area shape="rect" id="Node000001" title="computes quadrature points for given element then calls above (overloaded) compute function" alt="" coords="5,144,196,205"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="244,144,434,205"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,172,231,173,226,175,197,177"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="482,5,700,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="371,141,421,99,481,60,496,55,492,58,483,65,424,104,374,145"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="482,75,700,119"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="434,143,504,123,499,125,436,148"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="496,144,686,205"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="434,172,483,174,478,175,435,177"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="496,229,686,290"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="432,203,486,223,481,223,432,208"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="496,314,686,376"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="369,203,421,252,483,300,492,307,487,306,481,305,417,256,368,208"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="748,5,967,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="700,25,735,27,730,28,701,30"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="748,75,967,119"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="700,94,735,96,730,98,701,100"/>
 </map>

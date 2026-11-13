@@ -1,41 +1,41 @@
 <map id="polyfem::solver::StackedForm::Block::offset" name="polyfem::solver::StackedForm::Block::offset">
-<area shape="rect" id="Node000001" title=" " alt="" coords="487,419,669,459"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_stacked_form.html#adf30612d0072dd80c175190a1c5ef76f" title=" " alt="" coords="256,419,439,459"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="473,442,439,442,439,437,473,437"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aebc6d72a7f2a4835764e55b0a62d69ef" title=" " alt="" coords="256,91,439,131"/>
-<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="553,410,361,133,365,130,557,407"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a3b25af6a5805a2a4865301f3606c33ac" title=" " alt="" coords="256,867,439,907"/>
-<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="562,473,361,869,356,866,558,471"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_stacked_form.html#afd321e12e54d6306c8a01719af07d671" title="Compute the first derivative of the value wrt x." alt="" coords="15,84,198,139"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="336,407,320,352,294,285,256,215,233,182,206,153,190,141,193,137,210,149,237,179,261,212,299,282,325,351,341,405"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a71c9723c8de53828aea0e2cf2449fdc5" title="Initialize the form." alt="" coords="15,227,198,267"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="324,409,276,344,243,311,207,282,185,270,187,265,209,277,247,307,280,341,329,406"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_stacked_form.html#ad13359e5df8136fbde06ffce1f8cbda2" title="Initialize lagged fields TODO: more than one step." alt="" coords="15,291,198,331"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="310,413,262,378,207,346,179,334,181,329,209,341,265,374,313,409"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a9769d2651e16cecb161eee8d9fd97ba3" title="Checks if the step is collision free." alt="" coords="5,355,208,395"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="257,418,182,398,183,393,259,413"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a5fb9a377cadac78582846da6ae6199b9" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="15,419,198,459"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="242,442,198,442,198,437,242,437"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a363acb88d6f0fced0337ab5f13307172" title="Initialize variables used during the line search." alt="" coords="15,483,198,523"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="259,466,183,486,182,481,257,460"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_stacked_form.html#af19ef54608aff650dae4dcd147a27d9d" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="15,547,198,587"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="313,470,265,505,209,538,181,550,179,545,207,533,262,500,310,466"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_stacked_form.html#ac9f65e3322d31b850edfead3a17e1c6f" title="Update fields after a step in the optimization." alt="" coords="15,611,198,651"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="329,473,280,538,247,572,209,602,187,614,185,609,207,597,243,568,276,534,324,469"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_stacked_form.html#afaf6207d058f6f41da3388d6a76ca0b0" title="Compute the second derivative of the value wrt x." alt="" coords="15,5,198,60"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="335,407,312,327,280,228,243,134,224,98,206,73,193,62,196,58,210,69,229,95,248,132,285,226,317,325,340,405"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a6538945533150e1f9cd497068c117784" title="Update cached fields upon a change in the solution." alt="" coords="15,675,198,715"/>
-<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="337,473,318,516,291,568,255,620,210,665,190,678,187,673,206,661,251,617,286,565,314,514,332,471"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a75be6481110139e593ed17ab16588566" title="Update lagged fields." alt="" coords="15,739,198,779"/>
-<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="342,474,326,529,301,598,262,668,238,701,210,729,192,741,189,737,206,725,234,697,258,665,296,595,321,527,337,472"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a0025b388dd25e4c1fcaf4031434c095c" title="Update time&#45;dependent fields." alt="" coords="15,803,198,843"/>
-<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="345,473,333,540,310,626,292,671,270,715,243,757,210,793,193,805,190,801,206,789,238,753,265,713,287,669,305,624,328,539,340,472"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aef220c74d6ca5b102c74e8f201be980d" title="Compute the value of the form." alt="" coords="15,163,198,203"/>
-<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="332,408,314,365,286,313,251,262,206,217,187,206,190,201,210,213,255,258,291,311,318,362,337,406"/>
-<area shape="poly" id="edge16_Node000016_Node000003" title=" " alt="" coords="242,114,198,114,198,109,242,109"/>
-<area shape="poly" id="edge17_Node000016_Node000011" title=" " alt="" coords="272,90,190,63,192,58,273,85"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aa734f2145a9ecd531854faf672161fab" title=" " alt="" coords="15,931,198,971"/>
-<area shape="poly" id="edge19_Node000017_Node000018" title=" " alt="" coords="259,914,183,934,182,929,257,908"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a6275f943861961046f595d894500b803" title=" " alt="" coords="15,867,198,907"/>
-<area shape="poly" id="edge20_Node000017_Node000019" title=" " alt="" coords="242,890,198,890,198,885,242,885"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="486,454,668,498"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_stacked_form.html#adf30612d0072dd80c175190a1c5ef76f" title=" " alt="" coords="256,454,438,498"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="468,477,440,479,438,474,473,475"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aebc6d72a7f2a4835764e55b0a62d69ef" title=" " alt="" coords="256,99,438,144"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="550,441,362,147,364,142,556,440"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a3b25af6a5805a2a4865301f3606c33ac" title=" " alt="" coords="256,939,438,984"/>
+<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="561,513,361,940,357,937,556,513"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_stacked_form.html#afd321e12e54d6306c8a01719af07d671" title="Compute the first derivative of the value wrt x." alt="" coords="15,91,198,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="336,438,320,380,295,308,257,232,233,197,206,166,195,155,193,150,210,162,238,194,262,230,300,305,326,379,341,439"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a71c9723c8de53828aea0e2cf2449fdc5" title="Initialize the form." alt="" coords="15,246,198,290"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="323,441,275,373,243,336,206,305,188,293,186,289,209,301,247,333,280,369,328,440"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_stacked_form.html#ad13359e5df8136fbde06ffce1f8cbda2" title="Initialize lagged fields TODO: more than one step." alt="" coords="15,315,198,360"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="306,444,261,409,206,375,183,363,181,358,209,370,264,405,311,443"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a9769d2651e16cecb161eee8d9fd97ba3" title="Checks if the step is collision free." alt="" coords="5,384,208,429"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="251,451,188,432,186,427,255,448"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a5fb9a377cadac78582846da6ae6199b9" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="15,454,198,498"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="238,478,199,478,197,474,242,475"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a363acb88d6f0fced0337ab5f13307172" title="Initialize variables used during the line search." alt="" coords="15,523,198,568"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="251,505,188,525,185,520,255,501"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_stacked_form.html#af19ef54608aff650dae4dcd147a27d9d" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="15,592,198,637"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="307,511,264,548,209,583,184,594,180,590,206,578,261,543,310,507"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_stacked_form.html#ac9f65e3322d31b850edfead3a17e1c6f" title="Update fields after a step in the optimization." alt="" coords="15,662,198,706"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="324,514,280,583,247,620,209,652,189,663,185,659,206,647,243,616,275,580,327,509"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_stacked_form.html#afaf6207d058f6f41da3388d6a76ca0b0" title="Compute the second derivative of the value wrt x." alt="" coords="15,5,198,67"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="334,439,312,354,281,247,244,147,225,108,206,81,196,70,194,65,210,77,229,105,249,144,286,245,317,352,339,439"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a6538945533150e1f9cd497068c117784" title="Update cached fields upon a change in the solution." alt="" coords="15,731,198,776"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="335,511,318,561,291,617,255,672,209,721,192,732,188,729,206,717,251,669,287,614,313,559,333,516"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a75be6481110139e593ed17ab16588566" title="Update lagged fields." alt="" coords="15,800,198,845"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="340,512,327,574,302,648,263,724,238,759,209,790,193,802,190,798,206,786,234,756,259,721,297,646,322,573,338,516"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a0025b388dd25e4c1fcaf4031434c095c" title="Update time&#45;dependent fields." alt="" coords="15,870,198,914"/>
+<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="343,512,334,587,311,679,294,727,271,775,243,820,210,859,194,871,191,867,206,856,239,817,266,773,289,725,306,677,329,586,341,517"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aef220c74d6ca5b102c74e8f201be980d" title="Compute the value of the form." alt="" coords="15,176,198,221"/>
+<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="331,439,313,393,287,338,251,283,206,236,191,224,189,219,209,231,255,280,291,336,318,391,336,439"/>
+<area shape="poly" id="edge16_Node000016_Node000003" title=" " alt="" coords="238,123,200,124,196,119,242,120"/>
+<area shape="poly" id="edge17_Node000016_Node000011" title=" " alt="" coords="265,95,197,70,194,65,270,92"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_stacked_form.html#aa734f2145a9ecd531854faf672161fab" title=" " alt="" coords="15,1008,198,1053"/>
+<area shape="poly" id="edge19_Node000017_Node000018" title=" " alt="" coords="255,988,187,1010,186,1005,250,989"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_stacked_form.html#a6275f943861961046f595d894500b803" title=" " alt="" coords="15,939,198,984"/>
+<area shape="poly" id="edge20_Node000017_Node000019" title=" " alt="" coords="238,962,198,964,198,959,243,961"/>
 </map>

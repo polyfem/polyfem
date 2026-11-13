@@ -137,6 +137,7 @@ var namespacepolyfem_1_1mesh =
     [ "mesh_vertex", "namespacepolyfem_1_1mesh.html#a3467e60e5f28e9e32e8d017f5d3fef5d", null ],
     [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespacepolyfem_1_1mesh.html#a4840c076c8975d60f888fd87763daebb", null ],
     [ "offset_polygon", "namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7", null ],
+    [ "offset_surface_vertices", "namespacepolyfem_1_1mesh.html#a34d54f55dd701139fa274cf8a8f37889", null ],
     [ "operator<<", "namespacepolyfem_1_1mesh.html#a3cabdf1ac4e1ac087b4832016583b815", null ],
     [ "orient_closed_surface", "namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854", null ],
     [ "orient_normals_2d", "namespacepolyfem_1_1mesh.html#aa2a0193cff42609573f6a015e1a172d9", null ],

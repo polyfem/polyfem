@@ -1,37 +1,37 @@
 <map id="polyfem::mesh::PolygonMesh::n_facets" name="polyfem::mesh::PolygonMesh::n_facets">
-<area shape="rect" id="Node000001" title=" " alt="" coords="761,216,976,256"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#a71d99b5d48e7efb980d13e1a948b1643" title="Glues every corner without neighbor to the facet sharing its edge in opposite orientation (already gl..." alt="" coords="499,5,713,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="846,206,791,132,754,93,712,60,689,48,692,43,715,55,758,89,795,128,850,202"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#aee310a963b5999870f3955d5d2d170af" title="Assigns to each facet the index of its connected component (through the corner adjacency) and returns..." alt="" coords="499,69,713,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="831,210,776,170,712,130,670,112,672,107,715,126,779,165,834,205"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#a40091bdb9dd5f3d4028988b807cb5976" title="Appends a polygon (not glued to its neighbors) and returns its index." alt="" coords="499,376,713,416"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="824,266,641,378,639,374,821,261"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a0520d751993ea1dccc80daad30fed3f7" title="Refine a polygonal mesh." alt="" coords="265,440,430,480"/>
-<area shape="poly" id="edge18_Node000001_Node000007" title=" " alt="" coords="854,270,832,308,801,353,762,396,715,430,680,446,643,458,568,472,495,476,430,473,430,468,495,470,567,466,642,453,678,441,712,426,758,392,797,350,828,306,850,267"/>
-<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#a0239f485970311cb8cb1c6e0ce6a25f1" title="Refine a triangle mesh." alt="" coords="265,504,430,544"/>
-<area shape="poly" id="edge19_Node000001_Node000010" title=" " alt="" coords="859,270,840,319,810,377,768,434,743,460,715,481,681,499,645,513,570,530,496,536,430,536,430,530,496,531,569,525,643,508,679,494,712,476,740,456,764,431,805,374,835,317,854,268"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#ac14ef771bb20ab60b061d692f5ea5a41" title="Removes the facets f with to_delete[f], keeping all vertices, and renumbers the remaining facets (and..." alt="" coords="499,184,713,224"/>
-<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="748,224,713,220,714,214,748,219"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ada9f6d39ea17e474dc056c4b3f054717" title="Remove all top&#45;dimensional elements whose mask entry is false." alt="" coords="252,120,443,160"/>
-<area shape="poly" id="edge20_Node000001_Node000012" title=" " alt="" coords="815,213,766,192,713,175,643,161,572,151,443,143,443,138,572,146,644,155,714,169,768,187,817,208"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a27031fb3ff823c512a1e9f6e6ab5973f" title="number of faces" alt="" coords="511,248,701,288"/>
-<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="748,253,702,259,701,254,747,248"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac76c33ff3aee81cbe3e488f030c06a48" title="appends a new mesh to the end of this" alt="" coords="252,312,443,352"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="511,375,428,355,429,349,512,370"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aa01f3dbbae04363c9a973d60aa130fb4" title="Construct only the dimension&#45;specific topology." alt="" coords="252,376,443,416"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="485,399,443,399,443,393,485,393"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="512,422,429,443,428,437,511,417"/>
-<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="567,426,514,461,452,494,422,506,420,501,450,490,511,457,564,422"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae585a5793769e0d6860d61ef6f03192e" title="refine the mesh" alt="" coords="5,504,196,544"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="257,486,179,507,178,501,256,481"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a8c420b5e0be3c794014d222906f7cbca" title=" " alt="" coords="18,440,183,480"/>
-<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="251,463,184,463,184,457,251,457"/>
-<area shape="poly" id="edge10_Node000010_Node000008" title=" " alt="" coords="251,527,196,527,196,521,251,521"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="511,183,428,163,429,157,512,178"/>
-<area shape="poly" id="edge14_Node000013_Node000005" title=" " alt="" coords="512,294,429,315,428,309,511,289"/>
-<area shape="poly" id="edge17_Node000013_Node000012" title=" " alt="" coords="506,244,497,238,481,222,472,205,464,189,449,174,428,162,431,158,452,170,468,186,477,203,485,219,500,234,509,239"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#adee7e38b7b60601cb04eff9b365b90c5" title="attach high order nodes" alt="" coords="244,248,451,288"/>
-<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="497,271,451,271,451,265,497,265"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a8980d507ab5aa0faaec57e4e4fa36091" title="Create a copy of the mesh." alt="" coords="252,184,443,224"/>
-<area shape="poly" id="edge16_Node000013_Node000015" title=" " alt="" coords="511,247,428,227,429,221,512,242"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="758,229,973,274"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#a71d99b5d48e7efb980d13e1a948b1643" title="Glues every corner without neighbor to the facet sharing its edge in opposite orientation (already gl..." alt="" coords="496,5,710,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="841,216,788,140,751,100,709,65,689,53,689,48,712,60,755,96,792,137,847,217"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#aee310a963b5999870f3955d5d2d170af" title="Assigns to each facet the index of its connected component (through the corner adjacency) and returns..." alt="" coords="496,75,710,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="824,219,771,181,709,141,671,123,671,117,712,136,774,176,829,219"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#a40091bdb9dd5f3d4028988b807cb5976" title="Appends a polygon (not glued to its neighbors) and returns its index." alt="" coords="496,403,710,447"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="820,282,640,404,638,400,815,284"/>
+<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a0520d751993ea1dccc80daad30fed3f7" title="Refine a polygonal mesh." alt="" coords="263,472,428,517"/>
+<area shape="poly" id="edge18_Node000001_Node000007" title=" " alt="" coords="851,287,830,331,799,379,760,425,737,445,712,462,677,478,641,491,566,505,493,510,428,507,428,502,493,504,565,500,640,486,675,473,709,457,734,441,756,421,795,376,825,329,847,290"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#a0239f485970311cb8cb1c6e0ce6a25f1" title="Refine a triangle mesh." alt="" coords="263,541,428,586"/>
+<area shape="poly" id="edge19_Node000001_Node000010" title=" " alt="" coords="856,287,837,342,807,403,766,464,741,491,712,514,678,533,643,548,567,566,493,574,428,574,428,569,493,569,567,561,641,543,676,528,709,509,737,487,762,461,803,401,832,340,852,291"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_polygon_mesh.html#ac14ef771bb20ab60b061d692f5ea5a41" title="Removes the facets f with to_delete[f], keeping all vertices, and renumbers the remaining facets (and..." alt="" coords="496,195,710,239"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="740,236,711,234,710,229,745,235"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ada9f6d39ea17e474dc056c4b3f054717" title="Remove all top&#45;dimensional elements whose mask entry is false." alt="" coords="251,125,440,170"/>
+<area shape="poly" id="edge20_Node000001_Node000012" title=" " alt="" coords="807,222,761,203,710,185,640,170,569,160,441,151,440,146,570,155,641,165,711,180,763,198,812,222"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a27031fb3ff823c512a1e9f6e6ab5973f" title="number of faces" alt="" coords="508,264,698,309"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="740,269,699,276,698,271,745,267"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac76c33ff3aee81cbe3e488f030c06a48" title="appends a new mesh to the end of this" alt="" coords="251,333,440,378"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="500,398,431,381,431,376,505,398"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aa01f3dbbae04363c9a973d60aa130fb4" title="Construct only the dimension&#45;specific topology." alt="" coords="251,403,440,447"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="478,426,441,428,440,422,483,424"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="505,451,429,475,427,470,500,453"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="564,456,510,496,449,531,422,543,420,538,447,527,507,492,559,458"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae585a5793769e0d6860d61ef6f03192e" title="refine the mesh" alt="" coords="5,541,195,586"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="252,521,182,543,181,538,246,522"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a8c420b5e0be3c794014d222906f7cbca" title=" " alt="" coords="18,472,182,517"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="245,495,183,497,182,492,250,493"/>
+<area shape="poly" id="edge10_Node000010_Node000008" title=" " alt="" coords="245,564,195,566,195,561,250,563"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="500,191,431,173,431,168,505,189"/>
+<area shape="poly" id="edge14_Node000013_Node000005" title=" " alt="" coords="500,314,432,335,430,330,505,312"/>
+<area shape="poly" id="edge17_Node000013_Node000012" title=" " alt="" coords="500,256,494,254,478,236,470,218,462,201,446,184,429,173,428,168,450,180,466,198,474,216,482,233,498,250,505,256"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#adee7e38b7b60601cb04eff9b365b90c5" title="attach high order nodes" alt="" coords="243,264,448,309"/>
+<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="490,287,449,289,448,284,495,285"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a8980d507ab5aa0faaec57e4e4fa36091" title="Create a copy of the mesh." alt="" coords="251,195,440,239"/>
+<area shape="poly" id="edge16_Node000013_Node000015" title=" " alt="" coords="500,260,431,243,431,237,505,259"/>
 </map>

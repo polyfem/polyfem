@@ -1,5 +1,9 @@
 var NAVTREEINDEX59 =
 {
+"namespacepolyfem_1_1mesh_1_1_polygons.html#af2a60f57e7713591462bc94ed733c21c":[5,0,9,5,3,3],
+"namespacepolyfem_1_1problem.html":[5,0,9,6],
+"namespacepolyfem_1_1problem.html#a16c99ca8a297003a36e58856b748866e":[5,0,9,6,55],
+"namespacepolyfem_1_1problem.html#a4066fe380238ef9431c9dd8e0e60b885":[5,0,9,6,47],
 "namespacepolyfem_1_1problem.html#a542151afb4d6a156d38fd195ee17873e":[5,0,9,6,51],
 "namespacepolyfem_1_1problem.html#a6dc359d8c81e9ce70412a4d612c1a9db":[5,0,9,6,50],
 "namespacepolyfem_1_1problem.html#aaaa2e2b203aded553324c4811584c3e6":[5,0,9,6,49],
@@ -245,9 +249,5 @@ var NAVTREEINDEX59 =
 "namespaceq__bases.html#a4f0ae016b7b54dcb6ca8e7f4115a0169":[5,0,15,6],
 "namespaceq__bases.html#a54815539afd49eb161f29d083583a255":[5,0,15,26],
 "namespaceq__bases.html#a5f98b0aab32fa2e9d9aa5e8e991f78fd":[5,0,15,54],
-"namespaceq__bases.html#a6b80a61cd976ee7bbe4d4061f935cd11":[5,0,15,7],
-"namespaceq__bases.html#a6dd88f74e3b498e26525d040aaed1feb":[5,0,15,9],
-"namespaceq__bases.html#a73320fca443fa05f763ddcfe04e86cd6":[5,0,15,5],
-"namespaceq__bases.html#a787a64026e99ebba5b9679b91f360c06":[5,0,15,3],
-"namespaceq__bases.html#a7a9fcf8c8b8effd25e3b08d946046141":[5,0,15,20]
+"namespaceq__bases.html#a6b80a61cd976ee7bbe4d4061f935cd11":[5,0,15,7]
 };

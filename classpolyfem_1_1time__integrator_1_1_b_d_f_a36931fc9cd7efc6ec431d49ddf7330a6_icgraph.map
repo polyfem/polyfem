@@ -1,19 +1,19 @@
 <map id="polyfem::time_integrator::BDF::betas" name="polyfem::time_integrator::BDF::betas">
-<area shape="rect" id="Node000001" title="Retrieve the value of beta used for BDF with i steps." alt="" coords="728,69,913,109"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="244,5,441,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="726,69,680,60,556,44,441,34,442,29,556,39,680,55,727,64"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="495,69,680,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="714,92,680,92,680,87,714,87"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="495,133,680,173"/>
-<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="735,116,661,136,660,131,733,110"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="496,68,419,48,420,43,498,63"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="239,69,447,109"/>
-<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="481,92,447,92,447,87,481,87"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="250,133,435,173"/>
-<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="498,115,420,136,419,131,496,110"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="250,197,435,237"/>
-<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="505,118,496,123,481,139,473,155,465,171,448,187,427,199,425,195,445,183,460,168,468,152,477,136,493,119,502,113"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,101,191,141"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="225,107,191,112,190,107,225,102"/>
-<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="236,142,191,136,191,131,237,137"/>
+<area shape="rect" id="Node000001" title="Retrieve the value of beta used for BDF with i steps." alt="" coords="725,75,910,119"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="243,5,440,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="715,71,677,65,554,48,440,37,440,31,554,42,678,60,721,70"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="493,75,677,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="707,97,678,100,678,94,712,97"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="493,144,677,189"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="729,124,663,146,662,141,723,125"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="487,70,422,53,422,48,492,69"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="238,75,445,119"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="475,97,446,100,445,94,480,97"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="249,144,434,189"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="492,123,423,146,422,141,487,125"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="249,213,434,258"/>
+<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="501,126,495,134,479,151,472,168,463,185,447,203,426,215,425,210,443,199,459,182,467,165,475,148,491,130,496,129"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,109,190,154"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="220,115,191,121,189,116,224,113"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="231,152,190,147,190,142,236,150"/>
 </map>
