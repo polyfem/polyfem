@@ -14,8 +14,11 @@
 #include <polyfem/assembler/InversionBarrier.hpp>
 #include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
+#include <polyfem/assembler/ThermoElasticity.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
+#include <polyfem/utils/par_for.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
 #include "VarFormTestAccess.hpp"
@@ -205,6 +208,88 @@ namespace
 	}
 } // namespace
 
+TEST_CASE("mixed assembly preserves cached values across quadrature changes", "[assembler][cache]")
+{
+	utils::NThread::get().set_num_threads(2);
+	const int psi_order = GENERATE(1, 2);
+	const int phi_order = GENERATE(1, 2);
+	const bool cache_psi = GENERATE(false, true);
+	const bool cache_phi = GENERATE(false, true);
+	CAPTURE(psi_order, phi_order, cache_psi, cache_phi);
+
+	const auto make_bases = [](const int order) {
+		ElementBases bases = make_synthetic_element_bases(2, 1);
+		bases.has_parameterization = false;
+		bases.set_quadrature([order](quadrature::Quadrature &quadrature) {
+			quadrature::TriQuadrature().get_quadrature(order, quadrature);
+		});
+		bases.set_bases_func([](const Eigen::MatrixXd &points, std::vector<AssemblyValues> &values) {
+			values[0].val = (1 + points.col(0).array() + 2 * points.col(1).array()).matrix();
+		});
+		bases.set_grads_func([](const Eigen::MatrixXd &points, std::vector<AssemblyValues> &values) {
+			values[0].grad.resize(points.rows(), 2);
+			values[0].grad.col(0).setOnes();
+			values[0].grad.col(1).setConstant(2);
+		});
+		return std::vector<ElementBases>{bases};
+	};
+	const auto psi_bases = make_bases(psi_order);
+	const auto phi_bases = make_bases(phi_order);
+	const auto &gbases = phi_bases;
+
+	AssemblyValsCache empty_cache, psi_cache, phi_cache;
+	empty_cache.init_empty();
+	psi_cache.init_empty();
+	phi_cache.init_empty();
+	if (cache_psi)
+		psi_cache.init(false, psi_bases, gbases);
+	if (cache_phi)
+		phi_cache.init(false, phi_bases, gbases);
+
+	ElementAssemblyValues psi_before, phi_before;
+	psi_cache.compute(0, false, psi_bases[0], gbases[0], psi_before);
+	phi_cache.compute(0, false, phi_bases[0], gbases[0], phi_before);
+
+	ThermoElasticity assembler;
+	assembler.set_size(2);
+	assembler.add_multimaterial(0, json{{"alpha", 0.01}, {"T0", 0.0}, {"elastic_material", {{"type", "NeoHookean"}, {"E", 100.0}, {"nu", 0.3}}}},
+								Units(), test_resources());
+	Eigen::MatrixXd x(3, 1);
+	x << 0.01, 0.02, 0.5;
+	const MixedNLAssembler::SolutionSplitter split = [](const Eigen::MatrixXd &x, Eigen::MatrixXd &phi, Eigen::MatrixXd &psi) {
+		phi = x.topRows(2);
+		psi = x.bottomRows(1);
+	};
+
+	const double expected_energy = assembler.assemble_energy(false, 1, 1, psi_bases, phi_bases, gbases, empty_cache, empty_cache, 0, 0, x, Eigen::MatrixXd(), split);
+	const double energy = assembler.assemble_energy(false, 1, 1, psi_bases, phi_bases, gbases, psi_cache, phi_cache, 0, 0, x, Eigen::MatrixXd(), split);
+	REQUIRE(energy == Catch::Approx(expected_energy).margin(1e-12));
+	const Eigen::VectorXd energies = assembler.assemble_energy_per_element(false, 1, 1, psi_bases, phi_bases, gbases, psi_cache, phi_cache, 0, 0, x, Eigen::MatrixXd(), split);
+	REQUIRE(energies(0) == Catch::Approx(expected_energy).margin(1e-12));
+
+	Eigen::MatrixXd expected_gradient, gradient;
+	assembler.assemble_gradient(false, 1, 1, psi_bases, phi_bases, gbases, empty_cache, empty_cache, 0, 0, x, Eigen::MatrixXd(), split, expected_gradient);
+	assembler.assemble_gradient(false, 1, 1, psi_bases, phi_bases, gbases, psi_cache, phi_cache, 0, 0, x, Eigen::MatrixXd(), split, gradient);
+	require_approx_matrix(gradient, expected_gradient, 1e-12);
+
+	SparseMatrixCache expected_matrix_cache, matrix_cache;
+	StiffnessMatrix expected_hessian, hessian;
+	assembler.assemble_hessian(false, 1, 1, false, psi_bases, phi_bases, gbases, empty_cache, empty_cache, 0, 0, x, Eigen::MatrixXd(), split, expected_matrix_cache, expected_hessian);
+	assembler.assemble_hessian(false, 1, 1, false, psi_bases, phi_bases, gbases, psi_cache, phi_cache, 0, 0, x, Eigen::MatrixXd(), split, matrix_cache, hessian);
+	require_approx_matrix(Eigen::MatrixXd(hessian), Eigen::MatrixXd(expected_hessian), 1e-12);
+
+	if (cache_psi)
+	{
+		require_approx_matrix(psi_cache.cached_values(0).quadrature.points, psi_before.quadrature.points, 0);
+		require_approx_matrix(psi_cache.cached_values(0).basis_values[0].val, psi_before.basis_values[0].val, 0);
+	}
+	if (cache_phi)
+	{
+		require_approx_matrix(phi_cache.cached_values(0).quadrature.points, phi_before.quadrature.points, 0);
+		require_approx_matrix(phi_cache.cached_values(0).basis_values[0].val, phi_before.basis_values[0].val, 0);
+	}
+}
+
 TEST_CASE("hessian_lin", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -240,7 +325,11 @@ TEST_CASE("hessian_lin", "[assembler]")
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);
 	AssemblyValsCache ass_vals_cache;
-	ass_vals_cache.init_empty();
+	const bool cache_values = GENERATE(false, true);
+	if (cache_values)
+		ass_vals_cache.init(debug.mesh->is_volume(), *debug.bases, *debug.geometry_bases);
+	else
+		ass_vals_cache.init_empty();
 	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
 	disp.setZero();
 
@@ -302,7 +391,11 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);
 	AssemblyValsCache ass_vals_cache;
-	ass_vals_cache.init_empty();
+	const bool cache_values = GENERATE(false, true);
+	if (cache_values)
+		ass_vals_cache.init(debug.mesh->is_volume(), *debug.bases, *debug.geometry_bases);
+	else
+		ass_vals_cache.init_empty();
 	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
 	disp.setZero();
 
