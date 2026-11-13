@@ -67,6 +67,13 @@ namespace polyfem::assembler
 		all.resize(local_pts.rows(), all_size);
 		assert(displacement.cols() == 1);
 
+		// This formulation has no energy.
+		if (type == ElasticityTensorType::ENERGY)
+		{
+			all.setZero();
+			return;
+		}
+
 		Eigen::MatrixXd displacement_grad(size(), size());
 
 		ElementAssemblyValues vals;

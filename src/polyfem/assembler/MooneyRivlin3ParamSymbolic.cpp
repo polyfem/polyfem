@@ -193,6 +193,12 @@ namespace polyfem::assembler
 				continue;
 			}
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = elastic_energy<double>(vals.val.row(p), vals.element_id, def_grad);
+				continue;
+			}
+
 			const double t = 0;
 			const double c1 = c1_(local_pts.row(p), t, vals.element_id);
 			const double c2 = c2_(local_pts.row(p), t, vals.element_id);

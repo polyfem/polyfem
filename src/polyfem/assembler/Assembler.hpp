@@ -437,28 +437,38 @@ namespace polyfem::assembler
 			std::vector<NamedMatrix> &result) const override
 		{
 			result.clear();
-			Eigen::MatrixXd cauchy, pk1, pk2, F;
+			Eigen::MatrixXd cauchy, pk1, pk2, F, energy;
 
 			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
 			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
 			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
 			compute_stress_tensor(data, ElasticityTensorType::F, F);
+			compute_energy_density(data, energy);
 
 			result.emplace_back("cauchy_stess", cauchy);
 			result.emplace_back("pk1_stess", pk1);
 			result.emplace_back("pk2_stess", pk2);
 			result.emplace_back("F", F);
+			result.emplace_back("energy", energy);
 		}
 
 		void compute_stress_tensor(const OutputData &data,
 								   const ElasticityTensorType &type,
 								   Eigen::MatrixXd &stresses) const
 		{
+			assert(type != ElasticityTensorType::ENERGY); // scalar, use compute_energy_density
 			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::MatrixXd tmp = stress;
 				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 				return Eigen::MatrixXd(a);
 			});
+		}
+
+		/// Elastic energy density at data.local_pts, one row per point.
+		void compute_energy_density(const OutputData &data,
+									Eigen::MatrixXd &energy) const
+		{
+			assign_stress_tensor(data, 1, ElasticityTensorType::ENERGY, energy, [](const Eigen::MatrixXd &e) { return e; });
 		}
 
 		void compute_von_mises_stresses(const OutputData &data,

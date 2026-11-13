@@ -188,6 +188,12 @@ namespace polyfem::assembler
 					stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
 			}
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = 0.5 * (stress_tensor * strain).trace();
+				continue;
+			}
+
 			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
 
 			if (type == ElasticityTensorType::PK1)

@@ -268,6 +268,12 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
+				continue;
+			}
+
 			Eigen::MatrixXd stress_tensor;
 			if (size() == 2)
 				stress_tensor = compute_stress_from_def_grad<2>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();

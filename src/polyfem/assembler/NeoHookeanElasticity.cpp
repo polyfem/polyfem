@@ -291,6 +291,12 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = elastic_energy_density<double>(local_pts.row(p), vals.val.row(p), t, vals.element_id, def_grad);
+				continue;
+			}
+
 			Eigen::MatrixXd stress_tensor = (lambda * std::log(J) * I + mu * (b - I)) / J;
 			if (type == ElasticityTensorType::PK1)
 				stress_tensor = pk1_from_cauchy(stress_tensor, def_grad);

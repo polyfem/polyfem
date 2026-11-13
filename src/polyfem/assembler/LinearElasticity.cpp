@@ -211,6 +211,12 @@ namespace polyfem
 				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
 				const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
+				if (type == ElasticityTensorType::ENERGY)
+				{
+					all(p, 0) = mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
+					continue;
+				}
+
 				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 				if (type == ElasticityTensorType::PK1)
 					stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
