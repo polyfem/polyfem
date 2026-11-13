@@ -28,11 +28,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             name: Linux
     steps:
       - name: Checkout repository
@@ -59,8 +59,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-
 
       - name: Prepare ccache
         run: |
