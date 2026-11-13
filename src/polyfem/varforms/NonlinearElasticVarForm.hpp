@@ -10,6 +10,13 @@
 #include <ipc/collision_mesh.hpp>
 
 #include <functional>
+#include <memory>
+
+namespace polyfem::solver
+{
+	class BarrierContactNonsmoothTerm;
+	class FastTetValidity;
+} // namespace polyfem::solver
 
 namespace polyfem::varform
 {
@@ -58,7 +65,8 @@ namespace polyfem::varform
 			const json &args,
 			const io::ResourceIO &resources,
 			const Eigen::VectorXi &in_node_to_node,
-			ipc::CollisionMesh &collision_mesh);
+			ipc::CollisionMesh &collision_mesh,
+			Eigen::SparseMatrix<double> *displacement_map_out = nullptr);
 
 	protected:
 		void reset() override;
@@ -108,6 +116,18 @@ namespace polyfem::varform
 		solver::SolveData solve_data_;
 		std::vector<std::shared_ptr<solver::Form>> forms;
 		bool contact_dhat_was_explicit_ = false;
+
+		/// @brief NonsmoothNewton: reject unsupported configurations at init (throws with the reason)
+		void check_nonsmooth_newton_config() const;
+		/// @brief NonsmoothNewton: reject unsupported problems before the solve (throws with the reason)
+		void check_nonsmooth_newton_support() const;
+		/// @brief NonsmoothNewton: the barrier contact form as the nonsmooth term of the solves with these nonlinear solver
+		/// parameters (the reduced solve or the augmented Lagrangian subproblems)
+		std::shared_ptr<solver::BarrierContactNonsmoothTerm> make_nonsmooth_term(const json &nonlinear_params);
+		std::shared_ptr<solver::FastTetValidity> nonsmooth_fast_validity_; ///< built on first use (null: not applicable)
+		/// displacement map of collision_mesh_ (collision full vertex <- FE node); empty: the collision full vertices are the FE nodes
+		Eigen::SparseMatrix<double> collision_displacement_map_;
+		bool nonsmooth_fast_validity_done_ = false;
 
 		int n_obstacle_vertices() const override { return obstacle.n_vertices(); }
 	};
