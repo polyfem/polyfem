@@ -1374,7 +1374,7 @@
         "type": "int",
         "default": 0,
         "min": 0,
-        "doc": "Lattice order for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
+        "doc": "Number of segments per original boundary edge in 2D, or face lattice order in 3D, for tessellation_type=max_order (0 = automatic: the globally maximal element order). Larger values sample the boundary finer; 1 gives the corner-only linear proxy."
     },
     {
         "pointer": "/contact/collision_mesh/enabled",
