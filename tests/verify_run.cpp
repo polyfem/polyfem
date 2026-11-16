@@ -930,7 +930,7 @@ TEST_CASE("runners-polyspline", tagsrun)
 
 TEST_CASE("esp", tagsrun)
 {
-	run_data("esp", POLYFEM_DATA_DIR "/../esp_data/");
+	run_data("esp", POLYFEM_DATA_DIR);
 }
 
 #ifdef POLYFEM_WITH_MISO
