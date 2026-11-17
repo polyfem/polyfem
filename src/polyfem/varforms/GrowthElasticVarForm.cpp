@@ -229,7 +229,10 @@ namespace polyfem::varform
 				|| gl.value("parallel_threshold", d.parallel_threshold) != d.parallel_threshold
 				|| gl.value("threshold_state", d.threshold_state) != d.threshold_state
 				|| gl.value("lag_report", d.lag_report) != d.lag_report
-				|| gl.value("final_tol_factor", d.final_tol_factor) != d.final_tol_factor)
+				|| gl.value("final_tol_factor", d.final_tol_factor) != d.final_tol_factor
+				|| gl.value("relag_acceleration", d.relag_acceleration) != d.relag_acceleration
+				|| gl.value("relag_omega_min", d.relag_omega_min) != d.relag_omega_min
+				|| gl.value("relag_omega_max", d.relag_omega_max) != d.relag_omega_max)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -252,6 +255,13 @@ namespace polyfem::varform
 		growth_law_.threshold_state = gl.value("threshold_state", growth_law_.threshold_state);
 		growth_law_.lag_report = gl.value("lag_report", growth_law_.lag_report);
 		growth_law_.final_tol_factor = gl.value("final_tol_factor", growth_law_.final_tol_factor);
+		growth_law_.relag_acceleration = gl.value("relag_acceleration", growth_law_.relag_acceleration);
+		growth_law_.relag_omega_min = gl.value("relag_omega_min", growth_law_.relag_omega_min);
+		growth_law_.relag_omega_max = gl.value("relag_omega_max", growth_law_.relag_omega_max);
+		if (growth_law_.relag_acceleration != "none" && growth_law_.relag_acceleration != "aitken")
+			log_and_throw_error("growth_law relag_acceleration must be \"none\" or \"aitken\", got \"{}\".", growth_law_.relag_acceleration);
+		if (!(growth_law_.relag_omega_min > 0) || !(growth_law_.relag_omega_max >= growth_law_.relag_omega_min))
+			log_and_throw_error("growth_law needs 0 < relag_omega_min <= relag_omega_max.");
 		if (!(growth_law_.final_tol_factor > 0) || growth_law_.final_tol_factor > 1)
 			log_and_throw_error("growth_law final_tol_factor must be in (0, 1], got {}.", growth_law_.final_tol_factor);
 		{
@@ -1420,33 +1430,55 @@ namespace polyfem::varform
 			log_and_throw_error("growth_law: non-finite C_check threshold.");
 	}
 
-	void GrowthElasticVarForm::update_lagged_threshold(const Eigen::MatrixXd &solution, const double t)
+	void GrowthElasticVarForm::threshold_target(const Eigen::MatrixXd &solution, const double t,
+												 Eigen::VectorXd &par, Eigen::VectorXd &gam, Eigen::VectorXd &clamped)
 	{
-		const int n_el = mesh_->n_elements();
 		Eigen::VectorXd full, ns, tt;
 		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
-		shear_supply_ = full - ns;
-		const bool parallel_lagged = growth_law_.parallel_threshold == "lagged";
-		if (parallel_lagged)
+		gam = full - ns;
+		if (growth_law_.parallel_threshold == "lagged")
 		{
-			threshold_parallel_ = ns.cwiseMax(0.0);
-			threshold_clamped_ = (ns.array() < 0).cast<double>().matrix();
+			par = ns.cwiseMax(0.0);
+			clamped = (ns.array() < 0).cast<double>().matrix();
 		}
+		else
+		{
+			par = threshold_parallel_;
+			clamped = threshold_clamped_;
+		}
+	}
 
+	void GrowthElasticVarForm::set_threshold(const Eigen::VectorXd &par, const Eigen::VectorXd &gam,
+											 const Eigen::VectorXd &clamped, const double t, const double omega)
+	{
+		const int n_el = mesh_->n_elements();
+		threshold_parallel_ = par;
+		shear_supply_ = gam;
+		if (clamped.size() == n_el)
+			threshold_clamped_ = clamped;
 		threshold_per_element_ = threshold_parallel_ + shear_supply_;
 		assemble_growth_node_weights();
 
 		// round-off of f_gamma on zero-floored PHI_PAR is not a negative threshold
 		const double neg_tol = 1e-6 * std::max(1.0, threshold_parallel_.cwiseAbs().maxCoeff());
 		const int n_neg = int((threshold_per_element_.array() < -neg_tol).count());
-		const std::string par_info = parallel_lagged
+		const bool parallel_lagged = growth_law_.parallel_threshold == "lagged";
+		const std::string par_info = parallel_lagged && threshold_clamped_.size() == n_el
 										 ? fmt::format("; PHI_PAR (lagged) median {:.4g} Pa, clamped on {:.1f}%",
 													   median_of(threshold_parallel_), 100.0 * threshold_clamped_.mean())
 										 : std::string();
+		const std::string om = omega != 1.0 ? fmt::format("; relaxation omega {:.3g}", omega) : std::string();
 		logger().info("growth_law: lagged shear supply at t = {:g}: f_gamma median {:.4g} Pa, in [{:.4g}, {:.4g}]; "
-					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements{}",
+					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements{}{}",
 					  t, median_of(shear_supply_), shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
-					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), 100.0 * n_neg / n_el, par_info);
+					  threshold_per_element_.minCoeff(), threshold_per_element_.maxCoeff(), 100.0 * n_neg / n_el, par_info, om);
+	}
+
+	void GrowthElasticVarForm::update_lagged_threshold(const Eigen::MatrixXd &solution, const double t)
+	{
+		Eigen::VectorXd par, gam, clamped;
+		threshold_target(solution, t, par, gam, clamped);
+		set_threshold(par, gam, clamped, t, 1.0);
 	}
 
 	Eigen::VectorXd GrowthElasticVarForm::element_mean_growth(const Eigen::VectorXd &theta)
@@ -1615,6 +1647,16 @@ namespace polyfem::varform
 		// the release tolerance they are compared with.
 		std::vector<char> pinned(ng, 1);
 		bool tight = false;
+
+		// Aitken dynamic relaxation of the per-pass threshold iteration (shear_update
+		// "pass"): x_{k+1} = x_k + omega_k (G(x_k) - x_k), x = (PHI_PAR, f_gamma) per
+		// element, omega_k = -omega_{k-1} r_{k-1}.(r_k - r_{k-1}) / |r_k - r_{k-1}|^2.
+		// Restarted (omega = 1) whenever the active set changed in between, since the
+		// map G then changes too. The fixed point is the same as without relaxation.
+		const bool aitken = growth_law_.shear_update == "pass" && growth_law_.relag_acceleration == "aitken";
+		Eigen::VectorXd r_prev;
+		double omega_prev = 1.0;
+		bool set_changed_last_pass = true;
 		for (int pass = 1; pass <= growth_law_.max_active_set_iterations; ++pass)
 		{
 			pinned_growth_nodes_.clear();
@@ -1640,9 +1682,26 @@ namespace polyfem::varform
 			{
 				const Eigen::VectorXd w_old = growth_node_weights_;
 				const Eigen::VectorXd phi_old = threshold_per_element_;
-				update_lagged_threshold(solution, t);
+				Eigen::VectorXd par_g, gam_g, clamped_g;
+				threshold_target(solution, t, par_g, gam_g, clamped_g);
+				const int n_el = int(par_g.size());
+				Eigen::VectorXd r(2 * n_el);
+				r << par_g - threshold_parallel_, gam_g - shear_supply_;
+				const double dphi = ((par_g + gam_g) - phi_old).cwiseAbs().maxCoeff(); // |G(x) - x|, the lag
+				double omega = 1.0;
+				if (aitken && !set_changed_last_pass && r_prev.size() == r.size())
+				{
+					const Eigen::VectorXd dr = r - r_prev;
+					const double den = dr.squaredNorm();
+					if (den > 0)
+						omega = std::clamp(-omega_prev * r_prev.dot(dr) / den,
+										   growth_law_.relag_omega_min, growth_law_.relag_omega_max);
+				}
+				r_prev = r;
+				omega_prev = omega;
+				set_threshold((threshold_parallel_ + omega * r.head(n_el)).cwiseMax(0.0),
+							  shear_supply_ + omega * r.tail(n_el), clamped_g, t, omega);
 				mult += growth_node_weights_ - w_old;
-				const double dphi = (threshold_per_element_ - phi_old).cwiseAbs().maxCoeff();
 				// a changed threshold only moves the solution where theta is free
 				const bool any_free = std::find(pinned.begin(), pinned.end(), 0) != pinned.end();
 				threshold_moved = growth_law_.shear_update == "pass" && any_free && dphi > growth_law_.shear_update_tol;
@@ -1682,6 +1741,7 @@ namespace polyfem::varform
 				{{"type", "growth_active_set"}, {"t", t}, {"step", step}, {"pass", pass},
 				 {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
 
+			set_changed_last_pass = n_released != 0 || n_pinned != 0;
 			if (n_released == 0 && n_pinned == 0 && !threshold_moved)
 			{
 				if (growth_law_.final_tol_factor < 1.0 && !tight)

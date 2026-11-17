@@ -457,7 +457,10 @@
             "parallel_threshold",
             "threshold_state",
             "lag_report",
-            "final_tol_factor"
+            "final_tol_factor",
+            "relag_acceleration",
+            "relag_omega_min",
+            "relag_omega_max"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -617,6 +620,28 @@
         "type": "float",
         "default": 1.0,
         "doc": "When < 1: once the active set has settled, one confirmation pass re-solves with solver.nonlinear.grad_norm_tol multiplied by this factor, and the set is re-checked on the tighter multipliers (1 = off)"
+    },
+    {
+        "pointer": "/growth_law/relag_acceleration",
+        "type": "string",
+        "default": "none",
+        "options": [
+            "none",
+            "aitken"
+        ],
+        "doc": "shear_update pass: acceleration of the per-pass threshold iteration. aitken: Aitken / Irons-Tuck dynamic relaxation on (PHI_PAR, f_gamma), restarted whenever the active set changes; same fixed point"
+    },
+    {
+        "pointer": "/growth_law/relag_omega_min",
+        "type": "float",
+        "default": 0.05,
+        "doc": "relag_acceleration aitken: lower clamp on the relaxation factor"
+    },
+    {
+        "pointer": "/growth_law/relag_omega_max",
+        "type": "float",
+        "default": 5.0,
+        "doc": "relag_acceleration aitken: upper clamp on the relaxation factor"
     }
 
 ]
