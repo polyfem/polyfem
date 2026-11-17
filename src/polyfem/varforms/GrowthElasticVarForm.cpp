@@ -216,7 +216,9 @@ namespace polyfem::varform
 				|| gl.value("save_increments", d.save_increments) != d.save_increments
 				|| gl.value("shear_supply", d.shear_supply) != d.shear_supply
 				|| gl.value("theta_crit", d.theta_crit) != d.theta_crit
-				|| gl.value("parallel_field", d.parallel_field) != d.parallel_field)
+				|| gl.value("parallel_field", d.parallel_field) != d.parallel_field
+				|| gl.value("shear_update", d.shear_update) != d.shear_update
+				|| gl.value("shear_update_tol", d.shear_update_tol) != d.shear_update_tol)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -233,6 +235,12 @@ namespace polyfem::varform
 		growth_law_.shear_supply = gl.value("shear_supply", growth_law_.shear_supply);
 		growth_law_.theta_crit = gl.value("theta_crit", growth_law_.theta_crit);
 		growth_law_.parallel_field = gl.value("parallel_field", growth_law_.parallel_field);
+		growth_law_.shear_update = gl.value("shear_update", growth_law_.shear_update);
+		growth_law_.shear_update_tol = gl.value("shear_update_tol", growth_law_.shear_update_tol);
+		if (growth_law_.shear_update != "increment" && growth_law_.shear_update != "predictor" && growth_law_.shear_update != "pass")
+			log_and_throw_error("growth_law shear_update must be \"increment\", \"predictor\" or \"pass\", got \"{}\".", growth_law_.shear_update);
+		if (!(growth_law_.shear_update_tol > 0))
+			log_and_throw_error("growth_law shear_update_tol must be positive.");
 		if (growth_law_.shear_supply != "frozen" && growth_law_.shear_supply != "lagged")
 			log_and_throw_error("growth_law shear_supply must be \"frozen\" or \"lagged\", got \"{}\".", growth_law_.shear_supply);
 		if (growth_law_.shear_supply == "lagged")
@@ -1329,7 +1337,9 @@ namespace polyfem::varform
 
 		std::vector<double> sorted(shear_supply_.data(), shear_supply_.data() + n_el);
 		std::nth_element(sorted.begin(), sorted.begin() + n_el / 2, sorted.end());
-		const int n_neg = int((threshold_per_element_.array() < 0).count());
+		// round-off of f_gamma on zero-floored PHI_PAR is not a negative threshold
+		const double neg_tol = 1e-6 * std::max(1.0, threshold_parallel_.cwiseAbs().maxCoeff());
+		const int n_neg = int((threshold_per_element_.array() < -neg_tol).count());
 		logger().info("growth_law: lagged shear supply at t = {:g}: f_gamma median {:.4g} Pa, in [{:.4g}, {:.4g}]; "
 					  "threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements",
 					  t, sorted[n_el / 2], shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
@@ -1378,7 +1388,27 @@ namespace polyfem::varform
 
 			solve_with_current_pins(step, t, solution);
 
-			const Eigen::VectorXd mult = growth_multiplier(solution);
+			Eigen::VectorXd mult = growth_multiplier(solution);
+
+			// Lagged shear supply re-evaluated on this pass's state. The dissipation
+			// is linear in theta with gradient w, so the multiplier for the updated
+			// threshold is mult + (w_new - w_old), exactly, without another solve.
+			bool threshold_moved = false;
+			if (growth_law_.shear_supply == "lagged"
+				&& (growth_law_.shear_update == "pass" || (growth_law_.shear_update == "predictor" && pass == 1)))
+			{
+				const Eigen::VectorXd w_old = growth_node_weights_;
+				const Eigen::VectorXd phi_old = threshold_per_element_;
+				update_lagged_threshold(solution, t);
+				mult += growth_node_weights_ - w_old;
+				const double dphi = (threshold_per_element_ - phi_old).cwiseAbs().maxCoeff();
+				// a changed threshold only moves the solution where theta is free
+				const bool any_free = std::find(pinned.begin(), pinned.end(), 0) != pinned.end();
+				threshold_moved = growth_law_.shear_update == "pass" && any_free && dphi > growth_law_.shear_update_tol;
+				logger().info("growth step {} (t = {:g}) pass {}: shear supply updated, max |d phi| {:.4g} Pa{}",
+							  step, t, pass, dphi, threshold_moved ? " (re-solving)" : "");
+			}
+
 			int n_released = 0, n_pinned = 0, n_pinned_total = 0;
 			std::vector<char> next = pinned;
 			for (int a = 0; a < ng; ++a)
@@ -1408,7 +1438,7 @@ namespace polyfem::varform
 				{{"type", "growth_active_set"}, {"t", t}, {"step", step}, {"pass", pass},
 				 {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
 
-			if (n_released == 0 && n_pinned == 0)
+			if (n_released == 0 && n_pinned == 0 && !threshold_moved)
 				return pass;
 			pinned = next;
 		}
@@ -1433,7 +1463,7 @@ namespace polyfem::varform
 		for (int step = 1; step <= growth_law_.n_steps; ++step)
 		{
 			const double t = growth_law_.t_end * double(step) / double(growth_law_.n_steps);
-			if (growth_law_.shear_supply == "lagged")
+			if (growth_law_.shear_supply == "lagged" && growth_law_.shear_update == "increment")
 				update_lagged_threshold(solution, growth_law_.t_end * double(step - 1) / double(growth_law_.n_steps));
 			const int passes = solve_growth_increment(step, t, solution);
 

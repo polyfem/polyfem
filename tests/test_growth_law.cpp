@@ -484,6 +484,34 @@ TEST_CASE("growth_law_lagged_shear_supply", "[growth][growth_law]")
 	for (int a = 0; a < nv; ++a)
 		CHECK(theta(a) == Catch::Approx(lambda * lambda / vstar).epsilon(1e-6));
 
+	SECTION("predictor and per-pass updates agree on the shear-free cube")
+	{
+		for (const std::string mode : {"predictor", "pass"})
+		{
+			json a2 = args;
+			a2["materials"]["growth_law"]["shear_update"] = mode;
+			State s2;
+			s2.init(a2, /*strict_validation=*/true);
+			s2.set_max_threads(1);
+			s2.load_mesh();
+			Eigen::MatrixXd sol2;
+			s2.solve(sol2);
+			const auto vf2 = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(s2.variational_formulation);
+			REQUIRE(vf2);
+			CHECK(vf2->growth_shear_supply().cwiseAbs().maxCoeff() < 1e-6);
+			for (int a = 0; a < nv; ++a)
+				CHECK(sol2(sol2.rows() - nv + a) == Catch::Approx(lambda * lambda / vstar).epsilon(1e-6));
+		}
+	}
+
+	SECTION("unknown shear_update is refused")
+	{
+		json bad = args;
+		bad["materials"]["growth_law"]["shear_update"] = "sometimes";
+		State s2;
+		CHECK_THROWS(s2.init(bad, /*strict_validation=*/true));
+	}
+
 	SECTION("lagged needs theta_crit")
 	{
 		json bad = args;
@@ -492,4 +520,3 @@ TEST_CASE("growth_law_lagged_shear_supply", "[growth][growth_law]")
 		CHECK_THROWS(s2.init(bad, /*strict_validation=*/true));
 	}
 }
-

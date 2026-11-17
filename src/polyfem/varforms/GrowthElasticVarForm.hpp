@@ -193,6 +193,13 @@ namespace polyfem::varform
 			std::string shear_supply = "frozen";
 			double theta_crit = 0;             ///< lagged: threshold in-plane elastic area stretch
 			std::string parallel_field = "PHI_PAR"; ///< lagged: threshold-file field holding max(f_par(C_check), 0)
+			/// lagged: when f_gamma is re-evaluated. "increment": once, on the previous
+			/// increment's converged state. "predictor": on the elastic predictor of the
+			/// increment (pass 1, growth pinned: the displacement at this increment's t),
+			/// at no extra solve. "pass": after every active-set pass, iterating until
+			/// the threshold changes by less than shear_update_tol (Pa).
+			std::string shear_update = "increment";
+			double shear_update_tol = 1.0;
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)

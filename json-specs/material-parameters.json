@@ -451,7 +451,9 @@
             "save_increments",
             "shear_supply",
             "theta_crit",
-            "parallel_field"
+            "parallel_field",
+            "shear_update",
+            "shear_update_tol"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -565,6 +567,23 @@
         "type": "string",
         "default": "PHI_PAR",
         "doc": "shear_supply lagged: CELL_DATA field of the threshold file holding max(f_par(C_check), 0) [Pa]"
+    },
+    {
+        "pointer": "/growth_law/shear_update",
+        "type": "string",
+        "default": "increment",
+        "options": [
+            "increment",
+            "predictor",
+            "pass"
+        ],
+        "doc": "shear_supply lagged: when f_gamma is re-evaluated. increment: once per increment, on the previous increment's converged state. predictor: on the increment's elastic predictor (pass 1, growth pinned), i.e. the displacement at this increment's t, at no extra solve. pass: after every active-set pass, re-solving until the threshold moves by less than shear_update_tol"
+    },
+    {
+        "pointer": "/growth_law/shear_update_tol",
+        "type": "float",
+        "default": 1.0,
+        "doc": "shear_update pass: the per-pass iteration stops when max |d phi_e| < shear_update_tol [Pa] (and the active set has settled)"
     }
 
 ]
