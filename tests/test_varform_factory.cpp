@@ -10,6 +10,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 
 #include <cmath>
@@ -48,6 +49,33 @@ namespace
 		return args;
 	}
 } // namespace
+
+TEST_CASE("problem time dependence matches time configuration", "[varform][init]")
+{
+	const std::string name = GENERATE("Franke", "FrankeOld", "ElasticExact", "TimeDependentScalar");
+	const bool has_time = GENERATE(false, true);
+	const bool transient_problem = name == "TimeDependentScalar";
+	CAPTURE(name, has_time);
+
+	json args;
+	args["geometry"] = {{"mesh", std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/square.obj"}};
+	args["materials"] = {{"type", name == "ElasticExact" ? "LinearElasticity" : "Laplacian"}};
+	if (name == "ElasticExact")
+	{
+		args["materials"]["E"] = 1e5;
+		args["materials"]["nu"] = 0.3;
+	}
+	args["preset_problem"] = {{"type", name}};
+	if (has_time)
+		args["time"] = {{"tend", 1}, {"dt", 1}};
+
+	State state;
+	if (transient_problem == has_time)
+		CHECK_NOTHROW(state.init(args, true));
+	else
+		CHECK_THROWS_WITH(state.init(args, true),
+						  "Problem time dependence must match the presence of the 'time' configuration.");
+}
 
 TEST_CASE("varform factory supports migrated formulations", "[varform]")
 {

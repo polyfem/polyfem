@@ -5,7 +5,6 @@
 
 #include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3DStorage.hpp>
-#include <geogram/mesh/mesh.h>
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>
@@ -15,6 +14,8 @@ namespace polyfem
 {
 	namespace mesh
 	{
+		struct StandardCell;
+
 		class CMesh3D : public Mesh3D
 		{
 		public:
@@ -119,7 +120,6 @@ namespace polyfem
 				std::cerr << "never user this function" << std::endl;
 				return mesh_;
 			}
-			static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 
 			void append(const Mesh &mesh) override;
 
@@ -129,7 +129,7 @@ namespace polyfem
 			void remove_elements(const std::vector<bool> &keep) override;
 
 		private:
-			bool build_storage_from_geogram(const GEO::Mesh &mesh);
+			bool build_storage_from_cells(const Eigen::MatrixXd &V, const std::vector<StandardCell> &cells);
 			Mesh3DStorage mesh_;
 		};
 	} // namespace mesh

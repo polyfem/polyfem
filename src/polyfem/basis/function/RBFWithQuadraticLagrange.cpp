@@ -268,8 +268,10 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembl
 	std::array<Eigen::MatrixXd, 5> strong;
 
 	// ass_val = [q_10, q_01, q_11, q_20, q_02, psi_0, ..., psi_k]
-	ElementAssemblyValues ass_val;
+	ElementAssemblyValues ass_val{};
 	ass_val.has_parameterization = false;
+	ass_val.quadrature = quadr;
+	ass_val.val = quadr.points;
 	ass_val.basis_values.resize(5 + num_kernels);
 
 	// evaluating monomial and grad of monomials at quad points
@@ -462,15 +464,13 @@ void RBFWithQuadraticLagrange::compute_weights(const LinearAssembler &assembler,
 		// Solve the system
 		const int num_kernels = centers_.rows();
 		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
-		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+		weights_ = A.colPivHouseholderQr().solve(b);
 		logger().trace("-- Solved!");
 
 		return;
 	}
 
 	const int num_bases = b.cols();
-
-	const Eigen::MatrixXd At = A.transpose();
 
 	// Compute C
 	Eigen::MatrixXd C;
@@ -487,32 +487,23 @@ void RBFWithQuadraticLagrange::compute_weights(const LinearAssembler &assembler,
 	assert(centers_.rows() + 1 + dim + dim * (dim + 1) / 2 > C.rows());
 	logger().trace("#constraints: {}", C.rows());
 
-	// Compute rhs = [ A^T b; d ]
 	assert(local_basis_integral.cols() == C.rows());
 	assert(local_basis_integral.rows() == b.cols());
 	assert(A.rows() == b.rows());
-	Eigen::MatrixXd rhs(A.cols() + local_basis_integral.cols(), b.cols());
-	rhs.topRows(A.cols()) = At * b;
-	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
-
-	// Compute M = [ A^T A, C^T; C, 0]
 	assert(C.cols() == A.cols());
-	assert(A.rows() == b.rows());
-	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
-	M.topLeftCorner(A.cols(), A.cols()) = At * A;
-	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
-	M.bottomLeftCorner(C.rows(), A.cols()) = C;
-	M.bottomRightCorner(C.rows(), C.rows()).setZero();
 
-	// Solve the system
-	logger().trace("-- Solving system of size {}x{}", M.rows(), M.cols());
-	auto ldlt = M.ldlt();
-	if (ldlt.info() == Eigen::NumericalIssue)
+	// Find a feasible weight vector and an orthonormal null space of C.
+	// The boundary fit then uses QR directly, without forming A^T A.
+	const auto constraints = C.completeOrthogonalDecomposition();
+	weights_ = constraints.solve(local_basis_integral.transpose());
+	const int free_weights = A.cols() - constraints.rank();
+	if (free_weights > 0)
 	{
-		logger().error("-- WARNING: Numerical issues when solving the harmonic least square.");
+		const Eigen::MatrixXd null_space = constraints.colsPermutation() * constraints.matrixZ().transpose().rightCols(free_weights);
+		const Eigen::MatrixXd reduced = A * null_space;
+		const Eigen::MatrixXd residual = b - A * weights_;
+		weights_ += null_space * reduced.colPivHouseholderQr().solve(residual);
 	}
-	const auto tmp = ldlt.solve(rhs);
-	weights_ = tmp.topRows(A.cols());
 	logger().trace("-- Solved!");
 	logger().trace("-- Mean residual: {}", (A * weights_ - b).array().abs().colwise().maxCoeff().mean());
 	logger().trace("-- Max constraints error: {}", (C * weights_ - local_basis_integral.transpose()).array().abs().maxCoeff());

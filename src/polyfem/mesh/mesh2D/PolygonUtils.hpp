@@ -32,7 +32,7 @@ namespace polyfem
 		/// Determine whether a polygon is star-shaped or not.
 		///
 		/// @param[in]  IV     #IV x (2|3) of vertex positions around the polygon
-		/// @param[out] bary   The barycenter of the kernel
+		/// @param[out] bary   Area centroid of the kernel, or vertex mean for a degenerate kernel
 		///
 		/// @return     True if star shaped, False otherwise.
 		///
@@ -59,7 +59,8 @@ namespace polyfem
 		int is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<bool> &inside);
 
 		///
-		/// Sample points on a polygon, evenly spaced from each other
+		/// Sample equal-arclength interval midpoints, starting at the
+		/// lexicographically smallest polygon vertex.
 		///
 		/// @param[in]  IV            #IV x 2 vertex positions for the input polygon
 		/// @param[in]  num_samples   Desired number of samples

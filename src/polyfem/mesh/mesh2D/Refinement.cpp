@@ -610,36 +610,35 @@ void polyfem::mesh::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixX
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func)
+void polyfem::mesh::refine_polygonal_mesh(const PolygonMesh &M_in, PolygonMesh &M_out, Polygons::SplitFunction split_func)
 {
-	using GEO::index_t;
+	using index_t = int;
 	using Navigation::Index;
 
 	// Step 0: Clear output mesh, and fill it with M_in's vertices
 	assert(&M_in != &M_out);
-	M_out.copy(M_in);
-	M_out.edges.clear();
-	M_out.facets.clear();
-	GEO::Attribute<GEO::index_t> c2e(M_in.facet_corners.attributes(), "edge_id");
+	M_out = M_in;
+	M_out.clear_edges();
+	M_out.clear_facets();
 
 	// Step 1: Iterate over facets and refine triangles and quads
-	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
-	for (index_t f = 0; f < M_in.facets.nb(); ++f)
+	std::vector<int> edge_to_midpoint(M_in.n_edges(), -1);
+	for (index_t f = 0; f < M_in.n_facets(); ++f)
 	{
-		index_t nv = M_in.facets.nb_vertices(f);
+		index_t nv = M_in.n_facet_vertices(f);
 		assert(nv > 2);
-		Index idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
-		assert(Navigation::switch_vertex(M_in, idx).vertex == (int)M_in.facets.vertex(f, 1));
+		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		assert(Navigation::switch_vertex(M_in, idx).vertex == M_in.facet_vertex(f, 1));
 
 		// Create mid-edge vertices
-		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, c2e, idx))
+		for (index_t lv = 0; lv < M_in.n_facet_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx))
 		{
-			assert(idx.vertex == (int)M_in.facets.vertex(f, lv));
+			assert(idx.vertex == M_in.facet_vertex(f, lv));
 			if (edge_to_midpoint[idx.edge] == -1)
 			{
-				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex) + mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+				PolygonMesh::Point coords = 0.5 * (mesh_vertex(M_in, idx.vertex) + mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
 				edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
-				assert(edge_to_midpoint[idx.edge] + 1 == (int)M_out.vertices.nb());
+				assert(edge_to_midpoint[idx.edge] + 1 == M_out.n_vertices());
 			}
 		}
 
@@ -647,43 +646,38 @@ void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_ou
 		{
 			// Create mid-face vertex
 			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
-			assert(vf + 1 == M_out.vertices.nb());
+			assert(vf + 1 == M_out.n_vertices());
 
 			// Create quads
-			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv)
+			for (index_t lv = 0; lv < M_in.n_facet_vertices(f); ++lv)
 			{
-				idx = Navigation::get_index_from_face(M_in, c2e, f, lv);
-				assert(Navigation::switch_vertex(M_in, idx).vertex == (int)M_in.facets.vertex(f, (lv + 1) % M_in.facets.nb_vertices(f)));
+				idx = Navigation::get_index_from_face(M_in, f, lv);
+				assert(Navigation::switch_vertex(M_in, idx).vertex == M_in.facet_vertex(f, (lv + 1) % M_in.n_facet_vertices(f)));
 				int v1 = idx.vertex;
 				int v12 = edge_to_midpoint[idx.edge];
-				int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, c2e, idx).edge];
+				int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
 				assert(v12 != -1 && v01 != -1);
-				M_out.facets.create_quad(v1, v12, vf, v01);
+				M_out.create_polygon({v1, v12, vf, v01});
 			}
 		}
 	}
 
 	// Step 2: Create polygonal faces following vertices around holes
-	for (index_t f = 0; f < M_in.facets.nb(); ++f)
+	for (index_t f = 0; f < M_in.n_facets(); ++f)
 	{
-		if (M_in.facets.nb_vertices(f) <= 4)
+		if (M_in.n_facet_vertices(f) <= 4)
 		{
 			continue;
 		}
-		GEO::vector<index_t> hole;
+		std::vector<index_t> hole;
 		{
-			auto idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
-			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv)
+			auto idx = Navigation::get_index_from_face(M_in, f, 0);
+			for (index_t lv = 0; lv < M_in.n_facet_vertices(f); ++lv)
 			{
 				hole.push_back(idx.vertex);
 				hole.push_back(edge_to_midpoint[idx.edge]);
-				idx = Navigation::next_around_face(M_in, c2e, idx);
+				idx = Navigation::next_around_face(M_in, idx);
 			}
-		}
-
-		if (M_in.vertices.dimension() != 2)
-		{
-			// std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
 		}
 
 		// Subdivide the hole using polar refinement
@@ -692,7 +686,7 @@ void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_ou
 		std::vector<std::vector<int>> F;
 		for (index_t k = 0; k < n; ++k)
 		{
-			GEO::vec3 pk = polyfem::mesh::mesh_vertex(M_out, hole[k]);
+			PolygonMesh::Point pk = polyfem::mesh::mesh_vertex(M_out, hole[k]);
 			P.row(k) << pk[0], pk[1];
 		}
 		split_func(P, V, F);
@@ -700,12 +694,12 @@ void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_ou
 		std::vector<int> remap(V.rows() - n);
 		for (index_t k = n, lk = 0; k < V.rows(); ++k, ++lk)
 		{
-			GEO::vec3 qk = GEO::vec3(V(k, 0), V(k, 1), 0);
+			PolygonMesh::Point qk = PolygonMesh::Point(V(k, 0), V(k, 1), 0);
 			remap[lk] = mesh_create_vertex(M_out, qk);
 		}
 		for (const auto &poly : F)
 		{
-			GEO::vector<index_t> vertices;
+			std::vector<index_t> vertices;
 			for (int vk : poly)
 			{
 				if (vk < (int)n)
@@ -717,59 +711,58 @@ void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_ou
 					vertices.push_back(remap[vk - n]);
 				}
 			}
-			M_out.facets.create_polygon(vertices);
+			M_out.create_polygon(vertices);
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out)
+void polyfem::mesh::refine_triangle_mesh(const PolygonMesh &M_in, PolygonMesh &M_out)
 {
-	using GEO::index_t;
+	using index_t = int;
 	using Navigation::Index;
 
 	// Step 1: Clear output mesh, and fill it with M_in's vertices
 	assert(&M_in != &M_out);
-	M_out.copy(M_in);
-	M_out.edges.clear();
-	M_out.facets.clear();
-	GEO::Attribute<GEO::index_t> c2e(M_in.facet_corners.attributes(), "edge_id");
+	M_out = M_in;
+	M_out.clear_edges();
+	M_out.clear_facets();
 
 	// Step 2: Iterate over facets and refine triangles
-	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
-	for (index_t f = 0; f < M_in.facets.nb(); ++f)
+	std::vector<int> edge_to_midpoint(M_in.n_edges(), -1);
+	for (index_t f = 0; f < M_in.n_facets(); ++f)
 	{
-		index_t nv = M_in.facets.nb_vertices(f);
+		index_t nv = M_in.n_facet_vertices(f);
 		assert(nv == 3);
-		Index idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
-		assert(Navigation::switch_vertex(M_in, idx).vertex == (int)M_in.facets.vertex(f, 1));
+		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		assert(Navigation::switch_vertex(M_in, idx).vertex == M_in.facet_vertex(f, 1));
 
 		// Create mid-edge vertices
-		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, c2e, idx))
+		for (index_t lv = 0; lv < M_in.n_facet_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx))
 		{
-			assert(idx.vertex == (int)M_in.facets.vertex(f, lv));
+			assert(idx.vertex == M_in.facet_vertex(f, lv));
 			if (edge_to_midpoint[idx.edge] == -1)
 			{
-				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex) + mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+				PolygonMesh::Point coords = 0.5 * (mesh_vertex(M_in, idx.vertex) + mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
 				edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
-				assert(edge_to_midpoint[idx.edge] + 1 == (int)M_out.vertices.nb());
+				assert(edge_to_midpoint[idx.edge] + 1 == M_out.n_vertices());
 			}
 		}
 
 		// Create triangles
 		std::array<index_t, 3> e2v;
-		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv)
+		for (index_t lv = 0; lv < M_in.n_facet_vertices(f); ++lv)
 		{
-			idx = Navigation::get_index_from_face(M_in, c2e, f, lv);
-			assert(Navigation::switch_vertex(M_in, idx).vertex == (int)M_in.facets.vertex(f, (lv + 1) % M_in.facets.nb_vertices(f)));
+			idx = Navigation::get_index_from_face(M_in, f, lv);
+			assert(Navigation::switch_vertex(M_in, idx).vertex == M_in.facet_vertex(f, (lv + 1) % M_in.n_facet_vertices(f)));
 			int v1 = idx.vertex;
 			int v12 = edge_to_midpoint[idx.edge];
-			int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, c2e, idx).edge];
+			int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
 			e2v[lv] = v12;
 			assert(v12 != -1 && v01 != -1);
-			M_out.facets.create_triangle(v1, v12, v01);
+			M_out.create_polygon({v1, v12, v01});
 		}
-		M_out.facets.create_triangle(e2v[0], e2v[1], e2v[2]);
+		M_out.create_polygon({e2v[0], e2v[1], e2v[2]});
 	}
 }
