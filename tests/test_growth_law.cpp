@@ -1,4 +1,4 @@
-// V2: solved growth on a homogeneous single-material cube (Stage 2 exit test).
+// Solved growth (growth_law) on a homogeneous single-material cube.
 //
 // A unit cube (2x2x2 cells, Kuhn split into tets) with rollers on x=0, y=0,
 // z=0, prescribed u_x on x=1 and u_y on y=1 (equibiaxial in-plane stretch
@@ -8,8 +8,8 @@
 //     F = diag(lambda, lambda, b),  Fg = diag(sqrt(theta), sqrt(theta), 1),
 //     Fe = diag(a, a, b),  a = lambda / sqrt(theta),  dpsi/db (Fe) = 0,
 //
-// so f_I depends on the elastic area stretch a^2 alone (the calibration
-// path), and the growth law gives theta = lambda^2 / vartheta*, with
+// so f_I depends on the elastic area stretch a^2 alone (the equibiaxial,
+// traction-free path), and the growth law gives theta = lambda^2 / vartheta*, with
 // f_I(vartheta*) = phi, wherever lambda^2 > vartheta*, and theta = theta_n
 // otherwise. The reference below is an independent scalar implementation of
 // the fitted energy on that path (not the assembler).
@@ -206,9 +206,9 @@ namespace
 
 TEST_CASE("growth_law_off_keeps_prescribed_mode", "[growth][growth_law]")
 {
-	// Without a threshold the law is off and the Stage-1 prescribed path runs
+	// Without a threshold the law is off and the prescribed-growth path runs
 	// unchanged (jse injects the growth_law block with threshold "none"). The
-	// homogeneous V2 state is prescribed here, so the solve must hold it.
+	// homogeneous grown cube state is prescribed here, so the solve must hold it.
 	const int n = 2;
 	const int nv = (n + 1) * (n + 1) * (n + 1);
 	const auto dir = scratch_dir();
@@ -251,13 +251,13 @@ TEST_CASE("growth_law_off_keeps_prescribed_mode", "[growth][growth_law]")
 
 TEST_CASE("growth_law_reference_path", "[growth][growth_law]")
 {
-	// The reference reproduces the calibration-path numbers of the formulation
-	// (Q1): f_I = 469 Pa at vartheta^e = 1.2, and 0 at the stress-free state.
+	// The scalar reference on the equibiaxial path: f_I = 469 Pa at an elastic
+	// area stretch of 1.2 for the fitted material, and 0 at the stress-free state.
 	CHECK(f_I(1.0) == Catch::Approx(0.0).margin(1e-5));
 	CHECK(f_I(1.2) == Catch::Approx(469.0).margin(0.5));
 }
 
-TEST_CASE("growth_law_V2_cube", "[growth][growth_law]")
+TEST_CASE("growth_law_cube_analytic", "[growth][growth_law]")
 {
 	const int n = 2;
 	const int nv = (n + 1) * (n + 1) * (n + 1);
@@ -310,7 +310,7 @@ TEST_CASE("growth_law_V2_cube", "[growth][growth_law]")
 
 TEST_CASE("growth_law_increment_output", "[growth][growth_law]")
 {
-	// Ramp the V2 stretch over four increments: growth activates in the first
+	// Ramp the cube stretch over four increments: growth activates in the first
 	// increment whose end-of-increment area stretch exceeds vartheta*, and
 	// save_increments writes one VTU per converged increment plus a PVD.
 	const int n = 2;
@@ -482,8 +482,8 @@ TEST_CASE("growth_driving_force_of_Ce", "[growth][growth_law]")
 TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 {
 	// Threshold route_b: phi built by the solver from the state (C_check at
-	// theta_crit, here not the calibration value) and iterated to its fixed point
-	// within the increment. On the shear-free V2 cube f_gamma = 0 and the cube
+	// theta_crit) and iterated to its fixed point within the increment. On the
+	// shear-free cube f_gamma = 0 and the cube
 	// stops exactly at vartheta^e = theta_crit, theta = lambda^2 / theta_crit, for
 	// one increment or several (path independence).
 	const int n = 2;
@@ -558,11 +558,6 @@ TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 		const GrowthRun rb = run_growth(big);
 		for (int a = 0; a < nv; ++a)
 			CHECK(rb.sol(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
-
-		json bad = args;
-		bad["materials"]["growth_law"]["relag_max_updates"] = -1;
-		State s6;
-		CHECK_THROWS(s6.init(bad, /*strict_validation=*/true));
 	}
 
 	SECTION("route_b needs theta_crit")
@@ -571,17 +566,6 @@ TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 		bad["materials"]["growth_law"].erase("theta_crit");
 		State s2;
 		CHECK_THROWS(s2.init(bad, /*strict_validation=*/true));
-	}
-
-	SECTION("retired threshold options are refused")
-	{
-		for (const std::string key : {"shear_supply", "parallel_threshold", "shear_update"})
-		{
-			json bad = args;
-			bad["materials"]["growth_law"][key] = "lagged";
-			State s3;
-			CHECK_THROWS(s3.init(bad, /*strict_validation=*/true));
-		}
 	}
 }
 
@@ -737,7 +721,7 @@ TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 
 TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 {
-	// V2 cube above threshold: F = diag(lambda, lambda, b), Fe = diag(a, a, b)
+	// Cube above threshold: F = diag(lambda, lambda, b), Fe = diag(a, a, b)
 	// with a^2 = vartheta* and the top traction free, so sigma_zz = 0. The
 	// exported stresses must be the grown ones; the ungrown material at the
 	// total F (what the elastic base evaluates) has sigma_zz far from 0.

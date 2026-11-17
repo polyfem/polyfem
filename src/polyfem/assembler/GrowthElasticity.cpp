@@ -113,14 +113,10 @@ namespace polyfem::assembler
 		// ------------------------------------------------------------------
 		// Per-element vector/scalar cell data.
 		//
-		// Minimal reader for the legacy ASCII VTK written by the fiber/normal
-		// pipeline (add_wall_normals.py): CELL_DATA section, arrays either as
-		// "VECTORS <name> ..." or inside "FIELD FieldData" as
-		// "<name> <ncomp> <ntuples> <dtype>".
-		//
-		// TODO(consolidation): route through the same loader GenericFiber
-		// uses for fiber_direction, so growth normals and fibers share one
-		// code path.
+		// Minimal reader for legacy ASCII VTK cell data: CELL_DATA section,
+		// arrays as "VECTORS <name> ...", "SCALARS <name> ..." or inside
+		// "FIELD FieldData" as "<name> <ncomp> <ntuples> <dtype>". (The fiber
+		// reader in MatParams.cpp handles VECTORS only.)
 		// ------------------------------------------------------------------
 		Eigen::MatrixXd read_vtk_cell_array(
 			std::istream &in, const std::string &path, const std::string &field, const int ncomp_expected)
@@ -351,7 +347,7 @@ namespace polyfem::assembler
 					// Fg^-1 = I + (theta^{-1/2} - 1)(I - n0 x n0) + (vn^{-1} - 1) n0 x n0.
 					// Identity-anchored form: at theta == 1, vn == 1 both coefficients
 					// are exactly zero, so Fgi is the BITWISE identity for any normal
-					// and the correction vanishes exactly (the V1 regression identity).
+					// and the correction vanishes exactly.
 					using std::sqrt;
 					const T c_ip = T(1) / sqrt(theta) - T(1);
 					const double c_n = 1.0 / vn_e - 1.0;
@@ -366,7 +362,7 @@ namespace polyfem::assembler
 					Fe = F * Fgi;
 					const T Jg = theta * T(vn_e);
 
-					// per-intermediate-volume convention (Q5): J^g * psi_e(Fe),
+					// energy per intermediate volume: J^g * psi_e(Fe),
 					// minus psi_e(F) so this form is the additive correction and
 					// vanishes identically at theta = 1, vn = 1.
 					const RowVectorNd pos = data.phi_vals.val.row(p);

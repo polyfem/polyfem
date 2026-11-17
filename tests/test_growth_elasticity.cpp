@@ -1,4 +1,4 @@
-// V1(a) unit checks for GrowthElasticity: finite-difference verification of
+// Unit checks for GrowthElasticity: finite-difference verification of
 // the mixed gradient and Hessian (including the K_ug coupling quadrant), and
 // the theta == 1 exact-zero identity of the additive correction.
 //
@@ -113,7 +113,7 @@ namespace
 			{"elastic_material",
 			 {{"type", "MaterialSum"},
 			  {"models",
-			   {// the fitted uterine composition (values from the fit)
+			   {// a fitted soft-tissue composition (isotropic, dispersed fiber, volumetric)
 				{{"type", "IsochoricNeoHookean"}, {"E", 2600.0}, {"nu", 0.26}},
 				{{"type", "HGODispersion"},
 				 {"k1", 2400.0},
@@ -238,8 +238,8 @@ TEST_CASE("growth_elasticity_theta_one_identity", "[assembler][growth]")
 	// At theta == 1 (vn == 1) the correction must vanish EXACTLY -- zero
 	// energy, zero gradient in every component, zero Hessian in the uu
 	// quadrant -- because Fgi is the bitwise identity by construction
-	// (identity-anchored form) and both energy calls see the same def_grad.
-	// This is the unit-level half of the V1 bit-identity regression.
+	// (identity-anchored form) and both energy calls see the same def_grad,
+	// so an ungrown body reproduces the plain elastic material bit for bit.
 	const auto assembler = make_assembler(growth_material());
 	const TetSpaces s = make_tet_spaces();
 	const Eigen::MatrixXd zero_phi = Eigen::MatrixXd::Zero(12, 1);

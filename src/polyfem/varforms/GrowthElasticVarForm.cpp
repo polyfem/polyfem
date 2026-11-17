@@ -353,12 +353,11 @@ namespace polyfem::varform
 				elastic_assembler->set_use_robust_jacobian();
 		}
 
-		// The growth space carries NO PDE of its own in Stage 1: this
-		// Laplacian is used purely structurally (FE-space construction and
-		// Dirichlet-value plumbing through the RhsAssembler); it is never
-		// registered as a form. Its material parameter is therefore optional
-		// and unused; the name reserves the slot a Stage-2 gradient
-		// regularizer would occupy.
+		// The growth space carries no PDE of its own: this Laplacian is used
+		// purely structurally (FE-space construction and Dirichlet-value
+		// plumbing through the RhsAssembler); it is never registered as a form.
+		// Its material parameter is therefore optional and unused; the name
+		// reserves the slot a gradient regularizer of theta would occupy.
 		growth_assembler_ = std::make_shared<assembler::Laplacian>("growth_diffusivity");
 		growthelastic_assembler_ = assembler::AssemblerUtils::make_mixed_nl_assembler("GrowthElasticity");
 		mass_assembler_ = std::make_shared<assembler::Mass>();
@@ -378,7 +377,7 @@ namespace polyfem::varform
 		problem->set_parameters(tmp, resources_);
 		growth_problem_->set_parameters(tmp, resources_);
 		// Solved growth evaluates the displacement Dirichlet expressions at each
-		// pseudo-time increment (the production ramp), so they are not constant
+		// pseudo-time increment (the Dirichlet ramp), so they are not constant
 		// in time. The growth problem stays static: its only Dirichlet data are
 		// the active-set pins, which carry tabulated targets.
 		if (growth_law_.enabled)
@@ -465,8 +464,8 @@ namespace polyfem::varform
 		// dissipation see theta only through element averages, and nodal
 		// patterns with zero average on every element are exact null modes
 		// (hourglass modes of the growth field; on a Kuhn-split cube every tet
-		// holds one node of each class (i+j+k) mod 4, and V2 converged to such a
-		// pattern). With order >= 2 (four points on a tet) the nodal values map
+		// holds one node of each class (i+j+k) mod 4, and the solve converged to
+		// such a pattern). With order >= 2 (four points on a tet) the nodal values map
 		// invertibly onto the point values, and the energy, convex in theta
 		// pointwise, fixes them. Prescribed growth is unaffected (theta is
 		// data), so only the solved mode raises it. Both spaces share the order
@@ -647,8 +646,8 @@ namespace polyfem::varform
 
 		// build_fe_space builds the input->internal node map only for spaces that
 		// own their geometry; the growth space shares the displacement geometry,
-		// so it must build its own (else growth_nodal_field and "growth" state
-		// restarts are placed in internal order -- caught by C2b).
+		// so it must build its own (else growth_nodal_field values would be placed
+		// in internal order).
 		build_node_mapping(mesh, args["space"]["basis_type"], growth_space_,
 						   growth_space_.space_in_node_to_node,
 						   growth_space_.space_in_primitive_to_primitive);
@@ -863,9 +862,8 @@ namespace polyfem::varform
 		Eigen::MatrixXd field = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
 
 		// Mesh-vertex (input) -> internal node order. The internal order is NOT
-		// the file order in general (C2b: 57% of the quarter-tube vertices
-		// differ). No AL diagnostic can catch a wrong map here: initial and
-		// target both come from this function. C2b (c2b_ordering.py) is the check.
+		// the file order in general, and no augmented-Lagrangian diagnostic can
+		// catch a wrong map here: initial and target both come from this function.
 		const auto &map = growth_space_.space_in_node_to_node;
 		if (map.size() != field.rows())
 			log_and_throw_error(
@@ -958,7 +956,7 @@ namespace polyfem::varform
 		}
 		solve_data_.al_form.clear();
 
-		// No growth-block form: Stage 1 has no growth PDE. The growth block's
+		// No growth-block form: theta has no PDE of its own. The growth block's
 		// stiffness is the K_gg quadrant of the coupling form below plus the
 		// augmented-Lagrangian boundary form; with every growth DOF prescribed
 		// the reduced problem contains only displacements.
@@ -1228,7 +1226,7 @@ namespace polyfem::varform
 	}
 
 	// ======================================================================
-	// Stage 2: solved growth
+	// Solved growth (growth_law)
 	// ======================================================================
 
 	void GrowthElasticVarForm::compute_growth_node_weights()
@@ -1487,10 +1485,10 @@ namespace polyfem::varform
 
 	void GrowthElasticVarForm::accumulate_dissipation(const int step, const double t, const Eigen::VectorXd &dtheta)
 	{
-		// Route-B split of the increment's dissipation term v_n phi dtheta (per
-		// reference volume, Pa): D = v_n max(f_par, 0) dtheta >= 0, the dissipation,
-		// and S = v_n f_gamma dtheta, the shear supply (Q12 obligation 3). Needs the
-		// split, i.e. threshold route_b.
+		// Split of the increment's dissipation term v_n phi dtheta (per reference
+		// volume, Pa) for the route_b threshold: D = v_n max(f_par, 0) dtheta >= 0,
+		// the dissipation, and S = v_n f_gamma dtheta, the shear supply. A
+		// shear supply comparable to D means the shear credit carries the growth.
 		const int n_el = mesh_->n_elements();
 		if (threshold_parallel_.size() != n_el || shear_supply_.size() != n_el)
 			return;
@@ -1807,7 +1805,7 @@ namespace polyfem::varform
 		theta_n_ = theta.cwiseMax(theta_n_);
 		solution.col(0).segment(nu, ng) = theta_n_;
 
-		// Activation increment (Q13(a)): the first increment in which a DOF
+		// Activation increment: the first increment in which a DOF
 		// was free in the settled active set AND grew. Free-but-unmoved
 		// DOFs (exactly at threshold) do not count.
 		for (int a = 0; a < ng; ++a)
@@ -2231,8 +2229,8 @@ namespace polyfem::varform
 
 		// Conjugate reaction on the growth block: the growth rows of the
 		// stacked energy gradient at the converged full solution. With theta
-		// prescribed everywhere this is the driving-force/reaction field r of
-		// the formulation (the V3 deliverable); the augmented-Lagrangian
+		// prescribed everywhere this is the driving-force/reaction field of the
+		// prescribed growth; the augmented-Lagrangian
 		// boundary forms are NOT part of stacked_form_, so this is the pure
 		// energy gradient.
 		if (stacked_form_ && options.export_field("growth_reaction"))
@@ -2241,7 +2239,7 @@ namespace polyfem::varform
 			stacked_form_->first_derivative(stacked.col(0), full_grad);
 			Eigen::MatrixXd reaction_nodal = full_grad.tail(growth_ndof());
 			// Solved growth adds the dissipation to stacked_form_; growth_reaction
-			// keeps its V3 meaning, the pure energy gradient (assembled -vn f_I).
+			// stays the pure energy gradient (assembled -vn f_I).
 			if (dissipation_form_)
 				reaction_nodal -= dissipation_form_->weights();
 

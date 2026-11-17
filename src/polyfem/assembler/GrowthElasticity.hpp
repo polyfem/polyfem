@@ -11,8 +11,8 @@ namespace polyfem::assembler
 		class GrowthElasticityModel;
 	}
 
-	/// Mixed (displacement, growth) assembler implementing the growth
-	/// correction energy of the uterine growth formulation:
+	/// Mixed (displacement, growth) assembler implementing the correction energy
+	/// of finite areal growth of a thin wall:
 	///
 	///     W = J^g * psi_e(Fe) - psi_e(F),
 	///     Fe  = F * inv(Fg),
@@ -21,14 +21,14 @@ namespace polyfem::assembler
 	///
 	/// with theta the scalar growth field (the psi-space DOF, interpolated at
 	/// quadrature points), n0 the reference wall normal (per-element data),
-	/// and vn the prescribed normal growth component (default 1: the pure
-	/// in-plane row; the candidate amended map supplies vn per element).
+	/// and vn the prescribed normal growth component (default 1: pure in-plane
+	/// growth; a per-element field prescribes thickening or thinning).
 	///
 	/// The subtraction of psi_e(F) makes this an additive correction: the
 	/// standard elastic form on the displacement block stays registered
 	/// unchanged, and at theta == 1, vn == 1 the correction is identically
-	/// zero (bitwise: both energy calls see the same def_grad), which is the
-	/// V1 regression identity.
+	/// zero (bitwise: both energy calls see the same def_grad), so an ungrown
+	/// body reproduces the plain elastic material exactly.
 	///
 	/// psi_e is the fitted MaterialSum composition, re-composed here from
 	/// concrete child materials (see GrowthElasticity.cpp) because SumModel's
@@ -57,7 +57,8 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		/// Growth driving force f_I = -(1/vn) d(J^g psi_e)/d theta as a function of
-		/// the elastic right Cauchy-Green tensor alone (Q5): with Fe = Ce^{1/2},
+		/// the elastic right Cauchy-Green tensor alone (energy per intermediate
+		/// volume): with Fe = Ce^{1/2},
 		/// f_I(Ce) = -d/dtheta [theta psi_e(Fe Fg^{-1}(theta))] at theta = 1, vn = 1.
 		/// Ce is in global coordinates; el_id, pos and t select the material
 		/// parameters (per-element fibers) exactly as in the energy.

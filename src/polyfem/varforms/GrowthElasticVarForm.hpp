@@ -28,25 +28,21 @@ namespace polyfem::solver
 namespace polyfem::varform
 {
 	/// Variational form for the (displacement, growth) problem built on the
-	/// GrowthElasticity mixed assembler. Structural clone of
-	/// ThermoElasticVarForm with the transient machinery removed: Stage 1 of
-	/// the growth build is static with the growth field theta prescribed
-	/// (Dirichlet on the growth space); the growth block carries NO PDE of its
-	/// own -- its stiffness comes from the K_gg quadrant of the growth
-	/// correction plus the augmented-Lagrangian boundary forms, and with every
-	/// growth DOF prescribed the reduced problem contains only displacements.
-	///
-	/// Deliberate deltas from the thermo precedent (each commented in the cpp):
-	///  - static only: time-dependent configs are rejected with a clear error;
-	///  - no growth-block ElasticForm / BodyForm / inertia / integrators;
-	///  - the growth initial solution defaults to 1 (identity growth), because
-	///    the zero default that is harmless for temperature is singular for
-	///    theta (the assembler's positivity guard would throw on the first
-	///    energy evaluation);
-	///  - output fields "growth", "growth_gradient", and "growth_reaction" --
-	///    the last is the growth-block gradient of the stacked energy at the
-	///    converged full solution, i.e. the conjugate driving-force/reaction
-	///    field of the formulation (the V3 deliverable).
+	/// GrowthElasticity mixed assembler, structured like ThermoElasticVarForm
+	/// without the transient machinery. Two modes:
+	///  - prescribed growth (boundary_conditions.growth_nodal_field, or the
+	///    growth-space Dirichlet data): one static solve for the displacement
+	///    with theta given; output "growth_reaction" is the growth-block energy
+	///    gradient at the solution, i.e. the conjugate driving force;
+	///  - solved growth (material "growth_law"): theta >= theta_n solved with
+	///    the displacement over quasi-static pseudo-time increments
+	///    (growth_law.n_steps, t_end), with a rate-independent threshold
+	///    (dissipation form) and a primal-dual active set for irreversibility.
+	/// theta has no PDE of its own: the growth block's stiffness is the K_gg
+	/// quadrant of the coupling form plus the augmented-Lagrangian forms. The
+	/// growth initial solution defaults to 1 (identity growth), because zero is
+	/// singular for theta. No "time" block, no contact, no pressure loads.
+	/// Exported stresses are those of the grown material.
 	class GrowthElasticVarForm : public NonlinearElasticVarForm
 	{
 	public:
@@ -125,7 +121,7 @@ namespace polyfem::varform
 		void make_nl_problem(const Eigen::MatrixXd &sol, const double t);
 		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution, double grad_tol_factor = 1.0);
 
-		// ---- Stage 2: solved growth (growth_law on the material) ----
+		// ---- solved growth (growth_law on the material) ----
 		void read_growth_law(const json &args);
 		void compute_growth_node_weights();
 		/// w_a = sum_e vn_e phi_e int_e N_a dV from threshold_per_element_ (and the
@@ -223,8 +219,8 @@ namespace polyfem::varform
 		int growth_space_id_ = -1;
 		std::string elastic_formulation_ = "MaterialSum";
 
-		/// Stage-2 growth law (material "growth_law"): rate-independent, per-element
-		/// threshold (given, or route B from the state), irreversibility
+		/// Growth law (material "growth_law"): rate-independent, per-element
+		/// threshold (given, or built from the state: route_b), irreversibility
 		/// theta >= theta_n enforced by a primal-dual active set (pinned DOFs are
 		/// Dirichlet at theta_n through BCLagrangianForm; free DOFs are unconstrained).
 		struct GrowthLawSettings

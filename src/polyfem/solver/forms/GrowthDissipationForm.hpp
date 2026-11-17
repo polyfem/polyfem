@@ -13,9 +13,8 @@ namespace polyfem::solver
 	/// with phi_e the per-element threshold (Pa), vn_e the prescribed normal
 	/// growth, N_a the growth shape functions and theta_n the converged growth of
 	/// the previous increment (data). The vn_e factor makes stationarity read
-	/// f_I = phi_e with f_I = -(1/vn) d(J^g psi_e)/d theta, the driving force
-	/// per the formulation's convention, so a threshold field computed as f_I
-	/// (V0b, route B) enters unchanged.
+	/// f_I = phi_e with f_I = -(1/vn) d(J^g psi_e)/d theta, the driving force,
+	/// so a threshold field computed as a driving force enters unchanged.
 	///
 	/// Linear in theta: constant gradient w, zero Hessian, so it never changes
 	/// convexity or symmetry. Irreversibility (theta >= theta_n) is NOT imposed
