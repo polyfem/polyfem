@@ -546,7 +546,6 @@ namespace polyfem::assembler
 	{
 		assert(data.x.cols() == 1);
 
-		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
 		const int n_pts = data.da.size();
 
 		Eigen::Matrix<double, n_basis, dim> local_disp(data.vals.basis_values.size(), size());
@@ -632,25 +631,24 @@ namespace polyfem::assembler
 
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + (((lambda * log_det_j - mu) / (J)) * del2J_delF2);
 
-			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor = Eigen::Matrix<double, dim * dim, N>::Zero(jac_it.size(), grad.size());
-
-			for (size_t i = 0; i < local_disp.rows(); ++i)
+			for (int a = 0; a < local_disp.rows(); ++a)
 			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
+				// With column-major vec(F), B_a consists of g_a(k) * I blocks.
+				Eigen::Matrix<double, dim, dim * dim> BaA =
+					delF_delU(a, 0) * hessian_temp.template block<dim, dim * dim>(0, 0);
+				for (int k = 1; k < dim; ++k)
+					BaA += delF_delU(a, k) * hessian_temp.template block<dim, dim * dim>(k * dim, 0);
+				BaA *= data.da(p);
+
+				for (int b = 0; b < local_disp.rows(); ++b)
 				{
-					Eigen::Matrix<double, dim, dim> temp(size(), size());
-					temp.setZero();
-					temp.row(j) = delF_delU.row(i);
-					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
-					delF_delU_tensor.col(i * size() + j) = temp_flattened;
+					Eigen::Matrix<double, dim, dim> Kab =
+						delF_delU(b, 0) * BaA.template block<dim, dim>(0, 0);
+					for (int k = 1; k < dim; ++k)
+						Kab += delF_delU(b, k) * BaA.template block<dim, dim>(0, k * dim);
+					H.template block<dim, dim>(a * dim, b * dim) += Kab;
 				}
 			}
-
-			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
-
-			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-
-			H += hessian * data.da(p);
 		}
 	}
 

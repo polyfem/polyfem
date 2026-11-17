@@ -1059,6 +1059,67 @@ POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(3, 5)
 
 #undef POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE
 
+TEST_CASE("neo hookean basis-block Hessian contraction", "[assembler][elasticity]")
+{
+	const int dim = GENERATE(2, 3);
+	const std::vector<int> basis_counts = dim == 2 ? std::vector<int>{3, 6, 10, 5, 15} : std::vector<int>{4, 10, 20, 5, 35};
+	for (const int n_bases : basis_counts)
+	{
+		CAPTURE(dim, n_bases);
+		SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, n_bases);
+		constexpr int n_pts = 3;
+		fixture.vals.val.resize(n_pts, dim);
+		fixture.vals.jac_it.resize(n_pts);
+		fixture.vals.det.resize(n_pts);
+		fixture.vals.quadrature.weights.resize(n_pts);
+		fixture.da.resize(n_pts);
+		for (int p = 0; p < n_pts; ++p)
+		{
+			Eigen::MatrixXd jac_it = Eigen::MatrixXd::Identity(dim, dim);
+			for (int r = 0; r < dim; ++r)
+			{
+				fixture.vals.val(p, r) = 0.1 * (p + 1) * (r + 1);
+				for (int c = 0; c < dim; ++c)
+					jac_it(r, c) += 0.03 * (p + 1) * (r + 1) / (c + 1);
+			}
+			fixture.vals.jac_it[p] = jac_it;
+			fixture.vals.det(p) = 1.0 / jac_it.determinant();
+			fixture.vals.quadrature.weights(p) = 0.2 * (p + 1);
+			fixture.da(p) = fixture.vals.det(p) * fixture.vals.quadrature.weights(p);
+		}
+		fixture.vals.quadrature.points = fixture.vals.val;
+		for (int i = 0; i < n_bases; ++i)
+		{
+			auto &basis = fixture.vals.basis_values[i];
+			basis.val = Eigen::MatrixXd::Constant(n_pts, 1, 1.0 / n_bases);
+			basis.grad.resize(n_pts, dim);
+			basis.grad_t_m.resize(n_pts, dim);
+			for (int p = 0; p < n_pts; ++p)
+			{
+				for (int d = 0; d < dim; ++d)
+					basis.grad(p, d) = 0.15 * std::sin(1.7 * (i + 1) * (d + 1) + 0.6 * p);
+				basis.grad_t_m.row(p) = basis.grad.row(p) * fixture.vals.jac_it[p];
+			}
+		}
+		for (int i = 0; i < fixture.x.rows(); ++i)
+			fixture.x(i) = 0.1 * std::sin(0.7 * (i + 1));
+
+		Units units;
+		NeoHookeanElasticity fast;
+		ConfigurableNeoHookeanAutodiff reference;
+		fast.set_size(dim);
+		reference.set_size(dim);
+		reference.set_autodiff_type(AutodiffType::STRESS);
+		const json material = {{"E", 12.0}, {"nu", 0.23}};
+		fast.add_multimaterial(0, material, units, test_resources());
+		reference.add_multimaterial(0, material, units, test_resources());
+		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+		const Eigen::MatrixXd hessian = fast.assemble_hessian(data);
+		require_approx_matrix(hessian, reference.assemble_hessian(data), 1e-9);
+		require_approx_matrix(hessian, hessian.transpose(), 1e-12);
+	}
+}
+
 #define POLYFEM_GENERIC_ELASTIC_AUTODIFF_CASE(DIM, N_BASES)                                             \
 	TEST_CASE("generic elastic autodiff modes " #DIM "d " #N_BASES " bases", "[assembler][elasticity]") \
 	{                                                                                                   \
