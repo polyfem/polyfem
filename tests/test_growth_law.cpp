@@ -604,6 +604,36 @@ TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
 			CHECK(sol4(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
 	}
 
+	SECTION("capped updates: 1 is the predictor update, a large cap is the uncapped fixed point")
+	{
+		const auto run = [&](json c) {
+			State s;
+			s.init(c, /*strict_validation=*/true);
+			s.set_max_threads(1);
+			s.load_mesh();
+			Eigen::MatrixXd x;
+			s.solve(x);
+			return Eigen::VectorXd(x.bottomRows(nv).col(0));
+		};
+		json cap1 = args;
+		cap1["materials"]["growth_law"]["relag_max_updates"] = 1;
+		json pred = args;
+		pred["materials"]["growth_law"]["shear_update"] = "predictor";
+		const Eigen::VectorXd th_cap1 = run(cap1), th_pred = run(pred);
+		CHECK((th_cap1 - th_pred).cwiseAbs().maxCoeff() < 1e-10);
+
+		json big = args;
+		big["materials"]["growth_law"]["relag_max_updates"] = 100;
+		const Eigen::VectorXd th_big = run(big);
+		for (int a = 0; a < nv; ++a)
+			CHECK(th_big(a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
+
+		json bad = args;
+		bad["materials"]["growth_law"]["relag_max_updates"] = -1;
+		State s6;
+		CHECK_THROWS(s6.init(bad, /*strict_validation=*/true));
+	}
+
 	SECTION("no shear credit: identical on the shear-free cube, S = 0")
 	{
 		json c = args;

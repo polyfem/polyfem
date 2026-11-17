@@ -255,6 +255,10 @@ namespace polyfem::varform
 			std::string relag_acceleration = "none";
 			double relag_omega_min = 0.05;
 			double relag_omega_max = 5.0;
+			/// shear_update "pass": at most this many threshold updates per increment,
+			/// after which the threshold is held and the active set settles on it
+			/// (0 = no cap, iterate to shear_update_tol)
+			int relag_max_updates = 0;
 			/// a failed increment is retried from its start as two half increments,
 			/// recursively, up to this many levels (0 = abort on the first failure)
 			int max_increment_splits = 3;

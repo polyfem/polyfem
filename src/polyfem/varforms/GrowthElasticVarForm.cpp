@@ -233,6 +233,7 @@ namespace polyfem::varform
 				|| gl.value("relag_acceleration", d.relag_acceleration) != d.relag_acceleration
 				|| gl.value("relag_omega_min", d.relag_omega_min) != d.relag_omega_min
 				|| gl.value("relag_omega_max", d.relag_omega_max) != d.relag_omega_max
+				|| gl.value("relag_max_updates", d.relag_max_updates) != d.relag_max_updates
 				|| gl.value("max_increment_splits", d.max_increment_splits) != d.max_increment_splits)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
@@ -262,6 +263,9 @@ namespace polyfem::varform
 			log_and_throw_error("growth_law max_increment_splits must be >= 0.");
 		growth_law_.relag_omega_min = gl.value("relag_omega_min", growth_law_.relag_omega_min);
 		growth_law_.relag_omega_max = gl.value("relag_omega_max", growth_law_.relag_omega_max);
+		growth_law_.relag_max_updates = gl.value("relag_max_updates", growth_law_.relag_max_updates);
+		if (growth_law_.relag_max_updates < 0)
+			log_and_throw_error("growth_law relag_max_updates must be >= 0 (0 = no cap).");
 		if (growth_law_.relag_acceleration != "none" && growth_law_.relag_acceleration != "aitken")
 			log_and_throw_error("growth_law relag_acceleration must be \"none\" or \"aitken\", got \"{}\".", growth_law_.relag_acceleration);
 		if (!(growth_law_.relag_omega_min > 0) || !(growth_law_.relag_omega_max >= growth_law_.relag_omega_min))
@@ -1677,6 +1681,7 @@ namespace polyfem::varform
 		Eigen::VectorXd r_prev;
 		double omega_prev = 1.0;
 		bool set_changed_last_pass = true;
+		int n_threshold_updates = 0;
 		for (int pass = 1; pass <= growth_law_.max_active_set_iterations; ++pass)
 		{
 			pinned_growth_nodes_.clear();
@@ -1697,9 +1702,12 @@ namespace polyfem::varform
 			// is linear in theta with gradient w, so the multiplier for the updated
 			// threshold is mult + (w_new - w_old), exactly, without another solve.
 			bool threshold_moved = false;
-			if (threshold_follows_state()
+			const bool update_capped = growth_law_.shear_update == "pass" && growth_law_.relag_max_updates > 0
+									   && n_threshold_updates >= growth_law_.relag_max_updates;
+			if (threshold_follows_state() && !update_capped
 				&& (growth_law_.shear_update == "pass" || (growth_law_.shear_update == "predictor" && pass == 1)))
 			{
+				++n_threshold_updates;
 				const Eigen::VectorXd w_old = growth_node_weights_;
 				const Eigen::VectorXd phi_old = threshold_per_element_;
 				Eigen::VectorXd par_g, gam_g, clamped_g;
@@ -1725,8 +1733,12 @@ namespace polyfem::varform
 				// a changed threshold only moves the solution where theta is free
 				const bool any_free = std::find(pinned.begin(), pinned.end(), 0) != pinned.end();
 				threshold_moved = growth_law_.shear_update == "pass" && any_free && dphi > growth_law_.shear_update_tol;
-				logger().info("growth step {} (t = {:g}) pass {}: shear supply updated, max |d phi| {:.4g} Pa{}",
-							  step, t, pass, dphi, threshold_moved ? " (re-solving)" : "");
+				const bool cap_now = growth_law_.shear_update == "pass" && growth_law_.relag_max_updates > 0
+									 && n_threshold_updates >= growth_law_.relag_max_updates;
+				logger().info("growth step {} (t = {:g}) pass {}: shear supply updated, max |d phi| {:.4g} Pa{}{}",
+							  step, t, pass, dphi, threshold_moved ? " (re-solving)" : "",
+							  cap_now ? fmt::format("; update cap {} reached, threshold held from here", growth_law_.relag_max_updates)
+									  : std::string());
 			}
 
 			// scale from the threshold in use (it may have just been updated)
