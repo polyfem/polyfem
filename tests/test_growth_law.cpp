@@ -604,7 +604,24 @@ TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
 			CHECK(sol4(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
 	}
 
-	SECTION("lagged parallel threshold needs a lagged shear supply")
+	SECTION("no shear credit: identical on the shear-free cube, S = 0")
+	{
+		json c = args;
+		c["materials"]["growth_law"]["shear_supply"] = "none";
+		State s5;
+		s5.init(c, /*strict_validation=*/true);
+		s5.set_max_threads(1);
+		s5.load_mesh();
+		Eigen::MatrixXd sol5;
+		s5.solve(sol5);
+		const auto vf5 = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(s5.variational_formulation);
+		REQUIRE(vf5);
+		CHECK(vf5->growth_shear_supply_work().cwiseAbs().maxCoeff() == 0.0);
+		for (int a = 0; a < nv; ++a)
+			CHECK(sol5(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
+	}
+
+	SECTION("lagged parallel threshold refuses a frozen shear supply")
 	{
 		json bad = args;
 		bad["materials"]["growth_law"]["shear_supply"] = "frozen";
