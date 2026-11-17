@@ -133,7 +133,10 @@ namespace polyfem::solver
 			f->second_derivative(x, tmp);
 			if (tmp.nonZeros() == 0)
 				continue;
-			hessian += tmp;
+			if (hessian.nonZeros() == 0)
+				hessian.swap(tmp);
+			else
+				hessian += tmp;
 		}
 	}
 
