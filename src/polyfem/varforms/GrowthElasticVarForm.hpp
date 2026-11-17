@@ -226,8 +226,8 @@ namespace polyfem::varform
 		struct GrowthLawSettings
 		{
 			bool enabled = false;
-			int n_steps = 1;                   ///< pseudo-time increments over (0, t_end]
-			double t_end = 1.0;                ///< pseudo-time at which DBC expressions reach their end state
+			int n_steps = 1;    ///< pseudo-time increments over (0, t_end]
+			double t_end = 1.0; ///< pseudo-time at which DBC expressions reach their end state
 			int max_active_set_iterations = 30;
 			double active_set_tol = 1e-8;      ///< release a pin if dPi/dtheta < -tol * scale_a (Pa)
 			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
@@ -251,24 +251,24 @@ namespace polyfem::varform
 			int max_increment_splits = 3;
 		} growth_law_;
 
-		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (from_state: phi_par + f_gamma)
-		Eigen::VectorXd threshold_parallel_;       ///< from_state: phi_par,e of the last update [Pa]
-		Eigen::VectorXd shear_supply_;             ///< from_state: f_gamma,e of the last update [Pa]
-		bool setup_logged_ = false;                ///< the setup line is logged once, not per update
-		Eigen::VectorXd threshold_clamped_;        ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
-		Eigen::VectorXd lag_residual_;             ///< phi(converged state) - phi used, last increment [Pa]
-		Eigen::VectorXd attainment_;               ///< vartheta^e / theta_crit at the last converged increment
-		Eigen::VectorXd dissipation_;              ///< cumulative D = sum v_n max(f_par,0) dtheta per element [Pa]
-		Eigen::VectorXd shear_work_;               ///< cumulative S = sum v_n f_gamma dtheta per element [Pa]
-		Eigen::VectorXd element_volume_;           ///< reference element volumes (growth quadrature)
+		Eigen::VectorXd threshold_per_element_;     ///< phi_e [Pa] in use (from_state: phi_par + f_gamma)
+		Eigen::VectorXd threshold_parallel_;        ///< from_state: phi_par,e of the last update [Pa]
+		Eigen::VectorXd shear_supply_;              ///< from_state: f_gamma,e of the last update [Pa]
+		bool setup_logged_ = false;                 ///< the setup line is logged once, not per update
+		Eigen::VectorXd threshold_clamped_;         ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
+		Eigen::VectorXd lag_residual_;              ///< phi(converged state) - phi used, last increment [Pa]
+		Eigen::VectorXd attainment_;                ///< vartheta^e / theta_crit at the last converged increment
+		Eigen::VectorXd dissipation_;               ///< cumulative D = sum v_n max(f_par,0) dtheta per element [Pa]
+		Eigen::VectorXd shear_work_;                ///< cumulative S = sum v_n f_gamma dtheta per element [Pa]
+		Eigen::VectorXd element_volume_;            ///< reference element volumes (growth quadrature)
 		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
-		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
-		Eigen::VectorXd growth_node_vn_volume_;    ///< int vn N_a dV (KKT residual in Pa)
-		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV
-		Eigen::VectorXd theta_n_;                  ///< converged growth of the previous increment
-		std::vector<int> pinned_growth_nodes_;     ///< member: BCLagrangianForm keeps a reference
-		std::vector<char> growth_pinned_mask_;     ///< last solved pass: 1 = pinned at theta_n
-		Eigen::VectorXi growth_activation_step_;  ///< first increment in which a growth DOF grew (0 = never)
+		Eigen::VectorXd growth_node_volume_;        ///< int N_a dV
+		Eigen::VectorXd growth_node_vn_volume_;     ///< int vn N_a dV (KKT residual in Pa)
+		Eigen::VectorXd growth_node_weights_;       ///< int vn phi N_a dV
+		Eigen::VectorXd theta_n_;                   ///< converged growth of the previous increment
+		std::vector<int> pinned_growth_nodes_;      ///< member: BCLagrangianForm keeps a reference
+		std::vector<char> growth_pinned_mask_;      ///< last solved pass: 1 = pinned at theta_n
+		Eigen::VectorXi growth_activation_step_;    ///< first increment in which a growth DOF grew (0 = never)
 		std::shared_ptr<solver::GrowthDissipationForm> dissipation_form_;
 	};
 } // namespace polyfem::varform

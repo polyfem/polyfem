@@ -331,7 +331,6 @@ namespace polyfem::varform
 		read_material_space_ids(args);
 		read_growth_law(args);
 
-
 		// No dynamics: prescribed growth is a single static solve, and solved
 		// growth (growth_law) steps its own quasi-static pseudo-time through
 		// growth_law.n_steps / t_end, evaluating the displacement Dirichlet
@@ -1398,7 +1397,7 @@ namespace polyfem::varform
 	}
 
 	void GrowthElasticVarForm::threshold_target(const Eigen::MatrixXd &solution, const double t,
-												 Eigen::VectorXd &par, Eigen::VectorXd &gam, Eigen::VectorXd &clamped)
+												Eigen::VectorXd &par, Eigen::VectorXd &gam, Eigen::VectorXd &clamped)
 	{
 		Eigen::VectorXd full, ns, tt;
 		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
@@ -1449,7 +1448,7 @@ namespace polyfem::varform
 	}
 
 	void GrowthElasticVarForm::log_kkt_residual(const int step, const double t, const Eigen::MatrixXd &solution,
-												 const Eigen::VectorXd &mult, const std::vector<char> &pinned)
+												const Eigen::VectorXd &mult, const std::vector<char> &pinned)
 	{
 		// dPi/dtheta per v_n-weighted nodal volume is phi - f_I in Pa (nodal average):
 		// ~0 on free DOFs (the law holds), >= 0 on pinned ones (the slack).
@@ -1479,8 +1478,7 @@ namespace polyfem::varform
 					  "pinned min slack {:.3g} Pa ({})",
 					  step, t, med, mx, free_res.size(), n_pinned > 0 ? min_slack : 0.0, n_pinned);
 		stats.solver_info.push_back(
-			{{"type", "growth_kkt"}, {"t", t}, {"step", step}, {"free_median_pa", med}, {"free_max_pa", mx},
-			 {"pinned_min_slack_pa", n_pinned > 0 ? min_slack : 0.0}});
+			{{"type", "growth_kkt"}, {"t", t}, {"step", step}, {"free_median_pa", med}, {"free_max_pa", mx}, {"pinned_min_slack_pa", n_pinned > 0 ? min_slack : 0.0}});
 	}
 
 	void GrowthElasticVarForm::accumulate_dissipation(const int step, const double t, const Eigen::VectorXd &dtheta)
@@ -1524,8 +1522,7 @@ namespace polyfem::varform
 					  "{:.4g} (cumulative {:.4g}) [Pa x mesh volume]; S/D {:.3f}; growing elements {}, with phi < 0: {}, with D < 0: {}",
 					  step, t, iD, cD, iS, cS, iD != 0 ? iS / iD : 0.0, n_grow, n_neg, n_dneg);
 		stats.solver_info.push_back(
-			{{"type", "growth_dissipation"}, {"t", t}, {"step", step}, {"D", iD}, {"S", iS},
-			 {"D_cumulative", cD}, {"S_cumulative", cS}, {"n_phi_negative", n_neg}, {"n_D_negative", n_dneg}});
+			{{"type", "growth_dissipation"}, {"t", t}, {"step", step}, {"D", iD}, {"S", iS}, {"D_cumulative", cD}, {"S_cumulative", cS}, {"n_phi_negative", n_neg}, {"n_D_negative", n_dneg}});
 	}
 
 	void GrowthElasticVarForm::report_lag_residual(const int step, const double t, const Eigen::MatrixXd &solution)
@@ -1561,8 +1558,7 @@ namespace polyfem::varform
 					  "attainment median {:.4f} (p5 {:.4f}, p95 {:.4f}) over {} grown unclamped elements",
 					  step, t, q(res, 0.5), q(res, 0.95), q(att, 0.5), q(att, 0.05), q(att, 0.95), res.size());
 		stats.solver_info.push_back(
-			{{"type", "growth_lag_residual"}, {"t", t}, {"step", step}, {"abs_median", q(res, 0.5)},
-			 {"abs_p95", q(res, 0.95)}, {"attainment_median", q(att, 0.5)}});
+			{{"type", "growth_lag_residual"}, {"t", t}, {"step", step}, {"abs_median", q(res, 0.5)}, {"abs_p95", q(res, 0.95)}, {"attainment_median", q(att, 0.5)}});
 	}
 
 	Eigen::VectorXd GrowthElasticVarForm::growth_multiplier(const Eigen::MatrixXd &solution) const
@@ -1694,8 +1690,7 @@ namespace polyfem::varform
 			logger().info("growth step {} (t = {:g}) active-set pass {}: {} released, {} pinned, {}/{} at theta_n",
 						  step, t, pass, n_released, n_pinned, n_pinned_total, ng);
 			stats.solver_info.push_back(
-				{{"type", "growth_active_set"}, {"t", t}, {"step", step}, {"pass", pass},
-				 {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
+				{{"type", "growth_active_set"}, {"t", t}, {"step", step}, {"pass", pass}, {"released", n_released}, {"pinned", n_pinned}, {"n_at_bound", n_pinned_total}});
 
 			set_changed_last_pass = n_released != 0 || n_pinned != 0;
 			if (n_released == 0 && n_pinned == 0 && !threshold_moved)
@@ -1704,7 +1699,8 @@ namespace polyfem::varform
 				{
 					tight = true;
 					logger().info("growth step {} (t = {:g}): active set settled; confirmation pass with the gradient "
-								  "tolerance x {:g}", step, t, growth_law_.final_tol_factor);
+								  "tolerance x {:g}",
+								  step, t, growth_law_.final_tol_factor);
 					continue;
 				}
 				log_kkt_residual(step, t, solution, mult, pinned);
@@ -1744,8 +1740,7 @@ namespace polyfem::varform
 						  step, growth_law_.n_steps, t, passes, n_active, ng,
 						  theta.minCoeff(), theta.maxCoeff(), dtheta.maxCoeff(), dtheta.minCoeff());
 			stats.solver_info.push_back(
-				{{"type", "growth_step"}, {"t", t}, {"step", step}, {"passes", passes},
-				 {"n_growing", n_active}, {"theta_min", theta.minCoeff()}, {"theta_max", theta.maxCoeff()}});
+				{{"type", "growth_step"}, {"t", t}, {"step", step}, {"passes", passes}, {"n_growing", n_active}, {"theta_min", theta.minCoeff()}, {"theta_max", theta.maxCoeff()}});
 
 			if (growth_law_.theta_crit > 0)
 				report_lag_residual(step, t, solution);
