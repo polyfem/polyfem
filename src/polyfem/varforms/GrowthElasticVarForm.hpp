@@ -61,8 +61,8 @@ namespace polyfem::varform
 		/// growth_law: first increment in which each growth DOF grew (0 = never);
 		/// empty before a solved run. Also exported as growth_activation_step.
 		const Eigen::VectorXi &growth_activation_step() const { return growth_activation_step_; }
-		/// growth_law shear_supply "lagged": f_gamma per element used by the last
-		/// increment, and the threshold phi_e in use (empty / file values otherwise).
+		/// growth_law threshold route_b: f_gamma per element used by the last
+		/// increment, and the threshold phi_e in use (empty / the given values otherwise).
 		const Eigen::VectorXd &growth_shear_supply() const { return shear_supply_; }
 		const Eigen::VectorXd &growth_threshold() const { return threshold_per_element_; }
 		const Eigen::VectorXd &growth_threshold_parallel() const { return threshold_parallel_; }
@@ -120,20 +120,11 @@ namespace polyfem::varform
 		void read_growth_law(const json &args);
 		void compute_growth_node_weights();
 		/// w_a = sum_e vn_e phi_e int_e N_a dV from threshold_per_element_ (and the
-		/// nodal volumes); called once (frozen) or per increment (lagged).
+		/// nodal volumes); called once (fixed threshold) or per update (route_b).
 		void assemble_growth_node_weights();
-		/// shear_supply = "lagged": f_gamma per element on the displacement of
-		/// `solution` (C_check at theta_crit; f_gamma = f_I(Ce) - f_I(Ce with the
-		/// transverse shears removed and Ce_nn at the layer value)), then
-		/// threshold = phi_par + f_gamma and the node weights.
-		void update_lagged_threshold(const Eigen::MatrixXd &solution, double t);
-		/// the threshold is re-evaluated from the state during the run
-		bool threshold_follows_state() const
-		{
-			return growth_law_.shear_supply == "lagged" || growth_law_.parallel_threshold == "lagged";
-		}
-		/// the threshold the state implies: G(x) = (PHI_PAR, f_gamma) at C_check of the
-		/// state (PHI_PAR only when parallel_threshold is lagged, else the current one)
+		/// the threshold the state implies (route_b): G(x) = (PHI_PAR, f_gamma) at
+		/// C_check of the state; f_gamma = f_I(Ce) - f_I(Ce with the transverse shears
+		/// removed and Ce_nn at the layer value), PHI_PAR = max(f_par, 0)
 		void threshold_target(const Eigen::MatrixXd &solution, double t,
 							  Eigen::VectorXd &par, Eigen::VectorXd &gam, Eigen::VectorXd &clamped);
 		/// install a threshold (parts), rebuild the node weights, log
@@ -223,11 +214,10 @@ namespace polyfem::varform
 		int growth_space_id_ = -1;
 		std::string elastic_formulation_ = "MaterialSum";
 
-		/// Stage-2 growth law (material "growth_law"): rate-independent, constant
-		/// per-element threshold within the run, irreversibility theta >= theta_n
-		/// enforced by a primal-dual active set (pinned DOFs are Dirichlet at
-		/// theta_n through BCLagrangianForm; free DOFs are unconstrained). The
-		/// threshold is not yet lagged per increment (variant (b) is Stage 3).
+		/// Stage-2 growth law (material "growth_law"): rate-independent, per-element
+		/// threshold (given, or route B from the state), irreversibility
+		/// theta >= theta_n enforced by a primal-dual active set (pinned DOFs are
+		/// Dirichlet at theta_n through BCLagrangianForm; free DOFs are unconstrained).
 		struct GrowthLawSettings
 		{
 			bool enabled = false;
@@ -238,53 +228,28 @@ namespace polyfem::varform
 			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
 			double theta_floor_fraction = 0.5; ///< positivity filter: theta >= fraction * theta_n
 			bool save_increments = false;      ///< write growth_step_<k>.vtu + growth_steps.pvd per increment
-			/// "frozen": phi_e is the threshold file's field for the whole run (route B
-			/// at the end state's C_check). "lagged": only the dissipative part is
-			/// frozen, phi_e = phi_par,e + f_gamma,e, with the shear supply f_gamma
-			/// re-evaluated at the start of every increment on the previous
-			/// increment's converged displacement (C_check construction at theta_crit).
-			std::string shear_supply = "frozen";
-			double theta_crit = 0;             ///< lagged: threshold in-plane elastic area stretch
-			std::string parallel_field = "PHI_PAR"; ///< lagged: threshold-file field holding max(f_par(C_check), 0)
-			/// lagged: when f_gamma is re-evaluated. "increment": once, on the previous
-			/// increment's converged state. "predictor": on the elastic predictor of the
-			/// increment (pass 1, growth pinned: the displacement at this increment's t),
-			/// at no extra solve. "pass": after every active-set pass, iterating until
-			/// the threshold changes by less than shear_update_tol (Pa).
-			std::string shear_update = "increment";
-			double shear_update_tol = 1.0;
-			/// Dissipative part PHI_PAR of the route-B threshold. "file": the threshold
-			/// file's parallel_field (V0b). "state": computed here at C_check of the
-			/// displacement in threshold_state (default input.data.state), with the
-			/// solver's own energy and fibers, then frozen; with shear_supply frozen,
-			/// f_gamma is taken from the same state. "lagged": re-evaluated with
-			/// f_gamma on the state (timing: shear_update), i.e. variant (b) frozen at
-			/// the current state; with shear_update "pass" this is the in-increment
-			/// re-lag (Stage 3, Q14).
-			std::string parallel_threshold = "file";
-			std::string threshold_state;       ///< parallel_threshold "state": state file with "u"
-			bool lag_report = true;            ///< log the lag residual per increment (needs theta_crit)
+			/// threshold "route_b": phi_e = max(f_par, 0) + f_gamma at C_check of the
+			/// current displacement, built by the solver and re-evaluated after every
+			/// active-set pass (Aitken-relaxed) until it moves by less than relag_tol,
+			/// or at most relag_max_updates times per increment (0 = no cap; the first
+			/// update is on the elastic predictor). Otherwise the threshold is the
+			/// given number or file, fixed for the run.
+			bool route_b = false;
+			double theta_crit = 0;  ///< C_check in-plane elastic area stretch (route_b; else optional, lag report)
+			double relag_tol = 1.0; ///< route_b: per-pass threshold iteration tolerance [Pa]
+			int relag_max_updates = 0;
 			/// < 1: after the active set settles, one confirmation pass with the
 			/// nonlinear gradient tolerance multiplied by this factor (1 = off)
 			double final_tol_factor = 1.0;
-			/// shear_update "pass": "aitken" relaxes the per-pass threshold iteration
-			/// (Aitken / Irons-Tuck), omega clamped to [relag_omega_min, relag_omega_max]
-			std::string relag_acceleration = "none";
-			double relag_omega_min = 0.05;
-			double relag_omega_max = 5.0;
-			/// shear_update "pass": at most this many threshold updates per increment,
-			/// after which the threshold is held and the active set settles on it
-			/// (0 = no cap, iterate to shear_update_tol)
-			int relag_max_updates = 0;
 			/// a failed increment is retried from its start as two half increments,
 			/// recursively, up to this many levels (0 = abort on the first failure)
 			int max_increment_splits = 3;
 		} growth_law_;
 
-		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
-		Eigen::VectorXd threshold_parallel_;       ///< lagged: phi_par,e, frozen [Pa]
-		Eigen::VectorXd shear_supply_;             ///< lagged: f_gamma,e of the current increment [Pa]
-		bool shear_supply_logged_once_ = false;    ///< the setup line is logged once, not per increment
+		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (route_b: phi_par + f_gamma)
+		Eigen::VectorXd threshold_parallel_;       ///< route_b: phi_par,e of the last update [Pa]
+		Eigen::VectorXd shear_supply_;             ///< route_b: f_gamma,e of the last update [Pa]
+		bool setup_logged_ = false;                ///< the setup line is logged once, not per update
 		Eigen::VectorXd threshold_clamped_;        ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
 		Eigen::VectorXd lag_residual_;             ///< phi(converged state) - phi used, last increment [Pa]
 		Eigen::VectorXd attainment_;               ///< vartheta^e / theta_crit at the last converged increment
