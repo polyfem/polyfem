@@ -72,7 +72,7 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override;
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;
+		void assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space, LocalHessian &hessian) const override;
 		bool is_fluid() const override { return true; }
 		bool is_tensor() const override { return true; }
 
@@ -88,7 +88,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override { return {}; }
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override;
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;
+		void assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space, LocalHessian &hessian) const override;
 		void set_size(const int size) override { size_ = size; }
 	};
 
@@ -99,7 +99,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override { return {}; }
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override { return 0; }
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;
+		void assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space, LocalHessian &hessian) const override;
 		void set_size(const int) override { size_ = 1; }
 	};
 
@@ -111,7 +111,7 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 		double compute_energy(const MultiSpacesNLAssemblerData &) const override;
 		Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space) const override;
+		void assemble_hessian(const MultiSpacesNLAssemblerData &data, int row_space, int col_space, LocalHessian &hessian) const override;
 		bool is_fluid() const override { return true; }
 		bool is_tensor() const override { return true; }
 

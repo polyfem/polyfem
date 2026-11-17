@@ -66,16 +66,17 @@ namespace polyfem::assembler
 		return gradient;
 	}
 
-	Eigen::MatrixXd
-	SumModel::assemble_hessian(const NonLinearAssemblerData &data) const
+	void SumModel::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
-		Eigen::MatrixXd hessian = assemblers_.front()->assemble_hessian(data);
+		assemblers_.front()->assemble_hessian(data, hessian);
+		LocalHessian contribution;
 		for (size_t i = 1; i < assemblers_.size(); ++i)
 		{
-			const auto assembler = assemblers_[i];
-			hessian += assembler->assemble_hessian(data);
+			assemblers_[i]->assemble_hessian(data, contribution);
+			hessian.visit([&](auto &H) {
+				contribution.visit([&](const auto &term) { H += term; });
+			});
 		}
-		return hessian;
 	}
 
 	double SumModel::compute_energy(const NonLinearAssemblerData &data) const

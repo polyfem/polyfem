@@ -12,6 +12,7 @@
 #include <polyfem/assembler/NavierStokesFSI.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/InversionBarrier.hpp>
+#include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/ThermoElasticity.hpp>
@@ -31,6 +32,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <type_traits>
 
 using namespace polyfem;
 using namespace polyfem::assembler;
@@ -40,6 +42,15 @@ using namespace polyfem::utils;
 
 namespace
 {
+
+	template <typename Assembler, typename... Args>
+	Eigen::MatrixXd assemble_local_hessian(const Assembler &assembler, const Args &...args)
+	{
+		LocalHessian hessian;
+		assembler.assemble_hessian(args..., hessian);
+		return hessian.visit([](const auto &H) -> Eigen::MatrixXd { return H; });
+	}
+
 	const io::ResourceIO &test_resources()
 	{
 		static const io::FileSystemIO resources(".");
@@ -290,6 +301,100 @@ TEST_CASE("mixed assembly preserves cached values across quadrature changes", "[
 	}
 }
 
+TEST_CASE("cached nonlinear assembly handles mixed global mappings", "[assembler][cache]")
+{
+	const int geometry_dim = GENERATE(2, 3);
+	const bool scalar = GENERATE(false, true);
+	const bool cache_values = GENERATE(false, true);
+	const int threads = GENERATE(1, 2);
+	CAPTURE(geometry_dim, scalar, cache_values, threads);
+	utils::NThread::get().set_num_threads(threads);
+	constexpr int n_global_bases = 40;
+	const std::vector<int> basis_counts = {
+		geometry_dim + 1, geometry_dim + 2, geometry_dim + 1, geometry_dim + 1,
+		geometry_dim == 3 ? 35 : 15, geometry_dim + 1, geometry_dim + 1};
+	std::vector<ElementBases> bases;
+	for (int e = 0; e < basis_counts.size(); ++e)
+	{
+		const int nb = basis_counts[e];
+		ElementBases element = make_synthetic_element_bases(geometry_dim, nb);
+		element.has_parameterization = false;
+		for (int i = 0; i < nb; ++i)
+			element.bases[i].global()[0].index = (e + i) % n_global_bases;
+		element.set_quadrature([geometry_dim](quadrature::Quadrature &q) {
+			q.points = Eigen::MatrixXd::Constant(1, geometry_dim, 0.1);
+			q.weights = Eigen::VectorXd::Constant(1, 1.25);
+		});
+		element.set_bases_func([nb](const Eigen::MatrixXd &points, std::vector<AssemblyValues> &values) {
+			for (auto &value : values)
+				value.val = Eigen::MatrixXd::Constant(points.rows(), 1, 1.0 / nb);
+		});
+		element.set_grads_func([geometry_dim](const Eigen::MatrixXd &points, std::vector<AssemblyValues> &values) {
+			for (int i = 0; i < values.size(); ++i)
+			{
+				values[i].grad.resize(points.rows(), geometry_dim);
+				for (int d = 0; d < geometry_dim; ++d)
+					values[i].grad.col(d).setConstant(0.02 * std::sin((i + 1) * (d + 1)));
+			}
+		});
+		bases.push_back(std::move(element));
+	}
+	bases[2].bases[0].global()[0].val = 0.5;
+	bases[3].bases[0].global()[0].val = 0.25;
+	bases[3].bases[0].global().emplace_back(n_global_bases - 1, RowVectorNd::Zero(geometry_dim), 0.75);
+	bases[5].bases.back().global()[0].index = bases[5].bases.front().global()[0].index;
+	bases[6].bases[0].global().clear();
+
+	AssemblyValsCache cache;
+	if (cache_values)
+		cache.init(geometry_dim == 3, bases, bases);
+	else
+		cache.init_empty();
+	NeoHookeanElasticity neo;
+	neo.set_size(geometry_dim);
+	neo.add_multimaterial(0, {{"E", 12.0}, {"nu", 0.23}}, Units(), test_resources());
+	Laplacian laplacian;
+	laplacian.set_size(1);
+	const NLAssembler &assembler = scalar ? static_cast<const NLAssembler &>(laplacian) : static_cast<const NLAssembler &>(neo);
+	const int dim = assembler.size();
+	const Eigen::MatrixXd x = Eigen::VectorXd::LinSpaced(n_global_bases * dim, -0.001, 0.001);
+	Eigen::MatrixXd expected = Eigen::MatrixXd::Zero(x.rows(), x.rows());
+	for (int e = 0; e < bases.size(); ++e)
+	{
+		ElementAssemblyValues vals;
+		cache.compute(e, geometry_dim == 3, bases[e], bases[e], vals);
+		REQUIRE(vals.has_single_unit_mapping() == (e != 2 && e != 3 && e != 6));
+		const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+		const Eigen::MatrixXd local = assemble_local_hessian(assembler, NonLinearAssemblerData(vals, 0, 0, x, x, da));
+		for (int i = 0; i < vals.basis_values.size(); ++i)
+			for (int j = 0; j < vals.basis_values.size(); ++j)
+				for (const auto &row : vals.basis_values[i].global)
+					for (const auto &col : vals.basis_values[j].global)
+						for (int n = 0; n < dim; ++n)
+							for (int m = 0; m < dim; ++m)
+								expected(row.index * dim + m, col.index * dim + n) += local(i * dim + m, j * dim + n) * row.val * col.val;
+	}
+	SparseMatrixCache matrix_cache;
+	StiffnessMatrix hessian;
+	for (int pass = 0; pass < 3; ++pass)
+	{
+		CAPTURE(pass);
+		assembler.assemble_hessian(geometry_dim == 3, n_global_bases, false,
+			bases, bases, cache, 0, 0, x, x, matrix_cache, hessian);
+		require_approx_matrix(Eigen::MatrixXd(hessian), expected, 1e-10);
+	}
+
+	if (cache_values)
+	{
+		bases[0].bases[0].global()[0].val = 0.5;
+		cache.update(0, geometry_dim == 3, bases[0], bases[0]);
+		REQUIRE_FALSE(cache.cached_values(0).has_single_unit_mapping());
+		bases[0].bases[0].global()[0].val = 1.0;
+		cache.update(0, geometry_dim == 3, bases[0], bases[0]);
+		REQUIRE(cache.cached_values(0).has_single_unit_mapping());
+	}
+}
+
 TEST_CASE("hessian_lin", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -517,8 +622,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		{
 			const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
 
-			const Eigen::MatrixXd hessiana = autodiff.assemble_hessian(data);
-			const Eigen::MatrixXd hessian = real.assemble_hessian(data);
+			const Eigen::MatrixXd hessiana = assemble_local_hessian(autodiff, data);
+			const Eigen::MatrixXd hessian = assemble_local_hessian(real, data);
 
 			for (int i = 0; i < hessiana.size(); ++i)
 			{
@@ -715,7 +820,7 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 
 	// Gradient and Hessian match central differences.
 	const Eigen::VectorXd grad = amips.assemble_gradient(data);
-	const Eigen::MatrixXd hess = amips.assemble_hessian(data);
+	const Eigen::MatrixXd hess = assemble_local_hessian(amips, data);
 	const double h = 1e-7;
 	for (int a = 0; a < 3; ++a)
 	{
@@ -747,7 +852,7 @@ TEST_CASE("AMIPS absolute mode", "[assembler][amips]")
 	amips_ad.add_multimaterial(0, R"({"use_rest_pose": true, "weight": 1})"_json, units, test_resources());
 	amips_ad.add_multimaterial(1, R"({"use_rest_pose": false, "weight": 1})"_json, units, test_resources());
 	REQUIRE((amips_ad.assemble_gradient(data) - grad).norm() <= 1e-10 * grad.norm());
-	REQUIRE((amips_ad.assemble_hessian(data) - hess).norm() <= 1e-10 * hess.norm());
+	REQUIRE((assemble_local_hessian(amips_ad, data) - hess).norm() <= 1e-10 * hess.norm());
 
 	// Absolute mode has no stress: the stress output is NaN, the deformation gradient is not.
 	Eigen::MatrixXd local_pts(1, 2);
@@ -828,7 +933,7 @@ TEST_CASE("modified-neohookean-hessian", "[assembler]")
 		x0.setRandom();
 		x0 /= 20.0;
 
-		const Eigen::MatrixXd hess = assembler->assemble_hessian(NonLinearAssemblerData(vals, 0, 0, x0, x0, da));
+		const Eigen::MatrixXd hess = assemble_local_hessian(*assembler, NonLinearAssemblerData(vals, 0, 0, x0, x0, da));
 
 		for (int i = 0; i < n_local; ++i)
 		{
@@ -965,6 +1070,109 @@ TEST_CASE("modified-neohookean-barrier-active", "[assembler]")
 	}
 }
 
+TEST_CASE("local Hessian storage switches and reuses buffers", "[assembler][local_hessian]")
+{
+	LocalHessian hessian;
+	REQUIRE(hessian.rows() == 0);
+	REQUIRE(hessian.cols() == 0);
+
+	const auto is_inline = [&]() {
+		return hessian.visit([](const auto &H) {
+			return std::decay_t<decltype(H)>::MaxRowsAtCompileTime != Eigen::Dynamic;
+		});
+	};
+	const auto data_pointer = [&]() {
+		return std::as_const(hessian).visit([](const auto &H) -> const double * { return H.data(); });
+	};
+
+	hessian.resize(LocalHessian::SmallDofs, LocalHessian::SmallDofs);
+	REQUIRE(is_inline());
+	const double *inline_data = data_pointer();
+	hessian.assign(Eigen::MatrixXd::Identity(12, 12));
+	REQUIRE(data_pointer() == inline_data);
+	REQUIRE(std::as_const(hessian).visit([](const auto &H) { return H.isIdentity(); }));
+
+	// A P4 tetrahedron has 35 nodes and 105 displacement DOFs.
+	hessian.resize(105, 105);
+	REQUIRE_FALSE(is_inline());
+	const double *dynamic_data = data_pointer();
+	REQUIRE(hessian.rows() == 105);
+	REQUIRE(hessian.cols() == 105);
+
+	hessian.resize(12, 12);
+	REQUIRE(is_inline());
+	REQUIRE(data_pointer() == inline_data);
+	hessian.resize(105, 105);
+	REQUIRE(data_pointer() == dynamic_data);
+
+	// Mixed-space blocks may be rectangular, with only one dimension over the bound.
+	for (const auto &[rows, cols] : std::vector<std::pair<int, int>>{{12, 105}, {105, 12}})
+	{
+		hessian.resize(rows, cols);
+		REQUIRE_FALSE(is_inline());
+		REQUIRE(hessian.rows() == rows);
+		REQUIRE(hessian.cols() == cols);
+		hessian.visit([](auto &H) { H.setConstant(2.0); });
+		REQUIRE(std::as_const(hessian).visit([](const auto &H) { return H.sum(); }) == 2.0 * rows * cols);
+	}
+}
+
+TEST_CASE("local Hessian assembly reuses storage across element orders", "[assembler][elasticity][local_hessian]")
+{
+	NeoHookeanElasticity assembler;
+	assembler.set_size(3);
+	assembler.add_multimaterial(0, {{"E", 12.0}, {"nu", 0.23}}, Units(), test_resources());
+	LocalHessian hessian;
+	const double *large_buffer = nullptr;
+	for (const int n_bases : {4, 35, 4, 35})
+	{
+		CAPTURE(n_bases);
+		const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(3, n_bases);
+		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+		hessian.visit([](auto &H) { H.setConstant(std::numeric_limits<double>::quiet_NaN()); });
+		assembler.assemble_hessian(data, hessian);
+		REQUIRE(hessian.rows() == 3 * n_bases);
+		REQUIRE(hessian.cols() == 3 * n_bases);
+		REQUIRE(std::as_const(hessian).visit([](const auto &H) { return H.allFinite(); }));
+
+		const Eigen::VectorXd direction = Eigen::VectorXd::LinSpaced(fixture.x.size(), -0.2, 0.3);
+		const double eps = 1e-6;
+		const Eigen::MatrixXd plus = fixture.x + eps * direction;
+		const Eigen::MatrixXd minus = fixture.x - eps * direction;
+		const Eigen::VectorXd difference = (assembler.assemble_gradient(NonLinearAssemblerData(fixture.vals, 0.2, 0.01, plus, fixture.x_prev, fixture.da))
+											- assembler.assemble_gradient(NonLinearAssemblerData(fixture.vals, 0.2, 0.01, minus, fixture.x_prev, fixture.da)))
+										   / (2 * eps);
+		const Eigen::VectorXd product = hessian.visit([&](const auto &H) -> Eigen::VectorXd { return H * direction; });
+		require_approx_vector(product, difference, 1e-7);
+
+		if (n_bases == 35)
+		{
+			const double *buffer = std::as_const(hessian).visit([](const auto &H) -> const double * { return H.data(); });
+			if (large_buffer)
+				REQUIRE(buffer == large_buffer);
+			large_buffer = buffer;
+		}
+	}
+}
+
+TEST_CASE("neo hookean spatial material parameters", "[assembler][elasticity]")
+{
+	const int dim = GENERATE(2, 3);
+	const SyntheticNonlinearElement fixture = make_synthetic_nonlinear_element(dim, dim + 1);
+	const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
+	NeoHookeanElasticity fast;
+	ConfigurableNeoHookeanAutodiff reference;
+	fast.set_size(dim);
+	reference.set_size(dim);
+	reference.set_autodiff_type(AutodiffType::FULL);
+	const json material = {{"E", "12 + x + 2*y + 3*z + t"}, {"nu", "0.2 + 0.01*x"}};
+	fast.add_multimaterial(0, material, Units(), test_resources());
+	reference.add_multimaterial(0, material, Units(), test_resources());
+	REQUIRE(fast.compute_energy(data) == Catch::Approx(reference.compute_energy(data)).margin(1e-10));
+	require_approx_vector(fast.assemble_gradient(data), reference.assemble_gradient(data), 1e-8);
+	require_approx_matrix(assemble_local_hessian(fast, data), assemble_local_hessian(reference, data), 1e-7);
+}
+
 void check_neo_hookean_synthetic_nonlinear_branch(const int dim, const int n_bases)
 {
 	CAPTURE(dim);
@@ -992,16 +1200,16 @@ void check_neo_hookean_synthetic_nonlinear_branch(const int dim, const int n_bas
 	require_approx_vector(fast.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
 	require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-8);
 
-	const Eigen::MatrixXd fast_hessian = fast.assemble_hessian(data);
+	const Eigen::MatrixXd fast_hessian = assemble_local_hessian(fast, data);
 	REQUIRE(fast_hessian.rows() == dim * n_bases);
 	REQUIRE(fast_hessian.cols() == dim * n_bases);
 	REQUIRE(fast_hessian.allFinite());
 
 	if (dim * n_bases < 60)
 	{
-		const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
+		const Eigen::MatrixXd full_hessian = assemble_local_hessian(full, data);
 		require_approx_matrix(fast_hessian, full_hessian, 1e-7);
-		require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-7);
+		require_approx_matrix(assemble_local_hessian(stress, data), full_hessian, 1e-7);
 	}
 	else
 	{
@@ -1037,9 +1245,9 @@ void check_generic_elastic_autodiff_mode(const int dim, const int n_bases)
 	REQUIRE(no_ad.compute_energy(data) == Catch::Approx(full.compute_energy(data)).margin(1e-12));
 	require_approx_vector(stress.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
 	require_approx_vector(no_ad.assemble_gradient(data), full.assemble_gradient(data), 1e-9);
-	const Eigen::MatrixXd full_hessian = full.assemble_hessian(data);
-	require_approx_matrix(stress.assemble_hessian(data), full_hessian, 1e-8);
-	require_approx_matrix(no_ad.assemble_hessian(data), full_hessian, 1e-8);
+	const Eigen::MatrixXd full_hessian = assemble_local_hessian(full, data);
+	require_approx_matrix(assemble_local_hessian(stress, data), full_hessian, 1e-8);
+	require_approx_matrix(assemble_local_hessian(no_ad, data), full_hessian, 1e-8);
 }
 
 #define POLYFEM_NEO_HOOKEAN_SYNTHETIC_CASE(DIM, N_BASES)                                                          \
@@ -1114,8 +1322,8 @@ TEST_CASE("neo hookean basis-block Hessian contraction", "[assembler][elasticity
 		fast.add_multimaterial(0, material, units, test_resources());
 		reference.add_multimaterial(0, material, units, test_resources());
 		const NonLinearAssemblerData data(fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
-		const Eigen::MatrixXd hessian = fast.assemble_hessian(data);
-		require_approx_matrix(hessian, reference.assemble_hessian(data), 1e-9);
+		const Eigen::MatrixXd hessian = assemble_local_hessian(fast, data);
+		require_approx_matrix(hessian, assemble_local_hessian(reference, data), 1e-9);
 		require_approx_matrix(hessian, hessian.transpose(), 1e-12);
 	}
 }
@@ -1143,16 +1351,16 @@ TEST_CASE("Navier-Stokes Newton and Picard operators", "[assembler][navier_stoke
 		const NonLinearAssemblerData data(
 			fixture.vals, 0.2, 0.01, x_matrix, fixture.x_prev, fixture.da);
 		assembler.set_picard(true);
-		return (assembler.assemble_hessian(data) * x).eval();
+		return (assemble_local_hessian(assembler, data) * x).eval();
 	};
 
 	const Eigen::VectorXd x = fixture.x;
 	const NonLinearAssemblerData data(
 		fixture.vals, 0.2, 0.01, fixture.x, fixture.x_prev, fixture.da);
 	assembler.set_picard(false);
-	const Eigen::MatrixXd newton = assembler.assemble_hessian(data);
+	const Eigen::MatrixXd newton = assemble_local_hessian(assembler, data);
 	assembler.set_picard(true);
-	const Eigen::MatrixXd picard = assembler.assemble_hessian(data);
+	const Eigen::MatrixXd picard = assemble_local_hessian(assembler, data);
 
 	Eigen::MatrixXd finite_difference(newton.rows(), newton.cols());
 	const double eps = 1e-7;
@@ -1226,9 +1434,9 @@ TEST_CASE("ALE Navier-Stokes local Jacobian blocks", "[assembler][navier_stokes]
 		for (const int col : {0, 1, 2})
 		{
 			CAPTURE(row, col);
-			Eigen::MatrixXd jacobian = velocity.assemble_hessian(data, row, col)
-									   + mixed.assemble_hessian(data, row, col)
-									   + inertia.assemble_hessian(data, row, col);
+			Eigen::MatrixXd jacobian = assemble_local_hessian(velocity, data, row, col)
+									   + assemble_local_hessian(mixed, data, row, col)
+									   + assemble_local_hessian(inertia, data, row, col);
 			const int row_offset = row == 0 ? 0 : n_bases * dim;
 			const int row_size = row == 0 ? n_bases * dim : n_bases;
 			Eigen::MatrixXd finite_difference(row_size, x[col].size());
@@ -1252,8 +1460,8 @@ TEST_CASE("ALE Navier-Stokes local Jacobian blocks", "[assembler][navier_stokes]
 		}
 
 	const auto picard_data = make_data(true);
-	const Eigen::MatrixXd full = velocity.assemble_hessian(data, 0, 0);
-	const Eigen::MatrixXd picard = velocity.assemble_hessian(picard_data, 0, 0);
+	const Eigen::MatrixXd full = assemble_local_hessian(velocity, data, 0, 0);
+	const Eigen::MatrixXd picard = assemble_local_hessian(velocity, picard_data, 0, 0);
 	REQUIRE((full - picard).norm() > 1e-10);
 }
 
@@ -1307,7 +1515,7 @@ TEST_CASE("ALE identity mapping reproduces Navier-Stokes", "[assembler][navier_s
 		fixture.vals, 0.2, 0.1, fixture.x, fixture.x_prev, fixture.da);
 	navier_stokes.set_picard(true);
 	const Eigen::VectorXd expected_velocity =
-		(stiffness + navier_stokes.assemble_hessian(nonlinear_data)) * x[0];
+		(stiffness + assemble_local_hessian(navier_stokes, nonlinear_data)) * x[0];
 	const Eigen::VectorXd actual_velocity =
 		ale_velocity.assemble_gradient(data).head(velocity_size);
 	require_approx_vector(actual_velocity, expected_velocity, 1e-12);
@@ -1500,24 +1708,29 @@ TEST_CASE("elasticity utilities conversions stresses and dispatch", "[assembler]
 	const auto h81 = [](const NonLinearAssemblerData &) { return tagged_hessian_energy<81>(81); };
 	const auto hN = [](const NonLinearAssemblerData &) { return tagged_small_hessian_energy(7, 7); };
 	const auto hn = [](const NonLinearAssemblerData &) { return tagged_dynamic_hessian_energy(5, 202); };
+	const auto evaluate_hessian = [&](const int size, const int n_bases, const NonLinearAssemblerData &data, const auto &...functions) {
+		LocalHessian hessian;
+		hessian_from_energy(size, n_bases, data, hessian, functions...);
+		return hessian.visit([](const auto &H) -> Eigen::MatrixXd { return H; });
+	};
 
 	for (const auto &[product, tag] : std::vector<std::pair<int, double>>{{6, 6}, {8, 8}, {12, 12}, {18, 18}, {24, 24}, {30, 30}})
 	{
-		const Eigen::MatrixXd hessian = hessian_from_energy(product, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn);
+		const Eigen::MatrixXd hessian = evaluate_hessian(product, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn);
 		REQUIRE(hessian.rows() == product);
 		REQUIRE(hessian.cols() == product);
 		REQUIRE(hessian(0, 0) == Catch::Approx(tag));
 	}
 #ifdef WIN32
-	REQUIRE(hessian_from_energy(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
-	REQUIRE(hessian_from_energy(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
-	REQUIRE(hessian_from_energy(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(evaluate_hessian(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(evaluate_hessian(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(evaluate_hessian(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
 #else
-	REQUIRE(hessian_from_energy(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(7));
-	REQUIRE(hessian_from_energy(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(60));
-	REQUIRE(hessian_from_energy(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(81));
+	REQUIRE(evaluate_hessian(7, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(7));
+	REQUIRE(evaluate_hessian(60, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(60));
+	REQUIRE(evaluate_hessian(81, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(81));
 #endif
-	REQUIRE(hessian_from_energy(SMALL_N + 2, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
+	REQUIRE(evaluate_hessian(SMALL_N + 2, 1, data, h6, h8, h12, h18, h24, h30, h60, h81, hN, hn)(0, 0) == Catch::Approx(202));
 }
 
 TEST_CASE("material parameter helpers", "[assembler][mat_params]")

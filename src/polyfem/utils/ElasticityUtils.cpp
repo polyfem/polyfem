@@ -177,19 +177,19 @@ namespace polyfem
 		return grad;
 	}
 
-	Eigen::MatrixXd hessian_from_energy(const int size, const int n_bases, const assembler::NonLinearAssemblerData &data,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>(const assembler::NonLinearAssemblerData &)> &fun6,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>(const assembler::NonLinearAssemblerData &)> &fun8,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>(const assembler::NonLinearAssemblerData &)> &fun12,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>(const assembler::NonLinearAssemblerData &)> &fun18,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>(const assembler::NonLinearAssemblerData &)> &fun24,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>(const assembler::NonLinearAssemblerData &)> &fun30,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>(const assembler::NonLinearAssemblerData &)> &fun60,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>(const assembler::NonLinearAssemblerData &)> &fun81,
-										const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>(const assembler::NonLinearAssemblerData &)> &funN,
-										const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const assembler::NonLinearAssemblerData &)> &funn)
+	void hessian_from_energy(const int size, const int n_bases, const assembler::NonLinearAssemblerData &data, assembler::LocalHessian &hessian,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>(const assembler::NonLinearAssemblerData &)> &fun6,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>(const assembler::NonLinearAssemblerData &)> &fun8,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>(const assembler::NonLinearAssemblerData &)> &fun12,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>(const assembler::NonLinearAssemblerData &)> &fun18,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>(const assembler::NonLinearAssemblerData &)> &fun24,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>(const assembler::NonLinearAssemblerData &)> &fun30,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>(const assembler::NonLinearAssemblerData &)> &fun60,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>(const assembler::NonLinearAssemblerData &)> &fun81,
+							 const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>(const assembler::NonLinearAssemblerData &)> &funN,
+							 const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const assembler::NonLinearAssemblerData &)> &funn)
 	{
-		Eigen::MatrixXd hessian;
+		bool computed = false;
 #ifdef WIN32
 		(void)fun60;
 		(void)fun81;
@@ -201,50 +201,58 @@ namespace polyfem
 		case 6:
 		{
 			auto auto_diff_energy = fun6(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 8:
 		{
 			auto auto_diff_energy = fun8(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 12:
 		{
 			auto auto_diff_energy = fun12(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 18:
 		{
 			auto auto_diff_energy = fun18(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 24:
 		{
 			auto auto_diff_energy = fun24(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 30:
 		{
 			auto auto_diff_energy = fun30(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 #ifndef WIN32
 		case 60:
 		{
 			auto auto_diff_energy = fun60(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 		case 81:
 		{
 			auto auto_diff_energy = fun81(data);
-			hessian = auto_diff_energy.getHessian();
+			hessian.assign(auto_diff_energy.getHessian());
+			computed = true;
 			break;
 		}
 #endif
@@ -252,13 +260,14 @@ namespace polyfem
 			break;
 		}
 
-		if (hessian.size() <= 0)
+		if (!computed)
 		{
 #ifndef WIN32
 			if (n_bases * size <= SMALL_N)
 			{
 				auto auto_diff_energy = funN(data);
-				hessian = auto_diff_energy.getHessian();
+				hessian.assign(auto_diff_energy.getHessian());
+				computed = true;
 			}
 			else
 #endif
@@ -274,11 +283,11 @@ namespace polyfem
 				}
 
 				auto auto_diff_energy = funn(data);
-				hessian = auto_diff_energy.getHessian();
+				hessian.assign(auto_diff_energy.getHessian());
+				computed = true;
 			}
 		}
 
-		return hessian;
 	}
 
 	void compute_diplacement_grad(const int size, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)

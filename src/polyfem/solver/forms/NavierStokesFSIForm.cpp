@@ -325,7 +325,7 @@ namespace polyfem::solver
 		const SpaceValues &vals,
 		const int row_space,
 		const int col_space,
-		const Eigen::MatrixXd &local,
+		const Eigen::Ref<const Eigen::MatrixXd> &local,
 		std::vector<Eigen::Triplet<double>> &entries) const
 	{
 		const int row_components = components_[row_space];
@@ -401,6 +401,7 @@ namespace polyfem::solver
 	{
 		assert(x.size() == total_size_);
 		std::vector<Eigen::Triplet<double>> entries;
+		assembler::LocalHessian block, contribution;
 
 		Eigen::VectorXd velocity_tilde = Eigen::VectorXd::Zero(velocity_ndof());
 		if (velocity_time_integrator_)
@@ -432,10 +433,16 @@ namespace polyfem::solver
 			for (const int row_space : {0, 1})
 				for (const int col_space : {0, 1, 2})
 				{
-					Eigen::MatrixXd block = Eigen::MatrixXd::Zero(local_x[row_space].size(), local_x[col_space].size());
-					for (const auto &assembler : assemblers_)
-						block += assembler->assemble_hessian(data, row_space, col_space);
-					scatter_local_block(vals, row_space, col_space, block, entries);
+					block.resize(local_x[row_space].size(), local_x[col_space].size());
+					block.visit([&](auto &H) {
+						H.setZero();
+						for (const auto &assembler : assemblers_)
+						{
+							assembler->assemble_hessian(data, row_space, col_space, contribution);
+							contribution.visit([&](const auto &term) { H += term; });
+						}
+						scatter_local_block(vals, row_space, col_space, H, entries);
+					});
 				}
 		}
 

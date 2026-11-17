@@ -118,7 +118,7 @@ namespace polyfem::solver
 			const SpaceValues &vals,
 			int row_space,
 			int col_space,
-			const Eigen::MatrixXd &local,
+			const Eigen::Ref<const Eigen::MatrixXd> &local,
 			std::vector<Eigen::Triplet<double>> &entries) const;
 		assembler::NavierStokesFSIAssemblerData make_data(
 			const SpaceValues &vals,

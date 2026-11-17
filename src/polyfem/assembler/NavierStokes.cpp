@@ -1,5 +1,7 @@
 #include "NavierStokes.hpp"
 
+#include <type_traits>
+
 namespace polyfem::assembler
 {
 
@@ -41,21 +43,25 @@ namespace polyfem::assembler
 		return Eigen::VectorXd(data.vals.basis_values.size() * size());
 	}
 
-	Eigen::MatrixXd
-	NavierStokesVelocity::assemble_hessian(const NonLinearAssemblerData &data) const
+	void NavierStokesVelocity::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
-		Eigen::MatrixXd H;
-		if (full_gradient_)
-			H = compute_N(data) + compute_W(data);
-		else
-			H = compute_N(data);
-
-		return H.transpose();
+		hessian.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		hessian.visit([&](auto &H) {
+			compute_N(data, H);
+			if (full_gradient_)
+			{
+				typename std::decay_t<decltype(H)>::PlainObject W(H.rows(), H.cols());
+				compute_W(data, W);
+				H += W;
+			}
+			H.transposeInPlace();
+		});
 	}
 
 	// Compute N = int v \cdot \nabla phi_i \cdot \phi_j
 
-	Eigen::MatrixXd NavierStokesVelocity::compute_N(const NonLinearAssemblerData &data) const
+	template <typename Matrix>
+	void NavierStokesVelocity::compute_N(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &N) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -78,7 +84,6 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::MatrixXd N(size() * n_bases, size() * n_bases);
 		N.setZero();
 
 		GradMat grad_i(size(), size());
@@ -128,12 +133,12 @@ namespace polyfem::assembler
 			}
 		}
 
-		return N;
 	}
 
 	// Compute N = int phi_j \cdot \nabla v \cdot \phi_j
 
-	Eigen::MatrixXd NavierStokesVelocity::compute_W(const NonLinearAssemblerData &data) const
+	template <typename Matrix>
+	void NavierStokesVelocity::compute_W(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &W) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -156,7 +161,6 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::MatrixXd W(size() * n_bases, size() * n_bases);
 		W.setZero();
 
 		GradMat grad_v(size(), size());
@@ -210,7 +214,6 @@ namespace polyfem::assembler
 			}
 		}
 
-		return W;
 	}
 
 	std::map<std::string, Assembler::ParamFunc> NavierStokesVelocity::parameters() const

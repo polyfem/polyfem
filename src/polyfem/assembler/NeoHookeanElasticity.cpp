@@ -9,6 +9,20 @@ namespace polyfem::assembler
 {
 	namespace
 	{
+		void evaluate_lame_parameters(const LameParameters &params, const NonLinearAssemblerData &data,
+			const Eigen::Index p, double &lambda, double &mu)
+		{
+			// Keep these as row views: the MatrixXd overload creates two heap temporaries.
+			const auto uv = data.vals.quadrature.points.row(p);
+			const auto point = data.vals.val.row(p);
+			assert(uv.size() == 2 || uv.size() == 3);
+			assert(uv.size() == point.size());
+			params.lambda_mu(
+				uv(0), uv(1), uv.size() == 3 ? uv(2) : 0.0,
+				point(0), point(1), point.size() == 3 ? point(2) : 0.0,
+				data.t, data.vals.element_id, lambda, mu);
+		}
+
 		bool delta(int i, int j)
 		{
 			return (i == j) ? true : false;
@@ -173,82 +187,65 @@ namespace polyfem::assembler
 		}
 	}
 
-	Eigen::MatrixXd
-	NeoHookeanElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
+	void NeoHookeanElasticity::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd hessian;
-
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			hessian.setZero();
+			if (size() == 2)
 			{
-			case 3:
+				switch (data.vals.basis_values.size())
+				{
+				case 3:
+				{
+					compute_energy_hessian_aux_fast<3, 2>(data, hessian);
+					break;
+				}
+				case 6:
+				{
+					compute_energy_hessian_aux_fast<6, 2>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_energy_hessian_aux_fast<10, 2>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
+					break;
+				}
+				}
+			}
+			else // if (size() == 3)
 			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<3, 2>(data, hessian);
-				break;
+				assert(size() == 3);
+				switch (data.vals.basis_values.size())
+				{
+				case 4:
+				{
+					compute_energy_hessian_aux_fast<4, 3>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_energy_hessian_aux_fast<10, 3>(data, hessian);
+					break;
+				}
+				case 20:
+				{
+					compute_energy_hessian_aux_fast<20, 3>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
+					break;
+				}
+				}
 			}
-			case 6:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<6, 2>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 2>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<4, 3>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 3>(data, hessian);
-				break;
-			}
-			case 20:
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<20, 3>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
-				break;
-			}
-			}
-		}
-
-		return hessian;
+		});
 	}
 
 	void NeoHookeanElasticity::assign_stress_tensor(const OutputData &data,
@@ -377,7 +374,7 @@ namespace polyfem::assembler
 				def_grad = (local_disp.transpose() * grad) * jac_it + Eigen::Matrix<T, dim, dim>::Identity(size(), size());
 
 				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+				evaluate_lame_parameters(params_, data, p, lambda, mu);
 
 				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
 				const T log_det_j = log(J);
@@ -524,7 +521,7 @@ namespace polyfem::assembler
 			}
 
 			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+				evaluate_lame_parameters(params_, data, p, lambda, mu);
 
 			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
@@ -541,8 +538,8 @@ namespace polyfem::assembler
 		G_flattened = temp;
 	}
 
-	template <int n_basis, int dim>
-	void NeoHookeanElasticity::compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const
+	template <int n_basis, int dim, typename Matrix>
+	void NeoHookeanElasticity::compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &H) const
 	{
 		assert(data.x.cols() == 1);
 
@@ -623,7 +620,7 @@ namespace polyfem::assembler
 			}
 
 			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+			evaluate_lame_parameters(params_, data, p, lambda, mu);
 
 			Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
 
