@@ -131,6 +131,8 @@ namespace polyfem::solver
 				continue;
 			THessian tmp;
 			f->second_derivative(x, tmp);
+			if (tmp.nonZeros() == 0)
+				continue;
 			hessian += tmp;
 		}
 	}
