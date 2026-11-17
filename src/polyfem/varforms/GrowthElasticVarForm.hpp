@@ -19,6 +19,7 @@ namespace polyfem::solver
 {
 	class AugmentedLagrangianForm;
 	class Form;
+	class GrowthDissipationForm;
 	class MixedAssemblerForm;
 	class NLProblem;
 	class StackedForm;
@@ -81,7 +82,21 @@ namespace polyfem::varform
 		void build_growth_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
 		void build_growth_boundary(mesh::Mesh &mesh);
 		void build_forms(Eigen::MatrixXd &solution, const double t);
+		/// NLProblem over the current forms and AL forms, initialized at sol, t.
+		void make_nl_problem(const Eigen::MatrixXd &sol, const double t);
 		void solve_nonlinear_step(const int step, Eigen::MatrixXd &solution);
+
+		// ---- Stage 2: solved growth (growth_law on the material) ----
+		void read_growth_law(const json &args);
+		void compute_growth_node_weights();
+		void solve_growth_law(Eigen::MatrixXd &solution);
+		/// One increment: primal-dual active-set loop on theta >= theta_n.
+		/// Returns the number of passes; throws if the set does not settle.
+		int solve_growth_increment(const int step, const double t, Eigen::MatrixXd &solution);
+		void solve_with_current_pins(const int step, const double t, Eigen::MatrixXd &solution);
+		/// d Pi_inc / d theta at the solution: stacked energy gradient plus the
+		/// dissipation weights (the KKT residual; >= 0 where pinned, ~0 where free).
+		Eigen::VectorXd growth_multiplier(const Eigen::MatrixXd &solution) const;
 
 		void initial_growth_solution(Eigen::MatrixXd &solution) const;
 		const Eigen::MatrixXd &prescribed_growth_field() const;
@@ -134,5 +149,30 @@ namespace polyfem::varform
 		int displacement_space_id_ = -1;
 		int growth_space_id_ = -1;
 		std::string elastic_formulation_ = "MaterialSum";
+
+		/// Stage-2 growth law (material "growth_law"): rate-independent, constant
+		/// per-element threshold within the run, irreversibility theta >= theta_n
+		/// enforced by a primal-dual active set (pinned DOFs are Dirichlet at
+		/// theta_n through BCLagrangianForm; free DOFs are unconstrained). The
+		/// threshold is not yet lagged per increment (variant (b) is Stage 3).
+		struct GrowthLawSettings
+		{
+			bool enabled = false;
+			int n_steps = 1;                   ///< pseudo-time increments over (0, t_end]
+			double t_end = 1.0;                ///< pseudo-time at which DBC expressions reach their end state
+			int max_active_set_iterations = 30;
+			double active_set_tol = 1e-8;      ///< release a pin if dPi/dtheta < -tol * scale_a (Pa)
+			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
+			double theta_floor_fraction = 0.5; ///< positivity filter: theta >= fraction * theta_n
+		} growth_law_;
+
+		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa]
+		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
+		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
+		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV
+		Eigen::VectorXd theta_n_;                  ///< converged growth of the previous increment
+		std::vector<int> pinned_growth_nodes_;     ///< member: BCLagrangianForm keeps a reference
+		std::vector<char> growth_pinned_mask_;     ///< last solved pass: 1 = pinned at theta_n
+		std::shared_ptr<solver::GrowthDissipationForm> dissipation_form_;
 	};
 } // namespace polyfem::varform

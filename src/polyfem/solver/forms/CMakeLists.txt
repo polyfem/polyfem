@@ -26,6 +26,8 @@ set(SOURCES
 	LaggedRegForm.hpp
 	FrictionForm.cpp
 	FrictionForm.hpp
+	GrowthDissipationForm.cpp
+	GrowthDissipationForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
 	NormalAdhesionForm.cpp

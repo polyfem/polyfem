@@ -37,6 +37,13 @@ namespace polyfem::assembler
 	///
 	/// Follows the structure of ThermoElasticity (the in-tree precedent for a
 	/// displacement/scalar mixed correction assembler).
+	/// Read one CELL_DATA array of a legacy ASCII VTK (VECTORS, SCALARS or
+	/// FIELD layout) as an (n_cells x ncomp_expected) matrix. Shared by the
+	/// assembler (normal_direction, normal_growth) and the growth VarForm
+	/// (growth_law threshold), so per-element growth data has one reader.
+	Eigen::MatrixXd read_growth_cell_array(
+		const std::string &path, const std::string &field, const int ncomp_expected);
+
 	class GrowthElasticity : public MixedNLAssembler
 	{
 	public:

@@ -235,7 +235,8 @@
         "optional": [
             "id", 
             "rho", 
-            "normal_growth"
+            "normal_growth",
+            "growth_law"
         ],
         "doc": "Growth mixed material: additive correction J^g psi(Fe) - psi(F) on a (displacement, growth) block pair. The displacement block reuses the nested elastic_material; the growth field theta is the second space's scalar DOF. normal_direction is the reference wall normal (constant or per-element file); normal_growth is the prescribed normal component (default 1)."
     },
@@ -434,6 +435,104 @@
         "type": "string",
         "default": "VN",
         "doc": "Name of the CELL_DATA array holding the per-element normal growth"
+    },
+    {
+        "pointer": "/growth_law",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "threshold",
+            "n_steps",
+            "t_end",
+            "max_active_set_iterations",
+            "active_set_tol",
+            "feasibility_tol",
+            "theta_floor_fraction"
+        ],
+        "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
+    },
+    {
+        "pointer": "/growth_law/threshold",
+        "type": "float",
+        "doc": "Constant activation threshold phi [Pa], in units of the driving force f_I = -(1/vn) d(J^g psi_e)/d theta; the dissipation is int vn phi (theta - theta_n) dV, so growth activates where f_I = phi."
+    },
+    {
+        "pointer": "/growth_law/threshold",
+        "type": "object",
+        "required": [
+            "type",
+            "path"
+        ],
+        "optional": [
+            "field"
+        ],
+        "doc": "Per-element threshold read from a legacy ASCII VTK file, bound by global element id"
+    },
+    {
+        "pointer": "/growth_law/threshold",
+        "type": "string",
+        "options": [
+            "none"
+        ],
+        "default": "none",
+        "doc": "No threshold: the growth law is off (the default; theta is prescribed or fixed)."
+    },
+    {
+        "pointer": "/growth_law/threshold/type",
+        "type": "string",
+        "options": [
+            "per_element_file"
+        ],
+        "doc": "Threshold source"
+    },
+    {
+        "pointer": "/growth_law/threshold/path",
+        "type": "string",
+        "doc": "Path to a legacy ASCII VTK file, resolved relative to the input JSON"
+    },
+    {
+        "pointer": "/growth_law/threshold/field",
+        "type": "string",
+        "default": "PHI",
+        "doc": "Name of the CELL_DATA array holding the per-element threshold [Pa]"
+    },
+    {
+        "pointer": "/growth_law/n_steps",
+        "type": "int",
+        "default": 1,
+        "min": 1,
+        "doc": "Number of pseudo-time increments over (0, t_end]"
+    },
+    {
+        "pointer": "/growth_law/t_end",
+        "type": "float",
+        "default": 1,
+        "doc": "Pseudo-time of the last increment; displacement Dirichlet expressions are evaluated at t = t_end * k / n_steps"
+    },
+    {
+        "pointer": "/growth_law/max_active_set_iterations",
+        "type": "int",
+        "default": 30,
+        "min": 1,
+        "doc": "Maximum active-set passes per increment before the solve stops with an error"
+    },
+    {
+        "pointer": "/growth_law/active_set_tol",
+        "type": "float",
+        "default": 1e-08,
+        "doc": "A pinned growth DOF is released when dPi/dtheta < -active_set_tol * max(1 Pa, |phi|_max) * int N_a dV"
+    },
+    {
+        "pointer": "/growth_law/feasibility_tol",
+        "type": "float",
+        "default": 1e-12,
+        "doc": "A free growth DOF is pinned when theta < theta_n - feasibility_tol"
+    },
+    {
+        "pointer": "/growth_law/theta_floor_fraction",
+        "type": "float",
+        "default": 0.5,
+        "doc": "Positivity filter on line-search steps: theta >= theta_floor_fraction * theta_n (keeps det F^g > 0; irreversibility itself is the active set)"
     }
 
 ]

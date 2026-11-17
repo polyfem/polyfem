@@ -451,6 +451,12 @@ namespace polyfem::assembler
 		};
 	} // namespace detail
 
+	Eigen::MatrixXd read_growth_cell_array(
+		const std::string &path, const std::string &field, const int ncomp_expected)
+	{
+		return read_vtk_cell_array(path, field, ncomp_expected);
+	}
+
 	GrowthElasticity::GrowthElasticity()
 		: model_(std::make_unique<detail::GrowthElasticityModel>())
 	{
