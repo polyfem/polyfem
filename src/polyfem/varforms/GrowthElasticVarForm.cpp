@@ -232,7 +232,8 @@ namespace polyfem::varform
 				|| gl.value("final_tol_factor", d.final_tol_factor) != d.final_tol_factor
 				|| gl.value("relag_acceleration", d.relag_acceleration) != d.relag_acceleration
 				|| gl.value("relag_omega_min", d.relag_omega_min) != d.relag_omega_min
-				|| gl.value("relag_omega_max", d.relag_omega_max) != d.relag_omega_max)
+				|| gl.value("relag_omega_max", d.relag_omega_max) != d.relag_omega_max
+				|| gl.value("max_increment_splits", d.max_increment_splits) != d.max_increment_splits)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
 									"(a number in Pa, or a per_element_file); set one to enable the law.");
 			return;
@@ -256,6 +257,9 @@ namespace polyfem::varform
 		growth_law_.lag_report = gl.value("lag_report", growth_law_.lag_report);
 		growth_law_.final_tol_factor = gl.value("final_tol_factor", growth_law_.final_tol_factor);
 		growth_law_.relag_acceleration = gl.value("relag_acceleration", growth_law_.relag_acceleration);
+		growth_law_.max_increment_splits = gl.value("max_increment_splits", growth_law_.max_increment_splits);
+		if (growth_law_.max_increment_splits < 0)
+			log_and_throw_error("growth_law max_increment_splits must be >= 0.");
 		growth_law_.relag_omega_min = gl.value("relag_omega_min", growth_law_.relag_omega_min);
 		growth_law_.relag_omega_max = gl.value("relag_omega_max", growth_law_.relag_omega_max);
 		if (growth_law_.relag_acceleration != "none" && growth_law_.relag_acceleration != "aitken")
@@ -1079,7 +1083,17 @@ namespace polyfem::varform
 		json nonlinear_params = solver_params_for_residual_mode(args["solver"]["nonlinear"], nl_problem.is_residual());
 		if (grad_tol_factor != 1.0 && nonlinear_params.contains("grad_norm_tol"))
 			nonlinear_params["grad_norm_tol"] = nonlinear_params["grad_norm_tol"].get<double>() * grad_tol_factor;
-		const json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
+		json al_nonlinear_params = solver_params_for_residual_mode(args["solver"]["augmented_lagrangian"]["nonlinear"], nl_problem.is_residual());
+		// The AL subsolves run on the AL settings (as in the plain elastic VarForm);
+		// the main Newton residual tolerance is carried over when it is looser, since
+		// the penalty phase is where the gradient is largest (absolute test).
+		if (nonlinear_params.contains("Newton") && nonlinear_params["Newton"].contains("residual_tolerance"))
+		{
+			const double main_tol = nonlinear_params["Newton"]["residual_tolerance"];
+			const double al_tol = al_nonlinear_params.value("Newton", json::object()).value("residual_tolerance", 0.0);
+			if (main_tol > al_tol)
+				al_nonlinear_params["Newton"]["residual_tolerance"] = main_tol;
+		}
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(
@@ -1116,7 +1130,7 @@ namespace polyfem::varform
 
 			al_solver.solve_al(
 				nl_problem, solution, al_nonlinear_params,
-				args["solver"]["linear"], units.characteristic_length(), nl_solver);
+				args["solver"]["linear"], units.characteristic_length());
 			al_solver.solve_reduced(
 				nl_problem, solution, nonlinear_params,
 				args["solver"]["linear"], units.characteristic_length(), nl_solver);
@@ -1767,7 +1781,6 @@ namespace polyfem::varform
 	{
 		compute_growth_node_weights();
 
-		const int nu = displacement_ndof();
 		const int ng = growth_ndof();
 		theta_n_ = solution.col(0).tail(ng);
 		if (!(theta_n_.array() > 0).all())
@@ -1776,13 +1789,13 @@ namespace polyfem::varform
 
 		for (int step = 1; step <= growth_law_.n_steps; ++step)
 		{
+			const double t_from = growth_law_.t_end * double(step - 1) / double(growth_law_.n_steps);
 			const double t = growth_law_.t_end * double(step) / double(growth_law_.n_steps);
-			if (growth_law_.shear_supply == "lagged" && growth_law_.shear_update == "increment")
-				update_lagged_threshold(solution, growth_law_.t_end * double(step - 1) / double(growth_law_.n_steps));
-			const int passes = solve_growth_increment(step, t, solution);
+			const Eigen::VectorXd theta_start = theta_n_;
+			const int passes = advance_increment(step, t_from, t, solution, 0);
 
 			const Eigen::VectorXd theta = solution.col(0).tail(ng);
-			const Eigen::VectorXd dtheta = theta - theta_n_;
+			const Eigen::VectorXd dtheta = theta - theta_start;
 			const int n_active = int(std::count(growth_pinned_mask_.begin(), growth_pinned_mask_.end(), 0));
 			logger().info("growth step {}/{} (t = {:g}): {} pass(es), {}/{} DOFs growing, "
 						  "theta in [{:.6g}, {:.6g}], max increment {:.3e}, min increment {:.3e}",
@@ -1792,26 +1805,73 @@ namespace polyfem::varform
 				{{"type", "growth_step"}, {"t", t}, {"step", step}, {"passes", passes},
 				 {"n_growing", n_active}, {"theta_min", theta.minCoeff()}, {"theta_max", theta.maxCoeff()}});
 
-			accumulate_dissipation(step, t, dtheta);
-
-			// Irreversibility holds by construction: pinned DOFs equal theta_n and
-			// free DOFs passed the feasibility test. Clamp round-off only.
-			theta_n_ = theta.cwiseMax(theta_n_);
-			solution.col(0).segment(nu, ng) = theta_n_;
-
-			// Activation increment (Q13(a)): the first increment in which a DOF
-			// was free in the settled active set AND grew. Free-but-unmoved
-			// DOFs (exactly at threshold) do not count.
-			for (int a = 0; a < ng; ++a)
-				if (growth_activation_step_(a) == 0 && !growth_pinned_mask_[a] && dtheta(a) > 0)
-					growth_activation_step_(a) = step;
-
 			if (growth_law_.lag_report && growth_law_.theta_crit > 0)
 				report_lag_residual(step, t, solution);
 
 			if (growth_law_.save_increments)
 				save_growth_increment(step, t, solution);
 		}
+	}
+
+	int GrowthElasticVarForm::advance_increment(const int step, const double t_from, const double t_to,
+												Eigen::MatrixXd &solution, const int depth)
+	{
+		// Everything an attempt may change, so a failed one can be undone exactly.
+		const Eigen::MatrixXd solution0 = solution;
+		const Eigen::VectorXd threshold0 = threshold_per_element_, parallel0 = threshold_parallel_,
+							  shear0 = shear_supply_, clamped0 = threshold_clamped_, weights0 = growth_node_weights_;
+		const std::vector<char> mask0 = growth_pinned_mask_;
+		try
+		{
+			if (growth_law_.shear_supply == "lagged" && growth_law_.shear_update == "increment")
+				update_lagged_threshold(solution, t_from);
+			const int passes = solve_growth_increment(step, t_to, solution);
+			commit_increment(step, t_to, solution);
+			return passes;
+		}
+		catch (const std::runtime_error &e)
+		{
+			if (depth >= growth_law_.max_increment_splits)
+				throw;
+			solution = solution0;
+			threshold_per_element_ = threshold0;
+			threshold_parallel_ = parallel0;
+			shear_supply_ = shear0;
+			threshold_clamped_ = clamped0;
+			growth_node_weights_ = weights0;
+			growth_pinned_mask_ = mask0;
+			const double t_mid = 0.5 * (t_from + t_to);
+			logger().warn("growth step {}: the increment to t = {:g} failed ({}); retrying from t = {:g} as two "
+						  "half increments, to t = {:g} and t = {:g} (split level {} of {})",
+						  step, t_to, e.what(), t_from, t_mid, t_to, depth + 1, growth_law_.max_increment_splits);
+			stats.solver_info.push_back(
+				{{"type", "growth_split"}, {"step", step}, {"t_from", t_from}, {"t_to", t_to}, {"level", depth + 1}});
+			const int p1 = advance_increment(step, t_from, t_mid, solution, depth + 1);
+			const int p2 = advance_increment(step, t_mid, t_to, solution, depth + 1);
+			return p1 + p2;
+		}
+	}
+
+	void GrowthElasticVarForm::commit_increment(const int step, const double t, Eigen::MatrixXd &solution)
+	{
+		const int nu = displacement_ndof();
+		const int ng = growth_ndof();
+		const Eigen::VectorXd theta = solution.col(0).tail(ng);
+		const Eigen::VectorXd dtheta = theta - theta_n_;
+
+		accumulate_dissipation(step, t, dtheta);
+
+		// Irreversibility holds by construction: pinned DOFs equal theta_n and
+		// free DOFs passed the feasibility test. Clamp round-off only.
+		theta_n_ = theta.cwiseMax(theta_n_);
+		solution.col(0).segment(nu, ng) = theta_n_;
+
+		// Activation increment (Q13(a)): the first increment in which a DOF
+		// was free in the settled active set AND grew. Free-but-unmoved
+		// DOFs (exactly at threshold) do not count.
+		for (int a = 0; a < ng; ++a)
+			if (growth_activation_step_(a) == 0 && !growth_pinned_mask_[a] && dtheta(a) > 0)
+				growth_activation_step_(a) = step;
 	}
 
 	void GrowthElasticVarForm::save_growth_increment(const int step, const double t, const Eigen::MatrixXd &solution)

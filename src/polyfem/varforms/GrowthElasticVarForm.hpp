@@ -133,6 +133,10 @@ namespace polyfem::varform
 							  const Eigen::VectorXd &mult, const std::vector<char> &pinned);
 		static double median_of(const Eigen::VectorXd &v);
 		void solve_growth_law(Eigen::MatrixXd &solution);
+		/// one increment (t_from, t_to], split recursively on failure; returns passes
+		int advance_increment(int step, double t_from, double t_to, Eigen::MatrixXd &solution, int depth);
+		/// D/S accumulation, theta_n update and activation marking after a converged (sub)increment
+		void commit_increment(int step, double t, Eigen::MatrixXd &solution);
 		/// growth_law.save_increments: the converged stacked state of increment
 		/// `step` (pseudo-time t) as growth_step_<step>.vtu, and growth_steps.pvd
 		/// rewritten to list steps 1..step.
@@ -246,6 +250,9 @@ namespace polyfem::varform
 			std::string relag_acceleration = "none";
 			double relag_omega_min = 0.05;
 			double relag_omega_max = 5.0;
+			/// a failed increment is retried from its start as two half increments,
+			/// recursively, up to this many levels (0 = abort on the first failure)
+			int max_increment_splits = 3;
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
