@@ -446,13 +446,12 @@ namespace polyfem::assembler
 				for (int a = 0; a < nb; ++a)
 				{
 					const Eigen::Matrix<double, dim * dim, dim> Ba = compute_B_block<dim>(Bgrad.row(a));
+					const Eigen::Matrix<double, dim, dim * dim> BaAw = (Ba.transpose() * A) * w(p);
 
 					for (int b = 0; b < nb; ++b)
 					{
 						const Eigen::Matrix<double, dim * dim, dim> Bb = compute_B_block<dim>(Bgrad.row(b));
-
-						const Eigen::Matrix<double, dim, dim> Kab =
-							Ba.transpose() * A * Bb * w(p);
+						const Eigen::Matrix<double, dim, dim> Kab = BaAw * Bb;
 
 						H.template block<dim, dim>(a * d, b * d) += Kab;
 					}
