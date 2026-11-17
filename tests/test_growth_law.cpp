@@ -560,6 +560,11 @@ TEST_CASE("growth_law_threshold_at_state", "[growth][growth_law]")
 	CHECK(vf->growth_lag_residual().cwiseAbs().maxCoeff() < 1e-3);
 	const double phi_par = vf->growth_threshold_parallel()(0);
 	CHECK(phi_par > 0);
+	// route-B split: no shear, so S = 0 and D = v_n PHI_PAR (theta - 1) per element
+	REQUIRE(vf->growth_dissipation().size() > 0);
+	CHECK(vf->growth_shear_supply_work().cwiseAbs().maxCoeff() < 1e-6);
+	CHECK(vf->growth_dissipation().minCoeff() == Catch::Approx(phi_par * (lambda * lambda / crit - 1.0)).epsilon(1e-5));
+	CHECK(vf->growth_dissipation().maxCoeff() == Catch::Approx(phi_par * (lambda * lambda / crit - 1.0)).epsilon(1e-5));
 
 	SECTION("threshold frozen at that state reproduces it")
 	{

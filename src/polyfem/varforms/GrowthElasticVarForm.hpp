@@ -68,6 +68,8 @@ namespace polyfem::varform
 		const Eigen::VectorXd &growth_threshold_parallel() const { return threshold_parallel_; }
 		const Eigen::VectorXd &growth_attainment() const { return attainment_; }
 		const Eigen::VectorXd &growth_lag_residual() const { return lag_residual_; }
+		const Eigen::VectorXd &growth_dissipation() const { return dissipation_; }
+		const Eigen::VectorXd &growth_shear_supply_work() const { return shear_work_; }
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -117,6 +119,8 @@ namespace polyfem::varform
 		Eigen::VectorXd element_mean_growth(const Eigen::VectorXd &theta);
 		/// lag residual phi(converged state) - phi used, and attainment, logged per increment
 		void report_lag_residual(int step, double t, const Eigen::MatrixXd &solution);
+		/// route-B split of the increment's dissipation term (D, S), accumulated and logged
+		void accumulate_dissipation(int step, double t, const Eigen::VectorXd &dtheta);
 		static double median_of(const Eigen::VectorXd &v);
 		void solve_growth_law(Eigen::MatrixXd &solution);
 		/// growth_law.save_increments: the converged stacked state of increment
@@ -233,6 +237,9 @@ namespace polyfem::varform
 		Eigen::VectorXd threshold_clamped_;        ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
 		Eigen::VectorXd lag_residual_;             ///< phi(converged state) - phi used, last increment [Pa]
 		Eigen::VectorXd attainment_;               ///< vartheta^e / theta_crit at the last converged increment
+		Eigen::VectorXd dissipation_;              ///< cumulative D = sum v_n max(f_par,0) dtheta per element [Pa]
+		Eigen::VectorXd shear_work_;               ///< cumulative S = sum v_n f_gamma dtheta per element [Pa]
+		Eigen::VectorXd element_volume_;           ///< reference element volumes (growth quadrature)
 		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
 		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
 		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV
