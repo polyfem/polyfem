@@ -66,7 +66,7 @@ namespace polyfem::varform
 		/// growth_law: first increment in which each growth DOF grew (0 = never);
 		/// empty before a solved run. Also exported as growth_activation_step.
 		const Eigen::VectorXi &growth_activation_step() const { return growth_activation_step_; }
-		/// growth_law threshold route_b: f_gamma per element used by the last
+		/// growth_law threshold from_state: f_gamma per element used by the last
 		/// increment, and the threshold phi_e in use (empty / the given values otherwise).
 		const Eigen::VectorXd &growth_shear_supply() const { return shear_supply_; }
 		const Eigen::VectorXd &growth_threshold() const { return threshold_per_element_; }
@@ -125,9 +125,9 @@ namespace polyfem::varform
 		void read_growth_law(const json &args);
 		void compute_growth_node_weights();
 		/// w_a = sum_e vn_e phi_e int_e N_a dV from threshold_per_element_ (and the
-		/// nodal volumes); called once (fixed threshold) or per update (route_b).
+		/// nodal volumes); called once (fixed threshold) or per update (from_state).
 		void assemble_growth_node_weights();
-		/// the threshold the state implies (route_b): G(x) = (PHI_PAR, f_gamma) at
+		/// the threshold the state implies (from_state): G(x) = (PHI_PAR, f_gamma) at
 		/// C_check of the state; f_gamma = f_I(Ce) - f_I(Ce with the transverse shears
 		/// removed and Ce_nn at the layer value), PHI_PAR = max(f_par, 0)
 		void threshold_target(const Eigen::MatrixXd &solution, double t,
@@ -135,7 +135,7 @@ namespace polyfem::varform
 		/// install a threshold (parts), rebuild the node weights, log
 		void set_threshold(const Eigen::VectorXd &par, const Eigen::VectorXd &gam,
 						   const Eigen::VectorXd &clamped, double t, double omega);
-		/// Route B at C_check of displacement u, per element: f_I(Ce) (phi_full),
+		/// The state-built threshold at C_check of displacement u, per element: f_I(Ce) (phi_full),
 		/// f_I(Ce shear-free, layer thickness) (phi_no_shear), and the total in-plane
 		/// area stretch theta_tot. f_par = phi_no_shear, f_gamma = phi_full - phi_no_shear.
 		void evaluate_threshold_state(const Eigen::VectorXd &u, double t,
@@ -144,7 +144,7 @@ namespace polyfem::varform
 		Eigen::VectorXd element_mean_growth(const Eigen::VectorXd &theta);
 		/// lag residual phi(converged state) - phi used, and attainment, logged per increment
 		void report_lag_residual(int step, double t, const Eigen::MatrixXd &solution);
-		/// route-B split of the increment's dissipation term (D, S), accumulated and logged
+		/// split of the increment's dissipation term (D, S), accumulated and logged
 		void accumulate_dissipation(int step, double t, const Eigen::VectorXd &dtheta);
 		/// phi - f_I per v_n-weighted nodal volume on the settled set: free and pinned
 		void log_kkt_residual(int step, double t, const Eigen::MatrixXd &solution,
@@ -220,7 +220,7 @@ namespace polyfem::varform
 		std::string elastic_formulation_ = "MaterialSum";
 
 		/// Growth law (material "growth_law"): rate-independent, per-element
-		/// threshold (given, or built from the state: route_b), irreversibility
+		/// threshold (given, or built from the state), irreversibility
 		/// theta >= theta_n enforced by a primal-dual active set (pinned DOFs are
 		/// Dirichlet at theta_n through BCLagrangianForm; free DOFs are unconstrained).
 		struct GrowthLawSettings
@@ -233,15 +233,15 @@ namespace polyfem::varform
 			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
 			double theta_floor_fraction = 0.5; ///< positivity filter: theta >= fraction * theta_n
 			bool save_increments = false;      ///< write growth_step_<k>.vtu + growth_steps.pvd per increment
-			/// threshold "route_b": phi_e = max(f_par, 0) + f_gamma at C_check of the
+			/// threshold "from_state": phi_e = max(f_par, 0) + f_gamma at C_check of the
 			/// current displacement, built by the solver and re-evaluated after every
 			/// active-set pass (Aitken-relaxed) until it moves by less than relag_tol,
 			/// or at most relag_max_updates times per increment (0 = no cap; the first
 			/// update is on the elastic predictor). Otherwise the threshold is the
 			/// given number or file, fixed for the run.
-			bool route_b = false;
-			double theta_crit = 0;  ///< C_check in-plane elastic area stretch (route_b; else optional, lag report)
-			double relag_tol = 1.0; ///< route_b: per-pass threshold iteration tolerance [Pa]
+			bool from_state = false;
+			double theta_crit = 0;  ///< C_check in-plane elastic area stretch (from_state; else optional, lag report)
+			double relag_tol = 1.0; ///< from_state: per-pass threshold iteration tolerance [Pa]
 			int relag_max_updates = 0;
 			/// < 1: after the active set settles, one confirmation pass with the
 			/// nonlinear gradient tolerance multiplied by this factor (1 = off)
@@ -251,9 +251,9 @@ namespace polyfem::varform
 			int max_increment_splits = 3;
 		} growth_law_;
 
-		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (route_b: phi_par + f_gamma)
-		Eigen::VectorXd threshold_parallel_;       ///< route_b: phi_par,e of the last update [Pa]
-		Eigen::VectorXd shear_supply_;             ///< route_b: f_gamma,e of the last update [Pa]
+		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (from_state: phi_par + f_gamma)
+		Eigen::VectorXd threshold_parallel_;       ///< from_state: phi_par,e of the last update [Pa]
+		Eigen::VectorXd shear_supply_;             ///< from_state: f_gamma,e of the last update [Pa]
 		bool setup_logged_ = false;                ///< the setup line is logged once, not per update
 		Eigen::VectorXd threshold_clamped_;        ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
 		Eigen::VectorXd lag_residual_;             ///< phi(converged state) - phi used, last increment [Pa]

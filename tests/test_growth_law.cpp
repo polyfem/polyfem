@@ -285,7 +285,7 @@ TEST_CASE("growth_law_cube_analytic", "[growth][growth_law]")
 
 	SECTION("negative threshold: Pi_inc bounded below, growth stopped by the elastic energy")
 	{
-		// Route B admits phi < 0 (the shear supply); growth must still stop at a
+		// A threshold built from the state admits phi < 0 (the shear supply); growth must still stop at a
 		// finite theta where f_I = phi, i.e. at in-plane elastic compression.
 		const double phi_neg = -300.0;
 		const double vneg = activation_stretch(phi_neg);
@@ -479,9 +479,9 @@ TEST_CASE("growth_driving_force_of_Ce", "[growth][growth_law]")
 	}
 }
 
-TEST_CASE("growth_law_route_b", "[growth][growth_law]")
+TEST_CASE("growth_law_threshold_from_state", "[growth][growth_law]")
 {
-	// Threshold route_b: phi built by the solver from the state (C_check at
+	// Threshold from_state: phi built by the solver from the state (C_check at
 	// theta_crit) and iterated to its fixed point within the increment. On the
 	// shear-free cube f_gamma = 0 and the cube
 	// stops exactly at vartheta^e = theta_crit, theta = lambda^2 / theta_crit, for
@@ -494,7 +494,7 @@ TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 	const double lambda = std::sqrt(1.5), crit = 1.25;
 
 	json args = cube_args(mesh, lambda, 469.0, 1, 1.0, "t");
-	args["materials"]["growth_law"]["threshold"] = "route_b";
+	args["materials"]["growth_law"]["threshold"] = "from_state";
 	args["materials"]["growth_law"]["relag_tol"] = 1e-4;
 	args["materials"]["growth_law"]["theta_crit"] = crit;
 
@@ -510,7 +510,7 @@ TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 	CHECK(vf->growth_shear_supply().cwiseAbs().maxCoeff() < 1e-6);
 	const double phi_par = vf->growth_threshold_parallel()(0);
 	CHECK(phi_par > 0);
-	// route-B split: no shear, so S = 0 and D = v_n PHI_PAR (theta - 1) per element
+	// threshold split: no shear, so S = 0 and D = v_n PHI_PAR (theta - 1) per element
 	REQUIRE(vf->growth_dissipation().size() > 0);
 	CHECK(vf->growth_shear_supply_work().cwiseAbs().maxCoeff() < 1e-6);
 	CHECK(vf->growth_dissipation().minCoeff() == Catch::Approx(phi_par * (lambda * lambda / crit - 1.0)).epsilon(1e-5));
@@ -560,7 +560,7 @@ TEST_CASE("growth_law_route_b", "[growth][growth_law]")
 			CHECK(rb.sol(3 * nv + a) == Catch::Approx(lambda * lambda / crit).epsilon(1e-6));
 	}
 
-	SECTION("route_b needs theta_crit")
+	SECTION("from_state needs theta_crit")
 	{
 		json bad = args;
 		bad["materials"]["growth_law"].erase("theta_crit");

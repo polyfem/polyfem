@@ -455,7 +455,7 @@
             "relag_max_updates",
             "max_increment_splits"
         ],
-        "doc": "Solved growth: rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set: a number, a per_element_file, or \"route_b\" (built by the solver from the state); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
+        "doc": "Solved growth: rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set: a number, a per_element_file, or \"from_state\" (built by the solver from the state); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
     {
         "pointer": "/growth_law/threshold",
@@ -479,10 +479,10 @@
         "type": "string",
         "options": [
             "none",
-            "route_b"
+            "from_state"
         ],
         "default": "none",
-        "doc": "none: no threshold, the growth law is off (the default; theta is prescribed or fixed). route_b: the threshold is built by the solver from the state, phi_e = max(f_par(C_check), 0) + f_gamma(C_check) at C_check of the current displacement (in-plane elastic area stretch theta_crit), re-evaluated after every active-set pass with Aitken relaxation until it moves by less than relag_tol, or at most relag_max_updates times per increment (the first on the elastic predictor); needs theta_crit."
+        "doc": "none: no threshold, the growth law is off (the default; theta is prescribed or fixed). from_state: the threshold is built by the solver from the state, phi_e = max(f_par(C_check), 0) + f_gamma(C_check) at C_check of the current displacement (in-plane elastic area stretch theta_crit), re-evaluated after every active-set pass with Aitken relaxation until it moves by less than relag_tol, or at most relag_max_updates times per increment (the first on the elastic predictor); needs theta_crit."
     },
     {
         "pointer": "/growth_law/threshold/type",
@@ -551,13 +551,13 @@
         "pointer": "/growth_law/theta_crit",
         "type": "float",
         "default": 0,
-        "doc": "Threshold in-plane elastic area stretch of the C_check construction (theta = theta_tot / theta_crit). Required for threshold route_b; with a number or file threshold it is optional and enables the lag-residual report (route B at the converged state against the threshold used)"
+        "doc": "Threshold in-plane elastic area stretch of the C_check construction (theta = theta_tot / theta_crit). Required for threshold from_state; with a number or file threshold it is optional and enables the lag-residual report (the from_state threshold of the converged state against the threshold used)"
     },
     {
         "pointer": "/growth_law/relag_tol",
         "type": "float",
         "default": 1.0,
-        "doc": "threshold route_b: the per-pass threshold iteration stops when max |d phi_e| < relag_tol [Pa] (and the active set has settled)"
+        "doc": "threshold from_state: the per-pass threshold iteration stops when max |d phi_e| < relag_tol [Pa] (and the active set has settled)"
     },
     {
         "pointer": "/growth_law/final_tol_factor",
@@ -570,7 +570,7 @@
         "type": "int",
         "default": 0,
         "min": 0,
-        "doc": "threshold route_b: at most this many threshold updates per increment (the first is on the elastic predictor); after that the threshold is held and the active set settles on it, so the lag residual reports what the cap leaves. 0 = no cap (iterate until the threshold moves by less than relag_tol)"
+        "doc": "threshold from_state: at most this many threshold updates per increment (the first is on the elastic predictor); after that the threshold is held and the active set settles on it, so the lag residual reports what the cap leaves. 0 = no cap (iterate until the threshold moves by less than relag_tol)"
     },
     {
         "pointer": "/growth_law/max_increment_splits",

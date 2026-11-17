@@ -215,8 +215,8 @@ namespace polyfem::varform
 		// whose other settings were changed but whose threshold was left out is
 		// refused rather than silently ignored.
 		const json &gl = material["growth_law"];
-		const bool route_b = gl.contains("threshold") && gl["threshold"].is_string() && gl["threshold"] == "route_b";
-		const bool has_threshold = route_b || (gl.contains("threshold") && (gl["threshold"].is_number() || gl["threshold"].is_object()));
+		const bool from_state = gl.contains("threshold") && gl["threshold"].is_string() && gl["threshold"] == "from_state";
+		const bool has_threshold = from_state || (gl.contains("threshold") && (gl["threshold"].is_number() || gl["threshold"].is_object()));
 		if (!has_threshold)
 		{
 			const GrowthLawSettings d;
@@ -232,12 +232,12 @@ namespace polyfem::varform
 				|| gl.value("final_tol_factor", d.final_tol_factor) != d.final_tol_factor
 				|| gl.value("max_increment_splits", d.max_increment_splits) != d.max_increment_splits)
 				log_and_throw_error("GrowthElasticity growth_law settings are given but no threshold "
-									"(a number in Pa, a per_element_file, or \"route_b\"); set one to enable the law.");
+									"(a number in Pa, a per_element_file, or \"from_state\"); set one to enable the law.");
 			return;
 		}
 
 		growth_law_.enabled = true;
-		growth_law_.route_b = route_b;
+		growth_law_.from_state = from_state;
 		growth_law_.n_steps = gl.value("n_steps", growth_law_.n_steps);
 		growth_law_.t_end = gl.value("t_end", growth_law_.t_end);
 		growth_law_.max_active_set_iterations = gl.value("max_active_set_iterations", growth_law_.max_active_set_iterations);
@@ -258,8 +258,8 @@ namespace polyfem::varform
 			log_and_throw_error("growth_law relag_tol must be positive.");
 		if (!(growth_law_.final_tol_factor > 0) || growth_law_.final_tol_factor > 1)
 			log_and_throw_error("growth_law final_tol_factor must be in (0, 1], got {}.", growth_law_.final_tol_factor);
-		if (growth_law_.route_b && !(growth_law_.theta_crit > 0))
-			log_and_throw_error("growth_law threshold \"route_b\" needs theta_crit > 0 (the C_check construction).");
+		if (growth_law_.from_state && !(growth_law_.theta_crit > 0))
+			log_and_throw_error("growth_law threshold \"from_state\" needs theta_crit > 0 (the C_check construction).");
 		if (growth_law_.theta_crit < 0)
 			log_and_throw_error("growth_law theta_crit must be >= 0.");
 
@@ -1251,7 +1251,7 @@ namespace polyfem::varform
 			out = values.col(0);
 		};
 
-		if (growth_law_.route_b)
+		if (growth_law_.from_state)
 		{
 			// set from the state on the elastic predictor, before any growth DOF is
 			// released (the predictor does not depend on the threshold: every growth
@@ -1316,8 +1316,8 @@ namespace polyfem::varform
 
 		if (!setup_logged_)
 		{
-			const std::string source = growth_law_.route_b
-										   ? fmt::format("route B from the state (theta_crit {:g}, relag cap {})", growth_law_.theta_crit,
+			const std::string source = growth_law_.from_state
+										   ? fmt::format("from the state (theta_crit {:g}, relag cap {})", growth_law_.theta_crit,
 														 growth_law_.relag_max_updates > 0 ? std::to_string(growth_law_.relag_max_updates) : "none")
 										   : fmt::format("given, in [{:g}, {:g}] Pa", threshold_per_element_.minCoeff(),
 														 threshold_per_element_.maxCoeff());
@@ -1422,7 +1422,7 @@ namespace polyfem::varform
 		const double neg_tol = 1e-6 * std::max(1.0, threshold_parallel_.cwiseAbs().maxCoeff());
 		const int n_neg = int((threshold_per_element_.array() < -neg_tol).count());
 		const std::string om = omega != 1.0 ? fmt::format("; relaxation omega {:.3g}", omega) : std::string();
-		logger().info("growth_law: route-B threshold at t = {:g}: PHI_PAR median {:.4g} Pa, clamped on {:.1f}%; "
+		logger().info("growth_law: threshold from the state at t = {:g}: PHI_PAR median {:.4g} Pa, clamped on {:.1f}%; "
 					  "f_gamma median {:.4g} Pa, in [{:.4g}, {:.4g}]; threshold in [{:.4g}, {:.4g}] Pa, negative on {:.1f}% of elements{}",
 					  t, median_of(threshold_parallel_), 100.0 * threshold_clamped_.mean(),
 					  median_of(shear_supply_), shear_supply_.minCoeff(), shear_supply_.maxCoeff(),
@@ -1486,7 +1486,7 @@ namespace polyfem::varform
 	void GrowthElasticVarForm::accumulate_dissipation(const int step, const double t, const Eigen::VectorXd &dtheta)
 	{
 		// Split of the increment's dissipation term v_n phi dtheta (per reference
-		// volume, Pa) for the route_b threshold: D = v_n max(f_par, 0) dtheta >= 0,
+		// volume, Pa) for the from_state threshold: D = v_n max(f_par, 0) dtheta >= 0,
 		// the dissipation, and S = v_n f_gamma dtheta, the shear supply. A
 		// shear supply comparable to D means the shear credit carries the growth.
 		const int n_el = mesh_->n_elements();
@@ -1530,8 +1530,9 @@ namespace polyfem::varform
 
 	void GrowthElasticVarForm::report_lag_residual(const int step, const double t, const Eigen::MatrixXd &solution)
 	{
-		// The threshold the converged state itself implies (route B at its own
-		// C_check) against the one the increment used: the variant-(b) lag.
+		// The threshold the converged state itself implies (the from_state
+		// construction at its own C_check) against the one the increment used:
+		// the lag left by capping or converging the threshold iteration.
 		Eigen::VectorXd full, ns, tt;
 		evaluate_threshold_state(solution.col(0).head(displacement_ndof()), t, full, ns, tt);
 		const Eigen::VectorXd phi_state = ns.cwiseMax(0.0) + (full - ns);
@@ -1596,7 +1597,7 @@ namespace polyfem::varform
 		std::vector<char> pinned(ng, 1);
 		bool tight = false;
 
-		// route_b: the threshold is re-evaluated on every pass's state, with Aitken
+		// from_state: the threshold is re-evaluated on every pass's state, with Aitken
 		// dynamic relaxation of the iteration: x_{k+1} = x_k + omega_k (G(x_k) - x_k),
 		// x = (PHI_PAR, f_gamma) per element,
 		// omega_k = -omega_{k-1} r_{k-1}.(r_k - r_{k-1}) / |r_k - r_{k-1}|^2, clamped.
@@ -1623,13 +1624,13 @@ namespace polyfem::varform
 
 			Eigen::VectorXd mult = growth_multiplier(solution);
 
-			// route_b: threshold re-evaluated on this pass's state. The dissipation
+			// from_state: threshold re-evaluated on this pass's state. The dissipation
 			// is linear in theta with gradient w, so the multiplier for the updated
 			// threshold is mult + (w_new - w_old), exactly, without another solve.
 			bool threshold_moved = false;
 			const bool update_capped = growth_law_.relag_max_updates > 0
 									   && n_threshold_updates >= growth_law_.relag_max_updates;
-			if (growth_law_.route_b && !update_capped)
+			if (growth_law_.from_state && !update_capped)
 			{
 				++n_threshold_updates;
 				const Eigen::VectorXd w_old = growth_node_weights_;
