@@ -55,6 +55,8 @@ namespace polyfem::varform
 
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
+		void export_data(const Eigen::MatrixXd &solution) const override;
+
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
@@ -113,6 +115,14 @@ namespace polyfem::varform
 
 		std::shared_ptr<solver::MixedAssemblerForm> growth_coupling_form_;
 		std::shared_ptr<solver::StackedForm> stacked_form_;
+
+		/// Converged stacked (u, growth) solution cached at the end of
+		/// solve_problem. The output pipeline does not reliably hand
+		/// output_fields the stacked vector (sizes/ordering differ per export
+		/// path), so growth sampling and the reaction evaluation use this
+		/// authoritative copy whenever the passed solution is not
+		/// total_ndof-sized.
+		Eigen::MatrixXd converged_solution_;
 
 		int displacement_space_id_ = -1;
 		int growth_space_id_ = -1;

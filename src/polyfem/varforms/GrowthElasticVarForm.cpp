@@ -32,6 +32,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <fstream>
+#include <iomanip>
 #include <vector>
 
 namespace polyfem::varform
@@ -167,6 +169,7 @@ namespace polyfem::varform
 		growth_rhs_.resize(0, 0);
 		growth_coupling_form_ = nullptr;
 		stacked_form_ = nullptr;
+		converged_solution_.resize(0, 0);
 		displacement_space_id_ = -1;
 		growth_space_id_ = -1;
 		elastic_formulation_ = "MaterialSum";
@@ -887,10 +890,36 @@ namespace polyfem::varform
 		stats.solver_info = json::array();
 
 		solve_nonlinear_step(0, sol);
+		converged_solution_ = sol;
 
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);
+	}
+
+	void GrowthElasticVarForm::export_data(const Eigen::MatrixXd &solution) const
+	{
+		Eigen::MatrixXd displacement, growth;
+		split_solution(solution, displacement, growth);
+
+		// The inherited exporter expects a pure-displacement solution; handing
+		// it the displacement block keeps state files written by the SAME code
+		// path as plain elastic runs (directly comparable, e.g. for the V1
+		// bit-identity). The growth block goes to a full-precision sidecar.
+		NonlinearElasticVarForm::export_data(displacement);
+
+		// The elastic state writer lives in the plain static solve path (not in
+		// export_data), so this VarForm writes both blocks itself as
+		// full-precision text: %.17g round-trips IEEE doubles exactly, so
+		// these files support bit-level comparison against plain-elastic runs.
+		const std::string state = args["output"]["data"]["state"];
+		if (!state.empty())
+		{
+			std::ofstream out_u(state + ".disp.txt");
+			out_u << std::setprecision(17) << displacement << "\n";
+			std::ofstream out_g(state + ".growth.txt");
+			out_g << std::setprecision(17) << growth << "\n";
+		}
 	}
 
 	io::OutStatsData GrowthElasticVarForm::compute_errors(const Eigen::MatrixXd &solution)
@@ -910,8 +939,18 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
+		// See converged_solution_: prefer the cached stacked solution when the
+		// passed one is not stacked-sized (export paths differ in what they
+		// hand this function; slicing a wrong-sized vector fed garbage theta
+		// into the reaction evaluation and tripped the positivity guard).
+		const bool passed_is_stacked = solution.rows() == total_ndof();
+		const Eigen::MatrixXd &stacked =
+			passed_is_stacked ? solution : converged_solution_;
+		if (stacked.rows() != total_ndof())
+			return NonlinearElasticVarForm::output_fields(sample, solution, options);
+
 		Eigen::MatrixXd displacement, growth;
-		split_solution(solution, displacement, growth);
+		split_solution(stacked, displacement, growth);
 
 		std::vector<io::OutputField> fields =
 			NonlinearElasticVarForm::output_fields(sample, displacement, options);
@@ -1044,7 +1083,7 @@ namespace polyfem::varform
 		if (stacked_form_ && options.export_field("growth_reaction"))
 		{
 			Eigen::VectorXd full_grad;
-			stacked_form_->first_derivative(solution.col(0), full_grad);
+			stacked_form_->first_derivative(stacked.col(0), full_grad);
 			const Eigen::MatrixXd reaction_nodal = full_grad.tail(growth_ndof());
 
 			Eigen::MatrixXd values;
