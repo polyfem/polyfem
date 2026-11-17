@@ -58,6 +58,10 @@ namespace polyfem::varform
 
 		void export_data(const Eigen::MatrixXd &solution) const override;
 
+		/// growth_law: first increment in which each growth DOF grew (0 = never);
+		/// empty before a solved run. Also exported as growth_activation_step.
+		const Eigen::VectorXi &growth_activation_step() const { return growth_activation_step_; }
+
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
@@ -90,6 +94,10 @@ namespace polyfem::varform
 		void read_growth_law(const json &args);
 		void compute_growth_node_weights();
 		void solve_growth_law(Eigen::MatrixXd &solution);
+		/// growth_law.save_increments: the converged stacked state of increment
+		/// `step` (pseudo-time t) as growth_step_<step>.vtu, and growth_steps.pvd
+		/// rewritten to list steps 1..step.
+		void save_growth_increment(int step, double t, const Eigen::MatrixXd &solution);
 		/// One increment: primal-dual active-set loop on theta >= theta_n.
 		/// Returns the number of passes; throws if the set does not settle.
 		int solve_growth_increment(const int step, const double t, Eigen::MatrixXd &solution);
@@ -164,6 +172,7 @@ namespace polyfem::varform
 			double active_set_tol = 1e-8;      ///< release a pin if dPi/dtheta < -tol * scale_a (Pa)
 			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
 			double theta_floor_fraction = 0.5; ///< positivity filter: theta >= fraction * theta_n
+			bool save_increments = false;      ///< write growth_step_<k>.vtu + growth_steps.pvd per increment
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa]
@@ -173,6 +182,7 @@ namespace polyfem::varform
 		Eigen::VectorXd theta_n_;                  ///< converged growth of the previous increment
 		std::vector<int> pinned_growth_nodes_;     ///< member: BCLagrangianForm keeps a reference
 		std::vector<char> growth_pinned_mask_;     ///< last solved pass: 1 = pinned at theta_n
+		Eigen::VectorXi growth_activation_step_;  ///< first increment in which a growth DOF grew (0 = never)
 		std::shared_ptr<solver::GrowthDissipationForm> dissipation_form_;
 	};
 } // namespace polyfem::varform
