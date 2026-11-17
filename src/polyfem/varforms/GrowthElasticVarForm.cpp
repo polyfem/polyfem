@@ -185,6 +185,7 @@ namespace polyfem::varform
 		// evolution in pseudo-time is Stage 2 and follows its own design.
 		if (args.contains("time") && !args["time"].is_null())
 			log_and_throw_error("GrowthElasticity supports static solves only (growth evolution is a later stage).");
+
 		// Contact is inherited u-block machinery and structurally functional here
 		// (collision mesh, barrier stiffness update), but the growth+contact
 		// combination is untested; decline loudly until it has its own validation.
@@ -287,7 +288,8 @@ namespace polyfem::varform
 		growth_assembler_->set_size(1);
 		growth_assembler_->set_materials(body_ids, args["materials"], units, root_path);
 		growth_mass_assembler_->set_size(1);
-		growth_mass_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		// no set_materials: the growth mass uses NoDensity (unit density), which
+		// throws on add_multimaterial by design -- it needs no material setup
 
 		problem->init(mesh);
 		growth_problem_->init(mesh);
