@@ -6,11 +6,6 @@
 
 #include <igl/barycentric_coordinates.h>
 
-#include <geogram/basic/file_system.h>
-#include <geogram/mesh/mesh_io.h>
-#include <geogram/mesh/mesh_geometry.h>
-#include <geogram/mesh/mesh_repair.h>
-
 #include <cassert>
 #include <array>
 
@@ -23,7 +18,7 @@ namespace polyfem
 			p0.resize(n_edges(), 2);
 			p1.resize(p0.rows(), p0.cols());
 
-			for (GEO::index_t e = 0; e < n_edges(); ++e)
+			for (int e = 0; e < n_edges(); ++e)
 			{
 				const int v0 = edge_vertex(e, 0);
 				const int v1 = edge_vertex(e, 1);

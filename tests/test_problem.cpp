@@ -13,6 +13,7 @@
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -624,6 +625,45 @@ TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[proble
 	CHECK(values(0) == 14);
 
 	std::filesystem::remove(nodal_neumann_path);
+}
+
+TEST_CASE("static exact problems are independent of time", "[problem]")
+{
+	const auto name = GENERATE("Franke", "FrankeOld", "ElasticExact");
+	const int dimension = GENERATE(2, 3);
+	const double time = GENERATE(0.0, 0.37, 2.0);
+	CAPTURE(name, dimension, time);
+
+	Eigen::MatrixXd pts(3, dimension);
+	pts.col(0) << 0.2, 0.5, 0.8;
+	pts.col(1) << 0.3, 0.6, 0.4;
+	if (dimension == 3)
+		pts.col(2) << 0.4, 0.7, 0.2;
+
+	const auto problem = ProblemFactory::factory().get_problem(name);
+	std::unique_ptr<Assembler> assembler;
+	if (problem->is_scalar())
+		assembler = std::make_unique<Laplacian>();
+	else
+		assembler = std::make_unique<LinearElasticity>();
+	assembler->set_size(dimension);
+	assembler->add_multimaterial(0, get_params(), Units(), test_resources());
+
+	Eigen::MatrixXd expected, actual;
+	problem->exact(pts, 1, expected);
+	REQUIRE(expected.norm() > 0);
+	problem->exact(pts, time, actual);
+	CHECK(actual.isApprox(expected, 1e-12));
+
+	problem->exact_grad(pts, 1, expected);
+	REQUIRE(expected.norm() > 0);
+	problem->exact_grad(pts, time, actual);
+	CHECK(actual.isApprox(expected, 1e-12));
+
+	problem->rhs(*assembler, pts, 1, expected);
+	REQUIRE(expected.norm() > 0);
+	problem->rhs(*assembler, pts, time, actual);
+	CHECK(actual.isApprox(expected, 1e-12));
 }
 
 TEST_CASE("franke 2d", "[problem]")

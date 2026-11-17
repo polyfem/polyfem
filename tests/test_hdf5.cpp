@@ -661,7 +661,6 @@ TEST_CASE("Checkpoint round trip preserves 2D polygon meshes", "[hdf5][checkpoin
 {
 	namespace fs = std::filesystem;
 	using namespace polyfem;
-	State state; // Initialize Geogram.
 	const fs::path path = fs::temp_directory_path() / "polyfem-polygon-checkpoint.h5";
 	Eigen::MatrixXd vertices(5, 2);
 	vertices << 0, 0, 2, 0, 3, 1, 1, 2, 0, 1;
