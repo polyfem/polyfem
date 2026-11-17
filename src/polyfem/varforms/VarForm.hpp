@@ -225,6 +225,10 @@ namespace polyfem
 				FESpace &space,
 				VarFormBoundaryState &boundary);
 
+		protected:
+			/// Input-order -> internal node map of an FE space. build_fe_space only
+			/// calls this for spaces that build their own geometry; secondary spaces
+			/// sharing a geometry (e.g. the growth space) must call it themselves.
 			void build_node_mapping(
 				const mesh::Mesh &mesh,
 				const std::string &basis_type,
@@ -232,7 +236,6 @@ namespace polyfem
 				Eigen::VectorXi &space_in_node_to_node,
 				Eigen::VectorXi &space_in_primitive_to_primitive) const;
 
-		protected:
 			virtual void build_rhs_assembler() = 0;
 			virtual void set_obstacle(mesh::Obstacle &&obstacle);
 
