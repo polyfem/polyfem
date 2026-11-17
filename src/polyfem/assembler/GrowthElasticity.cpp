@@ -123,9 +123,8 @@ namespace polyfem::assembler
 		// code path.
 		// ------------------------------------------------------------------
 		Eigen::MatrixXd read_vtk_cell_array(
-			const std::string &path, const std::string &field, const int ncomp_expected)
+			std::istream &in, const std::string &path, const std::string &field, const int ncomp_expected)
 		{
-			std::ifstream in(path);
 			if (!in)
 				log_and_throw_error("GrowthElasticity: cannot open '{}'", path);
 
@@ -226,7 +225,7 @@ namespace polyfem::assembler
 					m->set_size(size);
 			}
 
-			void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+			void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 			{
 				// ---- elastic material: the fitted MaterialSum composition
 				if (!params.contains("elastic_material") || !params["elastic_material"].is_object())
@@ -249,11 +248,11 @@ namespace polyfem::assembler
 
 					const std::string type = child.value("type", "");
 					if (type == "IsochoricNeoHookean")
-						add_child(iso_, index, child, units, root_path);
+						add_child(iso_, index, child, units, resources);
 					else if (type == "HGODispersion")
-						add_child(fiber_, index, child, units, root_path);
+						add_child(fiber_, index, child, units, resources);
 					else if (type == "VolumePenalty")
-						add_child(vol_, index, child, units, root_path);
+						add_child(vol_, index, child, units, resources);
 					else
 						log_and_throw_error(
 							"GrowthElasticity elastic_material supports IsochoricNeoHookean, "
@@ -273,9 +272,8 @@ namespace polyfem::assembler
 				}
 				else if (nd.is_object() && nd.value("type", "") == "per_element_file")
 				{
-					normals_ = read_vtk_cell_array(
-						utils::resolve_path(nd.at("path").get<std::string>(), root_path),
-						nd.value("field", "N0"), 3);
+					normals_ = read_growth_cell_array(
+						resources, nd.at("path").get<std::string>(), nd.value("field", "N0"), 3);
 					normals_.rowwise().normalize();
 				}
 				else
@@ -293,9 +291,8 @@ namespace polyfem::assembler
 					if (ng.is_number())
 						constant_vn_ = ng.get<double>();
 					else if (ng.is_object() && ng.value("type", "") == "per_element_file")
-						vn_ = read_vtk_cell_array(
-							utils::resolve_path(ng.at("path").get<std::string>(), root_path),
-							ng.value("field", "VN"), 1);
+						vn_ = read_growth_cell_array(
+							resources, ng.at("path").get<std::string>(), ng.value("field", "VN"), 1);
 					else
 						log_and_throw_error(
 							"GrowthElasticity normal_growth must be a number "
@@ -462,7 +459,7 @@ namespace polyfem::assembler
 			template <typename Child>
 			void add_child(
 				std::vector<std::unique_ptr<Child>> &list,
-				const int index, const json &child, const Units &units, const std::string &root_path)
+				const int index, const json &child, const Units &units, const io::ResourceIO &resources)
 			{
 				if (list.empty())
 				{
@@ -472,7 +469,7 @@ namespace polyfem::assembler
 				}
 				// multimaterial entries accumulate on the same child instances,
 				// mirroring how SumModel forwards add_multimaterial per index
-				list.front()->add_multimaterial(index, child, units, root_path);
+				list.front()->add_multimaterial(index, child, units, resources);
 			}
 
 			template <typename T>
@@ -531,9 +528,10 @@ namespace polyfem::assembler
 	} // namespace detail
 
 	Eigen::MatrixXd read_growth_cell_array(
-		const std::string &path, const std::string &field, const int ncomp_expected)
+		const io::ResourceIO &resources, const std::string &path, const std::string &field, const int ncomp_expected)
 	{
-		return read_vtk_cell_array(path, field, ncomp_expected);
+		auto in = resources.open(path, false);
+		return read_vtk_cell_array(*in, resources.describe(path), field, ncomp_expected);
 	}
 
 	GrowthElasticity::GrowthElasticity()
@@ -554,9 +552,9 @@ namespace polyfem::assembler
 		model().set_size(size);
 	}
 
-	void GrowthElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
+	void GrowthElasticity::add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources)
 	{
-		model().add_multimaterial(index, params, units, root_path);
+		model().add_multimaterial(index, params, units, resources);
 	}
 
 	double GrowthElasticity::compute_energy(const MixedNonLinearAssemblerData &data) const

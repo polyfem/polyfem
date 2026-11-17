@@ -42,7 +42,7 @@ namespace polyfem::assembler
 	/// assembler (normal_direction, normal_growth) and the growth VarForm
 	/// (growth_law threshold), so per-element growth data has one reader.
 	Eigen::MatrixXd read_growth_cell_array(
-		const std::string &path, const std::string &field, const int ncomp_expected);
+		const io::ResourceIO &resources, const std::string &path, const std::string &field, const int ncomp_expected);
 
 	class GrowthElasticity : public MixedNLAssembler
 	{
@@ -54,7 +54,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void set_size(const int size) override;
-		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
 
 		/// Growth driving force f_I = -(1/vn) d(J^g psi_e)/d theta as a function of
 		/// the elastic right Cauchy-Green tensor alone (Q5): with Fe = Ce^{1/2},

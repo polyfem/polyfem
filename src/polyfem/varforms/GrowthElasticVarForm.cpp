@@ -14,8 +14,6 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
-#include <polyfem/mesh/GeometryReader.hpp>
-
 #include <polyfem/refinement/APriori.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
@@ -285,12 +283,43 @@ namespace polyfem::varform
 									"(per-element thresholds go in the threshold file).");
 	}
 
+	void GrowthElasticVarForm::serialize_checkpoint(
+		io::CheckpointWriter &writer,
+		const Eigen::MatrixXd &solution,
+		const io::CheckpointMetadata &metadata) const
+	{
+		VarForm::serialize_checkpoint(writer, solution, metadata);
+		write_checkpoint_ordering(writer, "primary", space_);
+		write_checkpoint_ordering(writer, "growth", growth_space_);
+	}
+
+	void GrowthElasticVarForm::deserialize_checkpoint(
+		const io::CheckpointReader &reader,
+		Eigen::MatrixXd &solution)
+	{
+		VarForm::deserialize_checkpoint(reader, solution);
+		validate_checkpoint_solution(solution, total_ndof());
+		reorder_checkpoint_block(
+			reader, "primary", space_,
+			mesh_->dimension(), 0, solution);
+		reorder_checkpoint_block(
+			reader, "growth", growth_space_,
+			1, displacement_ndof(), solution);
+	}
+
 	void GrowthElasticVarForm::init(
 		const std::string &formulation,
 		const Units &units,
 		const json &args,
 		const std::string &out_path)
 	{
+		for (const std::string field : {"pressure_boundary", "pressure_cavity"})
+		{
+			const json::json_pointer path("/boundary_conditions/" + field);
+			if (args.contains(path) && !args.at(path).empty())
+				log_and_throw_error("{} does not support boundary_conditions.{}.", formulation, field);
+		}
+
 		VarForm::init(formulation, units, args, out_path);
 		read_material_space_ids(args);
 		read_growth_law(args);
@@ -339,8 +368,8 @@ namespace polyfem::varform
 
 		json tmp;
 		tmp["is_time_dependent"] = false;
-		problem->set_parameters(tmp, root_path);
-		growth_problem_->set_parameters(tmp, root_path);
+		problem->set_parameters(tmp, resources_);
+		growth_problem_->set_parameters(tmp, resources_);
 		// Solved growth evaluates the displacement Dirichlet expressions at each
 		// pseudo-time increment (the production ramp), so they are not constant
 		// in time. The growth problem stays static: its only Dirichlet data are
@@ -349,17 +378,16 @@ namespace polyfem::varform
 		{
 			json td;
 			td["is_time_dependent"] = true;
-			problem->set_parameters(td, root_path);
+			problem->set_parameters(td, resources_);
 		}
 
 		auto bc = args["boundary_conditions"];
-		bc["root_path"] = root_path;
-		problem->set_parameters(bc, root_path);
-		growth_problem_->set_parameters(bc, root_path);
-		problem->set_parameters(args["initial_conditions"], root_path);
-		growth_problem_->set_parameters(args["initial_conditions"], root_path);
-		problem->set_parameters(args["output"], root_path);
-		growth_problem_->set_parameters(args["output"], root_path);
+		problem->set_parameters(bc, resources_);
+		growth_problem_->set_parameters(bc, resources_);
+		problem->set_parameters(args["initial_conditions"], resources_);
+		growth_problem_->set_parameters(args["initial_conditions"], resources_);
+		problem->set_parameters(args["output"], resources_);
+		growth_problem_->set_parameters(args["output"], resources_);
 
 		problem->set_units(*primary_assembler_, units);
 		growth_problem_->set_units(*growth_assembler_, units);
@@ -406,29 +434,21 @@ namespace polyfem::varform
 		const json elastic_materials = elastic_material_args();
 
 		primary_assembler_->set_size(mesh.dimension());
-		primary_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
+		primary_assembler_->set_materials(body_ids, elastic_materials, units, resources_);
 		growthelastic_assembler_->set_size(mesh.dimension());
-		growthelastic_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		growthelastic_assembler_->set_materials(body_ids, args["materials"], units, resources_);
 		mass_assembler_->set_size(mesh.dimension());
-		mass_assembler_->set_materials(body_ids, elastic_materials, units, root_path);
+		mass_assembler_->set_materials(body_ids, elastic_materials, units, resources_);
 		pure_mass_assembler_->set_size(mass_assembler_->size());
 
 		growth_assembler_->set_size(1);
-		growth_assembler_->set_materials(body_ids, args["materials"], units, root_path);
+		growth_assembler_->set_materials(body_ids, args["materials"], units, resources_);
 		growth_mass_assembler_->set_size(1);
 		// no set_materials: the growth mass uses NoDensity (unit density), which
 		// throws on add_multimaterial by design -- it needs no material setup
 
 		problem->init(mesh);
 		growth_problem_->init(mesh);
-
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
-			args["geometry"],
-			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
-			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			root_path, mesh.dimension());
 	}
 
 	void GrowthElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args_in)
@@ -710,7 +730,7 @@ namespace polyfem::varform
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(),
-			mass_ass_vals_cache_, *problem,
+			mass_ass_vals_cache_, *problem, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			displacement_space_id_);
@@ -722,7 +742,7 @@ namespace polyfem::varform
 			growth_boundary_.dirichlet_nodes_position, growth_boundary_.neumann_nodes_position,
 			growth_space_.n_bases, /*size=*/1,
 			growth_space_.basis_list(), growth_space_.geometry_basis_list(),
-			growth_mass_ass_vals_cache_, *growth_problem_,
+			growth_mass_ass_vals_cache_, *growth_problem_, resources_,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params,
 			growth_space_id_);
@@ -733,7 +753,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		json p_params = {};
 		p_params["formulation"] = primary_assembler_->name();
-		p_params["root_path"] = root_path;
 		{
 			RowVectorNd min, max, delta;
 			mesh.bounding_box(min, max);
@@ -743,8 +762,8 @@ namespace polyfem::varform
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params, root_path);
-		growth_problem_->set_parameters(p_params, root_path);
+		problem->set_parameters(p_params, resources_);
+		growth_problem_->set_parameters(p_params, resources_);
 
 		rhs_.resize(0, 0);
 		growth_rhs_.resize(0, 0);
@@ -818,9 +837,10 @@ namespace polyfem::varform
 		if (path.empty())
 			return prescribed_growth_; // empty: no whole-field prescription
 
-		std::ifstream in(resolve_input_path(path));
-		if (!in)
-			log_and_throw_error("GrowthElasticity: cannot open growth_nodal_field '{}'.", path);
+		auto input = resources_.open(path, false);
+		if (!input || !*input)
+			log_and_throw_error("GrowthElasticity: cannot open growth_nodal_field '{}'.", resources_.describe(path));
+		std::istream &in = *input;
 
 		std::vector<double> values;
 		values.reserve(growth_ndof());
@@ -871,19 +891,12 @@ namespace polyfem::varform
 		}
 
 		assert(growth_rhs_assembler_ != nullptr);
-
-		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "growth",
-			args["input"]["data"]["reorder"], growth_space_.space_in_node_to_node,
-			/*dim=*/1, solution);
-
-		if (!was_solution_loaded)
-			growth_rhs_assembler_->initial_solution(solution);
+		growth_rhs_assembler_->initial_solution(solution);
 
 		// theta = 0 is singular (Fg not invertible); the harmless zero default
 		// of the temperature precedent is fatal here, so an all-zero initial
-		// growth field -- i.e. no file and no initial_conditions entry for the
-		// growth space -- is replaced by the identity, theta = 1, making the
+		// growth field -- i.e. no initial_conditions entry for the growth
+		// space -- is replaced by the identity, theta = 1, making the
 		// first iterate pure elasticity per the formulation's initialization
 		// convention. A user-prescribed nonzero field is left untouched.
 		if (solution.size() > 0 && (solution.array() == 0.0).all())
@@ -1227,7 +1240,7 @@ namespace polyfem::varform
 			if (!spec.is_object() || spec.value("type", "") != "per_element_file")
 				log_and_throw_error("growth_law: {} must be a number or {{type: per_element_file, path, field}}.", what);
 			const Eigen::MatrixXd values = assembler::read_growth_cell_array(
-				resolve_input_path(spec.at("path").get<std::string>()), spec.value("field", default_field), 1);
+				resources_, spec.at("path").get<std::string>(), spec.value("field", default_field), 1);
 			if (values.rows() != n_el)
 				log_and_throw_error("growth_law: {} file has {} cells, mesh has {} elements.", what, values.rows(), n_el);
 			out = values.col(0);
@@ -1830,10 +1843,8 @@ namespace polyfem::varform
 		Eigen::MatrixXd displacement, growth;
 		split_solution(solution, displacement, growth);
 
-		// The inherited exporter expects a pure-displacement solution; handing
-		// it the displacement block keeps state files written by the SAME code
-		// path as plain elastic runs (directly comparable, e.g. for the V1
-		// bit-identity). The growth block goes to a full-precision sidecar.
+		// The inherited exporter expects a pure-displacement solution; the
+		// growth block is in the VTU output (field "growth").
 		NonlinearElasticVarForm::export_data(displacement);
 		if (!args["output"]["data"]["stress_mat"].get<std::string>().empty()
 			|| !args["output"]["data"]["mises"].get<std::string>().empty())
@@ -1841,19 +1852,6 @@ namespace polyfem::varform
 				"GrowthElastic: output.data.stress_mat / mises are evaluated with the ungrown "
 				"material at the total F; the grown-material stresses are the VTU fields "
 				"(cauchy_stess_*, pk1_stess_*, pk2_stess_*, von_mises).");
-
-		// The elastic state writer lives in the plain static solve path (not in
-		// export_data), so this VarForm writes both blocks itself as
-		// full-precision text: %.17g round-trips IEEE doubles exactly, so
-		// these files support bit-level comparison against plain-elastic runs.
-		const std::string state = args["output"]["data"]["state"];
-		if (!state.empty())
-		{
-			std::ofstream out_u(state + ".disp.txt");
-			out_u << std::setprecision(17) << displacement << "\n";
-			std::ofstream out_g(state + ".growth.txt");
-			out_g << std::setprecision(17) << growth << "\n";
-		}
 	}
 
 	io::OutStatsData GrowthElasticVarForm::compute_errors(const Eigen::MatrixXd &solution)

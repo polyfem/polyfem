@@ -17,6 +17,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/varforms/GrowthElasticVarForm.hpp>
 #include <polyfem/assembler/GrowthElasticity.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/Units.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OutputData.hpp>
@@ -441,7 +442,7 @@ TEST_CASE("growth_driving_force_of_Ce", "[growth][growth_law]")
 	assembler::GrowthElasticity ge;
 	ge.set_size(3);
 	Units units;
-	ge.add_multimaterial(0, material_params(), units, "");
+	ge.add_multimaterial(0, material_params(), units, io::FileSystemIO("."));
 	const RowVectorNd pos = RowVectorNd::Zero(3);
 
 	SECTION("diagonal Ce: f_I = a/2 dpsi/da - psi")
@@ -692,7 +693,7 @@ TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 
 	SECTION("no growth: the plain elastic stresses at F")
 	{
-		ge.add_multimaterial(0, material_params(), units, "");
+		ge.add_multimaterial(0, material_params(), units, io::FileSystemIO("."));
 		ge.grown_stresses(0, pos, 0, F, 1.0, s, P, S);
 		const Eigen::Matrix3d P_ref = pk1_ref(F);
 		check_close(P, P_ref, 1e-6);
@@ -706,7 +707,7 @@ TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 		{
 			json params = material_params();
 			params["normal_growth"] = vn;
-			ge.add_multimaterial(0, params, units, "");
+			ge.add_multimaterial(0, params, units, io::FileSystemIO("."));
 			const double theta = 1.3, Jg = theta * vn;
 			const Eigen::Matrix3d Fgi = growth_inverse(theta, vn);
 			const Eigen::Matrix3d Fe = F * Fgi;

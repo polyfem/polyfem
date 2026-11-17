@@ -12,6 +12,7 @@
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/GrowthElasticity.hpp>
+#include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/basis/Basis.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -133,7 +134,7 @@ namespace
 		auto assembler = std::make_unique<TestableGrowthElasticity>();
 		assembler->set_size(3);
 		Units units;
-		assembler->add_multimaterial(0, material, units, "");
+		assembler->add_multimaterial(0, material, units, io::FileSystemIO("."));
 		return assembler;
 	}
 

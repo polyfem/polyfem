@@ -50,11 +50,16 @@ namespace polyfem::varform
 	class GrowthElasticVarForm : public NonlinearElasticVarForm
 	{
 	public:
+		using NonlinearElasticVarForm::NonlinearElasticVarForm;
 		std::string name() const override { return "GrowthElastic"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
+		/// both blocks of the stacked (displacement, growth) solution, each with
+		/// its node ordering, as for the other mixed formulations
+		void serialize_checkpoint(io::CheckpointWriter &writer, const Eigen::MatrixXd &solution, const io::CheckpointMetadata &metadata) const override;
+		void deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution) override;
 
 		void export_data(const Eigen::MatrixXd &solution) const override;
 
