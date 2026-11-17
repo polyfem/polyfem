@@ -61,6 +61,10 @@ namespace polyfem::varform
 		/// growth_law: first increment in which each growth DOF grew (0 = never);
 		/// empty before a solved run. Also exported as growth_activation_step.
 		const Eigen::VectorXi &growth_activation_step() const { return growth_activation_step_; }
+		/// growth_law shear_supply "lagged": f_gamma per element used by the last
+		/// increment, and the threshold phi_e in use (empty / file values otherwise).
+		const Eigen::VectorXd &growth_shear_supply() const { return shear_supply_; }
+		const Eigen::VectorXd &growth_threshold() const { return threshold_per_element_; }
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -93,6 +97,14 @@ namespace polyfem::varform
 		// ---- Stage 2: solved growth (growth_law on the material) ----
 		void read_growth_law(const json &args);
 		void compute_growth_node_weights();
+		/// w_a = sum_e vn_e phi_e int_e N_a dV from threshold_per_element_ (and the
+		/// nodal volumes); called once (frozen) or per increment (lagged).
+		void assemble_growth_node_weights();
+		/// shear_supply = "lagged": f_gamma per element on the displacement of
+		/// `solution` (C_check at theta_crit; f_gamma = f_I(Ce) - f_I(Ce with the
+		/// transverse shears removed and Ce_nn at the layer value)), then
+		/// threshold = phi_par + f_gamma and the node weights.
+		void update_lagged_threshold(const Eigen::MatrixXd &solution, double t);
 		void solve_growth_law(Eigen::MatrixXd &solution);
 		/// growth_law.save_increments: the converged stacked state of increment
 		/// `step` (pseudo-time t) as growth_step_<step>.vtu, and growth_steps.pvd
@@ -173,9 +185,20 @@ namespace polyfem::varform
 			double feasibility_tol = 1e-12;    ///< pin a free DOF if theta < theta_n - tol
 			double theta_floor_fraction = 0.5; ///< positivity filter: theta >= fraction * theta_n
 			bool save_increments = false;      ///< write growth_step_<k>.vtu + growth_steps.pvd per increment
+			/// "frozen": phi_e is the threshold file's field for the whole run (route B
+			/// at the end state's C_check). "lagged": only the dissipative part is
+			/// frozen, phi_e = phi_par,e + f_gamma,e, with the shear supply f_gamma
+			/// re-evaluated at the start of every increment on the previous
+			/// increment's converged displacement (C_check construction at theta_crit).
+			std::string shear_supply = "frozen";
+			double theta_crit = 0;             ///< lagged: threshold in-plane elastic area stretch
+			std::string parallel_field = "PHI_PAR"; ///< lagged: threshold-file field holding max(f_par(C_check), 0)
 		} growth_law_;
 
-		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa]
+		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
+		Eigen::VectorXd threshold_parallel_;       ///< lagged: phi_par,e, frozen [Pa]
+		Eigen::VectorXd shear_supply_;             ///< lagged: f_gamma,e of the current increment [Pa]
+		bool shear_supply_logged_once_ = false;    ///< the setup line is logged once, not per increment
 		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
 		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
 		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV

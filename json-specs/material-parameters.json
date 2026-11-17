@@ -448,7 +448,10 @@
             "active_set_tol",
             "feasibility_tol",
             "theta_floor_fraction",
-            "save_increments"
+            "save_increments",
+            "shear_supply",
+            "theta_crit",
+            "parallel_field"
         ],
         "doc": "Solved growth (Stage 2): rate-independent growth law with irreversibility theta >= theta_n, solved by a primal-dual active set over quasi-static pseudo-time increments. The law is on when threshold is set (a number or a per_element_file); threshold \"none\" (the default) leaves theta prescribed (growth_nodal_field) or fixed."
     },
@@ -540,6 +543,28 @@
         "type": "bool",
         "default": false,
         "doc": "Write the converged state after every increment as growth_step_<k>.vtu (k = 1..n_steps, same fields as the final export, incl. growth_pinned and growth_activation_step) plus growth_steps.pvd, in the output folder"
+    },
+    {
+        "pointer": "/growth_law/shear_supply",
+        "type": "string",
+        "default": "frozen",
+        "options": [
+            "frozen",
+            "lagged"
+        ],
+        "doc": "frozen: the threshold file's field is phi_e for the whole run (route B at the end state's C_check). lagged: only the dissipative part phi_par (parallel_field) is frozen; the shear supply f_gamma is re-evaluated at the start of every increment on the previous increment's converged displacement, phi_e = phi_par,e + f_gamma,e (needs theta_crit)"
+    },
+    {
+        "pointer": "/growth_law/theta_crit",
+        "type": "float",
+        "default": 0,
+        "doc": "shear_supply lagged: the threshold in-plane elastic area stretch of the C_check construction (theta = theta_tot / theta_crit)"
+    },
+    {
+        "pointer": "/growth_law/parallel_field",
+        "type": "string",
+        "default": "PHI_PAR",
+        "doc": "shear_supply lagged: CELL_DATA field of the threshold file holding max(f_par(C_check), 0) [Pa]"
     }
 
 ]

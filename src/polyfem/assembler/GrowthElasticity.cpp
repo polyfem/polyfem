@@ -9,6 +9,8 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <Eigen/Eigenvalues>
+
 #include <cmath>
 #include <fstream>
 #include <sstream>
@@ -379,6 +381,42 @@ namespace polyfem::assembler
 				return energy;
 			}
 
+			double driving_force(const int el_id, const RowVectorNd &pos, const double t, const Eigen::Matrix3d &Ce) const
+			{
+				if (size_ != 3)
+					log_and_throw_error("GrowthElasticity supports 3D only.");
+				const Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es(0.5 * (Ce + Ce.transpose()));
+				if (es.info() != Eigen::Success || !(es.eigenvalues().minCoeff() > 0))
+					log_and_throw_error("GrowthElasticity::driving_force: Ce is not positive definite on element {}.", el_id);
+				// f_I depends on Ce only (objectivity), so any Fe with Fe^T Fe = Ce
+				// will do; the symmetric root is the canonical choice.
+				const Eigen::Matrix3d Fe = es.eigenvectors() * es.eigenvalues().cwiseSqrt().asDiagonal() * es.eigenvectors().transpose();
+				const Eigen::Vector3d n0v = n0(el_id);
+
+				using AD = DScalar1<double, Eigen::VectorXd>;
+				DiffScalarBase::setVariableCount(1);
+				const AD theta(0, 1.0);
+				using std::sqrt;
+				const AD c_ip = AD(1) / sqrt(theta) - AD(1);
+				Eigen::Matrix<AD, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> Fs(3, 3);
+				for (int a = 0; a < 3; ++a)
+					for (int b = 0; b < 3; ++b)
+					{
+						// Fe * Fgi(theta), Fgi = I + c_ip (I - n0 n0), vn = 1
+						AD v = AD(Fe(a, b));
+						for (int k = 0; k < 3; ++k)
+						{
+							const double ip = (k == b ? 1.0 : 0.0) - n0v(k) * n0v(b);
+							v += AD(Fe(a, k) * ip) * c_ip;
+						}
+						Fs(a, b) = v;
+					}
+				const AD g = theta * sum_energy<AD>(pos, t, el_id, Fs);
+				return -g.getGradient()(0);
+			}
+
+			Eigen::Vector3d wall_normal(const int el_id) const { return n0(el_id); }
+
 		private:
 			template <typename Child>
 			void add_child(
@@ -495,6 +533,16 @@ namespace polyfem::assembler
 	{
 		const auto energy = model().compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data);
 		return energy.getHessian();
+	}
+
+	double GrowthElasticity::driving_force(const int el_id, const RowVectorNd &pos, const double t, const Eigen::Matrix3d &Ce) const
+	{
+		return model().driving_force(el_id, pos, t, Ce);
+	}
+
+	Eigen::Vector3d GrowthElasticity::wall_normal(const int el_id) const
+	{
+		return model().wall_normal(el_id);
 	}
 
 	detail::GrowthElasticityModel &GrowthElasticity::model()

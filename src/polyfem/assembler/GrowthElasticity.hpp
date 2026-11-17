@@ -56,6 +56,15 @@ namespace polyfem::assembler
 		void set_size(const int size) override;
 		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
+		/// Growth driving force f_I = -(1/vn) d(J^g psi_e)/d theta as a function of
+		/// the elastic right Cauchy-Green tensor alone (Q5): with Fe = Ce^{1/2},
+		/// f_I(Ce) = -d/dtheta [theta psi_e(Fe Fg^{-1}(theta))] at theta = 1, vn = 1.
+		/// Ce is in global coordinates; el_id, pos and t select the material
+		/// parameters (per-element fibers) exactly as in the energy.
+		double driving_force(const int el_id, const RowVectorNd &pos, const double t, const Eigen::Matrix3d &Ce) const;
+		/// Reference wall normal n0 of element el_id (unit).
+		Eigen::Vector3d wall_normal(const int el_id) const;
+
 	protected:
 		int rows() const override { return size(); }
 		int cols() const override { return 1; }

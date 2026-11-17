@@ -16,6 +16,8 @@
 
 #include <polyfem/State.hpp>
 #include <polyfem/varforms/GrowthElasticVarForm.hpp>
+#include <polyfem/assembler/GrowthElasticity.hpp>
+#include <polyfem/Units.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -354,3 +356,140 @@ TEST_CASE("growth_law_increment_output", "[growth][growth_law]")
 		}
 	}
 }
+
+namespace
+{
+	/// psi_e at a general Ce (n0 = z, fiber x): the same fitted energy as psi(a, b)
+	double psi_C(const Eigen::Matrix3d &Ce)
+	{
+		const double mu = E_ / (2.0 * (1.0 + nu_));
+		const double I1 = Ce.trace(), J = std::sqrt(Ce.determinant()), I4 = Ce(0, 0);
+		const double E4 = kappa_ * I1 + (1.0 - 3.0 * kappa_) * I4 - 1.0;
+		const double nh = 0.5 * mu * (std::pow(J, -2.0 / 3.0) * I1 - 3.0);
+		const double fib = k1_ / (2.0 * k2_) * (std::exp(k2_ * E4 * E4) - 1.0) / (1.0 + std::exp(-kchi_ * E4));
+		const double vol = 0.5 * kvol_ * (0.5 * (J * J - 1.0) - std::log(J));
+		return nh + fib + vol;
+	}
+
+	/// f_I(Ce) = -d/dtheta [theta psi(Fgi^T Ce Fgi)] at theta = 1, Fgi = diag(theta^-1/2, theta^-1/2, 1)
+	double f_I_C(const Eigen::Matrix3d &Ce)
+	{
+		const auto g = [&](const double th) {
+			const Eigen::Vector3d d(1 / std::sqrt(th), 1 / std::sqrt(th), 1.0);
+			return th * psi_C(d.asDiagonal() * Ce * d.asDiagonal());
+		};
+		const double h = 1e-6;
+		return -(g(1 + h) - g(1 - h)) / (2 * h);
+	}
+
+	json material_params()
+	{
+		return R"({
+			"type": "GrowthElasticity", "rho": 1000.0,
+			"displacement_space_id": 0, "growth_space_id": 1,
+			"normal_direction": [0, 0, 1],
+			"elastic_material": {"type": "MaterialSum", "models": [
+				{"type": "IsochoricNeoHookean", "E": 2600.0, "nu": 0.26},
+				{"type": "HGODispersion", "k1": 2400.0, "k2": 0.01, "kappa": 0.24, "k_chi": 100,
+				 "fiber_direction": [1, 0, 0]},
+				{"type": "VolumePenalty", "k": 1805.5555555555557}]}
+		})"_json;
+	}
+
+	std::string write_threshold_vtk(const std::filesystem::path &dir, const int n_cells, const double phi, const double phi_par)
+	{
+		const std::string path = (dir / "threshold_lagged.vtk").string();
+		std::ofstream out(path);
+		out.precision(17);
+		out << "# vtk DataFile Version 3.0\nthreshold\nASCII\nDATASET UNSTRUCTURED_GRID\nPOINTS 0 double\n"
+			<< "CELLS 0 0\nCELL_TYPES 0\nCELL_DATA " << n_cells << "\n";
+		for (const auto &[name, v] : {std::pair<std::string, double>{"PHI", phi}, {"PHI_PAR", phi_par}})
+		{
+			out << "SCALARS " << name << " double 1\nLOOKUP_TABLE default\n";
+			for (int i = 0; i < n_cells; ++i)
+				out << v << "\n";
+		}
+		return path;
+	}
+} // namespace
+
+TEST_CASE("growth_driving_force_of_Ce", "[growth][growth_law]")
+{
+	// The Ce-based evaluator used for the lagged shear supply against an
+	// independent scalar implementation of the fitted energy.
+	assembler::GrowthElasticity ge;
+	ge.set_size(3);
+	Units units;
+	ge.add_multimaterial(0, material_params(), units, "");
+	const RowVectorNd pos = RowVectorNd::Zero(3);
+
+	SECTION("diagonal Ce: f_I = a/2 dpsi/da - psi")
+	{
+		for (const auto &[a, b] : {std::pair<double, double>{1.0, 1.0}, {1.1, 0.9}, {std::sqrt(1.2), 0.85}, {0.95, 1.05}})
+		{
+			const double h = 1e-6;
+			const double ref = 0.5 * a * (psi(a + h, b) - psi(a - h, b)) / (2 * h) - psi(a, b);
+			const Eigen::Vector3d d(a * a, a * a, b * b);
+			CHECK(ge.driving_force(0, pos, 0, d.asDiagonal()) == Catch::Approx(ref).margin(1e-3));
+		}
+	}
+
+	SECTION("sheared Ce: general reference")
+	{
+		Eigen::Matrix3d Ce;
+		Ce << 1.21, 0.05, 0.30,
+			0.05, 1.15, -0.20,
+			0.30, -0.20, 0.80;
+		CHECK(ge.driving_force(0, pos, 0, Ce) == Catch::Approx(f_I_C(Ce)).margin(1e-3));
+		// removing the transverse shear at the layer thickness changes f_I
+		const Eigen::Vector3d n(0, 0, 1);
+		const Eigen::Matrix3d nn = n * n.transpose(), P = Eigen::Matrix3d::Identity() - nn;
+		const Eigen::Matrix3d Ce_ns = P * Ce * P + (1.0 / n.dot(Ce.inverse() * n)) * nn;
+		CHECK(ge.driving_force(0, pos, 0, Ce_ns) == Catch::Approx(f_I_C(Ce_ns)).margin(1e-3));
+		CHECK(std::abs(ge.driving_force(0, pos, 0, Ce) - ge.driving_force(0, pos, 0, Ce_ns)) > 1.0);
+	}
+}
+
+TEST_CASE("growth_law_lagged_shear_supply", "[growth][growth_law]")
+{
+	// On the shear-free V2 cube the lagged shear supply is zero, so lagged mode
+	// with PHI_PAR = phi reproduces the frozen solution and activation increment.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const auto dir = scratch_dir();
+	const std::string mesh = write_cube_mesh(dir, n);
+	const double phi = 469.0, vstar = activation_stretch(phi);
+	const double lambda = std::sqrt(1.5);
+	const std::string vtk = write_threshold_vtk(dir, 6 * n * n * n, -999.0, phi);
+
+	json args = cube_args(mesh, lambda, phi, 4, 1.0, "t");
+	args["materials"]["growth_law"]["threshold"] = {{"type", "per_element_file"}, {"path", vtk}, {"field", "PHI"}};
+	args["materials"]["growth_law"]["shear_supply"] = "lagged";
+	args["materials"]["growth_law"]["theta_crit"] = 1.2;
+
+	State state;
+	state.init(args, /*strict_validation=*/true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+	REQUIRE(sol.rows() == 4 * nv);
+
+	const auto vf = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(state.variational_formulation);
+	REQUIRE(vf);
+	// PHI (-999) must be ignored in lagged mode: only PHI_PAR + f_gamma enters
+	CHECK(vf->growth_shear_supply().cwiseAbs().maxCoeff() < 1e-6);
+	CHECK(vf->growth_threshold().minCoeff() == Catch::Approx(phi).margin(1e-6));
+	const Eigen::VectorXd theta = sol.col(0).tail(nv);
+	for (int a = 0; a < nv; ++a)
+		CHECK(theta(a) == Catch::Approx(lambda * lambda / vstar).epsilon(1e-6));
+
+	SECTION("lagged needs theta_crit")
+	{
+		json bad = args;
+		bad["materials"]["growth_law"].erase("theta_crit");
+		State s2;
+		CHECK_THROWS(s2.init(bad, /*strict_validation=*/true));
+	}
+}
+
