@@ -7,6 +7,10 @@
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
+
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
@@ -23,6 +27,7 @@
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/StackedAugmentedLagrangianForm.hpp>
 
+#include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -34,6 +39,7 @@
 #include <polysolve/nonlinear/Solver.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <fstream>
 #include <limits>
@@ -1932,6 +1938,12 @@ namespace polyfem::varform
 		// path as plain elastic runs (directly comparable, e.g. for the V1
 		// bit-identity). The growth block goes to a full-precision sidecar.
 		NonlinearElasticVarForm::export_data(displacement);
+		if (!args["output"]["data"]["stress_mat"].get<std::string>().empty()
+			|| !args["output"]["data"]["mises"].get<std::string>().empty())
+			logger().warn(
+				"GrowthElastic: output.data.stress_mat / mises are evaluated with the ungrown "
+				"material at the total F; the grown-material stresses are the VTU fields "
+				"(cauchy_stess_*, pk1_stess_*, pk2_stess_*, von_mises).");
 
 		// The elastic state writer lives in the plain static solve path (not in
 		// export_data), so this VarForm writes both blocks itself as
@@ -1957,6 +1969,215 @@ namespace polyfem::varform
 
 		stats.compute_errors(space_.n_bases, space_.basis_list(), space_.geometry_basis_list(), *mesh_, *problem, /*tend=*/0, displacement);
 		return stats;
+	}
+
+	void GrowthElasticVarForm::grown_stress_at(
+		const int e, const Eigen::MatrixXd &local_pts, const double t,
+		const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &growth,
+		Eigen::MatrixXd &cauchy, Eigen::MatrixXd &pk1, Eigen::MatrixXd &pk2,
+		Eigen::MatrixXd &von_mises) const
+	{
+		const auto ge = std::dynamic_pointer_cast<assembler::GrowthElasticity>(growthelastic_assembler_);
+		if (!ge)
+			log_and_throw_error("GrowthElastic: grown stresses need the GrowthElasticity assembler.");
+
+		const int dim = mesh_->dimension();
+		const basis::ElementBases &bs = space_.basis_list()[e];
+		const basis::ElementBases &gbs = space_.geometry_basis_list()[e];
+		assembler::ElementAssemblyValues vals;
+		vals.compute(e, mesh_->is_volume(), local_pts, bs, gbs);
+
+		Eigen::MatrixXd theta, theta_grad;
+		io::Evaluator::interpolate_at_local_vals(
+			*mesh_, 1, growth_space_.basis_list(), growth_space_.geometry_basis_list(),
+			e, local_pts, growth, theta, theta_grad);
+
+		const int n = local_pts.rows();
+		cauchy.resize(n, 9);
+		pk1.resize(n, 9);
+		pk2.resize(n, 9);
+		von_mises.resize(n, 1);
+
+		Eigen::MatrixXd grad_u(dim, dim);
+		Eigen::Matrix3d s, P, S;
+		for (int p = 0; p < n; ++p)
+		{
+			compute_diplacement_grad(dim, bs, vals, local_pts, p, displacement, grad_u);
+			const Eigen::Matrix3d F = Eigen::Matrix3d::Identity() + grad_u;
+			ge->grown_stresses(e, vals.val.row(p), t, F, theta(p, 0), s, P, S);
+
+			// column-major, as the base flattening (field "<name>_k" = column k)
+			cauchy.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(s.data());
+			pk1.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(P.data());
+			pk2.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(S.data());
+			von_mises(p, 0) = von_mises_stress_for_stress_tensor(s);
+		}
+	}
+
+	void GrowthElasticVarForm::replace_stress_fields(
+		const io::OutputSample &sample,
+		const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &growth,
+		std::vector<io::OutputField> &fields) const
+	{
+		if (!mesh_ || mesh_->dimension() != 3 || displacement.size() <= 0 || growth.size() <= 0)
+			return;
+		if (!std::dynamic_pointer_cast<assembler::GrowthElasticity>(growthelastic_assembler_))
+			return;
+
+		// Base names: "von_mises" and "<tensor>_k" (k = 1..3, column k of the
+		// column-major tensor); the nodal averages carry "_avg" before "_k".
+		// Only fields the base emitted are touched, so the export options keep
+		// deciding what is written.
+		static const std::array<std::string, 3> tensor_names = {{"cauchy_stess", "pk1_stess", "pk2_stess"}};
+		struct Targets
+		{
+			io::OutputField *von_mises = nullptr;
+			std::array<std::array<io::OutputField *, 3>, 3> tensor{};
+			bool any = false;
+		};
+		const auto collect = [&](const std::string &suffix) {
+			Targets tg;
+			for (io::OutputField &field : fields)
+			{
+				if (field.name == "von_mises" + suffix)
+				{
+					tg.von_mises = &field;
+					tg.any = true;
+					continue;
+				}
+				for (int a = 0; a < 3; ++a)
+					for (int k = 0; k < 3; ++k)
+						if (field.name == fmt::format("{}{}_{}", tensor_names[a], suffix, k + 1))
+						{
+							tg.tensor[a][k] = &field;
+							tg.any = true;
+						}
+			}
+			return tg;
+		};
+		const Targets point = collect("");
+		const Targets avg = collect("_avg");
+		if (!point.any && !avg.any)
+			return;
+
+		// row `row` of the targets from row `src` of (cauchy, pk1, pk2, von_mises)
+		const auto write_row = [](const Targets &tg, const int row,
+								  const std::array<const Eigen::MatrixXd *, 3> &tensors,
+								  const Eigen::MatrixXd &vm, const int src) {
+			if (tg.von_mises && row < tg.von_mises->values.rows())
+				tg.von_mises->values(row, 0) = vm(src, 0);
+			for (int a = 0; a < 3; ++a)
+				for (int k = 0; k < 3; ++k)
+					if (tg.tensor[a][k] && row < tg.tensor[a][k]->values.rows())
+						tg.tensor[a][k]->values.row(row) = tensors[a]->block(src, 3 * k, 1, 3);
+		};
+
+		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
+		Eigen::MatrixXd cauchy, pk1, pk2, vm;
+
+		// ---- point values at the output samples
+		if (point.any && has_element_samples)
+		{
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int e = sample.element_ids(i);
+				if (e < 0)
+					continue;
+				grown_stress_at(e, sample.local_points.row(i), sample.time, displacement, growth, cauchy, pk1, pk2, vm);
+				write_row(point, i, {{&cauchy, &pk1, &pk2}}, vm, 0);
+			}
+		}
+
+		if (!avg.any)
+			return;
+
+		// ---- nodal averages: same rule as the elastic base (element values at
+		// the element's Lagrange nodes, weighted by element volume, interface
+		// nodes only), then sampled at the output points
+		const int nb = space_.n_bases;
+		Eigen::VectorXd areas = Eigen::VectorXd::Zero(nb);
+		std::array<Eigen::MatrixXd, 3> avg_tensor;
+		for (auto &m : avg_tensor)
+			m.setZero(nb, 9);
+		Eigen::MatrixXd avg_vm = Eigen::MatrixXd::Zero(nb, 1);
+
+		for (int e = 0; e < int(space_.basis_list().size()); ++e)
+		{
+			Eigen::MatrixXd local_pts;
+			if (mesh_->is_simplex(e))
+				autogen::p_nodes_3d(space_.disc_orders(e), local_pts);
+			else if (mesh_->is_cube(e))
+				autogen::q_nodes_3d(space_.disc_orders(e), local_pts);
+			else if (mesh_->is_prism(e))
+				autogen::prism_nodes_3d(space_.disc_orders(e), space_.disc_ordersq(e), local_pts);
+			else
+				continue;
+
+			const basis::ElementBases &bs = space_.basis_list()[e];
+			assembler::ElementAssemblyValues vals;
+			vals.compute(e, mesh_->is_volume(), bs, space_.geometry_basis_list()[e]);
+			const double area = (vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			grown_stress_at(e, local_pts, sample.time, displacement, growth, cauchy, pk1, pk2, vm);
+
+			for (size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const basis::Basis &b = bs.bases[j];
+				if (b.global().size() > 1)
+					continue;
+				const int index = b.global().front().index;
+				areas(index) += area;
+				avg_tensor[0].row(index) += cauchy.row(j) * area;
+				avg_tensor[1].row(index) += pk1.row(j) * area;
+				avg_tensor[2].row(index) += pk2.row(j) * area;
+				avg_vm(index) += vm(j) * area;
+			}
+		}
+
+		for (int i = 0; i < nb; ++i)
+		{
+			if (!(areas(i) > 0))
+				continue;
+			for (auto &m : avg_tensor)
+				m.row(i) /= areas(i);
+			avg_vm(i) /= areas(i);
+		}
+
+		// stack (cauchy | pk1 | pk2 | vm) per node so one interpolation serves all
+		Eigen::MatrixXd nodal(nb, 28);
+		nodal << avg_tensor[0], avg_tensor[1], avg_tensor[2], avg_vm;
+		const Eigen::VectorXd nodal_flat = utils::flatten(nodal);
+
+		const auto write_sampled = [&](const int row, const Eigen::MatrixXd &v) {
+			cauchy = v.middleCols(0, 9);
+			pk1 = v.middleCols(9, 9);
+			pk2 = v.middleCols(18, 9);
+			write_row(avg, row, {{&cauchy, &pk1, &pk2}}, v.middleCols(27, 1), 0);
+		};
+
+		if (has_element_samples)
+		{
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int e = sample.element_ids(i);
+				if (e < 0)
+					continue;
+				Eigen::MatrixXd local_sol, local_grad;
+				io::Evaluator::interpolate_at_local_vals(
+					*mesh_, 28, space_.basis_list(), space_.geometry_basis_list(),
+					e, sample.local_points.row(i), nodal_flat, local_sol, local_grad);
+				write_sampled(i, local_sol);
+			}
+		}
+		else if (sample.node_ids.size() > 0)
+		{
+			for (int i = 0; i < sample.node_ids.size(); ++i)
+			{
+				const int node = sample.node_ids(i);
+				if (node >= 0 && node < nb)
+					write_sampled(i, nodal.row(node));
+			}
+		}
 	}
 
 	std::vector<io::OutputField> GrowthElasticVarForm::output_fields(
@@ -1996,6 +2217,8 @@ namespace polyfem::varform
 			return fields;
 		if (sample.domain == io::OutputSample::Domain::Contact)
 			return fields;
+
+		replace_stress_fields(sample, displacement, growth, fields);
 
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());

@@ -19,12 +19,15 @@
 #include <polyfem/assembler/GrowthElasticity.hpp>
 #include <polyfem/Units.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/OutputData.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -727,4 +730,158 @@ TEST_CASE("growth_law_increment_splitting", "[growth][growth_law]")
 	CHECK((sol - sol_ref).cwiseAbs().maxCoeff() < 1e-8);
 	for (int a = 0; a < nv; ++a)
 		CHECK(sol(3 * nv + a) == 1.0);
+}
+
+namespace
+{
+	/// Pe = d psi_e / dF at a general F by central differences of psi_C(F^T F)
+	Eigen::Matrix3d pk1_ref(const Eigen::Matrix3d &F)
+	{
+		const double h = 1e-6;
+		Eigen::Matrix3d P;
+		for (int a = 0; a < 3; ++a)
+			for (int b = 0; b < 3; ++b)
+			{
+				Eigen::Matrix3d Fp = F, Fm = F;
+				Fp(a, b) += h;
+				Fm(a, b) -= h;
+				P(a, b) = (psi_C(Fp.transpose() * Fp) - psi_C(Fm.transpose() * Fm)) / (2 * h);
+			}
+		return P;
+	}
+
+	/// Fg^-1 for n0 = z
+	Eigen::Matrix3d growth_inverse(const double theta, const double vn)
+	{
+		return Eigen::Vector3d(1 / std::sqrt(theta), 1 / std::sqrt(theta), 1 / vn).asDiagonal();
+	}
+
+	void check_close(const Eigen::Matrix3d &A, const Eigen::Matrix3d &B, const double tol)
+	{
+		CHECK((A - B).cwiseAbs().maxCoeff() < tol * std::max(1.0, B.cwiseAbs().maxCoeff()));
+	}
+} // namespace
+
+TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
+{
+	// Stresses of J^g psi_e(F Fg^-1) against the independent scalar energy:
+	// P = J^g Pe(Fe) Fg^-T, sigma = Pe(Fe) Fe^T / J^e, S = F^-1 P.
+	assembler::GrowthElasticity ge;
+	ge.set_size(3);
+	Units units;
+	const RowVectorNd pos = RowVectorNd::Zero(3);
+	Eigen::Matrix3d F;
+	F << 1.12, 0.04, 0.10,
+		-0.03, 1.05, 0.06,
+		0.08, -0.05, 0.88;
+	Eigen::Matrix3d s, P, S;
+
+	SECTION("no growth: the plain elastic stresses at F")
+	{
+		ge.add_multimaterial(0, material_params(), units, "");
+		ge.grown_stresses(0, pos, 0, F, 1.0, s, P, S);
+		const Eigen::Matrix3d P_ref = pk1_ref(F);
+		check_close(P, P_ref, 1e-6);
+		check_close(s, P_ref * F.transpose() / F.determinant(), 1e-6);
+		check_close(S, F.inverse() * P_ref, 1e-6);
+	}
+
+	for (const double vn : {1.0, 1.1})
+	{
+		DYNAMIC_SECTION("grown, vn = " << vn)
+		{
+			json params = material_params();
+			params["normal_growth"] = vn;
+			ge.add_multimaterial(0, params, units, "");
+			const double theta = 1.3, Jg = theta * vn;
+			const Eigen::Matrix3d Fgi = growth_inverse(theta, vn);
+			const Eigen::Matrix3d Fe = F * Fgi;
+			const Eigen::Matrix3d Pe = pk1_ref(Fe);
+
+			ge.grown_stresses(0, pos, 0, F, theta, s, P, S);
+			check_close(P, Jg * Pe * Fgi.transpose(), 1e-6);
+			check_close(s, Pe * Fe.transpose() / Fe.determinant(), 1e-6);
+			check_close(S, F.inverse() * P, 1e-10);
+			CHECK((s - s.transpose()).cwiseAbs().maxCoeff() < 1e-8 * s.cwiseAbs().maxCoeff());
+
+			// F = Fg: the grown reference state is stress free
+			ge.grown_stresses(0, pos, 0, Fgi.inverse(), theta, s, P, S);
+			CHECK(s.cwiseAbs().maxCoeff() < 1e-8);
+			CHECK(P.cwiseAbs().maxCoeff() < 1e-8);
+			CHECK(S.cwiseAbs().maxCoeff() < 1e-8);
+		}
+	}
+}
+
+TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
+{
+	// V2 cube above threshold: F = diag(lambda, lambda, b), Fe = diag(a, a, b)
+	// with a^2 = vartheta* and the top traction free, so sigma_zz = 0. The
+	// exported stresses must be the grown ones; the ungrown material at the
+	// total F (what the elastic base evaluates) has sigma_zz far from 0.
+	const int n = 2;
+	const int nv = (n + 1) * (n + 1) * (n + 1);
+	const int n_el = 6 * n * n * n;
+	const std::string mesh = write_cube_mesh(scratch_dir(), n);
+	const double phi = 469.0, vstar = activation_stretch(phi);
+	const double lambda = std::sqrt(1.5);
+
+	State state;
+	state.init(cube_args(mesh, lambda, phi, 1, 1.0, "t"), /*strict_validation=*/true);
+	state.set_max_threads(1);
+	state.load_mesh();
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+	REQUIRE(sol.rows() == 4 * nv);
+	const auto vf = std::dynamic_pointer_cast<varform::GrowthElasticVarForm>(state.variational_formulation);
+	REQUIRE(vf);
+
+	// reference state
+	const double theta = lambda * lambda / vstar, a = std::sqrt(vstar);
+	const double b = bisect([&](double bb) { return dpsi_db(a, bb); }, 0.3, 1.8);
+	const Eigen::Matrix3d F = Eigen::Vector3d(lambda, lambda, b).asDiagonal();
+	const Eigen::Matrix3d Fe = Eigen::Vector3d(a, a, b).asDiagonal();
+	const Eigen::Matrix3d Pe = pk1_ref(Fe);
+	const Eigen::Matrix3d s_ref = Pe * Fe.transpose() / Fe.determinant();
+	const Eigen::Matrix3d P_ref = theta * Pe * growth_inverse(theta, 1.0).transpose();
+	const Eigen::Matrix3d S_ref = F.inverse() * P_ref;
+	const Eigen::Matrix3d P_ungrown = pk1_ref(F);
+	REQUIRE(std::abs((P_ungrown * F.transpose() / F.determinant())(2, 2)) > 100.0);
+
+	// one sample at each element centroid
+	io::OutputSample sample;
+	sample.domain = io::OutputSample::Domain::Volume;
+	sample.local_points = Eigen::MatrixXd::Constant(n_el, 3, 0.25);
+	sample.element_ids = Eigen::VectorXi::LinSpaced(n_el, 0, n_el - 1);
+	sample.points = Eigen::MatrixXd::Zero(n_el, 3);
+	const std::vector<io::OutputField> fields = vf->output_fields(sample, sol, io::OutputFieldOptions{});
+
+	const auto field = [&](const std::string &name) -> const Eigen::MatrixXd & {
+		const auto it = std::find_if(fields.begin(), fields.end(), [&](const io::OutputField &f) { return f.name == name; });
+		REQUIRE(it != fields.end());
+		REQUIRE(it->values.rows() == n_el);
+		return it->values;
+	};
+	// "<name>_k" holds column k of the tensor
+	const auto tensor_at = [&](const std::string &name, const int row) {
+		Eigen::Matrix3d T;
+		for (int k = 0; k < 3; ++k)
+			T.col(k) = field(name + "_" + std::to_string(k + 1)).row(row).transpose();
+		return T;
+	};
+
+	const double tol = 1e-4;
+	for (const std::string suffix : {"", "_avg"})
+	{
+		for (int i = 0; i < n_el; ++i)
+		{
+			const Eigen::Matrix3d s = tensor_at("cauchy_stess" + suffix, i);
+			CHECK(std::abs(s(2, 2)) < tol * s_ref.cwiseAbs().maxCoeff());
+			check_close(s, s_ref, tol);
+			check_close(tensor_at("pk1_stess" + suffix, i), P_ref, tol);
+			check_close(tensor_at("pk2_stess" + suffix, i), S_ref, tol);
+			check_close(tensor_at("F" + suffix, i), F, tol);
+			CHECK(field("von_mises" + suffix)(i, 0) == Catch::Approx(von_mises_stress_for_stress_tensor(s_ref)).epsilon(tol));
+		}
+	}
 }

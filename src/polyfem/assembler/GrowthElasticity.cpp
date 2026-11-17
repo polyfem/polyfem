@@ -417,6 +417,47 @@ namespace polyfem::assembler
 
 			Eigen::Vector3d wall_normal(const int el_id) const { return n0(el_id); }
 
+			void grown_stresses(
+				const int el_id, const RowVectorNd &pos, const double t,
+				const Eigen::Matrix3d &F, const double theta,
+				Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2) const
+			{
+				if (size_ != 3)
+					log_and_throw_error("GrowthElasticity supports 3D only.");
+				if (!(theta > 0))
+					log_and_throw_error("GrowthElasticity::grown_stresses: growth theta must be positive; got {} on element {}.", theta, el_id);
+				const double J = F.determinant();
+				if (!(J > 0))
+					log_and_throw_error("GrowthElasticity::grown_stresses: det F = {} on element {}.", J, el_id);
+
+				// Fg^-1 in the identity-anchored form of the energy, so theta == 1,
+				// vn == 1 gives Fe == F exactly.
+				const Eigen::Vector3d n0v = n0(el_id);
+				const double vn_e = vn(el_id);
+				const Eigen::Matrix3d nn = n0v * n0v.transpose();
+				const Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
+				const Eigen::Matrix3d Fgi = I + (1.0 / std::sqrt(theta) - 1.0) * (I - nn) + (1.0 / vn_e - 1.0) * nn;
+				const Eigen::Matrix3d Fe = F * Fgi;
+				const double Jg = theta * vn_e;
+
+				// Pe = d psi_e / d Fe through the same templated child energies
+				using AD = DScalar1<double, Eigen::VectorXd>;
+				DiffScalarBase::setVariableCount(9);
+				Eigen::Matrix<AD, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> Fe_ad(3, 3);
+				for (int a = 0; a < 3; ++a)
+					for (int b = 0; b < 3; ++b)
+						Fe_ad(a, b) = AD(a * 3 + b, Fe(a, b));
+				const AD psi = sum_energy<AD>(pos, t, el_id, Fe_ad);
+				Eigen::Matrix3d Pe;
+				for (int a = 0; a < 3; ++a)
+					for (int b = 0; b < 3; ++b)
+						Pe(a, b) = psi.getGradient()(a * 3 + b);
+
+				pk1 = Jg * Pe * Fgi.transpose();
+				cauchy = pk1 * F.transpose() / J;
+				pk2 = F.inverse() * pk1;
+			}
+
 		private:
 			template <typename Child>
 			void add_child(
@@ -543,6 +584,14 @@ namespace polyfem::assembler
 	Eigen::Vector3d GrowthElasticity::wall_normal(const int el_id) const
 	{
 		return model().wall_normal(el_id);
+	}
+
+	void GrowthElasticity::grown_stresses(
+		const int el_id, const RowVectorNd &pos, const double t,
+		const Eigen::Matrix3d &F, const double theta,
+		Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2) const
+	{
+		model().grown_stresses(el_id, pos, t, F, theta, cauchy, pk1, pk2);
 	}
 
 	detail::GrowthElasticityModel &GrowthElasticity::model()
