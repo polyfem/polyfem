@@ -90,7 +90,7 @@ namespace polyfem
 			void set_checkpoint_reader(const io::CheckpointReader &reader) { checkpoint_reader_ = std::cref(reader); }
 
 			/// Check time configuration after the derived formulation initializes its problem.
-			void validate_time_dependence() const;
+			virtual void validate_time_dependence() const;
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation

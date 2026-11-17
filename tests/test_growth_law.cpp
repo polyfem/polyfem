@@ -124,15 +124,22 @@ namespace
 						T.push_back(t);
 					}
 
-		const std::string path = (dir / "cube.mesh").string();
+		// Gmsh MSH 4.1 ASCII: one volume entity (physical tag 1) holding every
+		// node and tetrahedron
+		const std::string path = (dir / "cube.msh").string();
 		std::ofstream out(path);
-		out << "MeshVersionFormatted 1\nDimension 3\nVertices\n" << V.size() << "\n";
+		out.precision(17);
+		out << "$MeshFormat\n4.1 0 8\n$EndMeshFormat\n"
+			<< "$Entities\n0 0 0 1\n1 0 0 0 1 1 1 1 1 0\n$EndEntities\n";
+		out << "$Nodes\n1 " << V.size() << " 1 " << V.size() << "\n3 1 0 " << V.size() << "\n";
+		for (size_t a = 0; a < V.size(); ++a)
+			out << a + 1 << "\n";
 		for (const auto &v : V)
-			out << v.x() << " " << v.y() << " " << v.z() << " 0\n";
-		out << "Tetrahedra\n" << T.size() << "\n";
-		for (const auto &t : T)
-			out << t(0) + 1 << " " << t(1) + 1 << " " << t(2) + 1 << " " << t(3) + 1 << " 1\n";
-		out << "End\n";
+			out << v.x() << " " << v.y() << " " << v.z() << "\n";
+		out << "$EndNodes\n$Elements\n1 " << T.size() << " 1 " << T.size() << "\n3 1 4 " << T.size() << "\n";
+		for (size_t e = 0; e < T.size(); ++e)
+			out << e + 1 << " " << T[e](0) + 1 << " " << T[e](1) + 1 << " " << T[e](2) + 1 << " " << T[e](3) + 1 << "\n";
+		out << "$EndElements\n";
 		return path;
 	}
 

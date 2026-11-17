@@ -307,6 +307,13 @@ namespace polyfem::varform
 			1, displacement_ndof(), solution);
 	}
 
+	void GrowthElasticVarForm::validate_time_dependence() const
+	{
+		if (growth_law_.enabled)
+			return;
+		VarForm::validate_time_dependence();
+	}
+
 	void GrowthElasticVarForm::init(
 		const std::string &formulation,
 		const Units &units,

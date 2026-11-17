@@ -54,6 +54,10 @@ namespace polyfem::varform
 		std::string name() const override { return "GrowthElastic"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		/// Solved growth steps its own pseudo-time (growth_law.n_steps, t_end), so its
+		/// displacement problem is time dependent (the Dirichlet data follow t)
+		/// without a "time" block, which init refuses.
+		void validate_time_dependence() const override;
 
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 		/// both blocks of the stacked (displacement, growth) solution, each with
