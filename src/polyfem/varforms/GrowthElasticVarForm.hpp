@@ -65,6 +65,9 @@ namespace polyfem::varform
 		/// increment, and the threshold phi_e in use (empty / file values otherwise).
 		const Eigen::VectorXd &growth_shear_supply() const { return shear_supply_; }
 		const Eigen::VectorXd &growth_threshold() const { return threshold_per_element_; }
+		const Eigen::VectorXd &growth_threshold_parallel() const { return threshold_parallel_; }
+		const Eigen::VectorXd &growth_attainment() const { return attainment_; }
+		const Eigen::VectorXd &growth_lag_residual() const { return lag_residual_; }
 
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -105,6 +108,16 @@ namespace polyfem::varform
 		/// transverse shears removed and Ce_nn at the layer value)), then
 		/// threshold = phi_par + f_gamma and the node weights.
 		void update_lagged_threshold(const Eigen::MatrixXd &solution, double t);
+		/// Route B at C_check of displacement u, per element: f_I(Ce) (phi_full),
+		/// f_I(Ce shear-free, layer thickness) (phi_no_shear), and the total in-plane
+		/// area stretch theta_tot. f_par = phi_no_shear, f_gamma = phi_full - phi_no_shear.
+		void evaluate_threshold_state(const Eigen::VectorXd &u, double t,
+									  Eigen::VectorXd &phi_full, Eigen::VectorXd &phi_no_shear, Eigen::VectorXd &theta_tot);
+		/// element mean of a nodal growth field (growth quadrature)
+		Eigen::VectorXd element_mean_growth(const Eigen::VectorXd &theta);
+		/// lag residual phi(converged state) - phi used, and attainment, logged per increment
+		void report_lag_residual(int step, double t, const Eigen::MatrixXd &solution);
+		static double median_of(const Eigen::VectorXd &v);
 		void solve_growth_law(Eigen::MatrixXd &solution);
 		/// growth_law.save_increments: the converged stacked state of increment
 		/// `step` (pseudo-time t) as growth_step_<step>.vtu, and growth_steps.pvd
@@ -200,12 +213,26 @@ namespace polyfem::varform
 			/// the threshold changes by less than shear_update_tol (Pa).
 			std::string shear_update = "increment";
 			double shear_update_tol = 1.0;
+			/// Dissipative part PHI_PAR of the route-B threshold. "file": the threshold
+			/// file's parallel_field (V0b). "state": computed here at C_check of the
+			/// displacement in threshold_state (default input.data.state), with the
+			/// solver's own energy and fibers, then frozen; with shear_supply frozen,
+			/// f_gamma is taken from the same state. "lagged": re-evaluated with
+			/// f_gamma on the state (timing: shear_update), i.e. variant (b) frozen at
+			/// the current state; with shear_update "pass" this is the in-increment
+			/// re-lag (Stage 3, Q14).
+			std::string parallel_threshold = "file";
+			std::string threshold_state;       ///< parallel_threshold "state": state file with "u"
+			bool lag_report = true;            ///< log the lag residual per increment (needs theta_crit)
 		} growth_law_;
 
 		Eigen::VectorXd threshold_per_element_;    ///< phi_e [Pa] in use (lagged: phi_par + f_gamma)
 		Eigen::VectorXd threshold_parallel_;       ///< lagged: phi_par,e, frozen [Pa]
 		Eigen::VectorXd shear_supply_;             ///< lagged: f_gamma,e of the current increment [Pa]
 		bool shear_supply_logged_once_ = false;    ///< the setup line is logged once, not per increment
+		Eigen::VectorXd threshold_clamped_;        ///< 1 where f_par(C_check) < 0 (zero floor), when computed here
+		Eigen::VectorXd lag_residual_;             ///< phi(converged state) - phi used, last increment [Pa]
+		Eigen::VectorXd attainment_;               ///< vartheta^e / theta_crit at the last converged increment
 		Eigen::VectorXd normal_growth_per_element_; ///< vn_e (1 when not given)
 		Eigen::VectorXd growth_node_volume_;       ///< int N_a dV
 		Eigen::VectorXd growth_node_weights_;      ///< int vn phi N_a dV
