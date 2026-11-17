@@ -287,7 +287,6 @@ namespace polyfem
 				computed = true;
 			}
 		}
-
 	}
 
 	void compute_diplacement_grad(const int size, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)

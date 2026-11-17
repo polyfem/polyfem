@@ -24,7 +24,7 @@ namespace polyfem::assembler
 	{
 		template <int Dimension, int BasisCount, typename Matrix>
 		void add_unit_weight_hessian(const Eigen::MatrixBase<Matrix> &hessian,
-			const int n_bases, const int dimension, SparseMatrixCache::CachedElementWriter writer)
+									 const int n_bases, const int dimension, SparseMatrixCache::CachedElementWriter writer)
 		{
 			const int nb = BasisCount == Eigen::Dynamic ? n_bases : BasisCount;
 			const int dim = Dimension == Eigen::Dynamic ? dimension : Dimension;

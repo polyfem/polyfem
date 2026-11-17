@@ -10,7 +10,7 @@ namespace polyfem::assembler
 	namespace
 	{
 		void evaluate_lame_parameters(const LameParameters &params, const NonLinearAssemblerData &data,
-			const Eigen::Index p, double &lambda, double &mu)
+									  const Eigen::Index p, double &lambda, double &mu)
 		{
 			// Keep these as row views: the MatrixXd overload creates two heap temporaries.
 			const auto uv = data.vals.quadrature.points.row(p);
@@ -521,7 +521,7 @@ namespace polyfem::assembler
 			}
 
 			double lambda, mu;
-				evaluate_lame_parameters(params_, data, p, lambda, mu);
+			evaluate_lame_parameters(params_, data, p, lambda, mu);
 
 			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();

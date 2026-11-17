@@ -380,7 +380,7 @@ TEST_CASE("cached nonlinear assembly handles mixed global mappings", "[assembler
 	{
 		CAPTURE(pass);
 		assembler.assemble_hessian(geometry_dim == 3, n_global_bases, false,
-			bases, bases, cache, 0, 0, x, x, matrix_cache, hessian);
+								   bases, bases, cache, 0, 0, x, x, matrix_cache, hessian);
 		require_approx_matrix(Eigen::MatrixXd(hessian), expected, 1e-10);
 	}
 

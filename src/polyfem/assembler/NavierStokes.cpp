@@ -132,7 +132,6 @@ namespace polyfem::assembler
 				}
 			}
 		}
-
 	}
 
 	// Compute N = int phi_j \cdot \nabla v \cdot \phi_j
@@ -213,7 +212,6 @@ namespace polyfem::assembler
 				}
 			}
 		}
-
 	}
 
 	std::map<std::string, Assembler::ParamFunc> NavierStokesVelocity::parameters() const
