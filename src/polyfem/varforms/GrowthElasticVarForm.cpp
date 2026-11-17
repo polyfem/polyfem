@@ -1034,13 +1034,18 @@ namespace polyfem::varform
 
 		std::vector<io::OutputField> fields =
 			NonlinearElasticVarForm::output_fields(sample, displacement, options);
-		fields.erase(
-			std::remove_if(
-				fields.begin(), fields.end(),
-				[](const io::OutputField &field) {
-					return field.name == "solution" || field.name == "solution_gradient";
-				}),
-			fields.end());
+		// The base fields carry the displacement block under the name
+		// "solution", which would be misleading beside the growth fields;
+		// rename rather than drop, so the vtu is self-contained (points and
+		// displacement in one consistent order -- what verification tooling
+		// pairs against).
+		for (io::OutputField &field : fields)
+		{
+			if (field.name == "solution")
+				field.name = "displacement";
+			else if (field.name == "solution_gradient")
+				field.name = "displacement_gradient";
+		}
 
 		if (!mesh_ || growth.size() <= 0)
 			return fields;
