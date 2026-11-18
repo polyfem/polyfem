@@ -80,82 +80,65 @@ namespace polyfem::assembler
 		return gradient;
 	}
 
-	Eigen::MatrixXd
-	MooneyRivlin3ParamSymbolic::assemble_hessian(const NonLinearAssemblerData &data) const
+	void MooneyRivlin3ParamSymbolic::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd hessian;
-
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			hessian.setZero();
+			if (size() == 2)
 			{
-			case 3:
+				switch (data.vals.basis_values.size())
+				{
+				case 3:
+				{
+					compute_energy_hessian_aux_fast<3, 2>(data, hessian);
+					break;
+				}
+				case 6:
+				{
+					compute_energy_hessian_aux_fast<6, 2>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_energy_hessian_aux_fast<10, 2>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
+					break;
+				}
+				}
+			}
+			else // if (size() == 3)
 			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<3, 2>(data, hessian);
-				break;
+				assert(size() == 3);
+				switch (data.vals.basis_values.size())
+				{
+				case 4:
+				{
+					compute_energy_hessian_aux_fast<4, 3>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_energy_hessian_aux_fast<10, 3>(data, hessian);
+					break;
+				}
+				case 20:
+				{
+					compute_energy_hessian_aux_fast<20, 3>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
+					break;
+				}
+				}
 			}
-			case 6:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<6, 2>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 2>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<4, 3>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 3>(data, hessian);
-				break;
-			}
-			case 20:
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<20, 3>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
-				break;
-			}
-			}
-		}
-
-		return hessian;
+		});
 	}
 
 	void MooneyRivlin3ParamSymbolic::assign_stress_tensor(const OutputData &data,
@@ -463,8 +446,8 @@ namespace polyfem::assembler
 		G_flattened = temp;
 	}
 
-	template <int n_basis, int dim>
-	void MooneyRivlin3ParamSymbolic::compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const
+	template <int n_basis, int dim, typename Matrix>
+	void MooneyRivlin3ParamSymbolic::compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &H) const
 	{
 		assert(data.x.cols() == 1);
 
