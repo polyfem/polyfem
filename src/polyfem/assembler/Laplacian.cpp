@@ -80,29 +80,33 @@ namespace polyfem::assembler
 		assert(size() == 1);
 
 		const Eigen::VectorXd local_u = local_scalar_values(data);
-		return 0.5 * local_u.dot(assemble_hessian(data) * local_u);
+		LocalHessian hessian;
+		assemble_hessian(data, hessian);
+		return hessian.visit([&](const auto &H) { return 0.5 * local_u.dot(H * local_u); });
 	}
 
 	Eigen::VectorXd Laplacian::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		assert(size() == 1);
 
-		return assemble_hessian(data) * local_scalar_values(data);
+		LocalHessian hessian;
+		assemble_hessian(data, hessian);
+		return hessian.visit([&](const auto &H) -> Eigen::VectorXd { return H * local_scalar_values(data); });
 	}
 
-	Eigen::MatrixXd Laplacian::assemble_hessian(const NonLinearAssemblerData &data) const
+	void Laplacian::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		assert(size() == 1);
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			assert(size() == 1);
 
-		const int n_bases = int(data.vals.basis_values.size());
-		Eigen::MatrixXd hessian = Eigen::MatrixXd::Zero(n_bases, n_bases);
-		for (int i = 0; i < n_bases; ++i)
-		{
-			for (int j = 0; j < n_bases; ++j)
-				hessian(i, j) = assemble(LinearAssemblerData(data.vals, data.t, i, j, data.da))(0);
-		}
-
-		return hessian;
+			const int n_bases = int(data.vals.basis_values.size());
+			for (int i = 0; i < n_bases; ++i)
+			{
+				for (int j = 0; j < n_bases; ++j)
+					hessian(i, j) = assemble(LinearAssemblerData(data.vals, data.t, i, j, data.da))(0);
+			}
+		});
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::compute_rhs(const AutodiffHessianPt &pt) const

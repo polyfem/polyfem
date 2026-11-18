@@ -43,13 +43,12 @@ namespace polyfem::assembler
 		return assembler->assemble_gradient(data);
 	}
 
-	Eigen::MatrixXd
-	MultiModel::assemble_hessian(const NonLinearAssemblerData &data) const
+	void MultiModel::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		const int el_id = data.vals.element_id;
 		const std::string model = multi_material_models_[el_id];
 		const auto assembler = all_elastic_materials_.get_assembler(model);
-		return assembler->assemble_hessian(data);
+		assembler->assemble_hessian(data, hessian);
 	}
 
 	double MultiModel::compute_energy(const NonLinearAssemblerData &data) const

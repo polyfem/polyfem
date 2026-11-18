@@ -178,117 +178,115 @@ namespace polyfem::assembler
 	}
 
 	// Compute \int grad phi_i : dStress / dF^n : grad phi_j dx
-	Eigen::MatrixXd
-	ViscousDamping::assemble_hessian(const NonLinearAssemblerData &data) const
+	void ViscousDamping::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd hessian;
-		hessian.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
-		if (data.x_prev.size() != data.x.size())
-			return hessian;
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			hessian.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+			if (data.x_prev.size() != data.x.size())
+				return;
 
-		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
-				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
-			}
-		}
-
-		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
-
-		const int n_pts = data.da.size();
-
-		Eigen::MatrixXd def_grad, dFdt;
-		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-		Eigen::MatrixXd hessian_temp, delF_delU_tensor;
-		for (long p = 0; p < n_pts; ++p)
-		{
-			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
-
+			Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+			Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 			{
-				grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				const auto &bs = data.vals.basis_values[i];
+				for (size_t ii = 0; ii < bs.global.size(); ++ii)
+				{
+					local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+					local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				}
 			}
 
-			Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
+			Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
 
-			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
-			dFdt = local_vel.transpose() * delF_delU;
+			const int n_pts = data.da.size();
 
-			compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
-			hessian_temp = d2RdF2 + (1. / data.dt) * (d2RdFdFdot + d2RdFdFdot.transpose()) + (1. / data.dt / data.dt) * d2RdFdot2;
+			Eigen::MatrixXd def_grad, dFdt;
+			Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
+			Eigen::MatrixXd hessian_temp, delF_delU_tensor;
+			for (long p = 0; p < n_pts; ++p)
+			{
+				Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
-			delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
-			for (size_t i = 0; i < local_disp.rows(); ++i)
-				for (size_t j = 0; j < size(); ++j)
-					for (size_t d = 0; d < size(); d++)
-						delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
+				for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+				{
+					grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				}
 
-			hessian += delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor * data.da(p);
-		}
+				Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 
-		return hessian;
+				def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+				dFdt = local_vel.transpose() * delF_delU;
+
+				compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
+				hessian_temp = d2RdF2 + (1. / data.dt) * (d2RdFdFdot + d2RdFdFdot.transpose()) + (1. / data.dt / data.dt) * d2RdFdot2;
+
+				delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
+				for (size_t i = 0; i < local_disp.rows(); ++i)
+					for (size_t j = 0; j < size(); ++j)
+						for (size_t d = 0; d < size(); d++)
+							delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
+
+				hessian += delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor * data.da(p);
+			}
+		});
 	}
 
 	// Compute \int grad phi_i : dStress / dF^{n-1} : grad phi_j dx
-	Eigen::MatrixXd
-	ViscousDampingPrev::assemble_hessian(const NonLinearAssemblerData &data) const
+	void ViscousDampingPrev::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd stress_grad_Ut;
-		stress_grad_Ut.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
-		if (data.x_prev.size() != data.x.size())
-			return stress_grad_Ut;
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &stress_grad_Ut) {
+			stress_grad_Ut.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+			if (data.x_prev.size() != data.x.size())
+				return;
 
-		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
-				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
-			}
-		}
-
-		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
-
-		const int n_pts = data.da.size();
-
-		Eigen::MatrixXd def_grad, dFdt;
-		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-		Eigen::MatrixXd stress_grad_Ut_temp, delF_delU_tensor;
-		for (long p = 0; p < n_pts; ++p)
-		{
-			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
-
+			Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+			Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 			{
-				grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				const auto &bs = data.vals.basis_values[i];
+				for (size_t ii = 0; ii < bs.global.size(); ++ii)
+				{
+					local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+					local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				}
 			}
 
-			Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
+			Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
 
-			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
-			dFdt = local_vel.transpose() * delF_delU;
+			const int n_pts = data.da.size();
 
-			compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
-			stress_grad_Ut_temp = -(1. / data.dt) * d2RdFdFdot - (1. / data.dt / data.dt) * d2RdFdot2;
+			Eigen::MatrixXd def_grad, dFdt;
+			Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
+			Eigen::MatrixXd stress_grad_Ut_temp, delF_delU_tensor;
+			for (long p = 0; p < n_pts; ++p)
+			{
+				Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
-			delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
-			for (size_t i = 0; i < local_disp.rows(); ++i)
-				for (size_t j = 0; j < size(); ++j)
-					for (size_t d = 0; d < size(); d++)
-						delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
+				for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+				{
+					grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				}
 
-			stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * data.da(p);
-		}
+				Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 
-		return stress_grad_Ut;
+				def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+				dFdt = local_vel.transpose() * delF_delU;
+
+				compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
+				stress_grad_Ut_temp = -(1. / data.dt) * d2RdFdFdot - (1. / data.dt / data.dt) * d2RdFdot2;
+
+				delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
+				for (size_t i = 0; i < local_disp.rows(); ++i)
+					for (size_t j = 0; j < size(); ++j)
+						for (size_t d = 0; d < size(); d++)
+							delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
+
+				stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * data.da(p);
+			}
+		});
 	}
 
 	// E := 0.5(F^T F - I), Compute Energy = \int \psi \| \frac{\partial E}{\partial t} \|^2 + 0.5 \phi (Tr(\frac{\partial E}{\partial t}))^2 du

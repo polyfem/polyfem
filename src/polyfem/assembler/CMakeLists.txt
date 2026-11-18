@@ -2,6 +2,7 @@ set(SOURCES
 	Assembler.cpp
 	Assembler.hpp
 	AssemblerData.hpp
+	LocalHessian.hpp
 	AssemblerUtils.cpp
 	AssemblerUtils.hpp
 	AssemblyValsCache.cpp

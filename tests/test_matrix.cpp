@@ -247,3 +247,59 @@ TEST_CASE("cache", "[matrix]")
 	REQUIRE(tmp2.coeff(9, 4) == 6);
 	REQUIRE(tmp2.coeff(9, 9) == 4);
 }
+
+TEST_CASE("cache compressed export", "[matrix]")
+{
+	SparseMatrixCache cache(4);
+	const auto add = [](SparseMatrixCache &target, const double scale) {
+		target.add_value(0, 0, 0, scale);
+		target.add_value(0, 2, 0, 2 * scale);
+		target.add_value(0, 2, 0, -2 * scale);
+		target.add_value(1, 3, 2, 3 * scale);
+		target.add_value(1, 1, 3, -4 * scale);
+	};
+	add(cache, 1);
+	const StiffnessMatrix first = cache.get_matrix();
+	REQUIRE(first.nonZeros() == 4);
+
+	const auto check_pattern = [&](const StiffnessMatrix &actual) {
+		REQUIRE(actual.isCompressed());
+		REQUIRE(actual.rows() == first.rows());
+		REQUIRE(actual.cols() == first.cols());
+		REQUIRE(actual.nonZeros() == first.nonZeros());
+		for (int i = 0; i <= first.outerSize(); ++i)
+			REQUIRE(actual.outerIndexPtr()[i] == first.outerIndexPtr()[i]);
+		for (int i = 0; i < first.nonZeros(); ++i)
+			REQUIRE(actual.innerIndexPtr()[i] == first.innerIndexPtr()[i]);
+	};
+
+	// Reuse the mapped structure, including an explicitly stored zero and empty column.
+	add(cache, -2);
+	const StiffnessMatrix second = cache.get_matrix();
+	check_pattern(second);
+	REQUIRE((second + 2 * first).norm() == 0);
+	REQUIRE((cache.mat() - second).norm() == 0);
+	REQUIRE(first.coeff(0, 0) == 1);
+
+	// A worker shares the parent's index mapping but owns its coefficients.
+	SparseMatrixCache worker(cache);
+	add(worker, 3);
+	const StiffnessMatrix worker_matrix = worker.get_matrix();
+	check_pattern(worker_matrix);
+	REQUIRE((worker_matrix - 3 * first).norm() == 0);
+
+	// Export clears the value buffer while retaining all structural entries.
+	const StiffnessMatrix cleared = cache.get_matrix();
+	check_pattern(cleared);
+	REQUIRE(cleared.norm() == 0);
+	REQUIRE(second.coeff(0, 0) == -2);
+	REQUIRE(worker_matrix.coeff(0, 0) == 3);
+
+	SparseMatrixCache empty(4);
+	REQUIRE(empty.get_matrix().nonZeros() == 0);
+	const StiffnessMatrix empty_cached = empty.get_matrix();
+	REQUIRE(empty_cached.isCompressed());
+	REQUIRE(empty_cached.rows() == 4);
+	REQUIRE(empty_cached.cols() == 4);
+	REQUIRE(empty_cached.nonZeros() == 0);
+}
