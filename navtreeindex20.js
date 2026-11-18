@@ -1,5 +1,13 @@
 var NAVTREEINDEX20 =
 {
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a1629afce6608ba533217d4b3b5ead820":[6,0,4,2,1,17],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a1629afce6608ba533217d4b3b5ead820":[5,0,9,4,1,17],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a21e39134a340e65b862315579b174c1f":[6,0,4,2,1,18],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a21e39134a340e65b862315579b174c1f":[5,0,9,4,1,18],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80":[5,0,9,4,1,11],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80":[6,0,4,2,1,11],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a2e1fa64a38b589b61443a481b1032c41":[6,0,4,2,1,15],
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a2e1fa64a38b589b61443a481b1032c41":[5,0,9,4,1,15],
 "classpolyfem_1_1io_1_1_checkpoint_reader.html#a40796bb4d3be92c1d09f3dbb37977984":[6,0,4,2,1,0],
 "classpolyfem_1_1io_1_1_checkpoint_reader.html#a40796bb4d3be92c1d09f3dbb37977984":[5,0,9,4,1,0],
 "classpolyfem_1_1io_1_1_checkpoint_reader.html#a456bab9c04c2b990136899f9445ce012":[5,0,9,4,1,8],
@@ -241,13 +249,5 @@ var NAVTREEINDEX20 =
 "classpolyfem_1_1io_1_1_o_b_j_reader.html#a355379bd80f9d347147f2c6ff97efcd6":[5,0,9,4,10,0],
 "classpolyfem_1_1io_1_1_o_b_j_reader.html#a355379bd80f9d347147f2c6ff97efcd6":[6,0,4,2,10,0],
 "classpolyfem_1_1io_1_1_o_b_j_writer.html":[5,0,9,4,11],
-"classpolyfem_1_1io_1_1_o_b_j_writer.html":[6,0,4,2,11],
-"classpolyfem_1_1io_1_1_o_b_j_writer.html#a9a7d5152259217228b39f418d9a6db05":[6,0,4,2,11,0],
-"classpolyfem_1_1io_1_1_o_b_j_writer.html#a9a7d5152259217228b39f418d9a6db05":[5,0,9,4,11,0],
-"classpolyfem_1_1io_1_1_out_geometry_data.html":[5,0,9,4,12],
-"classpolyfem_1_1io_1_1_out_geometry_data.html":[6,0,4,2,12],
-"classpolyfem_1_1io_1_1_out_geometry_data.html#a0020d2d17b8e920289cad2096e17e15e":[5,0,9,4,12,3],
-"classpolyfem_1_1io_1_1_out_geometry_data.html#a0020d2d17b8e920289cad2096e17e15e":[6,0,4,2,12,3],
-"classpolyfem_1_1io_1_1_out_geometry_data.html#a1180446e5cc8941d379a7f663023576d":[6,0,4,2,12,16],
-"classpolyfem_1_1io_1_1_out_geometry_data.html#a1180446e5cc8941d379a7f663023576d":[5,0,9,4,12,16]
+"classpolyfem_1_1io_1_1_o_b_j_writer.html":[6,0,4,2,11]
 };

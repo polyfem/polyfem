@@ -1,5 +1,13 @@
 var NAVTREEINDEX19 =
 {
+"classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb":[6,0,4,1,1,0],
+"classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb":[5,0,9,2,1,0],
+"classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6":[5,0,9,2,1,15],
+"classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6":[6,0,4,1,1,15],
+"classpolyfem_1_1basis_1_1_basis.html#ad5a4752ad6ee252f5f6ed60d949c1f50":[6,0,4,1,1,9],
+"classpolyfem_1_1basis_1_1_basis.html#ad5a4752ad6ee252f5f6ed60d949c1f50":[5,0,9,2,1,9],
+"classpolyfem_1_1basis_1_1_basis.html#ad724f7e408ed7966571960c4d462fd2e":[6,0,4,1,1,1],
+"classpolyfem_1_1basis_1_1_basis.html#ad724f7e408ed7966571960c4d462fd2e":[5,0,9,2,1,1],
 "classpolyfem_1_1basis_1_1_basis.html#afe218649534756d6c0d5853bd94ff8d1":[5,0,9,2,1,17],
 "classpolyfem_1_1basis_1_1_basis.html#afe218649534756d6c0d5853bd94ff8d1":[6,0,4,1,1,17],
 "classpolyfem_1_1basis_1_1_element_bases.html":[6,0,4,1,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX19 =
 "classpolyfem_1_1io_1_1_checkpoint_reader.html":[6,0,4,2,1],
 "classpolyfem_1_1io_1_1_checkpoint_reader.html":[5,0,9,4,1],
 "classpolyfem_1_1io_1_1_checkpoint_reader.html#a0ee66bf1be178064f0b513f8434f3f39":[6,0,4,2,1,4],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a0ee66bf1be178064f0b513f8434f3f39":[5,0,9,4,1,4],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a1629afce6608ba533217d4b3b5ead820":[6,0,4,2,1,17],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a1629afce6608ba533217d4b3b5ead820":[5,0,9,4,1,17],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a21e39134a340e65b862315579b174c1f":[6,0,4,2,1,18],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a21e39134a340e65b862315579b174c1f":[5,0,9,4,1,18],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80":[5,0,9,4,1,11],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a279cb4959aab0c59da17e21d57304a80":[6,0,4,2,1,11],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a2e1fa64a38b589b61443a481b1032c41":[6,0,4,2,1,15],
-"classpolyfem_1_1io_1_1_checkpoint_reader.html#a2e1fa64a38b589b61443a481b1032c41":[5,0,9,4,1,15]
+"classpolyfem_1_1io_1_1_checkpoint_reader.html#a0ee66bf1be178064f0b513f8434f3f39":[5,0,9,4,1,4]
 };

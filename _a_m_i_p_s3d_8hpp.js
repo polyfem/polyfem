@@ -1,5 +1,5 @@
 var _a_m_i_p_s3d_8hpp =
 [
-    [ "AMIPS3d_gradient", "_a_m_i_p_s3d_8hpp.html#ae948019c655a36c138e517d2e396a984", null ],
-    [ "AMIPS3d_hessian", "_a_m_i_p_s3d_8hpp.html#ab2162d08eff01b0b3215df22e866154f", null ]
+    [ "AMIPS3d_gradient", "_a_m_i_p_s3d_8hpp.html#a6ab50a9826c1f0a122ebb5db63a27860", null ],
+    [ "AMIPS3d_hessian", "_a_m_i_p_s3d_8hpp.html#a87f5ea816d7af21866062fb3fe87e17b", null ]
 ];

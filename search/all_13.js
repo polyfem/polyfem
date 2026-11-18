@@ -406,7 +406,7 @@ var searchData=
   ['summodel_2ecpp_403',['SumModel.cpp',['../_sum_model_8cpp.html',1,'']]],
   ['summodel_2ehpp_404',['SumModel.hpp',['../_sum_model_8hpp.html',1,'']]],
   ['supports_405',['supports',['../classpolyfem_1_1varform_1_1_var_form_factory.html#aa1e8c29e666a4e024cb6a36f563c1469',1,'polyfem::varform::VarFormFactory']]],
-  ['surface_406',['surface',['../namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::solver::Surface'],['../structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996aaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::io::OutputSample::Surface'],['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78',1,'polyfem::io::OutGeometryData::ExportOptions::surface']]],
+  ['surface_406',['surface',['../namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::solver::Surface'],['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78',1,'polyfem::io::OutGeometryData::ExportOptions::surface'],['../structpolyfem_1_1io_1_1_output_sample.html#a93a260710e5ee0178b4cad1a3e8e1996aaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::io::OutputSample::Surface']]],
   ['surface_5fids_5f_407',['surface_ids_',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#acd5f3b5c2ba1c5efb528c86e385925eb',1,'polyfem::solver::BoundarySmoothingForm']]],
   ['surfacemesh_408',['SurfaceMesh',['../namespacepolyfem_1_1mesh.html#a81d9c6d2c634b90fc922645edc8230ea',1,'polyfem::mesh']]],
   ['surfacemeshdata_409',['SurfaceMeshData',['../classpolyfem_1_1mesh_1_1_surface_mesh_data.html',1,'polyfem::mesh']]],

@@ -1,5 +1,13 @@
 var NAVTREEINDEX61 =
 {
+"pyramid__bases_8py.html#abb37d49743b409f689700e8894cefbf6":[7,0,1,0,1,54,45],
+"pyramid__bases_8py.html#ac76c5071c49c8ff00f63487ae3fa22ce":[7,0,1,0,1,54,6],
+"pyramid__bases_8py.html#ae00b5f33d7e27e0c7855f23904415af6":[7,0,1,0,1,54,7],
+"pyramid__bases_8py.html#ae5f55a7f22d3d35e7e1daf2f64455777":[7,0,1,0,1,54,40],
+"pyramid__bases_8py.html#ae9a653695271bae3b899457a2a6731e4":[7,0,1,0,1,54,37],
+"pyramid__bases_8py.html#aec9ac5f7f90aba75a239bd52e1b9cab5":[7,0,1,0,1,54,19],
+"pyramid__bases_8py.html#af2cf6b43d0fd9d7d117e29dbfd7c78b0":[7,0,1,0,1,54,5],
+"pyramid__bases_8py.html#af8da195a687f2699503800e60e79f9f2":[7,0,1,0,1,54,43],
 "pyramid__bases_8py_source.html":[7,0,1,0,1,54],
 "pyramid__duffy_8py.html":[7,0,1,0,1,1,1],
 "pyramid__duffy_8py.html#a30d74f385bc124a6e8b3db261dd91ad8":[7,0,1,0,1,1,1,5],
@@ -241,13 +249,5 @@ var NAVTREEINDEX61 =
 "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a7494031793f190ded7429b97b54021cd":[6,0,4,0,81,1],
 "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a7494031793f190ded7429b97b54021cd":[5,0,9,0,81,1],
 "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a811829027b98e8aa2674e0e95daae979":[6,0,4,0,81,6],
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a811829027b98e8aa2674e0e95daae979":[5,0,9,0,81,6],
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a8146b72656e058368450c00e1c1cd426":[6,0,4,0,81,0],
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a8146b72656e058368450c00e1c1cd426":[5,0,9,0,81,0],
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#ad01372e9e7af2744cf8fef893dec2793":[6,0,4,0,81,5],
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#ad01372e9e7af2744cf8fef893dec2793":[5,0,9,0,81,5],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html":[5,0,9,0,82],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html":[6,0,4,0,82],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a13d58ffaf770926a887ffb352335498e":[6,0,4,0,82,3],
-"structpolyfem_1_1assembler_1_1_tensor_initial_value.html#a13d58ffaf770926a887ffb352335498e":[5,0,9,0,82,3]
+"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a811829027b98e8aa2674e0e95daae979":[5,0,9,0,81,6]
 };
