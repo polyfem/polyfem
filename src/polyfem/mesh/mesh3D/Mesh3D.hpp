@@ -5,7 +5,6 @@
 
 #include "Navigation3D.hpp"
 #include "Mesh3DStorage.hpp"
-#include <geogram/mesh/mesh.h>
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>

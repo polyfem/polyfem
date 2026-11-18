@@ -23,16 +23,16 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             name: Linux
     steps:
       - name: Checkout repository
@@ -59,8 +59,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-v2-
 
       - name: Prepare ccache
         run: |
@@ -109,7 +109,7 @@ jobs:
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 3
       CTEST_PARALLEL_LEVEL: 3
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
@@ -188,7 +188,7 @@ jobs:
       SCCACHE_IDLE_TIMEOUT: "12000"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
-      # Pin OpenMP (leaked in via geogram) so results are reproducible.
+      # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
       OMP_NUM_THREADS: "1"
     strategy:
       fail-fast: false
