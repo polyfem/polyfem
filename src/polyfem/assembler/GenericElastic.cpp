@@ -292,36 +292,37 @@ namespace polyfem::assembler
 	}
 
 	template <typename Derived>
-	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian(const NonLinearAssemblerData &data) const
+	void GenericElastic<Derived>::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		if (autodiff_type_ == AutodiffType::FULL)
-			return assemble_hessian_full_ad(data);
-		else if (autodiff_type_ == AutodiffType::STRESS)
-		{
-#ifndef NDEBUG
-			auto hessian = assemble_hessian_stress_ad(data);
-			auto hessian_full = assemble_hessian_full_ad(data);
-			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-5);
-#endif
-			return assemble_hessian_stress_ad(data);
-		}
+			assemble_hessian_full_ad(data, hessian);
 		else
 		{
+			if (autodiff_type_ == AutodiffType::STRESS)
+				assemble_hessian_stress_ad(data, hessian);
+			else
+				assemble_hessian_stress_noad(data, hessian);
 #ifndef NDEBUG
-			auto hessian = assemble_hessian_stress_noad(data);
-			auto hessian_full = assemble_hessian_stress_ad(data);
-			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-5);
+			LocalHessian reference;
+			if (autodiff_type_ == AutodiffType::STRESS)
+				assemble_hessian_full_ad(data, reference);
+			else
+				assemble_hessian_stress_ad(data, reference);
+			hessian.visit([&](const auto &H) {
+				reference.visit([&](const auto &R) {
+					assert((std::isnan(H.norm()) && std::isnan(R.norm())) || (H - R).norm() < 1e-5);
+				});
+			});
 #endif
-			return assemble_hessian_stress_noad(data);
 		}
 	}
 
 	template <typename Derived>
-	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_full_ad(const NonLinearAssemblerData &data) const
+	void GenericElastic<Derived>::assemble_hessian_full_ad(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		const int n_bases = data.vals.basis_values.size();
-		return polyfem::hessian_from_energy(
-			size(), n_bases, data,
+		polyfem::hessian_from_energy(
+			size(), n_bases, data, hessian,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -335,159 +336,127 @@ namespace polyfem::assembler
 	}
 
 	template <typename Derived>
-	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_stress_ad(const NonLinearAssemblerData &data) const
+	void GenericElastic<Derived>::assemble_hessian_stress_ad(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd hessian;
-
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			hessian.setZero();
+			if (size() == 2)
 			{
-			case 3:
+				switch (data.vals.basis_values.size())
+				{
+				case 3:
+				{
+					compute_hessian_from_stress<3, 2>(data, hessian);
+					break;
+				}
+				case 6:
+				{
+					compute_hessian_from_stress<6, 2>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_hessian_from_stress<10, 2>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_hessian_from_stress<Eigen::Dynamic, 2>(data, hessian);
+					break;
+				}
+				}
+			}
+			else // if (size() == 3)
 			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				compute_hessian_from_stress<3, 2>(data, hessian);
-				break;
+				assert(size() == 3);
+				switch (data.vals.basis_values.size())
+				{
+				case 4:
+				{
+					compute_hessian_from_stress<4, 3>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_hessian_from_stress<10, 3>(data, hessian);
+					break;
+				}
+				case 20:
+				{
+					compute_hessian_from_stress<20, 3>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_hessian_from_stress<Eigen::Dynamic, 3>(data, hessian);
+					break;
+				}
+				}
 			}
-			case 6:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_hessian_from_stress<6, 2>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				compute_hessian_from_stress<10, 2>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-				hessian.setZero();
-				compute_hessian_from_stress<Eigen::Dynamic, 2>(data, hessian);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_hessian_from_stress<4, 3>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				compute_hessian_from_stress<10, 3>(data, hessian);
-				break;
-			}
-			case 20:
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				compute_hessian_from_stress<20, 3>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-				hessian.setZero();
-				compute_hessian_from_stress<Eigen::Dynamic, 3>(data, hessian);
-				break;
-			}
-			}
-		}
-
-		return hessian;
+		});
 	}
 
 	template <typename Derived>
-	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_stress_noad(const NonLinearAssemblerData &data) const
+	void GenericElastic<Derived>::assemble_hessian_stress_noad(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		Eigen::MatrixXd hessian;
-
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &hessian) {
+			hessian.setZero();
+			if (size() == 2)
 			{
-			case 3:
+				switch (data.vals.basis_values.size())
+				{
+				case 3:
+				{
+					compute_hessian_from_stress_noad<3, 2>(data, hessian);
+					break;
+				}
+				case 6:
+				{
+					compute_hessian_from_stress_noad<6, 2>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_hessian_from_stress_noad<10, 2>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_hessian_from_stress_noad<Eigen::Dynamic, 2>(data, hessian);
+					break;
+				}
+				}
+			}
+			else // if (size() == 3)
 			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<3, 2>(data, hessian);
-				break;
+				assert(size() == 3);
+				switch (data.vals.basis_values.size())
+				{
+				case 4:
+				{
+					compute_hessian_from_stress_noad<4, 3>(data, hessian);
+					break;
+				}
+				case 10:
+				{
+					compute_hessian_from_stress_noad<10, 3>(data, hessian);
+					break;
+				}
+				case 20:
+				{
+					compute_hessian_from_stress_noad<20, 3>(data, hessian);
+					break;
+				}
+				default:
+				{
+					compute_hessian_from_stress_noad<Eigen::Dynamic, 3>(data, hessian);
+					break;
+				}
+				}
 			}
-			case 6:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<6, 2>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<10, 2>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<Eigen::Dynamic, 2>(data, hessian);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<4, 3>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<10, 3>(data, hessian);
-				break;
-			}
-			case 20:
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<20, 3>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-				hessian.setZero();
-				compute_hessian_from_stress_noad<Eigen::Dynamic, 3>(data, hessian);
-				break;
-			}
-			}
-		}
-
-		return hessian;
+		});
 	}
 
 	template <typename Derived>

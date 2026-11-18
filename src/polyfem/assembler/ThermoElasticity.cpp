@@ -109,7 +109,7 @@ namespace polyfem::assembler
 
 			virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
 			virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
-			virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+			virtual void compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const = 0;
 		};
 
 		template <typename Elasticity>
@@ -126,7 +126,7 @@ namespace polyfem::assembler
 
 			double compute_energy(const MixedNonLinearAssemblerData &data) const override;
 			Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const override;
-			Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const override;
+			void compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const override;
 
 		private:
 			int size() const { return size_; }
@@ -213,10 +213,10 @@ namespace polyfem::assembler
 	}
 
 	template <typename Elasticity>
-	Eigen::MatrixXd detail::ThermoElasticityModelImpl<Elasticity>::compute_hessian(const MixedNonLinearAssemblerData &data) const
+	void detail::ThermoElasticityModelImpl<Elasticity>::compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		const auto energy = compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data);
-		return energy.getHessian();
+		hessian.assign(energy.getHessian());
 	}
 
 	template <typename Elasticity>
@@ -328,9 +328,9 @@ namespace polyfem::assembler
 		return model().compute_gradient(data);
 	}
 
-	Eigen::MatrixXd ThermoElasticity::compute_hessian(const MixedNonLinearAssemblerData &data) const
+	void ThermoElasticity::compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
-		return model().compute_hessian(data);
+		model().compute_hessian(data, hessian);
 	}
 
 	detail::ThermoElasticityModel &ThermoElasticity::model()

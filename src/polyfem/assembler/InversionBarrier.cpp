@@ -266,65 +266,66 @@ namespace polyfem::assembler
 		return Eigen::Map<const Eigen::VectorXd>(G_T.data(), G_T.size());
 	}
 
-	Eigen::MatrixXd InversionBarrier::assemble_hessian(const NonLinearAssemblerData &data) const
+	void InversionBarrier::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &result) const
 	{
-		const int dim = size();
-		const int n_basis = data.vals.basis_values.size();
-		const int N = n_basis * dim;
+		result.resize(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
+		result.visit([&](auto &H) {
+			H.setZero();
+			const int dim = size();
+			const int n_basis = data.vals.basis_values.size();
+			const int N = n_basis * dim;
 
-		Eigen::MatrixXd H = Eigen::MatrixXd::Zero(N, N);
+			Eigen::VectorXd jacs;
+			if (use_robust_jacobian)
+				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
 
-		Eigen::VectorXd jacs;
-		if (use_robust_jacobian)
-			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
-
-		Eigen::MatrixXd local_disp(n_basis, dim);
-		local_disp.setZero();
-		for (int i = 0; i < n_basis; ++i)
-			for (const auto &g : data.vals.basis_values[i].global)
-				for (int d = 0; d < dim; ++d)
-					local_disp(i, d) += g.val * data.x(g.index * dim + d);
-
-		const int n_pts = data.da.size();
-		for (long p = 0; p < n_pts; ++p)
-		{
-			Eigen::MatrixXd grad(n_basis, dim);
+			Eigen::MatrixXd local_disp(n_basis, dim);
+			local_disp.setZero();
 			for (int i = 0; i < n_basis; ++i)
-				grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				for (const auto &g : data.vals.basis_values[i].global)
+					for (int d = 0; d < dim; ++d)
+						local_disp(i, d) += g.val * data.x(g.index * dim + d);
 
-			const Eigen::MatrixXd jac_it = data.vals.jac_it[p];
-			const Eigen::MatrixXd delF_delU = grad * jac_it;
-
-			const Eigen::MatrixXd def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(dim, dim);
-
-			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
-			const double JBarrierThreshold = JBarrierThreshold_(data.vals.quadrature.points.row(p), data.t, data.vals.element_id);
-
-			Eigen::MatrixXd delJ_delF, del2J_delF2;
-			jacobian_cofactor_derivatives(def_grad, dim, delJ_delF, del2J_delF2);
-
-			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
-
-			const Eigen::Map<const Eigen::VectorXd> g_j(delJ_delF.data(), delJ_delF.size());
-
-			const Eigen::MatrixXd hessian_temp = mu * barrier<double>::first_derivatives(J, JBarrierThreshold) * del2J_delF2
-												 + mu * barrier<double>::second_derivatives(J, JBarrierThreshold) * (g_j * g_j.transpose());
-
-			Eigen::MatrixXd delF_delU_tensor = Eigen::MatrixXd::Zero(dim * dim, N);
-			for (int i = 0; i < n_basis; ++i)
+			const int n_pts = data.da.size();
+			for (long p = 0; p < n_pts; ++p)
 			{
-				for (int j = 0; j < dim; ++j)
-				{
-					Eigen::MatrixXd temp = Eigen::MatrixXd::Zero(dim, dim);
-					temp.row(j) = delF_delU.row(i);
-					delF_delU_tensor.col(i * dim + j) = Eigen::Map<const Eigen::VectorXd>(temp.data(), temp.size());
-				}
-			}
+				Eigen::MatrixXd grad(n_basis, dim);
+				for (int i = 0; i < n_basis; ++i)
+					grad.row(i) = data.vals.basis_values[i].grad.row(p);
 
-			H += (delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor) * data.da(p);
-		}
-		return H;
+				const Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+				const Eigen::MatrixXd delF_delU = grad * jac_it;
+
+				const Eigen::MatrixXd def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(dim, dim);
+
+				const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+				const double JBarrierThreshold = JBarrierThreshold_(data.vals.quadrature.points.row(p), data.t, data.vals.element_id);
+
+				Eigen::MatrixXd delJ_delF, del2J_delF2;
+				jacobian_cofactor_derivatives(def_grad, dim, delJ_delF, del2J_delF2);
+
+				double lambda, mu;
+				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+
+				const Eigen::Map<const Eigen::VectorXd> g_j(delJ_delF.data(), delJ_delF.size());
+
+				const Eigen::MatrixXd hessian_temp = mu * barrier<double>::first_derivatives(J, JBarrierThreshold) * del2J_delF2
+													 + mu * barrier<double>::second_derivatives(J, JBarrierThreshold) * (g_j * g_j.transpose());
+
+				Eigen::MatrixXd delF_delU_tensor = Eigen::MatrixXd::Zero(dim * dim, N);
+				for (int i = 0; i < n_basis; ++i)
+				{
+					for (int j = 0; j < dim; ++j)
+					{
+						Eigen::MatrixXd temp = Eigen::MatrixXd::Zero(dim, dim);
+						temp.row(j) = delF_delU.row(i);
+						delF_delU_tensor.col(i * dim + j) = Eigen::Map<const Eigen::VectorXd>(temp.data(), temp.size());
+					}
+				}
+
+				H += (delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor) * data.da(p);
+			}
+		});
 	}
 
 	std::map<std::string, Assembler::ParamFunc> InversionBarrier::parameters() const

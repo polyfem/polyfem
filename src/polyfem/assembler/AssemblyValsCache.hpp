@@ -20,9 +20,18 @@ namespace polyfem
 			/// will clear the old cache if exists.
 			void init_empty(const bool is_mass = false);
 
-			/// retrieves cached basis evaluation and geometric for the given element
-			/// if it doesn't exist, computes and caches it (modifies cache member in the latter case)
+			/// Copies cached values into vals, or computes into vals when the cache is empty.
 			void compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis, ElementAssemblyValues &vals) const;
+
+			/// Returns cached values, or computes into scratch when the cache is empty.
+			/// The returned reference is valid while its cache entry or scratch remains unchanged.
+			const ElementAssemblyValues &get_or_compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis, ElementAssemblyValues &scratch) const
+			{
+				if (is_initialized())
+					return cached_values(el_index);
+				compute(el_index, is_volume, basis, gbasis, scratch);
+				return scratch;
+			}
 
 			void update(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
 
@@ -32,6 +41,12 @@ namespace polyfem
 			}
 
 			inline bool is_initialized() const { return !cache.empty(); }
+
+			const ElementAssemblyValues &cached_values(const int element) const
+			{
+				assert(element >= 0 && static_cast<size_t>(element) < cache.size());
+				return cache[element];
+			}
 
 			inline bool is_mass() const { return is_mass_; }
 
