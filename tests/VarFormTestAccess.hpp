@@ -78,6 +78,21 @@ namespace polyfem::test
 			form.prepare();
 		}
 
+		static io::OutputFieldFunction snapshot_output_fields(const varform::VarForm &form, const Eigen::MatrixXd &solution)
+		{
+			const auto space = form.output_space();
+			return form.snapshot_output_fields(solution, form.export_options(space), space, 0.125, 0.01);
+		}
+
+		static io::OutputFieldFunction snapshot_elastic_fields(
+			const varform::ElasticVarForm &form, const Eigen::MatrixXd &solution,
+			const time_integrator::ImplicitTimeIntegrator *integrator,
+			const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &forms)
+		{
+			const auto space = form.output_space();
+			return form.snapshot_elastic_output_fields(solution, form.export_options(space), nullptr, integrator, forms, nullptr);
+		}
+
 		static ElasticFormDebugData elastic_form_data(varform::ElasticVarForm &form)
 		{
 			return {

@@ -17,6 +17,8 @@ set(SOURCES
 	OutData.cpp
 	OutData.hpp
 	OutputData.hpp
+	OutputWriter.cpp
+	OutputWriter.hpp
 	OutStatsData.hpp
 	ResourceIO.cpp
 	ResourceIO.hpp

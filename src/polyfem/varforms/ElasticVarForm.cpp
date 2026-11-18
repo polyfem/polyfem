@@ -450,6 +450,63 @@ namespace polyfem::varform
 		return indices;
 	}
 
+	io::OutputFieldFunction ElasticVarForm::snapshot_elastic_output_fields(
+		const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+		const mesh::Obstacle *obstacle,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator,
+		const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
+		const solver::Form *elastic_form, const solver::ContactForm *contact_form) const
+	{
+		auto state = std::make_shared<ElasticOutputState>();
+		const io::OutputFieldOptions options{opts.fields};
+		const auto &flags = args["output"]["paraview"]["options"];
+		if (problem->is_time_dependent())
+		{
+			if (flags["velocity"] && options.export_field("velocity"))
+				state->velocity = time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size());
+			if (flags["acceleration"] && options.export_field("acceleration"))
+				state->acceleration = time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size());
+		}
+		if (flags["forces"] && !problem->is_scalar())
+		{
+			const double scaling = time_integrator ? time_integrator->acceleration_scaling() : 1;
+			for (const auto &[name, form] : named_forms)
+			{
+				const std::string field_name = name + "_forces";
+				if (!options.export_field(field_name))
+					continue;
+				Eigen::VectorXd force;
+				if (form && form->enabled())
+				{
+					form->first_derivative(solution, force);
+					force *= -1.0 / scaling;
+				}
+				else
+					force.setZero(solution.size());
+				state->forces.push_back({field_name, std::move(force)});
+			}
+		}
+		if (!opts.fields.empty() && options.export_field("gradient_of_elastic_potential") && elastic_form)
+		{
+			Eigen::VectorXd gradient;
+			elastic_form->first_derivative(solution, gradient);
+			state->elastic_gradient = std::move(gradient);
+		}
+		if (!opts.fields.empty() && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
+		{
+			Eigen::VectorXd gradient;
+			contact_form->first_derivative(solution, gradient);
+			gradient *= -contact_form->barrier_stiffness() / contact_form->weight();
+			state->contact_gradient = std::move(gradient);
+		}
+		auto saved_solution = std::make_shared<Eigen::MatrixXd>(solution);
+		return [this, state, saved_solution, obstacle, fields = opts.fields](const io::OutputSample &sample) {
+			return elastic_output_fields(sample, *saved_solution,
+										 {sample.requested_fields.empty() ? fields : sample.requested_fields},
+										 obstacle, nullptr, {}, nullptr, nullptr, state.get());
+		};
+	}
+
 	std::vector<io::OutputField> ElasticVarForm::elastic_output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
@@ -458,7 +515,7 @@ namespace polyfem::varform
 		const time_integrator::ImplicitTimeIntegrator *time_integrator,
 		const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
 		const solver::Form *elastic_form,
-		const solver::ContactForm *contact_form) const
+		const solver::ContactForm *contact_form, const ElasticOutputState *output_state) const
 	{
 		std::vector<io::OutputField> fields;
 		if (!mesh_ || !problem || solution.size() <= 0)
@@ -1017,16 +1074,18 @@ namespace polyfem::varform
 			if (velocity && options.export_field("velocity"))
 				append_sampled_dof_field(
 					"velocity",
-					time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
+					output_state ? output_state->velocity : time_integrator ? time_integrator->v_prev()
+																			: Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 			if (acceleration && options.export_field("acceleration"))
 				append_sampled_dof_field(
 					"acceleration",
-					time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
+					output_state ? output_state->acceleration : time_integrator ? time_integrator->a_prev()
+																				: Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 		}
 
-		if (forces)
+		if (forces && !output_state)
 		{
 			const double s = time_integrator ? time_integrator->acceleration_scaling() : 1;
 			for (const auto &[name, form] : named_forms)
@@ -1049,16 +1108,28 @@ namespace polyfem::varform
 			}
 		}
 
-		append_traction_force();
+		if (output_state)
+			for (const auto &field : output_state->forces)
+				if (options.export_field(field.name))
+					append_sampled_dof_field(field.name, field.values, actual_dim);
 
-		if (explicit_fields && options.export_field("gradient_of_elastic_potential") && elastic_form)
+		append_traction_force();
+		if (output_state)
+		{
+			if (output_state->elastic_gradient.size() > 0 && options.export_field("gradient_of_elastic_potential"))
+				append_sampled_dof_field("gradient_of_elastic_potential", output_state->elastic_gradient, actual_dim);
+			if (output_state->contact_gradient.size() > 0 && options.export_field("gradient_of_contact_potential"))
+				append_sampled_dof_field("gradient_of_contact_potential", output_state->contact_gradient, actual_dim);
+		}
+
+		if (!output_state && explicit_fields && options.export_field("gradient_of_elastic_potential") && elastic_form)
 		{
 			Eigen::VectorXd potential_grad;
 			elastic_form->first_derivative(solution, potential_grad);
 			append_sampled_dof_field("gradient_of_elastic_potential", potential_grad, actual_dim);
 		}
 
-		if (explicit_fields && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
+		if (!output_state && explicit_fields && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
 		{
 			Eigen::VectorXd potential_grad;
 			contact_form->first_derivative(solution, potential_grad);

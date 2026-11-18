@@ -1,5 +1,8 @@
 #include "OutData.hpp"
 
+#include <tuple>
+#include <utility>
+
 #include <array>
 #include <map>
 
@@ -54,6 +57,27 @@
 
 namespace polyfem::io
 {
+	namespace
+	{
+		template <typename... MeshData>
+		void write_output_mesh(OutGeometryData::WriteJobs *writes,
+							   const std::shared_ptr<paraviewo::ParaviewWriter> &writer,
+							   const std::string &path, MeshData &&...mesh_data)
+		{
+			auto write = [writer, path, data = std::make_tuple(std::forward<MeshData>(mesh_data)...)] {
+				std::apply([&](const auto &...geometry) {
+					if (!writer->write_mesh(path, geometry...))
+						log_and_throw_error("Unable to write output mesh {}", path);
+				},
+						   data);
+			};
+			if (writes)
+				writes->emplace_back(std::move(write));
+			else
+				write();
+		}
+	} // namespace
+
 	bool OutputFieldOptions::export_field(const std::string &field) const
 	{
 		return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
@@ -2192,7 +2216,7 @@ namespace polyfem::io
 		const double dt,
 		const ExportOptions &opts,
 		paraviewo::VTMWriter &vtm,
-		const std::string &block_prefix) const
+		const std::string &block_prefix, WriteJobs *writes) const
 	{
 		if (!space.mesh)
 		{
@@ -2214,27 +2238,27 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(base_path + opts.file_extension(), space, output_fields, t, dt, opts);
+			save_volume(base_path + opts.file_extension(), space, output_fields, t, dt, opts, writes);
 		}
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
+			save_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts, writes);
 		}
 
 		if (save_contact)
 		{
-			save_contact_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
+			save_contact_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts, writes);
 		}
 
 		if (opts.wire)
 		{
-			save_wire(base_path + "_wire" + opts.file_extension(), space, output_fields, t, opts);
+			save_wire(base_path + "_wire" + opts.file_extension(), space, output_fields, t, opts, writes);
 		}
 
 		if (opts.points)
 		{
-			save_points(base_path + "_points" + opts.file_extension(), space, output_fields, opts);
+			save_points(base_path + "_points" + opts.file_extension(), space, output_fields, opts, writes);
 		}
 
 		const auto block_name = [&block_prefix](const std::string &name) {
@@ -2258,7 +2282,7 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt,
-		const ExportOptions &opts) const
+		const ExportOptions &opts, WriteJobs *writes) const
 	{
 		if (!space.mesh || !space.geometry_bases)
 			return;
@@ -2417,9 +2441,9 @@ namespace polyfem::io
 		}
 
 		if (elements.empty())
-			writer.write_mesh(path, points, tets, mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle);
+			write_output_mesh(writes, tmpw, path, std::move(points), std::move(tets), mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle);
 		else
-			writer.write_mesh(path, points, elements);
+			write_output_mesh(writes, tmpw, path, std::move(points), std::move(elements));
 	}
 
 	void OutGeometryData::save_surface(
@@ -2428,7 +2452,7 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts) const
+		const ExportOptions &opts, WriteJobs *writes) const
 	{
 		if (!space.mesh || !space.geometry_bases || !space.total_local_boundary)
 			return;
@@ -2490,7 +2514,7 @@ namespace polyfem::io
 		sample.time = t;
 		sample.dt = dt_in;
 		add_output_fields(writer, sample, output_fields);
-		writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements, mesh.is_volume() ? CellType::Triangle : CellType::Line);
+		write_output_mesh(writes, tmpw, export_surface, std::move(boundary_vis_vertices), std::move(boundary_vis_elements), mesh.is_volume() ? CellType::Triangle : CellType::Line);
 	}
 
 	void OutGeometryData::save_contact_surface(
@@ -2499,7 +2523,7 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts) const
+		const ExportOptions &opts, WriteJobs *writes) const
 	{
 		if (!space.collision_mesh)
 			return;
@@ -2526,11 +2550,11 @@ namespace polyfem::io
 		const std::filesystem::path surface_path(export_surface);
 		const std::string contact_path =
 			(surface_path.parent_path() / (surface_path.stem().string() + "_contact" + surface_path.extension().string())).string();
-		writer.write_mesh(
-			contact_path,
-			collision_mesh.rest_positions(),
-			collision_mesh.dim() == 3 ? collision_mesh.faces() : collision_mesh.edges(),
-			collision_mesh.dim() == 3 ? CellType::Triangle : CellType::Line);
+		write_output_mesh(writes, tmpw,
+						  contact_path,
+						  collision_mesh.rest_positions(),
+						  collision_mesh.dim() == 3 ? collision_mesh.faces() : collision_mesh.edges(),
+						  collision_mesh.dim() == 3 ? CellType::Triangle : CellType::Line);
 	}
 
 	void OutGeometryData::save_wire(
@@ -2538,7 +2562,7 @@ namespace polyfem::io
 		const OutputSpace &space,
 		const OutputFieldFunction &output_fields,
 		const double t,
-		const ExportOptions &opts) const
+		const ExportOptions &opts, WriteJobs *writes) const
 	{
 		if (!space.mesh || !space.geometry_bases)
 			return;
@@ -2581,14 +2605,14 @@ namespace polyfem::io
 		sample.time = t;
 		add_output_fields(writer, sample, output_fields);
 
-		writer.write_mesh(name, points, edges, CellType::Line);
+		write_output_mesh(writes, tmpw, name, std::move(points), std::move(edges), CellType::Line);
 	}
 
 	void OutGeometryData::save_points(
 		const std::string &path,
 		const OutputSpace &space,
 		const OutputFieldFunction &output_fields,
-		const ExportOptions &opts) const
+		const ExportOptions &opts, WriteJobs *writes) const
 	{
 		if (!space.mesh || !space.dirichlet_nodes || !space.dirichlet_nodes_position)
 			return;
@@ -2635,7 +2659,7 @@ namespace polyfem::io
 		sample.domain = OutputSample::Domain::Points;
 		sample.cell_count = static_cast<int>(cells.size());
 		add_output_fields(writer, sample, output_fields);
-		writer.write_mesh(path, points, cells);
+		write_output_mesh(writes, tmpw, path, std::move(points), std::move(cells));
 	}
 
 	void OutGeometryData::save_pvd(

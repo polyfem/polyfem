@@ -28,6 +28,7 @@ namespace polyfem::io
 	class OutGeometryData
 	{
 	public:
+		using WriteJobs = std::vector<std::function<void()>>;
 		/// @brief different export flags
 		struct ExportOptions
 		{
@@ -161,7 +162,7 @@ namespace polyfem::io
 					  const double dt,
 					  const ExportOptions &opts,
 					  paraviewo::VTMWriter &vtm,
-					  const std::string &block_prefix) const;
+					  const std::string &block_prefix, WriteJobs *writes = nullptr) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
@@ -175,7 +176,7 @@ namespace polyfem::io
 						 const OutputFieldFunction &output_fields,
 						 const double t,
 						 const double dt,
-						 const ExportOptions &opts) const;
+						 const ExportOptions &opts, WriteJobs *writes = nullptr) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
@@ -189,7 +190,7 @@ namespace polyfem::io
 						  const OutputFieldFunction &output_fields,
 						  const double t,
 						  const double dt_in,
-						  const ExportOptions &opts) const;
+						  const ExportOptions &opts, WriteJobs *writes = nullptr) const;
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
@@ -204,7 +205,7 @@ namespace polyfem::io
 			const OutputFieldFunction &output_fields,
 			const double t,
 			const double dt_in,
-			const ExportOptions &opts) const;
+			const ExportOptions &opts, WriteJobs *writes = nullptr) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -216,7 +217,7 @@ namespace polyfem::io
 					   const OutputSpace &space,
 					   const OutputFieldFunction &output_fields,
 					   const double t,
-					   const ExportOptions &opts) const;
+					   const ExportOptions &opts, WriteJobs *writes = nullptr) const;
 
 		/// saves the nodal values
 		/// @param[in] path filename
@@ -227,7 +228,7 @@ namespace polyfem::io
 			const std::string &path,
 			const OutputSpace &space,
 			const OutputFieldFunction &output_fields,
-			const ExportOptions &opts) const;
+			const ExportOptions &opts, WriteJobs *writes = nullptr) const;
 
 		/// save a PVD of a time dependent simulation
 		/// @param[in] name filename

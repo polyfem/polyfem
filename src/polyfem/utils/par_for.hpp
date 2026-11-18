@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <functional>
+#include <limits>
 #include <thread>
 
 #include <Eigen/Core>
@@ -13,6 +15,24 @@ namespace polyfem
 {
 	namespace utils
 	{
+		/// Restrict parallel work on the current thread and its CPP worker calls.
+		class ScopedThreadLimit
+		{
+		public:
+			explicit ScopedThreadLimit(const size_t limit) : previous_(limit_)
+			{
+				limit_ = std::min(limit_, std::max(size_t(1), limit));
+			}
+			~ScopedThreadLimit() { limit_ = previous_; }
+			ScopedThreadLimit(const ScopedThreadLimit &) = delete;
+			ScopedThreadLimit &operator=(const ScopedThreadLimit &) = delete;
+			static size_t current() { return limit_; }
+
+		private:
+			inline static thread_local size_t limit_ = std::numeric_limits<size_t>::max();
+			size_t previous_;
+		};
+
 		class NThread
 		{
 		public:
@@ -39,7 +59,7 @@ namespace polyfem
 		private:
 			NThread() {}
 
-			size_t num_threads_;
+			size_t num_threads_ = 1;
 
 #if defined(POLYFEM_WITH_TBB) || defined(POLYFEM_WITH_CPP_THREADS)
 			/// limits the number of used threads
@@ -48,6 +68,6 @@ namespace polyfem
 		};
 
 		void par_for(const int size, const std::function<void(int, int, int)> &func);
-		inline size_t get_n_threads() { return NThread::get().num_threads(); }
+		inline size_t get_n_threads() { return std::min(NThread::get().num_threads(), ScopedThreadLimit::current()); }
 	} // namespace utils
 } // namespace polyfem

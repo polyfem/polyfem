@@ -97,6 +97,29 @@ namespace polyfem::varform
 		return space;
 	}
 
+	io::OutputFieldFunction NonlinearElasticVarForm::snapshot_output_fields(
+		const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+		const io::OutputSpace &space, const double time, const double dt) const
+	{
+		auto elastic_fields = snapshot_elastic_output_fields(solution, opts, space.obstacle,
+															 solve_data_.time_integrator.get(), solve_data_.named_forms(),
+															 solve_data_.elastic_form.get(), solve_data_.contact_form.get());
+		std::vector<io::OutputField> contact_fields;
+		if (space.collision_mesh && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces || (!opts.fields.empty() && opts.export_field("adaptive_dhat"))))
+		{
+			io::OutputSample sample;
+			sample.points = space.collision_mesh->rest_positions();
+			sample.domain = io::OutputSample::Domain::Contact;
+			sample.cell_count = space.collision_mesh->dim() == 3 ? space.collision_mesh->num_faces() : space.collision_mesh->num_edges();
+			sample.time = time;
+			sample.dt = dt;
+			contact_fields = output_fields(sample, solution, {opts.fields});
+		}
+		return [elastic_fields = std::move(elastic_fields), contact_fields = std::move(contact_fields)](const io::OutputSample &sample) {
+			return sample.domain == io::OutputSample::Domain::Contact ? contact_fields : elastic_fields(sample);
+		};
+	}
+
 	std::vector<io::OutputField> NonlinearElasticVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
@@ -1293,9 +1316,9 @@ namespace polyfem::varform
 	bool NonlinearElasticVarForm::save_timestep_for_embedding(
 		const double time, const int step, const double dt,
 		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
-		const std::string &block_prefix) const
+		const std::string &block_prefix, io::OutGeometryData::WriteJobs *writes) const
 	{
-		return save_timestep_to_vtm(time, step, dt, solution, vtm, block_prefix);
+		return save_timestep_to_vtm(time, step, dt, solution, vtm, block_prefix, writes);
 	}
 
 	int NonlinearElasticVarForm::embedding_ndof() const

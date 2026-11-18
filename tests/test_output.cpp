@@ -1,11 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/OutputWriter.hpp>
+#include <polyfem/solver/forms/Form.hpp>
+#include <polyfem/time_integrator/ImplicitEuler.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/varforms/VarForm.hpp>
@@ -14,9 +18,13 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
+#include <future>
+#include <chrono>
+#include <stdexcept>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <regex>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -134,6 +142,18 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		sample.points = sample.local_points;
 		sample.time = 0.125;
 		const auto fields = form.output_fields(sample, solution, {});
+		Eigen::MatrixXd snapshot_solution = solution;
+		const auto snapshot = test::VarFormTestAccess::snapshot_output_fields(form, snapshot_solution);
+		REQUIRE(bool(snapshot));
+		snapshot_solution.setConstant(42);
+		const auto deferred_fields = snapshot(sample);
+		REQUIRE(deferred_fields.size() == fields.size());
+		for (size_t k = 0; k < fields.size(); ++k)
+		{
+			CHECK(deferred_fields[k].name == fields[k].name);
+			CHECK(deferred_fields[k].association == fields[k].association);
+			CHECK(deferred_fields[k].values.isApprox(fields[k].values));
+		}
 		const auto field_values = [&](const std::string &name) -> const Eigen::MatrixXd & {
 			const auto it = std::find_if(fields.begin(), fields.end(), [&](const auto &field) { return field.name == name; });
 			REQUIRE(it != fields.end());
@@ -235,6 +255,179 @@ TEST_CASE("absolute AMIPS output preserves undefined stresses", "[output]")
 		else
 			CHECK(field.values.allFinite());
 	}
+}
+
+TEST_CASE("elastic output captures changing integrator and force data", "[output_writer]")
+{
+	class MutableForce : public solver::Form
+	{
+	public:
+		double derivative = 0.3;
+		std::string name() const override { return "test"; }
+		double value_unweighted(const Eigen::VectorXd &) const override { return 0; }
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradient) const override
+		{
+			gradient.setConstant(x.size(), derivative);
+		}
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override
+		{
+			hessian.resize(x.size(), x.size());
+			hessian.setZero();
+		}
+	};
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi elements(1, 3);
+	elements << 0, 1, 2;
+	json args;
+	args["geometry"][0]["mesh"] = "";
+	args["materials"] = {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}, {"rho", 1}};
+	args["time"] = {{"dt", 0.01}, {"tend", 0.02}};
+	args["contact"]["enabled"] = false;
+	args["output"]["log"]["quiet"] = true;
+	args["output"]["log"]["level"] = "error";
+	args["output"]["paraview"]["options"] = {{"velocity", true}, {"acceleration", true}, {"forces", true}};
+	args["output"]["paraview"]["fields"] = {"velocity", "acceleration", "test_forces"};
+	State state;
+	state.init(args, true);
+	state.set_mesh(vertices, elements);
+	auto &form = dynamic_cast<varform::ElasticVarForm &>(*state.variational_formulation);
+	test::VarFormTestAccess::prepare(form);
+	const int ndof = 2 * test::VarFormTestAccess::debug_data(form).n_bases;
+	const Eigen::VectorXd solution = Eigen::VectorXd::Zero(ndof);
+	time_integrator::ImplicitEuler integrator;
+	integrator.init(solution, Eigen::VectorXd::Constant(ndof, 0.4), Eigen::VectorXd::Constant(ndof, 0.2), 0.01);
+	auto force = std::make_shared<MutableForce>();
+	const double expected_force = -force->derivative / integrator.acceleration_scaling();
+	const auto snapshot = test::VarFormTestAccess::snapshot_elastic_fields(form, solution, &integrator, {{"test", force}});
+	force->derivative = 42;
+	integrator.update_quantities(Eigen::VectorXd::Ones(ndof));
+	io::OutputSample sample;
+	autogen::p_nodes_2d(1, sample.local_points);
+	sample.points = sample.local_points;
+	sample.element_ids = Eigen::VectorXi::Zero(sample.local_points.rows());
+	std::vector<io::OutputField> fields;
+	io::OutputWriter writer;
+	writer.enqueue([&] { return [&] { fields = snapshot(sample); }; });
+	writer.finish();
+	REQUIRE(fields.size() == 3);
+	const std::map<std::string, double> expected_values{
+		{"velocity", 0.4}, {"acceleration", 0.2}, {"test_forces", expected_force}};
+	for (const auto &field : fields)
+	{
+		CAPTURE(field.name);
+		CHECK((field.values.array() - expected_values.at(field.name)).abs().maxCoeff() < 1e-10);
+	}
+}
+
+TEST_CASE("output writer preserves order and drains", "[output_writer]")
+{
+	const bool asynchronous = GENERATE(false, true);
+	std::vector<int> written;
+	{
+		io::OutputWriter writer(asynchronous);
+		for (int i = 0; i < 20; ++i)
+			writer.enqueue([&, i] { return [&, i] { written.push_back(i); }; });
+		writer.flush();
+		REQUIRE(written.size() == 20);
+		writer.enqueue([&] { return [&] { written.push_back(20); }; });
+	}
+	REQUIRE(written.size() == 21);
+	for (int i = 0; i < written.size(); ++i)
+		CHECK(written[i] == i);
+}
+
+TEST_CASE("output writer blocks preparation with one pending frame", "[output_writer]")
+{
+	io::OutputWriter writer;
+	if (!writer.asynchronous())
+		return;
+	using namespace std::chrono_literals;
+	std::promise<void> active, release, producer_started, prepared;
+	auto active_future = active.get_future();
+	auto release_future = release.get_future().share();
+	auto started_future = producer_started.get_future();
+	auto prepared_future = prepared.get_future();
+	writer.enqueue([&] { return [&] { active.set_value(); release_future.wait(); }; });
+	const bool running = active_future.wait_for(5s) == std::future_status::ready;
+	if (!running)
+	{
+		release.set_value();
+		writer.finish();
+		FAIL("Output worker did not start");
+	}
+	writer.enqueue([] { return [] {}; });
+	auto producer = std::async(std::launch::async, [&] {
+		producer_started.set_value();
+		writer.enqueue([&] { prepared.set_value(); return [] {}; });
+	});
+	started_future.wait();
+	const bool blocked = prepared_future.wait_for(50ms) == std::future_status::timeout;
+	release.set_value();
+	producer.get();
+	writer.finish();
+	CHECK(blocked);
+	CHECK(prepared_future.wait_for(0ms) == std::future_status::ready);
+}
+
+TEST_CASE("serial output waits for an active write before finishing", "[output_writer]")
+{
+	io::OutputWriter writer(false);
+	using namespace std::chrono_literals;
+	std::promise<void> active, release, finishing, finished;
+	auto active_future = active.get_future();
+	auto release_future = release.get_future().share();
+	auto finishing_future = finishing.get_future();
+	auto finished_future = finished.get_future();
+	auto producer = std::async(std::launch::async, [&] {
+		writer.enqueue([&] { return [&] { active.set_value(); release_future.wait(); }; });
+	});
+	active_future.wait();
+	auto closer = std::async(std::launch::async, [&] {
+		finishing.set_value();
+		writer.finish();
+		finished.set_value();
+	});
+	finishing_future.wait();
+	const bool blocked = finished_future.wait_for(50ms) == std::future_status::timeout;
+	release.set_value();
+	producer.get();
+	closer.get();
+	CHECK(blocked);
+}
+
+TEST_CASE("output writer propagates failures and closes", "[output_writer]")
+{
+	const bool asynchronous = GENERATE(false, true);
+	io::OutputWriter writer(asynchronous);
+	const auto prepare = []() -> io::OutputWriter::Job {
+		return [] { throw std::runtime_error("output failure"); };
+	};
+	if (writer.asynchronous())
+	{
+		writer.enqueue(prepare);
+		REQUIRE_THROWS_WITH(writer.flush(), "output failure");
+	}
+	else
+		REQUIRE_THROWS_WITH(writer.enqueue(prepare), "output failure");
+	REQUIRE_THROWS_WITH(writer.finish(), "output failure");
+	REQUIRE_THROWS_WITH(writer.enqueue(prepare), "output failure");
+}
+
+TEST_CASE("output writer can recover from frame preparation failure", "[output_writer]")
+{
+	const bool asynchronous = GENERATE(false, true);
+	io::OutputWriter writer(asynchronous);
+	REQUIRE_THROWS_WITH(writer.enqueue([]() -> io::OutputWriter::Job {
+		throw std::runtime_error("preparation failure");
+	}),
+						"preparation failure");
+	bool written = false;
+	writer.enqueue([&] { return [&] { written = true; }; });
+	writer.finish();
+	writer.finish();
+	CHECK(written);
+	REQUIRE_THROWS_AS(writer.enqueue([] { return [] {}; }), std::logic_error);
 }
 
 #ifdef NDEBUG

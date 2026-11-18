@@ -2487,6 +2487,7 @@
         "type": "object",
         "optional": [
             "file_name",
+            "async",
             "vismesh_rel_area",
             "skip_frame",
             "high_order_mesh",
@@ -2498,6 +2499,12 @@
             "options"
         ],
         "doc": "Output in paraview format"
+    },
+    {
+        "pointer": "/output/paraview/async",
+        "default": true,
+        "type": "bool",
+        "doc": "Write timestep output with the configured threading backend and one pending frame."
     },
     {
         "pointer": "/output/paraview/file_name",

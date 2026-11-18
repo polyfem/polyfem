@@ -39,6 +39,21 @@ namespace polyfem::varform
 		void deserialize_checkpoint(const io::CheckpointReader &reader, Eigen::MatrixXd &solution) override;
 
 	protected:
+		struct ElasticOutputState
+		{
+			Eigen::VectorXd velocity;
+			Eigen::VectorXd acceleration;
+			std::vector<io::OutputField> forces;
+			Eigen::VectorXd elastic_gradient;
+			Eigen::VectorXd contact_gradient;
+		};
+
+		io::OutputFieldFunction snapshot_elastic_output_fields(
+			const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+			const mesh::Obstacle *obstacle,
+			const time_integrator::ImplicitTimeIntegrator *time_integrator,
+			const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
+			const solver::Form *elastic_form, const solver::ContactForm *contact_form = nullptr) const;
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
@@ -77,7 +92,8 @@ namespace polyfem::varform
 			const time_integrator::ImplicitTimeIntegrator *time_integrator,
 			const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
 			const solver::Form *elastic_form,
-			const solver::ContactForm *contact_form = nullptr) const;
+			const solver::ContactForm *contact_form = nullptr,
+			const ElasticOutputState *output_state = nullptr) const;
 		void append_primary_output_fields(
 			std::vector<io::OutputField> &fields,
 			const io::OutputSample &sample,

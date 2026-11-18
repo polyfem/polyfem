@@ -716,6 +716,17 @@ namespace polyfem::varform
 			logger().debug("Solver error: {}", error);
 	}
 
+	io::OutputFieldFunction FluidVarForm::snapshot_output_fields(
+		const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+		const io::OutputSpace &, double, double) const
+	{
+		auto saved_solution = std::make_shared<Eigen::MatrixXd>(solution);
+		return [this, saved_solution, fields = opts.fields](const io::OutputSample &sample) {
+			return output_fields(sample, *saved_solution,
+								 {sample.requested_fields.empty() ? fields : sample.requested_fields});
+		};
+	}
+
 	std::vector<io::OutputField> FluidVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
