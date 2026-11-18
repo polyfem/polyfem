@@ -73,6 +73,13 @@ namespace polyfem::assembler
 		elasticity_assembler->assign_stress_tensor(data, all_size, type, all, fun);
 	}
 
+	void MultiModel::compute_output_values(const OutputData &data,
+										   std::vector<NamedMatrix> *scalar, std::vector<NamedMatrix> *tensor) const
+	{
+		const auto assembler = all_elastic_materials_.get_assembler(multi_material_models_[data.el_id]);
+		assembler->compute_output_values(data, scalar, tensor);
+	}
+
 	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const
 	{
 		std::map<std::string, Assembler::ParamFunc> params;

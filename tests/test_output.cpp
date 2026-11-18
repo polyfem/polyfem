@@ -66,6 +66,9 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 {
 	const int dim = GENERATE(2, 3);
 	const int order = GENERATE(1, 2);
+	const std::string material = GENERATE("NeoHookean", "LinearElasticity", "HookeLinearElasticity", "SaintVenant",
+										  "FixedCorotational", "MooneyRivlin3Param", "MooneyRivlin3ParamSymbolic", "InversionBarrier", "MaterialSum",
+										  "MultiModels", "AMIPS", "NeoHookeanVarying");
 	Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(dim + 2, dim);
 	vertices.middleRows(1, dim).setIdentity();
 	vertices.bottomRows(1).setOnes();
@@ -79,7 +82,20 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		std::swap(elements(1, 1), elements(1, 2));
 	json args;
 	args["geometry"][0]["mesh"] = "";
-	args["materials"] = {{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}};
+	args["materials"] = {{"type", material}, {"E", 1e5}, {"nu", 0.3}};
+	if (material == "NeoHookeanVarying")
+		args["materials"] = {{"type", "NeoHookean"}, {"E", "100000*(1+0.1*x+0.2*y+0.05*z+0.03*t)"}, {"nu", 0.3}};
+	if (material == "AMIPS")
+		args["materials"] = {{"type", material}, {"use_rest_pose", true}};
+	if (material == "MultiModels")
+		args["materials"] = json::array({{{"id", 0}, {"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}},
+										 {{"id", 1}, {"type", "LinearElasticity"}, {"E", 2e5}, {"nu", 0.25}}});
+	if (material.find("MooneyRivlin") == 0)
+		args["materials"] = {{"type", material}, {"c1", 2}, {"c2", 3}, {"c3", 1}, {"d1", 0.1}};
+	if (material == "InversionBarrier")
+		args["materials"]["JBarrierThreshold"] = 2;
+	if (material == "MaterialSum")
+		args["materials"] = {{"type", material}, {"models", json::array({{{"type", "NeoHookean"}, {"E", 1e5}, {"nu", 0.3}}, {{"type", "InversionBarrier"}, {"E", 1e5}, {"nu", 0.3}, {"JBarrierThreshold", 2}}})}};
 	args["space"]["discr_order"] = order;
 	args["contact"]["enabled"] = false;
 	args["output"]["log"]["quiet"] = true;
@@ -100,7 +116,7 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		autogen::p_nodes_3d(order, nodes);
 	for (int layout = 0; layout < 3; ++layout)
 	{
-		CAPTURE(dim, order, layout);
+		CAPTURE(dim, order, layout, material);
 		io::OutputSample sample;
 		sample.local_points.resize(2 * nodes.rows() + 1, dim);
 		sample.element_ids.resize(sample.local_points.rows());
@@ -116,6 +132,7 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		sample.local_points.bottomRows(1).setZero();
 		sample.element_ids.tail(1).setConstant(-1);
 		sample.points = sample.local_points;
+		sample.time = 0.125;
 		const auto fields = form.output_fields(sample, solution, {});
 		const auto field_values = [&](const std::string &name) -> const Eigen::MatrixXd & {
 			const auto it = std::find_if(fields.begin(), fields.end(), [&](const auto &field) { return field.name == name; });
@@ -126,10 +143,12 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		{
 			const int e = sample.element_ids(row);
 			const Eigen::MatrixXd point = sample.local_points.row(row);
-			const assembler::OutputData data(0, e, (*debug.bases)[e], (*debug.geometry_bases)[e], point, solution);
+			const assembler::OutputData data(sample.time, e, (*debug.bases)[e], (*debug.geometry_bases)[e], point, solution);
 			std::vector<assembler::Assembler::NamedMatrix> scalar, tensor;
-			debug.assembler->compute_scalar_value(data, scalar);
 			const auto &elasticity = dynamic_cast<const assembler::ElasticityAssembler &>(*debug.assembler);
+			Eigen::MatrixXd von_mises;
+			elasticity.compute_von_mises_stresses(data, von_mises);
+			scalar.emplace_back("von_mises", std::move(von_mises));
 			const std::vector<std::pair<std::string, ElasticityTensorType>> tensor_types = {
 				{"cauchy_stess", ElasticityTensorType::CAUCHY},
 				{"pk1_stess", ElasticityTensorType::PK1},
@@ -183,6 +202,39 @@ TEST_CASE("output statistics are initialized", "[output]")
 	CHECK(stats.min_edge_length == 0);
 	CHECK(stats.nn_zero == 0);
 	CHECK(stats.simplex_count == 0);
+}
+
+TEST_CASE("absolute AMIPS output preserves undefined stresses", "[output]")
+{
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi elements(1, 3);
+	elements << 0, 1, 2;
+	json args;
+	args["geometry"][0]["mesh"] = "";
+	args["materials"] = {{"type", "AMIPS"}, {"use_rest_pose", false}};
+	args["contact"]["enabled"] = false;
+	args["output"]["log"]["quiet"] = true;
+	args["output"]["log"]["level"] = "error";
+	State state;
+	state.init(args, true);
+	state.set_mesh(vertices, elements);
+	auto &form = *state.variational_formulation;
+	test::VarFormTestAccess::prepare(form);
+	const auto debug = test::VarFormTestAccess::debug_data(form);
+	const Eigen::MatrixXd solution = Eigen::MatrixXd::Zero(2 * debug.n_bases, 1);
+	io::OutputSample sample;
+	autogen::p_nodes_2d(1, sample.local_points);
+	sample.points = sample.local_points;
+	sample.element_ids = Eigen::VectorXi::Zero(sample.local_points.rows());
+	for (const auto &field : form.output_fields(sample, solution, {}))
+	{
+		CAPTURE(field.name);
+		if (field.name.find("stess") != std::string::npos || field.name.find("von_mises") != std::string::npos)
+			CHECK(field.values.array().isNaN().all());
+		else
+			CHECK(field.values.allFinite());
+	}
 }
 
 #ifdef NDEBUG

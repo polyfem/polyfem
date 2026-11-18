@@ -175,50 +175,16 @@ namespace polyfem
 			}
 		}
 
-		void LinearElasticity::assign_stress_tensor(
-			const OutputData &data,
-			const int all_size,
-			const ElasticityTensorType &type,
-			Eigen::MatrixXd &all,
-			const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+		bool LinearElasticity::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+													 const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 		{
-			const auto &displacement = data.fun;
 			const auto &local_pts = data.local_pts;
-			const auto &bs = data.bs;
-			const auto &gbs = data.gbs;
-			const auto el_id = data.el_id;
 			const auto t = data.t;
-
-			all.resize(local_pts.rows(), all_size);
-			assert(displacement.cols() == 1);
-
-			Eigen::MatrixXd displacement_grad(size(), size());
-
-			ElementAssemblyValues vals;
-			vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-
-			for (long p = 0; p < local_pts.rows(); ++p)
-			{
-				compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-				if (type == ElasticityTensorType::F)
-				{
-					all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-					continue;
-				}
-
-				double lambda, mu;
-				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
-
-				const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
-				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
-				if (type == ElasticityTensorType::PK1)
-					stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-				else if (type == ElasticityTensorType::PK2)
-					stress = pk2_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-
-				all.row(p) = fun(stress);
-			}
+			double lambda, mu;
+			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+			const MatrixNd strain = (displacement_grad + displacement_grad.transpose()) / 2;
+			output.native = 2 * mu * strain + lambda * strain.trace() * MatrixNd::Identity(size(), size());
+			return true;
 		}
 
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> LinearElasticity::kernel(const int dim, const AutodiffGradPt &r, const AutodiffScalarGrad &) const

@@ -3,6 +3,7 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <igl/Timer.h>
 
@@ -19,6 +20,158 @@ namespace polyfem::assembler
 	using namespace basis;
 	using namespace quadrature;
 	using namespace utils;
+
+	const MatrixNd &ElasticityAssembler::OutputStress::inverse()
+	{
+		if (!inverse_ready_)
+		{
+			inverse_ = deformation_.inverse();
+			inverse_ready_ = true;
+		}
+		return inverse_;
+	}
+
+	double ElasticityAssembler::OutputStress::determinant()
+	{
+		if (!determinant_ready_)
+		{
+			determinant_ = native_type == ElasticityTensorType::PK1
+							   ? utils::determinant(deformation_)
+							   : deformation_.determinant();
+			determinant_ready_ = true;
+		}
+		return determinant_;
+	}
+
+	const MatrixNd &ElasticityAssembler::OutputStress::tensor(const ElasticityTensorType type)
+	{
+		if (type == ElasticityTensorType::F)
+			return deformation_;
+		if (type == native_type)
+			return native;
+		// Preserve the existing Cauchy-to-PK behavior for NaN inputs.
+		if (native_type == ElasticityTensorType::CAUCHY && (native.hasNaN() || deformation_.hasNaN()))
+			return deformation_;
+		const int index = static_cast<int>(type);
+		assert(index >= 0 && index < 3);
+		if (!computed_[index])
+		{
+			if (native_type == ElasticityTensorType::PK1)
+			{
+				if (type == ElasticityTensorType::CAUCHY)
+					tensors_[index] = (native * deformation_.transpose()) / determinant();
+				else
+					tensors_[index] = inverse() * native;
+			}
+			else if (type == ElasticityTensorType::PK1)
+				tensors_[index] = determinant() * native * inverse().transpose();
+			else
+				tensors_[index] = determinant() * inverse() * native * inverse().transpose();
+			computed_[index] = true;
+		}
+		return tensors_[index];
+	}
+
+	bool ElasticityAssembler::evaluate_output_stress(
+		const OutputData &data, const bool need_stress,
+		const std::function<void(Eigen::Index, OutputStress &)> &emit) const
+	{
+		assert(data.fun.cols() == 1);
+		ElementAssemblyValues vals;
+		vals.compute(data.el_id, size() == 3, data.local_pts, data.bs, data.gbs);
+		MatrixNd gradient(size(), size());
+		for (Eigen::Index p = 0; p < data.local_pts.rows(); ++p)
+		{
+			gradient.setZero();
+			for (int j = 0; j < data.bs.bases.size(); ++j)
+				for (int d = 0; d < size(); ++d)
+					for (const auto &global : data.bs.bases[j].global())
+						gradient.row(d) += global.val * vals.basis_values[j].grad.row(p) * data.fun(global.index * size() + d);
+			gradient = (gradient * vals.jac_it[p]).eval();
+			const MatrixNd deformation = MatrixNd::Identity(size(), size()) + gradient;
+			OutputStress stress(deformation);
+			if (need_stress && !compute_output_stress(data, vals, p, gradient, stress))
+				return false;
+			emit(p, stress);
+		}
+		return true;
+	}
+
+	void ElasticityAssembler::assign_stress_tensor(
+		const OutputData &data, const int all_size, const ElasticityTensorType &type,
+		Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	{
+		all.resize(data.local_pts.rows(), all_size);
+		Eigen::MatrixXd tensor(size(), size());
+		const bool supported = evaluate_output_stress(data, type != ElasticityTensorType::F, [&](Eigen::Index p, OutputStress &stress) {
+			if (type != ElasticityTensorType::F && !stress.has_stress)
+				all.row(p).setConstant(std::nan(""));
+			else
+			{
+				tensor = stress.tensor(type);
+				all.row(p) = fun(tensor);
+			}
+		});
+		if (!supported)
+			log_and_throw_error("Output stress is not implemented by {}", name());
+	}
+
+	void ElasticityAssembler::compute_scalar_value(const OutputData &data, std::vector<NamedMatrix> &result) const
+	{
+		compute_output_values(data, &result, nullptr);
+	}
+
+	void ElasticityAssembler::compute_tensor_value(const OutputData &data, std::vector<NamedMatrix> &result) const
+	{
+		compute_output_values(data, nullptr, &result);
+	}
+
+	void ElasticityAssembler::compute_output_values(
+		const OutputData &data, std::vector<NamedMatrix> *scalar, std::vector<NamedMatrix> *tensor) const
+	{
+		if (!scalar && !tensor)
+			return;
+		if (scalar)
+		{
+			scalar->clear();
+			scalar->emplace_back("von_mises", Eigen::MatrixXd(data.local_pts.rows(), 1));
+		}
+		if (tensor)
+		{
+			tensor->clear();
+			for (const char *field : {"cauchy_stess", "pk1_stess", "pk2_stess", "F"})
+				tensor->emplace_back(field, Eigen::MatrixXd(data.local_pts.rows(), size() * size()));
+		}
+		const bool supported = evaluate_output_stress(data, true, [&](Eigen::Index p, OutputStress &stress) {
+			if (scalar)
+				(*scalar)[0].second(p) = stress.has_stress
+											 ? von_mises_stress_for_stress_tensor(stress.tensor(ElasticityTensorType::CAUCHY))
+											 : std::nan("");
+			if (tensor)
+			{
+				for (int k = 0; k < 3; ++k)
+				{
+					if (stress.has_stress)
+					{
+						const auto &value = stress.tensor(static_cast<ElasticityTensorType>(k));
+						(*tensor)[k].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(value.data(), size() * size());
+					}
+					else
+						(*tensor)[k].second.row(p).setConstant(std::nan(""));
+				}
+				const auto &F = stress.deformation();
+				(*tensor)[3].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(F.data(), size() * size());
+			}
+		});
+		if (!supported)
+		{
+			if (scalar)
+				compute_von_mises_stresses(data, (*scalar)[0].second);
+			if (tensor)
+				for (int k = 0; k < 4; ++k)
+					compute_stress_tensor(data, static_cast<ElasticityTensorType>(k), (*tensor)[k].second);
+		}
+	}
 
 	namespace
 	{

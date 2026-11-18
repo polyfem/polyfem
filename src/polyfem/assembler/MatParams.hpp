@@ -82,7 +82,8 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit, const io::ResourceIO &resources);
 
 		void lambda_mu(double px, double py, double pz, double x, double y, double z, double t, int el_id, double &lambda, double &mu) const;
-		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id, double &lambda, double &mu) const
+		template <typename Param, typename Point>
+		void lambda_mu(const Eigen::MatrixBase<Param> &param, const Eigen::MatrixBase<Point> &p, double t, int el_id, double &lambda, double &mu) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
 			assert(param.size() == p.size());
@@ -91,6 +92,10 @@ namespace polyfem::assembler
 				p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 				t,
 				el_id, lambda, mu);
+		}
+		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id, double &lambda, double &mu) const
+		{
+			lambda_mu<Eigen::MatrixXd, Eigen::MatrixXd>(param, p, t, el_id, lambda, mu);
 		}
 
 		Eigen::MatrixXd lambda_mat_, mu_mat_;

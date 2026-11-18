@@ -27,78 +27,28 @@ namespace polyfem::assembler
 	}
 
 	template <typename Derived>
-	void GenericElastic<Derived>::assign_stress_tensor(
-		const OutputData &data,
-		const int all_size,
-		const ElasticityTensorType &type,
-		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool GenericElastic<Derived>::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+														const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		Eigen::MatrixXd deformation_grad(size(), size());
-		Eigen::MatrixXd stress_tensor(size(), size());
-
+		const auto &deformation = output.deformation();
 		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
-
-		const auto &displacement = data.fun;
-		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-		DiffScalarBase::setVariableCount(deformation_grad.size());
-
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-
-		for (long p = 0; p < local_pts.rows(); ++p)
+		DiffScalarBase::setVariableCount(size() * size());
+		if (!derived().real_def_grad(vals.val.row(p), data.t, data.el_id))
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, deformation_grad);
-
-			// Id + grad d
-			for (int d = 0; d < size(); ++d)
-				deformation_grad(d, d) += 1;
-
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(deformation_grad);
-				continue;
-			}
-
-			// Absolute mode measures distortion from the regular element, not a stress.
-			if (!derived().real_def_grad(vals.val.row(p), data.t, el_id))
-			{
-				all.row(p).setConstant(std::nan(""));
-				continue;
-			}
-
-			for (int d1 = 0; d1 < size(); ++d1)
-			{
-				for (int d2 = 0; d2 < size(); ++d2)
-					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
-			}
-
-			const auto val = derived().elastic_energy(local_pts.row(p), data.t, vals.element_id, def_grad);
-
-			for (int d1 = 0; d1 < size(); ++d1)
-			{
-				for (int d2 = 0; d2 < size(); ++d2)
-					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
-			}
-
-			stress_tensor = 1.0 / deformation_grad.determinant() * stress_tensor * deformation_grad.transpose();
-
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, deformation_grad);
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, deformation_grad);
-
-			all.row(p) = fun(stress_tensor);
+			output.has_stress = false;
+			return true;
 		}
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		for (int d1 = 0; d1 < size(); ++d1)
+			for (int d2 = 0; d2 < size(); ++d2)
+				def_grad(d1, d2) = Diff(d1 * size() + d2, deformation(d1, d2));
+		const auto val = derived().elastic_energy(data.local_pts.row(p), data.t, vals.element_id, def_grad);
+		MatrixNd stress_tensor(size(), size());
+		for (int d1 = 0; d1 < size(); ++d1)
+			for (int d2 = 0; d2 < size(); ++d2)
+				stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
+		output.native = 1.0 / deformation.determinant() * stress_tensor * deformation.transpose();
+		return true;
 	}
 
 	template <typename Derived>

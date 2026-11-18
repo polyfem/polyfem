@@ -248,86 +248,19 @@ namespace polyfem::assembler
 		});
 	}
 
-	Eigen::MatrixXd NeoHookeanElasticity::cauchy_stress(
-		const OutputData &data, const ElementAssemblyValues &vals,
-		const Eigen::Index point, const Eigen::MatrixXd &deformation) const
+	bool NeoHookeanElasticity::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+													 const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto uv = data.local_pts.row(point);
-		const auto position = vals.val.row(point);
-		double lambda, mu;
-		params_.lambda_mu(
-			uv(0), uv(1), size() == 3 ? uv(2) : 0.0,
-			position(0), position(1), size() == 3 ? position(2) : 0.0,
-			data.t, vals.element_id, lambda, mu);
-		const double J = polyfem::utils::determinant(deformation);
-		const Eigen::MatrixXd b = deformation * deformation.transpose();
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-		return (lambda * std::log(J) * I + mu * (b - I)) / J;
-	}
-
-	void NeoHookeanElasticity::compute_tensor_value(const OutputData &data, std::vector<NamedMatrix> &result) const
-	{
-		assert(data.fun.cols() == 1);
-		result.clear();
-		for (const char *name : {"cauchy_stess", "pk1_stess", "pk2_stess", "F"})
-			result.emplace_back(name, Eigen::MatrixXd(data.local_pts.rows(), size() * size()));
-		ElementAssemblyValues vals;
-		vals.compute(data.el_id, size() == 3, data.local_pts, data.bs, data.gbs);
-		Eigen::MatrixXd gradient(size(), size());
-		for (Eigen::Index p = 0; p < data.local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), data.bs, vals, data.local_pts, p, data.fun, gradient);
-			const Eigen::MatrixXd deformation = Eigen::MatrixXd::Identity(size(), size()) + gradient;
-			const Eigen::MatrixXd stress = cauchy_stress(data, vals, p, deformation);
-			result[0].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(stress.data(), size() * size());
-			Eigen::MatrixXd transformed = pk1_from_cauchy(stress, deformation);
-			result[1].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(transformed.data(), size() * size());
-			transformed = pk2_from_cauchy(stress, deformation);
-			result[2].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(transformed.data(), size() * size());
-			result[3].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(deformation.data(), size() * size());
-		}
-	}
-
-	void NeoHookeanElasticity::assign_stress_tensor(const OutputData &data,
-													const int all_size,
-													const ElasticityTensorType &type,
-													Eigen::MatrixXd &all,
-													const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
-	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(def_grad);
-				continue;
-			}
-			Eigen::MatrixXd stress_tensor = cauchy_stress(data, vals, p, def_grad);
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, def_grad);
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, def_grad);
-
-			all.row(p) = fun(stress_tensor);
-		}
+		const auto t = data.t;
+		const auto &def_grad = output.deformation();
+		double lambda, mu;
+		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		const double J = polyfem::utils::determinant(def_grad);
+		const MatrixNd b = def_grad * def_grad.transpose();
+		const auto I = MatrixNd::Identity(size(), size());
+		output.native = (lambda * std::log(J) * I + mu * (b - I)) / J;
+		return true;
 	}
 
 	double NeoHookeanElasticity::compute_energy(const NonLinearAssemblerData &data) const

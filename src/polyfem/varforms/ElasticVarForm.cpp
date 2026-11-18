@@ -566,38 +566,51 @@ namespace polyfem::varform
 
 		std::vector<std::pair<std::string, int>> raw_scalar_fields, raw_tensor_fields;
 		bool all_scalar_fields = false, all_tensor_fields = false;
+		const bool sample_scalar = scalar_values && !problem->is_scalar() && has_element_samples
+								   && (options.fields.empty() || options.export_field("von_mises"));
+		const bool sample_tensor = tensor_values && !problem->is_scalar() && has_element_samples
+								   && (options.fields.empty() || options.export_field("cauchy_stess") || options.export_field("pk1_stess")
+									   || options.export_field("pk2_stess") || options.export_field("F"));
+		bool stress_sampled = false;
+		std::vector<assembler::Assembler::NamedMatrix> sampled_scalar, sampled_tensor;
 		const auto sample_stress_values = [&](const bool tensor) {
-			std::vector<assembler::Assembler::NamedMatrix> point_values, local_values;
-			for (int begin = 0; begin < sample.local_points.rows();)
+			if (!stress_sampled)
 			{
-				const int element_id = sample.element_ids(begin);
-				int end = begin + 1;
-				while (end < sample.local_points.rows() && sample.element_ids(end) == element_id)
-					++end;
-				if (element_id >= 0)
-				{
-					const Eigen::MatrixXd local_points = sample.local_points.middleRows(begin, end - begin);
-					const assembler::OutputData data(sample.time, element_id,
-													 space_.basis_list()[element_id], space_.geometry_basis_list()[element_id], local_points, solution);
-					if (tensor)
-						primary_assembler_->compute_tensor_value(data, local_values);
-					else
-						primary_assembler_->compute_scalar_value(data, local_values);
-					if (point_values.empty())
+				const auto scatter_values = [&](const auto &local, auto &points, int begin, int count) {
+					if (points.empty())
 					{
-						point_values.resize(local_values.size());
-						for (int k = 0; k < local_values.size(); ++k)
+						points.resize(local.size());
+						for (size_t k = 0; k < local.size(); ++k)
 						{
-							point_values[k].first = local_values[k].first;
-							point_values[k].second.setZero(output_rows, local_values[k].second.cols());
+							points[k].first = local[k].first;
+							points[k].second.setZero(output_rows, local[k].second.cols());
 						}
 					}
-					for (int k = 0; k < local_values.size(); ++k)
-						point_values[k].second.middleRows(begin, end - begin) = local_values[k].second;
+					for (size_t k = 0; k < local.size(); ++k)
+						points[k].second.middleRows(begin, count) = local[k].second;
+				};
+				std::vector<assembler::Assembler::NamedMatrix> local_scalar, local_tensor;
+				for (int begin = 0; begin < sample.local_points.rows();)
+				{
+					const int element_id = sample.element_ids(begin);
+					int end = begin + 1;
+					while (end < sample.local_points.rows() && sample.element_ids(end) == element_id)
+						++end;
+					if (element_id >= 0)
+					{
+						const Eigen::MatrixXd local_points = sample.local_points.middleRows(begin, end - begin);
+						const assembler::OutputData data(sample.time, element_id,
+														 space_.basis_list()[element_id], space_.geometry_basis_list()[element_id], local_points, solution);
+						primary_assembler_->compute_output_values(data,
+																  sample_scalar ? &local_scalar : nullptr, sample_tensor ? &local_tensor : nullptr);
+						scatter_values(local_scalar, sampled_scalar, begin, end - begin);
+						scatter_values(local_tensor, sampled_tensor, begin, end - begin);
+					}
+					begin = end;
 				}
-				begin = end;
+				stress_sampled = true;
 			}
-			return point_values;
+			return tensor ? std::move(sampled_tensor) : std::move(sampled_scalar);
 		};
 
 		const auto append_scalar_values = [&]() {
@@ -727,9 +740,16 @@ namespace polyfem::varform
 				const auto [begin, count] = sample_ranges[e];
 				const bool sampled_at_nodes = begin >= 0 && count == local_pts.rows()
 											  && (sample.local_points.middleRows(begin, count).array() == local_pts.array()).all();
+				const bool reuse_scalar = sampled_at_nodes && all_scalar_fields;
+				const bool reuse_tensor = sampled_at_nodes && all_tensor_fields;
+				if ((scalar_values && !reuse_scalar) || (tensor_values && !reuse_tensor))
+					primary_assembler_->compute_output_values(
+						assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution),
+						scalar_values && !reuse_scalar ? &tmp_s : nullptr,
+						tensor_values && !reuse_tensor ? &tmp_t : nullptr);
 				if (scalar_values)
 				{
-					if (sampled_at_nodes && all_scalar_fields)
+					if (reuse_scalar)
 					{
 						tmp_s.resize(raw_scalar_fields.size());
 						for (int k = 0; k < raw_scalar_fields.size(); ++k)
@@ -738,12 +758,10 @@ namespace polyfem::varform
 							tmp_s[k].second = fields[raw_scalar_fields[k].second].values.middleRows(begin, count);
 						}
 					}
-					else
-						primary_assembler_->compute_scalar_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_s);
 				}
 				if (tensor_values)
 				{
-					if (sampled_at_nodes && all_tensor_fields)
+					if (reuse_tensor)
 					{
 						tmp_t.resize(raw_tensor_fields.size());
 						for (int k = 0; k < raw_tensor_fields.size(); ++k)
@@ -755,8 +773,6 @@ namespace polyfem::varform
 									fields[raw_tensor_fields[k].second + d].values.middleRows(begin, count);
 						}
 					}
-					else
-						primary_assembler_->compute_tensor_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_t);
 				}
 
 				if (avg_scalar.empty() && !tmp_s.empty())

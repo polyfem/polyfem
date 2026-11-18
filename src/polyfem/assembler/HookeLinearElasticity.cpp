@@ -213,86 +213,55 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void HookeLinearElasticity::assign_stress_tensor(
-		const OutputData &data,
-		const int all_size,
-		const ElasticityTensorType &type,
-		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool HookeLinearElasticity::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+													  const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
 		const auto el_id = data.el_id;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-
-		for (long p = 0; p < local_pts.rows(); ++p)
+		const auto t = data.t;
+		ElasticityTensor elasticity_tensor;
+		if (fiber_direction_.has_rotation())
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(local_pts.row(p), vals.val.row(p), data.t, el_id);
 
-			ElasticityTensor elasticity_tensor;
-			if (fiber_direction_.has_rotation())
-			{
-				const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(local_pts.row(p), vals.val.row(p), data.t, el_id);
-
-				elasticity_tensor = elasticity_tensor_;
-				elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
-			}
-			else
-			{
-				elasticity_tensor = elasticity_tensor_;
-			}
-
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-				continue;
-			}
-
-			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
-			Eigen::MatrixXd sigma(size(), size());
-
-			if (size() == 2)
-			{
-				std::array<double, 3> eps;
-				eps[0] = strain(0, 0);
-				eps[1] = strain(1, 1);
-				eps[2] = 2 * strain(0, 1);
-
-				sigma << elasticity_tensor.compute_stress<3>(eps, 0), elasticity_tensor.compute_stress<3>(eps, 2),
-					elasticity_tensor.compute_stress<3>(eps, 2), elasticity_tensor.compute_stress<3>(eps, 1);
-			}
-			else
-			{
-				std::array<double, 6> eps;
-				eps[0] = strain(0, 0);
-				eps[1] = strain(1, 1);
-				eps[2] = strain(2, 2);
-				eps[3] = 2 * strain(1, 2);
-				eps[4] = 2 * strain(0, 2);
-				eps[5] = 2 * strain(0, 1);
-
-				sigma << elasticity_tensor.compute_stress<6>(eps, 0), elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 4),
-					elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 1), elasticity_tensor.compute_stress<6>(eps, 3),
-					elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
-			}
-
-			if (type == ElasticityTensorType::PK1)
-				sigma = pk1_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-			else if (type == ElasticityTensorType::PK2)
-				sigma = pk2_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-
-			all.row(p) = fun(sigma);
+			elasticity_tensor = elasticity_tensor_;
+			elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
 		}
+		else
+		{
+			elasticity_tensor = elasticity_tensor_;
+		}
+
+		MatrixNd strain = (displacement_grad + displacement_grad.transpose()) / 2;
+		MatrixNd sigma(size(), size());
+
+		if (size() == 2)
+		{
+			std::array<double, 3> eps;
+			eps[0] = strain(0, 0);
+			eps[1] = strain(1, 1);
+			eps[2] = 2 * strain(0, 1);
+
+			sigma << elasticity_tensor.compute_stress<3>(eps, 0), elasticity_tensor.compute_stress<3>(eps, 2),
+				elasticity_tensor.compute_stress<3>(eps, 2), elasticity_tensor.compute_stress<3>(eps, 1);
+		}
+		else
+		{
+			std::array<double, 6> eps;
+			eps[0] = strain(0, 0);
+			eps[1] = strain(1, 1);
+			eps[2] = strain(2, 2);
+			eps[3] = 2 * strain(1, 2);
+			eps[4] = 2 * strain(0, 2);
+			eps[5] = 2 * strain(0, 1);
+
+			sigma << elasticity_tensor.compute_stress<6>(eps, 0), elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 4),
+				elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 1), elasticity_tensor.compute_stress<6>(eps, 3),
+				elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
+		}
+
+		output.native = sigma;
+		return true;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
