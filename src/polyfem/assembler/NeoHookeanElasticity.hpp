@@ -87,9 +87,12 @@ namespace polyfem::assembler
 								  const ElasticityTensorType &type,
 								  Eigen::MatrixXd &all,
 								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		void compute_tensor_value(const OutputData &data, std::vector<NamedMatrix> &result) const override;
 
 	private:
 		LameParameters params_;
+		Eigen::MatrixXd cauchy_stress(const OutputData &data, const ElementAssemblyValues &vals,
+									  const Eigen::Index point, const Eigen::MatrixXd &deformation) const;
 
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T, int n_basis, int dim>

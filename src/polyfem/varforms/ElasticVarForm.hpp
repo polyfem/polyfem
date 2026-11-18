@@ -83,7 +83,8 @@ namespace polyfem::varform
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options,
-			const mesh::Obstacle *obstacle = nullptr) const;
+			const mesh::Obstacle *obstacle = nullptr,
+			const StiffnessMatrix *interpolation = nullptr) const;
 		Eigen::MatrixXd displaced_output_normals(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution) const;
