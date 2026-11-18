@@ -207,6 +207,7 @@ TEST_CASE("ALE Navier-Stokes FSI runs through State", "[varform][state][navier_s
 	const std::filesystem::path checkpoint_path = output_directory / "checkpoint-1.h5";
 	std::filesystem::remove_all(output_directory);
 	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/navier_stokes_transient.json");
+	args["/solver/advanced/cache_size"_json_pointer] = GENERATE(0, 900000);
 	args.erase("preset_problem");
 	args["geometry"] = {
 		{"mesh", std::string(POLYFEM_DATA_DIR) + "/contact/meshes/2D/simple/square.obj"},
