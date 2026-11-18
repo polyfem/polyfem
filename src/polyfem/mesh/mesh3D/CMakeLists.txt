@@ -1,6 +1,8 @@
 set(SOURCES
 	Mesh3D.cpp
 	Mesh3D.hpp
+	CellConnectivity.cpp
+	CellConnectivity.hpp
 	CMesh3D.cpp
 	CMesh3D.hpp
 	NCMesh3D.cpp

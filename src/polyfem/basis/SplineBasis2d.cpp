@@ -22,6 +22,7 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <set>
 
 // TODO carefull with simplices
 

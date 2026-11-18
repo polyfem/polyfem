@@ -513,8 +513,10 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	std::array<Eigen::MatrixXd, 5> strong;
 
 	// ass_val = [q_10, q_01, q_11, q_20, q_02, psi_0, ..., psi_k]
-	ElementAssemblyValues ass_val;
+	ElementAssemblyValues ass_val{};
 	ass_val.has_parameterization = false;
+	ass_val.quadrature = quadr;
+	ass_val.val = quadr.points;
 	ass_val.basis_values.resize(5 + num_kernels);
 
 	// evaluating monomial and grad of monomials at quad points
@@ -721,7 +723,8 @@ void RBFWithQuadratic::compute_weights(const LinearAssembler &assembler, const E
 		// Solve the system
 		const int num_kernels = centers_.rows();
 		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
-		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
+		// Factor the design matrix directly to avoid squaring its condition number.
+		weights_ = A.colPivHouseholderQr().solve(rhs);
 		logger().trace("-- Solved!");
 
 		return;
@@ -752,12 +755,8 @@ void RBFWithQuadratic::compute_weights(const LinearAssembler &assembler, const E
 #ifdef VERBOSE
 	logger().trace("-- Solving system of size {}x{}", L.cols(), L.cols());
 #endif
-	auto ldlt = (L.transpose() * A.transpose() * A * L).ldlt();
-	if (ldlt.info() == Eigen::NumericalIssue)
-	{
-		logger().error("-- WARNING: Numerical issues when solving the harmonic least square.");
-	}
-	weights_ += L * ldlt.solve(L.transpose() * A.transpose() * b);
+	const Eigen::MatrixXd reduced = A * L;
+	weights_ += L * reduced.colPivHouseholderQr().solve(b);
 #ifdef VERBOSE
 	logger().trace("-- Solved!");
 #endif
