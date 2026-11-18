@@ -23,10 +23,9 @@ namespace polyfem::assembler
 
 		weight_.add_multimaterial(index, params, "", resources);
 
-		json power_params = params;
-		power_.add_multimaterial(index, power_params, "", resources);
+		power_.add_multimaterial(index, params, "", resources);
 
-		normalized_.add_multimaterial(index, params.contains("normalized") ? params : json{{"normalized", false}}, "", resources);
+		normalized_.add_multimaterial(index, params, "", resources);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> AMIPSEnergy::parameters() const
