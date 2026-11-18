@@ -3,7 +3,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_multi_model.html#a77b2786e29b0c2ed670080c8d452098c", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_multi_model.html#a2129c1ca8ddd63ee7c7b36350523e366", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_multi_model.html#a6a5547e3ddfa78abdb9fb12af42b5a36", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a535cf3a88a39fa73b0e844597ddfdc35", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a170fd8f2d527aa132ce70288b80c9b32", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_multi_model.html#ab242fe537541a4cfdb4698754a026fa0", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_multi_model.html#a752227101e924df55c7542b2d7e60e0d", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_multi_model.html#a04885b411d242a2e7d5a8587e5e7740a", null ],

@@ -190,7 +190,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a96dfee30f817cfe008e3aefb04c3544b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const</td></tr>
 <tr class="memdesc:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
+<tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const</td></tr>
 <tr class="memdesc:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9da0c5d97cbb385ffc9b6685d29d06c inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_ab9da0c5d97cbb385ffc9b6685d29d06c"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c">max_step_size</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const</td></tr>
@@ -273,22 +273,22 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:adae507c0bc165e4fc5fef037c5c3d16f" id="r_adae507c0bc165e4fc5fef037c5c3d16f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> = std::array&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a>, 3 &gt;</td></tr>
-<tr class="separator:adae507c0bc165e4fc5fef037c5c3d16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3444052a0f6248ca5ad82a1e0fa9f5bd" id="r_a3444052a0f6248ca5ad82a1e0fa9f5bd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> = std::array&lt; const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> *, 3 &gt;</td></tr>
+<tr class="separator:a3444052a0f6248ca5ad82a1e0fa9f5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29b9b006e339c9ebe0f6f6dfb8c9acc0" id="r_a29b9b006e339c9ebe0f6f6dfb8c9acc0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a29b9b006e339c9ebe0f6f6dfb8c9acc0">LocalCoefficients</a> = std::array&lt; Eigen::VectorXd, 3 &gt;</td></tr>
 <tr class="separator:a29b9b006e339c9ebe0f6f6dfb8c9acc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a9703af5d4d75c2a2cc44f2d93dc18e08" id="r_a9703af5d4d75c2a2cc44f2d93dc18e08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a9703af5d4d75c2a2cc44f2d93dc18e08">compute_element_values</a> (int element, <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
-<tr class="separator:a9703af5d4d75c2a2cc44f2d93dc18e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ce51cf1bfb05c8c124524234255d0d9" id="r_a4ce51cf1bfb05c8c124524234255d0d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a4ce51cf1bfb05c8c124524234255d0d9">compute_element_values</a> (int element, std::array&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a>, 3 &gt; &amp;scratch, <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
+<tr class="separator:a4ce51cf1bfb05c8c124524234255d0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accbb2e900d556d85ac9934410d4af5cf" id="r_accbb2e900d556d85ac9934410d4af5cf"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#accbb2e900d556d85ac9934410d4af5cf">gather</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, int components, int global_offset) const</td></tr>
 <tr class="separator:accbb2e900d556d85ac9934410d4af5cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb0117ea52a6675c085f978c8b229233" id="r_acb0117ea52a6675c085f978c8b229233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#acb0117ea52a6675c085f978c8b229233">scatter_local_residual</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::VectorXd &amp;local, Eigen::VectorXd &amp;global) const</td></tr>
+<tr class="memitem:acb0117ea52a6675c085f978c8b229233" id="r_acb0117ea52a6675c085f978c8b229233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#acb0117ea52a6675c085f978c8b229233">scatter_local_residual</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::VectorXd &amp;local, Eigen::VectorXd &amp;global) const</td></tr>
 <tr class="separator:acb0117ea52a6675c085f978c8b229233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada84db6e401727dc15a0031b05e177cb" id="r_ada84db6e401727dc15a0031b05e177cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#ada84db6e401727dc15a0031b05e177cb">scatter_local_block</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, int row_space, int col_space, const Eigen::MatrixXd &amp;local, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>) const</td></tr>
-<tr class="separator:ada84db6e401727dc15a0031b05e177cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dfba4096256877e82eb12fd4f4ac43a" id="r_a1dfba4096256877e82eb12fd4f4ac43a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_assembler_data.html">assembler::NavierStokesFSIAssemblerData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a1dfba4096256877e82eb12fd4f4ac43a">make_data</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a29b9b006e339c9ebe0f6f6dfb8c9acc0">LocalCoefficients</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a29b9b006e339c9ebe0f6f6dfb8c9acc0">LocalCoefficients</a> &amp;x_prev, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>, const Eigen::VectorXd &amp;velocity_tilde, const Eigen::VectorXd &amp;mesh_velocity) const</td></tr>
+<tr class="memitem:a07acf3166ac577fbff834f8c653f7a9c" id="r_a07acf3166ac577fbff834f8c653f7a9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a07acf3166ac577fbff834f8c653f7a9c">scatter_local_block</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, int row_space, int col_space, const Eigen::Ref&lt; const Eigen::MatrixXd &gt; &amp;local, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>) const</td></tr>
+<tr class="separator:a07acf3166ac577fbff834f8c653f7a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dfba4096256877e82eb12fd4f4ac43a" id="r_a1dfba4096256877e82eb12fd4f4ac43a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_assembler_data.html">assembler::NavierStokesFSIAssemblerData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a1dfba4096256877e82eb12fd4f4ac43a">make_data</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a29b9b006e339c9ebe0f6f6dfb8c9acc0">LocalCoefficients</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a29b9b006e339c9ebe0f6f6dfb8c9acc0">LocalCoefficients</a> &amp;x_prev, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>, const Eigen::VectorXd &amp;velocity_tilde, const Eigen::VectorXd &amp;mesh_velocity) const</td></tr>
 <tr class="separator:a1dfba4096256877e82eb12fd4f4ac43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4da0c16dbeaba0cebdfde30566c58c05" id="r_a4da0c16dbeaba0cebdfde30566c58c05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a4da0c16dbeaba0cebdfde30566c58c05">has_valid_ale_mapping</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
 <tr class="separator:a4da0c16dbeaba0cebdfde30566c58c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -393,8 +393,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="adae507c0bc165e4fc5fef037c5c3d16f" name="adae507c0bc165e4fc5fef037c5c3d16f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adae507c0bc165e4fc5fef037c5c3d16f">&#9670;&#160;</a></span>SpaceValues</h2>
+<a id="a3444052a0f6248ca5ad82a1e0fa9f5bd" name="a3444052a0f6248ca5ad82a1e0fa9f5bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3444052a0f6248ca5ad82a1e0fa9f5bd">&#9670;&#160;</a></span>SpaceValues</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -403,7 +403,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">polyfem::solver::NavierStokesFSIForm::SpaceValues</a> =  std::array&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a>, 3&gt;</td>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">polyfem::solver::NavierStokesFSIForm::SpaceValues</a> =  std::array&lt;const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> *, 3&gt;</td>
         </tr>
       </table>
   </td>
@@ -556,13 +556,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00201">201</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00205">205</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a9703af5d4d75c2a2cc44f2d93dc18e08" name="a9703af5d4d75c2a2cc44f2d93dc18e08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9703af5d4d75c2a2cc44f2d93dc18e08">&#9670;&#160;</a></span>compute_element_values()</h2>
+<a id="a4ce51cf1bfb05c8c124524234255d0d9" name="a4ce51cf1bfb05c8c124524234255d0d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ce51cf1bfb05c8c124524234255d0d9">&#9670;&#160;</a></span>compute_element_values()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -571,7 +571,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::NavierStokesFSIForm::compute_element_values </td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">NavierStokesFSIForm::SpaceValues</a> polyfem::solver::NavierStokesFSIForm::compute_element_values </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>element</em>, </td>
@@ -579,8 +579,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;&#160;</td>
-          <td class="paramname"><em>vals</em>, </td>
+          <td class="paramtype">std::array&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a>, 3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -601,15 +601,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">246</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">250</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00138">bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00140">caches_</a>, <a class="el" href="_assembler_8cpp_source.html#l00028">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00146">is_volume_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00138">bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00140">caches_</a>, <a class="el" href="_assembler_8cpp_source.html#l00044">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00146">is_volume_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_a9703af5d4d75c2a2cc44f2d93dc18e08_icgraph.svg" width="100%" height="470"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_a4ce51cf1bfb05c8c124524234255d0d9_icgraph.svg" width="100%" height="470"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -659,11 +659,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">345</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">352</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00141">assemblers_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_assembler_8cpp_source.html#l00028">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00268">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00303">scatter_local_residual()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">total_size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00148">velocity_tilde_updater_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">x_prev_</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator::x_tilde()</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00141">assemblers_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_assembler_8cpp_source.html#l00044">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00275">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00310">scatter_local_residual()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">total_size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00148">velocity_tilde_updater_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">x_prev_</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator::x_tilde()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00385">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -723,11 +723,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00268">268</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00275">275</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -760,11 +760,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">447</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">461</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>, <a class="el" href="_assembler_8cpp_source.html#l00028">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00268">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>, <a class="el" href="_assembler_8cpp_source.html#l00044">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00275">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00471">is_step_valid()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00485">is_step_valid()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -824,9 +824,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00471">471</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00485">485</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -847,7 +847,7 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="memname"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_assembler_data.html">assembler::NavierStokesFSIAssemblerData</a> polyfem::solver::NavierStokesFSIForm::make_data </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;&#160;</td>
           <td class="paramname"><em>vals</em>, </td>
         </tr>
         <tr>
@@ -893,11 +893,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">282</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">289</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator::acceleration_scaling()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00147">body_force_evaluator_</a>, <a class="el" href="_assembler_8cpp_source.html#l00028">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00145">dt_</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator::acceleration_scaling()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00147">body_force_evaluator_</a>, <a class="el" href="_assembler_8cpp_source.html#l00044">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00145">dt_</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -938,7 +938,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1005,8 +1005,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ada84db6e401727dc15a0031b05e177cb" name="ada84db6e401727dc15a0031b05e177cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada84db6e401727dc15a0031b05e177cb">&#9670;&#160;</a></span>scatter_local_block()</h2>
+<a id="a07acf3166ac577fbff834f8c653f7a9c" name="a07acf3166ac577fbff834f8c653f7a9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07acf3166ac577fbff834f8c653f7a9c">&#9670;&#160;</a></span>scatter_local_block()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1017,7 +1017,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::solver::NavierStokesFSIForm::scatter_local_block </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;&#160;</td>
           <td class="paramname"><em>vals</em>, </td>
         </tr>
         <tr>
@@ -1035,7 +1035,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">const Eigen::Ref&lt; const Eigen::MatrixXd &gt; &amp;&#160;</td>
           <td class="paramname"><em>local</em>, </td>
         </tr>
         <tr>
@@ -1057,20 +1057,20 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00317">317</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00324">324</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, and <a class="el" href="_form_8hpp_source.html#l00026">polyfem::solver::Form::value()</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, and <a class="el" href="_form_8hpp_source.html#l00026">polyfem::solver::Form::value()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_ada84db6e401727dc15a0031b05e177cb_cgraph.svg" width="654" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_a07acf3166ac577fbff834f8c653f7a9c_cgraph.svg" width="654" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_ada84db6e401727dc15a0031b05e177cb_icgraph.svg" width="494" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form_a07acf3166ac577fbff834f8c653f7a9c_icgraph.svg" width="494" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1087,7 +1087,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::solver::NavierStokesFSIForm::scatter_local_residual </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#adae507c0bc165e4fc5fef037c5c3d16f">SpaceValues</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a3444052a0f6248ca5ad82a1e0fa9f5bd">SpaceValues</a> &amp;&#160;</td>
           <td class="paramname"><em>vals</em>, </td>
         </tr>
         <tr>
@@ -1115,11 +1115,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00303">303</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00310">310</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1173,9 +1173,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">392</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">399</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00141">assemblers_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_assembler_8cpp_source.html#l00028">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00268">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00317">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">total_size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00027">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00148">velocity_tilde_updater_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">x_prev_</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator::x_tilde()</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00141">assemblers_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">components_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_assembler_8cpp_source.html#l00044">da</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">dim_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00275">gather()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">geom_bases_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">global_offsets_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">mesh_displacement_time_integrator_</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00020">polyfem::assembler::LocalHessian::resize()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00324">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">total_size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00148">velocity_tilde_updater_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">velocity_time_integrator_</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">x_prev_</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1259,7 +1259,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00440">440</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00454">454</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">t_</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">total_size_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">x_prev_</a>.</p>
 
@@ -1300,9 +1300,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00385">385</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">392</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html">NavierStokesFSIForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1338,7 +1338,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">global_sizes_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1370,7 +1370,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00141">141</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1396,7 +1396,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00138">138</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>.</p>
 
 </div>
 </div>
@@ -1422,7 +1422,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00147">147</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>.</p>
 
 </div>
 </div>
@@ -1448,7 +1448,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00140">140</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>.</p>
 
 </div>
 </div>
@@ -1474,7 +1474,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00135">135</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00317">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00303">scatter_local_residual()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00324">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00310">scatter_local_residual()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1500,7 +1500,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00133">133</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1526,7 +1526,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00145">145</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>.</p>
 
 </div>
 </div>
@@ -1552,7 +1552,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00139">139</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1578,7 +1578,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00136">136</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00447">has_valid_ale_mapping()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00317">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00303">scatter_local_residual()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00461">has_valid_ale_mapping()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00324">scatter_local_block()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00310">scatter_local_residual()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1604,7 +1604,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00137">137</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00102">pressure_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00103">mesh_displacement_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00102">pressure_ndof()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00101">velocity_ndof()</a>.</p>
 
 </div>
 </div>
@@ -1630,7 +1630,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00146">146</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00246">compute_element_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00250">compute_element_values()</a>.</p>
 
 </div>
 </div>
@@ -1656,7 +1656,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00143">143</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1706,7 +1706,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00144">144</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00440">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00454">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -1732,7 +1732,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00132">132</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00440">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00454">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -1758,7 +1758,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00148">148</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00098">set_velocity_tilde_updater()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00098">set_velocity_tilde_updater()</a>.</p>
 
 </div>
 </div>
@@ -1784,7 +1784,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00142">142</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00282">make_data()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00289">make_data()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1810,7 +1810,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html#l00149">149</a> of file <a class="el" href="_navier_stokes_f_s_i_form_8hpp_source.html">NavierStokesFSIForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00345">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00392">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00440">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00352">first_derivative_unweighted()</a>, <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00399">second_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_f_s_i_form_8cpp_source.html#l00454">update_quantities()</a>.</p>
 
 </div>
 </div>

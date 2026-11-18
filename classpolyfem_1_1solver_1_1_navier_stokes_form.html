@@ -170,7 +170,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a96dfee30f817cfe008e3aefb04c3544b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const</td></tr>
 <tr class="memdesc:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
+<tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const</td></tr>
 <tr class="memdesc:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f6226a2602f5ca5bc5c9a93f7a12fd4 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a6f6226a2602f5ca5bc5c9a93f7a12fd4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4">is_step_valid</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const</td></tr>
@@ -418,13 +418,13 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_form_8cpp_source.html#l00037">37</a> of file <a class="el" href="_navier_stokes_form_8cpp_source.html">NavierStokesForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_form_8hpp_source.html#l00047">ass_vals_cache_</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00045">polyfem::assembler::NavierStokesVelocity::assemble_hessian()</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00043">bases_</a>, <a class="el" href="_assembler_8cpp_source.html#l00026">cache</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00044">geom_bases_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00049">is_volume_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00042">n_bases_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00046">navier_stokes_assembler_</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00049">polyfem::assembler::NavierStokesVelocity::set_picard()</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00048">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_form_8hpp_source.html#l00047">ass_vals_cache_</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00046">polyfem::assembler::NavierStokesVelocity::assemble_hessian()</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00043">bases_</a>, <a class="el" href="_assembler_8cpp_source.html#l00042">cache</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00044">geom_bases_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00049">is_volume_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00042">n_bases_</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00046">navier_stokes_assembler_</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00049">polyfem::assembler::NavierStokesVelocity::set_picard()</a>, <a class="el" href="_navier_stokes_form_8hpp_source.html#l00048">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_navier_stokes_form_8cpp_source.html#l00053">first_derivative_unweighted()</a>, and <a class="el" href="_navier_stokes_form_8cpp_source.html#l00061">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_a3c7ec7a5bc996bc33ce6ed29c7e622a8_cgraph.svg" width="100%" height="450"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_a3c7ec7a5bc996bc33ce6ed29c7e622a8_cgraph.svg" width="100%" height="469"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -522,7 +522,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_a93184ec549a5e68e53175fd690ee7ba5_cgraph.svg" width="100%" height="450"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_a93184ec549a5e68e53175fd690ee7ba5_cgraph.svg" width="100%" height="469"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -607,7 +607,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_acc6b0a4de09a3aa4536a86eddf439774_cgraph.svg" width="100%" height="450"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_form_acc6b0a4de09a3aa4536a86eddf439774_cgraph.svg" width="100%" height="469"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

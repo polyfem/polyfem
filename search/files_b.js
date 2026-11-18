@@ -20,6 +20,7 @@ var searchData=
   ['linequadrature_2ehpp_17',['LineQuadrature.hpp',['../_line_quadrature_8hpp.html',1,'']]],
   ['localboundary_2ecpp_18',['LocalBoundary.cpp',['../_local_boundary_8cpp.html',1,'']]],
   ['localboundary_2ehpp_19',['LocalBoundary.hpp',['../_local_boundary_8hpp.html',1,'']]],
-  ['logger_2ecpp_20',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
-  ['logger_2ehpp_21',['Logger.hpp',['../_logger_8hpp.html',1,'']]]
+  ['localhessian_2ehpp_20',['LocalHessian.hpp',['../_local_hessian_8hpp.html',1,'']]],
+  ['logger_2ecpp_21',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
+  ['logger_2ehpp_22',['Logger.hpp',['../_logger_8hpp.html',1,'']]]
 ];

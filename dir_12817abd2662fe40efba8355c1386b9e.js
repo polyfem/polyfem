@@ -49,6 +49,7 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "Laplacian.hpp", "_laplacian_8hpp.html", "_laplacian_8hpp" ],
     [ "LinearElasticity.cpp", "_linear_elasticity_8cpp.html", null ],
     [ "LinearElasticity.hpp", "_linear_elasticity_8hpp.html", "_linear_elasticity_8hpp" ],
+    [ "LocalHessian.hpp", "_local_hessian_8hpp.html", "_local_hessian_8hpp" ],
     [ "MacroStrain.hpp", "_macro_strain_8hpp.html", "_macro_strain_8hpp" ],
     [ "Mass.cpp", "_mass_8cpp.html", null ],
     [ "Mass.hpp", "_mass_8hpp.html", "_mass_8hpp" ],

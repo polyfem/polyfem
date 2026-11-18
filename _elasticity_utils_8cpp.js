@@ -9,7 +9,7 @@ var _elasticity_utils_8cpp =
     [ "d_E_nu_d_lambda_mu", "_elasticity_utils_8cpp.html#ae2ee1fd43a8bc67f783f3caeae1ab194", null ],
     [ "d_lambda_mu_d_E_nu", "_elasticity_utils_8cpp.html#af50dca98c7a28e276c5b3cc9ab6c622e", null ],
     [ "gradient_from_energy", "_elasticity_utils_8cpp.html#acf04b657153af8a5f4d2269617e8555c", null ],
-    [ "hessian_from_energy", "_elasticity_utils_8cpp.html#a62aec6e705390cac4c531c6bf2cd7441", null ],
+    [ "hessian_from_energy", "_elasticity_utils_8cpp.html#accb2e9831f785bccaa4876d33eecc09a", null ],
     [ "pk1_from_cauchy", "_elasticity_utils_8cpp.html#aaf867383bfea72c587035f4e3346bb21", null ],
     [ "pk2_from_cauchy", "_elasticity_utils_8cpp.html#a2e0e4c0eef41d449e66abee527fc8e13", null ],
     [ "von_mises_stress_for_stress_tensor", "_elasticity_utils_8cpp.html#a99d54b5136c9fd5b53151e3ae47bad34", null ]

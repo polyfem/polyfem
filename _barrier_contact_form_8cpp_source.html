@@ -329,7 +329,7 @@ $(document).ready(function(){initNavTree('_barrier_contact_form_8cpp_source.html
 </div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
 <div class="foldopen" id="foldopen00190" data-start="{" data-end="}">
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a1e777797edf8bcb45893c036c7b2fc96">  190</a></span>    <span class="keywordtype">void</span> BarrierContactForm::second_derivative_unweighted(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a1e777797edf8bcb45893c036c7b2fc96">  190</a></span>    <span class="keywordtype">void</span> BarrierContactForm::second_derivative_unweighted(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_define" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;barrier hessian&quot;</span>);</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
@@ -344,8 +344,8 @@ $(document).ready(function(){initNavTree('_barrier_contact_form_8cpp_source.html
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            psd_projection_method = ipc::PSDProjectionMethod::NONE;</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>), psd_projection_method);</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        hessian = collision_mesh_.to_full_dof(hessian);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a> = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>), psd_projection_method);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a> = collision_mesh_.to_full_dof(<a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>);</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
 </div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
@@ -395,6 +395,7 @@ $(document).ready(function(){initNavTree('_barrier_contact_form_8cpp_source.html
 </div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>} <span class="comment">// namespace polyfem::solver</span></div>
 <div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00051">AdjointNLProblem.cpp:51</a></div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a0a5b4b9805e4eb9b8f739bf6b799c6fc"><div class="ttname"><a href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a></div><div class="ttdeci">LocalHessian hessian</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00045">Assembler.cpp:45</a></div></div>
 <div class="ttc" id="a_barrier_contact_form_8hpp_html"><div class="ttname"><a href="_barrier_contact_form_8hpp.html">BarrierContactForm.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_maybe_parallel_for_8hpp_html"><div class="ttname"><a href="_maybe_parallel_for_8hpp.html">MaybeParallelFor.hpp</a></div></div>

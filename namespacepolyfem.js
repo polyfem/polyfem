@@ -145,7 +145,7 @@ var namespacepolyfem =
     [ "get_local_disp", "namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35", null ],
     [ "gradient_from_energy", "namespacepolyfem.html#af67ac2f505cacb0b0f006754bf981929", null ],
     [ "gradient_from_energy", "namespacepolyfem.html#acf04b657153af8a5f4d2269617e8555c", null ],
-    [ "hessian_from_energy", "namespacepolyfem.html#a62aec6e705390cac4c531c6bf2cd7441", null ],
+    [ "hessian_from_energy", "namespacepolyfem.html#accb2e9831f785bccaa4876d33eecc09a", null ],
     [ "log_and_throw_adjoint_error", "namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777", null ],
     [ "log_and_throw_adjoint_error", "namespacepolyfem.html#a7c6826a8f33961afdbfb91fd443fac97", null ],
     [ "log_and_throw_error", "namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391", null ],

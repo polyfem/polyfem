@@ -1,11 +1,13 @@
 var classpolyfem_1_1utils_1_1_sparse_matrix_cache =
 [
+    [ "CachedElementWriter", "structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer.html", "structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer" ],
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad5282b44d29a0897bda1ee57477a3406", null ],
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ac9d3d45537e88f3bed63aa741fcc9062", null ],
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a1113a13ce876ac5b12816ad85b7c04e6", null ],
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#acf443ca25c9a8f42eb8ebaac65db771c", null ],
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a506debff160c1162e5cc28f553bb314b", null ],
     [ "add_value", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a23bb0c92d0709f13c317c7da13498c08", null ],
+    [ "cached_element_writer", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab9614bce5f9ea834a4aea60fc033c744", null ],
     [ "capacity", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5e85b367b1f622ecacefdf3e76dcf24f", null ],
     [ "copy", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad88a48a400a496954c400573daf100de", null ],
     [ "entries", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad648e9993048c63266f5d93dd1eabcb6", null ],

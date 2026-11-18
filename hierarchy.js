@@ -117,6 +117,7 @@ var hierarchy =
       [ "polyfem::BSplineParametrization2D", "classpolyfem_1_1_b_spline_parametrization2_d.html", null ],
       [ "polyfem::BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", null ]
     ] ],
+    [ "polyfem::utils::SparseMatrixCache::CachedElementWriter", "structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer.html", null ],
     [ "polyfem::mesh::CellDescriptor", "structpolyfem_1_1mesh_1_1_cell_descriptor.html", null ],
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", null ],
     [ "polyfem::io::CheckpointMetadata", "classpolyfem_1_1io_1_1_checkpoint_metadata.html", null ],
@@ -305,6 +306,7 @@ var hierarchy =
     [ "polyfem::io::LoadedInput", "classpolyfem_1_1io_1_1_loaded_input.html", null ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
+    [ "polyfem::assembler::LocalHessian", "classpolyfem_1_1assembler_1_1_local_hessian.html", null ],
     [ "polyfem::assembler::MacroStrainValue", "classpolyfem_1_1assembler_1_1_macro_strain_value.html", null ],
     [ "polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping", "structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html", null ],
     [ "polyfem::assembler::MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", null ],

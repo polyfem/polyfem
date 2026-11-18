@@ -159,10 +159,10 @@ $(document).ready(function(){initNavTree('_lagged_reg_form_8cpp_source.html','')
 </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">   26</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">LaggedRegForm::second_derivative_unweighted</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">   26</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">LaggedRegForm::second_derivative_unweighted</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        hessian.resize(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size(), <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size());</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        hessian.setIdentity();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>.resize(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size(), <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size());</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_variable" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>.setIdentity();</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
 </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
@@ -187,6 +187,7 @@ $(document).ready(function(){initNavTree('_lagged_reg_form_8cpp_source.html','')
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
 </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>} <span class="comment">// namespace polyfem::solver</span></div>
+<div class="ttc" id="a_assembler_8cpp_html_a0a5b4b9805e4eb9b8f739bf6b799c6fc"><div class="ttname"><a href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a></div><div class="ttdeci">LocalHessian hessian</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00045">Assembler.cpp:45</a></div></div>
 <div class="ttc" id="a_lagged_reg_form_8hpp_html"><div class="ttname"><a href="_lagged_reg_form_8hpp.html">LaggedRegForm.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>

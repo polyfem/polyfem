@@ -120,6 +120,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_sparse_matri
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -140,6 +141,11 @@ Collaboration diagram for polyfem::utils::SparseMatrixCache:</div>
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache__coll__graph.svg" width="330" height="132"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer.html">CachedElementWriter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad5282b44d29a0897bda1ee57477a3406" id="r_ad5282b44d29a0897bda1ee57477a3406"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad5282b44d29a0897bda1ee57477a3406">SparseMatrixCache</a> ()</td></tr>
@@ -183,6 +189,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a93c3f213a2d270904a85bc7f09ec3c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dda2dd2b80dc6b1c30447f152f12ccf" id="r_a8dda2dd2b80dc6b1c30447f152f12ccf"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a8dda2dd2b80dc6b1c30447f152f12ccf">mapping_size</a> () const</td></tr>
 <tr class="separator:a8dda2dd2b80dc6b1c30447f152f12ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9614bce5f9ea834a4aea60fc033c744" id="r_ab9614bce5f9ea834a4aea60fc033c744"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer.html">CachedElementWriter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab9614bce5f9ea834a4aea60fc033c744">cached_element_writer</a> (int element)</td></tr>
+<tr class="separator:ab9614bce5f9ea834a4aea60fc033c744"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23bb0c92d0709f13c317c7da13498c08" id="r_a23bb0c92d0709f13c317c7da13498c08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a23bb0c92d0709f13c317c7da13498c08">add_value</a> (const int e, const int i, const int j, const double value) override</td></tr>
 <tr class="memdesc:a23bb0c92d0709f13c317c7da13498c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">e = element_index, i = global row_index, j = global column_index, value = value to add to matrix if the cache is yet to be constructed, save the row, column, and value to be added to the second cache in this case, modifies_ entries_ and second_cache_entries_ otherwise, save the value directly in the second cache in this case, modfies values_  <br /></td></tr>
 <tr class="separator:a23bb0c92d0709f13c317c7da13498c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -303,9 +311,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00008">8</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00010">10</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -340,9 +348,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00013">13</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00015">15</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -367,9 +375,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00018">18</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00020">20</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -404,9 +412,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00023">23</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00025">25</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -466,13 +474,48 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a04e70368c86530cc8de1aa9f8a76b369">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00088">88</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00090">90</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00117">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00118">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00130">second_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00116">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00130">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00131">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00143">second_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00129">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a23bb0c92d0709f13c317c7da13498c08_cgraph.svg" width="100%" height="394"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ab9614bce5f9ea834a4aea60fc033c744" name="ab9614bce5f9ea834a4aea60fc033c744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9614bce5f9ea834a4aea60fc033c744">&#9670;&#160;</a></span>cached_element_writer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpolyfem_1_1utils_1_1_sparse_matrix_cache_1_1_cached_element_writer.html">CachedElementWriter</a> polyfem::utils::SparseMatrixCache::cached_element_writer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>element</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00088">88</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00143">second_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ab9614bce5f9ea834a4aea60fc033c744_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -504,7 +547,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00074">74</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>.</p>
 
 </div>
 </div>
@@ -560,9 +603,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00104">104</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00117">117</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>.</p>
 
 </div>
 </div>
@@ -593,7 +636,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00073">73</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>.</p>
 
 </div>
 </div>
@@ -625,9 +668,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5e50a47fc4b8b2589dac15a4c5507412">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00134">134</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00136">136</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00117">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00118">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00111">inner_index_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00113">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00110">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00111">outer_index_</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00115">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00115">second_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00116">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00107">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00130">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00131">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00124">inner_index_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00126">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00123">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00124">outer_index_</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00117">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00128">second_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00129">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -664,9 +707,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a232dc628927c72ab3f3e38af902c8711">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00049">49</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00051">51</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -713,9 +756,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a84ca46b3720b37aae6a5b734f4758f1c">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00039">39</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00041">41</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00107">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00108">tmp_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00121">tmp_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -752,11 +795,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abc98dcf108be9cb0137b54bf066dd853">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00029">29</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00031">31</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00107">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00108">tmp_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00121">tmp_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00049">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00018">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00013">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00008">SparseMatrixCache()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00023">SparseMatrixCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00051">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00020">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00015">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00010">SparseMatrixCache()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00025">SparseMatrixCache()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -798,9 +841,9 @@ Here is the caller graph for this function:</div>
 
 <p>set matrix to be a matrix of all zeros with same size as other (potentially with the same main cache) </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00056">56</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00058">58</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00113">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00107">size_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00126">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">size_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -861,11 +904,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00120">120</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00133">133</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00113">main_cache_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00126">main_cache_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00130">second_cache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00143">second_cache()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -897,11 +940,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00125">125</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00138">138</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00110">mapping_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00123">mapping_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00115">prune()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00041">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00117">prune()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -940,7 +983,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00078">78</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00110">mapping_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00123">mapping_</a>.</p>
 
 </div>
 </div>
@@ -967,9 +1010,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00103">103</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00116">116</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1043,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00075">75</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00110">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00123">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 
 </div>
 </div>
@@ -1030,7 +1073,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a9e463c7b874a8d4e5e08944a7321f4a4">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00230">230</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00242">242</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
 </div>
 </div>
@@ -1050,9 +1093,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00236">236</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00248">248</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00111">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00111">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00116">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00124">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00124">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00129">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1087,7 +1130,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a3e0b5275ad08d9e70b99421b863fec20">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00283">283</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00295">295</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
 </div>
 </div>
@@ -1107,9 +1150,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00289">289</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00301">301</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00111">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00111">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00116">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00124">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00124">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00129">second_cache_entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1146,11 +1189,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abe75eb5d0a9c0a020700073937662cd0">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00115">115</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00117">117</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00108">tmp_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00121">tmp_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1192,7 +1235,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00072">72</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>.</p>
 
 </div>
 </div>
@@ -1219,11 +1262,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00130">130</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00143">143</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00115">second_cache_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00128">second_cache_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00088">cached_element_writer()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1232,7 +1275,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a9f0e5ccd48cbbcdb758f7893eceb3d60_icgraph.svg" width="470" height="56"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a9f0e5ccd48cbbcdb758f7893eceb3d60_icgraph.svg" width="486" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1264,9 +1307,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5ce8cbccca5d025593149ac5f6d5c0e9">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00080">80</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00082">82</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00108">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00112">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00121">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00125">values_</a>.</p>
 
 </div>
 </div>
@@ -1297,7 +1340,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00076">76</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00109">entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00108">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00122">entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00121">mat_</a>.</p>
 
 </div>
 </div>
@@ -1322,9 +1365,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00117">117</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00130">130</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>.</p>
 
 </div>
 </div>
@@ -1348,9 +1391,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00118">118</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00131">131</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>.</p>
 
 </div>
 </div>
@@ -1376,9 +1419,9 @@ Here is the caller graph for this function:</div>
 
 <p>contains global matrix indices and corresponding value </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00109">109</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00122">122</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00074">capacity()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">entries()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00073">entries_size()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00115">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00072">reserve()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00076">triplet_count()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00074">capacity()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00117">entries()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00073">entries_size()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00117">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00072">reserve()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00076">triplet_count()</a>.</p>
 
 </div>
 </div>
@@ -1402,9 +1445,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00111">111</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00124">124</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1428,9 +1471,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00113">113</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00126">126</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00120">main_cache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00133">main_cache()</a>.</p>
 
 </div>
 </div>
@@ -1456,9 +1499,9 @@ Here is the caller graph for this function:</div>
 
 <p>maps row indices to column index/local index pairs </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00110">110</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00123">123</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00125">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00078">mapping_size()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00138">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00078">mapping_size()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>.</p>
 
 </div>
 </div>
@@ -1482,9 +1525,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00108">108</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00121">121</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00103">mat()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00115">prune()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00076">triplet_count()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00041">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00116">mat()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00117">prune()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00082">set_zero()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00076">triplet_count()</a>.</p>
 
 </div>
 </div>
@@ -1510,9 +1553,9 @@ Here is the caller graph for this function:</div>
 
 <p>saves inner/outer indices for sparse matrix </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00111">111</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00124">124</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1538,9 +1581,9 @@ Here is the caller graph for this function:</div>
 
 <p>maps element index to local index </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00115">115</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00128">128</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00130">second_cache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00143">second_cache()</a>.</p>
 
 </div>
 </div>
@@ -1566,9 +1609,9 @@ Here is the caller graph for this function:</div>
 
 <p>maps element indices to global matrix indices </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00116">116</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00129">129</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1592,9 +1635,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00107">107</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00120">120</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00041">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>.</p>
 
 </div>
 </div>
@@ -1618,9 +1661,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00108">108</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00121">121</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00115">prune()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00041">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00031">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00117">prune()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00082">set_zero()</a>.</p>
 
 </div>
 </div>
@@ -1646,9 +1689,9 @@ Here is the caller graph for this function:</div>
 
 <p>buffer for values (corresponds to inner/outer_index_ structure for sparse matrix) </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00112">112</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00125">125</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00134">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00236">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00289">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00090">add_value()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00088">cached_element_writer()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00136">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00058">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00075">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00301">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00082">set_zero()</a>.</p>
 
 </div>
 </div>

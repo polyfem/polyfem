@@ -153,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:accadfe6af0a8927e865be10eec393d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fdadb530a0d81164630edb50294a249" id="r_a7fdadb530a0d81164630edb50294a249"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a7fdadb530a0d81164630edb50294a249">assemble_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data) const override</td></tr>
 <tr class="separator:a7fdadb530a0d81164630edb50294a249"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a259992cd0b5d7e2eaa3fe44c3952ed33" id="r_a259992cd0b5d7e2eaa3fe44c3952ed33"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a259992cd0b5d7e2eaa3fe44c3952ed33">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data, int row_space, int col_space) const override</td></tr>
-<tr class="separator:a259992cd0b5d7e2eaa3fe44c3952ed33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33d5f43dd82e458dbdd3ee374f2fcb26" id="r_a33d5f43dd82e458dbdd3ee374f2fcb26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a33d5f43dd82e458dbdd3ee374f2fcb26">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data, int row_space, int col_space, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const override</td></tr>
+<tr class="separator:a33d5f43dd82e458dbdd3ee374f2fcb26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fae02d0f44e709f45c8ea276e7ac9bd" id="r_a5fae02d0f44e709f45c8ea276e7ac9bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a5fae02d0f44e709f45c8ea276e7ac9bd">is_fluid</a> () const override</td></tr>
 <tr class="separator:a5fae02d0f44e709f45c8ea276e7ac9bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93891f0869f3eca325d6b73874dfc079" id="r_a93891f0869f3eca325d6b73874dfc079"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a93891f0869f3eca325d6b73874dfc079">is_tensor</a> () const override</td></tr>
@@ -302,7 +302,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00195">195</a> of file <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html">NavierStokesFSI.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00523">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00078">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_units_8hpp_source.html#l00028">polyfem::Units::density()</a>, <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">density_</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_units_8hpp_source.html#l00034">polyfem::Units::viscosity()</a>, and <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00523">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00078">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_units_8hpp_source.html#l00028">polyfem::Units::density()</a>, <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">density_</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_units_8hpp_source.html#l00034">polyfem::Units::viscosity()</a>, and <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -343,8 +343,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a259992cd0b5d7e2eaa3fe44c3952ed33" name="a259992cd0b5d7e2eaa3fe44c3952ed33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a259992cd0b5d7e2eaa3fe44c3952ed33">&#9670;&#160;</a></span>assemble_hessian()</h2>
+<a id="a33d5f43dd82e458dbdd3ee374f2fcb26" name="a33d5f43dd82e458dbdd3ee374f2fcb26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d5f43dd82e458dbdd3ee374f2fcb26">&#9670;&#160;</a></span>assemble_hessian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -353,7 +353,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd polyfem::assembler::NavierStokesFSIVelocity::assemble_hessian </td>
+          <td class="memname">void polyfem::assembler::NavierStokesFSIVelocity::assemble_hessian </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -368,7 +368,13 @@ Here is the call graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>col_space</em>&#160;</td>
+          <td class="paramname"><em>col_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -383,11 +389,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a0d134fbbf1c0b7f8e74fb656a7e14664">polyfem::assembler::MultiSpacesNLAssembler</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a6acc1095db5aca4f88440d24a2f9fb64">polyfem::assembler::MultiSpacesNLAssembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00253">253</a> of file <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html">NavierStokesFSI.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">density_</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00059">F_inv</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, and <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">density_</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00059">F_inv</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, and <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">viscosity_</a>.</p>
 
 </div>
 </div>
@@ -540,7 +546,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00375">375</a> of file <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html">NavierStokesFSI.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00376">376</a> of file <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html">NavierStokesFSI.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">density_</a>, and <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">viscosity_</a>.</p>
 
@@ -569,7 +575,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00081">81</a> of file <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html">NavierStokesFSI.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00195">add_multimaterial()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00208">assemble_gradient()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00253">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00375">parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00195">add_multimaterial()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00208">assemble_gradient()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00253">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00376">parameters()</a>.</p>
 
 </div>
 </div>
@@ -595,7 +601,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html#l00080">80</a> of file <a class="el" href="_navier_stokes_f_s_i_8hpp_source.html">NavierStokesFSI.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00195">add_multimaterial()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00208">assemble_gradient()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00253">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00375">parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00195">add_multimaterial()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00208">assemble_gradient()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00253">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00376">parameters()</a>.</p>
 
 </div>
 </div>

@@ -19,7 +19,7 @@ var _elasticity_utils_8hpp =
     [ "first_invariant", "_elasticity_utils_8hpp.html#aa181bc58c3a1b62840a1af8c8c651142", null ],
     [ "get_local_disp", "_elasticity_utils_8hpp.html#aa3c7c48e526af400b4beb3738e168c35", null ],
     [ "gradient_from_energy", "_elasticity_utils_8hpp.html#af67ac2f505cacb0b0f006754bf981929", null ],
-    [ "hessian_from_energy", "_elasticity_utils_8hpp.html#a62aec6e705390cac4c531c6bf2cd7441", null ],
+    [ "hessian_from_energy", "_elasticity_utils_8hpp.html#accb2e9831f785bccaa4876d33eecc09a", null ],
     [ "pk1_from_cauchy", "_elasticity_utils_8hpp.html#aaf867383bfea72c587035f4e3346bb21", null ],
     [ "pk2_from_cauchy", "_elasticity_utils_8hpp.html#a2e0e4c0eef41d449e66abee527fc8e13", null ],
     [ "second_invariant", "_elasticity_utils_8hpp.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],

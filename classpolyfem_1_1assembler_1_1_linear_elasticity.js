@@ -6,7 +6,7 @@ var classpolyfem_1_1assembler_1_1_linear_elasticity =
     [ "assemble", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa1a862bfc2bad0bfb530e5575a040d78", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#adc7b5a738074ba44208a49ea1027fd14", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a526a044ad0a5c294c982d0a10dd9613f", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a9d537c9389851edc2d9345184d00b776", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#aecfa9de4e318d8d77a80eb1e7905e239", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a73b0200a86f253dd7e1cb70bb696041f", null ],
     [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a487478d9cd202dddbf01901a119c0e26", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#ab79fcf0e691ac9c51f3dc08167d2bbfc", null ],

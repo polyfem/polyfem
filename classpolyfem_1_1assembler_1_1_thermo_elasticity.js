@@ -6,7 +6,7 @@ var classpolyfem_1_1assembler_1_1_thermo_elasticity =
     [ "cols", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a647ed72ef0b0987e535af5bbe4b90f42", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a4a0b91ad0778bc0d15ff49414ca3228a", null ],
     [ "compute_gradient", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a74f64d75b8ca10152bd7728ad17c0b59", null ],
-    [ "compute_hessian", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a98830c997776ca264aa62e99dd72e7ea", null ],
+    [ "compute_hessian", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a7da16b23f10d328fbf5ae49f3824098e", null ],
     [ "model", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a72d26b33f0fd1ac810546de236329206", null ],
     [ "model", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#aedf72ccd1e2edd9c4db73382b6c990fb", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html#abd5203e35eb89e1b14af448e1904f589", null ],

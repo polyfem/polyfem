@@ -160,7 +160,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a977842d69b890f40f60b6e306b41efa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b46719271b9c104022eb3aee0ccfee3" id="r_a1b46719271b9c104022eb3aee0ccfee3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a1b46719271b9c104022eb3aee0ccfee3">assemble_gradient</a> (const bool is_volume, const int n_psi_basis, const int n_phi_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;psi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;phi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;psi_cache, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;phi_cache, const double t, const double dt, const Eigen::MatrixXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const Eigen::MatrixXd &amp;x_prev, const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#ab2b5ab053261c67bdac25d22f6adab8d">SolutionSplitter</a> &amp;split_solution, Eigen::MatrixXd &amp;grad) const</td></tr>
 <tr class="separator:a1b46719271b9c104022eb3aee0ccfee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f3f0a567cedcbf94ed1565402ccad7b" id="r_a7f3f0a567cedcbf94ed1565402ccad7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a7f3f0a567cedcbf94ed1565402ccad7b">assemble_hessian</a> (const bool is_volume, const int n_psi_basis, const int n_phi_basis, const bool project_to_psd, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;psi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;phi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;psi_cache, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;phi_cache, const double t, const double dt, const Eigen::MatrixXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const Eigen::MatrixXd &amp;x_prev, const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#ab2b5ab053261c67bdac25d22f6adab8d">SolutionSplitter</a> &amp;split_solution, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">utils::MatrixCache</a> &amp;mat_cache, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
+<tr class="memitem:a7f3f0a567cedcbf94ed1565402ccad7b" id="r_a7f3f0a567cedcbf94ed1565402ccad7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a7f3f0a567cedcbf94ed1565402ccad7b">assemble_hessian</a> (const bool is_volume, const int n_psi_basis, const int n_phi_basis, const bool project_to_psd, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;psi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;phi_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;psi_cache, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;phi_cache, const double t, const double dt, const Eigen::MatrixXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const Eigen::MatrixXd &amp;x_prev, const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#ab2b5ab053261c67bdac25d22f6adab8d">SolutionSplitter</a> &amp;split_solution, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">utils::MatrixCache</a> &amp;mat_cache, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const</td></tr>
 <tr class="separator:a7f3f0a567cedcbf94ed1565402ccad7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a0600d3aedd4a08864bb729b2091313" id="r_a8a0600d3aedd4a08864bb729b2091313"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a8a0600d3aedd4a08864bb729b2091313">is_linear</a> () const override</td></tr>
 <tr class="separator:a8a0600d3aedd4a08864bb729b2091313"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -230,8 +230,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a5080cfe6f0a54512b94ca1dc6b8b05ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad79e1949d52410a1f715e010921bee7" id="r_aad79e1949d52410a1f715e010921bee7"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aad79e1949d52410a1f715e010921bee7">compute_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
 <tr class="separator:aad79e1949d52410a1f715e010921bee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae89f34535e140bae27a14e01b464027" id="r_aae89f34535e140bae27a14e01b464027"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aae89f34535e140bae27a14e01b464027">compute_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
-<tr class="separator:aae89f34535e140bae27a14e01b464027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e575b5ed204b1547772c573aa0ca4af" id="r_a3e575b5ed204b1547772c573aa0ca4af"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a3e575b5ed204b1547772c573aa0ca4af">compute_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const =0</td></tr>
+<tr class="separator:a3e575b5ed204b1547772c573aa0ca4af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -241,7 +241,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00209">209</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00210">210</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ab2b5ab053261c67bdac25d22f6adab8d" name="ab2b5ab053261c67bdac25d22f6adab8d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab2b5ab053261c67bdac25d22f6adab8d">&#9670;&#160;</a></span>SolutionSplitter</h2>
@@ -255,7 +255,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00212">212</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00213">213</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -378,11 +378,11 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00580">580</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00593">593</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a5080cfe6f0a54512b94ca1dc6b8b05ae">compute_energy()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a5080cfe6f0a54512b94ca1dc6b8b05ae">compute_energy()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00640">assemble_energy_per_element()</a>, and <a class="el" href="_mixed_assembler_form_8cpp_source.html#l00050">polyfem::solver::MixedAssemblerForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00652">assemble_energy_per_element()</a>, and <a class="el" href="_mixed_assembler_form_8cpp_source.html#l00050">polyfem::solver::MixedAssemblerForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -468,7 +468,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac4d96c45f51580d6d96e356bc1b0abc4">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00082">82</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00083">83</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -564,9 +564,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00640">640</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00652">652</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00580">assemble_energy()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a5080cfe6f0a54512b94ca1dc6b8b05ae">compute_energy()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00593">assemble_energy()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a5080cfe6f0a54512b94ca1dc6b8b05ae">compute_energy()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mixed_assembler_form_8cpp_source.html#l00061">polyfem::solver::MixedAssemblerForm::value_per_element_unweighted()</a>.</p>
 <div class="dynheader">
@@ -654,7 +654,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7de3ff4c52f6f157d8bab2b26e8df014">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00092">92</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00093">93</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -742,7 +742,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a9a642ff7af46139d5097c853e20770a4">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00103">103</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00104">104</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -844,9 +844,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00706">706</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00717">717</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aad79e1949d52410a1f715e010921bee7">compute_gradient()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aad79e1949d52410a1f715e010921bee7">compute_gradient()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mixed_assembler_form_8cpp_source.html#l00074">polyfem::solver::MixedAssemblerForm::first_derivative_unweighted()</a>.</p>
 <div class="dynheader">
@@ -958,7 +958,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abee5f6717dfe53dfb6adc153a96c1512">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00116">116</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00117">117</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1072,9 +1072,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00795">795</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00805">805</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aae89f34535e140bae27a14e01b464027">compute_hessian()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5e50a47fc4b8b2589dac15a4c5507412">polyfem::utils::MatrixCache::get_matrix()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abc98dcf108be9cb0137b54bf066dd853">polyfem::utils::MatrixCache::init()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5ce8cbccca5d025593149ac5f6d5c0e9">polyfem::utils::MatrixCache::set_zero()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec">cols()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a3e575b5ed204b1547772c573aa0ca4af">compute_hessian()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5e50a47fc4b8b2589dac15a4c5507412">polyfem::utils::MatrixCache::get_matrix()</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abc98dcf108be9cb0137b54bf066dd853">polyfem::utils::MatrixCache::init()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b">rows()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5ce8cbccca5d025593149ac5f6d5c0e9">polyfem::utils::MatrixCache::set_zero()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mixed_assembler_form_8cpp_source.html#l00090">polyfem::solver::MixedAssemblerForm::second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
@@ -1115,7 +1115,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a647ed72ef0b0987e535af5bbe4b90f42">polyfem::assembler::ThermoElasticity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00580">assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00640">assemble_energy_per_element()</a>, <a class="el" href="_assembler_8cpp_source.html#l00706">assemble_gradient()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00795">assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00593">assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00652">assemble_energy_per_element()</a>, <a class="el" href="_assembler_8cpp_source.html#l00717">assemble_gradient()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00805">assemble_hessian()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1150,7 +1150,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a4a0b91ad0778bc0d15ff49414ca3228a">polyfem::assembler::ThermoElasticity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00580">assemble_energy()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00640">assemble_energy_per_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00593">assemble_energy()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00652">assemble_energy_per_element()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1185,7 +1185,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a74f64d75b8ca10152bd7728ad17c0b59">polyfem::assembler::ThermoElasticity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00706">assemble_gradient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00717">assemble_gradient()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1194,8 +1194,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aae89f34535e140bae27a14e01b464027" name="aae89f34535e140bae27a14e01b464027"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae89f34535e140bae27a14e01b464027">&#9670;&#160;</a></span>compute_hessian()</h2>
+<a id="a3e575b5ed204b1547772c573aa0ca4af" name="a3e575b5ed204b1547772c573aa0ca4af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e575b5ed204b1547772c573aa0ca4af">&#9670;&#160;</a></span>compute_hessian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1204,11 +1204,21 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual Eigen::MatrixXd polyfem::assembler::MixedNLAssembler::compute_hessian </td>
+          <td class="memname">virtual void polyfem::assembler::MixedNLAssembler::compute_hessian </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -1218,13 +1228,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a98830c997776ca264aa62e99dd72e7ea">polyfem::assembler::ThermoElasticity</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a7da16b23f10d328fbf5ae49f3824098e">polyfem::assembler::ThermoElasticity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00795">assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00805">assemble_hessian()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler_aae89f34535e140bae27a14e01b464027_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler_a3e575b5ed204b1547772c573aa0ca4af_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1254,7 +1264,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00288">288</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00289">289</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1283,7 +1293,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html#a3a9bbc57764d913721e6b4abff876e21">polyfem::assembler::ThermoElasticity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00580">assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00640">assemble_energy_per_element()</a>, <a class="el" href="_assembler_8cpp_source.html#l00706">assemble_gradient()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00795">assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00593">assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00652">assemble_energy_per_element()</a>, <a class="el" href="_assembler_8cpp_source.html#l00717">assemble_gradient()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00805">assemble_hessian()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

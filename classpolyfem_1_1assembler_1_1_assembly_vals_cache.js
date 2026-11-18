@@ -1,7 +1,9 @@
 var classpolyfem_1_1assembler_1_1_assembly_vals_cache =
 [
+    [ "cached_values", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5b45a78d0da5a10481b42bafbf6721ce", null ],
     [ "clear", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187", null ],
     [ "compute", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c", null ],
+    [ "get_or_compute", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#aad4ba2656450d8ac56a241d61832774b", null ],
     [ "init", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15", null ],
     [ "init_empty", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ab09fc4509586d8a21220a5b7aa53c943", null ],
     [ "is_initialized", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd", null ],

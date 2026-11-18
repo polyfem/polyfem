@@ -23,6 +23,7 @@ var searchData=
   ['loadedinput_20',['LoadedInput',['../classpolyfem_1_1io_1_1_loaded_input.html',1,'polyfem::io']]],
   ['local2global_21',['Local2Global',['../classpolyfem_1_1basis_1_1_local2_global.html',1,'polyfem::basis']]],
   ['localboundary_22',['LocalBoundary',['../classpolyfem_1_1mesh_1_1_local_boundary.html',1,'polyfem::mesh']]],
-  ['logcompositeform_23',['LogCompositeForm',['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver']]],
-  ['lshape_24',['Lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem']]]
+  ['localhessian_23',['LocalHessian',['../classpolyfem_1_1assembler_1_1_local_hessian.html',1,'polyfem::assembler']]],
+  ['logcompositeform_24',['LogCompositeForm',['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver']]],
+  ['lshape_25',['Lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem']]]
 ];

@@ -149,8 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1cb86e7ffb6665a1c03b287ed7f42d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a967c033ef9ae1ecb3a4130948c98aafb" id="r_a967c033ef9ae1ecb3a4130948c98aafb"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a967c033ef9ae1ecb3a4130948c98aafb">assemble_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data) const =0</td></tr>
 <tr class="separator:a967c033ef9ae1ecb3a4130948c98aafb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d134fbbf1c0b7f8e74fb656a7e14664" id="r_a0d134fbbf1c0b7f8e74fb656a7e14664"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a0d134fbbf1c0b7f8e74fb656a7e14664">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data, int row_space, int col_space) const =0</td></tr>
-<tr class="separator:a0d134fbbf1c0b7f8e74fb656a7e14664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6acc1095db5aca4f88440d24a2f9fb64" id="r_a6acc1095db5aca4f88440d24a2f9fb64"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a6acc1095db5aca4f88440d24a2f9fb64">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;data, int row_space, int col_space, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const =0</td></tr>
+<tr class="separator:a6acc1095db5aca4f88440d24a2f9fb64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae846d6eb119eb31716377bf4237ec38" id="r_aae846d6eb119eb31716377bf4237ec38"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#aae846d6eb119eb31716377bf4237ec38">is_linear</a> () const override</td></tr>
 <tr class="separator:aae846d6eb119eb31716377bf4237ec38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a642ff7af46139d5097c853e20770a4" id="r_a9a642ff7af46139d5097c853e20770a4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html#a9a642ff7af46139d5097c853e20770a4">assemble_gradient</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, const double t, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev, Eigen::MatrixXd &amp;rhs) const</td></tr>
@@ -224,7 +224,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Local nonlinear assembler for an arbitrary number of FE spaces. </p>
 <p>Unlike <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">NLAssembler</a> and <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html">MixedNLAssembler</a>, this class never performs global assembly. The owning form is responsible for element traversal and gather/scatter. </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00302">302</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00303">303</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab61d3741bc39e89ef50c6c6198ea18a4" name="ab61d3741bc39e89ef50c6c6198ea18a4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab61d3741bc39e89ef50c6c6198ea18a4">&#9670;&#160;</a></span>~MultiSpacesNLAssembler()</h2>
@@ -336,7 +336,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a9a642ff7af46139d5097c853e20770a4">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00103">103</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00104">104</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -464,12 +464,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abee5f6717dfe53dfb6adc153a96c1512">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00116">116</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00117">117</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a0d134fbbf1c0b7f8e74fb656a7e14664" name="a0d134fbbf1c0b7f8e74fb656a7e14664"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d134fbbf1c0b7f8e74fb656a7e14664">&#9670;&#160;</a></span>assemble_hessian() <span class="overload">[2/2]</span></h2>
+<a id="a6acc1095db5aca4f88440d24a2f9fb64" name="a6acc1095db5aca4f88440d24a2f9fb64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6acc1095db5aca4f88440d24a2f9fb64">&#9670;&#160;</a></span>assemble_hessian() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -478,7 +478,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual Eigen::MatrixXd polyfem::assembler::MultiSpacesNLAssembler::assemble_hessian </td>
+          <td class="memname">virtual void polyfem::assembler::MultiSpacesNLAssembler::assemble_hessian </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html">MultiSpacesNLAssemblerData</a> &amp;&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -493,7 +493,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>col_space</em>&#160;</td>
+          <td class="paramname"><em>col_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -508,7 +514,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a259992cd0b5d7e2eaa3fe44c3952ed33">polyfem::assembler::NavierStokesFSIVelocity</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_mixed.html#a9179a70047a57c004a7b2d0b52b39212">polyfem::assembler::NavierStokesFSIMixed</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_pressure.html#a9ae7dfa085592e44477786585df6ea23">polyfem::assembler::NavierStokesFSIPressure</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a1db016b777141001ec9fbcad2c7de075">polyfem::assembler::NavierStokesFSIInertia</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_velocity.html#a33d5f43dd82e458dbdd3ee374f2fcb26">polyfem::assembler::NavierStokesFSIVelocity</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_mixed.html#a8725a17bc303682c3b52c83e5f792a4e">polyfem::assembler::NavierStokesFSIMixed</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_pressure.html#a44405e895ac748972155c6f9c9adff20">polyfem::assembler::NavierStokesFSIPressure</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a3a1c3c545d87ebfc1b170f8b161bf222">polyfem::assembler::NavierStokesFSIInertia</a>.</p>
 
 </div>
 </div>
@@ -565,7 +571,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00317">317</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00319">319</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>

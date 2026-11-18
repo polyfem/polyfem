@@ -1,29 +1,35 @@
 <map id="polyfem::solver::NavierStokesFSIAveragePressureForm::second_derivative_unweighted" name="polyfem::solver::NavierStokesFSIAveragePressureForm::second_derivative_unweighted">
-<area shape="rect" id="Node000001" title="Compute the second derivative of the value wrt x." alt="" coords="5,182,242,244"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_average_pressure_form.html#a8ee5371f59d07bf71d7d7152f3acf36b" title=" " alt="" coords="290,144,537,205"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="241,195,276,192,272,194,243,200"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="331,229,496,274"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="242,226,318,238,313,240,242,231"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="retrieves cached basis evaluation and geometric for the given element if it doesn&#39;t exist,..." alt="" coords="600,58,760,120"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="511,140,587,118,583,120,513,145"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="585,144,775,205"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="537,172,572,174,567,175,538,177"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="823,5,1042,50"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="758,141,774,130,788,112,796,95,805,78,822,60,827,59,832,57,825,64,809,81,801,98,793,115,777,134,761,145"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="823,75,1042,119"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="775,143,841,125,846,123,777,148"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="837,144,1028,205"/>
-<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="776,172,825,174,819,175,776,177"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="837,229,1028,290"/>
-<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="774,203,827,223,822,223,773,208"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="837,314,1028,376"/>
-<area shape="poly" id="edge10_Node000004_Node000011" title=" " alt="" coords="761,203,777,215,794,237,802,259,809,280,825,300,829,306,824,304,821,304,804,282,797,261,789,240,773,219,760,208"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="1090,5,1308,50"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1042,25,1077,27,1071,28,1043,30"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="1090,75,1308,119"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1042,94,1077,97,1071,97,1043,100"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92" title="Compute the value of the form." alt="" coords="598,229,762,274"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="496,249,585,251,580,252,496,254"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="598,299,762,343"/>
-<area shape="poly" id="edge13_Node000012_Node000014" title=" " alt="" coords="496,270,586,296,580,296,496,276"/>
+<area shape="rect" id="Node000001" title="Compute the second derivative of the value wrt x." alt="" coords="5,481,242,542"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_average_pressure_form.html#a8ee5371f59d07bf71d7d7152f3acf36b" title=" " alt="" coords="290,442,537,504"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="241,493,277,491,272,493,243,498"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="331,528,496,573"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="242,525,318,537,313,538,242,530"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="585,186,775,248"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="445,440,633,260,638,258,449,444"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#aad4ba2656450d8ac56a241d61832774b" title="Returns cached values, or computes into scratch when the cache is empty." alt="" coords="600,442,760,504"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="537,470,587,473,582,473,538,476"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="823,5,1042,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="701,184,751,122,785,89,822,60,834,56,830,59,825,65,788,93,755,125,704,188"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="823,75,1042,119"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="726,183,772,156,822,129,841,124,836,126,824,134,774,160,729,188"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="837,144,1028,205"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="775,198,825,192,820,194,777,203"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="837,229,1028,290"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="776,230,825,241,820,242,776,236"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="837,314,1028,376"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="729,246,825,300,836,307,831,307,822,305,729,251"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="1090,5,1308,50"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1042,25,1077,27,1072,28,1043,30"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="1090,75,1308,119"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1042,94,1077,96,1072,98,1043,100"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5b45a78d0da5a10481b42bafbf6721ce" title=" " alt="" coords="852,400,1013,461"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="760,457,840,446,834,447,761,462"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="Copies cached values into vals, or computes into vals when the cache is empty." alt="" coords="852,485,1013,546"/>
+<area shape="poly" id="edge12_Node000011_Node000013" title=" " alt="" coords="761,484,840,499,834,500,761,489"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd" title=" " alt="" coords="852,570,1013,632"/>
+<area shape="poly" id="edge13_Node000011_Node000014" title=" " alt="" coords="756,502,777,514,801,535,825,556,841,567,836,566,822,561,797,539,774,518,755,507"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92" title="Compute the value of the form." alt="" coords="598,528,762,573"/>
+<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="496,548,585,550,580,551,496,553"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="598,597,762,642"/>
+<area shape="poly" id="edge16_Node000015_Node000017" title=" " alt="" coords="496,569,586,595,580,594,496,574"/>
 </map>

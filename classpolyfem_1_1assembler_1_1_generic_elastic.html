@@ -149,8 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a74e97bc9d3e075255e9bf0a75b977ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad98572dfc1d43134a9d1e2cb985290e1" id="r_ad98572dfc1d43134a9d1e2cb985290e1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ad98572dfc1d43134a9d1e2cb985290e1">compute_energy</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const override</td></tr>
 <tr class="separator:ad98572dfc1d43134a9d1e2cb985290e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a896f8a464b62e0250806325c63370cb2" id="r_a896f8a464b62e0250806325c63370cb2"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a896f8a464b62e0250806325c63370cb2">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const override</td></tr>
-<tr class="separator:a896f8a464b62e0250806325c63370cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7648a9d9b8e961ceb90c6993db488726" id="r_a7648a9d9b8e961ceb90c6993db488726"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a7648a9d9b8e961ceb90c6993db488726">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a2ca4c2128ba6cb135e8cb4575da5e8cb">hessian</a>) const override</td></tr>
+<tr class="separator:a7648a9d9b8e961ceb90c6993db488726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa84dfc9edb199e2634ba0fcc9d899da2" id="r_aa84dfc9edb199e2634ba0fcc9d899da2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#aa84dfc9edb199e2634ba0fcc9d899da2">assemble_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const override</td></tr>
 <tr class="separator:aa84dfc9edb199e2634ba0fcc9d899da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ee5632dfc7096b1ef7842c3ad9edb20" id="r_a0ee5632dfc7096b1ef7842c3ad9edb20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a0ee5632dfc7096b1ef7842c3ad9edb20">assign_stress_tensor</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, const int all_size, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const override</td></tr>
@@ -264,16 +264,16 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:adf501147e2009ccc941abb36db4cf911" id="r_adf501147e2009ccc941abb36db4cf911"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:adf501147e2009ccc941abb36db4cf911"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#adf501147e2009ccc941abb36db4cf911">compute_energy_aux</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
 <tr class="separator:adf501147e2009ccc941abb36db4cf911"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53a9cf2733fcbda72e0c663e3dc32009" id="r_a53a9cf2733fcbda72e0c663e3dc32009"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a53a9cf2733fcbda72e0c663e3dc32009">assemble_hessian_full_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
-<tr class="separator:a53a9cf2733fcbda72e0c663e3dc32009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6a35851f72e3fc7440cf3cbdb4bd3c1" id="r_af6a35851f72e3fc7440cf3cbdb4bd3c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#af6a35851f72e3fc7440cf3cbdb4bd3c1">assemble_hessian_full_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a2ca4c2128ba6cb135e8cb4575da5e8cb">hessian</a>) const</td></tr>
+<tr class="separator:af6a35851f72e3fc7440cf3cbdb4bd3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2996b9d90f3f730968baba85dd44d40e" id="r_a2996b9d90f3f730968baba85dd44d40e"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a2996b9d90f3f730968baba85dd44d40e">assemble_gradient_full_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
 <tr class="separator:a2996b9d90f3f730968baba85dd44d40e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88cea3590c82cf216f0612b82f6e2f45" id="r_a88cea3590c82cf216f0612b82f6e2f45"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a88cea3590c82cf216f0612b82f6e2f45">assemble_hessian_stress_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
-<tr class="separator:a88cea3590c82cf216f0612b82f6e2f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67e27388e56782b358bd12d7f8349157" id="r_a67e27388e56782b358bd12d7f8349157"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a67e27388e56782b358bd12d7f8349157">assemble_hessian_stress_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a2ca4c2128ba6cb135e8cb4575da5e8cb">hessian</a>) const</td></tr>
+<tr class="separator:a67e27388e56782b358bd12d7f8349157"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0937466020b34b9919803cd77b71322" id="r_ab0937466020b34b9919803cd77b71322"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ab0937466020b34b9919803cd77b71322">assemble_gradient_stress_ad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
 <tr class="separator:ab0937466020b34b9919803cd77b71322"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5da379b8b6c3d8560ddb744b6f719c66" id="r_a5da379b8b6c3d8560ddb744b6f719c66"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a5da379b8b6c3d8560ddb744b6f719c66">assemble_hessian_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
-<tr class="separator:a5da379b8b6c3d8560ddb744b6f719c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14b348d04f48dfbb771e1a28f065569c" id="r_a14b348d04f48dfbb771e1a28f065569c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a14b348d04f48dfbb771e1a28f065569c">assemble_hessian_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a2ca4c2128ba6cb135e8cb4575da5e8cb">hessian</a>) const</td></tr>
+<tr class="separator:a14b348d04f48dfbb771e1a28f065569c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f70bc0b7c8e7a7c837abfbf120f62a3" id="r_a7f70bc0b7c8e7a7c837abfbf120f62a3"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a7f70bc0b7c8e7a7c837abfbf120f62a3">assemble_gradient_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
 <tr class="separator:a7f70bc0b7c8e7a7c837abfbf120f62a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8b4e2da6168c8a6d66019efad190c1c" id="r_ad8b4e2da6168c8a6d66019efad190c1c"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
@@ -282,12 +282,12 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:ac0a2750c413794be5dee62fdb4152bfc" id="r_ac0a2750c413794be5dee62fdb4152bfc"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
 <tr class="memitem:ac0a2750c413794be5dee62fdb4152bfc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ac0a2750c413794be5dee62fdb4152bfc">compute_gradient_from_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::VectorXd &amp;res) const</td></tr>
 <tr class="separator:ac0a2750c413794be5dee62fdb4152bfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2dc71e780c7ff05eb3c551a89715ad9" id="r_ab2dc71e780c7ff05eb3c551a89715ad9"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
-<tr class="memitem:ab2dc71e780c7ff05eb3c551a89715ad9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ab2dc71e780c7ff05eb3c551a89715ad9">compute_hessian_from_stress</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;H) const</td></tr>
-<tr class="separator:ab2dc71e780c7ff05eb3c551a89715ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b179751ded524732e3bc2536c887034" id="r_a0b179751ded524732e3bc2536c887034"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
-<tr class="memitem:a0b179751ded524732e3bc2536c887034"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a0b179751ded524732e3bc2536c887034">compute_hessian_from_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;H) const</td></tr>
-<tr class="separator:a0b179751ded524732e3bc2536c887034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97160649205aa1db6a8473a9916cd368" id="r_a97160649205aa1db6a8473a9916cd368"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim, typename Matrix &gt; </td></tr>
+<tr class="memitem:a97160649205aa1db6a8473a9916cd368"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a97160649205aa1db6a8473a9916cd368">compute_hessian_from_stress</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::MatrixBase&lt; Matrix &gt; &amp;H) const</td></tr>
+<tr class="separator:a97160649205aa1db6a8473a9916cd368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce48a9c7f7364fb14f59b23df143190" id="r_abce48a9c7f7364fb14f59b23df143190"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim, typename Matrix &gt; </td></tr>
+<tr class="memitem:abce48a9c7f7364fb14f59b23df143190"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#abce48a9c7f7364fb14f59b23df143190">compute_hessian_from_stress_noad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::MatrixBase&lt; Matrix &gt; &amp;H) const</td></tr>
+<tr class="separator:abce48a9c7f7364fb14f59b23df143190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13e8dd79aa95cada259b150d06d89002" id="r_a13e8dd79aa95cada259b150d06d89002"><td class="memTemplParams" colspan="2">template&lt;int dim&gt; </td></tr>
 <tr class="memitem:a13e8dd79aa95cada259b150d06d89002"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, dim *dim, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a13e8dd79aa95cada259b150d06d89002">compute_B_block</a> (const Eigen::Matrix&lt; double, 1, dim &gt; &amp;g) const</td></tr>
 <tr class="separator:a13e8dd79aa95cada259b150d06d89002"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -574,8 +574,8 @@ template&lt;typename Derived &gt; </div>
 
 </div>
 </div>
-<a id="a896f8a464b62e0250806325c63370cb2" name="a896f8a464b62e0250806325c63370cb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a896f8a464b62e0250806325c63370cb2">&#9670;&#160;</a></span>assemble_hessian()</h2>
+<a id="a7648a9d9b8e961ceb90c6993db488726" name="a7648a9d9b8e961ceb90c6993db488726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7648a9d9b8e961ceb90c6993db488726">&#9670;&#160;</a></span>assemble_hessian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -586,11 +586,21 @@ template&lt;typename Derived &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian </td>
+          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -600,53 +610,21 @@ template&lt;typename Derived &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#aa0ad546418de6445ce58c2dba5c3c040">polyfem::assembler::NLAssembler</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#adc744a5aeca8355072f36afd1c1b57d7">polyfem::assembler::NLAssembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00295">295</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1">polyfem::assembler::FULL</a>, and <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b">polyfem::assembler::STRESS</a>.</p>
-
-</div>
-</div>
-<a id="a53a9cf2733fcbda72e0c663e3dc32009" name="a53a9cf2733fcbda72e0c663e3dc32009"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53a9cf2733fcbda72e0c663e3dc32009">&#9670;&#160;</a></span>assemble_hessian_full_ad()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Derived &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::MatrixXd <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_full_ad </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00320">320</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00180">polyfem::hessian_from_energy()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1">polyfem::assembler::FULL</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b">polyfem::assembler::STRESS</a>, and <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a53a9cf2733fcbda72e0c663e3dc32009_cgraph.svg" width="596" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a7648a9d9b8e961ceb90c6993db488726_cgraph.svg" width="404" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a88cea3590c82cf216f0612b82f6e2f45" name="a88cea3590c82cf216f0612b82f6e2f45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88cea3590c82cf216f0612b82f6e2f45">&#9670;&#160;</a></span>assemble_hessian_stress_ad()</h2>
+<a id="af6a35851f72e3fc7440cf3cbdb4bd3c1" name="af6a35851f72e3fc7440cf3cbdb4bd3c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6a35851f72e3fc7440cf3cbdb4bd3c1">&#9670;&#160;</a></span>assemble_hessian_full_ad()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -657,11 +635,21 @@ template&lt;typename Derived &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_stress_ad </td>
+          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_full_ad </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -671,14 +659,19 @@ template&lt;typename Derived &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00338">338</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00321">321</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00180">polyfem::hessian_from_energy()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_af6a35851f72e3fc7440cf3cbdb4bd3c1_cgraph.svg" width="100%" height="432"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
-<a id="a5da379b8b6c3d8560ddb744b6f719c66" name="a5da379b8b6c3d8560ddb744b6f719c66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5da379b8b6c3d8560ddb744b6f719c66">&#9670;&#160;</a></span>assemble_hessian_stress_noad()</h2>
+<a id="a67e27388e56782b358bd12d7f8349157" name="a67e27388e56782b358bd12d7f8349157"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67e27388e56782b358bd12d7f8349157">&#9670;&#160;</a></span>assemble_hessian_stress_ad()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -689,11 +682,21 @@ template&lt;typename Derived &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_stress_noad </td>
+          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_stress_ad </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -703,9 +706,61 @@ template&lt;typename Derived &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00416">416</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00339">339</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00020">polyfem::assembler::LocalHessian::resize()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a67e27388e56782b358bd12d7f8349157_cgraph.svg" width="618" height="160"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a14b348d04f48dfbb771e1a28f065569c" name="a14b348d04f48dfbb771e1a28f065569c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b348d04f48dfbb771e1a28f065569c">&#9670;&#160;</a></span>assemble_hessian_stress_noad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Derived &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html">polyfem::assembler::GenericElastic</a>&lt; Derived &gt;::assemble_hessian_stress_noad </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00401">401</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00020">polyfem::assembler::LocalHessian::resize()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a14b348d04f48dfbb771e1a28f065569c_cgraph.svg" width="618" height="160"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -863,7 +918,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00129">129</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00107">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00072">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00109">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -912,7 +967,7 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00181">181</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00109">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -961,7 +1016,7 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00254">254</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -970,15 +1025,15 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ab2dc71e780c7ff05eb3c551a89715ad9" name="ab2dc71e780c7ff05eb3c551a89715ad9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2dc71e780c7ff05eb3c551a89715ad9">&#9670;&#160;</a></span>compute_hessian_from_stress()</h2>
+<a id="a97160649205aa1db6a8473a9916cd368" name="a97160649205aa1db6a8473a9916cd368"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97160649205aa1db6a8473a9916cd368">&#9670;&#160;</a></span>compute_hessian_from_stress()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Derived &gt; </div>
 <div class="memtemplate">
-template&lt;int n_basis, int dim&gt; </div>
+template&lt;int n_basis, int dim, typename Matrix &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -992,7 +1047,7 @@ template&lt;int n_basis, int dim&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">Eigen::MatrixBase&lt; Matrix &gt; &amp;&#160;</td>
           <td class="paramname"><em>H</em>&#160;</td>
         </tr>
         <tr>
@@ -1010,24 +1065,24 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00309">309</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00109">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_ab2dc71e780c7ff05eb3c551a89715ad9_cgraph.svg" width="100%" height="519"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a97160649205aa1db6a8473a9916cd368_cgraph.svg" width="100%" height="519"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a0b179751ded524732e3bc2536c887034" name="a0b179751ded524732e3bc2536c887034"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b179751ded524732e3bc2536c887034">&#9670;&#160;</a></span>compute_hessian_from_stress_noad()</h2>
+<a id="abce48a9c7f7364fb14f59b23df143190" name="abce48a9c7f7364fb14f59b23df143190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce48a9c7f7364fb14f59b23df143190">&#9670;&#160;</a></span>compute_hessian_from_stress_noad()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Derived &gt; </div>
 <div class="memtemplate">
-template&lt;int n_basis, int dim&gt; </div>
+template&lt;int n_basis, int dim, typename Matrix &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1041,7 +1096,7 @@ template&lt;int n_basis, int dim&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">Eigen::MatrixBase&lt; Matrix &gt; &amp;&#160;</td>
           <td class="paramname"><em>H</em>&#160;</td>
         </tr>
         <tr>
@@ -1059,11 +1114,11 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00395">395</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00058">polyfem::assembler::GenericElastic&lt; Derived &gt;::derived()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00096">polyfem::assembler::GenericElastic&lt; Derived &gt;::point_weights()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00071">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_a0b179751ded524732e3bc2536c887034_cgraph.svg" width="100%" height="477"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_abce48a9c7f7364fb14f59b23df143190_cgraph.svg" width="100%" height="477"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1118,14 +1173,7 @@ template&lt;typename Derived &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a65e810a4116511e32b164e07fa5133ed">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00494">494</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00180">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00182">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00183">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00181">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00178">polyfem::assembler::OptAssemblerData::t</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_elastic_aea6d0fbd90e39efe7792c54d165294fe_cgraph.svg" width="626" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00463">463</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
 </div>
 </div>
@@ -1173,9 +1221,9 @@ template&lt;typename Derived &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a1379685184d2602dea3cfcd2a0e7ea36">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00536">536</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00505">505</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00180">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00182">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00183">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00181">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00178">polyfem::assembler::OptAssemblerData::t</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00180">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00058">F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00182">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00183">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00181">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00178">polyfem::assembler::OptAssemblerData::t</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1234,9 +1282,9 @@ template&lt;typename Derived &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a40cec3b41f6da8210cd6f9a098220b85">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00577">577</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8cpp_source.html#l00546">546</a> of file <a class="el" href="_generic_elastic_8cpp_source.html">GenericElastic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00180">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00182">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00183">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00181">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00178">polyfem::assembler::OptAssemblerData::t</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00180">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00058">F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00182">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00183">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00181">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00178">polyfem::assembler::OptAssemblerData::t</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1464,7 +1512,7 @@ template&lt;typename Derived &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00096">96</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00039">polyfem::assembler::ElementAssemblyValues::n_geometric_bases</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00033">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00039">polyfem::assembler::ElementAssemblyValues::n_geometric_bases</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00122">polyfem::assembler::GenericElastic&lt; Derived &gt;::rest_pose_at()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_elastic_8hpp_source.html#l00129">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_energy_aux()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00181">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_gradient_from_stress()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00254">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_gradient_from_stress_noad()</a>, <a class="el" href="_generic_elastic_8hpp_source.html#l00309">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_hessian_from_stress()</a>, and <a class="el" href="_generic_elastic_8hpp_source.html#l00395">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_hessian_from_stress_noad()</a>.</p>
 <div class="dynheader">

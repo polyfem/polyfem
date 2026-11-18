@@ -13,7 +13,7 @@ var classpolyfem_1_1assembler_1_1_mixed_n_l_assembler =
     [ "cols", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aedf12754ddc7107e993edbd25c6536ec", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a5080cfe6f0a54512b94ca1dc6b8b05ae", null ],
     [ "compute_gradient", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aad79e1949d52410a1f715e010921bee7", null ],
-    [ "compute_hessian", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#aae89f34535e140bae27a14e01b464027", null ],
+    [ "compute_hessian", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a3e575b5ed204b1547772c573aa0ca4af", null ],
     [ "is_linear", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a8a0600d3aedd4a08864bb729b2091313", null ],
     [ "rows", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html#a4cf19529fcdc593bf30325f3af9d998b", null ]
 ];

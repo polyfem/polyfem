@@ -147,8 +147,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a68d813b28082fed155773b26946c964e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69e2cc2325d1e4481c6aa44079cc7ddb" id="r_a69e2cc2325d1e4481c6aa44079cc7ddb"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a69e2cc2325d1e4481c6aa44079cc7ddb">compute_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
 <tr class="separator:a69e2cc2325d1e4481c6aa44079cc7ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66156de1265a568820fd111b110aff23" id="r_a66156de1265a568820fd111b110aff23"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#a66156de1265a568820fd111b110aff23">compute_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data) const =0</td></tr>
-<tr class="separator:a66156de1265a568820fd111b110aff23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1caa384f9515655a7eed41784db00d7" id="r_aa1caa384f9515655a7eed41784db00d7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html#aa1caa384f9515655a7eed41784db00d7">compute_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;data, <a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;<a class="el" href="_assembler_8cpp.html#a0a5b4b9805e4eb9b8f739bf6b799c6fc">hessian</a>) const =0</td></tr>
+<tr class="separator:aa1caa384f9515655a7eed41784db00d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -286,8 +286,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a66156de1265a568820fd111b110aff23" name="a66156de1265a568820fd111b110aff23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66156de1265a568820fd111b110aff23">&#9670;&#160;</a></span>compute_hessian()</h2>
+<a id="aa1caa384f9515655a7eed41784db00d7" name="aa1caa384f9515655a7eed41784db00d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1caa384f9515655a7eed41784db00d7">&#9670;&#160;</a></span>compute_hessian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -296,11 +296,21 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual Eigen::MatrixXd polyfem::assembler::detail::ThermoElasticityModel::compute_hessian </td>
+          <td class="memname">virtual void polyfem::assembler::detail::ThermoElasticityModel::compute_hessian </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_non_linear_assembler_data.html">MixedNonLinearAssemblerData</a> &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_local_hessian.html">LocalHessian</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -310,7 +320,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#a95b9ea79627f26ae61c1d01145b70f5d">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html#ad72396feba9f9b5d576ca4a39c94c86b">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;</a>.</p>
 
 </div>
 </div>

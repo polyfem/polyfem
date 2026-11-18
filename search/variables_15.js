@@ -22,5 +22,6 @@ var searchData=
   ['use_5frest_5fpose_5f_19',['use_rest_pose_',['../classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ab44ca0b227b6b1eaaec7536da1de8ba6',1,'polyfem::assembler::AMIPSEnergy']]],
   ['use_5frobust_5fjacobian_20',['use_robust_jacobian',['../classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aff8ca6a03207d0bb8943e10b8712133e',1,'polyfem::assembler::ElasticityAssembler']]],
   ['use_5fsampler_21',['use_sampler',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fstiffness_5fas_5fratio_5f_22',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
+  ['use_5fsmall_5f_22',['use_small_',['../classpolyfem_1_1assembler_1_1_local_hessian.html#af4173c6fb89016256414f7445b72a915',1,'polyfem::assembler::LocalHessian']]],
+  ['use_5fstiffness_5fas_5fratio_5f_23',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
 ];

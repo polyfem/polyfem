@@ -6,7 +6,7 @@ var classpolyfem_1_1assembler_1_1_n_l_assembler =
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#a83fef57dc75dab91705eed56f86baf88", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#a7234151319ae629f17fc364dcaf4ee9b", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#aa0ad546418de6445ce58c2dba5c3c040", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#adc744a5aeca8355072f36afd1c1b57d7", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#a39372bf562743b694ddc311f807dc57b", null ],
     [ "is_linear", "classpolyfem_1_1assembler_1_1_n_l_assembler.html#a07b379c815197a642f89d46c970c652a", null ]
 ];

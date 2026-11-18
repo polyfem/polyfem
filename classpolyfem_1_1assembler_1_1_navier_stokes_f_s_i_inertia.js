@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia =
 [
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#ad0257ba6d9b67ca0759a7d0a3832ab0d", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a36e1656cd7b3f3d705f374afc587cc1d", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a1db016b777141001ec9fbcad2c7de075", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a3a1c3c545d87ebfc1b170f8b161bf222", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#a412dd60f8e098679eac5a8e4a6b2e035", null ],
     [ "is_fluid", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#ae9e497bfde14fbc8f318fc086769ad53", null ],
     [ "is_tensor", "classpolyfem_1_1assembler_1_1_navier_stokes_f_s_i_inertia.html#afd6c2e6174e161c74381182f1a2a346b", null ],
