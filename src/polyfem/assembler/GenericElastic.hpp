@@ -31,7 +31,7 @@ namespace polyfem::assembler
 
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const override;
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
 		void assign_stress_tensor(const OutputData &data,
@@ -168,13 +168,13 @@ namespace polyfem::assembler
 			return energy;
 		}
 
-		Eigen::MatrixXd assemble_hessian_full_ad(const NonLinearAssemblerData &data) const;
+		void assemble_hessian_full_ad(const NonLinearAssemblerData &data, LocalHessian &hessian) const;
 		Eigen::VectorXd assemble_gradient_full_ad(const NonLinearAssemblerData &data) const;
 
-		Eigen::MatrixXd assemble_hessian_stress_ad(const NonLinearAssemblerData &data) const;
+		void assemble_hessian_stress_ad(const NonLinearAssemblerData &data, LocalHessian &hessian) const;
 		Eigen::VectorXd assemble_gradient_stress_ad(const NonLinearAssemblerData &data) const;
 
-		Eigen::MatrixXd assemble_hessian_stress_noad(const NonLinearAssemblerData &data) const;
+		void assemble_hessian_stress_noad(const NonLinearAssemblerData &data, LocalHessian &hessian) const;
 		Eigen::VectorXd assemble_gradient_stress_noad(const NonLinearAssemblerData &data) const;
 
 		template <int n_basis, int dim>
@@ -305,8 +305,8 @@ namespace polyfem::assembler
 			}
 		}
 
-		template <int n_basis, int dim>
-		void compute_hessian_from_stress(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const
+		template <int n_basis, int dim, typename Matrix>
+		void compute_hessian_from_stress(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &H) const
 		{
 			typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff2;
 			typedef Eigen::Matrix<Diff2, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
@@ -391,8 +391,8 @@ namespace polyfem::assembler
 			}
 		}
 
-		template <int n_basis, int dim>
-		void compute_hessian_from_stress_noad(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const
+		template <int n_basis, int dim, typename Matrix>
+		void compute_hessian_from_stress_noad(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &H) const
 		{
 			typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
@@ -446,13 +446,12 @@ namespace polyfem::assembler
 				for (int a = 0; a < nb; ++a)
 				{
 					const Eigen::Matrix<double, dim * dim, dim> Ba = compute_B_block<dim>(Bgrad.row(a));
+					const Eigen::Matrix<double, dim, dim * dim> BaAw = (Ba.transpose() * A) * w(p);
 
 					for (int b = 0; b < nb; ++b)
 					{
 						const Eigen::Matrix<double, dim * dim, dim> Bb = compute_B_block<dim>(Bgrad.row(b));
-
-						const Eigen::Matrix<double, dim, dim> Kab =
-							Ba.transpose() * A * Bb * w(p);
+						const Eigen::Matrix<double, dim, dim> Kab = BaAw * Bb;
 
 						H.template block<dim, dim>(a * d, b * d) += Kab;
 					}

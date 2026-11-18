@@ -25,7 +25,7 @@ namespace polyfem::assembler
 		// compute elastic energy
 		double compute_energy(const NonLinearAssemblerData &data) const override;
 		// neccessary for mixing linear model with non-linear collision response
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const override;
 		// compute gradient of elastic energy, as assembler
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
