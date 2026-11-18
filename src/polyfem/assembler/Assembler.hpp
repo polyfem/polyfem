@@ -4,6 +4,7 @@
 #include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/LocalHessian.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polyfem/utils/MatrixCache.hpp>
@@ -293,7 +294,7 @@ namespace polyfem::assembler
 
 		virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual void compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const = 0;
 	};
 
 	/// Local nonlinear assembler for an arbitrary number of FE spaces. Unlike
@@ -309,10 +310,11 @@ namespace polyfem::assembler
 
 		virtual double compute_energy(const MultiSpacesNLAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd assemble_hessian(
+		virtual void assemble_hessian(
 			const MultiSpacesNLAssemblerData &data,
 			int row_space,
-			int col_space) const = 0;
+			int col_space,
+			LocalHessian &hessian) const = 0;
 
 		bool is_linear() const override { return false; }
 	};
@@ -409,7 +411,7 @@ namespace polyfem::assembler
 		// energy, gradient, and hessian used in newton method
 		virtual double compute_energy(const NonLinearAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const = 0;
+		virtual void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const = 0;
 	};
 
 	class ElasticityAssembler : virtual public Assembler
