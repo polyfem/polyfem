@@ -158,6 +158,10 @@ namespace polyfem::mesh
 
 	int MeshNodes::node_id_from_primitive(int primitive_id)
 	{
+		// A primitive without node slots (e.g. cells when no space has
+		// interior nodes) has no valid id here.
+		if (primitive_id < 0 || primitive_id >= int(primitive_to_node_.size()))
+			log_and_throw_error("Node slot {} is out of range ({} slots).", primitive_id, primitive_to_node_.size());
 		if (primitive_to_node_[primitive_id] < 0 || !connect_nodes_)
 		{
 			primitive_to_node_[primitive_id] = n_nodes();
