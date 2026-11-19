@@ -306,30 +306,35 @@ namespace polyfem
 
 			int leader_edge_of_vertex(const int v_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge);
 			}
 			int leader_edge_of_edge(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return (edges[valid_to_all_edge(e_id)].leader < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].leader);
 			}
 
 			int leader_face_of_vertex(const int v_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				int id_full = vertices[valid_to_all_vertex(v_id)].face;
 				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
 			}
 			int leader_face_of_edge(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				int id_full = edges[valid_to_all_edge(e_id)].leader_face;
 				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
 			}
 			int leader_face_of_face(const int f_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				int id_full = faces[valid_to_all_face(f_id)].leader;
 				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
 			}
@@ -337,12 +342,14 @@ namespace polyfem
 			// number of follower edges of a leader edge
 			int n_follower_edges(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return edges[valid_to_all_edge(e_id)].followers.size();
 			}
 			int n_follower_faces(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return faces[valid_to_all_face(e_id)].followers.size();
 			}
 

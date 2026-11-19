@@ -221,19 +221,22 @@ namespace polyfem
 			int face_edge(const int f_id, const int le_id) const { return all_to_valid_edge(elements[valid_to_all_elem(f_id)].edges(le_id)); }
 			int leader_edge_of_vertex(const int v_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge);
 			}
 			int leader_edge_of_edge(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return (edges[valid_to_all_edge(e_id)].leader < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].leader);
 			}
 
 			// number of follower edges of a leader edge
 			int n_follower_edges(const int e_id) const
 			{
-				assert(adj_prepared);
+				if (!adj_prepared)
+					stale_index_error();
 				return edges[valid_to_all_edge(e_id)].followers.size();
 			}
 			// number of elements have this edge

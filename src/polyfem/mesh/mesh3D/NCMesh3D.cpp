@@ -628,7 +628,6 @@ namespace polyfem
 
 		void NCMesh3D::refine_element(int id_full)
 		{
-			assert(elements[id_full].is_valid());
 			if (elements[id_full].is_not_valid())
 				throw std::runtime_error("Cannot refine an invalid element!");
 
