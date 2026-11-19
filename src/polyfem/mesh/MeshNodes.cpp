@@ -158,6 +158,10 @@ namespace polyfem::mesh
 
 	int MeshNodes::node_id_from_primitive(int primitive_id)
 	{
+		// A primitive without node slots (e.g. cells when no space has
+		// interior nodes) has no valid id here.
+		if (primitive_id < 0 || primitive_id >= int(primitive_to_node_.size()))
+			log_and_throw_error("Node slot {} is out of range ({} slots).", primitive_id, primitive_to_node_.size());
 		if (primitive_to_node_[primitive_id] < 0 || !connect_nodes_)
 		{
 			primitive_to_node_[primitive_id] = n_nodes();
@@ -167,14 +171,15 @@ namespace polyfem::mesh
 			node_to_primitive_gid_.push_back(primitive_id);
 			assert(in_ordered_vertices_.size() == n_nodes());
 
+			// Each edge/face/cell owns max_nodes_per_* consecutive primitive slots.
 			if (primitive_id < edge_offset_)
 				nodes_.row(primitive_id) = mesh_.point(primitive_id);
 			else if (primitive_id < face_offset_)
-				nodes_.row(primitive_id) = mesh_.edge_barycenter(primitive_id - edge_offset_);
+				nodes_.row(primitive_id) = mesh_.edge_barycenter((primitive_id - edge_offset_) / max_nodes_per_edge_);
 			else if (primitive_id < cell_offset_)
-				nodes_.row(primitive_id) = mesh_.face_barycenter(primitive_id - face_offset_);
+				nodes_.row(primitive_id) = mesh_.face_barycenter((primitive_id - face_offset_) / max_nodes_per_face_);
 			else
-				nodes_.row(primitive_id) = mesh_.cell_barycenter(primitive_id - cell_offset_);
+				nodes_.row(primitive_id) = mesh_.cell_barycenter((primitive_id - cell_offset_) / max_nodes_per_cell_);
 		}
 		return primitive_to_node_[primitive_id];
 	}
@@ -791,21 +796,21 @@ namespace polyfem::mesh
 	{
 		const int res = node_to_primitive_[node_id];
 		assert(res >= edge_offset_ && res < face_offset_);
-		return res - edge_offset_;
+		return (res - edge_offset_) / max_nodes_per_edge_;
 	}
 
 	int MeshNodes::face_from_node_id(int node_id) const
 	{
 		const int res = node_to_primitive_[node_id];
 		assert(res >= face_offset_ && res < cell_offset_);
-		return res - face_offset_;
+		return (res - face_offset_) / max_nodes_per_face_;
 	}
 
 	int MeshNodes::cell_from_node_id(int node_id) const
 	{
 		const int res = node_to_primitive_[node_id];
-		assert(res >= cell_offset_ && res < n_nodes());
-		return res - cell_offset_;
+		assert(res >= cell_offset_ && res < primitive_to_node_.size());
+		return (res - cell_offset_) / max_nodes_per_cell_;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
