@@ -24,6 +24,7 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <algorithm>
 #include <array>
@@ -1046,6 +1047,71 @@ TEST_CASE("node ids follow the FE node numbering", "[mesh_test]")
 	CHECK(mesh2->get_node_id(0) == 12);
 	CHECK(mesh2->get_node_id(1) == 10);
 	CHECK(mesh2->get_node_id(2) == 13);
+
+	// The per-vertex ids are kept: MeshData stays per vertex, a second
+	// numbering starts again from them, and new vertex ids drop the numbering.
+	CHECK(mesh->to_mesh_data().node_ids == std::vector<int>{10, 11, 12, 13});
+	Eigen::VectorXi other(4);
+	other << 3, 2, 1, 0;
+	mesh->update_nodes(other);
+	for (int v = 0; v < 4; ++v)
+		CHECK(mesh->get_node_id(other(v)) == 10 + v);
+	mesh->update_nodes(in_node_to_node);
+	CHECK(mesh->get_node_id(5) == 10);
+	CHECK(mesh->get_node_id(0) == 11);
+	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 20 + int(v); });
+	for (int v = 0; v < 4; ++v)
+		CHECK(mesh->get_node_id(v) == 20 + v);
+}
+
+TEST_CASE("node ids stay per vertex through prepare and checkpoints", "[mesh_test][checkpoint]")
+{
+	const int order = GENERATE(1, 2);
+	CAPTURE(order);
+	io::LoadedInput loaded = io::load_json_input(std::string(POLYFEM_DATA_DIR) + "/standard/laplace_nodal_neumann.json");
+	json args = loaded.config;
+	auto common_resources = utils::apply_common_params(args, *loaded.resources);
+	const io::ResourceIO &resources = common_resources ? *common_resources : *loaded.resources;
+	args["/geometry/n_refs"_json_pointer] = 0;
+	args["/space/discr_order"_json_pointer] = order;
+	args["/output/log/level"_json_pointer] = "error";
+	args.erase("tests");
+
+	State state;
+	state.init(args, resources, true);
+	state.load_mesh();
+	auto &form = *state.variational_formulation;
+	const mesh::Mesh &mesh = test::VarFormTestAccess::mesh(form);
+	const MeshData before = mesh.to_mesh_data();
+	const std::vector<int> &vertex_ids = before.node_ids;
+	REQUIRE(vertex_ids.size() == size_t(before.vertices.rows()));
+	const int n_selected = std::count(vertex_ids.begin(), vertex_ids.end(), 2);
+	REQUIRE(n_selected > 0);
+
+	const auto fe_ids = [&]() {
+		test::VarFormTestAccess::prepare(form);
+		const auto debug = test::VarFormTestAccess::debug_data(form);
+		REQUIRE(debug.mesh == &mesh);
+		std::vector<int> ids(debug.n_bases);
+		for (int n = 0; n < debug.n_bases; ++n)
+			ids[n] = mesh.get_node_id(n);
+		return ids;
+	};
+	const std::vector<int> first = fe_ids();
+	// Every selected vertex gives one selected FE node.
+	CHECK(std::count(first.begin(), first.end(), 2) == n_selected);
+
+	// What a checkpoint stores (and a restart reads) is still per vertex.
+	const MeshData after = mesh.to_mesh_data();
+	REQUIRE_NOTHROW(after.validate());
+	CHECK(after.node_ids == vertex_ids);
+	const auto restored = Mesh::create(after);
+	for (int v = 0; v < restored->n_vertices(); ++v)
+		CHECK(restored->get_node_id(v) == vertex_ids[v]);
+
+	// Preparing again (as after a shape update) gives the same FE ids.
+	test::VarFormTestAccess::invalidate(form);
+	CHECK(fe_ids() == first);
 }
 
 TEST_CASE("nodal boundary conditions with higher-order elements", "[mesh_test]")

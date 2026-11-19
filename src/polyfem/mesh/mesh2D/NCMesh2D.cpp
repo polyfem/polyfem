@@ -15,7 +15,7 @@ namespace polyfem
 			assert(keep.size() == n_faces());
 
 			std::vector<int> old_node_ids(vertices.size(), -1);
-			if (has_node_ids())
+			if (!node_ids_.empty())
 				for (int v = 0; v < n_vertices(); ++v)
 					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
 			std::vector<int> old_boundary_ids(edges.size(), -1);
@@ -39,7 +39,7 @@ namespace polyfem
 			filter_element_data(keep);
 			prepare_mesh();
 
-			if (has_node_ids())
+			if (!node_ids_.empty())
 			{
 				node_ids_.resize(n_vertices());
 				for (int v = 0; v < n_vertices(); ++v)
@@ -91,6 +91,7 @@ namespace polyfem
 		void NCMesh2D::update_labels_after_refinement()
 		{
 			node_ids_.clear();
+			reset_fe_node_ids();
 			geometry_ids_.clear();
 			if (has_body_ids())
 			{
