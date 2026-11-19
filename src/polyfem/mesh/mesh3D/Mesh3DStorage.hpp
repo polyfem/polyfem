@@ -49,8 +49,8 @@ namespace polyfem
 		class JaggedArray
 		{
 		public:
-			/// Number of rows.
-			int size() const { return int(offsets_.size()) - 1; }
+			/// Number of rows (a moved-from array has none).
+			int size() const { return offsets_.empty() ? 0 : int(offsets_.size()) - 1; }
 			bool empty() const { return size() == 0; }
 			/// Total number of entries.
 			size_t n_entries() const { return data_.size(); }
@@ -109,6 +109,8 @@ namespace polyfem
 			void append(const JaggedArray &other, const T shift)
 			{
 				const uint32_t n = data_.size();
+				if (offsets_.empty())
+					offsets_.push_back(0);
 				offsets_.reserve(offsets_.size() + other.size());
 				for (int i = 0; i < other.size(); ++i)
 					offsets_.push_back(n + other.offsets_[i + 1]);
@@ -123,6 +125,8 @@ namespace polyfem
 			void push_offset()
 			{
 				assert(data_.size() <= std::numeric_limits<uint32_t>::max());
+				if (offsets_.empty()) // moved from: the new row is the first one
+					offsets_.push_back(0);
 				offsets_.push_back(data_.size());
 			}
 
@@ -175,7 +179,7 @@ namespace polyfem
 			// Faces: vertices in order, edges aligned with them, incident cells and
 			// the local index of the face in each of these cells.
 			JaggedArray<uint32_t> face_vs, face_es, face_hs;
-			JaggedArray<uint8_t> face_hs_slot;
+			JaggedArray<uint16_t> face_hs_slot;
 			std::vector<uint8_t> face_boundary;
 
 			// Cells.

@@ -337,3 +337,72 @@ TEST_CASE("3D mesh storage ignores hex flags on cells that are not hexes", "[mes
 	check_storage_invariants(*mesh);
 	check_navigation(*mesh);
 }
+
+TEST_CASE("3D mesh storage ignores hex flags on hexahedra that are not cubes", "[mesh_test][mesh3d_storage]")
+{
+	// A tet with two corners cut off: eight vertices of degree 3 and six
+	// faces, like a hex, but the faces are two triangles, two quads and two
+	// pentagons. Faces are listed counterclockwise seen from outside.
+	Eigen::MatrixXd vertices(8, 3);
+	vertices << 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25,
+		0.75, 0, 0, 0.75, 0.25, 0, 0.75, 0, 0.25,
+		0, 1, 0, 0, 0, 1;
+	Eigen::MatrixXi cells(1, 8);
+	cells << 0, 1, 2, 3, 4, 5, 6, 7;
+	MeshData data(vertices, cells);
+	data.faces = {{1, 6, 4, 3, 0}, {0, 3, 5, 7, 2}, {2, 7, 6, 1}, {4, 6, 7, 5}, {2, 1, 0}, {3, 4, 5}};
+	data.cell_faces = {{0, 1, 2, 3, 4, 5}};
+	data.cell_face_orientations = {std::vector<int>(6, 0)};
+	data.cell_kernel_points = vertices.colwise().mean();
+	data.cell_is_hex = {true};
+
+	auto mesh = Mesh::create(data);
+	REQUIRE(mesh->n_cells() == 1);
+	CHECK_FALSE(mesh->is_cube(0));
+	CHECK(mesh->n_cell_vertices(0) == 8);
+	check_storage_invariants(*mesh);
+	check_navigation(*mesh);
+}
+
+TEST_CASE("hex meshes are oriented so that every hex corner has a positive Jacobian", "[mesh_test][mesh3d_storage]")
+{
+	// Two hexes stacked along z, each optionally given mirrored (1 <-> 3,
+	// 5 <-> 7): preparing the mesh makes the navigation order of both hexes
+	// positively oriented (the corner tets of MeshProcessing3D::hex_tetra_table).
+	Eigen::MatrixXd vertices(12, 3);
+	vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1,
+		0, 0, 2, 1, 0, 2, 1, 1, 2, 0, 1, 2;
+	const int corners[8][4] = {{0, 3, 4, 1}, {1, 0, 5, 2}, {2, 1, 6, 3}, {3, 2, 7, 0}, {4, 7, 5, 0}, {5, 4, 6, 1}, {6, 5, 7, 2}, {7, 6, 4, 3}};
+	for (const int mirrored : {0, 1, 2, 3}) // bit c: hex c is mirrored
+	{
+		CAPTURE(mirrored);
+		Eigen::MatrixXi cells(2, 8);
+		cells << 0, 1, 2, 3, 4, 5, 6, 7,
+			4, 5, 6, 7, 8, 9, 10, 11;
+		for (int c = 0; c < 2; ++c)
+			if (mirrored & (1 << c))
+			{
+				std::swap(cells(c, 1), cells(c, 3));
+				std::swap(cells(c, 5), cells(c, 7));
+			}
+		auto mesh = Mesh::create(MeshData(vertices, cells));
+		REQUIRE(mesh->n_cells() == 2);
+		const Mesh3DStorage &M = dynamic_cast<CMesh3D &>(*mesh).mesh_storge();
+		for (int c = 0; c < 2; ++c)
+		{
+			CAPTURE(c);
+			REQUIRE(mesh->is_cube(c));
+			const auto hex = M.cell_vs[c];
+			for (const auto &corner : corners)
+			{
+				Eigen::Matrix3d jacobian;
+				for (int k = 0; k < 3; ++k)
+					jacobian.col(k) = M.points.col(hex[corner[k + 1]]) - M.points.col(hex[corner[0]]);
+				CHECK(jacobian.determinant() > 0);
+			}
+		}
+		check_storage_invariants(*mesh);
+		check_navigation(*mesh);
+	}
+}

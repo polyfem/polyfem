@@ -309,8 +309,13 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 	const auto build_face_slots = [&]() {
 		fill_rows(hmi.face_hs_slot, n_faces, [&](const auto &emit) {
 			for (uint32_t i = 0; i < n_cells; i++)
+			{
+				// Refined polyhedra can have many faces.
+				if (hmi.cell_fs.row_size(i) > std::numeric_limits<uint16_t>::max() + 1)
+					log_and_throw_error("Cell {} has {} faces, more than supported.", i, hmi.cell_fs.row_size(i));
 				for (uint32_t j = 0; j < hmi.cell_fs.row_size(i); j++)
-					emit(hmi.cell_fs[i][j], uint8_t(j));
+					emit(hmi.cell_fs[i][j], uint16_t(j));
+			}
 		});
 	};
 
@@ -346,7 +351,17 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			}
 		}
 
-		if (hmi.cell_hex[i] && (vs.size() != 8 || !degree3))
+		// Eight vertices of degree 3 do not make a hex on their own (faces
+		// 3, 3, 5, 5, 4, 4 also have them); the reordering below needs six quads.
+		const auto all_quads = [&]() {
+			if (hmi.cell_fs.row_size(i) != 6)
+				return false;
+			for (const auto fid : hmi.cell_fs[i])
+				if (hmi.face_vs.row_size(fid) != 4)
+					return false;
+			return true;
+		};
+		if (hmi.cell_hex[i] && (vs.size() != 8 || !degree3 || !all_quads()))
 			hmi.cell_hex[i] = false;
 
 		if (hmi.cell_hex[i])
