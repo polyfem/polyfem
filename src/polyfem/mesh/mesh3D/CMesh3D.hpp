@@ -24,6 +24,8 @@ namespace polyfem
 		/// the vertex order of the lower-id cell; edges are sorted by (min, max)
 		/// vertex id. cell_vertex() returns the input vertex order of a cell (the
 		/// order of MeshData::elements); the topology uses the descriptor order.
+		/// Cells created by refine() have no input order, so for them
+		/// cell_vertex() returns the navigation order.
 		/// Hex meshes are reoriented so that neighboring hexes agree (needed by
 		/// the spline bases), and every cell has a kernel point (a point from
 		/// which the cell is star-shaped) used by the polyhedral quadrature and

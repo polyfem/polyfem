@@ -437,9 +437,9 @@ namespace polyfem
 			if (!build_storage_from_cells(V, cells))
 				return false;
 
-			// cell_vertex() (and therefore to_mesh_data(), checkpoints and the
-			// MSH writer) returns input_vs, which must be in the input (MeshData,
-			// i.e. Gmsh) order. Hex cells were permuted to the descriptor order
+			// cell_vertex() (and therefore to_mesh_data() and checkpoints)
+			// returns input_vs, which must be in the input (MeshData, i.e. Gmsh)
+			// order. Hex cells were permuted to the descriptor order
 			// above; restore their input order (the kernel point was already
 			// computed from the permuted order).
 			for (int c = 0; c < cells.size(); ++c)
