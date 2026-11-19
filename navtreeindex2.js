@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"_geometry_utils_8cpp.html#ad4fc877ac33fe3a967cbd280d7a0b6e2":[7,0,1,0,11,19,10],
 "_geometry_utils_8cpp.html#ad647a82910f18529f06f18eed887e262":[7,0,1,0,11,19,11],
 "_geometry_utils_8cpp.html#ae05141c057d8d87bcc1e8c4ed8318d50":[7,0,1,0,11,19,16],
 "_geometry_utils_8cpp_source.html":[7,0,1,0,11,19],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "_m_m_g_remesh_8hpp_source.html":[7,0,1,0,4,20],
 "_m_v_polygonal_basis2d_8cpp.html":[7,0,1,0,2,0,2],
 "_m_v_polygonal_basis2d_8cpp_source.html":[7,0,1,0,2,0,2],
-"_m_v_polygonal_basis2d_8hpp.html":[7,0,1,0,2,0,3],
-"_m_v_polygonal_basis2d_8hpp_source.html":[7,0,1,0,2,0,3]
+"_m_v_polygonal_basis2d_8hpp.html":[7,0,1,0,2,0,3]
 };

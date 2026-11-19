@@ -1,5 +1,9 @@
 var NAVTREEINDEX60 =
 {
+"namespacepyramid__bases.html#a832086bd507885d7aa9544b289d6089a":[5,0,13,34],
+"namespacepyramid__bases.html#a891536e756329656ca4eb3d531faf098":[5,0,13,26],
+"namespacepyramid__bases.html#a89cf1599c7de7494a436748bc7071e6c":[5,0,13,33],
+"namespacepyramid__bases.html#a907ad1c9c1e6e4ca4b0db769d81aab80":[5,0,13,30],
 "namespacepyramid__bases.html#a95833df083804f4b063154f5f3123043":[5,0,13,28],
 "namespacepyramid__bases.html#a9e4f0dff0e523900f7b357f3932c9543":[5,0,13,22],
 "namespacepyramid__bases.html#aa22cefb6d68edbbb7d9f20e69e1bcf79":[5,0,13,14],
@@ -245,9 +249,5 @@ var NAVTREEINDEX60 =
 "pyramid__bases_8py.html#aa22cefb6d68edbbb7d9f20e69e1bcf79":[7,0,1,0,1,54,14],
 "pyramid__bases_8py.html#aaab6b179ebfcbeeabf75d616aa06ce4a":[7,0,1,0,1,54,24],
 "pyramid__bases_8py.html#ab15b069cdf56965ae0eb8a9e57dde935":[7,0,1,0,1,54,11],
-"pyramid__bases_8py.html#ab3c0d11b059c088668d7c103f9a3d3fc":[7,0,1,0,1,54,17],
-"pyramid__bases_8py.html#ab4548c57ea7c9f8e84be89cb9c31b54a":[7,0,1,0,1,54,8],
-"pyramid__bases_8py.html#ab916255180d7bc0805a596b6ddde414c":[7,0,1,0,1,54,1],
-"pyramid__bases_8py.html#ab976805a1f579b8f3d059d6d8c8a6055":[7,0,1,0,1,54,3],
-"pyramid__bases_8py.html#abb1e91a62d367006f4b13d0469982097":[7,0,1,0,1,54,41]
+"pyramid__bases_8py.html#ab3c0d11b059c088668d7c103f9a3d3fc":[7,0,1,0,1,54,17]
 };

@@ -125,7 +125,8 @@ var namespacepolyfem =
       [ "CAUCHY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
       [ "PK1", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],
       [ "PK2", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21", null ],
-      [ "F", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ]
+      [ "F", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ],
+      [ "ENERGY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a93e0e13277e4354c72e2b033514037a5", null ]
     ] ],
     [ "adjoint_logger", "namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399", null ],
     [ "compute_diplacement_grad", "namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440", null ],

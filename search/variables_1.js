@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['a_0',['a',['../structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html#af27767e6018b556f068a8d670c35c4ae',1,'polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping::A'],['../structpolyfem_1_1solver_1_1_stacked_form_1_1_term.html#ac04d09ba9fcb52adabe593faab9476ce',1,'polyfem::solver::StackedForm::Term::a']]],
+  ['a_0',['a',['../structpolyfem_1_1solver_1_1_stacked_form_1_1_term.html#ac04d09ba9fcb52adabe593faab9476ce',1,'polyfem::solver::StackedForm::Term::a'],['../structpolyfem_1_1solver_1_1_periodic_boundary_lagrangian_form_1_1_mapping.html#af27767e6018b556f068a8d670c35c4ae',1,'polyfem::solver::PeriodicBoundaryLagrangianForm::Mapping::A']]],
   ['a_5f_1',['a_',['../classpolyfem_1_1solver_1_1_quadratic_penalty_form.html#aa2c8199a6f19acc314c85fd11c81fdb1',1,'polyfem::solver::QuadraticPenaltyForm::A_'],['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#afdf395b5aef8344c72af0cf477885366',1,'polyfem::solver::AugmentedLagrangianForm::A_']]],
   ['a_5fprevs_5f_2',['a_prevs_',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa8b21a3a2ab95e537fb7c2499eefbb32',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
   ['a_5fproj_5f_3',['A_proj_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a8b581c520b0a2e473b15f149de5cddaa',1,'polyfem::solver::AugmentedLagrangianForm']]],

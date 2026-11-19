@@ -5,7 +5,8 @@ var _elasticity_utils_8hpp =
       [ "CAUCHY", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
       [ "PK1", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],
       [ "PK2", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21", null ],
-      [ "F", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ]
+      [ "F", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ],
+      [ "ENERGY", "_elasticity_utils_8hpp.html#ab904d08a2b6012d82ab5cdc90909e4d1a93e0e13277e4354c72e2b033514037a5", null ]
     ] ],
     [ "compute_diplacement_grad", "_elasticity_utils_8hpp.html#a9c92d8a4b1a73baab24a2ecef44f9440", null ],
     [ "compute_diplacement_grad", "_elasticity_utils_8hpp.html#afe7d5ac326e47bbc47caa5539c4f8172", null ],

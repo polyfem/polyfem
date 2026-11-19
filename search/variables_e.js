@@ -24,7 +24,7 @@ var searchData=
   ['n_5ftime_5fsteps_5f_21',['n_time_steps_',['../classpolyfem_1_1_diff_cache.html#a497ed0913a1ee4b96d873c5b9cffa539',1,'polyfem::DiffCache']]],
   ['n_5fturns_5f_22',['n_turns_',['../classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#af34966b24de440219471dbf1dc99023e',1,'polyfem::problem::TorsionElasticProblem']]],
   ['n_5fvertices_23',['n_vertices',['../structpolyfem_1_1mesh_1_1_cell_descriptor.html#a15ccf87ba6132993bc96c6f88d4c5301',1,'polyfem::mesh::CellDescriptor']]],
-  ['name_24',['name',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a344e0c037fe415e07689e9501582762d',1,'polyfem::mesh::Mesh_Quality::Name'],['../structpolyfem_1_1io_1_1_output_field.html#a0ec772e5ab53ce988279bb18ce91e0e9',1,'polyfem::io::OutputField::name']]],
+  ['name_24',['name',['../structpolyfem_1_1io_1_1_output_field.html#a0ec772e5ab53ce988279bb18ce91e0e9',1,'polyfem::io::OutputField::name'],['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a344e0c037fe415e07689e9501582762d',1,'polyfem::mesh::Mesh_Quality::Name']]],
   ['name_5f_25',['name_',['../classpolyfem_1_1assembler_1_1_problem.html#a8c5f8ee21d844b1f2a99432a96168e1b',1,'polyfem::assembler::Problem']]],
   ['nameg_26',['nameg',['../namespaceq__bases.html#aec37402488593c7d7538128ef186ee18',1,'q_bases']]],
   ['namen_27',['namen',['../namespaceq__bases.html#aa43bda70cf30b4526b9c37182f7a881d',1,'q_bases']]],

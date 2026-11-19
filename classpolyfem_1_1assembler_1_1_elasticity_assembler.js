@@ -4,6 +4,7 @@ var classpolyfem_1_1assembler_1_1_elasticity_assembler =
     [ "~ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a4ca51ead3cc6e9374b1563fd79881f4a", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#af8b356f56d37b709cafeb64a75851fd4", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#ab555bbc58a416da197a3d34970a3fcb9", null ],
+    [ "compute_energy_density", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aae3564f59e4e2870eba05e5554a8acf9", null ],
     [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a85e2120da8dadae430e58fda0836a213", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa78eebb40e44e9ae1774628038ef2717", null ],
     [ "compute_tensor_value", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a8f8334290e1d29f7baf3e516e455e387", null ],
