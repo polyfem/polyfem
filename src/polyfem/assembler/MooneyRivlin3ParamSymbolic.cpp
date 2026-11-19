@@ -146,6 +146,10 @@ namespace polyfem::assembler
 	{
 		const auto &local_pts = data.local_pts;
 		const auto &def_grad = output.deformation();
+		if (output.needs_energy)
+			output.energy = elastic_energy<double>(vals.val.row(p), vals.element_id, def_grad);
+		if (!output.needs_stress)
+			return true;
 		// Preserve the symbolic model's existing parameter time convention.
 		const double material_time = 0;
 		const double c1 = c1_(local_pts.row(p), material_time, vals.element_id);

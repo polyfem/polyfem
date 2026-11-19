@@ -73,7 +73,7 @@ namespace polyfem::assembler
 	}
 
 	bool ElasticityAssembler::evaluate_output_stress(
-		const OutputData &data, const bool need_stress,
+		const OutputData &data, const bool need_stress, const bool need_energy,
 		const std::function<void(Eigen::Index, OutputStress &)> &emit) const
 	{
 		assert(data.fun.cols() == 1);
@@ -90,7 +90,9 @@ namespace polyfem::assembler
 			gradient = (gradient * vals.jac_it[p]).eval();
 			const MatrixNd deformation = MatrixNd::Identity(size(), size()) + gradient;
 			OutputStress stress(deformation);
-			if (need_stress && !compute_output_stress(data, vals, p, gradient, stress))
+			stress.needs_stress = need_stress;
+			stress.needs_energy = need_energy;
+			if ((need_stress || need_energy) && !compute_output_stress(data, vals, p, gradient, stress))
 				return false;
 			emit(p, stress);
 		}
@@ -103,15 +105,18 @@ namespace polyfem::assembler
 	{
 		all.resize(data.local_pts.rows(), all_size);
 		Eigen::MatrixXd tensor(size(), size());
-		const bool supported = evaluate_output_stress(data, type != ElasticityTensorType::F, [&](Eigen::Index p, OutputStress &stress) {
-			if (type != ElasticityTensorType::F && !stress.has_stress)
-				all.row(p).setConstant(std::nan(""));
-			else
-			{
-				tensor = stress.tensor(type);
-				all.row(p) = fun(tensor);
-			}
-		});
+		const bool supported = evaluate_output_stress(data, type != ElasticityTensorType::F && type != ElasticityTensorType::ENERGY,
+													  type == ElasticityTensorType::ENERGY, [&](Eigen::Index p, OutputStress &stress) {
+														  if (type == ElasticityTensorType::ENERGY)
+															  all(p, 0) = stress.energy;
+														  else if (type != ElasticityTensorType::F && !stress.has_stress)
+															  all.row(p).setConstant(std::nan(""));
+														  else
+														  {
+															  tensor = stress.tensor(type);
+															  all.row(p) = fun(tensor);
+														  }
+													  });
 		if (!supported)
 			log_and_throw_error("Output stress is not implemented by {}", name());
 	}
@@ -141,8 +146,9 @@ namespace polyfem::assembler
 			tensor->clear();
 			for (const char *field : {"cauchy_stess", "pk1_stess", "pk2_stess", "F"})
 				tensor->emplace_back(field, Eigen::MatrixXd(data.local_pts.rows(), size() * size()));
+			tensor->emplace_back("energy", Eigen::MatrixXd(data.local_pts.rows(), 1));
 		}
-		const bool supported = evaluate_output_stress(data, true, [&](Eigen::Index p, OutputStress &stress) {
+		const bool supported = evaluate_output_stress(data, true, tensor != nullptr, [&](Eigen::Index p, OutputStress &stress) {
 			if (scalar)
 				(*scalar)[0].second(p) = stress.has_stress
 											 ? von_mises_stress_for_stress_tensor(stress.tensor(ElasticityTensorType::CAUCHY))
@@ -161,6 +167,7 @@ namespace polyfem::assembler
 				}
 				const auto &F = stress.deformation();
 				(*tensor)[3].second.row(p) = Eigen::Map<const Eigen::RowVectorXd>(F.data(), size() * size());
+				(*tensor)[4].second(p) = stress.energy;
 			}
 		});
 		if (!supported)
@@ -168,8 +175,11 @@ namespace polyfem::assembler
 			if (scalar)
 				compute_von_mises_stresses(data, (*scalar)[0].second);
 			if (tensor)
+			{
 				for (int k = 0; k < 4; ++k)
 					compute_stress_tensor(data, static_cast<ElasticityTensorType>(k), (*tensor)[k].second);
+				compute_energy_density(data, (*tensor)[4].second);
+			}
 		}
 	}
 

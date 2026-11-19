@@ -122,7 +122,7 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 		autogen::p_nodes_2d(order, nodes);
 	else
 		autogen::p_nodes_3d(order, nodes);
-	for (int layout = 0; layout < 3; ++layout)
+	for (int layout = 0; layout < 4; ++layout)
 	{
 		CAPTURE(dim, order, layout, material);
 		io::OutputSample sample;
@@ -133,7 +133,7 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 			{
 				const int row = layout == 1 ? 2 * p + e : e * nodes.rows() + p;
 				sample.local_points.row(row) = nodes.row(p);
-				if (layout == 2)
+				if (layout == 2 || (layout == 3 && e == 1))
 					sample.local_points.row(row) = 0.7 * nodes.row(p) + Eigen::RowVectorXd::Constant(dim, 0.05);
 				sample.element_ids(row) = e;
 			}
@@ -159,6 +159,7 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 			REQUIRE(it != fields.end());
 			return it->values;
 		};
+		Eigen::VectorXd expected_energy = Eigen::VectorXd::Zero(sample.local_points.rows());
 		for (int row = 0; row < sample.local_points.rows() - 1; ++row)
 		{
 			const int e = sample.element_ids(row);
@@ -169,6 +170,10 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 			Eigen::MatrixXd von_mises;
 			elasticity.compute_von_mises_stresses(data, von_mises);
 			scalar.emplace_back("von_mises", std::move(von_mises));
+			Eigen::MatrixXd energy;
+			elasticity.compute_energy_density(data, energy);
+			expected_energy(row) = energy(0, 0);
+			scalar.emplace_back("energy", std::move(energy));
 			const std::vector<std::pair<std::string, ElasticityTensorType>> tensor_types = {
 				{"cauchy_stess", ElasticityTensorType::CAUCHY},
 				{"pk1_stess", ElasticityTensorType::PK1},
@@ -181,10 +186,44 @@ TEST_CASE("elastic output reuses samples without changing fields", "[output]")
 				tensor.emplace_back(name, std::move(value));
 			}
 			for (const auto &[name, value] : scalar)
-				CHECK(field_values(name).row(row).isApprox(value, 1e-10));
+			{
+				CAPTURE(name, value, field_values(name).row(row), (field_values(name).row(row) - value).norm());
+				// The shared energy reuses the AD primal, whose rounding can differ near zero.
+				if (name == "energy")
+					CHECK((field_values(name).row(row) - value).norm() <= 1e-12 + 1e-10 * value.norm());
+				else
+					CHECK(field_values(name).row(row).isApprox(value, 1e-10));
+			}
 			for (const auto &[name, value] : tensor)
 				for (int d = 0; d < dim; ++d)
 					CHECK(field_values(fmt::format("{}_{}", name, d + 1)).row(row).isApprox(value.middleCols(d * dim, dim), 1e-10));
+		}
+		Eigen::Vector2d energy_sum = Eigen::Vector2d::Zero();
+		Eigen::Vector2i energy_count = Eigen::Vector2i::Zero();
+		for (int row = 0; row < sample.element_ids.size() - 1; ++row)
+		{
+			const int e = sample.element_ids(row);
+			energy_sum(e) += expected_energy(row);
+			++energy_count(e);
+		}
+		Eigen::VectorXd expected_energy_avg = Eigen::VectorXd::Zero(sample.element_ids.size());
+		for (int row = 0; row < sample.element_ids.size() - 1; ++row)
+		{
+			const int e = sample.element_ids(row);
+			expected_energy_avg(row) = energy_sum(e) / energy_count(e);
+		}
+		CHECK((field_values("energy_avg") - expected_energy_avg).norm() <= 1e-12 + 1e-10 * expected_energy_avg.norm());
+		for (const std::string name : {"energy", "energy_avg"})
+		{
+			const auto energy_only = form.output_fields(sample, solution, {{name}});
+			REQUIRE(energy_only.size() == 1);
+			CHECK(energy_only[0].name == name);
+			CHECK(energy_only[0].values.isApprox(field_values(name), 1e-10));
+			auto requested_sample = sample;
+			requested_sample.requested_fields = {name};
+			const auto saved_energy = snapshot(requested_sample);
+			REQUIRE(saved_energy.size() == 1);
+			CHECK(saved_energy[0].values.isApprox(field_values(name), 1e-10));
 		}
 		const auto averaged = form.output_fields(sample, solution, {{"von_mises_avg", "cauchy_stess_avg", "pk1_stess_avg", "pk2_stess_avg", "F_avg"}});
 		for (const auto &field : averaged)

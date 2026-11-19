@@ -157,6 +157,10 @@ namespace polyfem::assembler
 				stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
 		}
 
+		if (output.needs_energy)
+			output.energy = 0.5 * (stress_tensor * strain).trace();
+		if (!output.needs_stress)
+			return true;
 		stress_tensor = (MatrixNd::Identity(size(), size()) + displacement_grad) * stress_tensor;
 
 		output.native = stress_tensor;

@@ -56,6 +56,9 @@ namespace polyfem::assembler
 	{
 		const auto &local_pts = data.local_pts;
 		const auto t = data.t;
+		output.energy = 0;
+		if (!output.needs_stress)
+			return true;
 		double lambda, mu;
 		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 		const MatrixNd strain = (displacement_grad + displacement_grad.transpose()) / 2;

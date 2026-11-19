@@ -33,9 +33,17 @@ namespace polyfem::assembler
 		const auto &deformation = output.deformation();
 		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
 		DiffScalarBase::setVariableCount(size() * size());
-		if (!derived().real_def_grad(vals.val.row(p), data.t, data.el_id))
+		const bool rest_pose = derived().real_def_grad(vals.val.row(p), data.t, data.el_id);
+		output.has_stress = rest_pose;
+		if (!rest_pose || !output.needs_stress)
 		{
-			output.has_stress = false;
+			if (output.needs_energy)
+			{
+				DefGradMatrix<double> energy_deformation = deformation;
+				if (!rest_pose)
+					energy_deformation = energy_deformation * vals.jac_it[p].inverse();
+				output.energy = derived().template elastic_energy<double>(data.local_pts.row(p), data.t, vals.element_id, energy_deformation);
+			}
 			return true;
 		}
 		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
@@ -43,6 +51,8 @@ namespace polyfem::assembler
 			for (int d2 = 0; d2 < size(); ++d2)
 				def_grad(d1, d2) = Diff(d1 * size() + d2, deformation(d1, d2));
 		const auto val = derived().elastic_energy(data.local_pts.row(p), data.t, vals.element_id, def_grad);
+		if (output.needs_energy)
+			output.energy = val.getValue();
 		MatrixNd stress_tensor(size(), size());
 		for (int d1 = 0; d1 < size(); ++d1)
 			for (int d2 = 0; d2 < size(); ++d2)

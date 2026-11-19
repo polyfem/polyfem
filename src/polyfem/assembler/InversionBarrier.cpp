@@ -131,10 +131,14 @@ namespace polyfem::assembler
 		const auto &def_grad = output.deformation();
 		const double J = polyfem::utils::determinant(def_grad);
 		const double threshold = JBarrierThreshold_(local_pts.row(p), t, vals.element_id);
-		Eigen::MatrixXd delJ_delF, del2J_delF2;
-		jacobian_cofactor_derivatives(def_grad, size(), delJ_delF, del2J_delF2);
 		double lambda, mu;
 		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		if (output.needs_energy)
+			output.energy = mu * barrier<double>::value(J, threshold);
+		if (!output.needs_stress)
+			return true;
+		Eigen::MatrixXd delJ_delF, del2J_delF2;
+		jacobian_cofactor_derivatives(def_grad, size(), delJ_delF, del2J_delF2);
 		output.native = mu * barrier<double>::first_derivatives(J, threshold) * delJ_delF;
 		output.native_type = ElasticityTensorType::PK1;
 		return true;

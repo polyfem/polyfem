@@ -222,6 +222,10 @@ namespace polyfem::assembler
 		const auto &def_grad = output.deformation();
 		double lambda, mu;
 		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		if (output.needs_energy)
+			output.energy = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
+		if (!output.needs_stress)
+			return true;
 		if (size() == 2)
 			output.native = compute_stress_from_def_grad<2>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();
 		else

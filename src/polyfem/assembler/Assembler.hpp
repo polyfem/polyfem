@@ -443,11 +443,19 @@ namespace polyfem::assembler
 								   const ElasticityTensorType &type,
 								   Eigen::MatrixXd &stresses) const
 		{
+			assert(type != ElasticityTensorType::ENERGY); // scalar, use compute_energy_density
 			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::MatrixXd tmp = stress;
 				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 				return Eigen::MatrixXd(a);
 			});
+		}
+
+		/// Elastic energy density at data.local_pts, one row per point.
+		void compute_energy_density(const OutputData &data,
+									Eigen::MatrixXd &energy) const
+		{
+			assign_stress_tensor(data, 1, ElasticityTensorType::ENERGY, energy, [](const Eigen::MatrixXd &e) { return e; });
 		}
 
 		void compute_von_mises_stresses(const OutputData &data,
@@ -479,6 +487,9 @@ namespace polyfem::assembler
 			MatrixNd native;
 			ElasticityTensorType native_type = ElasticityTensorType::CAUCHY;
 			bool has_stress = true;
+			bool needs_stress = true;
+			bool needs_energy = false;
+			double energy = 0;
 			const MatrixNd &deformation() const { return deformation_; }
 			const MatrixNd &tensor(ElasticityTensorType type);
 
@@ -499,7 +510,7 @@ namespace polyfem::assembler
 										   const ElementAssemblyValues &vals, Eigen::Index point,
 										   const MatrixNd &displacement_gradient, OutputStress &stress) const { return false; }
 
-		bool evaluate_output_stress(const OutputData &data, bool need_stress,
+		bool evaluate_output_stress(const OutputData &data, bool need_stress, bool need_energy,
 									const std::function<void(Eigen::Index, OutputStress &)> &emit) const;
 		bool use_robust_jacobian = false;
 	};

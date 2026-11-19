@@ -183,6 +183,10 @@ namespace polyfem
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 			const MatrixNd strain = (displacement_grad + displacement_grad.transpose()) / 2;
+			if (output.needs_energy)
+				output.energy = mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
+			if (!output.needs_stress)
+				return true;
 			output.native = 2 * mu * strain + lambda * strain.trace() * MatrixNd::Identity(size(), size());
 			return true;
 		}

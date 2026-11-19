@@ -257,9 +257,15 @@ namespace polyfem::assembler
 		double lambda, mu;
 		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 		const double J = polyfem::utils::determinant(def_grad);
+		const double log_J = std::log(J);
+		if (output.needs_energy)
+			output.energy = (mu / 2.0) * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_J)
+							+ (lambda / 2.0) * log_J * log_J;
+		if (!output.needs_stress)
+			return true;
 		const MatrixNd b = def_grad * def_grad.transpose();
 		const auto I = MatrixNd::Identity(size(), size());
-		output.native = (lambda * std::log(J) * I + mu * (b - I)) / J;
+		output.native = (lambda * log_J * I + mu * (b - I)) / J;
 		return true;
 	}
 

@@ -627,7 +627,8 @@ namespace polyfem::varform
 								   && (options.fields.empty() || options.export_field("von_mises"));
 		const bool sample_tensor = tensor_values && !problem->is_scalar() && has_element_samples
 								   && (options.fields.empty() || options.export_field("cauchy_stess") || options.export_field("pk1_stess")
-									   || options.export_field("pk2_stess") || options.export_field("F"));
+									   || options.export_field("pk2_stess") || options.export_field("F")
+									   || options.export_field("energy") || options.export_field("energy_avg"));
 		bool stress_sampled = false;
 		std::vector<assembler::Assembler::NamedMatrix> sampled_scalar, sampled_tensor;
 		const auto sample_stress_values = [&](const bool tensor) {
@@ -701,7 +702,9 @@ namespace polyfem::varform
 									  || options.export_field("cauchy_stess")
 									  || options.export_field("pk1_stess")
 									  || options.export_field("pk2_stess")
-									  || options.export_field("F");
+									  || options.export_field("F")
+									  || options.export_field("energy")
+									  || options.export_field("energy_avg");
 			if (!wants_tensor)
 				return;
 
@@ -710,6 +713,38 @@ namespace polyfem::varform
 			all_tensor_fields = !point_values.empty();
 			for (const auto &[name, values] : point_values)
 			{
+				if (name == "energy")
+				{
+					// Scalar field: must not go through the per-dimension splitting below.
+					if (options.export_field("energy"))
+						fields.push_back({name, values, io::OutputField::Association::Point});
+
+					if (options.export_field("energy_avg"))
+					{
+						// Per-element mean of the energy at the sample points.
+						Eigen::VectorXd sum = Eigen::VectorXd::Zero(mesh_->n_elements());
+						Eigen::VectorXi cnt = Eigen::VectorXi::Zero(mesh_->n_elements());
+						for (int i = 0; i < sample.element_ids.size(); ++i)
+						{
+							const int e = sample.element_ids(i);
+							if (e < 0)
+								continue;
+							sum(e) += values(i, 0);
+							cnt(e)++;
+						}
+
+						Eigen::MatrixXd avg = Eigen::MatrixXd::Zero(values.rows(), 1);
+						for (int i = 0; i < sample.element_ids.size(); ++i)
+						{
+							const int e = sample.element_ids(i);
+							if (e >= 0)
+								avg(i) = sum(e) / cnt(e);
+						}
+						fields.push_back({"energy_avg", avg, io::OutputField::Association::Point});
+					}
+					continue;
+				}
+
 				if (!options.export_field(name))
 				{
 					all_tensor_fields = false;
@@ -800,10 +835,17 @@ namespace polyfem::varform
 				const bool reuse_scalar = sampled_at_nodes && all_scalar_fields;
 				const bool reuse_tensor = sampled_at_nodes && all_tensor_fields;
 				if ((scalar_values && !reuse_scalar) || (tensor_values && !reuse_tensor))
+				{
 					primary_assembler_->compute_output_values(
 						assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution),
 						scalar_values && !reuse_scalar ? &tmp_s : nullptr,
 						tensor_values && !reuse_tensor ? &tmp_t : nullptr);
+					// Energy uses the per-element mean assembled with the raw samples.
+					tmp_t.erase(std::remove_if(tmp_t.begin(), tmp_t.end(), [](const auto &field) {
+									return field.first == "energy";
+								}),
+								tmp_t.end());
+				}
 				if (scalar_values)
 				{
 					if (reuse_scalar)
@@ -841,8 +883,9 @@ namespace polyfem::varform
 				if (avg_tensor.empty() && !tmp_t.empty())
 				{
 					avg_tensor.resize(tmp_t.size());
-					for (auto &m : avg_tensor)
-						m.setZero(space_.n_bases, actual_dim * actual_dim);
+					// Not every tensor is dim x dim (e.g. the scalar "energy"), so size by its own columns.
+					for (int k = 0; k < tmp_t.size(); ++k)
+						avg_tensor[k].setZero(space_.n_bases, tmp_t[k].second.cols());
 				}
 
 				for (size_t j = 0; j < bs.bases.size(); ++j)
@@ -882,6 +925,10 @@ namespace polyfem::varform
 
 			for (int k = 0; k < tmp_t.size(); ++k)
 			{
+				// "energy_avg" is the per-element mean written by append_tensor_values.
+				if (tmp_t[k].first == "energy")
+					continue;
+
 				const std::string base_name = fmt::format("{:s}_avg", tmp_t[k].first);
 				if (!options.export_field(base_name))
 					continue;

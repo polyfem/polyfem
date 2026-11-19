@@ -260,6 +260,8 @@ namespace polyfem::assembler
 				elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
 		}
 
+		if (output.needs_energy)
+			output.energy = 0.5 * (sigma * strain).trace();
 		output.native = sigma;
 		return true;
 	}
