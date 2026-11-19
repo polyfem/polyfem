@@ -78,6 +78,18 @@ namespace polyfem::test
 			form.prepare();
 		}
 
+		/// The mesh of the form, also before prepare().
+		static const mesh::Mesh &mesh(const varform::VarForm &form)
+		{
+			return *form.mesh_;
+		}
+
+		/// Make the next prepare() rebuild everything, as a geometry update does.
+		static void invalidate(varform::VarForm &form)
+		{
+			form.set_args(form.args);
+		}
+
 		static ElasticFormDebugData elastic_form_data(varform::ElasticVarForm &form)
 		{
 			return {

@@ -37,11 +37,12 @@ namespace polyfem
 			std::vector<int> node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes, const int n_new_nodesq);
 			std::vector<int> node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes);
 
-			// Packed id from primitive
+			// Packed id of the first slot of a primitive (each edge/face/cell owns
+			// max_nodes_per_* consecutive slots)
 			int primitive_from_vertex(int v) const { return v; }
-			int primitive_from_edge(int e) const { return edge_offset_ + e; }
-			int primitive_from_face(int f) const { return face_offset_ + f; }
-			int primitive_from_cell(int c) const { return cell_offset_ + c; }
+			int primitive_from_edge(int e) const { return edge_offset_ + e * max_nodes_per_edge_; }
+			int primitive_from_face(int f) const { return face_offset_ + f * max_nodes_per_face_; }
+			int primitive_from_cell(int c) const { return cell_offset_ + c * max_nodes_per_cell_; }
 
 			bool is_vertex_node(int i) const { return i >= 0 && i < edge_offset_; }
 			bool is_edge_node(int i) const { return i >= edge_offset_ && i < face_offset_; }
@@ -51,7 +52,7 @@ namespace polyfem
 			int num_vertex_nodes() const { return count_nonnegative_nodes(0, edge_offset_); }
 			int num_edge_nodes() const { return count_nonnegative_nodes(edge_offset_, face_offset_); }
 			int num_face_nodes() const { return count_nonnegative_nodes(face_offset_, cell_offset_); }
-			int num_cell_nodes() const { return count_nonnegative_nodes(cell_offset_, n_nodes()); }
+			int num_cell_nodes() const { return count_nonnegative_nodes(cell_offset_, primitive_to_node_.size()); }
 
 			// Primitive id from node id
 			int vertex_from_node_id(int node_id) const;
