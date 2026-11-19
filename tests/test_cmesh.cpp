@@ -17,6 +17,7 @@
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/io/OutData.hpp>
 #include "VarFormTestAccess.hpp"
+#include "TestTempPath.hpp"
 #include <filesystem>
 #include <system_error>
 
@@ -1138,7 +1139,7 @@ TEST_CASE("nodal boundary conditions with higher-order elements", "[mesh_test]")
 TEST_CASE("obstacle mesh arrays replicate codimensional points", "[mesh_test]")
 {
 	namespace fs = std::filesystem;
-	const fs::path dir = fs::temp_directory_path() / "polyfem-mesh-array-test";
+	const fs::path dir = polyfem::test::unique_temp_path("polyfem-mesh-array-test");
 	fs::create_directories(dir);
 	{
 		// One edge (v1-v2) and two free points (v3, v4): 4 vertices, 2 points.

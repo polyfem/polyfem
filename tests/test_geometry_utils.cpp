@@ -18,6 +18,7 @@
 #include <system_error>
 #include <fstream>
 #include <set>
+#include "TestTempPath.hpp"
 
 namespace
 {
@@ -638,7 +639,7 @@ TEST_CASE("geometry loader rejects stored point and geometry selections on refin
 	using namespace polyfem::mesh;
 	namespace fs = std::filesystem;
 
-	const fs::path path = fs::temp_directory_path() / "polyfem-refine-stored-labels.h5";
+	const fs::path path = polyfem::test::unique_temp_path("polyfem-refine-stored-labels", ".h5");
 	Eigen::MatrixXd vertices(4, 2);
 	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 	Eigen::MatrixXi cells(2, 3);
@@ -727,13 +728,94 @@ TEST_CASE("refinement keeps the label arrays consistent", "[geometry][mesh_test]
 	}
 }
 
+TEST_CASE("conforming 3D refinement drops the labels and the curved geometry", "[geometry][mesh_test]")
+{
+	using namespace polyfem;
+	using namespace polyfem::mesh;
+
+	for (const bool hex : {false, true})
+	{
+		CAPTURE(hex);
+		Eigen::MatrixXd vertices;
+		Eigen::MatrixXi cells;
+		if (hex)
+		{
+			vertices.resize(8, 3);
+			vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+			cells.resize(1, 8);
+			cells << 0, 1, 2, 3, 4, 5, 6, 7;
+		}
+		else
+		{
+			vertices.resize(5, 3);
+			vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1;
+			cells.resize(2, 4);
+			cells << 0, 1, 2, 3, 1, 2, 3, 4;
+		}
+		MeshData data(vertices, cells);
+		if (!hex)
+		{
+			// P2 tets (straight, but stored as curved).
+			const int edges[6][2] = {{0, 1}, {1, 2}, {0, 2}, {0, 3}, {2, 3}, {1, 3}};
+			data.higher_order_nodes.resize(5 + 12, 3);
+			data.higher_order_nodes.topRows(5) = vertices;
+			data.higher_order_connectivity.resize(2);
+			for (int c = 0; c < 2; ++c)
+			{
+				for (int j = 0; j < 4; ++j)
+					data.higher_order_connectivity[c].push_back(cells(c, j));
+				for (int e = 0; e < 6; ++e)
+				{
+					const int node = 5 + 6 * c + e;
+					data.higher_order_nodes.row(node) = (vertices.row(cells(c, edges[e][0])) + vertices.row(cells(c, edges[e][1]))) / 2;
+					data.higher_order_connectivity[c].push_back(node);
+				}
+			}
+		}
+		auto mesh = Mesh::create(data);
+		const int n_cells = mesh->n_cells();
+		if (!hex)
+			REQUIRE(mesh->orders().maxCoeff() == 2);
+		mesh->set_body_ids(std::vector<int>(n_cells, 7));
+		mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+		mesh->compute_node_ids([](const size_t, const RowVectorNd &, bool) { return 2; });
+		mesh->set_geometry_ids(std::vector<int>(n_cells, 1));
+
+		mesh->refine(1, 0.5);
+		CHECK(mesh->n_cells() == 8 * n_cells);
+		CHECK_FALSE(mesh->has_body_ids());
+		CHECK_FALSE(mesh->has_boundary_ids());
+		CHECK_FALSE(mesh->has_node_ids());
+		CHECK_FALSE(mesh->has_geometry_ids());
+		CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
+
+		// What is left is consistent: it exports and rebuilds, and new labels
+		// cover the refined boundary.
+		const MeshData refined = mesh->to_mesh_data();
+		REQUIRE_NOTHROW(refined.validate());
+		CHECK(refined.body_ids.empty());
+		CHECK(refined.boundary_ids.empty());
+		CHECK(refined.node_ids.empty());
+		CHECK(refined.higher_order_connectivity.empty());
+		CHECK(Mesh::create(refined)->n_cells() == mesh->n_cells());
+		mesh->compute_boundary_ids([](const size_t, const std::vector<int> &, const RowVectorNd &, bool boundary) { return boundary ? 3 : -1; });
+		int n_boundary = 0;
+		for (int f = 0; f < mesh->n_faces(); ++f)
+		{
+			CHECK(mesh->get_boundary_id(f) == (mesh->is_boundary_face(f) ? 3 : -1));
+			n_boundary += mesh->is_boundary_face(f);
+		}
+		CHECK(n_boundary == (hex ? 24 : 4 * 6));
+	}
+}
+
 TEST_CASE("load_surface rejects faces with invalid vertices", "[geometry][mesh_utils]")
 {
 	using namespace polyfem;
 	using namespace polyfem::mesh;
 	namespace fs = std::filesystem;
 
-	const fs::path dir = fs::temp_directory_path() / "polyfem-bad-surface";
+	const fs::path dir = polyfem::test::unique_temp_path("polyfem-bad-surface");
 	fs::create_directories(dir);
 	std::ofstream(dir / "bad.obj") << "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 9\n";
 	std::ofstream(dir / "bad.off") << "OFF\n3 1 0\n0 0 0\n1 0 0\n0 1 0\n3 0 1 7\n";

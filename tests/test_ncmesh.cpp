@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <algorithm>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
@@ -464,18 +465,25 @@ TEST_CASE("non-conforming append merges structure and labels", "[ncmesh][mesh_te
 
 		// Boundary ids: kept for the first mesh, defaults for the second one.
 		int n_checked = 0;
+		std::vector<int> kept_boundary_ids;
 		for (int b = 0; b < first->n_boundary_elements(); ++b)
 		{
 			const RowVectorNd center = dim == 2 ? first->edge_barycenter(b) : first->face_barycenter(b);
 			const bool boundary = dim == 2 ? first->is_boundary_edge(b) : first->is_boundary_face(b);
 			if (center[0] < 2)
+			{
 				CHECK(first->get_boundary_id(b) == (boundary ? 3 : -1));
+				kept_boundary_ids.push_back(first->get_boundary_id(b));
+			}
 			else
 				CHECK(first->get_boundary_id(b) == (boundary ? std::numeric_limits<int>::max() : -1));
 			++n_checked;
 		}
 		CHECK(n_checked == first->n_boundary_elements());
-		CHECK(std::vector<int>(first_boundary_ids.begin(), first_boundary_ids.end()).size() == n_first_boundary);
+		// The first mesh keeps all of its ids, no more and no fewer.
+		std::sort(first_boundary_ids.begin(), first_boundary_ids.end());
+		std::sort(kept_boundary_ids.begin(), kept_boundary_ids.end());
+		CHECK(kept_boundary_ids == first_boundary_ids);
 
 		// The second mesh's elements only touch its own vertices.
 		for (int e = n_first_elements; e < first->n_elements(); ++e)
@@ -609,5 +617,40 @@ TEST_CASE("non-conforming append keeps the refinement hierarchy of the appended 
 			dynamic_cast<NCMesh3D &>(*first).refine_elements({n_first});
 		CHECK(first->n_elements() == n_first + n_second);
 		CHECK(first->n_vertices() == n_vertices + (dim == 2 ? 3 : 6));
+
+		// Refining the other root of the appended mesh splits the edge (face)
+		// it shares with the refined root: those midpoints must be found
+		// through the appended midpoint maps, not created again.
+		auto base = Mesh::create(nc_test_mesh(dim), true);
+		auto refined = Mesh::create(shifted, true);
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*refined).refine_elements({0});
+		else
+			dynamic_cast<NCMesh3D &>(*refined).refine_elements({0});
+		base->append(refined);
+		// The unrefined root is the appended element with only input vertices
+		// (input coordinates are integers, midpoints are not).
+		int root = -1;
+		for (int e = n_first; e < base->n_elements(); ++e)
+		{
+			bool input_vertices = true;
+			for (int j = 0; j < base->n_cell_vertices(e); ++j)
+			{
+				const RowVectorNd p = base->point(base->element_vertex(e, j));
+				input_vertices &= (p.array() == p.array().round()).all();
+			}
+			if (input_vertices)
+				root = e;
+		}
+		REQUIRE(root >= 0);
+		const int n_base_vertices = base->n_vertices();
+		if (dim == 2)
+			dynamic_cast<NCMesh2D &>(*base).refine_elements({root});
+		else
+			dynamic_cast<NCMesh3D &>(*base).refine_elements({root});
+		CHECK(base->n_vertices() == n_base_vertices + (dim == 2 ? 2 : 3));
+		for (int i = 0; i < base->n_vertices(); ++i)
+			for (int j = i + 1; j < base->n_vertices(); ++j)
+				CHECK((base->point(i) - base->point(j)).norm() > 1e-12);
 	}
 }

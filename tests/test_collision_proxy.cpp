@@ -10,6 +10,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include "VarFormTestAccess.hpp"
+#include "TestTempPath.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <h5pp/h5pp.h>
@@ -722,7 +723,7 @@ TEST_CASE("collision mesh marks obstacle vertices", "[collision_mesh][obstacle]"
 TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
 {
 	namespace fs = std::filesystem;
-	const fs::path dir = fs::temp_directory_path() / "polyfem-proxy-weights";
+	const fs::path dir = polyfem::test::unique_temp_path("polyfem-proxy-weights");
 	fs::create_directories(dir);
 	const auto write = [&](const std::string &name, const std::array<long, 2> &shape, const std::vector<int> &cols) {
 		h5pp::File file((dir / name).string(), h5pp::FileAccess::REPLACE);
