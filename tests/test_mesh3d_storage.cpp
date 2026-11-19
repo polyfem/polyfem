@@ -149,7 +149,9 @@ namespace
 					const auto by_edge = m.get_index_from_element_edge(c, idx.vertex, sv.vertex);
 					CHECK(by_edge.edge == idx.edge);
 					CHECK(by_edge.vertex == idx.vertex);
-					if (m.n_face_vertices(f) == 3)
+					// The triangle-face lookup is defined for tets, prisms and
+					// pyramids (4 or 5 faces), not for general polyhedra.
+					if (m.n_face_vertices(f) == 3 && (m.n_cell_faces(c) == 4 || m.n_cell_faces(c) == 5))
 					{
 						const auto by_face = m.get_index_from_element_face(c, idx.vertex, sv.vertex, m.switch_vertex(se).vertex);
 						CHECK(by_face.face == f);
