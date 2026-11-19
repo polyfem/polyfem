@@ -302,7 +302,7 @@ namespace polyfem::mesh
 				// Eigen::RowVector4d bc;
 				// igl::barycentric_coordinates(
 				// 	proxy_vertices.row(i), nodes.row(0), nodes.row(1), nodes.row(2), nodes.row(3), bc);
-				// vhat = bc.head<3>();
+				// vhat = bc.tail<3>(); // the P1 reference nodes are 0, e_1, e_2, e_3
 			}
 
 			// compute the displacement map entries
@@ -417,7 +417,11 @@ namespace polyfem::mesh
 			for (int i = 0; i < values.size(); i++)
 			{
 				// Rearrange the columns based on the FEM mesh node order
-				displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
+				const int node = in_node_to_node[cols[i]];
+				if (node < 0)
+					log_and_throw_error("Collision proxy weights {} reference input node {}, which is not an FE node.",
+										weights_filename, cols[i]);
+				displacement_map_entries.emplace_back(rows[i], node, values[i]);
 			}
 		};
 

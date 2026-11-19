@@ -759,6 +759,11 @@ TEST_CASE("collision proxy weights are validated", "[collision_proxy]")
 	CHECK_THROWS_WITH(
 		polyfem::mesh::load_collision_proxy_displacement_map(resources, "bad_length.hdf5", in_node_to_node, 1, entries),
 		Catch::Matchers::ContainsSubstring("1 values, 1 rows and 2 columns"));
+	// A column of an input node that is not an FE node.
+	const Eigen::VectorXi partial_map = (Eigen::VectorXi(3) << 2, 0, -1).finished();
+	CHECK_THROWS_WITH(
+		polyfem::mesh::load_collision_proxy_displacement_map(resources, "good.hdf5", partial_map, 1, entries),
+		Catch::Matchers::ContainsSubstring("input node 2, which is not an FE node"));
 	std::error_code ec; // files a reader left open cannot be removed on Windows
 	fs::remove_all(dir, ec);
 }
