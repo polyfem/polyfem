@@ -413,7 +413,8 @@ namespace polyfem::assembler
 			void grown_stresses(
 				const int el_id, const RowVectorNd &pos, const double t,
 				const Eigen::Matrix3d &F, const double theta,
-				Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2) const
+				Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2,
+				double &energy) const
 			{
 				if (size_ != 3)
 					log_and_throw_error("GrowthElasticity supports 3D only.");
@@ -449,6 +450,7 @@ namespace polyfem::assembler
 				pk1 = Jg * Pe * Fgi.transpose();
 				cauchy = pk1 * F.transpose() / J;
 				pk2 = F.inverse() * pk1;
+				energy = Jg * psi.getValue();
 			}
 
 		private:
@@ -583,9 +585,10 @@ namespace polyfem::assembler
 	void GrowthElasticity::grown_stresses(
 		const int el_id, const RowVectorNd &pos, const double t,
 		const Eigen::Matrix3d &F, const double theta,
-		Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2) const
+		Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2,
+		double &energy) const
 	{
-		model().grown_stresses(el_id, pos, t, F, theta, cauchy, pk1, pk2);
+		model().grown_stresses(el_id, pos, t, F, theta, cauchy, pk1, pk2, energy);
 	}
 
 	detail::GrowthElasticityModel &GrowthElasticity::model()

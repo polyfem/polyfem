@@ -97,17 +97,19 @@ namespace polyfem::varform
 		json elastic_material_args() const;
 
 		// ---- stress output of the grown material ----
-		/// Grown-material stresses (GrowthElasticity::grown_stresses) at local
-		/// points of element e, flattened column-major like the elastic tensor
-		/// output: cauchy, pk1, pk2 (n x 9) and von Mises of the Cauchy stress (n x 1).
+		/// Grown-material stresses and energy density (GrowthElasticity::grown_stresses)
+		/// at local points of element e, flattened column-major like the elastic
+		/// tensor output: cauchy, pk1, pk2 (n x 9), von Mises of the Cauchy stress
+		/// and the energy density (n x 1).
 		void grown_stress_at(
 			const int e, const Eigen::MatrixXd &local_pts, const double t,
 			const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &growth,
 			Eigen::MatrixXd &cauchy, Eigen::MatrixXd &pk1, Eigen::MatrixXd &pk2,
-			Eigen::MatrixXd &von_mises) const;
+			Eigen::MatrixXd &von_mises, Eigen::MatrixXd &energy) const;
 		/// The elastic base evaluates von_mises, cauchy_stess_*, pk1_stess_*,
-		/// pk2_stess_* (and the *_avg variants) with the ungrown material at the
-		/// total F; overwrite the ones it emitted with the grown-material values.
+		/// pk2_stess_* (and the *_avg variants), energy and energy_avg with the
+		/// ungrown material at the total F; overwrite the ones it emitted with the
+		/// grown-material values.
 		void replace_stress_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &growth,

@@ -671,7 +671,8 @@ namespace
 TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 {
 	// Stresses of J^g psi_e(F Fg^-1) against the independent scalar energy:
-	// P = J^g Pe(Fe) Fg^-T, sigma = Pe(Fe) Fe^T / J^e, S = F^-1 P.
+	// P = J^g Pe(Fe) Fg^-T, sigma = Pe(Fe) Fe^T / J^e, S = F^-1 P; the energy
+	// density is J^g psi_e(Fe).
 	assembler::GrowthElasticity ge;
 	ge.set_size(3);
 	Units units;
@@ -681,15 +682,17 @@ TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 		-0.03, 1.05, 0.06,
 		0.08, -0.05, 0.88;
 	Eigen::Matrix3d s, P, S;
+	double w;
 
 	SECTION("no growth: the plain elastic stresses at F")
 	{
 		ge.add_multimaterial(0, material_params(), units, io::FileSystemIO("."));
-		ge.grown_stresses(0, pos, 0, F, 1.0, s, P, S);
+		ge.grown_stresses(0, pos, 0, F, 1.0, s, P, S, w);
 		const Eigen::Matrix3d P_ref = pk1_ref(F);
 		check_close(P, P_ref, 1e-6);
 		check_close(s, P_ref * F.transpose() / F.determinant(), 1e-6);
 		check_close(S, F.inverse() * P_ref, 1e-6);
+		CHECK(w == Catch::Approx(psi_C(F.transpose() * F)).epsilon(1e-10));
 	}
 
 	for (const double vn : {1.0, 1.1})
@@ -704,14 +707,16 @@ TEST_CASE("growth_grown_stresses", "[growth][growth_stress]")
 			const Eigen::Matrix3d Fe = F * Fgi;
 			const Eigen::Matrix3d Pe = pk1_ref(Fe);
 
-			ge.grown_stresses(0, pos, 0, F, theta, s, P, S);
+			ge.grown_stresses(0, pos, 0, F, theta, s, P, S, w);
 			check_close(P, Jg * Pe * Fgi.transpose(), 1e-6);
+			CHECK(w == Catch::Approx(Jg * psi_C(Fe.transpose() * Fe)).epsilon(1e-10));
 			check_close(s, Pe * Fe.transpose() / Fe.determinant(), 1e-6);
 			check_close(S, F.inverse() * P, 1e-10);
 			CHECK((s - s.transpose()).cwiseAbs().maxCoeff() < 1e-8 * s.cwiseAbs().maxCoeff());
 
 			// F = Fg: the grown reference state is stress free
-			ge.grown_stresses(0, pos, 0, Fgi.inverse(), theta, s, P, S);
+			ge.grown_stresses(0, pos, 0, Fgi.inverse(), theta, s, P, S, w);
+			CHECK(std::abs(w) < 1e-8);
 			CHECK(s.cwiseAbs().maxCoeff() < 1e-8);
 			CHECK(P.cwiseAbs().maxCoeff() < 1e-8);
 			CHECK(S.cwiseAbs().maxCoeff() < 1e-8);
@@ -723,8 +728,9 @@ TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 {
 	// Cube above threshold: F = diag(lambda, lambda, b), Fe = diag(a, a, b)
 	// with a^2 = vartheta* and the top traction free, so sigma_zz = 0. The
-	// exported stresses must be the grown ones; the ungrown material at the
-	// total F (what the elastic base evaluates) has sigma_zz far from 0.
+	// exported stresses and energy density must be the grown ones; the ungrown
+	// material at the total F (what the elastic base evaluates) has sigma_zz far
+	// from 0 and a different energy.
 	const int n = 2;
 	const int nv = (n + 1) * (n + 1) * (n + 1);
 	const int n_el = 6 * n * n * n;
@@ -753,6 +759,8 @@ TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 	const Eigen::Matrix3d S_ref = F.inverse() * P_ref;
 	const Eigen::Matrix3d P_ungrown = pk1_ref(F);
 	REQUIRE(std::abs((P_ungrown * F.transpose() / F.determinant())(2, 2)) > 100.0);
+	const double w_ref = theta * psi(a, b); // J^g psi_e(Fe), vn = 1
+	REQUIRE(std::abs(psi_C(F.transpose() * F) - w_ref) > 0.1 * w_ref);
 
 	// one sample at each element centroid
 	io::OutputSample sample;
@@ -788,6 +796,7 @@ TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 			check_close(tensor_at("pk2_stess" + suffix, i), S_ref, tol);
 			check_close(tensor_at("F" + suffix, i), F, tol);
 			CHECK(field("von_mises" + suffix)(i, 0) == Catch::Approx(von_mises_stress_for_stress_tensor(s_ref)).epsilon(tol));
+			CHECK(field("energy" + suffix)(i, 0) == Catch::Approx(w_ref).epsilon(tol));
 		}
 	}
 }

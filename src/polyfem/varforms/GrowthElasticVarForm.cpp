@@ -1871,7 +1871,7 @@ namespace polyfem::varform
 		const int e, const Eigen::MatrixXd &local_pts, const double t,
 		const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &growth,
 		Eigen::MatrixXd &cauchy, Eigen::MatrixXd &pk1, Eigen::MatrixXd &pk2,
-		Eigen::MatrixXd &von_mises) const
+		Eigen::MatrixXd &von_mises, Eigen::MatrixXd &energy) const
 	{
 		const auto ge = std::dynamic_pointer_cast<assembler::GrowthElasticity>(growthelastic_assembler_);
 		if (!ge)
@@ -1893,6 +1893,7 @@ namespace polyfem::varform
 		pk1.resize(n, 9);
 		pk2.resize(n, 9);
 		von_mises.resize(n, 1);
+		energy.resize(n, 1);
 
 		Eigen::MatrixXd grad_u(dim, dim);
 		Eigen::Matrix3d s, P, S;
@@ -1900,13 +1901,15 @@ namespace polyfem::varform
 		{
 			compute_diplacement_grad(dim, bs, vals, local_pts, p, displacement, grad_u);
 			const Eigen::Matrix3d F = Eigen::Matrix3d::Identity() + grad_u;
-			ge->grown_stresses(e, vals.val.row(p), t, F, theta(p, 0), s, P, S);
+			double w;
+			ge->grown_stresses(e, vals.val.row(p), t, F, theta(p, 0), s, P, S, w);
 
 			// column-major, as the base flattening (field "<name>_k" = column k)
 			cauchy.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(s.data());
 			pk1.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(P.data());
 			pk2.row(p) = Eigen::Map<const Eigen::Matrix<double, 1, 9>>(S.data());
 			von_mises(p, 0) = von_mises_stress_for_stress_tensor(s);
+			energy(p, 0) = w;
 		}
 	}
 
@@ -1953,6 +1956,47 @@ namespace polyfem::varform
 		};
 		const Targets point = collect("");
 		const Targets avg = collect("_avg");
+		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
+		Eigen::MatrixXd cauchy, pk1, pk2, vm, w;
+
+		// ---- energy density at the output samples; "energy_avg" is the
+		// per-element mean of the sample values, as in the elastic base
+		io::OutputField *energy = nullptr, *energy_avg = nullptr;
+		for (io::OutputField &field : fields)
+		{
+			if (field.name == "energy")
+				energy = &field;
+			else if (field.name == "energy_avg")
+				energy_avg = &field;
+		}
+		if ((energy || energy_avg) && has_element_samples)
+		{
+			const int ns = sample.local_points.rows();
+			Eigen::VectorXd values = Eigen::VectorXd::Zero(ns);
+			Eigen::VectorXd sum = Eigen::VectorXd::Zero(mesh_->n_elements());
+			Eigen::VectorXi count = Eigen::VectorXi::Zero(mesh_->n_elements());
+			for (int i = 0; i < ns; ++i)
+			{
+				const int e = sample.element_ids(i);
+				if (e < 0)
+					continue;
+				grown_stress_at(e, sample.local_points.row(i), sample.time, displacement, growth, cauchy, pk1, pk2, vm, w);
+				values(i) = w(0, 0);
+				sum(e) += values(i);
+				count(e)++;
+			}
+			for (int i = 0; i < ns; ++i)
+			{
+				const int e = sample.element_ids(i);
+				if (e < 0)
+					continue;
+				if (energy && i < energy->values.rows())
+					energy->values(i, 0) = values(i);
+				if (energy_avg && i < energy_avg->values.rows())
+					energy_avg->values(i, 0) = sum(e) / count(e);
+			}
+		}
+
 		if (!point.any && !avg.any)
 			return;
 
@@ -1968,9 +2012,6 @@ namespace polyfem::varform
 						tg.tensor[a][k]->values.row(row) = tensors[a]->block(src, 3 * k, 1, 3);
 		};
 
-		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
-		Eigen::MatrixXd cauchy, pk1, pk2, vm;
-
 		// ---- point values at the output samples
 		if (point.any && has_element_samples)
 		{
@@ -1979,7 +2020,7 @@ namespace polyfem::varform
 				const int e = sample.element_ids(i);
 				if (e < 0)
 					continue;
-				grown_stress_at(e, sample.local_points.row(i), sample.time, displacement, growth, cauchy, pk1, pk2, vm);
+				grown_stress_at(e, sample.local_points.row(i), sample.time, displacement, growth, cauchy, pk1, pk2, vm, w);
 				write_row(point, i, {{&cauchy, &pk1, &pk2}}, vm, 0);
 			}
 		}
@@ -2014,7 +2055,7 @@ namespace polyfem::varform
 			vals.compute(e, mesh_->is_volume(), bs, space_.geometry_basis_list()[e]);
 			const double area = (vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			grown_stress_at(e, local_pts, sample.time, displacement, growth, cauchy, pk1, pk2, vm);
+			grown_stress_at(e, local_pts, sample.time, displacement, growth, cauchy, pk1, pk2, vm, w);
 
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{

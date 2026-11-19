@@ -66,18 +66,21 @@ namespace polyfem::assembler
 		/// Reference wall normal n0 of element el_id (unit).
 		Eigen::Vector3d wall_normal(const int el_id) const;
 
-		/// Stresses of the grown material, total energy density J^g psi_e(F Fg^{-1}),
-		/// at the total deformation gradient F and growth theta (vn per element):
-		///     P     = J^g Pe(Fe) Fg^{-T},   Pe = d psi_e / d Fe,
-		///     sigma = P F^T / J = Pe(Fe) Fe^T / J^e,
-		///     S     = F^{-1} P.
-		/// At theta == 1, vn == 1 these are the plain elastic stresses at F. All
+		/// Stresses and energy density of the grown material, total energy density
+		/// J^g psi_e(F Fg^{-1}), at the total deformation gradient F and growth
+		/// theta (vn per element):
+		///     P      = J^g Pe(Fe) Fg^{-T},   Pe = d psi_e / d Fe,
+		///     sigma  = P F^T / J = Pe(Fe) Fe^T / J^e,
+		///     S      = F^{-1} P,
+		///     energy = J^g psi_e(Fe)   (per reference volume).
+		/// At theta == 1, vn == 1 these are the plain elastic values at F. All
 		/// tensors are 3x3 in global coordinates; pos is the global position, as
 		/// in the energy.
 		void grown_stresses(
 			const int el_id, const RowVectorNd &pos, const double t,
 			const Eigen::Matrix3d &F, const double theta,
-			Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2) const;
+			Eigen::Matrix3d &cauchy, Eigen::Matrix3d &pk1, Eigen::Matrix3d &pk2,
+			double &energy) const;
 
 	protected:
 		int rows() const override { return size(); }
