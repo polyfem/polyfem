@@ -286,6 +286,12 @@ namespace polyfem::assembler
 					elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
 			}
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = 0.5 * (sigma * strain).trace();
+				continue;
+			}
+
 			if (type == ElasticityTensorType::PK1)
 				sigma = pk1_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
 			else if (type == ElasticityTensorType::PK2)
