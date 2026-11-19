@@ -15,6 +15,7 @@ set(SOURCES
 	MeshNodes.hpp
 	MeshUtils.cpp
 	MeshUtils.hpp
+	NCMeshStorage.hpp
 	MMGRemesh.cpp
 	MMGRemesh.hpp
 	Obstacle.cpp
