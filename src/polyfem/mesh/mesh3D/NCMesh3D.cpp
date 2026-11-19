@@ -16,6 +16,7 @@ namespace polyfem
 	{
 		void NCMesh3D::remove_elements(const std::vector<bool> &keep)
 		{
+			counts_cached = false;
 			assert(keep.size() == n_cells());
 
 			std::vector<int> old_node_ids(vertices.size(), -1);
@@ -116,6 +117,7 @@ namespace polyfem
 			refineHistory.clear();
 			index_prepared = false;
 			adj_prepared = false;
+			counts_cached = false;
 
 			vertices.reserve(V.rows());
 			for (int i = 0; i < V.rows(); i++)
@@ -600,6 +602,7 @@ namespace polyfem
 
 		void NCMesh3D::refine_element(int id_full)
 		{
+			counts_cached = false;
 			assert(elements[id_full].is_valid());
 			if (elements[id_full].is_not_valid())
 				throw std::runtime_error("Cannot refine an invalid element!");
@@ -713,6 +716,7 @@ namespace polyfem
 
 		void NCMesh3D::coarsen_element(int id_full)
 		{
+			counts_cached = false;
 			const int parent_id = elements[id_full].parent;
 			auto &parent = elements[parent_id];
 
@@ -794,6 +798,8 @@ namespace polyfem
 
 		void NCMesh3D::build_index_mapping()
 		{
+			counts_cached = false;
+
 			all_to_valid_elemMap.assign(elements.size(), -1);
 			valid_to_all_elemMap.resize(n_elements);
 
@@ -843,6 +849,10 @@ namespace polyfem
 				valid_to_all_faceMap[j] = i;
 				j++;
 			}
+			n_valid_vertices = valid_to_all_vertexMap.size();
+			n_valid_edges = valid_to_all_edgeMap.size();
+			n_valid_faces = valid_to_all_faceMap.size();
+			counts_cached = true;
 			index_prepared = true;
 		}
 
@@ -1128,6 +1138,7 @@ namespace polyfem
 		}
 		int NCMesh3D::add_element(Eigen::Vector4i v, int parent)
 		{
+			counts_cached = false;
 			const int id = elements.size();
 			const int level = (parent < 0) ? 0 : elements[parent].level + 1;
 
