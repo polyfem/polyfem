@@ -62,8 +62,8 @@ namespace polyfem
 		/// - boundary ids (per boundary element, default max int on the boundary
 		///   and -1 inside), used to select boundary conditions;
 		/// - node ids (per vertex, default -1), used by nodal boundary
-		///   conditions; after update_nodes() they are read per FE node, while
-		///   the per-vertex ids are kept for to_mesh_data() and append();
+		///   conditions; the FE spaces read them per FE node through
+		///   MeshNodes::node_tag(), and basis construction never changes them;
 		/// - geometry ids (per element, default 0), used to split multi-body meshes;
 		/// and the optional curved geometry: orders_ (geometric order per
 		/// element), edge/face/cell_nodes_ (extra nodes per entity) and the
@@ -503,23 +503,16 @@ namespace polyfem
 
 			/// @brief Get the boundary selection of a node
 			///
-			/// @param[in] node_id node id
-			/// @return label of node
+			/// @param[in] node_id vertex id (FE spaces read the ids of their
+			///            nodes through MeshNodes::node_tag)
+			/// @return label of the vertex
 			virtual int get_node_id(const int node_id) const
 			{
-				const std::vector<int> &ids = fe_node_ids_mapped_ ? fe_node_ids_ : node_ids_;
-				if (node_id >= 0 && node_id < ids.size())
-					return ids[node_id];
+				if (node_id >= 0 && node_id < node_ids_.size())
+					return node_ids_[node_id];
 				else
-					return -1; // default for no boundary (and for nodes without an id)
+					return -1; // default for no boundary (and for vertices without an id)
 			}
-
-			/// @brief Number the node ids by FE node: afterwards get_node_id and
-			/// has_node_ids refer to FE nodes. The per-vertex ids are kept (for
-			/// to_mesh_data and append), so calling this again is safe.
-			///
-			/// @param[in] in_node_to_node mapping from input nodes to polyfem nodes
-			void update_nodes(const Eigen::VectorXi &in_node_to_node);
 
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
@@ -557,7 +550,7 @@ namespace polyfem
 			/// @brief checks if points selections are available
 			///
 			/// @return points selections are available
-			bool has_node_ids() const { return !(fe_node_ids_mapped_ ? fe_node_ids_ : node_ids_).empty(); }
+			bool has_node_ids() const { return !node_ids_.empty(); }
 			/// @brief checks if surface selections are available
 			///
 			/// @return surface selections are available
@@ -725,13 +718,6 @@ namespace polyfem
 			std::vector<ElementType> elements_tag_;
 			/// list of node labels, one per vertex
 			std::vector<int> node_ids_;
-			/// node labels per FE node, built from node_ids_ by update_nodes()
-			std::vector<int> fe_node_ids_;
-			/// whether get_node_id() reads fe_node_ids_ (after update_nodes())
-			bool fe_node_ids_mapped_ = false;
-			/// Forget the FE numbering of the node ids (the vertex ids or the
-			/// topology changed).
-			void reset_fe_node_ids();
 			/// list of surface labels
 			std::vector<int> boundary_ids_;
 			/// list of volume labels

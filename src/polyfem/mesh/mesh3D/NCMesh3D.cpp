@@ -96,7 +96,6 @@ namespace polyfem
 		void NCMesh3D::update_labels_after_refinement()
 		{
 			node_ids_.clear();
-			reset_fe_node_ids();
 			geometry_ids_.clear();
 			if (has_body_ids())
 			{

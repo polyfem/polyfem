@@ -4,6 +4,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 #include <Eigen/Dense>
 
@@ -84,5 +85,7 @@ namespace polyfem::io
 		const ipc::CollisionMesh *collision_mesh = nullptr;
 		const std::vector<int> *dirichlet_nodes = nullptr;
 		const std::vector<RowVectorNd> *dirichlet_nodes_position = nullptr;
+		/// nodes of the FE space of dirichlet_nodes, for their tags
+		const mesh::MeshNodes *mesh_nodes = nullptr;
 	};
 } // namespace polyfem::io

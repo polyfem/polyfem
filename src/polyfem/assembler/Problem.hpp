@@ -6,6 +6,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 namespace polyfem
 {
@@ -48,8 +49,8 @@ namespace polyfem
 
 			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
 
-			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
-			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
 			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
 			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
 			virtual bool has_nodal_dirichlet(const int fe_space_id = -1) { return false; }
@@ -108,9 +109,11 @@ namespace polyfem
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				std::unordered_map<int, std::vector<mesh::LocalBoundary>> &selected_by_tag);
 
-			// Returns nodal BC node ids, not constrained DOF ids.
+			// Returns nodal BC node ids, not constrained DOF ids. The node tags
+			// (point selections) come from the mesh nodes of the FE space;
+			// mesh_nodes may be null (no tags, e.g. splines).
 			void setup_nodal_bc(
-				const mesh::Mesh &mesh,
+				const mesh::MeshNodes *mesh_nodes,
 				const BoundaryKind kind,
 				const int fe_space_id,
 				const int n_bases,

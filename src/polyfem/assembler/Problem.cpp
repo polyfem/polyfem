@@ -137,7 +137,7 @@ namespace polyfem
 		}
 
 		void Problem::setup_nodal_bc(
-			const Mesh &mesh,
+			const MeshNodes *mesh_nodes,
 			const BoundaryKind kind,
 			const int fe_space_id,
 			const int n_bases,
@@ -145,13 +145,14 @@ namespace polyfem
 		{
 			nodes.clear();
 
-			if (kind == BoundaryKind::Dirichlet && !(mesh.has_node_ids() || has_nodal_dirichlet(fe_space_id)))
+			const bool has_tags = mesh_nodes && mesh_nodes->has_node_tags();
+			if (kind == BoundaryKind::Dirichlet && !(has_tags || has_nodal_dirichlet(fe_space_id)))
 				return;
-			if (kind == BoundaryKind::Neumann && !(mesh.has_node_ids() || has_nodal_neumann(fe_space_id)))
+			if (kind == BoundaryKind::Neumann && !(has_tags || has_nodal_neumann(fe_space_id)))
 				return;
 			for (int n_id = 0; n_id < n_bases; ++n_id)
 			{
-				const int tag = mesh.get_node_id(n_id);
+				const int tag = mesh_nodes ? mesh_nodes->node_tag(n_id) : -1;
 
 				if (kind == BoundaryKind::Dirichlet && is_nodal_dirichlet_boundary(n_id, tag, fe_space_id))
 					nodes.push_back(n_id);

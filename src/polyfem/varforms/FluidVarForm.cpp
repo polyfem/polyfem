@@ -228,7 +228,8 @@ namespace polyfem::varform
 			nullptr,
 			nullptr,
 			&boundary_.dirichlet_nodes,
-			&boundary_.dirichlet_nodes_position};
+			&boundary_.dirichlet_nodes_position,
+			space_.mesh_nodes.get()};
 	}
 
 	io::OutStatsData FluidVarForm::compute_errors(const Eigen::MatrixXd &solution)
@@ -368,7 +369,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*primary_assembler_, *mesh_, nullptr, // no obstacle for the rhs assembler
+			*primary_assembler_, *mesh_, space_.mesh_nodes.get(), nullptr, // no obstacle for the rhs assembler
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
@@ -419,7 +420,6 @@ namespace polyfem::varform
 			boundary_);
 
 		problem->update_nodes(space_.space_in_node_to_node);
-		mesh.update_nodes(space_.space_in_node_to_node);
 
 		const auto &current_bases = space_.geometry_basis_list();
 		if (args["space"]["advanced"]["count_flipped_els"])
@@ -499,13 +499,13 @@ namespace polyfem::varform
 			boundary_.total_local_boundary, boundary_.local_neumann_boundary);
 
 		problem->setup_nodal_bc(
-			mesh, assembler::BoundaryKind::Dirichlet, velocity_space_id_, space_.n_bases, boundary_.dirichlet_nodes);
+			space_.mesh_nodes.get(), assembler::BoundaryKind::Dirichlet, velocity_space_id_, space_.n_bases, boundary_.dirichlet_nodes);
 		problem->setup_nodal_bc(
-			mesh, assembler::BoundaryKind::Neumann, velocity_space_id_, space_.n_bases, boundary_.neumann_nodes);
+			space_.mesh_nodes.get(), assembler::BoundaryKind::Neumann, velocity_space_id_, space_.n_bases, boundary_.neumann_nodes);
 
 		for (const int n_id : boundary_.dirichlet_nodes)
 		{
-			const int tag = mesh.get_node_id(n_id);
+			const int tag = space_.node_tag(n_id);
 			for (int d = 0; d < mesh.dimension(); ++d)
 				if (problem->is_nodal_dimension_dirichlet(n_id, tag, d, velocity_space_id_))
 					boundary_.boundary_nodes.push_back(n_id * mesh.dimension() + d);

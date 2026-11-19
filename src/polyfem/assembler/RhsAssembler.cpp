@@ -31,7 +31,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle *obstacle,
+		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const MeshNodes *mesh_nodes, const Obstacle *obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
@@ -43,6 +43,7 @@ namespace polyfem
 								   const int fe_space_id)
 			: assembler_(assembler),
 			  mesh_(mesh),
+			  mesh_nodes_(mesh_nodes),
 			  obstacle_(obstacle),
 			  n_basis_(n_basis),
 			  size_(size),
@@ -511,8 +512,8 @@ namespace polyfem
 					const auto &n_id = dirichlet_nodes_[n];
 					const auto &pt = dirichlet_nodes_position_[n];
 
-					const int tag = mesh_.get_node_id(n_id);
-					problem_.dirichlet_nodal_value(mesh_, n_id, pt, t, tmp_val, fe_space_id_);
+					const int tag = mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1;
+					problem_.dirichlet_nodal_value(mesh_, n_id, tag, pt, t, tmp_val, fe_space_id_);
 					assert(tmp_val.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
@@ -618,7 +619,7 @@ namespace polyfem
 					const int n_id = neumann_nodes_[n];
 					const RowVectorNd &pt = neumann_nodes_position_[n];
 
-					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, tmp_val, fe_space_id_);
+					problem_.neumann_nodal_value(mesh_, n_id, mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1, pt, empty_normal, t, tmp_val, fe_space_id_);
 					assert(tmp_val.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
@@ -846,7 +847,7 @@ namespace polyfem
 					const int n_id = neumann_nodes_[n];
 					const RowVectorNd &pt = neumann_nodes_position_[n];
 
-					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, nodal_force, fe_space_id_);
+					problem_.neumann_nodal_value(mesh_, n_id, mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1, pt, empty_normal, t, nodal_force, fe_space_id_);
 					assert(nodal_force.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
