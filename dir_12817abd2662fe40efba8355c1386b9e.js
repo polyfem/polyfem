@@ -31,6 +31,8 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "GenericFiber.hpp", "_generic_fiber_8hpp.html", "_generic_fiber_8hpp" ],
     [ "GenericProblem.cpp", "_generic_problem_8cpp.html", null ],
     [ "GenericProblem.hpp", "_generic_problem_8hpp.html", "_generic_problem_8hpp" ],
+    [ "GrowthElasticity.cpp", "_growth_elasticity_8cpp.html", "_growth_elasticity_8cpp" ],
+    [ "GrowthElasticity.hpp", "_growth_elasticity_8hpp.html", "_growth_elasticity_8hpp" ],
     [ "Helmholtz.cpp", "_helmholtz_8cpp.html", null ],
     [ "Helmholtz.hpp", "_helmholtz_8hpp.html", "_helmholtz_8hpp" ],
     [ "HGODispersion.cpp", "_h_g_o_dispersion_8cpp.html", null ],

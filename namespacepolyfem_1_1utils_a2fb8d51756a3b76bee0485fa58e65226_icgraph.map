@@ -1,21 +1,23 @@
 <map id="polyfem::utils::lump_matrix" name="polyfem::utils::lump_matrix">
-<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="587,213,739,258"/>
+<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="587,260,739,305"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a59adc2502d881f79a8a4b27583271838" title=" " alt="" coords="296,5,518,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="643,199,602,131,572,95,537,65,518,53,518,48,541,60,576,91,606,128,648,200"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="649,245,633,204,610,154,578,106,537,64,518,52,518,47,541,60,582,102,614,152,638,202,654,246"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a374ff1dc4f6f26c87756e140cc464391" title=" " alt="" coords="296,75,518,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="628,202,587,167,538,134,512,123,512,117,540,129,591,163,633,202"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="639,247,598,189,569,159,538,134,517,123,517,117,540,129,573,155,602,186,645,247"/>
 <area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_fluid_var_form.html#a06aa725b0244e6445d48dcf2f48a5a6d" title=" " alt="" coords="307,144,507,189"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="569,210,538,204,496,192,495,187,540,198,575,210"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" title=" " alt="" coords="275,213,539,258"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="569,236,540,238,539,233,574,235"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" title=" " alt="" coords="296,283,518,327"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="570,262,540,273,496,285,495,280,538,268,575,260"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" title=" " alt="" coords="310,352,504,413"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="632,268,590,308,540,342,505,358,503,353,538,337,587,304,627,270"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="287,437,526,482"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="650,271,633,310,609,352,578,392,541,427,520,439,518,434,537,423,574,389,604,349,628,308,646,274"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="618,250,581,227,538,203,508,192,507,186,540,199,584,222,624,250"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#aee7cbb943eabe0ab54a8da4fecee55b2" title=" " alt="" coords="312,213,502,274"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="569,269,503,261,502,255,574,268"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a0586de362094eb0a192cce117eeed215" title=" " alt="" coords="275,299,539,343"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="569,297,540,304,539,298,574,295"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_scalar_var_form.html#a7fd06063f5b63be1fe777b981f21bf33" title=" " alt="" coords="296,368,518,413"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="619,312,581,338,540,358,508,370,506,365,538,353,578,333,614,315"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a9f0957095dc99f99ba0117f2e701059c" title=" " alt="" coords="310,437,504,498"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="642,316,599,374,571,403,540,427,505,446,503,441,538,423,568,399,595,371,638,319"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="287,523,526,567"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="654,318,639,365,616,417,583,468,563,492,541,512,521,525,520,520,537,508,559,488,579,465,611,414,634,363,650,321"/>
 <area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a5ddff49852956d7654fb835ad932e177" title=" " alt="" coords="12,136,220,197"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,168,222,169,220,164,293,165"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aafbb794602d1f6a31de52a78f6699112" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,437,227,482"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="269,460,227,462,227,457,274,460"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aafbb794602d1f6a31de52a78f6699112" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,523,227,567"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="269,545,227,548,227,542,274,545"/>
 </map>

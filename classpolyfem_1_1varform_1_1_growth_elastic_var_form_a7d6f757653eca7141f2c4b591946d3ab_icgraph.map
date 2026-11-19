@@ -1,0 +1,67 @@
+<map id="polyfem::varform::GrowthElasticVarForm::growth_ndof" name="polyfem::varform::GrowthElasticVarForm::growth_ndof">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1959,318,2166,362"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ad56806bad3922c9aa0f1fd55f09a201c" title="w_a = sum_e vn_e phi_e int_e N_a dV from threshold_per_element_ (and the nodal volumes); called once ..." alt="" coords="1228,52,1418,114"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2047,302,2028,257,1999,204,1960,152,1936,130,1910,112,1850,84,1786,65,1719,53,1653,47,1588,47,1526,51,1419,65,1418,60,1525,46,1587,42,1653,42,1720,48,1787,59,1852,79,1912,107,1939,126,1963,148,2003,201,2033,255,2052,304"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a74140ade00b36abf7d6775cd5e507298" title=" " alt="" coords="244,225,434,287"/>
+<area shape="poly" id="edge26_Node000001_Node000004" title=" " alt="" coords="2050,302,2033,248,2005,182,1986,149,1964,117,1939,88,1909,64,1866,37,1826,20,1789,11,1752,8,1673,13,1573,17,814,17,717,17,640,20,605,27,568,39,528,56,483,81,442,113,407,152,379,191,358,226,354,224,375,188,403,148,439,109,481,77,526,51,566,34,603,22,640,15,717,11,814,12,1573,12,1672,7,1752,3,1790,6,1828,15,1868,32,1913,59,1942,84,1969,114,1991,146,2010,180,2038,247,2055,304"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a850978799112dc4f1aae2903b2565e9a" title="One increment: primal&#45;dual active&#45;set loop on theta &gt;= theta_n." alt="" coords="720,160,911,222"/>
+<area shape="poly" id="edge25_Node000001_Node000007" title=" " alt="" coords="2042,303,2021,267,1992,225,1954,186,1910,156,1887,149,1852,144,1752,140,1621,141,1471,147,1160,166,912,185,910,180,1160,161,1471,142,1621,136,1752,135,1853,139,1888,144,1912,151,1958,182,1996,222,2026,265,2047,305"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#aee7cbb943eabe0ab54a8da4fecee55b2" title=" " alt="" coords="1720,165,1910,227"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="2012,309,1910,248,1878,230,1879,225,1912,243,2017,309"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a4b911546b444207ecda36cd0b36eb52f" title=" " alt="" coords="1222,475,1425,520"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="2015,370,1966,399,1912,423,1849,443,1784,460,1652,483,1529,495,1426,500,1425,495,1528,490,1651,477,1783,454,1847,438,1910,418,1963,394,2010,371"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#afbbb8f2c2d1924c22dfc98ab95db6b2d" title="D/S accumulation, theta_n update and activation marking after a converged (sub)increment." alt="" coords="720,245,911,307"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="1942,336,911,284,911,278,1945,332"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#aba8a27a607d458e9700c9f2b871774df" title="d Pi_inc / d theta at the solution: stacked energy gradient plus the dissipation weights (the KKT res..." alt="" coords="1477,212,1667,274"/>
+<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="1973,313,1910,299,1784,275,1668,257,1668,252,1785,269,1912,294,1978,313"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a8f0bd4620bf4265186f872e0c607b5e1" title=" " alt="" coords="1475,399,1669,460"/>
+<area shape="poly" id="edge19_Node000001_Node000014" title=" " alt="" coords="1974,368,1912,387,1786,409,1670,423,1669,418,1785,403,1910,382,1979,367"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a5f3830415084252085517324cf38c098" title="lag residual phi(converged state) &#45; phi used, and attainment, logged per increment" alt="" coords="720,331,911,392"/>
+<area shape="poly" id="edge23_Node000001_Node000016" title=" " alt="" coords="1942,344,912,363,911,357,1945,340"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a97e0a76c3edfffaa7fa33c2fd009dd0b" title=" " alt="" coords="1477,772,1667,834"/>
+<area shape="poly" id="edge27_Node000001_Node000017" title=" " alt="" coords="2055,376,2038,439,2009,514,1968,592,1942,628,1913,661,1856,705,1793,740,1728,766,1668,785,1667,780,1727,761,1791,735,1853,700,1909,657,1938,625,1964,589,2005,512,2033,437,2051,380"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a1c908c306e30f7d46a4ff783704cb8bf" title=" " alt="" coords="482,753,672,815"/>
+<area shape="poly" id="edge32_Node000001_Node000021" title=" " alt="" coords="2061,376,2051,459,2027,564,2008,620,1983,675,1951,726,1913,771,1872,808,1834,836,1797,857,1760,870,1720,879,1677,883,1573,885,1064,885,958,879,853,862,755,840,672,818,673,812,756,835,854,857,959,874,1065,880,1573,880,1677,878,1720,874,1759,865,1795,852,1832,832,1869,804,1909,768,1947,723,1978,672,2003,618,2022,562,2046,458,2057,380"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ad5340d9d69c5cecedbdead538f1c9fb3" title=" " alt="" coords="1719,602,1911,646"/>
+<area shape="poly" id="edge34_Node000001_Node000022" title=" " alt="" coords="2034,373,1913,518,1838,604,1835,599,1909,514,2030,376"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a40d58afcb5f3b4beecb31e409ddc7cfd" title=" " alt="" coords="482,91,672,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1210,85,959,93,674,115,672,110,959,88,1215,82"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a212fc3d48f35fe26cee44246f39cfd81" title="install a threshold (parts), rebuild the node weights, log" alt="" coords="959,103,1173,148"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="1210,102,1174,110,1173,105,1215,100"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="507,162,397,227,393,223,510,158"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a075444f9d3acc67b87806400b7c453b0" title=" " alt="" coords="5,459,196,520"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="294,301,136,460,131,457,296,296"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="960,154,912,168,910,164,965,151"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a3c712583b7dfa12c524a4c9134ac41c4" title="one increment (t_from, t_to], split recursively on failure; returns passes" alt="" coords="482,225,672,287"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="703,222,674,232,671,228,707,220"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="464,257,435,259,433,254,469,255"/>
+<area shape="poly" id="edge8_Node000008_Node000008" title=" " alt="" coords="614,212,601,207,577,204,557,206,543,211,536,217,535,226,530,224,532,215,540,206,555,201,577,199,602,201,619,210"/>
+<area shape="poly" id="edge12_Node000010_Node000005" title=" " alt="" coords="1204,496,817,492,576,492,197,492,196,487,576,487,817,487,1209,494"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ac14cfbcdfde701d78c5ea9f62be8ebe3" title=" " alt="" coords="971,527,1161,588"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="1207,525,1162,538,1161,533,1212,523"/>
+<area shape="poly" id="edge14_Node000011_Node000007" title=" " alt="" coords="1051,511,1032,451,1003,378,962,302,937,267,909,235,897,225,897,219,913,232,941,264,967,299,1008,375,1037,449,1056,513"/>
+<area shape="poly" id="edge16_Node000012_Node000008" title=" " alt="" coords="702,268,673,267,672,262,707,266"/>
+<area shape="poly" id="edge18_Node000013_Node000007" title=" " alt="" coords="1459,238,958,207,912,203,910,198,959,202,1463,236"/>
+<area shape="poly" id="edge20_Node000014_Node000010" title=" " alt="" coords="1457,461,1408,477,1407,472,1462,459"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#af8b900e5882b9eabc23093e791b76bbd" title=" " alt="" coords="244,391,434,452"/>
+<area shape="poly" id="edge21_Node000014_Node000015" title=" " alt="" coords="1457,430,1067,432,814,432,435,427,434,421,814,427,1067,427,1462,429"/>
+<area shape="poly" id="edge22_Node000015_Node000005" title=" " alt="" coords="226,455,198,464,194,460,230,451"/>
+<area shape="poly" id="edge24_Node000016_Node000004" title=" " alt="" coords="702,345,596,327,481,301,435,289,434,283,483,296,597,321,707,343"/>
+<area shape="poly" id="edge28_Node000017_Node000010" title=" " alt="" coords="1472,760,1471,762,1453,732,1445,702,1445,673,1448,645,1451,617,1450,590,1442,562,1423,534,1411,523,1413,518,1427,530,1447,560,1455,589,1456,617,1453,645,1450,673,1451,701,1458,729,1476,759,1476,762"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ae6d5b52b514aca82e8c31a18cb50c2b8" title="Get the error statistics of the variational formulation, for output purposes." alt="" coords="1228,784,1418,846"/>
+<area shape="poly" id="edge29_Node000017_Node000018" title=" " alt="" coords="1458,808,1419,813,1419,808,1464,808"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a62df056b4100af13ed1bf47a5de48b72" title=" " alt="" coords="1221,715,1425,760"/>
+<area shape="poly" id="edge30_Node000017_Node000019" title=" " alt="" coords="1459,774,1411,763,1411,758,1464,774"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a16fae96d47838721f4cb65b32d9d14b0" title="Get the output fields of the variational formulation, for output purposes." alt="" coords="1228,629,1418,691"/>
+<area shape="poly" id="edge31_Node000017_Node000020" title=" " alt="" coords="1475,763,1472,762,1456,747,1447,733,1438,719,1424,705,1407,694,1408,689,1427,701,1442,716,1452,730,1460,744,1475,758,1481,764"/>
+<area shape="poly" id="edge33_Node000021_Node000005" title=" " alt="" coords="465,752,355,710,297,680,242,646,206,617,173,584,124,523,124,518,177,580,209,613,245,642,299,676,357,705,470,751"/>
+<area shape="poly" id="edge35_Node000022_Node000010" title=" " alt="" coords="1722,597,1670,584,1425,523,1425,518,1671,579,1727,597"/>
+<area shape="poly" id="edge41_Node000022_Node000017" title=" " alt="" coords="1780,656,1721,714,1698,740,1672,762,1653,774,1651,769,1669,758,1694,736,1717,710,1775,658"/>
+<area shape="poly" id="edge40_Node000022_Node000020" title=" " alt="" coords="1700,633,1419,656,1419,651,1706,632"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a726ea7100c784d8644efbfaaa5b0230a" title=" " alt="" coords="1473,687,1671,748"/>
+<area shape="poly" id="edge36_Node000022_Node000023" title=" " alt="" coords="1743,652,1655,689,1653,684,1738,653"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a5b4ffaa728c1b48e417e86e6ed688cc0" title="NLProblem over the current forms and AL forms, initialized at sol, t." alt="" coords="1228,544,1418,606"/>
+<area shape="poly" id="edge37_Node000022_Node000024" title=" " alt="" coords="1700,613,1419,587,1419,582,1706,613"/>
+<area shape="poly" id="edge38_Node000024_Node000005" title=" " alt="" coords="1210,595,1173,603,996,623,817,628,576,628,518,625,460,617,348,591,247,557,168,523,167,518,249,552,349,586,461,612,519,620,576,623,817,623,995,617,1173,598,1215,594"/>
+<area shape="poly" id="edge39_Node000024_Node000011" title=" " alt="" coords="1209,568,1162,567,1161,561,1215,567"/>
+</map>

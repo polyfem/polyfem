@@ -1,61 +1,67 @@
 <map id="polyfem::utils::json_as_array" name="polyfem::utils::json_as_array">
-<area shape="rect" id="Node000001" title="Return the value of a json object as an array." alt="" coords="1635,546,1781,590"/>
+<area shape="rect" id="Node000001" title="Return the value of a json object as an array." alt="" coords="1635,632,1781,677"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_generic_mat_params.html#a8bf8df6d5edfb3897298335865c13943" title=" " alt="" coords="1364,91,1525,152"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1700,529,1690,465,1669,380,1635,289,1612,247,1585,207,1554,178,1520,156,1520,150,1558,174,1589,204,1617,244,1640,287,1674,378,1695,464,1705,532"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#a7b6b09559135e24791d553ea580b3ac9" title=" " alt="" coords="1322,218,1567,262"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1700,529,1688,474,1668,405,1653,370,1634,336,1612,304,1585,277,1567,264,1568,259,1588,273,1616,301,1639,333,1657,368,1673,404,1694,473,1704,532"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aae683db92f7f638e9b254e8219f4eb25" title=" " alt="" coords="1313,287,1576,332"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1695,530,1680,488,1657,438,1626,388,1607,366,1585,346,1568,335,1568,330,1588,342,1610,362,1630,385,1662,436,1685,487,1699,532"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_solve_data.html#add0d37ff6f5449695df9ad16b992b366" title="Initialize the forms and return a vector of pointers to them." alt="" coords="1345,356,1544,401"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1686,531,1645,472,1617,442,1585,416,1544,397,1544,391,1588,411,1621,438,1649,469,1691,533"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1_opt_state.html#aeef759df193275f8dd2a886f62c6b461" title="init variables" alt="" coords="1370,426,1519,470"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1666,535,1629,510,1586,485,1519,463,1519,458,1588,480,1632,505,1672,536"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ad771e76cc48e121031514c522ab90e6a" title="Compute optimization variables from forward simulation varform::DifferentiableVarForm." alt="" coords="1334,495,1555,556"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="1617,554,1555,546,1555,541,1622,554"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ab994a5a9e8ae2086e99590b3797eb545" title="Compute optimization variables from forward simulation varform::DifferentiableVarForm." alt="" coords="1334,580,1555,642"/>
-<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="1617,583,1555,596,1554,590,1622,582"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a0dbf485b3a728a8eadab7a7e86c8e037" title="Load and combine the enabled FEM entries in a geometry configuration." alt="" coords="1326,666,1563,710"/>
-<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="1671,599,1632,631,1588,656,1557,668,1556,663,1586,651,1629,626,1667,602"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1_state.html#ad7a4321fa2880e56ae641ff1d3aa979d" title="loads the mesh from the json arguments" alt="" coords="730,753,926,781"/>
-<area shape="poly" id="edge26_Node000001_Node000018" title=" " alt="" coords="1701,604,1688,652,1666,705,1633,755,1612,777,1588,794,1564,806,1534,814,1460,825,1372,828,1276,824,1079,806,917,784,917,779,1080,801,1276,819,1372,822,1460,820,1533,809,1562,801,1585,790,1609,773,1629,752,1661,702,1683,650,1697,608"/>
-<area shape="rect" id="Node000026" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a1032bb8aab618252093b843ac96259fe" title=" " alt="" coords="1326,735,1563,780"/>
-<area shape="poly" id="edge27_Node000001_Node000026" title=" " alt="" coords="1690,603,1649,667,1621,699,1588,725,1564,738,1562,733,1585,721,1617,695,1645,664,1686,606"/>
-<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a03a71566d34ca48c814b7034e0cd6934" title="Construct ShapeVariableToSimulation." alt="" coords="1302,855,1587,916"/>
-<area shape="poly" id="edge30_Node000001_Node000027" title=" " alt="" coords="1701,604,1689,658,1667,720,1634,783,1613,812,1588,838,1562,857,1561,852,1585,834,1609,809,1629,780,1662,718,1684,656,1698,608"/>
-<area shape="rect" id="Node000028" href="$classpolyfem_1_1problem_1_1_node_problem.html#a283ec1a71845b3d91bac0259cdf40bb7" title=" " alt="" coords="1328,940,1561,985"/>
-<area shape="poly" id="edge31_Node000001_Node000028" title=" " alt="" coords="1707,604,1701,676,1682,763,1667,809,1647,853,1621,894,1588,930,1562,948,1561,942,1585,926,1616,891,1642,850,1662,807,1677,762,1695,675,1703,608"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1700,616,1688,545,1667,451,1633,348,1611,298,1584,251,1564,223,1540,197,1492,156,1492,150,1544,193,1568,220,1589,248,1615,296,1638,346,1672,450,1693,544,1705,618"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_differentiable_var_form.html#a7b6b09559135e24791d553ea580b3ac9" title=" " alt="" coords="1322,262,1567,306"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1702,616,1693,553,1674,472,1658,431,1639,390,1615,353,1585,321,1567,308,1567,302,1588,317,1619,350,1644,388,1663,429,1679,471,1698,552,1707,618"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#aae683db92f7f638e9b254e8219f4eb25" title=" " alt="" coords="1313,331,1576,376"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1698,616,1685,566,1663,504,1631,442,1610,414,1585,390,1569,379,1569,374,1588,386,1614,411,1635,439,1668,502,1690,564,1703,618"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_solve_data.html#add0d37ff6f5449695df9ad16b992b366" title="Initialize the forms and return a vector of pointers to them." alt="" coords="1345,400,1544,445"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1692,617,1676,581,1653,538,1622,495,1585,460,1565,448,1544,439,1544,434,1568,443,1588,455,1626,492,1657,535,1680,578,1697,619"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_opt_state.html#aeef759df193275f8dd2a886f62c6b461" title="init variables" alt="" coords="1370,470,1519,514"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="1680,619,1640,573,1614,549,1585,529,1553,514,1519,505,1519,499,1555,509,1588,525,1617,545,1643,569,1685,621"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_dirichlet_boundary_variable_to_simulation.html#ad771e76cc48e121031514c522ab90e6a" title="Compute optimization variables from forward simulation varform::DifferentiableVarForm." alt="" coords="1334,539,1555,600"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="1627,627,1586,615,1552,604,1552,598,1588,610,1632,627"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#ab994a5a9e8ae2086e99590b3797eb545" title="Compute optimization variables from forward simulation varform::DifferentiableVarForm." alt="" coords="1334,624,1555,686"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="1617,655,1555,657,1555,652,1622,654"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a0dbf485b3a728a8eadab7a7e86c8e037" title="Load and combine the enabled FEM entries in a geometry configuration." alt="" coords="1326,710,1563,754"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="1634,682,1587,700,1545,712,1544,707,1586,695,1629,683"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1_state.html#ad7a4321fa2880e56ae641ff1d3aa979d" title="loads the mesh from the json arguments" alt="" coords="730,797,926,825"/>
+<area shape="poly" id="edge27_Node000001_Node000019" title=" " alt="" coords="1696,690,1681,729,1658,770,1627,809,1588,838,1563,849,1534,857,1460,866,1373,869,1278,866,1084,849,922,828,922,823,1085,844,1278,860,1373,863,1460,861,1533,851,1562,844,1585,834,1623,805,1653,767,1676,727,1692,693"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a1032bb8aab618252093b843ac96259fe" title=" " alt="" coords="1326,779,1563,824"/>
+<area shape="poly" id="edge28_Node000001_Node000027" title=" " alt="" coords="1681,688,1639,732,1588,769,1562,781,1560,776,1585,765,1636,728,1676,691"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_pressure_boundary_variable_to_simulation.html#a03a71566d34ca48c814b7034e0cd6934" title="Construct ShapeVariableToSimulation." alt="" coords="1302,899,1587,960"/>
+<area shape="poly" id="edge31_Node000001_Node000028" title=" " alt="" coords="1698,690,1683,736,1660,787,1629,838,1588,882,1561,900,1559,896,1585,878,1625,835,1655,784,1678,734,1694,693"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#abd44ef83ab3cdaeb4781434739e1189c" title=" " alt="" coords="1326,984,1563,1029"/>
+<area shape="poly" id="edge32_Node000001_Node000029" title=" " alt="" coords="1705,691,1696,755,1676,830,1661,870,1641,908,1617,943,1588,974,1565,990,1563,985,1585,970,1613,940,1637,905,1656,868,1671,829,1691,753,1702,694"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1problem_1_1_node_problem.html#a283ec1a71845b3d91bac0259cdf40bb7" title=" " alt="" coords="1328,1054,1561,1098"/>
+<area shape="poly" id="edge34_Node000001_Node000031" title=" " alt="" coords="1708,690,1703,767,1686,861,1671,911,1650,959,1623,1004,1588,1043,1563,1061,1561,1056,1585,1040,1618,1001,1645,957,1666,909,1681,860,1698,766,1705,694"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a4c8a97739dfa7f403ef9f666418e1e51" title=" " alt="" coords="1002,91,1227,152"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1346,122,1228,124,1226,119,1351,121"/>
 <area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a4abe13c8cddc6616fe3211a4b61762fe" title=" " alt="" coords="999,5,1229,67"/>
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="1347,98,1230,68,1229,63,1352,96"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" title=" " alt="" coords="1014,331,1214,376"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1295,330,1215,343,1213,338,1300,328"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43ffcde10a9e01a9db53acefb33c551d" title=" " alt="" coords="994,176,1234,221"/>
-<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="1313,281,1301,277,1286,267,1276,256,1267,246,1253,236,1227,224,1227,219,1256,231,1271,242,1280,252,1290,263,1304,273,1318,281"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a96a486ddefa130ef15475698bd456c35" title=" " alt="" coords="1000,245,1228,307"/>
-<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="1295,295,1229,290,1228,285,1300,294"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4" title=" " alt="" coords="986,400,1242,445"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="1327,395,1243,408,1242,403,1332,393"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1_opt_state.html#abeebcfabcbb9dd65ad2e365bc9a07b07" title=" " alt="" coords="1030,469,1199,497"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="1352,458,1200,477,1199,471,1357,457"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a927ea1e21d5c2c2306a4632b81b7eaf4" title=" " alt="" coords="996,684,1232,729"/>
-<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="1308,696,1233,703,1232,698,1313,695"/>
-<area shape="rect" id="Node000025" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="974,615,1254,660"/>
-<area shape="poly" id="edge25_Node000016_Node000025" title=" " alt="" coords="1308,668,1255,662,1255,656,1314,668"/>
-<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="987,734,898,755,897,750,992,732"/>
-<area shape="rect" id="Node000019" href="$main_8cpp.html#a0db0bdb04cc388ac24d09941c4d38696" title=" " alt="" coords="506,753,682,781"/>
-<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="711,767,683,769,682,764,717,766"/>
-<area shape="rect" id="Node000020" href="$main_8cpp.html#ad25c24f2b13f71530f593dbdc20bfcaf" title=" " alt="" coords="303,710,458,754"/>
-<area shape="poly" id="edge19_Node000019_Node000020" title=" " alt="" coords="488,751,459,747,458,742,494,750"/>
-<area shape="rect" id="Node000021" href="$main_8cpp.html#a92fd232d50bdf76441b6c3f521356c2c" title=" " alt="" coords="303,779,458,824"/>
-<area shape="poly" id="edge20_Node000019_Node000021" title=" " alt="" coords="488,784,459,791,458,786,494,783"/>
-<area shape="rect" id="Node000022" href="$main_8cpp.html#a6e6ac95cda201242f104ab1f7082be37" title=" " alt="" coords="108,749,255,777"/>
-<area shape="poly" id="edge21_Node000021_Node000022" title=" " alt="" coords="285,784,256,780,255,775,291,783"/>
-<area shape="rect" id="Node000023" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,825,255,853"/>
-<area shape="poly" id="edge22_Node000021_Node000023" title=" " alt="" coords="286,820,256,828,255,822,290,818"/>
-<area shape="poly" id="edge23_Node000023_Node000023" title=" " alt="" coords="205,810,197,806,181,804,166,806,158,810,156,816,160,825,155,824,151,816,154,807,165,801,181,798,199,801,210,809"/>
-<area shape="rect" id="Node000024" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,825,60,853"/>
-<area shape="poly" id="edge24_Node000023_Node000024" title=" " alt="" coords="90,841,61,841,59,836,94,837"/>
-<area shape="poly" id="edge28_Node000026_Node000017" title=" " alt="" coords="1308,737,1233,728,1233,722,1313,737"/>
-<area shape="poly" id="edge29_Node000026_Node000018" title=" " alt="" coords="1308,760,927,768,926,763,1313,759"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a98437b89754412aa67b7e09672713f60" title=" " alt="" coords="1014,262,1214,306"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1317,328,1215,308,1214,302,1322,327"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a09e62966e83885b9f29b9345581539e9" title=" " alt="" coords="1014,331,1214,376"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="1295,354,1215,356,1214,351,1300,353"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a43ffcde10a9e01a9db53acefb33c551d" title=" " alt="" coords="994,400,1234,445"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="1317,381,1225,402,1223,397,1322,379"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a96a486ddefa130ef15475698bd456c35" title=" " alt="" coords="1000,176,1228,238"/>
+<area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="1307,324,1301,321,1284,304,1276,286,1268,268,1253,252,1228,237,1228,231,1256,247,1272,265,1281,283,1288,301,1304,317,1313,324"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#a1c1338f6fc0b7229d5a53384f03cf2c4" title=" " alt="" coords="986,470,1242,514"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="1327,448,1225,472,1223,467,1332,446"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_opt_state.html#abeebcfabcbb9dd65ad2e365bc9a07b07" title=" " alt="" coords="1030,538,1199,566"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="1353,509,1255,529,1196,540,1194,535,1254,524,1358,507"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_geometry_loader.html#a927ea1e21d5c2c2306a4632b81b7eaf4" title=" " alt="" coords="996,728,1232,773"/>
+<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="1308,740,1233,747,1232,742,1313,739"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html#aff800a5d031ed166c1f49ae6df9c6d02" title="For shock obsorption optimization, mesh is generated by an external inflator program that convert gra..." alt="" coords="974,659,1254,704"/>
+<area shape="poly" id="edge26_Node000017_Node000026" title=" " alt="" coords="1308,712,1255,706,1255,700,1314,712"/>
+<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="987,778,898,799,897,794,992,776"/>
+<area shape="rect" id="Node000020" href="$main_8cpp.html#a0db0bdb04cc388ac24d09941c4d38696" title=" " alt="" coords="506,797,682,825"/>
+<area shape="poly" id="edge19_Node000019_Node000020" title=" " alt="" coords="711,811,683,813,682,808,717,810"/>
+<area shape="rect" id="Node000021" href="$main_8cpp.html#ad25c24f2b13f71530f593dbdc20bfcaf" title=" " alt="" coords="303,754,458,798"/>
+<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="488,795,459,791,458,786,494,793"/>
+<area shape="rect" id="Node000022" href="$main_8cpp.html#a92fd232d50bdf76441b6c3f521356c2c" title=" " alt="" coords="303,823,458,868"/>
+<area shape="poly" id="edge21_Node000020_Node000022" title=" " alt="" coords="488,829,459,835,458,830,493,827"/>
+<area shape="rect" id="Node000023" href="$main_8cpp.html#a6e6ac95cda201242f104ab1f7082be37" title=" " alt="" coords="108,793,255,821"/>
+<area shape="poly" id="edge22_Node000022_Node000023" title=" " alt="" coords="286,828,256,824,255,819,290,827"/>
+<area shape="rect" id="Node000024" href="$main_8cpp.html#aaab087ad5391e901a55aa7da8153216d" title=" " alt="" coords="108,869,255,897"/>
+<area shape="poly" id="edge23_Node000022_Node000024" title=" " alt="" coords="286,864,257,871,254,867,290,862"/>
+<area shape="poly" id="edge24_Node000024_Node000024" title=" " alt="" coords="205,854,197,850,181,848,166,850,158,854,156,860,160,869,155,868,151,860,154,851,165,845,181,842,199,845,210,853"/>
+<area shape="rect" id="Node000025" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,869,60,897"/>
+<area shape="poly" id="edge25_Node000024_Node000025" title=" " alt="" coords="90,885,62,885,59,881,94,881"/>
+<area shape="poly" id="edge29_Node000027_Node000018" title=" " alt="" coords="1308,781,1233,772,1233,766,1313,781"/>
+<area shape="poly" id="edge30_Node000027_Node000019" title=" " alt="" coords="1308,804,927,812,926,807,1313,803"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ae3f3efd860a41c6fdfc2477140dec2e5" title="Initialize the variational formulation with the given parameters." alt="" coords="1019,984,1209,1029"/>
+<area shape="poly" id="edge33_Node000029_Node000030" title=" " alt="" coords="1307,1007,1210,1009,1210,1004,1313,1007"/>
 </map>

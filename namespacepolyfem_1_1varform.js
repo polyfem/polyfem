@@ -16,6 +16,7 @@ var namespacepolyfem_1_1varform =
     [ "FESpace", "classpolyfem_1_1varform_1_1_f_e_space.html", "classpolyfem_1_1varform_1_1_f_e_space" ],
     [ "FluidVarForm", "classpolyfem_1_1varform_1_1_fluid_var_form.html", "classpolyfem_1_1varform_1_1_fluid_var_form" ],
     [ "GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", "classpolyfem_1_1varform_1_1_geometry_mapping" ],
+    [ "GrowthElasticVarForm", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html", "classpolyfem_1_1varform_1_1_growth_elastic_var_form" ],
     [ "IncompressibleElasticVarForm", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form" ],
     [ "InitialConditionOverride", "structpolyfem_1_1varform_1_1_initial_condition_override.html", "structpolyfem_1_1varform_1_1_initial_condition_override" ],
     [ "LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", "classpolyfem_1_1varform_1_1_linear_elastic_var_form" ],

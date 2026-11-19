@@ -84,6 +84,7 @@ var hierarchy =
         ] ]
       ] ],
       [ "polyfem::assembler::MixedNLAssembler", "classpolyfem_1_1assembler_1_1_mixed_n_l_assembler.html", [
+        [ "polyfem::assembler::GrowthElasticity", "classpolyfem_1_1assembler_1_1_growth_elasticity.html", null ],
         [ "polyfem::assembler::ThermoElasticity", "classpolyfem_1_1assembler_1_1_thermo_elasticity.html", null ]
       ] ],
       [ "polyfem::assembler::MultiSpacesNLAssembler", "classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler.html", [
@@ -230,6 +231,7 @@ var hierarchy =
       ] ],
       [ "polyfem::solver::FSIInterfaceForm", "classpolyfem_1_1solver_1_1_f_s_i_interface_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
+      [ "polyfem::solver::GrowthDissipationForm", "classpolyfem_1_1solver_1_1_growth_dissipation_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
@@ -260,6 +262,8 @@ var hierarchy =
     [ "polyfem::mesh::GeometryLoader", "classpolyfem_1_1mesh_1_1_geometry_loader.html", null ],
     [ "polyfem::varform::GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", null ],
     [ "JIXIE::GivensRotation< T >", "class_j_i_x_i_e_1_1_givens_rotation.html", null ],
+    [ "polyfem::assembler::detail::GrowthElasticityModel", "classpolyfem_1_1assembler_1_1detail_1_1_growth_elasticity_model.html", null ],
+    [ "polyfem::varform::GrowthElasticVarForm::GrowthLawSettings", "structpolyfem_1_1varform_1_1_growth_elastic_var_form_1_1_growth_law_settings.html", null ],
     [ "polyfem::utils::HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", null ],
     [ "polyfem::utils::HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", null ],
     [ "polyfem::utils::HashUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", null ],
@@ -535,6 +539,7 @@ var hierarchy =
         ] ],
         [ "polyfem::varform::NonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html", [
           [ "polyfem::varform::DifferentiableNonlinearElasticVarForm", "classpolyfem_1_1varform_1_1_differentiable_nonlinear_elastic_var_form.html", null ],
+          [ "polyfem::varform::GrowthElasticVarForm", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html", null ],
           [ "polyfem::varform::NonlinearElasticStaticVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_static_var_form.html", null ],
           [ "polyfem::varform::NonlinearElasticTransientVarForm", "classpolyfem_1_1varform_1_1_nonlinear_elastic_transient_var_form.html", null ],
           [ "polyfem::varform::ThermoElasticVarForm", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html", null ]

@@ -69,6 +69,7 @@ var namespacepolyfem_1_1solver =
     [ "GCPContactForceDerivative", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_derivative.html", null ],
     [ "GCPContactForceForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form" ],
     [ "GCPContactForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_form" ],
+    [ "GrowthDissipationForm", "classpolyfem_1_1solver_1_1_growth_dissipation_form.html", "classpolyfem_1_1solver_1_1_growth_dissipation_form" ],
     [ "HomoCompositeForm", "classpolyfem_1_1solver_1_1_homo_composite_form.html", "classpolyfem_1_1solver_1_1_homo_composite_form" ],
     [ "HomogenizedDispGradForm", "classpolyfem_1_1solver_1_1_homogenized_disp_grad_form.html", "classpolyfem_1_1solver_1_1_homogenized_disp_grad_form" ],
     [ "InequalityConstraintForm", "classpolyfem_1_1solver_1_1_inequality_constraint_form.html", "classpolyfem_1_1solver_1_1_inequality_constraint_form" ],

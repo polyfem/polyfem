@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 626;
+var viewWidth = 635;
 var viewHeight = 302;
 var sectionId = 'dynsection-18';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-18';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="617.5,-163.5 515.25,-163.5 515.25,-130 617.5,-130 617.5,-163.5"/>
-<text xml:space="preserve" text-anchor="start" x="523.25" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
-<text xml:space="preserve" text-anchor="middle" x="566.38" y="-137.25" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix_binary</text>
+<polygon fill="#999999" stroke="#666666" points="627.25,-163.5 525,-163.5 525,-130 627.25,-130 627.25,-163.5"/>
+<text xml:space="preserve" text-anchor="start" x="533" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
+<text xml:space="preserve" text-anchor="middle" x="576.12" y="-137.25" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix_binary</text>
 </a>
 </g>
 </g>
@@ -68,9 +68,9 @@ var sectionId = 'dynsection-18';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1io.html#afe649b7ee254544f8cac2e7d11d32338" target="_top" xlink:title="Writes a matrix to a file. Determines the file format based on the path&#39;s extension.">
-<polygon fill="white" stroke="#666666" points="479.25,-163.5 377,-163.5 377,-130 479.25,-130 479.25,-163.5"/>
-<text xml:space="preserve" text-anchor="start" x="385" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
-<text xml:space="preserve" text-anchor="middle" x="428.12" y="-137.25" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix</text>
+<polygon fill="white" stroke="#666666" points="489,-163.5 386.75,-163.5 386.75,-130 489,-130 489,-163.5"/>
+<text xml:space="preserve" text-anchor="start" x="394.75" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
+<text xml:space="preserve" text-anchor="middle" x="437.88" y="-137.25" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix</text>
 </a>
 </g>
 </g>
@@ -78,8 +78,8 @@ var sectionId = 'dynsection-18';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M503.78,-146.75C495.73,-146.75 487.56,-146.75 479.72,-146.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="503.51,-150.25 513.51,-146.75 503.51,-143.25 503.51,-150.25"/>
+<path fill="none" stroke="#63b8ff" d="M513.53,-146.75C505.48,-146.75 497.31,-146.75 489.47,-146.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="513.26,-150.25 523.26,-146.75 513.26,-143.25 513.26,-150.25"/>
 </a>
 </g>
 </g>
@@ -87,9 +87,9 @@ var sectionId = 'dynsection-18';
 <g id="Node000003" class="node">
 <title>Node3</title>
 <g id="a_Node000003"><a xlink:href="classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a8991938815b74265d402c777c3932dc0" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="341,-293.5 179.5,-293.5 179.5,-260 341,-260 341,-293.5"/>
-<text xml:space="preserve" text-anchor="start" x="187.5" y="-280" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Bilaplacian</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-267.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
+<polygon fill="white" stroke="#666666" points="350.75,-293.5 189.25,-293.5 189.25,-260 350.75,-260 350.75,-293.5"/>
+<text xml:space="preserve" text-anchor="start" x="197.25" y="-280" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Bilaplacian</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-267.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
 </a>
 </g>
 </g>
@@ -97,8 +97,8 @@ var sectionId = 'dynsection-18';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M411.28,-173.37C396.02,-196.86 370.89,-230.43 341,-250.75 336.06,-254.11 330.66,-257.06 325.07,-259.64"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="414.2,-175.29 416.58,-164.96 408.28,-171.56 414.2,-175.29"/>
+<path fill="none" stroke="#63b8ff" d="M421.03,-173.37C405.77,-196.86 380.64,-230.43 350.75,-250.75 345.81,-254.11 340.41,-257.06 334.82,-259.64"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="423.95,-175.29 426.33,-164.96 418.03,-171.56 423.95,-175.29"/>
 </a>
 </g>
 </g>
@@ -106,9 +106,9 @@ var sectionId = 'dynsection-18';
 <g id="Node000004" class="node">
 <title>Node4</title>
 <g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_elastic_var_form.html#afda018390b13508e6c84f9cd58ee8729" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="330.12,-241.5 190.38,-241.5 190.38,-208 330.12,-208 330.12,-241.5"/>
-<text xml:space="preserve" text-anchor="start" x="198.38" y="-228" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Elastic</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
+<polygon fill="white" stroke="#666666" points="339.88,-241.5 200.12,-241.5 200.12,-208 339.88,-208 339.88,-241.5"/>
+<text xml:space="preserve" text-anchor="start" x="208.12" y="-228" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Elastic</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
 </a>
 </g>
 </g>
@@ -116,37 +116,18 @@ var sectionId = 'dynsection-18';
 <g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
 <g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M392.73,-169.99C377.35,-179.72 358.72,-190.64 341,-198.75 334.11,-201.9 326.74,-204.84 319.35,-207.54"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="394.55,-172.98 401.06,-164.62 390.76,-167.1 394.55,-172.98"/>
-</a>
-</g>
-</g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_fluid_var_form.html#aa0a78339610e3bdc6d72641150894083" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="333.88,-189.5 186.62,-189.5 186.62,-156 333.88,-156 333.88,-189.5"/>
-<text xml:space="preserve" text-anchor="start" x="194.62" y="-176" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::FluidVar</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-163.25" font-family="Helvetica,sans-Serif" font-size="10.00">Form::export_data</text>
-</a>
-</g>
-</g>
-<!-- Node2&#45;&gt;Node5 -->
-<g id="edge4_Node000002_Node000005" class="edge">
-<title>Node2&#45;&gt;Node5</title>
-<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M365.61,-156.39C355.39,-157.99 344.71,-159.67 334.25,-161.31"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="366.07,-159.86 375.41,-154.86 364.99,-152.95 366.07,-159.86"/>
+<path fill="none" stroke="#63b8ff" d="M402.48,-169.99C387.1,-179.72 368.47,-190.64 350.75,-198.75 343.86,-201.9 336.49,-204.84 329.1,-207.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="404.3,-172.98 410.81,-164.62 400.51,-167.1 404.3,-172.98"/>
 </a>
 </g>
 </g>
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a276b0e71089e306a3ab3c3293f190522" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="341,-137.5 179.5,-137.5 179.5,-104 341,-104 341,-137.5"/>
-<text xml:space="preserve" text-anchor="start" x="187.5" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::export_data</text>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1varform_1_1_fluid_var_form.html#aa0a78339610e3bdc6d72641150894083" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="343.62,-189.5 196.38,-189.5 196.38,-156 343.62,-156 343.62,-189.5"/>
+<text xml:space="preserve" text-anchor="start" x="204.38" y="-176" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::FluidVar</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-163.25" font-family="Helvetica,sans-Serif" font-size="10.00">Form::export_data</text>
 </a>
 </g>
 </g>
@@ -154,18 +135,18 @@ var sectionId = 'dynsection-18';
 <g id="edge5_Node000002_Node000006" class="edge">
 <title>Node2&#45;&gt;Node6</title>
 <g id="a_edge5_Node000002_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M365.56,-137.1C357.65,-135.86 349.47,-134.58 341.32,-133.3"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="364.99,-140.55 375.41,-138.64 366.07,-133.64 364.99,-140.55"/>
+<path fill="none" stroke="#63b8ff" d="M375.36,-156.39C365.14,-157.99 354.46,-159.67 344,-161.31"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="375.82,-159.86 385.16,-154.86 374.74,-152.95 375.82,-159.86"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a5e42f26ef1bcd6bca084c2f22c8137a3" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="329,-85.5 191.5,-85.5 191.5,-52 329,-52 329,-85.5"/>
-<text xml:space="preserve" text-anchor="start" x="199.5" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-59.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a276b0e71089e306a3ab3c3293f190522" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="350.75,-137.5 189.25,-137.5 189.25,-104 350.75,-104 350.75,-137.5"/>
+<text xml:space="preserve" text-anchor="start" x="197.25" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::export_data</text>
 </a>
 </g>
 </g>
@@ -173,18 +154,18 @@ var sectionId = 'dynsection-18';
 <g id="edge6_Node000002_Node000007" class="edge">
 <title>Node2&#45;&gt;Node7</title>
 <g id="a_edge6_Node000002_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M392.73,-123.51C377.35,-113.78 358.72,-102.86 341,-94.75 334.11,-91.6 326.74,-88.66 319.35,-85.96"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="390.76,-126.4 401.06,-128.88 394.55,-120.52 390.76,-126.4"/>
+<path fill="none" stroke="#63b8ff" d="M375.31,-137.1C367.4,-135.86 359.22,-134.58 351.07,-133.3"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="374.74,-140.55 385.16,-138.64 375.82,-133.64 374.74,-140.55"/>
 </a>
 </g>
 </g>
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da" target="_top" xlink:title="saves the volume vtu file">
-<polygon fill="white" stroke="#666666" points="332,-33.5 188.5,-33.5 188.5,0 332,0 332,-33.5"/>
-<text xml:space="preserve" text-anchor="start" x="196.5" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
-<text xml:space="preserve" text-anchor="middle" x="260.25" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_volume</text>
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a5e42f26ef1bcd6bca084c2f22c8137a3" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="338.75,-85.5 201.25,-85.5 201.25,-52 338.75,-52 338.75,-85.5"/>
+<text xml:space="preserve" text-anchor="start" x="209.25" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-59.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::export_data</text>
 </a>
 </g>
 </g>
@@ -192,27 +173,65 @@ var sectionId = 'dynsection-18';
 <g id="edge7_Node000002_Node000008" class="edge">
 <title>Node2&#45;&gt;Node8</title>
 <g id="a_edge7_Node000002_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M411.28,-120.13C396.02,-96.64 370.89,-63.07 341,-42.75 336.06,-39.39 330.66,-36.44 325.07,-33.86"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="408.28,-121.94 416.58,-128.54 414.2,-118.21 408.28,-121.94"/>
+<path fill="none" stroke="#63b8ff" d="M402.48,-123.51C387.1,-113.78 368.47,-102.86 350.75,-94.75 343.86,-91.6 336.49,-88.66 329.1,-85.96"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="400.51,-126.4 410.81,-128.88 404.3,-120.52 400.51,-126.4"/>
 </a>
 </g>
 </g>
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#abe2c6289fe2c9cc61ff0a6f1ee7f4d03" target="_top" xlink:title="Save the VTU datasets and append them to an existing VTM container.">
-<polygon fill="white" stroke="#666666" points="143.5,-33.5 0,-33.5 0,0 143.5,0 143.5,-33.5"/>
-<text xml:space="preserve" text-anchor="start" x="8" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
-<text xml:space="preserve" text-anchor="middle" x="71.75" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_vtu</text>
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a4d1d7d9ec27173a2c7b6452dec3f70da" target="_top" xlink:title="saves the volume vtu file">
+<polygon fill="white" stroke="#666666" points="341.75,-33.5 198.25,-33.5 198.25,0 341.75,0 341.75,-33.5"/>
+<text xml:space="preserve" text-anchor="start" x="206.25" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
+<text xml:space="preserve" text-anchor="middle" x="270" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_volume</text>
 </a>
 </g>
 </g>
-<!-- Node8&#45;&gt;Node9 -->
-<g id="edge8_Node000008_Node000009" class="edge">
-<title>Node8&#45;&gt;Node9</title>
-<g id="a_edge8_Node000008_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M176.86,-16.75C165.87,-16.75 154.68,-16.75 143.9,-16.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="176.7,-20.25 186.7,-16.75 176.7,-13.25 176.7,-20.25"/>
+<!-- Node2&#45;&gt;Node9 -->
+<g id="edge8_Node000002_Node000009" class="edge">
+<title>Node2&#45;&gt;Node9</title>
+<g id="a_edge8_Node000002_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M421.03,-120.13C405.77,-96.64 380.64,-63.07 350.75,-42.75 345.81,-39.39 340.41,-36.44 334.82,-33.86"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="418.03,-121.94 426.33,-128.54 423.95,-118.21 418.03,-121.94"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a62df056b4100af13ed1bf47a5de48b72" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="153.25,-241.5 0,-241.5 0,-208 153.25,-208 153.25,-241.5"/>
+<text xml:space="preserve" text-anchor="start" x="8" y="-228" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Growth</text>
+<text xml:space="preserve" text-anchor="middle" x="76.62" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::export_data</text>
+</a>
+</g>
+</g>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge4_Node000004_Node000005" class="edge">
+<title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M188.26,-224.75C176.75,-224.75 164.95,-224.75 153.54,-224.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="188.13,-228.25 198.13,-224.75 188.13,-221.25 188.13,-228.25"/>
+</a>
+</g>
+</g>
+<!-- Node10 -->
+<g id="Node000010" class="node">
+<title>Node10</title>
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#abe2c6289fe2c9cc61ff0a6f1ee7f4d03" target="_top" xlink:title="Save the VTU datasets and append them to an existing VTM container.">
+<polygon fill="white" stroke="#666666" points="148.38,-33.5 4.88,-33.5 4.88,0 148.38,0 148.38,-33.5"/>
+<text xml:space="preserve" text-anchor="start" x="12.88" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
+<text xml:space="preserve" text-anchor="middle" x="76.62" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_vtu</text>
+</a>
+</g>
+</g>
+<!-- Node9&#45;&gt;Node10 -->
+<g id="edge9_Node000009_Node000010" class="edge">
+<title>Node9&#45;&gt;Node10</title>
+<g id="a_edge9_Node000009_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M186.58,-16.75C174.01,-16.75 161.12,-16.75 148.82,-16.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="186.5,-20.25 196.5,-16.75 186.5,-13.25 186.5,-20.25"/>
 </a>
 </g>
 </g>

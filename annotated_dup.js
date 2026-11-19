@@ -23,6 +23,7 @@ var annotated_dup =
     [ "polyfem", "namespacepolyfem.html", [
       [ "assembler", "namespacepolyfem_1_1assembler.html", [
         [ "detail", "namespacepolyfem_1_1assembler_1_1detail.html", [
+          [ "GrowthElasticityModel", "classpolyfem_1_1assembler_1_1detail_1_1_growth_elasticity_model.html", "classpolyfem_1_1assembler_1_1detail_1_1_growth_elasticity_model" ],
           [ "ThermoElasticityModel", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model.html", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model" ],
           [ "ThermoElasticityModelImpl", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl.html", "classpolyfem_1_1assembler_1_1detail_1_1_thermo_elasticity_model_impl" ]
         ] ],
@@ -51,6 +52,7 @@ var annotated_dup =
         [ "GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", "classpolyfem_1_1assembler_1_1_generic_mat_params" ],
         [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
         [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
+        [ "GrowthElasticity", "classpolyfem_1_1assembler_1_1_growth_elasticity.html", "classpolyfem_1_1assembler_1_1_growth_elasticity" ],
         [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
         [ "HGODispersion", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion" ],
         [ "HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", "classpolyfem_1_1assembler_1_1_h_g_o_fiber" ],
@@ -310,6 +312,7 @@ var annotated_dup =
         [ "GCPContactForceDerivative", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_derivative.html", null ],
         [ "GCPContactForceForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_force_form" ],
         [ "GCPContactForm", "classpolyfem_1_1solver_1_1_g_c_p_contact_form.html", "classpolyfem_1_1solver_1_1_g_c_p_contact_form" ],
+        [ "GrowthDissipationForm", "classpolyfem_1_1solver_1_1_growth_dissipation_form.html", "classpolyfem_1_1solver_1_1_growth_dissipation_form" ],
         [ "HomoCompositeForm", "classpolyfem_1_1solver_1_1_homo_composite_form.html", "classpolyfem_1_1solver_1_1_homo_composite_form" ],
         [ "HomogenizedDispGradForm", "classpolyfem_1_1solver_1_1_homogenized_disp_grad_form.html", "classpolyfem_1_1solver_1_1_homogenized_disp_grad_form" ],
         [ "InequalityConstraintForm", "classpolyfem_1_1solver_1_1_inequality_constraint_form.html", "classpolyfem_1_1solver_1_1_inequality_constraint_form" ],
@@ -447,6 +450,7 @@ var annotated_dup =
         [ "FESpace", "classpolyfem_1_1varform_1_1_f_e_space.html", "classpolyfem_1_1varform_1_1_f_e_space" ],
         [ "FluidVarForm", "classpolyfem_1_1varform_1_1_fluid_var_form.html", "classpolyfem_1_1varform_1_1_fluid_var_form" ],
         [ "GeometryMapping", "classpolyfem_1_1varform_1_1_geometry_mapping.html", "classpolyfem_1_1varform_1_1_geometry_mapping" ],
+        [ "GrowthElasticVarForm", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html", "classpolyfem_1_1varform_1_1_growth_elastic_var_form" ],
         [ "IncompressibleElasticVarForm", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html", "classpolyfem_1_1varform_1_1_incompressible_elastic_var_form" ],
         [ "InitialConditionOverride", "structpolyfem_1_1varform_1_1_initial_condition_override.html", "structpolyfem_1_1varform_1_1_initial_condition_override" ],
         [ "LinearElasticVarForm", "classpolyfem_1_1varform_1_1_linear_elastic_var_form.html", "classpolyfem_1_1varform_1_1_linear_elastic_var_form" ],

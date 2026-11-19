@@ -102,20 +102,20 @@ var sectionId = 'dynsection-2';
 </a>
 </g>
 </g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1io_1_1_energy_c_s_v_writer.html#abd1c5b6cf85acf016dc37bd6ec291e7f" target="_top" xlink:title=" ">
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1io_1_1_energy_c_s_v_writer.html#abd1c5b6cf85acf016dc37bd6ec291e7f" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="341.75,-33.5 181,-33.5 181,0 341.75,0 341.75,-33.5"/>
 <text xml:space="preserve" text-anchor="start" x="189" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::EnergyCSVWriter</text>
 <text xml:space="preserve" text-anchor="middle" x="261.38" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">::write</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4_Node000001_Node000005" class="edge">
-<title>Node1&#45;&gt;Node5</title>
-<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node6 -->
+<g id="edge5_Node000001_Node000006" class="edge">
+<title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M377.79,-48.55C360.28,-43.72 341.76,-38.62 324.79,-33.95"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="376.51,-51.82 387.08,-51.1 378.37,-45.07 376.51,-51.82"/>
 </a>
@@ -124,11 +124,11 @@ var sectionId = 'dynsection-2';
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a169111c6364d27f4277ebf02b123ba3b" target="_top" xlink:title="Get the output fields of the variational formulation, for output purposes.">
-<polygon fill="white" stroke="#666666" points="145,-91.88 0,-91.88 0,-45.62 145,-45.62 145,-91.88"/>
-<text xml:space="preserve" text-anchor="start" x="8" y="-78.38" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
-<text xml:space="preserve" text-anchor="start" x="8" y="-65.62" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::output</text>
-<text xml:space="preserve" text-anchor="middle" x="72.5" y="-52.88" font-family="Helvetica,sans-Serif" font-size="10.00">_fields</text>
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a16fae96d47838721f4cb65b32d9d14b0" target="_top" xlink:title="Get the output fields of the variational formulation, for output purposes.">
+<polygon fill="white" stroke="#666666" points="143.88,-123.88 1.12,-123.88 1.12,-77.62 143.88,-77.62 143.88,-123.88"/>
+<text xml:space="preserve" text-anchor="start" x="9.12" y="-110.38" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Growth</text>
+<text xml:space="preserve" text-anchor="start" x="9.12" y="-97.62" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::output</text>
+<text xml:space="preserve" text-anchor="middle" x="72.5" y="-84.88" font-family="Helvetica,sans-Serif" font-size="10.00">_fields</text>
 </a>
 </g>
 </g>
@@ -136,8 +136,28 @@ var sectionId = 'dynsection-2';
 <g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
 <g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M170.98,-68.75C162.4,-68.75 153.77,-68.75 145.39,-68.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="170.69,-72.25 180.69,-68.75 170.69,-65.25 170.69,-72.25"/>
+<path fill="none" stroke="#63b8ff" d="M170.91,-84.07C161.95,-85.6 152.94,-87.15 144.21,-88.64"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="171.45,-87.53 180.71,-82.39 170.27,-80.63 171.45,-87.53"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a169111c6364d27f4277ebf02b123ba3b" target="_top" xlink:title="Get the output fields of the variational formulation, for output purposes.">
+<polygon fill="white" stroke="#666666" points="145,-59.88 0,-59.88 0,-13.62 145,-13.62 145,-59.88"/>
+<text xml:space="preserve" text-anchor="start" x="8" y="-46.38" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Thermo</text>
+<text xml:space="preserve" text-anchor="start" x="8" y="-33.62" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::output</text>
+<text xml:space="preserve" text-anchor="middle" x="72.5" y="-20.88" font-family="Helvetica,sans-Serif" font-size="10.00">_fields</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node5 -->
+<g id="edge4_Node000003_Node000005" class="edge">
+<title>Node3&#45;&gt;Node5</title>
+<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M170.98,-53.44C162.4,-51.97 153.77,-50.5 145.39,-49.06"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="170.27,-56.87 180.71,-55.11 171.45,-49.97 170.27,-56.87"/>
 </a>
 </g>
 </g>

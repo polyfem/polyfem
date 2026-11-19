@@ -195,6 +195,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html">GenericTensorProblem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_growth_elasticity.html">GrowthElasticity</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">Helmholtz</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html">HGODispersion</a></td></tr>
@@ -356,6 +358,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a0bc5be721b8d8c67586dc3044ace28e6" id="r_a0bc5be721b8d8c67586dc3044ace28e6"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#a0bc5be721b8d8c67586dc3044ace28e6">read_growth_cell_array</a> (const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources, const std::string &amp;path, const std::string &amp;field, const int ncomp_expected)</td></tr>
+<tr class="memdesc:a0bc5be721b8d8c67586dc3044ace28e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mixed (displacement, growth) assembler implementing the correction energy of finite areal growth of a thin wall:  <br /></td></tr>
+<tr class="separator:a0bc5be721b8d8c67586dc3044ace28e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaff5aece5fe5a409ef40ca97ac093b32" id="r_aaff5aece5fe5a409ef40ca97ac093b32"><td class="memTemplParams" colspan="2">template&lt;int dim&gt; </td></tr>
 <tr class="memitem:aaff5aece5fe5a409ef40ca97ac093b32"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, dim, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32">hat</a> (const Eigen::Matrix&lt; double, dim, 1 &gt; &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:aaff5aece5fe5a409ef40ca97ac093b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -551,6 +556,72 @@ template&lt;int dim&gt; </div>
 
 </div>
 </div>
+<a id="a0bc5be721b8d8c67586dc3044ace28e6" name="a0bc5be721b8d8c67586dc3044ace28e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bc5be721b8d8c67586dc3044ace28e6">&#9670;&#160;</a></span>read_growth_cell_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::assembler::read_growth_cell_array </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;&#160;</td>
+          <td class="paramname"><em>resources</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>ncomp_expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mixed (displacement, growth) assembler implementing the correction energy of finite areal growth of a thin wall: </p>
+<pre class="fragment">W = J^g * psi_e(Fe) - psi_e(F),
+Fe  = F * inv(Fg),
+Fg  = sqrt(theta) * (I - n0 x n0) + vn * n0 x n0,
+J^g = theta * vn,
+</pre><p> with theta the scalar growth field (the psi-space DOF, interpolated at quadrature points), n0 the reference wall normal (per-element data), and vn the prescribed normal growth component (default 1: pure in-plane growth; a per-element field prescribes thickening or thinning).</p>
+<p>The subtraction of psi_e(F) makes this an additive correction: the standard elastic form on the displacement block stays registered unchanged, and at theta == 1, vn == 1 the correction is identically zero (bitwise: both energy calls see the same def_grad), so an ungrown body reproduces the plain elastic material exactly.</p>
+<p>psi_e is the fitted MaterialSum composition, re-composed here from concrete child materials (see <a class="el" href="_growth_elasticity_8cpp.html">GrowthElasticity.cpp</a>) because <a class="el" href="classpolyfem_1_1assembler_1_1_sum_model.html">SumModel</a>'s type-erased children expose no templated energy; the children's templated elastic_energy bodies are reused verbatim.</p>
+<p>Follows the structure of <a class="el" href="classpolyfem_1_1assembler_1_1_thermo_elasticity.html">ThermoElasticity</a> (the in-tree precedent for a displacement/scalar mixed correction assembler). Read one CELL_DATA array of a legacy ASCII VTK (VECTORS, SCALARS or FIELD layout) as an (n_cells x ncomp_expected) matrix. Shared by the assembler (normal_direction, normal_growth) and the growth VarForm (growth_law threshold), so per-element growth data has one reader. </p>
+
+<p class="definition">Definition at line <a class="el" href="_growth_elasticity_8cpp_source.html#l00528">528</a> of file <a class="el" href="_growth_elasticity_8cpp_source.html">GrowthElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ab263b98396c82429f852bca0bf30e78a">polyfem::io::ResourceIO::describe()</a>, and <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad5ae92dde9a27ecfc298348a56d0f866">polyfem::io::ResourceIO::open()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_growth_elasticity_8cpp_source.html#l00224">polyfem::assembler::detail::GrowthElasticityModel::add_multimaterial()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01231">polyfem::varform::GrowthElasticVarForm::compute_growth_node_weights()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1assembler_a0bc5be721b8d8c67586dc3044ace28e6_cgraph.svg" width="418" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1assembler_a0bc5be721b8d8c67586dc3044ace28e6_icgraph.svg" width="100%" height="418"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a2f801823c84b74e526e11c71a7d23fec" name="a2f801823c84b74e526e11c71a7d23fec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f801823c84b74e526e11c71a7d23fec">&#9670;&#160;</a></span>MATERIAL_ELEMENT_INDEX</h2>
@@ -574,7 +645,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00009">9</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00455">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00523">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00078">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00117">polyfem::assembler::GenericMatParams::add_multimaterial()</a>, <a class="el" href="_sum_model_8cpp_source.html#l00013">polyfem::assembler::SumModel::add_multimaterial()</a>, <a class="el" href="_thermo_elasticity_8cpp_source.html#l00163">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;::add_multimaterial()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00202">polyfem::assembler::Assembler::set_materials()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00455">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00523">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00078">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00117">polyfem::assembler::GenericMatParams::add_multimaterial()</a>, <a class="el" href="_growth_elasticity_8cpp_source.html#l00224">polyfem::assembler::detail::GrowthElasticityModel::add_multimaterial()</a>, <a class="el" href="_sum_model_8cpp_source.html#l00013">polyfem::assembler::SumModel::add_multimaterial()</a>, <a class="el" href="_thermo_elasticity_8cpp_source.html#l00163">polyfem::assembler::detail::ThermoElasticityModelImpl&lt; Elasticity &gt;::add_multimaterial()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00202">polyfem::assembler::Assembler::set_materials()</a>.</p>
 
 </div>
 </div>

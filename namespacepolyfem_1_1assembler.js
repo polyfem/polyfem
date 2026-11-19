@@ -26,6 +26,7 @@ var namespacepolyfem_1_1assembler =
     [ "GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", "classpolyfem_1_1assembler_1_1_generic_mat_params" ],
     [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
     [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
+    [ "GrowthElasticity", "classpolyfem_1_1assembler_1_1_growth_elasticity.html", "classpolyfem_1_1assembler_1_1_growth_elasticity" ],
     [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
     [ "HGODispersion", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion.html", "classpolyfem_1_1assembler_1_1_h_g_o_dispersion" ],
     [ "HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", "classpolyfem_1_1assembler_1_1_h_g_o_fiber" ],
@@ -106,5 +107,6 @@ var namespacepolyfem_1_1assembler =
     ] ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ],
+    [ "read_growth_cell_array", "namespacepolyfem_1_1assembler.html#a0bc5be721b8d8c67586dc3044ace28e6", null ],
     [ "MATERIAL_ELEMENT_INDEX", "namespacepolyfem_1_1assembler.html#a2f801823c84b74e526e11c71a7d23fec", null ]
 ];

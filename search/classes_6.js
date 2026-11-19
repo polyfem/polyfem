@@ -28,5 +28,10 @@ var searchData=
   ['geometryloader_25',['GeometryLoader',['../classpolyfem_1_1mesh_1_1_geometry_loader.html',1,'polyfem::mesh']]],
   ['geometrymapping_26',['GeometryMapping',['../classpolyfem_1_1varform_1_1_geometry_mapping.html',1,'polyfem::varform']]],
   ['givensrotation_27',['GivensRotation',['../class_j_i_x_i_e_1_1_givens_rotation.html',1,'JIXIE']]],
-  ['gravityproblem_28',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
+  ['gravityproblem_28',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]],
+  ['growthdissipationform_29',['GrowthDissipationForm',['../classpolyfem_1_1solver_1_1_growth_dissipation_form.html',1,'polyfem::solver']]],
+  ['growthelasticity_30',['GrowthElasticity',['../classpolyfem_1_1assembler_1_1_growth_elasticity.html',1,'polyfem::assembler']]],
+  ['growthelasticitymodel_31',['GrowthElasticityModel',['../classpolyfem_1_1assembler_1_1detail_1_1_growth_elasticity_model.html',1,'polyfem::assembler::detail']]],
+  ['growthelasticvarform_32',['GrowthElasticVarForm',['../classpolyfem_1_1varform_1_1_growth_elastic_var_form.html',1,'polyfem::varform']]],
+  ['growthlawsettings_33',['GrowthLawSettings',['../structpolyfem_1_1varform_1_1_growth_elastic_var_form_1_1_growth_law_settings.html',1,'polyfem::varform::GrowthElasticVarForm']]]
 ];
