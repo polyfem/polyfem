@@ -167,6 +167,12 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = mu * barrier<double>::value(J, JBarrierThreshold);
+				continue;
+			}
+
 			// PK1-like stress dW/dF; convert to the requested tensor type via def_grad.
 			Eigen::MatrixXd stress_tensor = mu * barrier<double>::first_derivatives(J, JBarrierThreshold) * delJ_delF;
 			if (type == ElasticityTensorType::CAUCHY)
