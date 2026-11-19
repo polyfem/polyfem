@@ -1292,6 +1292,130 @@ TEST_CASE("unsupported higher-order elements are rejected", "[mesh_test]")
 		const auto mesh = Mesh::create(data);
 		CHECK((mesh->orders().size() == 0 || mesh->orders().maxCoeff() == 1));
 	}
+
+	// Only simplices can be curved: a 9-node quad and a 27-node hex are rejected.
+	for (const int dim : {2, 3})
+	{
+		CAPTURE(dim);
+		const int n_corners = dim == 2 ? 4 : 8;
+		Eigen::MatrixXd vertices(n_corners, dim);
+		if (dim == 2)
+			vertices << 0, 0, 1, 0, 1, 1, 0, 1;
+		else
+			vertices << 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1;
+		Eigen::MatrixXi cells(1, n_corners);
+		std::iota(cells.data(), cells.data() + n_corners, 0);
+		MeshData data(vertices, cells);
+		const int n_nodes = dim == 2 ? 9 : 27;
+		data.higher_order_nodes = vertices.colwise().mean().replicate(n_nodes, 1);
+		data.higher_order_nodes.topRows(n_corners) = vertices;
+		data.higher_order_connectivity = {std::vector<int>(n_nodes)};
+		std::iota(data.higher_order_connectivity[0].begin(), data.higher_order_connectivity[0].end(), 0);
+		REQUIRE_THROWS_WITH(Mesh::create(data), Catch::Matchers::ContainsSubstring(dim == 2 ? "only triangles can be curved" : "only tetrahedra can be curved"));
+	}
+}
+
+TEST_CASE("curved simplices and linear cells of other types round-trip together", "[mesh_test][mesh_data]")
+{
+	// Mesh::append gives the linear cells their plain vertex lists as
+	// higher-order connectivity; reading them back must keep them linear.
+	SECTION("2D")
+	{
+		// A P2 triangle whose bottom edge bulges.
+		Eigen::MatrixXd tri_vertices(3, 2);
+		tri_vertices << 0, 0, 1, 0, 0, 1;
+		Eigen::MatrixXi tri_cells(1, 3);
+		tri_cells << 0, 1, 2;
+		MeshData tri(tri_vertices, tri_cells);
+		tri.higher_order_nodes.resize(6, 2);
+		tri.higher_order_nodes << 0, 0, 1, 0, 0, 1, 0.5, -0.1, 0.5, 0.5, 0, 0.5;
+		tri.higher_order_connectivity = {{0, 1, 2, 3, 4, 5}};
+		const auto curved = Mesh::create(tri);
+		REQUIRE(curved->orders().maxCoeff() == 2);
+
+		// A quad and a hexagon: six vertices, the node count of a P2 triangle.
+		Eigen::MatrixXd vertices(10, 2);
+		vertices << 2, 0, 3, 0, 3, 1, 2, 1,
+			5, 0, 6, 0, 6.5, 0.5, 6, 1, 5, 1, 4.5, 0.5;
+		Eigen::MatrixXi cells(2, 6);
+		cells << 0, 1, 2, 3, -1, -1,
+			4, 5, 6, 7, 8, 9;
+		auto merged = Mesh::create(MeshData(vertices, cells));
+		merged->append(curved);
+
+		const MeshData data = merged->to_mesh_data();
+		REQUIRE(data.higher_order_connectivity.size() == 3);
+		CHECK(data.higher_order_connectivity[0].size() == 4);
+		CHECK(data.higher_order_connectivity[1].size() == 6);
+		const auto restored = Mesh::create(data);
+		REQUIRE(restored->orders().size() == 3);
+		CHECK(restored->orders()(0) == 1);
+		CHECK(restored->orders()(1) == 1);
+		CHECK(restored->orders()(2) == 2);
+
+		// The bulging edge node is the only curved one.
+		const auto &mesh2d = dynamic_cast<const Mesh2D &>(*restored);
+		int n_curved = 0;
+		for (int f = 0; f < restored->n_faces(); ++f)
+		{
+			auto index = mesh2d.get_index_from_face(f);
+			for (int le = 0; le < restored->n_face_vertices(f); ++le)
+			{
+				const RowVectorNd node = mesh2d.edge_node(index, 1, 1).first;
+				const RowVectorNd midpoint = (restored->point(index.vertex) + restored->point(mesh2d.switch_vertex(index).vertex)) / 2;
+				if ((node - midpoint).norm() > 1e-12)
+				{
+					++n_curved;
+					CHECK((node - RowVectorNd(Eigen::RowVector2d(0.5, -0.1))).norm() < 1e-14);
+				}
+				index = mesh2d.next_around_face(index);
+			}
+		}
+		CHECK(n_curved == 1);
+	}
+
+	SECTION("3D")
+	{
+		// A P2 tet whose edge (0, 1) bulges; nodes 4-9 are the midpoints of
+		// edges (0,1), (1,2), (0,2), (0,3), (2,3) and (1,3).
+		Eigen::MatrixXd tet_vertices(4, 3);
+		tet_vertices << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+		Eigen::MatrixXi tet_cells(1, 4);
+		tet_cells << 0, 1, 2, 3;
+		MeshData tet(tet_vertices, tet_cells);
+		tet.higher_order_nodes.resize(10, 3);
+		tet.higher_order_nodes.topRows(4) = tet_vertices;
+		const int edges[6][2] = {{0, 1}, {1, 2}, {0, 2}, {0, 3}, {2, 3}, {1, 3}};
+		for (int e = 0; e < 6; ++e)
+			tet.higher_order_nodes.row(4 + e) = (tet_vertices.row(edges[e][0]) + tet_vertices.row(edges[e][1])) / 2;
+		tet.higher_order_nodes(4, 1) = -0.1;
+		tet.higher_order_connectivity = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
+		const auto curved = Mesh::create(tet);
+		REQUIRE(curved->orders().maxCoeff() == 2);
+
+		Eigen::MatrixXd vertices(8, 3);
+		vertices << 2, 0, 0, 3, 0, 0, 3, 1, 0, 2, 1, 0, 2, 0, 1, 3, 0, 1, 3, 1, 1, 2, 1, 1;
+		Eigen::MatrixXi cells(1, 8);
+		std::iota(cells.data(), cells.data() + 8, 0);
+		auto merged = Mesh::create(MeshData(vertices, cells));
+		merged->append(curved);
+
+		const MeshData data = merged->to_mesh_data();
+		REQUIRE(data.higher_order_connectivity.size() == 2);
+		CHECK(data.higher_order_connectivity[0].size() == 8);
+		const auto restored = Mesh::create(data);
+		REQUIRE(restored->orders().size() == 2);
+		CHECK(restored->orders()(0) == 1);
+		CHECK(restored->orders()(1) == 2);
+
+		const auto &mesh3d = dynamic_cast<const Mesh3D &>(*restored);
+		for (int e = 0; e < 6; ++e)
+		{
+			const auto index = mesh3d.get_index_from_element_edge(1, 8 + edges[e][0], 8 + edges[e][1]);
+			const RowVectorNd node = mesh3d.edge_node(index, 1, 1).first;
+			CHECK((node - tet.higher_order_nodes.row(4 + e)).norm() < 1e-14);
+		}
+	}
 }
 
 TEST_CASE("mesh nodes place lazily created nodes at their primitive", "[mesh_test]")

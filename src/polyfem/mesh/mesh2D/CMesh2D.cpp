@@ -202,6 +202,16 @@ namespace polyfem
 
 				const auto &nodes_ids = nodes[f];
 
+				// Only triangles can be curved. Mesh::append lists the plain
+				// vertices of the linear quads and polygons it merges with curved
+				// triangles, so a node list as long as the vertex list is linear.
+				if (n_face_vertices(f) != 3)
+				{
+					if (nodes_ids.size() != size_t(n_face_vertices(f)))
+						log_and_throw_error("Element {} is a curved polygon with {} vertices and {} nodes; only triangles can be curved.", f, n_face_vertices(f), nodes_ids.size());
+					continue;
+				}
+
 				if (nodes_ids.size() == 3)
 				{
 					orders_(f) = 1;
@@ -306,14 +316,7 @@ namespace polyfem
 						n.nodes_ids.push_back(nodes_ids[9]);
 					}
 				}
-				// P4
-				else if (nodes_ids.size() == 15)
-				{
-					orders_(f) = 4;
-					assert(false);
-					// unsupported P4 for geometry, need meshes for testing
-				}
-				// unsupported
+				// unsupported (including P4, which has no geometric mapping yet)
 				else
 				{
 					log_and_throw_error("Unsupported higher-order triangle with {} nodes (supported: 3, 6, 10).", nodes_ids.size());

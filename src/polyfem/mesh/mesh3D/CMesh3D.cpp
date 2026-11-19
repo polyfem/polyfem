@@ -814,6 +814,17 @@ namespace polyfem
 
 				const auto &nodes_ids = nodes[c];
 
+				// Only tetrahedra can be curved. Mesh::append lists the plain
+				// vertices of the linear hexes, prisms, pyramids and polyhedra it
+				// merges with curved tets, so a node list as long as the vertex
+				// list is linear.
+				if (n_cell_vertices(c) != 4)
+				{
+					if (nodes_ids.size() != size_t(n_cell_vertices(c)))
+						log_and_throw_error("Element {} is a curved cell with {} vertices and {} nodes; only tetrahedra can be curved.", c, n_cell_vertices(c), nodes_ids.size());
+					continue;
+				}
+
 				if (nodes_ids.size() == 4)
 				{
 					orders_(c) = 1;
