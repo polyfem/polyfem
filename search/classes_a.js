@@ -1,29 +1,6 @@
 var searchData=
 [
-  ['l2projectionform_0',['L2ProjectionForm',['../classpolyfem_1_1solver_1_1_l2_projection_form.html',1,'polyfem::solver']]],
-  ['laggedregform_1',['LaggedRegForm',['../classpolyfem_1_1solver_1_1_lagged_reg_form.html',1,'polyfem::solver']]],
-  ['lagrange_2',['lagrange',['../classp__bases_1_1_lagrange.html',1,'p_bases.Lagrange'],['../classq__bases_1_1_lagrange.html',1,'q_bases.Lagrange']]],
-  ['lagrangebasis2d_3',['LagrangeBasis2d',['../classpolyfem_1_1basis_1_1_lagrange_basis2d.html',1,'polyfem::basis']]],
-  ['lagrangebasis3d_4',['LagrangeBasis3d',['../classpolyfem_1_1basis_1_1_lagrange_basis3d.html',1,'polyfem::basis']]],
-  ['lameparameters_5',['LameParameters',['../classpolyfem_1_1assembler_1_1_lame_parameters.html',1,'polyfem::assembler']]],
-  ['laplacian_6',['Laplacian',['../classpolyfem_1_1assembler_1_1_laplacian.html',1,'polyfem::assembler']]],
-  ['layerthicknessform_7',['LayerThicknessForm',['../classpolyfem_1_1solver_1_1_layer_thickness_form.html',1,'polyfem::solver']]],
-  ['lazycubicinterpolator_8',['LazyCubicInterpolator',['../classpolyfem_1_1_lazy_cubic_interpolator.html',1,'polyfem']]],
-  ['linearassembler_9',['LinearAssembler',['../classpolyfem_1_1assembler_1_1_linear_assembler.html',1,'polyfem::assembler']]],
-  ['linearassemblerdata_10',['LinearAssemblerData',['../classpolyfem_1_1assembler_1_1_linear_assembler_data.html',1,'polyfem::assembler']]],
-  ['linearelasticity_11',['LinearElasticity',['../classpolyfem_1_1assembler_1_1_linear_elasticity.html',1,'polyfem::assembler']]],
-  ['linearelasticproblemexact_12',['LinearElasticProblemExact',['../classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html',1,'polyfem::problem']]],
-  ['linearelasticvarform_13',['LinearElasticVarForm',['../classpolyfem_1_1varform_1_1_linear_elastic_var_form.html',1,'polyfem::varform']]],
-  ['linearfilter_14',['LinearFilter',['../classpolyfem_1_1solver_1_1_linear_filter.html',1,'polyfem::solver']]],
-  ['linearinterpolation_15',['LinearInterpolation',['../classpolyfem_1_1utils_1_1_linear_interpolation.html',1,'polyfem::utils']]],
-  ['linearproblem_16',['LinearProblem',['../classpolyfem_1_1problem_1_1_linear_problem.html',1,'polyfem::problem']]],
-  ['linearramp_17',['LinearRamp',['../classpolyfem_1_1utils_1_1_linear_ramp.html',1,'polyfem::utils']]],
-  ['linequadrature_18',['LineQuadrature',['../classpolyfem_1_1quadrature_1_1_line_quadrature.html',1,'polyfem::quadrature']]],
-  ['loadedgeometry_19',['LoadedGeometry',['../classpolyfem_1_1mesh_1_1_loaded_geometry.html',1,'polyfem::mesh']]],
-  ['loadedinput_20',['LoadedInput',['../classpolyfem_1_1io_1_1_loaded_input.html',1,'polyfem::io']]],
-  ['local2global_21',['Local2Global',['../classpolyfem_1_1basis_1_1_local2_global.html',1,'polyfem::basis']]],
-  ['localboundary_22',['LocalBoundary',['../classpolyfem_1_1mesh_1_1_local_boundary.html',1,'polyfem::mesh']]],
-  ['localhessian_23',['LocalHessian',['../classpolyfem_1_1assembler_1_1_local_hessian.html',1,'polyfem::assembler']]],
-  ['logcompositeform_24',['LogCompositeForm',['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver']]],
-  ['lshape_25',['Lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem']]]
+  ['kernelproblem_0',['KernelProblem',['../classpolyfem_1_1problem_1_1_kernel_problem.html',1,'polyfem::problem']]],
+  ['kineticform_1',['KineticForm',['../classpolyfem_1_1solver_1_1_kinetic_form.html',1,'polyfem::solver']]],
+  ['kovnaszy_2',['Kovnaszy',['../classpolyfem_1_1problem_1_1_kovnaszy.html',1,'polyfem::problem']]]
 ];

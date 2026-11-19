@@ -1,6 +1,14 @@
 var searchData=
 [
-  ['walkproblem_0',['WalkProblem',['../classpolyfem_1_1problem_1_1_walk_problem.html',1,'polyfem::problem']]],
-  ['weightedvolumeform_1',['WeightedVolumeForm',['../classpolyfem_1_1solver_1_1_weighted_volume_form.html',1,'polyfem::solver']]],
-  ['wspolygonalbasis2d_2',['WSPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html',1,'polyfem::basis']]]
+  ['varform_0',['VarForm',['../classpolyfem_1_1varform_1_1_var_form.html',1,'polyfem::varform']]],
+  ['varformboundarystate_1',['VarFormBoundaryState',['../structpolyfem_1_1varform_1_1_var_form_boundary_state.html',1,'polyfem::varform']]],
+  ['varformfactory_2',['VarFormFactory',['../classpolyfem_1_1varform_1_1_var_form_factory.html',1,'polyfem::varform']]],
+  ['variabletosimulation_3',['VariableToSimulation',['../classpolyfem_1_1solver_1_1_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['variabletosimulationgroup_4',['VariableToSimulationGroup',['../classpolyfem_1_1solver_1_1_variable_to_simulation_group.html',1,'polyfem::solver']]],
+  ['vertexattributes_5',['VertexAttributes',['../classpolyfem_1_1renderer_1_1_vertex_attributes.html',1,'polyfem::renderer']]],
+  ['viscousdamping_6',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html',1,'polyfem::assembler']]],
+  ['viscousdampingprev_7',['ViscousDampingPrev',['../classpolyfem_1_1assembler_1_1_viscous_damping_prev.html',1,'polyfem::assembler']]],
+  ['volumeform_8',['VolumeForm',['../classpolyfem_1_1solver_1_1_volume_form.html',1,'polyfem::solver']]],
+  ['volumepenalty_9',['VolumePenalty',['../classpolyfem_1_1assembler_1_1_volume_penalty.html',1,'polyfem::assembler']]],
+  ['volumepenaltyenergy_10',['VolumePenaltyEnergy',['../classdiff__elastic__energy_1_1_volume_penalty_energy.html',1,'diff_elastic_energy']]]
 ];

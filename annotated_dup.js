@@ -167,13 +167,12 @@ var annotated_dup =
         [ "Navigation3D", "namespacepolyfem_1_1mesh_1_1_navigation3_d.html", [
           [ "Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index" ]
         ] ],
+        [ "ArrayRow", "classpolyfem_1_1mesh_1_1_array_row.html", "classpolyfem_1_1mesh_1_1_array_row" ],
         [ "CellDescriptor", "structpolyfem_1_1mesh_1_1_cell_descriptor.html", "structpolyfem_1_1mesh_1_1_cell_descriptor" ],
         [ "CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_c_mesh2_d" ],
         [ "CMesh3D", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_c_mesh3_d" ],
-        [ "Edge", "structpolyfem_1_1mesh_1_1_edge.html", "structpolyfem_1_1mesh_1_1_edge" ],
-        [ "Element", "structpolyfem_1_1mesh_1_1_element.html", "structpolyfem_1_1mesh_1_1_element" ],
-        [ "Face", "structpolyfem_1_1mesh_1_1_face.html", "structpolyfem_1_1mesh_1_1_face" ],
         [ "GeometryLoader", "classpolyfem_1_1mesh_1_1_geometry_loader.html", "classpolyfem_1_1mesh_1_1_geometry_loader" ],
+        [ "JaggedArray", "classpolyfem_1_1mesh_1_1_jagged_array.html", "classpolyfem_1_1mesh_1_1_jagged_array" ],
         [ "LoadedGeometry", "classpolyfem_1_1mesh_1_1_loaded_geometry.html", "classpolyfem_1_1mesh_1_1_loaded_geometry" ],
         [ "LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", "classpolyfem_1_1mesh_1_1_local_boundary" ],
         [ "Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
@@ -190,9 +189,9 @@ var annotated_dup =
         [ "NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d" ],
         [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
         [ "PolygonMesh", "classpolyfem_1_1mesh_1_1_polygon_mesh.html", "classpolyfem_1_1mesh_1_1_polygon_mesh" ],
+        [ "SortedIds", "classpolyfem_1_1mesh_1_1_sorted_ids.html", "classpolyfem_1_1mesh_1_1_sorted_ids" ],
         [ "StandardCell", "structpolyfem_1_1mesh_1_1_standard_cell.html", "structpolyfem_1_1mesh_1_1_standard_cell" ],
-        [ "SurfaceMeshData", "classpolyfem_1_1mesh_1_1_surface_mesh_data.html", "classpolyfem_1_1mesh_1_1_surface_mesh_data" ],
-        [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ]
+        [ "SurfaceMeshData", "classpolyfem_1_1mesh_1_1_surface_mesh_data.html", "classpolyfem_1_1mesh_1_1_surface_mesh_data" ]
       ] ],
       [ "problem", "namespacepolyfem_1_1problem.html", [
         [ "Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html", "classpolyfem_1_1problem_1_1_airfoil" ],

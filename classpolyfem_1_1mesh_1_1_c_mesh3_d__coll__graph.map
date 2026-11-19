@@ -1,9 +1,19 @@
 <map id="polyfem::mesh::CMesh3D" name="polyfem::mesh::CMesh3D">
-<area shape="rect" id="Node000001" title=" " alt="" coords="173,175,362,203"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html" title=" " alt="" coords="5,82,186,110"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,115,245,173,240,176,133,120"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="14,5,177,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,46,98,83,93,81,94,51"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh3_d_storage.html" title=" " alt="" coords="210,82,440,110"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="311,122,277,177,274,173,306,124"/>
+<area shape="rect" id="Node000001" title="Conforming 3D mesh of tetrahedra, hexahedra, prisms, pyramids and general polyhedra,..." alt="" coords="1049,211,1239,238"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html" title="3D mesh interface: the elements are the cells (tetrahedra, hexahedra, prisms, pyramids or general pol..." alt="" coords="749,95,929,122"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="893,126,1108,210,1102,210,892,131"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="407,5,569,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="584,17,643,23,701,35,766,62,819,94,814,94,764,67,699,40,642,28,585,22"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh3_d_storage.html" title="Topology of a conforming 3D mesh (used by CMesh3D), stored as flat arrays indexed by entity id." alt="" coords="724,236,954,264"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="970,239,1025,235,1052,235,1047,236,1026,240,970,245"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_jagged_array.html" title=" " alt="" coords="385,182,591,227"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="606,221,615,222,726,238,721,238,615,227,606,226"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_jagged_array.html" title="Rows of different lengths stored contiguously (compressed rows): row i is data[offsets[i],..." alt="" coords="5,260,250,288"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="217,254,386,223,382,226,219,259"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_jagged_array.html" title=" " alt="" coords="385,252,591,296"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="265,271,387,273,381,275,265,276"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_jagged_array.html" title=" " alt="" coords="385,321,591,366"/>
+<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="218,288,387,322,382,325,218,294"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="606,273,700,270,764,264,759,265,700,275,607,279"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="606,319,699,296,799,265,804,264,701,301,607,324"/>
 </map>

@@ -9,6 +9,7 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher3D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html", null ],
+    [ "polyfem::mesh::ArrayRow< T >", "classpolyfem_1_1mesh_1_1_array_row.html", null ],
     [ "polyfem::assembler::Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", [
       [ "polyfem::assembler::ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", [
         [ "polyfem::assembler::ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", [
@@ -141,12 +142,10 @@ var hierarchy =
       [ "DScalar1< _Scalar, _Gradient >", "struct_d_scalar1.html", null ],
       [ "DScalar2< _Scalar, _Gradient, _Hessian >", "struct_d_scalar2.html", null ]
     ] ],
-    [ "polyfem::mesh::Edge", "structpolyfem_1_1mesh_1_1_edge.html", null ],
     [ "polyfem::mesh::Mesh::EdgeNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html", null ],
     [ "polyfem::utils::EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
     [ "polyfem::solver::ElasticForceDerivative", "classpolyfem_1_1solver_1_1_elastic_force_derivative.html", null ],
     [ "polyfem::assembler::ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", null ],
-    [ "polyfem::mesh::Element", "structpolyfem_1_1mesh_1_1_element.html", null ],
     [ "polyfem::assembler::ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", null ],
     [ "polyfem::basis::ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", null ],
     [ "polyfem::io::EnergyCSVWriter", "classpolyfem_1_1io_1_1_energy_c_s_v_writer.html", null ],
@@ -154,7 +153,6 @@ var hierarchy =
     [ "polyfem::io::Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", null ],
     [ "polyfem::io::OutGeometryData::ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html", null ],
     [ "polyfem::utils::ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", null ],
-    [ "polyfem::mesh::Face", "structpolyfem_1_1mesh_1_1_face.html", null ],
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", null ],
     [ "polyfem::varform::FESpace", "classpolyfem_1_1varform_1_1_f_e_space.html", null ],
     [ "polyfem::assembler::FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", null ],
@@ -294,6 +292,10 @@ var hierarchy =
     [ "Eigen::JacobiSVD", null, [
       [ "polyfem::utils::AutoFlipSVD< MatrixType >", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html", null ]
     ] ],
+    [ "polyfem::mesh::JaggedArray< T >", "classpolyfem_1_1mesh_1_1_jagged_array.html", null ],
+    [ "polyfem::mesh::JaggedArray< uint16_t >", "classpolyfem_1_1mesh_1_1_jagged_array.html", null ],
+    [ "polyfem::mesh::JaggedArray< uint32_t >", "classpolyfem_1_1mesh_1_1_jagged_array.html", null ],
+    [ "polyfem::mesh::JaggedArray< uint8_t >", "classpolyfem_1_1mesh_1_1_jagged_array.html", null ],
     [ "p_bases.Lagrange", "classp__bases_1_1_lagrange.html", null ],
     [ "q_bases.Lagrange", "classq__bases_1_1_lagrange.html", null ],
     [ "polyfem::basis::LagrangeBasis2d", "classpolyfem_1_1basis_1_1_lagrange_basis2d.html", null ],
@@ -497,6 +499,7 @@ var hierarchy =
       [ "polyfem::utils::UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", null ]
     ] ],
     [ "polyfem::solver::SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", null ],
+    [ "polyfem::mesh::SortedIds", "classpolyfem_1_1mesh_1_1_sorted_ids.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::mesh::StandardCell", "structpolyfem_1_1mesh_1_1_standard_cell.html", null ],
@@ -562,7 +565,6 @@ var hierarchy =
       [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", null ]
     ] ],
     [ "polyfem::solver::VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", null ],
-    [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
     [ "diff_elastic_energy.VolumePenaltyEnergy", "classdiff__elastic__energy_1_1_volume_penalty_energy.html", null ],
     [ "polyfem::basis::WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ]

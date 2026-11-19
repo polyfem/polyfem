@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['kernelproblem_0',['KernelProblem',['../classpolyfem_1_1problem_1_1_kernel_problem.html',1,'polyfem::problem']]],
-  ['kineticform_1',['KineticForm',['../classpolyfem_1_1solver_1_1_kinetic_form.html',1,'polyfem::solver']]],
-  ['kovnaszy_2',['Kovnaszy',['../classpolyfem_1_1problem_1_1_kovnaszy.html',1,'polyfem::problem']]]
+  ['jaggedarray_0',['JaggedArray',['../classpolyfem_1_1mesh_1_1_jagged_array.html',1,'polyfem::mesh']]],
+  ['jaggedarray_3c_20uint16_5ft_20_3e_1',['JaggedArray&lt; uint16_t &gt;',['../classpolyfem_1_1mesh_1_1_jagged_array.html',1,'polyfem::mesh']]],
+  ['jaggedarray_3c_20uint32_5ft_20_3e_2',['JaggedArray&lt; uint32_t &gt;',['../classpolyfem_1_1mesh_1_1_jagged_array.html',1,'polyfem::mesh']]],
+  ['jaggedarray_3c_20uint8_5ft_20_3e_3',['JaggedArray&lt; uint8_t &gt;',['../classpolyfem_1_1mesh_1_1_jagged_array.html',1,'polyfem::mesh']]]
 ];

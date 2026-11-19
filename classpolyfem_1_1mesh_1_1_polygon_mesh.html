@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_polygon_mesh.
 </div><!--header-->
 <div class="contents">
 
-<p>Minimal polygonal surface mesh used as the storage of <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">CMesh2D</a>.  
+<p>Minimal polygonal surface mesh used as the storage of <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html" title="Conforming 2D mesh of arbitrary polygons, stored in a PolygonMesh.">CMesh2D</a>.  
  <a href="classpolyfem_1_1mesh_1_1_polygon_mesh.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>&gt;</code></p>
@@ -236,7 +236,7 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a98c8dbe0852efc93c02c7788b7fc833e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Minimal polygonal surface mesh used as the storage of <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">CMesh2D</a>. </p>
+<div class="textblock"><p>Minimal polygonal surface mesh used as the storage of <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html" title="Conforming 2D mesh of arbitrary polygons, stored in a PolygonMesh.">CMesh2D</a>. </p>
 <p>Vertices carry 3D positions (z = 0 for planar meshes), facets are polygons stored as contiguous ranges of corners, and each corner knows the facet across the edge that starts at it. Edges and boundary flags are derived data filled by <a class="el" href="namespacepolyfem_1_1mesh_1_1_navigation.html#a94cda5ddd004ed2073b652f433b77ddb">Navigation::prepare_mesh()</a>.</p>
 <p>The connectivity semantics (facet gluing, facet flipping and deletion) and the point arithmetic follow geogram's GEO::Mesh, which this class replaces, so that meshes built with it are identical to the ones PolyFEM used to build. </p>
 
@@ -274,7 +274,7 @@ Private Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00117">points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00395">polyfem::mesh::CMesh2D::bounding_box()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00409">polyfem::mesh::CMesh2D::normalize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00396">polyfem::mesh::CMesh2D::bounding_box()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00410">polyfem::mesh::CMesh2D::normalize()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -304,7 +304,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00112">boundary_edge</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00114">boundary_vertex</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00120">corner_adjacent_facet_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00110">corner_edge</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00119">corner_vertex_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00121">edges_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00118">facet_ptr_</a>, and <a class="el" href="_polygon_mesh_8hpp_source.html#l00117">points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00153">polyfem::mesh::CMesh2D::build_topology()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00151">polyfem::mesh::CMesh2D::build_topology()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -332,7 +332,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00112">boundary_edge</a>, and <a class="el" href="_polygon_mesh_8hpp_source.html#l00121">edges_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -362,7 +362,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00120">corner_adjacent_facet_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00110">corner_edge</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00119">corner_vertex_</a>, and <a class="el" href="_polygon_mesh_8hpp_source.html#l00118">facet_ptr_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -610,7 +610,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00120">corner_adjacent_facet_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00110">corner_edge</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00119">corner_vertex_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00118">facet_ptr_</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00067">n_facets()</a>, and <a class="el" href="_polygon_mesh_8hpp_source.html#l00052">n_vertices()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00603">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00153">polyfem::mesh::CMesh2D::build_topology()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00151">polyfem::mesh::CMesh2D::build_topology()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -675,7 +675,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_polygon_mesh_8hpp_source.html#l00114">boundary_vertex</a>, <a class="el" href="_polygon_mesh_8hpp_source.html#l00052">n_vertices()</a>, and <a class="el" href="_polygon_mesh_8hpp_source.html#l00117">points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00603">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00153">polyfem::mesh::CMesh2D::build_topology()</a>, and <a class="el" href="_polygon_mesh_8cpp_source.html#l00030">create_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00151">polyfem::mesh::CMesh2D::build_topology()</a>, and <a class="el" href="_polygon_mesh_8cpp_source.html#l00030">create_vertex()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -761,7 +761,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00105">105</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00569">polyfem::mesh::CMesh2D::edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00459">polyfem::mesh::CMesh2D::edge_length()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00038">polyfem::mesh::CMesh2D::edge_vertex()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00570">polyfem::mesh::CMesh2D::edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00460">polyfem::mesh::CMesh2D::edge_length()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00044">polyfem::mesh::CMesh2D::edge_vertex()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -844,7 +844,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00069">69</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00603">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00188">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00039">polyfem::mesh::CMesh2D::cell_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">polyfem::mesh::CMesh2D::face_vertex()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00186">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00045">polyfem::mesh::CMesh2D::cell_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00043">polyfem::mesh::CMesh2D::face_vertex()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -941,7 +941,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00104">104</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8hpp_source.html#l00032">polyfem::mesh::CMesh2D::n_edges()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8hpp_source.html#l00038">polyfem::mesh::CMesh2D::n_edges()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -976,7 +976,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00068">68</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00603">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00068">flip_facet()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">polyfem::mesh::CMesh2D::n_face_vertices()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00068">flip_facet()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00041">polyfem::mesh::CMesh2D::n_face_vertices()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1010,7 +1010,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00067">67</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00126">connect_facets()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00168">connected_components()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00054">create_polygon()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00093">delete_facets()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00031">polyfem::mesh::CMesh2D::n_faces()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00020">polyfem::mesh::CMesh2D::remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00126">connect_facets()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00168">connected_components()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00054">create_polygon()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00093">delete_facets()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">polyfem::mesh::CMesh2D::n_faces()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00020">polyfem::mesh::CMesh2D::remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1044,7 +1044,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00052">52</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00603">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00126">connect_facets()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00054">create_polygon()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00022">create_vertices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">polyfem::mesh::CMesh2D::n_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00409">polyfem::mesh::CMesh2D::normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00721">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00126">connect_facets()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00054">create_polygon()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00022">create_vertices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00039">polyfem::mesh::CMesh2D::n_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00410">polyfem::mesh::CMesh2D::normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00089">polyfem::mesh::CMesh2D::refine()</a>, <a class="el" href="_refinement_8cpp_source.html#l00613">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00739">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1152,7 +1152,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00053">53</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00153">polyfem::mesh::CMesh2D::build_topology()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00409">polyfem::mesh::CMesh2D::normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00473">polyfem::mesh::CMesh2D::point()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00467">polyfem::mesh::CMesh2D::set_point()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00151">polyfem::mesh::CMesh2D::build_topology()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00410">polyfem::mesh::CMesh2D::normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00474">polyfem::mesh::CMesh2D::point()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00468">polyfem::mesh::CMesh2D::set_point()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1223,7 +1223,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00112">112</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00010">clear()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00205">clear_edges()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00198">create_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00045">polyfem::mesh::CMesh2D::is_boundary_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00010">clear()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00205">clear_edges()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00198">create_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00051">polyfem::mesh::CMesh2D::is_boundary_edge()</a>.</p>
 
 </div>
 </div>
@@ -1243,7 +1243,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_mesh_8hpp_source.html#l00114">114</a> of file <a class="el" href="_polygon_mesh_8hpp_source.html">PolygonMesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00010">clear()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00022">create_vertices()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00041">polyfem::mesh::CMesh2D::is_boundary_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polygon_mesh_8cpp_source.html#l00010">clear()</a>, <a class="el" href="_polygon_mesh_8cpp_source.html#l00022">create_vertices()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00047">polyfem::mesh::CMesh2D::is_boundary_vertex()</a>.</p>
 
 </div>
 </div>

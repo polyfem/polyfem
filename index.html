@@ -145,11 +145,39 @@ Finite Element Bases</h2>
 <li>Polygonal elements (<code><a class="el" href="_polygonal_basis3d_8hpp.html">PolygonalBasis3d.hpp</a></code>)</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md4"></a>
-Mesh data structure, Input/Output, and Navigation</h2>
-<p><code><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></code> contains data structures and algorithms for simplicial and polygonal meshes.</p>
-<p>The interface is generic (<code><a class="el" href="_mesh2_d_8hpp.html">Mesh2D.hpp</a></code>, <code><a class="el" href="_mesh3_d_8hpp.html">Mesh3D.hpp</a></code>). There are two specializations: a conforming implementation that supports conforming polygonal meshes (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) without hanging nodes, and a non-conforming version (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.</p>
-<p>Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).</p>
-<p>In PolyFEM the mesh is used to define a collection of dofs (in case of linear elements, they correspond to the nodes of the mesh, but this is not the case for other elements). The mesh is then discarded and not used by other modules.</p>
+Mesh data structures</h2>
+<p><code><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></code> contains the meshes used to define the finite element spaces, the obstacles used for contact, and their input/output. A mesh is built in two steps:</p>
+<ol type="1">
+<li><code>MeshLoader</code> decodes a file (MSH, HYBRID or OBJ, through <code>MeshReader</code>) or an HDF5 group into a <code>MeshData</code>: vertices, element connectivity padded with <code>-1</code>, and optionally body/boundary/node/geometry ids and curved (higher-order) nodes.</li>
+<li><code>Mesh::create(MeshData, non_conforming)</code> builds the runtime mesh: a conforming or non-conforming 2D or 3D mesh.</li>
+</ol>
+<p><code>GeometryLoader</code> implements the <code>geometry</code> section of the JSON input on top of this: for every entry it loads the mesh, normalizes and transforms it, refines it (<code>n_refs</code>), applies the volume/surface/point selections, and appends all the simulated meshes into one; obstacles (surfaces in MSH, OBJ or the triangle formats read by libigl) are collected into an <code>Obstacle</code>.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Class   </th><th class="markdownTableHeadNone">Represents   </th><th class="markdownTableHeadNone">Storage    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>Mesh</code>   </td><td class="markdownTableBodyNone">Abstract interface: entity counts, geometry, navigation, labels, curved geometry   </td><td class="markdownTableBodyNone">Labels and curved nodes shared by all meshes    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>Mesh2D</code>, <code>Mesh3D</code>   </td><td class="markdownTableBodyNone">Dimension-specific interface; 2D elements are faces, 3D elements are cells   </td><td class="markdownTableBodyNone">-    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>CMesh2D</code>   </td><td class="markdownTableBodyNone">Conforming mesh of arbitrary polygons   </td><td class="markdownTableBodyNone"><code>PolygonMesh</code>: vertices, facets as ranges of corners, facet adjacency and edges    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>CMesh3D</code>   </td><td class="markdownTableBodyNone">Conforming mesh of tetrahedra, hexahedra, prisms, pyramids and polyhedra   </td><td class="markdownTableBodyNone"><code>Mesh3DStorage</code>: flat (compressed-row) incidence arrays, built from standard cells (<code>CellConnectivity</code>) by <code>MeshProcessing3D</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>NCMesh2D</code>, <code>NCMesh3D</code>   </td><td class="markdownTableBodyNone">Triangle/tetrahedral meshes with hanging nodes, for adaptive h-refinement   </td><td class="markdownTableBodyNone">Refinement tree of elements, edges, faces and vertices    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>MeshNodes</code>   </td><td class="markdownTableBodyNone">Finite element nodes (vertices, edge/face/cell nodes), created lazily   </td><td class="markdownTableBodyNone">Packed primitive slots, one block per entity type    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>LocalBoundary</code>   </td><td class="markdownTableBodyNone">Boundary primitives of one element, used to assemble boundary conditions   </td><td class="markdownTableBodyNone">-    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>Obstacle</code>   </td><td class="markdownTableBodyNone">Non-simulated geometry for contact: meshes with prescribed displacements, and planes   </td><td class="markdownTableBodyNone">Concatenated vertices/edges/faces of all obstacles    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>CollisionProxy</code>   </td><td class="markdownTableBodyNone">Separate (usually finer) surface used for contact instead of the FE boundary   </td><td class="markdownTableBodyNone">Proxy mesh + sparse map from FE nodes to proxy vertices   </td></tr>
+</table>
+<p><b>Numbering.</b> Every entity type is numbered from 0. In conforming meshes, vertices and elements keep the input order and edges are sorted by their vertex pair; 3D faces are numbered cell by cell. Non-conforming meshes keep every entity ever created ("all" ids) and number the current ones ("valid" ids) in the same order; the <code>Mesh</code> interface always uses valid ids.</p>
+<p><b>Labels.</b> Body ids (per element, default 0) select materials, boundary ids (per boundary element: edges in 2D, faces in 3D; default max int on the boundary and -1 inside) select boundary conditions, node ids (per vertex, default -1) select nodal boundary conditions, and geometry ids (per element, default 0) identify the input geometry of each element. Refinement drops the labels of conforming meshes (the loader recomputes them from the selections) and passes the body/boundary ids of non-conforming meshes to the children; appending keeps the labels of both meshes.</p>
+<p><b>Navigation.</b> <code>Navigation::Index</code> (2D) and <code>Navigation3D::Index</code> (3D) are flags of incident entities (vertex, edge, face, and in 3D element); the <code>switch_*</code> functions move to the flag that differs in one entity. Non-conforming meshes must be prepared (<code>prepare_mesh()</code>) after their topology changes and before they are queried.</p>
+<p>Meshes are written in VTU (the format used by paraview/VTK) by <code><a class="el" href="namespacepolyfem_1_1io.html">polyfem::io</a></code>.</p>
 <h2><a class="anchor" id="autotoc_md5"></a>
 Quadrature Rules</h2>
 <p><code><a class="el" href="namespacepolyfem_1_1quadrature.html">polyfem::quadrature</a></code> contains a set of quadrature rules for all elements implemented in <code><a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a></code>. The quadrature library is mostly independent from the rest of the codebase and it is based on the open-source library quadpy.</p>

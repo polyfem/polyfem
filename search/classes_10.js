@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['rayleighdampingform_0',['RayleighDampingForm',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html',1,'polyfem::solver']]],
-  ['rbfinterpolation_1',['RBFInterpolation',['../classpolyfem_1_1utils_1_1_r_b_f_interpolation.html',1,'polyfem::utils']]],
-  ['rbfwithlinear_2',['RBFWithLinear',['../classpolyfem_1_1basis_1_1_r_b_f_with_linear.html',1,'polyfem::basis']]],
-  ['rbfwithquadratic_3',['RBFWithQuadratic',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html',1,'polyfem::basis']]],
-  ['rbfwithquadraticlagrange_4',['RBFWithQuadraticLagrange',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html',1,'polyfem::basis']]],
-  ['refelementsampler_5',['RefElementSampler',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html',1,'polyfem::utils']]],
-  ['referencesimplex_6',['referencesimplex',['../classp__bases_1_1_reference_simplex.html',1,'p_bases.ReferenceSimplex'],['../classq__bases_1_1_reference_simplex.html',1,'q_bases.ReferenceSimplex']]],
-  ['resourceio_7',['ResourceIO',['../classpolyfem_1_1io_1_1_resource_i_o.html',1,'polyfem::io']]],
-  ['rhsassembler_8',['RhsAssembler',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html',1,'polyfem::assembler']]],
-  ['runtimestatscsvwriter_9',['RuntimeStatsCSVWriter',['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::io']]]
+  ['quadquadrature_0',['QuadQuadrature',['../classpolyfem_1_1quadrature_1_1_quad_quadrature.html',1,'polyfem::quadrature']]],
+  ['quadraticbspline_1',['QuadraticBSpline',['../classpolyfem_1_1basis_1_1_quadratic_b_spline.html',1,'polyfem::basis']]],
+  ['quadraticbspline2d_2',['QuadraticBSpline2d',['../classpolyfem_1_1basis_1_1_quadratic_b_spline2d.html',1,'polyfem::basis']]],
+  ['quadraticbspline3d_3',['QuadraticBSpline3d',['../classpolyfem_1_1basis_1_1_quadratic_b_spline3d.html',1,'polyfem::basis']]],
+  ['quadraticelasticproblemexact_4',['QuadraticElasticProblemExact',['../classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html',1,'polyfem::problem']]],
+  ['quadraticpenaltyform_5',['QuadraticPenaltyForm',['../classpolyfem_1_1solver_1_1_quadratic_penalty_form.html',1,'polyfem::solver']]],
+  ['quadraticproblem_6',['QuadraticProblem',['../classpolyfem_1_1problem_1_1_quadratic_problem.html',1,'polyfem::problem']]],
+  ['quadrature_7',['Quadrature',['../classpolyfem_1_1quadrature_1_1_quadrature.html',1,'polyfem::quadrature']]]
 ];

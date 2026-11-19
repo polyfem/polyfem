@@ -1,49 +1,69 @@
 <map id="polyfem::mesh::CMesh3D::attach_higher_order_nodes" name="polyfem::mesh::CMesh3D::attach_higher_order_nodes">
-<area shape="rect" id="Node000001" title="attach high order nodes" alt="" coords="5,352,211,397"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af5f8e6a7533debfba249a418ce072466" title="id of the vertex of a cell" alt="" coords="260,5,450,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,351,127,293,155,216,174,174,197,133,225,94,257,60,264,57,261,61,261,64,229,98,202,136,179,176,160,218,132,295,117,352"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a576869589c66ade663856a21689d91bd" title="id of the face vertex" alt="" coords="260,75,450,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="115,351,134,305,164,245,205,184,230,155,257,130,266,126,262,130,260,134,234,159,209,187,169,248,139,307,120,352"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5" title="list of sorted faces." alt="" coords="274,144,436,189"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="121,350,175,276,214,235,257,199,268,194,264,198,260,203,217,239,179,280,126,353"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ad2fcaa2d336a5908b319db147c376a86" title=" " alt="" coords="259,213,451,258"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="135,350,190,309,257,268,272,263,268,266,260,273,193,313,139,353"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#abd521508bab9f7b6e396db97435d04e0" title="number of cells" alt="" coords="260,283,450,327"/>
-<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="189,349,260,330,256,334,192,354"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a48f699376b388e6b8b505a8d93d9760b" title="number of edges" alt="" coords="260,352,450,397"/>
-<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="210,372,247,373,242,376,212,377"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ac2c113feb4b3af1ca20e690ebbdc38e5" title="number of faces" alt="" coords="260,421,450,466"/>
-<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="190,395,261,415,256,418,191,400"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a7c81dd92af7f19d4050254e229d8ddbe" title=" " alt="" coords="260,611,450,655"/>
-<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="120,394,143,437,174,488,213,542,260,590,277,603,272,603,257,594,209,545,169,491,138,439,120,400"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aeb4a7e49a0c18eb64fefebcf24fc5105" title=" " alt="" coords="523,541,712,586"/>
-<area shape="poly" id="edge19_Node000001_Node000019" title=" " alt="" coords="121,394,144,431,174,473,213,514,236,531,260,545,320,567,385,578,448,581,510,580,505,581,448,586,384,583,319,572,258,550,233,536,210,518,170,476,140,434,121,400"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aef9a81ceaffffad57aaa36e910c567b0" title=" " alt="" coords="260,491,450,535"/>
-<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="137,394,193,435,260,476,273,484,268,485,257,481,190,440,137,400"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#acd084e2cdfad9b39a433bf760b8579e5" title=" " alt="" coords="523,680,712,725"/>
-<area shape="poly" id="edge24_Node000001_Node000022" title=" " alt="" coords="114,395,130,453,156,528,176,567,199,604,227,638,260,665,288,682,318,694,382,710,447,716,505,718,510,718,447,722,381,716,317,700,286,687,257,670,223,641,195,607,171,569,152,530,125,455,113,400"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399" title="id of the face vertex" alt="" coords="536,213,699,258"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="436,185,524,209,519,211,437,190"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39" title="number of vertices of a face" alt="" coords="536,75,699,119"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="435,143,523,121,519,124,438,147"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="536,144,699,189"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="435,164,523,165,518,168,437,169"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8" title=" " alt="" coords="499,331,736,375"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="421,256,452,268,563,322,558,324,450,273,422,261"/>
-<area shape="poly" id="edge10_Node000009_Node000009" title=" " alt="" coords="568,329,566,320,575,312,592,306,618,304,646,306,664,315,659,316,645,312,618,309,593,311,578,316,571,322,573,331"/>
-<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c" title=" " alt="" coords="829,339,980,367"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="736,350,816,352,811,354,737,356"/>
-<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a61605ebebbca1d2811da94bf3e50a423" title=" " alt="" coords="784,420,1025,465"/>
-<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="692,373,818,414,813,415,692,379"/>
-<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acb2f78e44632a5f6fe0605877c564cd6" title=" " alt="" coords="514,611,721,655"/>
-<area shape="poly" id="edge16_Node000015_Node000016" title=" " alt="" coords="450,630,502,633,497,633,450,636"/>
-<area shape="rect" id="Node000017" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a833056543775050cfa5dbd377fa8dee2" title=" " alt="" coords="801,559,1008,603"/>
-<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="721,612,784,603,789,602,722,617"/>
-<area shape="rect" id="Node000018" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a45d1df14b0d5989deb22f75a094937ee" title=" " alt="" coords="801,645,1008,690"/>
-<area shape="poly" id="edge18_Node000016_Node000018" title=" " alt="" coords="721,643,789,653,783,653,721,648"/>
-<area shape="poly" id="edge20_Node000019_Node000017" title=" " alt="" coords="713,567,789,574,783,574,713,572"/>
-<area shape="rect" id="Node000021" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acf2f94f81c7bf65de4afa6af74bdf131" title=" " alt="" coords="514,448,721,493"/>
-<area shape="poly" id="edge22_Node000020_Node000021" title=" " alt="" coords="449,495,502,489,497,490,451,500"/>
-<area shape="poly" id="edge23_Node000021_Node000011" title=" " alt="" coords="721,458,771,455,766,456,722,463"/>
-<area shape="poly" id="edge25_Node000022_Node000018" title=" " alt="" coords="713,688,783,682,789,682,713,694"/>
+<area shape="rect" id="Node000001" title="attach high order nodes" alt="" coords="5,452,211,497"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af5f8e6a7533debfba249a418ce072466" title="id of the vertex of a cell" alt="" coords="267,5,456,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,451,118,377,141,273,160,216,186,160,217,107,257,60,263,57,260,62,261,64,222,110,190,162,165,218,146,274,123,378,114,452"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_jagged_array.html#a471fa0f9ef93ec9c759baa7d3ae97bbf" title=" " alt="" coords="259,75,465,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="110,451,123,388,150,302,169,256,193,210,222,167,257,130,264,126,261,131,261,134,227,171,198,213,174,258,155,304,129,389,115,452"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a576869589c66ade663856a21689d91bd" title="id of the face vertex" alt="" coords="267,144,456,189"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="113,451,130,399,159,332,201,261,227,228,257,199,265,195,262,200,260,203,231,232,206,264,164,334,135,401,118,452"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5" title="list of sorted faces." alt="" coords="281,213,443,258"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="117,451,139,412,169,363,209,312,257,268,269,263,265,267,260,272,213,316,174,366,143,414,122,453"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ad2fcaa2d336a5908b319db147c376a86" title=" " alt="" coords="266,623,458,667"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="132,494,190,544,260,596,293,615,287,616,257,601,186,548,133,500"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="273,352,451,397"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="157,449,258,407,278,400,275,404,260,411,161,453"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aebe4d4e4cda1ed7fa7402bf9f1e5d9e3" title="number of vertices of a cell" alt="" coords="537,472,726,517"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="210,476,523,488,520,492,212,481"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#abd521508bab9f7b6e396db97435d04e0" title="number of cells" alt="" coords="267,283,456,327"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="127,450,182,394,218,364,257,337,270,332,267,336,260,342,222,368,186,398,131,453"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a48f699376b388e6b8b505a8d93d9760b" title="number of edges" alt="" coords="267,541,456,586"/>
+<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="173,494,284,534,280,537,174,500"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ac2c113feb4b3af1ca20e690ebbdc38e5" title="number of faces" alt="" coords="267,421,456,466"/>
+<area shape="poly" id="edge23_Node000001_Node000022" title=" " alt="" coords="210,460,254,455,250,459,213,464"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a7c81dd92af7f19d4050254e229d8ddbe" title=" " alt="" coords="267,829,456,874"/>
+<area shape="poly" id="edge26_Node000001_Node000024" title=" " alt="" coords="114,495,130,558,157,641,177,686,200,730,228,771,261,808,274,821,269,821,257,812,224,775,195,733,172,688,152,643,125,559,113,500"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aeb4a7e49a0c18eb64fefebcf24fc5105" title=" " alt="" coords="537,773,726,818"/>
+<area shape="poly" id="edge30_Node000001_Node000028" title=" " alt="" coords="114,494,131,551,158,622,177,659,201,695,228,727,260,753,290,771,322,784,390,801,458,808,524,809,519,810,458,813,389,806,320,789,288,775,257,758,224,731,196,698,173,662,153,624,126,553,114,500"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aef9a81ceaffffad57aaa36e910c567b0" title=" " alt="" coords="267,699,456,743"/>
+<area shape="poly" id="edge32_Node000001_Node000029" title=" " alt="" coords="120,495,144,535,175,583,214,633,260,678,278,691,273,691,257,682,210,637,171,586,139,537,121,500"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#acd084e2cdfad9b39a433bf760b8579e5" title=" " alt="" coords="267,899,456,943"/>
+<area shape="poly" id="edge35_Node000001_Node000031" title=" " alt="" coords="111,494,123,571,146,675,165,731,190,786,222,839,261,884,264,890,259,888,257,888,217,842,186,789,160,733,141,676,118,572,111,500"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_jagged_array.html#a8ea84f10fdc585cea84bdcbdb99bedbd" title=" " alt="" coords="528,5,735,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="456,25,515,26,511,29,458,30"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399" title="id of the face vertex" alt="" coords="550,213,713,258"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="442,233,538,234,533,237,444,238"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39" title="number of vertices of a face" alt="" coords="550,75,713,119"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="442,212,463,199,479,182,486,165,495,147,511,130,538,117,534,120,515,134,499,150,491,167,483,185,467,203,445,216"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="550,144,713,189"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="442,213,538,189,534,193,445,217"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8" title=" " alt="" coords="513,635,750,679"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="458,647,500,650,495,652,459,652"/>
+<area shape="poly" id="edge12_Node000011_Node000011" title=" " alt="" coords="581,633,579,624,588,616,605,610,632,608,660,610,679,619,674,619,659,616,632,613,606,615,590,620,584,626,586,635"/>
+<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c" title=" " alt="" coords="843,643,994,671"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="750,654,830,656,824,658,751,660"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a0ac583f41cc7e2c814bd78686899ad11" title="The first num common ids of A and B (in the order of A)." alt="" coords="798,700,1039,745"/>
+<area shape="poly" id="edge13_Node000011_Node000013" title=" " alt="" coords="733,677,805,696,800,696,733,683"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="570,351,694,379"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="450,369,556,366,552,369,452,374"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1mesh_1_1_jagged_array.html#a87141bdcbe9779ee32effbf6bad1078a" title="Number of rows (a moved&#45;from array has none)." alt="" coords="815,403,1022,447"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="726,469,811,450,806,453,728,474"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a61bcc4612c2359a2436f457ea0ef6513" title=" " alt="" coords="516,283,747,327"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="456,303,503,304,498,306,458,307"/>
+<area shape="poly" id="edge20_Node000019_Node000017" title=" " alt="" coords="717,325,751,337,811,364,867,395,862,395,809,369,749,342,718,331"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a03238658de0145eeb27bfc527822e217" title=" " alt="" coords="516,541,747,586"/>
+<area shape="poly" id="edge22_Node000020_Node000021" title=" " alt="" coords="456,561,503,563,498,565,458,566"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a861e2f3ee07172d95f194ded6b08f00a" title=" " alt="" coords="516,403,747,447"/>
+<area shape="poly" id="edge24_Node000022_Node000023" title=" " alt="" coords="456,435,504,433,499,435,458,440"/>
+<area shape="poly" id="edge25_Node000023_Node000017" title=" " alt="" coords="747,422,802,424,797,426,748,428"/>
+<area shape="rect" id="Node000025" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acb2f78e44632a5f6fe0605877c564cd6" title=" " alt="" coords="528,843,735,887"/>
+<area shape="poly" id="edge27_Node000024_Node000025" title=" " alt="" coords="457,854,516,859,510,859,457,859"/>
+<area shape="rect" id="Node000026" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a833056543775050cfa5dbd377fa8dee2" title=" " alt="" coords="815,788,1022,833"/>
+<area shape="poly" id="edge28_Node000025_Node000026" title=" " alt="" coords="735,843,798,833,803,832,736,848"/>
+<area shape="rect" id="Node000027" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a45d1df14b0d5989deb22f75a094937ee" title=" " alt="" coords="815,872,1022,917"/>
+<area shape="poly" id="edge29_Node000025_Node000027" title=" " alt="" coords="735,873,803,882,797,882,735,878"/>
+<area shape="poly" id="edge31_Node000028_Node000026" title=" " alt="" coords="727,798,803,804,797,805,727,803"/>
+<area shape="rect" id="Node000030" href="$namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acf2f94f81c7bf65de4afa6af74bdf131" title=" " alt="" coords="528,704,735,749"/>
+<area shape="poly" id="edge33_Node000029_Node000030" title=" " alt="" coords="457,720,516,723,511,725,457,725"/>
+<area shape="poly" id="edge34_Node000030_Node000013" title=" " alt="" coords="735,722,785,724,780,725,736,728"/>
+<area shape="poly" id="edge36_Node000031_Node000027" title=" " alt="" coords="457,914,803,900,797,900,457,919"/>
 </map>

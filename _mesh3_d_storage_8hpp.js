@@ -1,9 +1,7 @@
 var _mesh3_d_storage_8hpp =
 [
-    [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ],
-    [ "polyfem::mesh::Edge", "structpolyfem_1_1mesh_1_1_edge.html", "structpolyfem_1_1mesh_1_1_edge" ],
-    [ "polyfem::mesh::Face", "structpolyfem_1_1mesh_1_1_face.html", "structpolyfem_1_1mesh_1_1_face" ],
-    [ "polyfem::mesh::Element", "structpolyfem_1_1mesh_1_1_element.html", "structpolyfem_1_1mesh_1_1_element" ],
+    [ "polyfem::mesh::ArrayRow< T >", "classpolyfem_1_1mesh_1_1_array_row.html", "classpolyfem_1_1mesh_1_1_array_row" ],
+    [ "polyfem::mesh::JaggedArray< T >", "classpolyfem_1_1mesh_1_1_jagged_array.html", "classpolyfem_1_1mesh_1_1_jagged_array" ],
     [ "polyfem::mesh::Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", "classpolyfem_1_1mesh_1_1_mesh3_d_storage" ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", "structpolyfem_1_1mesh_1_1_mesh___quality" ],
     [ "MeshType", "_mesh3_d_storage_8hpp.html#a1786d2b6b9b3bda8c6667456f9b1f5ca", [
