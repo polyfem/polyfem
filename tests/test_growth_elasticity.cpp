@@ -35,7 +35,14 @@ namespace
 	public:
 		using GrowthElasticity::compute_energy;
 		using GrowthElasticity::compute_gradient;
-		using GrowthElasticity::compute_hessian;
+
+		// compute_hessian fills a LocalHessian; return it dense for the checks
+		Eigen::MatrixXd dense_hessian(const MixedNonLinearAssemblerData &data) const
+		{
+			LocalHessian hessian;
+			GrowthElasticity::compute_hessian(data, hessian);
+			return hessian.visit([](const auto &H) -> Eigen::MatrixXd { return H; });
+		}
 	};
 
 	// Unit reference tet: nodes X0=(0,0,0), X1=e1, X2=e2, X3=e3.
@@ -175,7 +182,7 @@ namespace
 		const Eigen::VectorXd grad =
 			assembler->compute_gradient(make_data(s, x_phi, x_psi, zero_phi, zero_psi));
 		const Eigen::MatrixXd hess =
-			assembler->compute_hessian(make_data(s, x_phi, x_psi, zero_phi, zero_psi));
+			assembler->dense_hessian(make_data(s, x_phi, x_psi, zero_phi, zero_psi));
 
 		REQUIRE(grad.size() == 16);
 		REQUIRE(hess.rows() == 16);
@@ -259,7 +266,7 @@ TEST_CASE("growth_elasticity_theta_one_identity", "[assembler][growth]")
 			REQUIRE(g(k) == 0.0); // u-gradient exactly zero
 		// (theta-gradient is the growth driving force; nonzero by design)
 
-		const Eigen::MatrixXd H = assembler->compute_hessian(make_data(s, x_phi, x_psi, zero_phi, zero_psi));
+		const Eigen::MatrixXd H = assembler->dense_hessian(make_data(s, x_phi, x_psi, zero_phi, zero_psi));
 		for (int r = 0; r < 12; ++r)
 			for (int c = 0; c < 12; ++c)
 				REQUIRE(H(r, c) == 0.0); // uu quadrant exactly zero

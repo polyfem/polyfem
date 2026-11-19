@@ -564,10 +564,10 @@ namespace polyfem::assembler
 		return energy.getGradient();
 	}
 
-	Eigen::MatrixXd GrowthElasticity::compute_hessian(const MixedNonLinearAssemblerData &data) const
+	void GrowthElasticity::compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		const auto energy = model().compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data);
-		return energy.getHessian();
+		hessian.assign(energy.getHessian());
 	}
 
 	double GrowthElasticity::driving_force(const int el_id, const RowVectorNd &pos, const double t, const Eigen::Matrix3d &Ce) const
