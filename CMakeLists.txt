@@ -70,17 +70,18 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
 option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
+option(POLYFEM_WITH_INFLATOR "Build the isolated microstructure inflator library" OFF)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_WITH_MISO "Use miso-generated code for Jacobian check"       ON)
+option(POLYFEM_WITH_OPENMP "Compile PolyFEM (and its dependents) with OpenMP, e.g. for multithreaded Eigen products" OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
-option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
 option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
 option(POLYFEM_SILENCE_DEP_WARNINGS "Silence all compiler warnings for dependencies" OFF)
 option(POLYFEM_PORTABLE_BUILD "Avoid host-specific CPU instruction flags in dependencies" OFF)
@@ -222,6 +223,22 @@ target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
+# System libraries (threads and dynamic loading)
+find_package(Threads REQUIRED)
+target_link_libraries(polyfem PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
+
+# OpenMP (opt-in)
+if(POLYFEM_WITH_OPENMP)
+    find_package(OpenMP REQUIRED COMPONENTS CXX)
+    target_link_libraries(polyfem PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
+if(MSVC OR MSYS)
+    # Do not define min()/max() macros (they break std::min/std::max) and
+    # expose M_PI and friends.
+    target_compile_definitions(polyfem PUBLIC NOMINMAX _USE_MATH_DEFINES)
+endif()
+
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     # IPC Toolkit uses TBB internally even when PolyFEM uses C++ threads.
@@ -263,10 +280,6 @@ endif()
 # Nanospline
 include(nanospline)
 target_link_libraries(polyfem PUBLIC nanospline)
-
-# Geogram
-include(geogram)
-target_link_libraries(polyfem PUBLIC geogram)
 
 # paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
@@ -360,22 +373,17 @@ if(POLYFEM_WITH_PYTHON)
     target_compile_definitions(polyfem PUBLIC POLYFEM_PYTHON_EXECUTABLE="${Python3_EXECUTABLE}")
 endif()
 
+if(POLYFEM_WITH_INFLATOR)
+    include(inflator)
+    target_link_libraries(polyfem PRIVATE inflator::inflator)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_INFLATOR)
+endif()
+
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
     include(mmg_remesh)
     target_link_libraries(polyfem PUBLIC mmg::mmg)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
-endif()
-
-
-if(POLYFEM_WITH_ITR)
-    # wmtk library
-    # Include lagrange first to fetch a newer version than
-    # what is used in the toolkit.
-    include(lagrange)
-    include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_ITR)
 endif()
 
 if(POLYFEM_WITH_CLIPPER)

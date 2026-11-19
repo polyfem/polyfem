@@ -3,7 +3,6 @@
 #include <polyfem/mesh/GeometryLoader.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
-#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/embedded_spec/polyfem.hpp>
@@ -34,7 +33,6 @@ int main(int argc, char **argv)
 	CLI11_PARSE(app, argc, argv);
 	try
 	{
-		utils::GeogramUtils::instance().initialize();
 		auto input = io::load_json_input(input_path);
 		json config = input.config;
 		auto resources = utils::apply_common_params(config, *input.resources);

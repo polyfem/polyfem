@@ -4,6 +4,7 @@
 #include <polyfem/io/ResourceIO.hpp>
 
 #include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/LocalHessian.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polyfem/utils/MatrixCache.hpp>
@@ -293,7 +294,7 @@ namespace polyfem::assembler
 
 		virtual double compute_energy(const MixedNonLinearAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const = 0;
+		virtual void compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const = 0;
 	};
 
 	/// Local nonlinear assembler for an arbitrary number of FE spaces. Unlike
@@ -309,10 +310,11 @@ namespace polyfem::assembler
 
 		virtual double compute_energy(const MultiSpacesNLAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd assemble_gradient(const MultiSpacesNLAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd assemble_hessian(
+		virtual void assemble_hessian(
 			const MultiSpacesNLAssemblerData &data,
 			int row_space,
-			int col_space) const = 0;
+			int col_space,
+			LocalHessian &hessian) const = 0;
 
 		bool is_linear() const override { return false; }
 	};
@@ -409,7 +411,7 @@ namespace polyfem::assembler
 		// energy, gradient, and hessian used in newton method
 		virtual double compute_energy(const NonLinearAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const = 0;
-		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const = 0;
+		virtual void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const = 0;
 	};
 
 	class ElasticityAssembler : virtual public Assembler
@@ -437,28 +439,38 @@ namespace polyfem::assembler
 			std::vector<NamedMatrix> &result) const override
 		{
 			result.clear();
-			Eigen::MatrixXd cauchy, pk1, pk2, F;
+			Eigen::MatrixXd cauchy, pk1, pk2, F, energy;
 
 			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
 			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
 			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
 			compute_stress_tensor(data, ElasticityTensorType::F, F);
+			compute_energy_density(data, energy);
 
 			result.emplace_back("cauchy_stess", cauchy);
 			result.emplace_back("pk1_stess", pk1);
 			result.emplace_back("pk2_stess", pk2);
 			result.emplace_back("F", F);
+			result.emplace_back("energy", energy);
 		}
 
 		void compute_stress_tensor(const OutputData &data,
 								   const ElasticityTensorType &type,
 								   Eigen::MatrixXd &stresses) const
 		{
+			assert(type != ElasticityTensorType::ENERGY); // scalar, use compute_energy_density
 			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::MatrixXd tmp = stress;
 				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 				return Eigen::MatrixXd(a);
 			});
+		}
+
+		/// Elastic energy density at data.local_pts, one row per point.
+		void compute_energy_density(const OutputData &data,
+									Eigen::MatrixXd &energy) const
+		{
+			assign_stress_tensor(data, 1, ElasticityTensorType::ENERGY, energy, [](const Eigen::MatrixXd &e) { return e; });
 		}
 
 		void compute_von_mises_stresses(const OutputData &data,

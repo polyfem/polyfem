@@ -5,11 +5,8 @@
 #include <polyfem/time_integrator/BDF.hpp>
 
 #include <polyfem/io/Checkpoint.hpp>
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-
-#include <fstream>
 
 namespace polyfem
 {
@@ -40,22 +37,6 @@ namespace polyfem
 
 			assert(dt > 0);
 			dt_ = dt;
-		}
-
-		void ImplicitTimeIntegrator::save_state(const std::string &state_path) const
-		{
-			const int ndof = x_prev().size();
-			const int history = x_prevs().size();
-			Eigen::MatrixXd values(ndof, history);
-			for (int i = 0; i < history; ++i)
-				values.col(i) = x_prevs()[i];
-			write_matrix(state_path, "u", values, true);
-			for (int i = 0; i < history; ++i)
-				values.col(i) = v_prevs()[i];
-			write_matrix(state_path, "v", values, false);
-			for (int i = 0; i < history; ++i)
-				values.col(i) = a_prevs()[i];
-			write_matrix(state_path, "a", values, false);
 		}
 
 		void ImplicitTimeIntegrator::serialize_checkpoint(io::CheckpointWriter &writer, const std::string &group) const

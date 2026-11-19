@@ -69,6 +69,9 @@ namespace polyfem::solver
 
 		bool solve_in_parallel;
 		std::vector<int> solve_in_order;
+		/// Source state for initial guess. use for incremental load.
+		/// initial_guess_sources_[target_state_id] = source_state_id, -1 implies none.
+		std::vector<int> initial_guess_sources_;
 
 		int save_iter = 0;
 

@@ -89,8 +89,15 @@ namespace polyfem::mesh
 				auto input = resources_.open(path, false);
 				data = MeshReader::read_hybrid(*input, resources_.describe(path));
 			}
+			else if (extension == ".obj")
+			{
+				auto input = resources_.open(path, false);
+				data = MeshReader::read_obj(*input, resources_.describe(path));
+			}
 			else
-				data = MeshReader::read_geogram(resources_.materialize(path));
+				log_and_throw_error(
+					"Unsupported mesh format '{}' for {} (supported: .msh, .hybrid, .obj).",
+					extension, resources_.describe(path));
 			return Mesh::create(std::move(data));
 		}
 
@@ -252,7 +259,7 @@ namespace polyfem::mesh
 		return Mesh::create(std::move(data));
 	}
 
-	SurfaceMesh MeshLoader::load_surface(const std::string &path) const
+	SurfaceMesh MeshLoader::load_surface(const std::string &path, const bool keep_volume) const
 	{
 		if (!resources_.exists(path))
 			log_and_throw_error("Surface resource {} does not exist.", resources_.describe(path));
@@ -263,11 +270,13 @@ namespace polyfem::mesh
 			std::string extension = std::filesystem::path(path).extension().string();
 			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 			if (extension == ".msh")
-				result = MeshReader::read_msh_surface(materialized);
+				result = MeshReader::read_msh_surface(materialized, keep_volume);
 			else if (extension == ".obj")
 				result = MeshReader::read_obj_surface(materialized);
 			else if (!MeshReader::read_triangle_surface(materialized, result))
-				result = MeshReader::read_geogram_surface(materialized);
+				log_and_throw_error(
+					"Unable to decode surface {} (supported: .msh, .obj, and the triangle meshes read by libigl: .off, .ply, .stl, .mesh, .wrl).",
+					resources_.describe(path));
 			return result;
 		}
 

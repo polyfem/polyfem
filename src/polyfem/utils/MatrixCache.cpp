@@ -3,6 +3,8 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <algorithm>
+
 namespace polyfem::utils
 {
 	SparseMatrixCache::SparseMatrixCache(const size_t size)
@@ -216,9 +218,19 @@ namespace polyfem::utils
 			assert(size_ > 0);
 			const auto &outer_index = main_cache()->outer_index_;
 			const auto &inner_index = main_cache()->inner_index_;
-			// directly write the values to the matrix
-			mat_ = Eigen::Map<const StiffnessMatrix>(
-				size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
+			// The cached arrays already describe the compressed matrix. Copy them
+			// directly instead of rebuilding the sparse structure through an evaluator.
+			assert(mat_.isCompressed());
+			assert(mat_.rows() == size_ && mat_.cols() == size_);
+			assert(outer_index.size() == size_ + 1);
+			assert(inner_index.size() == values_.size());
+			mat_.resizeNonZeros(values_.size());
+			std::copy(outer_index.begin(), outer_index.end(), mat_.outerIndexPtr());
+			if (!values_.empty())
+			{
+				std::copy(inner_index.begin(), inner_index.end(), mat_.innerIndexPtr());
+				std::copy(values_.begin(), values_.end(), mat_.valuePtr());
+			}
 
 			current_e_ = -1;
 			current_e_index_ = -1;

@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cfloat>
 #include <cmath>
 #include <cstddef>
 #include <map>

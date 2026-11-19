@@ -14,7 +14,9 @@ namespace polyfem
 		enum class BoundaryKind
 		{
 			Dirichlet,
-			Neumann
+			Neumann,
+			NormalAlignedNeumann, // Follower traction from pressure_boundary.
+			PressureCavity
 		};
 
 		class Problem
@@ -79,8 +81,15 @@ namespace polyfem
 				return true;
 			} // here for efficiency reasons
 
-			// Selects local boundary primitives for a BC kind. boundary_nodes contains
-			// constrained DOF ids only for Dirichlet.
+			// Selects local boundary primitives for a BC kind and FE space.
+			void setup_bc(
+				const mesh::Mesh &mesh,
+				const BoundaryKind kind,
+				const int fe_space_id,
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &selected_local_boundary);
+
+			// Also collects constrained DOF ids for Dirichlet conditions.
 			void setup_bc(
 				const mesh::Mesh &mesh,
 				const BoundaryKind kind,
@@ -91,13 +100,13 @@ namespace polyfem
 				std::vector<int> &boundary_nodes,
 				const int value_dim = -1);
 
-			// Cavity BCs are grouped by boundary tag, so they keep a separate API from
-			// ordinary Dirichlet/Neumann boundary selection.
-			void setup_pressure_cavity_bc(
+			// Groups selected primitives by boundary tag, e.g. for cavity pressure.
+			void setup_bc(
 				const mesh::Mesh &mesh,
+				const BoundaryKind kind,
 				const int fe_space_id,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
-				std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity);
+				std::unordered_map<int, std::vector<mesh::LocalBoundary>> &selected_by_tag);
 
 			// Returns nodal BC node ids, not constrained DOF ids.
 			void setup_nodal_bc(
@@ -106,17 +115,6 @@ namespace polyfem
 				const int fe_space_id,
 				const int n_bases,
 				std::vector<int> &nodes);
-
-			/// @deprecated Legacy all-in-one BC setup. New VarForm code should use the
-			/// BoundaryKind overloads above and request only the BC data it owns.
-			void setup_bc(const mesh::Mesh &mesh,
-						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
-						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
-						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-						  std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-						  std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-						  std::vector<int> &pressure_boundary_nodes,
-						  std::vector<int> &dirichlet_nodes, std::vector<int> &neumann_nodes);
 
 			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node) {}
 
@@ -128,7 +126,6 @@ namespace polyfem
 			std::vector<int> normal_aligned_neumann_boundary_ids_;
 			std::vector<int> pressure_boundary_ids_;
 			std::vector<int> pressure_cavity_ids_;
-			std::vector<int> splitting_pressure_boundary_ids_;
 
 			bool updated_dirichlet_node_ordering_ = false;
 

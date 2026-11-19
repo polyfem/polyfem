@@ -35,6 +35,12 @@ namespace polyfem
 			// only poly elements have no parameterization
 			bool has_parameterization = true;
 
+			// number of geometric basis functions (dim + 1 for a straight simplex)
+			int n_geometric_bases = 0;
+
+			/// Every local basis has exactly one global index with weight one.
+			bool has_single_unit_mapping() const { return has_single_unit_mapping_; }
+
 			/// computes the per element values at the local (ref el) points (pts)
 			/// sets basis_values, jac_it, val, and det members
 			void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
@@ -48,6 +54,7 @@ namespace polyfem
 			Eigen::VectorXd eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const;
 
 		private:
+			bool has_single_unit_mapping_ = false;
 			const basis::ElementBases *basis_, *gbasis_;
 			std::vector<AssemblyValues> g_basis_values_cache_;
 

@@ -30,7 +30,7 @@ namespace polyfem::assembler
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const override;
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units, const io::ResourceIO &resources) override;
@@ -68,8 +68,8 @@ namespace polyfem::assembler
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const;
-		template <int n_basis, int dim>
-		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
+		template <int n_basis, int dim, typename Matrix>
+		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixBase<Matrix> &H) const;
 		template <int n_basis, int dim>
 		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
 

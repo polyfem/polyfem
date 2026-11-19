@@ -250,126 +250,127 @@ namespace polyfem::assembler
 		return residual;
 	}
 
-	Eigen::MatrixXd NavierStokesFSIVelocity::assemble_hessian(
-		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space) const
+	void NavierStokesFSIVelocity::assemble_hessian(
+		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space, LocalHessian &hessian) const
 	{
 		const FSIData &data = fsi_data(base_data);
-		if (row_space != FSIData::Velocity)
-			return Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-		if (col_space == FSIData::MeshDisplacement)
-		{
-			const auto &vvals = data.vals(FSIData::Velocity);
-			const auto &dvals = data.vals(FSIData::MeshDisplacement);
-			const int dim = components(data, FSIData::Velocity);
-			Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-			std::vector<ALEPoint> ale(data.da.size());
-			for (int q = 0; q < data.da.size(); ++q)
-				ale[q] = ale_point(data, q);
-			Eigen::MatrixXd body_force;
-			std::vector<Eigen::MatrixXd> body_force_gradient;
-			evaluate_body_force(data, ale, body_force, &body_force_gradient);
-
-			for (int q = 0; q < data.da.size(); ++q)
+		hessian.resize(local_size(data, row_space), local_size(data, col_space));
+		hessian.visit([&](auto &jacobian) {
+			jacobian.setZero();
+			if (row_space != FSIData::Velocity)
+				return;
+			if (col_space == FSIData::MeshDisplacement)
 			{
-				const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
-				const Eigen::VectorXd mesh_velocity = interpolate_vector(dvals, data.mesh_velocity, dim, q);
-				const Eigen::VectorXd relative_velocity = velocity - mesh_velocity;
-				const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale[q].F_inv);
-				const double viscosity = viscosity_(ale[q].point, data.t, vvals.element_id);
-				const double rho = density_(vvals.quadrature.points.row(q), ale[q].point, data.t, vvals.element_id);
-				Eigen::VectorXd viscosity_gradient(dim), density_gradient(dim);
-				for (int n = 0; n < dim; ++n)
-				{
-					viscosity_gradient(n) = coordinate_derivative(
-						ale[q].point, n,
-						[&](const Eigen::RowVectorXd &point) { return viscosity_(point, data.t, vvals.element_id); });
-					density_gradient(n) = coordinate_derivative(
-						ale[q].point, n,
-						[&](const Eigen::RowVectorXd &point) {
-							return density_(vvals.quadrature.points.row(q), point, data.t, vvals.element_id);
-						});
-				}
-				const double weight = data.spatial_weight * ale[q].J * data.da(q);
+				const auto &vvals = data.vals(FSIData::Velocity);
+				const auto &dvals = data.vals(FSIData::MeshDisplacement);
+				const int dim = components(data, FSIData::Velocity);
+				std::vector<ALEPoint> ale(data.da.size());
+				for (int q = 0; q < data.da.size(); ++q)
+					ale[q] = ale_point(data, q);
+				Eigen::MatrixXd body_force;
+				std::vector<Eigen::MatrixXd> body_force_gradient;
+				evaluate_body_force(data, ale, body_force, &body_force_gradient);
 
-				for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+				for (int q = 0; q < data.da.size(); ++q)
 				{
-					const double phi_i = vvals.basis_values[i].val(q);
-					const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale[q].F_inv);
-					for (int j = 0; j < int(dvals.basis_values.size()); ++j)
+					const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
+					const Eigen::VectorXd mesh_velocity = interpolate_vector(dvals, data.mesh_velocity, dim, q);
+					const Eigen::VectorXd relative_velocity = velocity - mesh_velocity;
+					const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale[q].F_inv);
+					const double viscosity = viscosity_(ale[q].point, data.t, vvals.element_id);
+					const double rho = density_(vvals.quadrature.points.row(q), ale[q].point, data.t, vvals.element_id);
+					Eigen::VectorXd viscosity_gradient(dim), density_gradient(dim);
+					for (int n = 0; n < dim; ++n)
 					{
-						const double phi_j = dvals.basis_values[j].val(q);
-						const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale[q].F_inv);
-						for (int n = 0; n < dim; ++n)
+						viscosity_gradient(n) = coordinate_derivative(
+							ale[q].point, n,
+							[&](const Eigen::RowVectorXd &point) { return viscosity_(point, data.t, vvals.element_id); });
+						density_gradient(n) = coordinate_derivative(
+							ale[q].point, n,
+							[&](const Eigen::RowVectorXd &point) {
+								return density_(vvals.quadrature.points.row(q), point, data.t, vvals.element_id);
+							});
+					}
+					const double weight = data.spatial_weight * ale[q].J * data.da(q);
+
+					for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+					{
+						const double phi_i = vvals.basis_values[i].val(q);
+						const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale[q].F_inv);
+						for (int j = 0; j < int(dvals.basis_values.size()); ++j)
 						{
-							const double theta = grad_j(n);
-							const Eigen::VectorXd dmesh_velocity =
-								phi_j * data.dmesh_velocity_dmesh_displacement * Eigen::VectorXd::Unit(dim, n);
-							const double dviscosity = phi_j * viscosity_gradient(n);
-							const double drho = phi_j * density_gradient(n);
-							for (int m = 0; m < dim; ++m)
+							const double phi_j = dvals.basis_values[j].val(q);
+							const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale[q].F_inv);
+							for (int n = 0; n < dim; ++n)
 							{
-								const Eigen::RowVectorXd dgrad_velocity = -grad_velocity(m, n) * grad_j;
-								const Eigen::RowVectorXd dgrad_i = -grad_i(n) * grad_j;
-								const double viscous = viscosity * grad_velocity.row(m).dot(grad_i);
-								const double convection = rho * relative_velocity.dot(grad_velocity.row(m)) * phi_i;
-								const double force = -rho * body_force(q, m) * phi_i;
-								double derivative = theta * (viscous + convection + force);
-								derivative += dviscosity * grad_velocity.row(m).dot(grad_i)
-											  + viscosity * (dgrad_velocity.dot(grad_i) + grad_velocity.row(m).dot(dgrad_i));
-								derivative += drho * relative_velocity.dot(grad_velocity.row(m)) * phi_i
-											  + rho * (-dmesh_velocity.dot(grad_velocity.row(m)) + relative_velocity.dot(dgrad_velocity))
-													* phi_i;
-								derivative -= (drho * body_force(q, m)
-											   + rho * phi_j * body_force_gradient[n](q, m))
-											  * phi_i;
-								jacobian(i * dim + m, j * dim + n) += weight * derivative;
+								const double theta = grad_j(n);
+								const Eigen::VectorXd dmesh_velocity =
+									phi_j * data.dmesh_velocity_dmesh_displacement * Eigen::VectorXd::Unit(dim, n);
+								const double dviscosity = phi_j * viscosity_gradient(n);
+								const double drho = phi_j * density_gradient(n);
+								for (int m = 0; m < dim; ++m)
+								{
+									const Eigen::RowVectorXd dgrad_velocity = -grad_velocity(m, n) * grad_j;
+									const Eigen::RowVectorXd dgrad_i = -grad_i(n) * grad_j;
+									const double viscous = viscosity * grad_velocity.row(m).dot(grad_i);
+									const double convection = rho * relative_velocity.dot(grad_velocity.row(m)) * phi_i;
+									const double force = -rho * body_force(q, m) * phi_i;
+									double derivative = theta * (viscous + convection + force);
+									derivative += dviscosity * grad_velocity.row(m).dot(grad_i)
+												  + viscosity * (dgrad_velocity.dot(grad_i) + grad_velocity.row(m).dot(dgrad_i));
+									derivative += drho * relative_velocity.dot(grad_velocity.row(m)) * phi_i
+												  + rho * (-dmesh_velocity.dot(grad_velocity.row(m)) + relative_velocity.dot(dgrad_velocity))
+														* phi_i;
+									derivative -= (drho * body_force(q, m)
+												   + rho * phi_j * body_force_gradient[n](q, m))
+												  * phi_i;
+									jacobian(i * dim + m, j * dim + n) += weight * derivative;
+								}
 							}
 						}
 					}
 				}
+				return;
 			}
-			return jacobian;
-		}
-		if (col_space != FSIData::Velocity)
-			return Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
+			if (col_space != FSIData::Velocity)
+				return;
 
-		const auto &vvals = data.vals(FSIData::Velocity);
-		const int dim = components(data, FSIData::Velocity);
-		Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-		for (int q = 0; q < data.da.size(); ++q)
-		{
-			const ALEPoint ale = ale_point(data, q);
-			const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
-			const Eigen::VectorXd mesh_velocity = interpolate_vector(
-				data.vals(FSIData::MeshDisplacement), data.mesh_velocity, dim, q);
-			const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale.F_inv);
-			const double viscosity = viscosity_(ale.point, data.t, vvals.element_id);
-			const double rho = density_(vvals.quadrature.points.row(q), ale.point, data.t, vvals.element_id);
-			const double weight = data.spatial_weight * ale.J * data.da(q);
-
-			for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+			const auto &vvals = data.vals(FSIData::Velocity);
+			const int dim = components(data, FSIData::Velocity);
+			for (int q = 0; q < data.da.size(); ++q)
 			{
-				const double phi_i = vvals.basis_values[i].val(q);
-				const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
-				for (int j = 0; j < int(vvals.basis_values.size()); ++j)
+				const ALEPoint ale = ale_point(data, q);
+				const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
+				const Eigen::VectorXd mesh_velocity = interpolate_vector(
+					data.vals(FSIData::MeshDisplacement), data.mesh_velocity, dim, q);
+				const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale.F_inv);
+				const double viscosity = viscosity_(ale.point, data.t, vvals.element_id);
+				const double rho = density_(vvals.quadrature.points.row(q), ale.point, data.t, vvals.element_id);
+				const double weight = data.spatial_weight * ale.J * data.da(q);
+
+				for (int i = 0; i < int(vvals.basis_values.size()); ++i)
 				{
-					const double phi_j = vvals.basis_values[j].val(q);
-					const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::Velocity, j, q, ale.F_inv);
-					for (int m = 0; m < dim; ++m)
-						for (int n = 0; n < dim; ++n)
-						{
-							double value = 0;
-							if (m == n)
-								value += viscosity * grad_i.dot(grad_j)
-										 + rho * (velocity - mesh_velocity).dot(grad_j) * phi_i;
-							if (!data.picard)
-								value += rho * phi_j * grad_velocity(m, n) * phi_i;
-							jacobian(i * dim + m, j * dim + n) += weight * value;
-						}
+					const double phi_i = vvals.basis_values[i].val(q);
+					const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
+					for (int j = 0; j < int(vvals.basis_values.size()); ++j)
+					{
+						const double phi_j = vvals.basis_values[j].val(q);
+						const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::Velocity, j, q, ale.F_inv);
+						for (int m = 0; m < dim; ++m)
+							for (int n = 0; n < dim; ++n)
+							{
+								double value = 0;
+								if (m == n)
+									value += viscosity * grad_i.dot(grad_j)
+											 + rho * (velocity - mesh_velocity).dot(grad_j) * phi_i;
+								if (!data.picard)
+									value += rho * phi_j * grad_velocity(m, n) * phi_i;
+								jacobian(i * dim + m, j * dim + n) += weight * value;
+							}
+					}
 				}
 			}
-		}
-		return jacobian;
+		});
 	}
 
 	std::map<std::string, Assembler::ParamFunc> NavierStokesFSIVelocity::parameters() const
@@ -412,82 +413,82 @@ namespace polyfem::assembler
 		return residual;
 	}
 
-	Eigen::MatrixXd NavierStokesFSIMixed::assemble_hessian(
-		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space) const
+	void NavierStokesFSIMixed::assemble_hessian(
+		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space, LocalHessian &hessian) const
 	{
 		const FSIData &data = fsi_data(base_data);
-		if (col_space == FSIData::MeshDisplacement
-			&& (row_space == FSIData::Velocity || row_space == FSIData::Pressure))
-		{
-			const auto &vvals = data.vals(FSIData::Velocity);
-			const auto &pvals = data.vals(FSIData::Pressure);
-			const auto &dvals = data.vals(FSIData::MeshDisplacement);
-			const int dim = components(data, FSIData::Velocity);
-			Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-			for (int q = 0; q < data.da.size(); ++q)
+		hessian.resize(local_size(data, row_space), local_size(data, col_space));
+		hessian.visit([&](auto &jacobian) {
+			jacobian.setZero();
+			if (col_space == FSIData::MeshDisplacement
+				&& (row_space == FSIData::Velocity || row_space == FSIData::Pressure))
 			{
-				const ALEPoint ale = ale_point(data, q);
-				const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale.F_inv);
-				const double pressure = interpolate_scalar(pvals, data.pressure(), q);
-				const double weight = data.spatial_weight * ale.J * data.da(q);
-				for (int j = 0; j < int(dvals.basis_values.size()); ++j)
+				const auto &vvals = data.vals(FSIData::Velocity);
+				const auto &pvals = data.vals(FSIData::Pressure);
+				const auto &dvals = data.vals(FSIData::MeshDisplacement);
+				const int dim = components(data, FSIData::Velocity);
+				for (int q = 0; q < data.da.size(); ++q)
 				{
-					const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale.F_inv);
-					for (int n = 0; n < dim; ++n)
+					const ALEPoint ale = ale_point(data, q);
+					const Eigen::MatrixXd grad_velocity = velocity_gradient(data, q, ale.F_inv);
+					const double pressure = interpolate_scalar(pvals, data.pressure(), q);
+					const double weight = data.spatial_weight * ale.J * data.da(q);
+					for (int j = 0; j < int(dvals.basis_values.size()); ++j)
 					{
-						const double theta = grad_j(n);
-						if (row_space == FSIData::Velocity)
+						const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale.F_inv);
+						for (int n = 0; n < dim; ++n)
 						{
-							for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+							const double theta = grad_j(n);
+							if (row_space == FSIData::Velocity)
 							{
-								const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
-								const Eigen::RowVectorXd dgrad_i = -grad_i(n) * grad_j;
-								for (int m = 0; m < dim; ++m)
-									jacobian(i * dim + m, j * dim + n) -= weight * pressure * (theta * grad_i(m) + dgrad_i(m));
+								for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+								{
+									const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
+									const Eigen::RowVectorXd dgrad_i = -grad_i(n) * grad_j;
+									for (int m = 0; m < dim; ++m)
+										jacobian(i * dim + m, j * dim + n) -= weight * pressure * (theta * grad_i(m) + dgrad_i(m));
+								}
 							}
-						}
-						else
-						{
-							double ddivergence = 0;
-							for (int c = 0; c < dim; ++c)
-								ddivergence -= grad_velocity(c, n) * grad_j(c);
-							for (int i = 0; i < int(pvals.basis_values.size()); ++i)
-								jacobian(i, j * dim + n) -= weight * pvals.basis_values[i].val(q)
-															* (theta * grad_velocity.trace() + ddivergence);
+							else
+							{
+								double ddivergence = 0;
+								for (int c = 0; c < dim; ++c)
+									ddivergence -= grad_velocity(c, n) * grad_j(c);
+								for (int i = 0; i < int(pvals.basis_values.size()); ++i)
+									jacobian(i, j * dim + n) -= weight * pvals.basis_values[i].val(q)
+																* (theta * grad_velocity.trace() + ddivergence);
+							}
 						}
 					}
 				}
+				return;
 			}
-			return jacobian;
-		}
+			if (!((row_space == FSIData::Velocity && col_space == FSIData::Pressure)
+				  || (row_space == FSIData::Pressure && col_space == FSIData::Velocity)))
+				return;
 
-		Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-		if (!((row_space == FSIData::Velocity && col_space == FSIData::Pressure)
-			  || (row_space == FSIData::Pressure && col_space == FSIData::Velocity)))
-			return jacobian;
-
-		const auto &vvals = data.vals(FSIData::Velocity);
-		const auto &pvals = data.vals(FSIData::Pressure);
-		const int dim = components(data, FSIData::Velocity);
-		for (int q = 0; q < data.da.size(); ++q)
-		{
-			const ALEPoint ale = ale_point(data, q);
-			const double weight = data.spatial_weight * ale.J * data.da(q);
-			for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+			const auto &vvals = data.vals(FSIData::Velocity);
+			const auto &pvals = data.vals(FSIData::Pressure);
+			const int dim = components(data, FSIData::Velocity);
+			for (int q = 0; q < data.da.size(); ++q)
 			{
-				const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
-				for (int j = 0; j < int(pvals.basis_values.size()); ++j)
-					for (int m = 0; m < dim; ++m)
-					{
-						const double value = -weight * pvals.basis_values[j].val(q) * grad_i(m);
-						if (row_space == FSIData::Velocity)
-							jacobian(i * dim + m, j) += value;
-						else
-							jacobian(j, i * dim + m) += value;
-					}
+				const ALEPoint ale = ale_point(data, q);
+				const double weight = data.spatial_weight * ale.J * data.da(q);
+				for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+				{
+					const Eigen::RowVectorXd grad_i = spatial_gradient(data, FSIData::Velocity, i, q, ale.F_inv);
+					for (int j = 0; j < int(pvals.basis_values.size()); ++j)
+						for (int m = 0; m < dim; ++m)
+						{
+							const double value = -weight * pvals.basis_values[j].val(q) * grad_i(m);
+							if (row_space == FSIData::Velocity)
+								jacobian(i * dim + m, j) += value;
+							else
+								jacobian(j, i * dim + m) += value;
+						}
+				}
 			}
-		}
-		return jacobian;
+		});
 	}
 
 	Eigen::VectorXd NavierStokesFSIPressure::assemble_gradient(const MultiSpacesNLAssemblerData &base_data) const
@@ -496,11 +497,14 @@ namespace polyfem::assembler
 		return Eigen::VectorXd::Zero(local_total_size(data));
 	}
 
-	Eigen::MatrixXd NavierStokesFSIPressure::assemble_hessian(
-		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space) const
+	void NavierStokesFSIPressure::assemble_hessian(
+		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space, LocalHessian &hessian) const
 	{
 		const FSIData &data = fsi_data(base_data);
-		return Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
+		hessian.resize(local_size(data, row_space), local_size(data, col_space));
+		hessian.visit([&](auto &jacobian) {
+			jacobian.setZero();
+		});
 	}
 
 	void NavierStokesFSIInertia::add_multimaterial(
@@ -538,63 +542,65 @@ namespace polyfem::assembler
 		return residual;
 	}
 
-	Eigen::MatrixXd NavierStokesFSIInertia::assemble_hessian(
-		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space) const
+	void NavierStokesFSIInertia::assemble_hessian(
+		const MultiSpacesNLAssemblerData &base_data, const int row_space, const int col_space, LocalHessian &hessian) const
 	{
 		const FSIData &data = fsi_data(base_data);
-		Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(local_size(data, row_space), local_size(data, col_space));
-		if (!data.include_inertia || row_space != FSIData::Velocity)
-			return jacobian;
-		if (col_space == FSIData::MeshDisplacement)
-		{
+		hessian.resize(local_size(data, row_space), local_size(data, col_space));
+		hessian.visit([&](auto &jacobian) {
+			jacobian.setZero();
+			if (!data.include_inertia || row_space != FSIData::Velocity)
+				return;
+			if (col_space == FSIData::MeshDisplacement)
+			{
+				const auto &vvals = data.vals(FSIData::Velocity);
+				const auto &dvals = data.vals(FSIData::MeshDisplacement);
+				const int dim = components(data, FSIData::Velocity);
+				for (int q = 0; q < data.da.size(); ++q)
+				{
+					const ALEPoint ale = ale_point(data, q);
+					const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
+					const Eigen::VectorXd velocity_tilde = interpolate_vector(vvals, data.velocity_tilde, dim, q);
+					const double rho = density_(vvals.quadrature.points.row(q), ale.point, data.t, vvals.element_id);
+					Eigen::VectorXd density_gradient(dim);
+					for (int n = 0; n < dim; ++n)
+						density_gradient(n) = coordinate_derivative(
+							ale.point, n,
+							[&](const Eigen::RowVectorXd &point) {
+								return density_(vvals.quadrature.points.row(q), point, data.t, vvals.element_id);
+							});
+					const double weight = ale.J * data.da(q);
+					for (int i = 0; i < int(vvals.basis_values.size()); ++i)
+						for (int j = 0; j < int(dvals.basis_values.size()); ++j)
+						{
+							const double phi_j = dvals.basis_values[j].val(q);
+							const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale.F_inv);
+							for (int m = 0; m < dim; ++m)
+								for (int n = 0; n < dim; ++n)
+									jacobian(i * dim + m, j * dim + n) +=
+										weight * vvals.basis_values[i].val(q)
+										* (rho * grad_j(n) + phi_j * density_gradient(n))
+										* (velocity(m) - velocity_tilde(m));
+						}
+				}
+				return;
+			}
+			if (col_space != FSIData::Velocity)
+				return;
+
 			const auto &vvals = data.vals(FSIData::Velocity);
-			const auto &dvals = data.vals(FSIData::MeshDisplacement);
 			const int dim = components(data, FSIData::Velocity);
 			for (int q = 0; q < data.da.size(); ++q)
 			{
 				const ALEPoint ale = ale_point(data, q);
-				const Eigen::VectorXd velocity = interpolate_vector(vvals, data.velocity(), dim, q);
-				const Eigen::VectorXd velocity_tilde = interpolate_vector(vvals, data.velocity_tilde, dim, q);
 				const double rho = density_(vvals.quadrature.points.row(q), ale.point, data.t, vvals.element_id);
-				Eigen::VectorXd density_gradient(dim);
-				for (int n = 0; n < dim; ++n)
-					density_gradient(n) = coordinate_derivative(
-						ale.point, n,
-						[&](const Eigen::RowVectorXd &point) {
-							return density_(vvals.quadrature.points.row(q), point, data.t, vvals.element_id);
-						});
-				const double weight = ale.J * data.da(q);
+				const double weight = rho * ale.J * data.da(q);
 				for (int i = 0; i < int(vvals.basis_values.size()); ++i)
-					for (int j = 0; j < int(dvals.basis_values.size()); ++j)
-					{
-						const double phi_j = dvals.basis_values[j].val(q);
-						const Eigen::RowVectorXd grad_j = spatial_gradient(data, FSIData::MeshDisplacement, j, q, ale.F_inv);
+					for (int j = 0; j < int(vvals.basis_values.size()); ++j)
 						for (int m = 0; m < dim; ++m)
-							for (int n = 0; n < dim; ++n)
-								jacobian(i * dim + m, j * dim + n) +=
-									weight * vvals.basis_values[i].val(q)
-									* (rho * grad_j(n) + phi_j * density_gradient(n))
-									* (velocity(m) - velocity_tilde(m));
-					}
+							jacobian(i * dim + m, j * dim + m) += weight * vvals.basis_values[i].val(q) * vvals.basis_values[j].val(q);
 			}
-			return jacobian;
-		}
-		if (col_space != FSIData::Velocity)
-			return jacobian;
-
-		const auto &vvals = data.vals(FSIData::Velocity);
-		const int dim = components(data, FSIData::Velocity);
-		for (int q = 0; q < data.da.size(); ++q)
-		{
-			const ALEPoint ale = ale_point(data, q);
-			const double rho = density_(vvals.quadrature.points.row(q), ale.point, data.t, vvals.element_id);
-			const double weight = rho * ale.J * data.da(q);
-			for (int i = 0; i < int(vvals.basis_values.size()); ++i)
-				for (int j = 0; j < int(vvals.basis_values.size()); ++j)
-					for (int m = 0; m < dim; ++m)
-						jacobian(i * dim + m, j * dim + m) += weight * vvals.basis_values[i].val(q) * vvals.basis_values[j].val(q);
-		}
-		return jacobian;
+		});
 	}
 
 	std::map<std::string, Assembler::ParamFunc> NavierStokesFSIInertia::parameters() const

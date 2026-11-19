@@ -4,6 +4,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/VarFormDiff.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
+#ifdef POLYFEM_WITH_INFLATOR
+#include <polyfem/optimization/var2sims/InflatedPeriodicShapeVariableToSimulation.hpp>
+#endif
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -136,6 +139,16 @@ namespace polyfem::solver
 		  remeshing_trigger_(std::move(remeshing_trigger))
 	{
 		cur_grad.setZero(0);
+#ifdef POLYFEM_WITH_INFLATOR
+		// Inflation can change connectivity, so fixed-connectivity mesh smoothing cannot be applied.
+		for (const auto &mapping : variables_to_simulation_.data)
+		{
+			if (dynamic_cast<InflatedPeriodicShapeVariableToSimulation *>(mapping.get()) && (enable_slim || smooth_line_search))
+			{
+				log_and_throw_adjoint_error("Inflated meshes require enable_slim=false and smooth_line_search=false.");
+			}
+		}
+#endif
 
 		if (enable_slim && args["solver"]["nonlinear"]["advanced"]["apply_gradient_fd"] != "None")
 			adjoint_logger().warn("SLIM may affect the finite difference result!");
@@ -151,6 +164,15 @@ namespace polyfem::solver
 		}
 
 		solve_in_order.clear();
+
+		// Parse initial guess source. This is for incremental load where the initial solution
+		// of certain state comes from another state.
+		initial_guess_sources_.assign(all_varforms.size(), -1);
+		for (int index = 0; index < all_varforms.size(); ++index)
+		{
+			int source = args["states"][index]["initial_guess"].get<int>();
+			initial_guess_sources_[index] = source;
+		}
 		{
 			Graph G(all_varforms.size());
 			for (int k = 0; k < all_varforms.size(); k++)
@@ -175,6 +197,10 @@ namespace polyfem::solver
 				}
 			}
 		}
+		// A changed initial guess can select a different equilibrium branch even if the target's parameters are unchanged.
+		for (const int index : solve_in_order)
+			if (initial_guess_sources_[index] >= 0 && active_varform_mask[initial_guess_sources_[index]])
+				active_varform_mask[index] = true;
 	}
 
 	AdjointNLProblem::AdjointNLProblem(
@@ -462,6 +488,29 @@ namespace polyfem::solver
 				if (active_varform_mask[i] || diff_cache->size() == 0)
 				{
 					const auto *initial_conditions = diff_cache->initial_condition_override ? &*diff_cache->initial_condition_override : nullptr;
+					varform::InitialConditionOverride continuation;
+					const int source = initial_guess_sources_[i];
+					if (source >= 0)
+					{
+						Eigen::MatrixXd target_vertices;
+						Eigen::MatrixXd source_vertices;
+						Eigen::MatrixXi target_elements;
+						Eigen::MatrixXi source_elements;
+						varform->get_vertices(target_vertices);
+						all_varforms_[source]->get_vertices(source_vertices);
+						varform->get_elements(target_elements);
+						all_varforms_[source]->get_elements(source_elements);
+						if (target_vertices.rows() != source_vertices.rows() || target_vertices.cols() != source_vertices.cols()
+							|| target_elements.rows() != source_elements.rows() || target_elements.cols() != source_elements.cols()
+							|| target_vertices != source_vertices || target_elements != source_elements
+							|| varform->primary_space().disc_orders != all_varforms_[source]->primary_space().disc_orders
+							|| varform->primary_space().n_bases != all_varforms_[source]->primary_space().n_bases)
+							log_and_throw_adjoint_error("initial_guess states must use identical meshes and finite-element spaces.");
+						// Continue from the source equilibrium; the target still solves its own prescribed macro strain.
+						continuation.solution = all_diff_caches_[source]->u(0);
+						continuation.displacement_gradient = all_diff_caches_[source]->disp_grad();
+						initial_conditions = &continuation;
+					}
 					const varform::ForwardStepCallback post_step = [varform, diff_cache](const int step, const Eigen::MatrixXd &solution) {
 						diff_cache->cache_transient(step, *varform, solution, nullptr);
 					};

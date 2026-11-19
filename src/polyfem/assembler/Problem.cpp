@@ -23,10 +23,15 @@ namespace polyfem
 			{
 			case BoundaryKind::Dirichlet:
 				return (!might_have_no_dirichlet() && boundary_ids_.empty())
+					   || std::find(boundary_ids_.begin(), boundary_ids_.end(), -1) != boundary_ids_.end()
 					   || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end();
 			case BoundaryKind::Neumann:
 				return std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end()
 					   || std::find(normal_aligned_neumann_boundary_ids_.begin(), normal_aligned_neumann_boundary_ids_.end(), tag) != normal_aligned_neumann_boundary_ids_.end();
+			case BoundaryKind::NormalAlignedNeumann:
+				return is_boundary_pressure(tag);
+			case BoundaryKind::PressureCavity:
+				return std::find(pressure_cavity_ids_.begin(), pressure_cavity_ids_.end(), tag) != pressure_cavity_ids_.end();
 			default:
 				return false;
 			}
@@ -38,14 +43,10 @@ namespace polyfem
 			const Mesh &mesh,
 			const BoundaryKind kind,
 			const int fe_space_id,
-			const std::vector<ElementBases> &bases,
 			const std::vector<LocalBoundary> &local_boundary,
-			std::vector<LocalBoundary> &selected_local_boundary,
-			std::vector<int> &boundary_nodes,
-			const int value_dim)
+			std::vector<LocalBoundary> &selected_local_boundary)
 		{
 			selected_local_boundary.clear();
-			boundary_nodes.clear();
 
 			for (const LocalBoundary &lb : local_boundary)
 			{
@@ -63,6 +64,20 @@ namespace polyfem
 				if (!selected_lb.empty())
 					selected_local_boundary.emplace_back(selected_lb);
 			}
+		}
+
+		void Problem::setup_bc(
+			const Mesh &mesh,
+			const BoundaryKind kind,
+			const int fe_space_id,
+			const std::vector<ElementBases> &bases,
+			const std::vector<LocalBoundary> &local_boundary,
+			std::vector<LocalBoundary> &selected_local_boundary,
+			std::vector<int> &boundary_nodes,
+			const int value_dim)
+		{
+			setup_bc(mesh, kind, fe_space_id, local_boundary, selected_local_boundary);
+			boundary_nodes.clear();
 
 			if (kind != BoundaryKind::Dirichlet)
 				return;
@@ -98,29 +113,25 @@ namespace polyfem
 			boundary_nodes.resize(std::distance(boundary_nodes.begin(), end));
 		}
 
-		void Problem::setup_pressure_cavity_bc(
+		void Problem::setup_bc(
 			const Mesh &mesh,
+			const BoundaryKind kind,
 			const int fe_space_id,
 			const std::vector<LocalBoundary> &local_boundary,
-			std::unordered_map<int, std::vector<LocalBoundary>> &local_pressure_cavity)
+			std::unordered_map<int, std::vector<LocalBoundary>> &selected_by_tag)
 		{
-			(void)fe_space_id;
-
-			local_pressure_cavity.clear();
-
-			for (const LocalBoundary &lb : local_boundary)
+			std::vector<LocalBoundary> selected;
+			setup_bc(mesh, kind, fe_space_id, local_boundary, selected);
+			selected_by_tag.clear();
+			for (const LocalBoundary &lb : selected)
 			{
 				for (int i = 0; i < lb.size(); ++i)
 				{
-					const int primitive_g_id = lb.global_primitive_id(i);
-					const int tag = mesh.get_boundary_id(primitive_g_id);
-
-					if (std::find(pressure_cavity_ids_.begin(), pressure_cavity_ids_.end(), tag) == pressure_cavity_ids_.end())
-						continue;
-
-					LocalBoundary cavity_lb(lb.element_id(), lb.type());
-					cavity_lb.add_boundary_primitive(primitive_g_id, lb[i]);
-					local_pressure_cavity[tag].emplace_back(cavity_lb);
+					const int primitive_id = lb.global_primitive_id(i);
+					const int tag = mesh.get_boundary_id(primitive_id);
+					LocalBoundary tagged_boundary(lb.element_id(), lb.type());
+					tagged_boundary.add_boundary_primitive(primitive_id, lb[i]);
+					selected_by_tag[tag].emplace_back(tagged_boundary);
 				}
 			}
 		}
@@ -144,165 +155,11 @@ namespace polyfem
 
 				if (kind == BoundaryKind::Dirichlet && is_nodal_dirichlet_boundary(n_id, tag, fe_space_id))
 					nodes.push_back(n_id);
-				else if (kind == BoundaryKind::Neumann && is_nodal_neumann_boundary(n_id, tag, fe_space_id))
+				else if (kind == BoundaryKind::Neumann
+						 && !is_nodal_dirichlet_boundary(n_id, tag, fe_space_id)
+						 && is_nodal_neumann_boundary(n_id, tag, fe_space_id))
 					nodes.push_back(n_id);
 			}
-		}
-
-		void Problem::setup_bc(
-			const Mesh &mesh,
-			const int n_bases,
-			const std::vector<ElementBases> &bases,
-			const std::vector<ElementBases> &geom_bases,
-			const std::vector<ElementBases> &pressure_bases,
-			std::vector<LocalBoundary> &local_boundary,
-			std::vector<int> &boundary_nodes,
-			std::vector<LocalBoundary> &local_neumann_boundary,
-			std::vector<LocalBoundary> &local_pressure_boundary,
-			std::unordered_map<int, std::vector<LocalBoundary>> &local_pressure_cavity,
-			std::vector<int> &pressure_boundary_nodes,
-			std::vector<int> &dirichlet_nodes,
-			std::vector<int> &neumann_nodes)
-		{
-			std::vector<LocalBoundary> new_local_boundary;
-			std::vector<LocalBoundary> new_local_pressure_dirichlet_boundary;
-			local_neumann_boundary.clear();
-			local_pressure_boundary.clear();
-			local_pressure_cavity.clear();
-
-			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
-			{
-				const auto &lb = *it;
-				LocalBoundary new_lb(lb.element_id(), lb.type());
-				LocalBoundary new_neumann_lb(lb.element_id(), lb.type());
-				LocalBoundary new_pressure_lb(lb.element_id(), lb.type());
-				LocalBoundary new_pressure_dirichlet_lb(lb.element_id(), lb.type());
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					LocalBoundary new_pressure_cavity_lb(lb.element_id(), lb.type());
-
-					const int primitive_g_id = lb.global_primitive_id(i);
-					const int tag = mesh.get_boundary_id(primitive_g_id);
-
-					if (tag <= 0)
-						continue;
-
-					if ((!might_have_no_dirichlet() && boundary_ids_.empty())
-						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), -1) != boundary_ids_.end()
-						|| std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
-						new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-					if (std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
-						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-					if (std::find(normal_aligned_neumann_boundary_ids_.begin(), normal_aligned_neumann_boundary_ids_.end(), tag) != normal_aligned_neumann_boundary_ids_.end())
-						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-					if (std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), tag) != pressure_boundary_ids_.end())
-						new_pressure_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-					if (std::find(pressure_cavity_ids_.begin(), pressure_cavity_ids_.end(), tag) != pressure_cavity_ids_.end())
-						new_pressure_cavity_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-					if (std::find(splitting_pressure_boundary_ids_.begin(), splitting_pressure_boundary_ids_.end(), tag) != splitting_pressure_boundary_ids_.end())
-						new_pressure_dirichlet_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-
-					if (!new_pressure_cavity_lb.empty())
-					{
-						if (local_pressure_cavity.find(tag) == local_pressure_cavity.end())
-							local_pressure_cavity[tag] = std::vector<LocalBoundary>();
-						local_pressure_cavity[tag].emplace_back(new_pressure_cavity_lb);
-					}
-				}
-
-				if (!new_lb.empty())
-					new_local_boundary.emplace_back(new_lb);
-				if (!new_neumann_lb.empty())
-					local_neumann_boundary.emplace_back(new_neumann_lb);
-				if (!new_pressure_lb.empty())
-					local_pressure_boundary.emplace_back(new_pressure_lb);
-				if (!new_pressure_dirichlet_lb.empty())
-					new_local_pressure_dirichlet_boundary.emplace_back(new_pressure_dirichlet_lb);
-			}
-			local_boundary.clear();
-			std::swap(local_boundary, new_local_boundary);
-
-			boundary_nodes.clear();
-			pressure_boundary_nodes.clear();
-
-			const int dim = is_scalar() ? 1 : mesh.dimension();
-
-			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
-			{
-				const auto &lb = *it;
-				const auto &b = bases[lb.element_id()];
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						auto &bs = b.bases[nodes(n)];
-						for (size_t g = 0; g < bs.global().size(); ++g)
-						{
-							const int base_index = bs.global()[g].index * dim;
-							for (int d = 0; d < dim; ++d)
-							{
-								if (is_dimension_dirichet(mesh.get_boundary_id(primitive_global_id), d))
-									boundary_nodes.push_back(base_index + d);
-							}
-						}
-					}
-				}
-			}
-
-			for (auto it = new_local_pressure_dirichlet_boundary.begin(); it != new_local_pressure_dirichlet_boundary.end(); ++it)
-			{
-				const auto &lb = *it;
-				const auto &b = pressure_bases[lb.element_id()];
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						auto &bs = b.bases[nodes(n)];
-						for (size_t g = 0; g < bs.global().size(); ++g)
-						{
-							const int base_index = bs.global()[g].index;
-							pressure_boundary_nodes.push_back(base_index);
-						}
-					}
-				}
-			}
-
-			if (mesh.has_node_ids() || has_nodal_dirichlet() || has_nodal_neumann())
-			{
-				for (int n_id = 0; n_id < n_bases; ++n_id)
-				{
-					const int tag = mesh.get_node_id(n_id);
-
-					if (is_nodal_dirichlet_boundary(n_id, tag))
-					{
-						dirichlet_nodes.push_back(n_id);
-
-						for (int d = 0; d < dim; ++d)
-						{
-							if (is_nodal_dimension_dirichlet(n_id, tag, d))
-								boundary_nodes.push_back(n_id * dim + d);
-						}
-					}
-					else if (is_nodal_neumann_boundary(n_id, tag))
-					{
-						neumann_nodes.push_back(n_id);
-					}
-				}
-			}
-
-			std::sort(boundary_nodes.begin(), boundary_nodes.end());
-			auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
-			boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
-
-			std::sort(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
-			auto it_ = std::unique(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
-			pressure_boundary_nodes.resize(std::distance(pressure_boundary_nodes.begin(), it_));
 		}
 	} // namespace assembler
 } // namespace polyfem

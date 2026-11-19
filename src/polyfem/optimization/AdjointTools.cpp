@@ -20,7 +20,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/GCPContactForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
@@ -35,7 +35,7 @@
 #include <polyfem/optimization/force_derivatives/PressureForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/InertiaForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/BarrierContactForceDerivative.hpp>
-#include <polyfem/optimization/force_derivatives/SmoothContactForceDerivative.hpp>
+#include <polyfem/optimization/force_derivatives/GCPContactForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/NormalAdhesionForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/PeriodicContactForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/FrictionForceDerivative.hpp>
@@ -608,9 +608,9 @@ namespace polyfem::solver
 				{
 					BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(0), sol, adjoint_zeroed, contact_term);
 				}
-				else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(varform.solve_data()->contact_form.get()))
+				else if (const auto gcp = dynamic_cast<const GCPContactForm *>(varform.solve_data()->contact_form.get()))
 				{
-					SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
+					GCPContactForceDerivative::force_shape_derivative(*gcp, diff_cache.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
 				}
 
 				contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
@@ -659,9 +659,9 @@ namespace polyfem::solver
 			{
 				BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(0), sol, full_adjoint, contact_term);
 			}
-			else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(varform.solve_data()->contact_form.get()))
+			else if (const auto gcp = dynamic_cast<const GCPContactForm *>(varform.solve_data()->contact_form.get()))
 			{
-				SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, full_adjoint, contact_term);
+				GCPContactForceDerivative::force_shape_derivative(*gcp, diff_cache.smooth_collision_set(0), sol, full_adjoint, contact_term);
 			}
 
 			contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
@@ -777,9 +777,9 @@ namespace polyfem::solver
 					{
 						BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(i), diff_cache.u(i), cur_p, contact_term);
 					}
-					else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(varform.solve_data()->contact_form.get()))
+					else if (const auto gcp = dynamic_cast<const GCPContactForm *>(varform.solve_data()->contact_form.get()))
 					{
-						SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(i), diff_cache.u(i), cur_p, contact_term);
+						GCPContactForceDerivative::force_shape_derivative(*gcp, diff_cache.smooth_collision_set(i), diff_cache.u(i), cur_p, contact_term);
 					}
 					contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 					// contact_term /= beta_dt * beta_dt;
@@ -939,7 +939,8 @@ namespace polyfem::solver
 						/*lagged_displacements=*/surface_solution_prev,
 						surface_velocities,
 						bp,
-						0., true));
+						/*dmin=*/0.,
+						/*no_mu=*/true));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(varform.boundary_state().boundary_nodes).setZero();

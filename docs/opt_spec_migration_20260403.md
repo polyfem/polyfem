@@ -8,7 +8,7 @@ When there's only one variable to simulation in the config and and there's no sl
 parameters = "auto"
 ```
 
-instead of 
+instead of
 
 ```json
 parameters = [
@@ -168,15 +168,3 @@ In addition, `active_geometry_nodes` support advanced selection mode, which does
   }
 }
 ```
-
-## Migration cheatsheet
-
-- use auto parameters mode for simple case
-- rename dirichlet var2sim to dirichlet-boundary var2sim. 
-- migrate legacy `/variable_to_simulation/*/composite_map_type` modes to their new equivalents:
-    - `none` → No migrate required.
-    - `indices` → No replacement because this is too brittle.
-    - `interior` → `active_geometry_nodes: { "type": "interior", "selection": [volume ids] }`
-    - `boundary` → `active_geometry_nodes: { "type": "boundary", "selection": [surface ids] }`
-    - `boundary_excluding_surface` → `active_geometry_nodes: { "type": "boundary_excluding_surface", "selection": [surface ids] }`
-    - `time_step_indexing` → `active_time_slices: [..]`

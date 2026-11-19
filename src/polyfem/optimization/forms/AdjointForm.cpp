@@ -18,6 +18,37 @@
 
 namespace polyfem::solver
 {
+	HomogenizedDispGradForm::HomogenizedDispGradForm(const VariableToSimulationGroup &variables,
+													 std::shared_ptr<const varform::DifferentiableVarForm> varform,
+													 std::shared_ptr<const DiffCache> diff_cache, const json &args)
+		: AdjointForm(variables),
+		  varform_(std::move(varform)),
+		  diff_cache_(std::move(diff_cache)),
+		  dimensions_(args["dimensions"].get<std::vector<int>>())
+	{
+	}
+
+	double HomogenizedDispGradForm::value_unweighted(const Eigen::VectorXd &variables) const
+	{
+		return diff_cache_->disp_grad()(dimensions_[0], dimensions_[1]);
+	}
+
+	Eigen::MatrixXd HomogenizedDispGradForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &variables,
+																		 const varform::DifferentiableVarForm &varform, const DiffCache &diff_cache) const
+	{
+		if (&varform != varform_.get())
+		{
+			return AdjointForm::compute_reduced_adjoint_rhs(variables, varform, diff_cache);
+		}
+
+		const auto problem = std::static_pointer_cast<NLHomoProblem>(varform.solve_data()->nl_problem);
+		const int dimension = varform.get_mesh().dimension();
+		// Differentiate G_ij in extended coordinates, then apply the symmetry and fixed-component reduction.
+		Eigen::VectorXd extended = Eigen::VectorXd::Zero(problem->full_size() + dimension * dimension);
+		extended(problem->full_size() + dimensions_[0] + dimension * dimensions_[1]) = weight();
+		return problem->extended_to_reduced_grad(extended);
+	}
+
 	double AdjointForm::value(const Eigen::VectorXd &x) const
 	{
 		double val = Form::value(x);

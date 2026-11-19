@@ -15,11 +15,6 @@
 #include <string>
 #include <vector>
 
-namespace GEO
-{
-	class Mesh;
-}
-
 namespace polyfem::varform
 {
 	class VarForm;
@@ -115,12 +110,6 @@ namespace polyfem
 
 		/// loads the mesh from the json arguments
 		void load_mesh();
-
-		/// loads the mesh from a geogram mesh
-		/// @param[in] meshin geo mesh
-		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
-		/// @param[in] skip_boundary_sideset skip_boundary_sideset = false it uses the lambda boundary_marker to assign the sideset
-		void set_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool skip_boundary_sideset = false);
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim

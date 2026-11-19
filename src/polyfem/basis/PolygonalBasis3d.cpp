@@ -15,7 +15,6 @@
 
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <igl/per_vertex_normals.h>
 #include <random>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +30,6 @@ namespace polyfem
 	{
 		namespace
 		{
-
-			const int max_num_kernels = 300;
 
 			// -----------------------------------------------------------------------------
 
@@ -156,11 +153,11 @@ namespace polyfem
 			// -----------------------------------------------------------------------------
 
 			void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF,
-										int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
+										int n_kernels_per_edge, double eps, const Eigen::RowVector3d &interior_point, Eigen::MatrixXd &kernel_centers,
 										Eigen::MatrixXd &KV, Eigen::MatrixXi &KF,
 										EvalParametersFunc evalFuncGeom, GetAdjacentLocalEdge getAdjLocalEdge)
 			{
-				Eigen::MatrixXd PV, KN;
+				Eigen::MatrixXd PV;
 				Eigen::MatrixXi PF;
 				Eigen::VectorXd D;
 				compute_canonical_pattern(n_kernels_per_edge, PV, PF);
@@ -168,16 +165,7 @@ namespace polyfem
 				orient_closed_surface(KV, KF);
 				double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
 
-				if (true || KV.rows() < max_num_kernels)
-				{
-					igl::per_vertex_normals(KV, KF, KN);
-					kernel_centers = KV;
-				}
-				else
-				{
-					polyfem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
-				}
-				kernel_centers += eps * volume * KN;
+				offset_surface_vertices(KV, KF, interior_point, eps * volume, kernel_centers);
 
 				// std::default_random_engine gen;
 				// std::uniform_real_distribution<double> dist(-1.0, 1.0);
@@ -270,9 +258,8 @@ namespace polyfem
 				auto getAdjLocalEdge = compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
 
 				// Compute kernel centers
-				compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
+				compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, mesh.kernel(element_index), kernel_centers, KV, KF,
 									   evalFuncGeom, getAdjLocalEdge);
-				// if (KV.rows() >= max_num_kernels) { n_samples_per_edge = 5; }
 
 				// Compute collocation points
 				Eigen::MatrixXd PV, UV;

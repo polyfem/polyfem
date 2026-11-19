@@ -11,9 +11,12 @@ class AMIPSEnergy:
     def __init__(self, use_rest_pose, dim):
         self.use_rest_pose = use_rest_pose
         self.dim = dim
+        # Keep the exponent symbolic so one generated kernel supports any power.
+        self.power = sp.Symbol('power', real=True)
+        self.normalization = sp.Symbol('normalization', positive=True)
 
     def parameters(self):
-        return []
+        return ["power", "normalization"]
 
     def get_standard(self):
         if self.use_rest_pose:
@@ -29,17 +32,14 @@ class AMIPSEnergy:
                 [1, 0, 0],
                 [sp.Rational(1, 2), sp.sqrt(3) / 2, 0],
                 [sp.Rational(1, 2),
-                 sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(3) / 2]
+                 sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(sp.Rational(2, 3))]
             ])
         standard = standard.inv().T
 
         return standard
 
     def eval(self, p, t, el_id, def_grad):
-        if self.use_rest_pose:
-            power = 1 if self.dim == 2 else sp.Rational(2, 3)
-        else:
-            power = 2 if self.dim == 2 else sp.Rational(5, 3)
+        det_exponent = sp.Rational(2, self.dim)
 
         standard = self.get_standard()
 
@@ -51,8 +51,8 @@ class AMIPSEnergy:
         # if det <= 0:
         #     return sp.nan
 
-        powJ = det**power
-        return (def_grad.T @ def_grad).trace() / powJ
+        powJ = det**det_exponent
+        return ((def_grad.T @ def_grad).trace() / (powJ * self.normalization)) ** self.power
 
 
 class VolumePenaltyEnergy:
@@ -140,7 +140,7 @@ if __name__ == "__main__":
             # f.write("        }\n\n")
 
             f.write(
-                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
+                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
             f.write(
                 f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):

@@ -68,7 +68,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector full_to_reduced_diag(const TVector &full_diag) const;
-		TVector reduced_to_full(const TVector &reduced) const;
+		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
 

@@ -286,6 +286,12 @@ namespace polyfem::assembler
 					elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
 			}
 
+			if (type == ElasticityTensorType::ENERGY)
+			{
+				all(p, 0) = 0.5 * (sigma * strain).trace();
+				continue;
+			}
+
 			if (type == ElasticityTensorType::PK1)
 				sigma = pk1_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
 			else if (type == ElasticityTensorType::PK2)
@@ -352,11 +358,11 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
 	}
 
-	Eigen::MatrixXd HookeLinearElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
+	void HookeLinearElasticity::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 	{
 		const int n_bases = data.vals.basis_values.size();
-		return polyfem::hessian_from_energy(
-			size(), n_bases, data,
+		polyfem::hessian_from_energy(
+			size(), n_bases, data, hessian,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },

@@ -1,6 +1,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/Units.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/io/ResourceIO.hpp>
 #include <polyfem/io/Checkpoint.hpp>
@@ -10,7 +11,6 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
@@ -30,9 +30,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <ipc/utils/logger.hpp>
-#ifdef POLYFEM_WITH_ITR
-#include <wmtk/utils/Logger.hpp>
-#endif
 
 #include <igl/Timer.h>
 
@@ -69,6 +66,39 @@ namespace polyfem
 
 	namespace
 	{
+		std::string formulation_from_args(const json &args)
+		{
+			if (!args.contains("materials") || args["materials"].is_null())
+				return "";
+
+			if (args["materials"].is_array())
+			{
+				std::string current;
+				for (const auto &m : args["materials"])
+				{
+					const std::string tmp = m["type"];
+					if (current.empty())
+						current = tmp;
+					else if (current != tmp)
+					{
+						if (assembler::AssemblerUtils::is_elastic_material(current)
+							&& assembler::AssemblerUtils::is_elastic_material(tmp))
+						{
+							current = "MultiModels";
+						}
+						else
+						{
+							return "";
+						}
+					}
+				}
+
+				return current;
+			}
+
+			return args["materials"].value("type", "");
+		}
+
 		std::string resolve_output_path(const std::string &output_dir, const std::string &path)
 		{
 			if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
@@ -163,10 +193,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	State::State()
-	{
-		GeogramUtils::instance().initialize();
-	}
+	State::State() = default;
 
 	void State::init_logger(
 		const std::string &log_file,
@@ -205,19 +232,11 @@ namespace polyfem
 		const spdlog::level::level_enum log_level)
 	{
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-		GeogramUtils::instance().set_logger(logger());
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
-#ifdef POLYFEM_WITH_ITR
-		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
-#endif
-
 		logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
-#ifdef POLYFEM_WITH_ITR
-		wmtk::logger().set_level(spdlog::level::trace);
-#endif
 
 		set_log_level(log_level);
 	}
@@ -365,7 +384,7 @@ namespace polyfem
 			args["contact"]["periodic"] = false;
 		}
 
-		const std::string formulation = varform::formulation_from_args(args);
+		const std::string formulation = formulation_from_args(args);
 		if (formulation.empty())
 		{
 			logger().error("specify some 'materials'");
@@ -374,7 +393,7 @@ namespace polyfem
 
 		variational_formulation = varform::VarFormFactory::create(formulation, args, *resources_, is_adjoint_optimization);
 		if (!variational_formulation)
-			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
+			throw std::runtime_error("Unsupported configuration for formulation " + formulation + ".");
 
 		logger().info("Using variational formulation: {}", variational_formulation->name());
 		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
@@ -410,38 +429,6 @@ namespace polyfem
 	void State::set_max_threads(const int max_threads)
 	{
 		NThread::get().set_num_threads(max_threads);
-	}
-
-	void State::set_mesh(
-		GEO::Mesh &meshin,
-		const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker,
-		bool skip_boundary_sideset)
-	{
-		igl::Timer timer;
-		timer.start();
-		logger().info("Loading mesh...");
-
-		std::unique_ptr<Mesh> mesh = Mesh::create(
-			mesh::MeshReader::from_geogram(meshin));
-		if (!mesh)
-		{
-			logger().error("Unable to load the mesh");
-			return;
-		}
-
-		RowVectorNd min, max;
-		mesh->bounding_box(min, max);
-
-		logger().info("mesh bb min [{}], max [{}]", min, max);
-
-		if (!skip_boundary_sideset)
-			mesh->compute_boundary_ids(boundary_marker);
-
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
-
-		assert(variational_formulation != nullptr);
-		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
 	void State::load_mesh()

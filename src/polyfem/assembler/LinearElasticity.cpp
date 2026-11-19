@@ -85,11 +85,11 @@ namespace polyfem
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
 		}
 
-		Eigen::MatrixXd LinearElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
+		void LinearElasticity::assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const
 		{
 			const int n_bases = data.vals.basis_values.size();
-			return polyfem::hessian_from_energy(
-				size(), n_bases, data,
+			polyfem::hessian_from_energy(
+				size(), n_bases, data, hessian,
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -211,6 +211,12 @@ namespace polyfem
 				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
 				const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
+				if (type == ElasticityTensorType::ENERGY)
+				{
+					all(p, 0) = mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
+					continue;
+				}
+
 				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 				if (type == ElasticityTensorType::PK1)
 					stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));

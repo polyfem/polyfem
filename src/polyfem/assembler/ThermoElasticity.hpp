@@ -29,7 +29,7 @@ namespace polyfem::assembler
 
 		double compute_energy(const MixedNonLinearAssemblerData &data) const override;
 		Eigen::VectorXd compute_gradient(const MixedNonLinearAssemblerData &data) const override;
-		Eigen::MatrixXd compute_hessian(const MixedNonLinearAssemblerData &data) const override;
+		void compute_hessian(const MixedNonLinearAssemblerData &data, LocalHessian &hessian) const override;
 
 	private:
 		detail::ThermoElasticityModel &model();

@@ -6,7 +6,6 @@
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
-#include <geogram/mesh/mesh.h>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 
@@ -19,8 +18,7 @@ namespace polyfem
 		public:
 			CMesh2D() = default;
 			virtual ~CMesh2D() = default;
-			// We cannot move or copy CMesh2D because it has unique_ptrs which do
-			// not support copy and GEO::Mesh which does not support move.
+			// CMesh2D is neither copied nor moved; use copy() to duplicate it.
 			CMesh2D(CMesh2D &&) = delete;
 			CMesh2D &operator=(CMesh2D &&) = delete;
 			CMesh2D(const CMesh2D &) = delete;
@@ -30,25 +28,23 @@ namespace polyfem
 
 			bool is_conforming() const override { return true; }
 
-			int n_faces() const override { return mesh_.facets.nb(); }
-			int n_edges() const override { return mesh_.edges.nb(); }
-			int n_vertices() const override { return mesh_.vertices.nb(); }
+			int n_faces() const override { return mesh_.n_facets(); }
+			int n_edges() const override { return mesh_.n_edges(); }
+			int n_vertices() const override { return mesh_.n_vertices(); }
 
-			inline int n_face_vertices(const int f_id) const override { return mesh_.facets.nb_vertices(f_id); }
+			inline int n_face_vertices(const int f_id) const override { return mesh_.n_facet_vertices(f_id); }
 
-			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
-			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edges.vertex(e_id, lv_id); }
-			inline int cell_vertex(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
+			inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.facet_vertex(f_id, lv_id); }
+			inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edge_vertex(e_id, lv_id); }
+			inline int cell_vertex(const int f_id, const int lv_id) const override { return mesh_.facet_vertex(f_id, lv_id); }
 
 			bool is_boundary_vertex(const int vertex_global_id) const override
 			{
-				// GEO::Attribute<bool> boundary_vertices(mesh_.vertices.attributes(), "boundary_vertex");
-				return (*boundary_vertices_)[vertex_global_id];
+				return mesh_.boundary_vertex[vertex_global_id];
 			}
 			bool is_boundary_edge(const int edge_global_id) const override
 			{
-				// GEO::Attribute<bool> boundary_edges(mesh_.edges.attributes(), "boundary_edge");
-				return (*boundary_edges_)[edge_global_id];
+				return mesh_.boundary_edge[edge_global_id];
 			}
 
 			bool is_boundary_element(const int element_global_id) const override;
@@ -78,12 +74,12 @@ namespace polyfem
 			void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) override;
 
 			// Navigation wrapper
-			inline Navigation::Index get_index_from_face(int f, int lv = 0) const override { return Navigation::get_index_from_face(mesh_, *c2e_, f, lv); }
+			inline Navigation::Index get_index_from_face(int f, int lv = 0) const override { return Navigation::get_index_from_face(mesh_, f, lv); }
 
 			// Navigation in a surface mesh
 			inline Navigation::Index switch_vertex(Navigation::Index idx) const override { return Navigation::switch_vertex(mesh_, idx); }
-			inline Navigation::Index switch_edge(Navigation::Index idx) const override { return Navigation::switch_edge(mesh_, *c2e_, idx); }
-			inline Navigation::Index switch_face(Navigation::Index idx) const override { return Navigation::switch_face(mesh_, *c2e_, idx); }
+			inline Navigation::Index switch_edge(Navigation::Index idx) const override { return Navigation::switch_edge(mesh_, idx); }
+			inline Navigation::Index switch_face(Navigation::Index idx) const override { return Navigation::switch_face(mesh_, idx); }
 
 			// void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
@@ -95,10 +91,7 @@ namespace polyfem
 			void remove_elements(const std::vector<bool> &keep) override;
 
 		private:
-			GEO::Mesh mesh_;
-			std::unique_ptr<GEO::Attribute<GEO::index_t>> c2e_;
-			std::unique_ptr<GEO::Attribute<bool>> boundary_vertices_;
-			std::unique_ptr<GEO::Attribute<bool>> boundary_edges_;
+			PolygonMesh mesh_;
 		};
 	} // namespace mesh
 } // namespace polyfem

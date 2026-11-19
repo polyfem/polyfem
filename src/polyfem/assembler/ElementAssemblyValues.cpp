@@ -177,6 +177,7 @@ namespace polyfem
 
 			const int n_local_bases = int(basis.bases.size());
 			const int n_local_g_bases = int(gbasis.bases.size());
+			n_geometric_bases = n_local_g_bases;
 
 			// evaluate on reference element
 			basis.evaluate_bases(pts, basis_values);
@@ -188,10 +189,13 @@ namespace polyfem
 				gbasis.evaluate_grads(pts, g_basis_values_cache_);
 			}
 
+			has_single_unit_mapping_ = n_local_bases > 0;
 			for (int j = 0; j < n_local_bases; ++j)
 			{
 				AssemblyValues &ass_val = basis_values[j];
 				ass_val.global = basis.bases[j].global();
+				has_single_unit_mapping_ = has_single_unit_mapping_
+										   && ass_val.global.size() == 1 && ass_val.global[0].val == 1.0;
 				assert(ass_val.val.cols() == 1);
 				assert(ass_val.grad.cols() == pts.cols());
 			}

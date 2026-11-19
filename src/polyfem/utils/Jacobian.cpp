@@ -337,7 +337,7 @@ namespace polyfem::utils
 			if (t_lo < step)
 			{
 				step = t_lo;
-				invalid_id = static_cast<int>(info.pathToFeasibleId);
+				invalid_id = info.pathToFeasibleId ? static_cast<int>(*info.pathToFeasibleId) : -1;
 				invalid_step = upper(result);
 				tree = Tree{};
 				build_tree(tree, info.pathToFeasible, n_children);

@@ -15,7 +15,7 @@ ExternalProject_Add(
     PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-pref
     SOURCE_DIR ${POLYFEM_PREF_DIR}
     GIT_REPOSITORY https://github.com/polyfem/Decoupling-Simulation-Accuracy-from-Mesh-Quality
-    GIT_TAG 4129da2b2c453c70f07ab37a0a717b90c801276e
+    GIT_TAG c7ec1f12e6b6a3eeffd498c249d244b2006e2e48
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
