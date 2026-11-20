@@ -89,6 +89,7 @@ jobs:
         run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
 
       - name: Upload Artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Linux
@@ -167,6 +168,7 @@ jobs:
         run: cpack --config build/CPackConfig.cmake -B build/packages --verbose
 
       - name: Upload Artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-${{ matrix.os }}
@@ -182,6 +184,7 @@ jobs:
     runs-on: windows-2022
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
+      SCCACHE_CACHE_SIZE: "1G"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
@@ -260,6 +263,7 @@ jobs:
           cpack --config build\CPackConfig.cmake -B build\packages --verbose
 
       - name: Upload Artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: PolyFEM-Windows
