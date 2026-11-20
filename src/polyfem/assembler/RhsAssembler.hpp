@@ -62,6 +62,12 @@ namespace polyfem
 				const double t = 1) const;
 
 			// compute body energy
+			// Use loads assembled for the same time and previous displacement.
+			// Prescribed obstacle displacements and mixed pressure entries are not loads.
+			double compute_energy_from_rhs(
+				const Eigen::VectorXd &displacement,
+				const Eigen::MatrixXd &rhs) const;
+
 			double compute_energy(
 				const Eigen::MatrixXd &displacement,
 				const Eigen::MatrixXd &displacement_prev,

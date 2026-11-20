@@ -81,6 +81,7 @@ namespace polyfem::solver
 		bool is_formulation_mixed_; ///< True if the formulation is mixed
 
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
+		Eigen::MatrixXd energy_rhs_;  ///< Loads for the energy at t_, including lagged boundary normals
 
 		/// @brief Update current_rhs
 		void update_current_rhs(const Eigen::VectorXd &x);
