@@ -24,6 +24,8 @@ set(SOURCES
 	GenericFiber.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
+	GrowthElasticity.cpp
+	GrowthElasticity.hpp
 	Helmholtz.cpp
 	Helmholtz.hpp
 	HookeLinearElasticity.cpp

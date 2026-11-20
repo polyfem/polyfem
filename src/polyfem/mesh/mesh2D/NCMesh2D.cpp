@@ -17,7 +17,7 @@ namespace polyfem
 			assert(keep.size() == n_faces());
 
 			std::vector<int> old_node_ids(vertices.size(), -1);
-			if (has_node_ids())
+			if (!node_ids_.empty())
 				for (int v = 0; v < n_vertices(); ++v)
 					old_node_ids[valid_to_all_vertex(v)] = node_ids_[v];
 			std::vector<int> old_boundary_ids(edges.size(), -1);
@@ -42,7 +42,7 @@ namespace polyfem
 			index_prepared = adj_prepared = false;
 			prepare_mesh();
 
-			if (has_node_ids())
+			if (!node_ids_.empty())
 			{
 				node_ids_.resize(n_vertices());
 				for (int v = 0; v < n_vertices(); ++v)
@@ -62,7 +62,6 @@ namespace polyfem
 
 		bool NCMesh2D::is_boundary_element(const int element_global_id) const
 		{
-			assert(index_prepared);
 			for (int le = 0; le < n_face_vertices(element_global_id); le++)
 				if (is_boundary_edge(face_edge(element_global_id, le)))
 					return true;
@@ -74,18 +73,45 @@ namespace polyfem
 		{
 			if (n_refinement <= 0)
 				return;
-			clear_higher_order_data();
-			std::vector<bool> refine_mask(elements.size(), false);
-			for (int i = 0; i < elements.size(); i++)
-				if (elements[i].is_valid())
-					refine_mask[i] = true;
+			for (int level = 0; level < n_refinement; ++level)
+			{
+				clear_higher_order_data();
+				std::vector<bool> refine_mask(elements.size(), false);
+				for (int i = 0; i < elements.size(); i++)
+					if (elements[i].is_valid())
+						refine_mask[i] = true;
 
-			for (int i = 0; i < refine_mask.size(); i++)
-				if (refine_mask[i])
-					refine_element(i);
-
+				for (int i = 0; i < refine_mask.size(); i++)
+					if (refine_mask[i])
+						refine_element(i);
+			}
+			// refine_element() invalidates the id maps: rebuild them so that the
+			// mesh can be queried right away (e.g. to apply selections).
 			prepare_mesh();
-			refine(n_refinement - 1, t);
+			update_labels_after_refinement();
+		}
+
+		void NCMesh2D::update_labels_after_refinement()
+		{
+			node_ids_.clear();
+			geometry_ids_.clear();
+			if (has_body_ids())
+			{
+				body_ids_.resize(n_faces());
+				for (int e = 0; e < body_ids_.size(); ++e)
+					body_ids_[e] = elements[valid_to_all_elem(e)].body_id;
+			}
+			if (has_boundary_ids())
+			{
+				boundary_ids_.resize(n_edges());
+				for (int b = 0; b < boundary_ids_.size(); ++b)
+					boundary_ids_[b] = edges[valid_to_all_edge(b)].boundary_id;
+			}
+		}
+
+		void NCMesh2D::stale_index_error() const
+		{
+			log_and_throw_error("NCMesh2D: the mesh was modified without calling prepare_mesh().");
 		}
 
 		bool NCMesh2D::restore_nc_data(const MeshData &data)
@@ -366,6 +392,9 @@ namespace polyfem
 
 			for (int i : full_ids)
 				refine_element(i);
+
+			prepare_mesh();
+			update_labels_after_refinement();
 		}
 
 		void NCMesh2D::coarsen_element(int id_full)
@@ -374,6 +403,8 @@ namespace polyfem
 			if (id_full < 0 || id_full >= int(elements.size()) || elements[id_full].parent < 0)
 				log_and_throw_error("Cannot coarsen an NC root or invalid element.");
 			const int parent_id = elements[id_full].parent;
+			if (parent_id < 0)
+				log_and_throw_error("NCMesh2D: cannot coarsen element {}, it has no parent.", id_full);
 			auto &parent = elements[parent_id];
 
 			for (int i = 0; i < parent.children.size(); i++)
@@ -481,7 +512,7 @@ namespace polyfem
 			}
 		}
 
-		double line_weight(Eigen::Matrix<double, 2, 2> &e, Eigen::VectorXd &v)
+		double line_weight(const Eigen::Matrix<double, 2, 2> &e, const InlineVector<double, 3> &v)
 		{
 			assert(v.size() == 2);
 			double w1 = (v(0) - e(0, 0)) / (e(1, 0) - e(0, 0));
@@ -569,6 +600,8 @@ namespace polyfem
 
 		void NCMesh2D::build_index_mapping()
 		{
+			// Count the valid entities from the topology (not from the maps being rebuilt).
+			index_prepared = false;
 			all_to_valid_elemMap.assign(elements.size(), -1);
 			valid_to_all_elemMap.resize(n_elements);
 
@@ -611,142 +644,90 @@ namespace polyfem
 
 		void NCMesh2D::append(const Mesh &mesh)
 		{
-			if (mesh.dimension() != dimension() || !mesh.is_simplicial())
-				log_and_throw_error("NC append requires compatible simplex meshes.");
-			auto source = mesh.to_nonconforming()->to_mesh_data();
-			auto data = to_mesh_data();
-			data.nc->append(*source.nc);
-			restore_nc_data(data);
-			// Reconstruct the public input ordering and metadata after merging full storage.
-			auto combined = Mesh::create(to_mesh_data());
-			*this = std::move(static_cast<NCMesh2D &>(*combined));
-		}
+			assert(typeid(mesh) == typeid(NCMesh2D));
+			const NCMesh2D &other = dynamic_cast<const NCMesh2D &>(mesh);
+			const bool had_boundary_ids = has_boundary_ids(), other_has_boundary_ids = other.has_boundary_ids();
+			const bool had_body_ids = has_body_ids(), other_has_body_ids = other.has_body_ids();
 
-		MeshData NCMesh2D::to_mesh_data() const
-		{
+			Mesh::append(mesh);
 
-			MeshData data = Mesh::to_mesh_data();
-			data.nc.emplace();
-			auto &n = *data.nc;
-			const int d = dimension(), count = elements.size();
-			n.label_flags = (has_body_ids() ? 1 : 0) | (has_geometry_ids() ? 2 : 0)
-							| ((has_node_ids() || (label_flags_ & 4)) ? 4 : 0) | (has_boundary_ids() ? 8 : 0);
-			n.vertices.resize(vertices.size(), d);
-			for (int i = 0; i < n.vertices.rows(); ++i)
-				n.vertices.row(i) = vertices[i].pos.transpose();
-			n.cells.resize(count, d + 1);
-			n.ordered_cells.resize(count, d + 1);
-			n.cell_edges.resize(count, 3 * (d - 1));
-			n.cell_faces.resize(count, 4 * (d - 2));
-			n.children.resize(count, 1 << d);
-			n.element_state.resize(count, 6);
-			for (int i = 0; i < count; ++i)
+			// Merge the whole structure of the other mesh (refinement hierarchy,
+			// hanging nodes and per-entity labels included), offsetting its ids.
+			const int v_off = vertices.size(), e_off = edges.size(), el_off = elements.size();
+			const auto offset = [](Eigen::VectorXi ids, const int off) {
+				for (int i = 0; i < ids.size(); ++i)
+					if (ids[i] >= 0)
+						ids[i] += off;
+				return ids;
+			};
+
+			vertices.reserve(v_off + other.vertices.size());
+			for (const ncVert &v : other.vertices)
+				vertices.push_back(v); // edge/weight are rebuilt by prepare_mesh()
+
+			edges.reserve(e_off + other.edges.size());
+			for (const ncBoundary &e : other.edges)
 			{
-				const auto &e = elements[i];
-				n.cells.row(i) = e.geom_vertices.transpose();
-				n.ordered_cells.row(i) = e.vertices.transpose();
-				n.cell_edges.row(i) = e.edges.transpose();
-				n.cell_faces.row(i) = e.faces.transpose();
-				n.children.row(i) = e.children.transpose();
-				const int active_id = e.is_valid() ? all_to_valid_elem(i) : -1;
-				const int body = active_id >= 0 && has_body_ids() ? get_body_id(active_id) : e.body_id;
-				const int geometry = active_id >= 0 && has_geometry_ids() ? get_geometry_id(active_id)
-																		  : (i < int(full_geometry_ids_.size()) ? full_geometry_ids_[i] : -1);
-				n.element_state.row(i) << e.level, e.parent, int(e.is_refined), int(e.is_ghost), body, geometry;
+				ncBoundary copy = e;
+				copy.vertices = offset(e.vertices, v_off);
+				copy.elem_list.clear();
+				for (const int el : e.elem_list)
+					copy.elem_list.insert(el + el_off);
+				copy.global_ids.clear();
+				edges.push_back(std::move(copy)); // leader/followers are rebuilt by prepare_mesh()
 			}
-			n.edges.resize(edges.size(), 3);
-			for (int i = 0; i < n.edges.rows(); ++i)
-				n.edges.row(i) << edges[i].vertices.transpose(), edges[i].boundary_id;
-			n.faces.resize(0, 4);
 
-			n.midpoints.resize(midpointMap.size(), 3);
-			std::vector<std::array<int, 3>> midpoints;
-			for (const auto &entry : midpointMap)
-				midpoints.push_back({entry.first[0], entry.first[1], entry.second});
-			std::sort(midpoints.begin(), midpoints.end());
-			for (int i = 0; i < n.midpoints.rows(); ++i)
-				n.midpoints.row(i) << midpoints[i][0], midpoints[i][1], midpoints[i][2];
-			n.node_ids = full_node_ids_;
-			n.node_ids.resize(vertices.size(), -1);
-			if (n.label_flags & 4)
+			elements.reserve(el_off + other.elements.size());
+			for (const ncElem &el : other.elements)
 			{
-				data.node_ids.resize(n_vertices());
-				for (int i = 0; i < n_vertices(); ++i)
+				ncElem copy = el;
+				copy.geom_vertices = offset(el.geom_vertices, v_off);
+				copy.vertices = offset(el.vertices, v_off);
+				copy.edges = offset(el.edges, e_off);
+				copy.children = offset(el.children, el_off);
+				if (copy.parent >= 0)
+					copy.parent += el_off;
+				elements.push_back(std::move(copy));
+			}
+
+			for (const auto &[key, value] : other.midpointMap)
+				midpointMap[Eigen::Vector2i(key.array() + v_off)] = value + v_off;
+			for (const auto &[key, value] : other.edgeMap)
+				edgeMap[Eigen::Vector2i(key.array() + v_off)] = value + e_off;
+			for (const int id : other.refineHistory)
+				refineHistory.push_back(id + el_off);
+			n_elements += other.n_elements;
+
+			index_prepared = false;
+			adj_prepared = false;
+			prepare_mesh();
+
+			// The per-entity labels are authoritative; entities of a mesh that had
+			// no labels get the defaults, and the base-class arrays mirror them.
+			if (had_boundary_ids || other_has_boundary_ids)
+			{
+				boundary_ids_.resize(n_edges());
+				for (int e = 0; e < n_edges(); ++e)
 				{
-					const int full = valid_to_all_vertex(i);
-					if (has_node_ids())
-						n.node_ids[full] = get_node_id(i);
-					data.node_ids[i] = n.node_ids[full];
+					ncBoundary &edge = edges[valid_to_all_edge(e)];
+					const bool labeled = valid_to_all_edge(e) < e_off ? had_boundary_ids : other_has_boundary_ids;
+					if (!labeled)
+						edge.boundary_id = Mesh::get_default_boundary_id(e);
+					boundary_ids_[e] = edge.boundary_id;
 				}
 			}
-			n.refinement_history = refineHistory;
-			return data;
-		}
-		void NCMesh2D::update_nodes(const Eigen::VectorXi &in_node_to_node)
-		{
-			// Preserve vertex metadata separately from the FE node labels.
-			capture_labels();
-			Mesh::update_nodes(in_node_to_node);
-		}
-		void NCMesh2D::capture_labels()
-		{
-			if (!index_prepared)
-				return;
-			label_flags_ = (has_body_ids() ? 1 : 0) | (has_geometry_ids() ? 2 : 0)
-						   | ((has_node_ids() || (label_flags_ & 4)) ? 4 : 0) | (has_boundary_ids() ? 8 : 0);
-			full_node_ids_.resize(vertices.size(), -1);
-			full_geometry_ids_.resize(elements.size(), -1);
-			for (int i = 0; i < n_elements; ++i)
+			if (had_body_ids || other_has_body_ids)
 			{
-				const int id = valid_to_all_elem(i);
-				if (has_body_ids())
-					elements[id].body_id = get_body_id(i);
-				if (has_geometry_ids())
-					full_geometry_ids_[id] = get_geometry_id(i);
-			}
-			if (has_node_ids())
-				for (int i = 0; i < n_vertices(); ++i)
-					full_node_ids_[valid_to_all_vertex(i)] = get_node_id(i);
-		}
-		void NCMesh2D::restore_labels()
-		{
-			const int old = full_geometry_ids_.size();
-			full_geometry_ids_.resize(elements.size(), -1);
-			for (int i = old; i < int(elements.size()); ++i)
-				if (elements[i].parent >= 0)
-					full_geometry_ids_[i] = full_geometry_ids_[elements[i].parent];
-			full_node_ids_.resize(vertices.size(), -1);
-			if (label_flags_ & 1)
-			{
-				body_ids_.resize(n_elements);
-				for (int i = 0; i < n_elements; ++i)
-					body_ids_[i] = elements[valid_to_all_elem(i)].body_id;
-			}
-			if (label_flags_ & 2)
-			{
-				geometry_ids_.resize(n_elements);
-				for (int i = 0; i < n_elements; ++i)
-					geometry_ids_[i] = full_geometry_ids_[valid_to_all_elem(i)];
-			}
-			if (label_flags_ & 4)
-			{
-				node_ids_.resize(n_vertices());
-				for (int i = 0; i < n_vertices(); ++i)
-					node_ids_[i] = full_node_ids_[valid_to_all_vertex(i)];
-			}
-			if (label_flags_ & 8)
-			{
-				boundary_ids_.resize(n_boundary_elements());
-				for (int i = 0; i < n_boundary_elements(); ++i)
+				body_ids_.resize(n_faces());
+				for (int f = 0; f < n_faces(); ++f)
 				{
-					boundary_ids_[i] = edges[valid_to_all_edge(i)].boundary_id;
+					ncElem &element = elements[valid_to_all_elem(f)];
+					const bool labeled = valid_to_all_elem(f) < el_off ? had_body_ids : other_has_body_ids;
+					if (!labeled)
+						element.body_id = 0;
+					body_ids_[f] = element.body_id;
 				}
 			}
-		}
-		void NCMesh2D::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
-		{
-			for (auto &v : vertices)
-				v.pos = A * v.pos + b;
 		}
 
 		std::unique_ptr<Mesh> NCMesh2D::copy() const
@@ -841,6 +822,7 @@ namespace polyfem
 			Navigation::Index idx2;
 			idx2.face = idx.face;
 			idx2.vertex = idx.vertex;
+			idx2.edge = -1;
 			idx2.face_corner = -1;
 			const int full_vertex_id = valid_to_all_vertex(idx.vertex);
 
@@ -867,7 +849,7 @@ namespace polyfem
 
 			const auto &edge = edges[valid_to_all_edge(idx.edge)];
 			if (edge.n_elem() == 2)
-				idx2.face = (edge.find_opposite_element(valid_to_all_elem(idx.face)));
+				idx2.face = all_to_valid_elem(edge.find_opposite_element(valid_to_all_elem(idx.face)));
 			else
 				idx2.face = -1;
 

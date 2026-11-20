@@ -17,6 +17,13 @@ namespace polyfem::io
 		Evaluator() {};
 
 	public:
+		/// Build a frame-local value interpolation operator, including weighted global mappings.
+		static StiffnessMatrix build_interpolation_matrix(
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const Eigen::MatrixXd &local_points,
+			const Eigen::VectorXi &element_ids);
+
 		/// compute von mises stress at quadrature points for the function fun, also compute the interpolated function
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar

@@ -51,7 +51,7 @@ namespace polyfem::solver
 			for (int v_in = 0; v_in < vertex_num_; ++v_in)
 			{
 				int v = varform.primary_space().space_in_node_to_node(v_in);
-				int tag = varform.get_mesh().get_node_id(v);
+				int tag = varform.primary_space().node_tag(v);
 				if (varform.get_problem().is_nodal_dirichlet_boundary(v, tag))
 				{
 					tmp.push_back(v_in);

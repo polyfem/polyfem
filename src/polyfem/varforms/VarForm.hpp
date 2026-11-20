@@ -29,6 +29,10 @@
 
 namespace polyfem
 {
+	namespace io
+	{
+		class OutputWriter;
+	}
 	namespace time_integrator
 	{
 		class BDF;
@@ -71,6 +75,7 @@ namespace polyfem
 			/// @param args json input arguments, used to determine which data to reset
 			void set_args(const json &args)
 			{
+				flush_output();
 				this->args = args;
 				prepared_ = false;
 				output_sampler_initialized_ = false;
@@ -90,7 +95,7 @@ namespace polyfem
 			void set_checkpoint_reader(const io::CheckpointReader &reader) { checkpoint_reader_ = std::cref(reader); }
 
 			/// Check time configuration after the derived formulation initializes its problem.
-			void validate_time_dependence() const;
+			virtual void validate_time_dependence() const;
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
@@ -118,6 +123,8 @@ namespace polyfem
 			/// @brief Get the output space of the variational formulation, for output purposes
 			/// @return Output space
 			virtual io::OutputSpace output_space() const = 0;
+			/// Whether the output index and frame selection include this timestep.
+			bool should_save_timestep(int step) const;
 			/// @brief Get the output fields of the variational formulation, for output purposes
 			/// @param sample Output sample
 			/// @param solution Solution matrix
@@ -225,6 +232,10 @@ namespace polyfem
 				FESpace &space,
 				VarFormBoundaryState &boundary);
 
+		protected:
+			/// Input-order -> internal node map of an FE space. build_fe_space only
+			/// calls this for spaces that build their own geometry; secondary spaces
+			/// sharing a geometry (e.g. the growth space) must call it themselves.
 			void build_node_mapping(
 				const mesh::Mesh &mesh,
 				const std::string &basis_type,
@@ -232,7 +243,6 @@ namespace polyfem
 				Eigen::VectorXi &space_in_node_to_node,
 				Eigen::VectorXi &space_in_primitive_to_primitive) const;
 
-		protected:
 			virtual void build_rhs_assembler() = 0;
 			virtual void set_obstacle(mesh::Obstacle &&obstacle);
 
@@ -248,7 +258,7 @@ namespace polyfem
 			bool save_timestep_to_vtm(
 				const double time, const int t, const double dt,
 				const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
-				const std::string &block_prefix) const;
+				const std::string &block_prefix, io::OutGeometryData::WriteJobs *writes = nullptr) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;
 			void notify_time_step(const int t, const int time_steps, const double t0, const double dt) const;
@@ -261,6 +271,12 @@ namespace polyfem
 
 			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
 			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
+			/// Capture mutable timestep data for deferred field evaluation.
+			/// An empty callback requests immediate field preparation.
+			virtual io::OutputFieldFunction snapshot_output_fields(
+				const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+				const io::OutputSpace &space, double time, double dt) const { return {}; }
+			void flush_output() const;
 
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;
@@ -281,6 +297,7 @@ namespace polyfem
 
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;
+			mutable io::OutputWriter *output_writer_ = nullptr;
 			bool prepared_ = false;
 			int output_index_offset_ = 0;
 

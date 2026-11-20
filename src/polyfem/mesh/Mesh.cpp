@@ -10,6 +10,9 @@
 
 #include <Eigen/Geometry>
 
+#include <algorithm>
+#include <numeric>
+
 #include <igl/boundary_facets.h>
 #include <igl/oriented_facets.h>
 #include <igl/edges.h>
@@ -268,8 +271,31 @@ namespace polyfem::mesh
 			set_body_ids(data.body_ids);
 		if (!data.geometry_ids.empty())
 			set_geometry_ids(data.geometry_ids);
+
+		// Mesh vertex of each input vertex. Conforming meshes keep the input
+		// vertices; non-conforming ones number only the referenced ones
+		// (in_ordered_vertices_ lists them in increasing order).
+		std::vector<int> input_to_vertex(data.vertices.rows());
+		if (is_conforming())
+			std::iota(input_to_vertex.begin(), input_to_vertex.end(), 0);
+		else
+		{
+			std::fill(input_to_vertex.begin(), input_to_vertex.end(), -1);
+			for (int v = 0; v < in_ordered_vertices_.size(); ++v)
+				input_to_vertex[in_ordered_vertices_[v]] = v;
+		}
+
 		if (!data.node_ids.empty())
-			node_ids_ = data.node_ids;
+		{
+			if (is_conforming())
+				node_ids_ = data.node_ids;
+			else
+			{
+				node_ids_.resize(n_vertices());
+				for (int v = 0; v < n_vertices(); ++v)
+					node_ids_[v] = data.node_ids[in_ordered_vertices_[v]];
+			}
+		}
 
 		if (!data.boundary_ids.empty())
 		{
@@ -277,6 +303,14 @@ namespace polyfem::mesh
 			for (int i = 0; i < data.boundary_elements.size(); ++i)
 			{
 				std::vector<int> side = data.boundary_elements[i];
+				bool referenced = true;
+				for (int &v : side)
+				{
+					v = input_to_vertex[v];
+					referenced &= v >= 0;
+				}
+				if (!referenced)
+					continue;
 				std::sort(side.begin(), side.end());
 				const auto [it, inserted] = labels.emplace(std::move(side), data.boundary_ids[i]);
 				if (!inserted && it->second != data.boundary_ids[i])
@@ -362,22 +396,6 @@ namespace polyfem::mesh
 	{
 		return elements_tag_[el_id] == ElementType::INTERIOR_POLYTOPE
 			   || elements_tag_[el_id] == ElementType::BOUNDARY_POLYTOPE;
-	}
-
-	void Mesh::update_nodes(const Eigen::VectorXi &in_node_to_node)
-	{
-		if (in_node_to_node.size() <= 0 || node_ids_.empty())
-		{
-			node_ids_.clear();
-			return;
-		}
-
-		const auto tmp = node_ids_;
-
-		for (int n = 0; n < n_vertices(); ++n)
-		{
-			node_ids_[in_node_to_node[n]] = tmp[n];
-		}
 	}
 
 	void Mesh::compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
@@ -538,23 +556,14 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// Initialize node_ids_ if it is not initialized yet.
-		if (!has_node_ids() && mesh.has_node_ids())
+		// Per-vertex node ids; the side without ids gets the default -1.
+		if (!node_ids_.empty() || !mesh.node_ids_.empty())
 		{
-			node_ids_.resize(n_vertices);
-			for (int i = 0; i < node_ids_.size(); ++i)
-				node_ids_[i] = get_node_id(i); // results in default if node_ids_ is empty
-		}
-
-		if (mesh.has_node_ids())
-		{
-			node_ids_.insert(node_ids_.end(), mesh.node_ids_.begin(), mesh.node_ids_.end());
-		}
-		else if (has_node_ids()) // && !mesh.has_node_ids()
-		{
-			node_ids_.resize(n_vertices + mesh.n_vertices());
-			for (int i = 0; i < mesh.n_vertices(); ++i)
-				node_ids_[n_vertices + i] = mesh.get_node_id(i); // results in default if node_ids_ is empty
+			node_ids_.resize(n_vertices, -1);
+			if (mesh.node_ids_.empty())
+				node_ids_.resize(n_vertices + mesh.n_vertices(), -1);
+			else
+				node_ids_.insert(node_ids_.end(), mesh.node_ids_.begin(), mesh.node_ids_.end());
 		}
 
 		assert(node_ids_.empty() || node_ids_.size() == n_vertices + mesh.n_vertices());
@@ -615,31 +624,39 @@ namespace polyfem::mesh
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
 		// --------------------------------------------------------------------
-		for (const auto &n : mesh.edge_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			edge_nodes_.push_back(tmp);
-		}
-		for (const auto &n : mesh.face_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			tmp.v3 += n_vertices;
-			face_nodes_.push_back(tmp);
-		}
-		for (const auto &n : mesh.cell_nodes_)
-		{
-			auto tmp = n;
-			tmp.v1 += n_vertices;
-			tmp.v2 += n_vertices;
-			tmp.v3 += n_vertices;
-			tmp.v4 += n_vertices;
-			cell_nodes_.push_back(tmp);
-		}
-		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
+		// The curved-geometry nodes and the rational weights are indexed by
+		// edge/face/cell/element id, and the appended entities keep their ids
+		// shifted by this mesh's counts: pad both sides with empty entries
+		// (= linear) so the ids stay aligned when only one mesh has them.
+		const auto append_padded = [](auto &entries, const int n_entries, const auto &other, const int n_other, const auto &shift) {
+			if (entries.empty() && other.empty())
+				return;
+			entries.resize(n_entries);
+			for (auto n : other)
+			{
+				shift(n);
+				entries.push_back(std::move(n));
+			}
+			entries.resize(n_entries + n_other);
+		};
+		const int n_cells_this = is_volume() ? n_cells() : 0;
+		const int n_cells_other = mesh.is_volume() ? mesh.n_cells() : 0;
+		append_padded(edge_nodes_, n_edges(), mesh.edge_nodes_, mesh.n_edges(), [&](EdgeNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+		});
+		append_padded(face_nodes_, n_faces(), mesh.face_nodes_, mesh.n_faces(), [&](FaceNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+			n.v3 += n_vertices;
+		});
+		append_padded(cell_nodes_, n_cells_this, mesh.cell_nodes_, n_cells_other, [&](CellNodes &n) {
+			n.v1 += n_vertices;
+			n.v2 += n_vertices;
+			n.v3 += n_vertices;
+			n.v4 += n_vertices;
+		});
+		append_padded(cell_weights_, n_elements(), mesh.cell_weights_, mesh.n_elements(), [](std::vector<double> &) {});
 		// --------------------------------------------------------------------
 
 		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());
@@ -701,6 +718,19 @@ namespace polyfem::mesh
 		transform_high_order_nodes(face_nodes_, A, b);
 		transform_high_order_nodes(cell_nodes_, A, b);
 		transform_higher_order_data(A, b);
+	}
+
+	void Mesh::clear_data_lost_by_refinement()
+	{
+		boundary_ids_.clear();
+		body_ids_.clear();
+		node_ids_.clear();
+		geometry_ids_.clear();
+		orders_.resize(0, 0);
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		clear_higher_order_data();
 	}
 
 	void Mesh::clear_higher_order_data()

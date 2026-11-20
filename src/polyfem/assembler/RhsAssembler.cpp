@@ -31,7 +31,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle *obstacle,
+		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const MeshNodes *mesh_nodes, const Obstacle *obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
@@ -43,6 +43,7 @@ namespace polyfem
 								   const int fe_space_id)
 			: assembler_(assembler),
 			  mesh_(mesh),
+			  mesh_nodes_(mesh_nodes),
 			  obstacle_(obstacle),
 			  n_basis_(n_basis),
 			  size_(size),
@@ -511,8 +512,8 @@ namespace polyfem
 					const auto &n_id = dirichlet_nodes_[n];
 					const auto &pt = dirichlet_nodes_position_[n];
 
-					const int tag = mesh_.get_node_id(n_id);
-					problem_.dirichlet_nodal_value(mesh_, n_id, pt, t, tmp_val, fe_space_id_);
+					const int tag = mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1;
+					problem_.dirichlet_nodal_value(mesh_, n_id, tag, pt, t, tmp_val, fe_space_id_);
 					assert(tmp_val.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
@@ -618,7 +619,7 @@ namespace polyfem
 					const int n_id = neumann_nodes_[n];
 					const RowVectorNd &pt = neumann_nodes_position_[n];
 
-					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, tmp_val, fe_space_id_);
+					problem_.neumann_nodal_value(mesh_, n_id, mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1, pt, empty_normal, t, tmp_val, fe_space_id_);
 					assert(tmp_val.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
@@ -663,7 +664,7 @@ namespace polyfem
 											   const double t,
 											   Eigen::MatrixXd &rhs) const
 		{
-			if (problem_.is_constant_in_time())
+			if (problem_.is_constant_in_time() || !is_rhs_time_dependent(density))
 			{
 				rhs = final_rhs;
 			}
@@ -683,6 +684,17 @@ namespace polyfem
 
 				assert(rhs.size() == final_rhs.size());
 			}
+		}
+
+		double RhsAssembler::compute_energy_from_rhs(
+			const Eigen::VectorXd &displacement,
+			const Eigen::MatrixXd &rhs) const
+		{
+			const int n_obstacle_vertices = obstacle_ ? obstacle_->n_vertices() : 0;
+			const Eigen::Index ndof = (n_basis_ - n_obstacle_vertices) * size_;
+			assert(ndof >= 0 && ndof <= displacement.size());
+			assert(rhs.cols() == 1 && ndof <= rhs.rows());
+			return -displacement.head(ndof).dot(rhs.col(0).head(ndof));
 		}
 
 		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement,
@@ -846,7 +858,7 @@ namespace polyfem
 					const int n_id = neumann_nodes_[n];
 					const RowVectorNd &pt = neumann_nodes_position_[n];
 
-					problem_.neumann_nodal_value(mesh_, n_id, pt, empty_normal, t, nodal_force, fe_space_id_);
+					problem_.neumann_nodal_value(mesh_, n_id, mesh_nodes_ ? mesh_nodes_->node_tag(n_id) : -1, pt, empty_normal, t, nodal_force, fe_space_id_);
 					assert(nodal_force.size() == size_);
 
 					for (int d = 0; d < size_; ++d)

@@ -140,6 +140,18 @@ namespace polyfem::assembler
 		{
 		}
 
+		/// Evaluate requested output families together using element-local scratch.
+		virtual void compute_output_values(
+			const OutputData &data,
+			std::vector<NamedMatrix> *scalar,
+			std::vector<NamedMatrix> *tensor) const
+		{
+			if (scalar)
+				compute_scalar_value(data, *scalar);
+			if (tensor)
+				compute_tensor_value(data, *tensor);
+		}
+
 		// computes tensor, assembler is the name of the formulation
 		virtual void compute_stiffness_value(
 			const double t,
@@ -422,37 +434,10 @@ namespace polyfem::assembler
 
 		void set_use_robust_jacobian();
 
-		// plotting (eg von mises), assembler is the name of the formulation
-		void compute_scalar_value(
-			const OutputData &data,
-			std::vector<NamedMatrix> &result) const override
-		{
-			result.clear();
-			Eigen::MatrixXd tmp;
-			compute_von_mises_stresses(data, tmp);
-			result.emplace_back("von_mises", tmp);
-		}
-
-		// computes tensor, assembler is the name of the formulation
-		void compute_tensor_value(
-			const OutputData &data,
-			std::vector<NamedMatrix> &result) const override
-		{
-			result.clear();
-			Eigen::MatrixXd cauchy, pk1, pk2, F, energy;
-
-			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
-			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
-			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
-			compute_stress_tensor(data, ElasticityTensorType::F, F);
-			compute_energy_density(data, energy);
-
-			result.emplace_back("cauchy_stess", cauchy);
-			result.emplace_back("pk1_stess", pk1);
-			result.emplace_back("pk2_stess", pk2);
-			result.emplace_back("F", F);
-			result.emplace_back("energy", energy);
-		}
+		void compute_scalar_value(const OutputData &data, std::vector<NamedMatrix> &result) const override;
+		void compute_tensor_value(const OutputData &data, std::vector<NamedMatrix> &result) const override;
+		void compute_output_values(const OutputData &data,
+								   std::vector<NamedMatrix> *scalar, std::vector<NamedMatrix> *tensor) const override;
 
 		void compute_stress_tensor(const OutputData &data,
 								   const ElasticityTensorType &type,
@@ -491,9 +476,42 @@ namespace polyfem::assembler
 										  const int all_size,
 										  const ElasticityTensorType &type,
 										  Eigen::MatrixXd &all,
-										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
+										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 
 	protected:
+		/// Scratch for one output point. All tensor storage has a fixed 3x3 capacity.
+		class OutputStress
+		{
+		public:
+			explicit OutputStress(const MatrixNd &deformation) : deformation_(deformation) {}
+			MatrixNd native;
+			ElasticityTensorType native_type = ElasticityTensorType::CAUCHY;
+			bool has_stress = true;
+			bool needs_stress = true;
+			bool needs_energy = false;
+			double energy = 0;
+			const MatrixNd &deformation() const { return deformation_; }
+			const MatrixNd &tensor(ElasticityTensorType type);
+
+		private:
+			const MatrixNd &deformation_;
+			std::array<MatrixNd, 3> tensors_;
+			std::array<bool, 3> computed_{};
+			MatrixNd inverse_;
+			bool inverse_ready_ = false;
+			bool determinant_ready_ = false;
+			double determinant_ = 0;
+			const MatrixNd &inverse();
+			double determinant();
+		};
+
+		/// Return false to use a material's legacy assign_stress_tensor implementation.
+		virtual bool compute_output_stress(const OutputData &data,
+										   const ElementAssemblyValues &vals, Eigen::Index point,
+										   const MatrixNd &displacement_gradient, OutputStress &stress) const { return false; }
+
+		bool evaluate_output_stress(const OutputData &data, bool need_stress, bool need_energy,
+									const std::function<void(Eigen::Index, OutputStress &)> &emit) const;
 		bool use_robust_jacobian = false;
 	};
 

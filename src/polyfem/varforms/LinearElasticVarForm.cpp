@@ -49,6 +49,15 @@ namespace polyfem::varform
 			sample, solution, options, nullptr, solve_data_.time_integrator.get(), named_forms, solve_data_.elastic_form.get());
 	}
 
+	io::OutputFieldFunction LinearElasticVarForm::snapshot_output_fields(
+		const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+		const io::OutputSpace &space, double, double) const
+	{
+		return snapshot_elastic_output_fields(solution, opts, space.obstacle, solve_data_.time_integrator.get(),
+											  {{"elastic", solve_data_.elastic_form}, {"inertia", solve_data_.inertia_form}, {"body", solve_data_.body_form}},
+											  solve_data_.elastic_form.get());
+	}
+
 	void LinearElasticVarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
 	{
 		igl::Timer timer;

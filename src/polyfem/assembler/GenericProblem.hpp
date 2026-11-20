@@ -63,14 +63,15 @@ namespace polyfem
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_rhs_zero(const int fe_space_id = -1) const override;
+			bool is_rhs_time_dependent(const int fe_space_id = -1) const override;
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 			double pressure_cavity_bc(const int boundary_id, const double t) const override;
 
-			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
-			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id = -1) override;
 			bool is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id = -1) override;
 			bool has_nodal_dirichlet(const int fe_space_id = -1) override;
@@ -145,13 +146,14 @@ namespace polyfem
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void rhs(const assembler::Assembler &assembler, const mesh::Mesh &mesh, const int element_id, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_rhs_zero(const int fe_space_id = -1) const override;
+			bool is_rhs_time_dependent(const int fe_space_id = -1) const override;
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 
-			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
-			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const override;
 			bool is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id = -1) override;
 			bool is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id = -1) override;
 			bool has_nodal_dirichlet(const int fe_space_id = -1) override;

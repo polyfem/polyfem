@@ -12,6 +12,9 @@ jobs:
   build-and-push-standard:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    env:
+      # Retain build records only for main, alongside the published images.
+      DOCKER_BUILD_RECORD_UPLOAD: ${{ github.ref == 'refs/heads/main' }}
 
     steps:
       - name: Checkout repository

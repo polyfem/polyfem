@@ -1,5 +1,7 @@
 #include "NavierStokesFSIVarForm.hpp"
 
+#include <polyfem/io/OutputWriter.hpp>
+
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/NavierStokesFSI.hpp>
@@ -714,11 +716,11 @@ namespace polyfem::varform
 			mesh, assembler::BoundaryKind::Neumann, mesh_displacement_space_id_,
 			mesh_displacement_space_.basis_list(), mesh_displacement_boundary_.total_local_boundary,
 			mesh_displacement_boundary_.local_neumann_boundary, unused, mesh.dimension());
-		mesh_displacement_problem_->setup_nodal_bc(mesh, assembler::BoundaryKind::Dirichlet, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.dirichlet_nodes);
-		mesh_displacement_problem_->setup_nodal_bc(mesh, assembler::BoundaryKind::Neumann, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.neumann_nodes);
+		mesh_displacement_problem_->setup_nodal_bc(mesh_displacement_space_.mesh_nodes.get(), assembler::BoundaryKind::Dirichlet, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.dirichlet_nodes);
+		mesh_displacement_problem_->setup_nodal_bc(mesh_displacement_space_.mesh_nodes.get(), assembler::BoundaryKind::Neumann, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.neumann_nodes);
 		for (const int node : mesh_displacement_boundary_.dirichlet_nodes)
 		{
-			const int tag = mesh.get_node_id(node);
+			const int tag = mesh_displacement_space_.node_tag(node);
 			for (int d = 0; d < mesh.dimension(); ++d)
 				if (mesh_displacement_problem_->is_nodal_dimension_dirichlet(node, tag, d, mesh_displacement_space_id_))
 					mesh_displacement_boundary_.boundary_nodes.push_back(node * mesh.dimension() + d);
@@ -738,7 +740,7 @@ namespace polyfem::varform
 			solver_params["Pardiso"] = {};
 		solver_params["Pardiso"]["mtype"] = -2;
 		mesh_rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*mesh_elastic_assembler_, *mesh_, nullptr,
+			*mesh_elastic_assembler_, *mesh_, mesh_displacement_space_.mesh_nodes.get(), nullptr,
 			mesh_displacement_boundary_.dirichlet_nodes, mesh_displacement_boundary_.neumann_nodes,
 			mesh_displacement_boundary_.dirichlet_nodes_position, mesh_displacement_boundary_.neumann_nodes_position,
 			mesh_displacement_space_.n_bases, mesh_->dimension(),
@@ -1085,6 +1087,31 @@ namespace polyfem::varform
 		if (!has_solid_)
 		{
 			save_timestep(time, step, t0, dt, solution);
+			return;
+		}
+		if (!should_save_timestep(step) && !solid_varform_->should_save_timestep(step))
+			return;
+		if (output_writer_ && output_writer_->asynchronous())
+		{
+			const int global_t = output_file_index(step);
+			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+			const std::string vtm_path = resolve_output_path(fmt::format(step_name + "{:d}.vtm", global_t));
+			const std::string pvd_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+			const int skip_frame = args["output"]["paraview"]["skip_frame"];
+			output_writer_->enqueue([&] {
+				auto vtm = std::make_shared<paraviewo::VTMWriter>(time);
+				io::OutGeometryData::WriteJobs writes;
+				save_timestep_to_vtm(time, step, dt, solution, *vtm, "Fluid", &writes);
+				solid_varform_->save_timestep_for_embedding(time, step, dt,
+															solution.middleRows(solid_displacement_offset(), solid_displacement_ndof()), *vtm, "Solid", &writes);
+				return [this, vtm, writes = std::move(writes), global_t, step_name, vtm_path, pvd_path, skip_frame, t0 = t0, dt = dt] {
+					for (const auto &write : writes)
+						write();
+					vtm->save(vtm_path);
+					if (!pvd_path.empty())
+						output_geometry_.save_pvd(pvd_path, [step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); }, global_t, t0, dt, skip_frame);
+				};
+			});
 			return;
 		}
 

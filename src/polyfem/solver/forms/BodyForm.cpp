@@ -33,7 +33,11 @@ namespace polyfem::solver
 
 	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return rhs_assembler_.compute_energy(x, x_prev_, local_neumann_boundary_, density_, n_boundary_samples_, t_);
+		// Loads depend on time and the lagged displacement, not the line-search
+		// iterate. update_current_rhs already assembles them with those quantities.
+		if (energy_rhs_.size() == 0)
+			return 0;
+		return rhs_assembler_.compute_energy_from_rhs(x, energy_rhs_);
 	}
 
 	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
@@ -73,6 +77,22 @@ namespace polyfem::solver
 			std::vector<mesh::LocalBoundary>(), std::vector<int>(),
 			n_boundary_samples_, local_neumann_boundary_,
 			current_rhs_, x, t_);
+
+		if (rhs_assembler_.problem().is_constant_in_time() && rhs_assembler_.is_rhs_time_dependent(density_))
+		{
+			// The gradient's supplied static RHS may have been assembled at a
+			// different time. Match the energy's density/load evaluation at t_.
+			rhs_assembler_.assemble(density_, energy_rhs_, t_);
+			energy_rhs_ *= -1;
+			rhs_assembler_.set_bc(
+				std::vector<mesh::LocalBoundary>(), std::vector<int>(),
+				n_boundary_samples_, local_neumann_boundary_, energy_rhs_, x, t_);
+		}
+		else
+			energy_rhs_ = current_rhs_;
+		// Preserve the constant-time energy evaluation for unloaded problems.
+		if (energy_rhs_.isZero(0))
+			energy_rhs_.resize(0, 1);
 	}
 
 	void BodyForm::hessian_wrt_u_prev(const Eigen::VectorXd &u_prev, const double t, StiffnessMatrix &hessian) const

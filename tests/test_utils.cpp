@@ -177,6 +177,10 @@ TEST_CASE("expression", "[utils]")
 	expr.set_unit_type("");
 	expr2d.set_unit_type("");
 	val.set_unit_type("");
+	CHECK_FALSE(expr.is_constant());
+	CHECK_FALSE(expr2d.is_constant());
+	CHECK(val.is_constant());
+	CHECK_FALSE(val.is_time_dependent());
 
 	REQUIRE(expr(2, 3, 4) == Catch::Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
 	REQUIRE(expr2d(2, 3) == Catch::Approx(2. * 2. + sqrt(2. * 3.)).margin(1e-10));
@@ -188,6 +192,8 @@ TEST_CASE("expression", "[utils]")
 	time_expr.set_unit_type("");
 
 	REQUIRE_FALSE(time_expr.is_zero());
+	CHECK_FALSE(time_expr.is_constant());
+	CHECK(time_expr.is_time_dependent());
 	REQUIRE(time_expr(3, 0, 0, 0) == Catch::Approx(3).margin(1e-16));
 	REQUIRE(time_expr(3, 0, 0, 1) == Catch::Approx(6).margin(1e-16));
 
@@ -205,10 +211,61 @@ TEST_CASE("expression", "[utils]")
 	python_expr.set_unit_type("");
 
 	REQUIRE_FALSE(python_expr.is_zero());
+	CHECK_FALSE(python_expr.is_constant());
+	CHECK(python_expr.is_time_dependent());
 	REQUIRE(python_expr(1, 2, 3, 4, 5) == Catch::Approx(35).margin(1e-16));
 
 	std::filesystem::remove(python_file);
 #endif
+}
+
+TEST_CASE("expression constant classification", "[utils][constant_inputs]")
+{
+	const io::FileSystemIO resources(".");
+	utils::ExpressionValue value;
+	CHECK(value.is_constant());
+	value.init(3.0);
+	value.set_index(17);
+	CHECK(value.is_constant());
+	value.init(json{{"value", 2}, {"unit", "kPa"}}, resources);
+	value.set_unit_type("Pa");
+	CHECK(value.is_constant());
+	CHECK(value(1, 2, 3, 4, 5) == Catch::Approx(2000));
+	value.init(std::string("3"), resources);
+	CHECK(value.is_constant());
+	CHECK_FALSE(value.is_time_dependent());
+	value.init(std::string("x+y+z"), resources);
+	CHECK_FALSE(value.is_constant());
+	CHECK_FALSE(value.is_time_dependent());
+	value.init(std::string("tan(x)"), resources);
+	CHECK_FALSE(value.is_constant());
+	CHECK(value.is_time_dependent()); // Conservative match in a function name.
+	value.init(std::string("x+y+z+t"), resources);
+	CHECK_FALSE(value.is_constant());
+	CHECK(value.is_time_dependent());
+	value.init(std::function<double(double, double, double)>([](double, double, double) { return 3.; }));
+	CHECK_FALSE(value.is_constant());
+	CHECK(value.is_time_dependent());
+	value.init(std::function<double(double, double, double, double)>([](double, double, double, double) { return 3.; }));
+	CHECK_FALSE(value.is_constant());
+	value.init(std::function<double(double, double, double, double, int)>([](double, double, double, double, int) { return 3.; }));
+	CHECK_FALSE(value.is_constant());
+	value.init(std::function<Eigen::MatrixXd(double, double, double)>([](double, double, double) { return Eigen::MatrixXd::Ones(1, 1); }), 0);
+	CHECK_FALSE(value.is_constant());
+	value.init(Eigen::MatrixXd::Constant(2, 1, 3));
+	CHECK_FALSE(value.is_constant());
+	CHECK_FALSE(value.is_time_dependent());
+	value.set_mat(Eigen::MatrixXd::Constant(2, 1, 4));
+	CHECK_FALSE(value.is_constant());
+	value.clear();
+	CHECK(value.is_constant());
+	value.init(json::array({3, 3}), resources);
+	CHECK_FALSE(value.is_constant());
+	value.set_t(json::array({0, 1}));
+	CHECK_FALSE(value.is_constant());
+	CHECK(value.is_time_dependent());
+	CHECK(value(0, 0, 0, 0) == 3);
+	CHECK(value(0, 0, 0, 1) == 3);
 }
 
 TEST_CASE("mshreader", "[utils]")

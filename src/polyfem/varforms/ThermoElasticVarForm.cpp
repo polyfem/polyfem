@@ -385,7 +385,6 @@ namespace polyfem::varform
 			boundary_);
 
 		problem->update_nodes(space_.space_in_node_to_node);
-		mesh.update_nodes(space_.space_in_node_to_node);
 		build_displacement_boundary(mesh);
 
 		const int n_fe_bases = space_.n_bases;
@@ -464,13 +463,13 @@ namespace polyfem::varform
 			mesh.dimension());
 
 		problem->setup_nodal_bc(
-			mesh,
+			space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Dirichlet,
 			displacement_space_id_,
 			space_.n_bases,
 			boundary_.dirichlet_nodes);
 		problem->setup_nodal_bc(
-			mesh,
+			space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Neumann,
 			displacement_space_id_,
 			space_.n_bases,
@@ -478,7 +477,7 @@ namespace polyfem::varform
 
 		for (const int n_id : boundary_.dirichlet_nodes)
 		{
-			const int tag = mesh.get_node_id(n_id);
+			const int tag = space_.node_tag(n_id);
 			for (int d = 0; d < mesh.dimension(); ++d)
 				if (problem->is_nodal_dimension_dirichlet(n_id, tag, d, displacement_space_id_))
 					boundary_.boundary_nodes.push_back(n_id * mesh.dimension() + d);
@@ -542,13 +541,13 @@ namespace polyfem::varform
 			/*value_dim=*/1);
 
 		temperature_problem_->setup_nodal_bc(
-			mesh,
+			temperature_space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Dirichlet,
 			temperature_space_id_,
 			temperature_space_.n_bases,
 			temperature_boundary_.dirichlet_nodes);
 		temperature_problem_->setup_nodal_bc(
-			mesh,
+			temperature_space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Neumann,
 			temperature_space_id_,
 			temperature_space_.n_bases,
@@ -570,7 +569,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		solve_data_.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-			*primary_assembler_, *mesh_, &obstacle,
+			*primary_assembler_, *mesh_, space_.mesh_nodes.get(), &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, mesh_->dimension(), space_.basis_list(), space_.geometry_basis_list(),
@@ -581,7 +580,7 @@ namespace polyfem::varform
 		rhs_assembler_ = solve_data_.rhs_assembler;
 
 		temperature_rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*temperature_assembler_, *mesh_, nullptr,
+			*temperature_assembler_, *mesh_, temperature_space_.mesh_nodes.get(), nullptr,
 			temperature_boundary_.dirichlet_nodes, temperature_boundary_.neumann_nodes,
 			temperature_boundary_.dirichlet_nodes_position, temperature_boundary_.neumann_nodes_position,
 			temperature_space_.n_bases, /*size=*/1,

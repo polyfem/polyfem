@@ -123,66 +123,25 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void InversionBarrier::assign_stress_tensor(
-		const OutputData &data,
-		const int all_size,
-		const ElasticityTensorType &type,
-		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool InversionBarrier::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+												 const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
 		const auto t = data.t;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(def_grad);
-				continue;
-			}
-
-			const double J = polyfem::utils::determinant(def_grad);
-			const double JBarrierThreshold = JBarrierThreshold_(local_pts.row(p), t, vals.element_id);
-
-			Eigen::MatrixXd delJ_delF, del2J_delF2;
-			jacobian_cofactor_derivatives(def_grad, size(), delJ_delF, del2J_delF2);
-
-			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
-
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = mu * barrier<double>::value(J, JBarrierThreshold);
-				continue;
-			}
-
-			// PK1-like stress dW/dF; convert to the requested tensor type via def_grad.
-			Eigen::MatrixXd stress_tensor = mu * barrier<double>::first_derivatives(J, JBarrierThreshold) * delJ_delF;
-			if (type == ElasticityTensorType::CAUCHY)
-				stress_tensor = (stress_tensor * def_grad.transpose()) / J;
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = def_grad.inverse() * stress_tensor;
-			// else: PK1, already in the right form.
-
-			all.row(p) = fun(stress_tensor);
-		}
+		const auto &def_grad = output.deformation();
+		const double J = polyfem::utils::determinant(def_grad);
+		const double threshold = JBarrierThreshold_(local_pts.row(p), t, vals.element_id);
+		double lambda, mu;
+		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		if (output.needs_energy)
+			output.energy = mu * barrier<double>::value(J, threshold);
+		if (!output.needs_stress)
+			return true;
+		Eigen::MatrixXd delJ_delF, del2J_delF2;
+		jacobian_cofactor_derivatives(def_grad, size(), delJ_delF, del2J_delF2);
+		output.native = mu * barrier<double>::first_derivatives(J, threshold) * delJ_delF;
+		output.native_type = ElasticityTensorType::PK1;
+		return true;
 	}
 
 	double InversionBarrier::compute_energy(const NonLinearAssemblerData &data) const

@@ -6,6 +6,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 namespace polyfem
 {
@@ -40,6 +41,9 @@ namespace polyfem
 				rhs(assembler, pts, t, val, fe_space_id);
 			}
 			virtual bool is_rhs_zero(const int fe_space_id = -1) const = 0;
+			/// Whether volume loads may depend on time; unknown providers default to true.
+			/// Entries may differ by body/FE space; the mesh partition must stay fixed.
+			virtual bool is_rhs_time_dependent(const int fe_space_id = -1) const { return true; }
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
@@ -48,8 +52,8 @@ namespace polyfem
 
 			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
 
-			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
-			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}
 			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
 			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag, const int fe_space_id = -1) { return false; }
 			virtual bool has_nodal_dirichlet(const int fe_space_id = -1) { return false; }
@@ -108,9 +112,11 @@ namespace polyfem
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				std::unordered_map<int, std::vector<mesh::LocalBoundary>> &selected_by_tag);
 
-			// Returns nodal BC node ids, not constrained DOF ids.
+			// Returns nodal BC node ids, not constrained DOF ids. The node tags
+			// (point selections) come from the mesh nodes of the FE space;
+			// mesh_nodes may be null (no tags, e.g. splines).
 			void setup_nodal_bc(
-				const mesh::Mesh &mesh,
+				const mesh::MeshNodes *mesh_nodes,
 				const BoundaryKind kind,
 				const int fe_space_id,
 				const int n_bases,

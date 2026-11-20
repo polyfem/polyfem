@@ -7,11 +7,14 @@ set(test_sources
   test_bases.cpp
   test_clipping.cpp
   test_cmesh.cpp
+  test_mesh3d_storage.cpp
   test_mesh_geometry.cpp
   test_mesh_readers.cpp
   test_mmg_remesh.cpp
   test_collision_proxy.cpp
   test_geometry_utils.cpp
+  test_growth_elasticity.cpp
+  test_growth_law.cpp
   test_hdf5.cpp
   test_interpolation.cpp
   test_jacobian.cpp

@@ -85,6 +85,10 @@ namespace polyfem::varform
 		/// Optional primitive-to-node mapping for this FE space.
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
 
+		/// Point-selection id of a node of this space (see MeshNodes::node_tag);
+		/// -1 without mesh nodes (e.g. splines).
+		int node_tag(const int node) const { return mesh_nodes ? mesh_nodes->node_tag(node) : -1; }
+
 		/// Geometric mapping used to integrate this FE space.
 		std::shared_ptr<GeometryMapping> geometry;
 

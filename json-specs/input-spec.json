@@ -1818,6 +1818,17 @@
         "spec_file": "elastic-material-parameters.json"
     },
     {
+        "pointer": "/materials/*/elastic_material/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of elastic models used by a nested elastic_material MaterialSum"
+    },
+    {
+        "pointer": "/materials/*/elastic_material/models/*",
+        "type": "include",
+        "spec_file": "elastic-material-parameters.json"
+    },
+    {
         "pointer": "/boundary_conditions",
         "default": null,
         "type": "object",
@@ -1830,7 +1841,8 @@
             "pressure_boundary",
             "pressure_cavity",
             "obstacle_displacements",
-            "periodic"
+            "periodic",
+            "growth_nodal_field"
         ],
         "doc": "The settings for boundary conditions."
     },
@@ -1951,6 +1963,12 @@
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
         "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension. If the file has a .json extension, it is instead read as an array of Dirichlet boundary condition objects and expanded inline."
+    },
+    {
+        "pointer": "/boundary_conditions/growth_nodal_field",
+        "type": "string",
+        "default": "",
+        "doc": "Path to a per-mesh-vertex growth (theta) file; when set, every growth DOF is Dirichlet with these values (GrowthElasticity only)."
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
@@ -2487,6 +2505,7 @@
         "type": "object",
         "optional": [
             "file_name",
+            "async",
             "vismesh_rel_area",
             "skip_frame",
             "high_order_mesh",
@@ -2498,6 +2517,12 @@
             "options"
         ],
         "doc": "Output in paraview format"
+    },
+    {
+        "pointer": "/output/paraview/async",
+        "default": true,
+        "type": "bool",
+        "doc": "Write timestep output with the configured threading backend and one pending frame."
     },
     {
         "pointer": "/output/paraview/file_name",

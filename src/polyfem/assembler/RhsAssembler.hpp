@@ -21,6 +21,7 @@ namespace polyfem
 			RhsAssembler(
 				const Assembler &assembler,
 				const mesh::Mesh &mesh,
+				const mesh::MeshNodes *mesh_nodes, ///< nodes of the FE space, for the node tags (may be null)
 				const mesh::Obstacle *obstacle,
 				const std::vector<int> &dirichlet_nodes,
 				const std::vector<int> &neumann_nodes,
@@ -61,6 +62,17 @@ namespace polyfem
 				const double t = 1) const;
 
 			// compute body energy
+			bool is_rhs_time_dependent(const Density &density) const
+			{
+				return density.is_time_dependent() || problem_.is_rhs_time_dependent(fe_space_id_);
+			}
+
+			// Use loads assembled for the same time and previous displacement.
+			// Prescribed obstacle displacements and mixed pressure entries are not loads.
+			double compute_energy_from_rhs(
+				const Eigen::VectorXd &displacement,
+				const Eigen::MatrixXd &rhs) const;
+
 			double compute_energy(
 				const Eigen::MatrixXd &displacement,
 				const Eigen::MatrixXd &displacement_prev,
@@ -130,6 +142,7 @@ namespace polyfem
 
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
+			const mesh::MeshNodes *mesh_nodes_;
 			const mesh::Obstacle *obstacle_;
 			const int n_basis_;
 			const int size_;                                 ///< dimension of problem

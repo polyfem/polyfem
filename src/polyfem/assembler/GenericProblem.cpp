@@ -287,6 +287,25 @@ namespace polyfem
 			}
 		}
 
+		bool GenericTensorProblem::is_rhs_time_dependent(const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+				const auto *size = find_for_fe_space(rhs_size_, fe_space_id);
+				if (rhs && size)
+					for (int i = 0; i < *size; ++i)
+						if ((*rhs)[i].is_time_dependent())
+							return true;
+			}
+			for (const auto &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+					for (int i = 0; i < entry.size; ++i)
+						if (entry.value[i].is_time_dependent())
+							return true;
+			return false;
+		}
+
 		bool GenericTensorProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
@@ -507,10 +526,9 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
-			const int tag = mesh.get_node_id(node_id);
 
 			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -542,10 +560,9 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
-			const int tag = mesh.get_node_id(node_id);
 
 			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
 			{
@@ -1282,6 +1299,20 @@ namespace polyfem
 			}
 		}
 
+		bool GenericScalarProblem::is_rhs_time_dependent(const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+				if (rhs && rhs->is_time_dependent())
+					return true;
+			}
+			for (const auto &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id) && entry.value.is_time_dependent())
+					return true;
+			return false;
+		}
+
 		bool GenericScalarProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
@@ -1494,10 +1525,9 @@ namespace polyfem
 				}
 		}
 
-		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
-			const int tag = mesh.get_node_id(node_id);
 
 			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -1523,10 +1553,9 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
-			const int tag = mesh.get_node_id(node_id);
 
 			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
 			{

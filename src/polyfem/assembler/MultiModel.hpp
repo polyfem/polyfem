@@ -34,6 +34,8 @@ namespace polyfem::assembler
 		std::string name() const override { return "MultiModels"; }
 		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
+		void compute_output_values(const OutputData &data,
+								   std::vector<NamedMatrix> *scalar, std::vector<NamedMatrix> *tensor) const override;
 
 	protected:
 		void assign_stress_tensor(const OutputData &data,

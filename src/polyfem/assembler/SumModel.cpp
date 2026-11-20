@@ -116,6 +116,37 @@ namespace polyfem::assembler
 		}
 	}
 
+	void SumModel::compute_output_values(const OutputData &data,
+										 std::vector<NamedMatrix> *scalar, std::vector<NamedMatrix> *tensor) const
+	{
+		if (!scalar && !tensor)
+			return;
+		assert(!assemblers_.empty());
+		std::vector<NamedMatrix> scalar_part, tensor_part;
+		for (size_t i = 0; i < assemblers_.size(); ++i)
+		{
+			const auto material = std::dynamic_pointer_cast<ElasticityAssembler>(assemblers_[i]);
+			material->compute_output_values(data, scalar ? &scalar_part : nullptr, tensor ? &tensor_part : nullptr);
+			if (scalar)
+			{
+				if (i == 0)
+					*scalar = std::move(scalar_part);
+				else
+					for (size_t k = 0; k < scalar_part.size(); ++k)
+						(*scalar)[k].second += scalar_part[k].second;
+			}
+			if (tensor)
+			{
+				if (i == 0)
+					*tensor = std::move(tensor_part);
+				else
+					for (size_t k = 0; k < tensor_part.size(); ++k)
+						if (tensor_part[k].first != "F")
+							(*tensor)[k].second += tensor_part[k].second;
+			}
+		}
+	}
+
 	std::map<std::string, Assembler::ParamFunc> SumModel::parameters() const
 	{
 		std::map<std::string, Assembler::ParamFunc> params;

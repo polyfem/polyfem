@@ -2611,7 +2611,9 @@ int LagrangeBasis3d::build_bases(
 		compute_edge_face_orders(ncmesh, discr_ordersp, edge_orders, face_orders);
 	}
 
-	mesh_nodes = std::make_shared<MeshNodes>(mesh, has_polys, !is_geom_bases, nn, n_face_nodes * (is_geom_bases ? 2 : 1), mmax == 0 ? 1 : n_cells_nodes);
+	// P0 elements own one cell node, so keep a cell slot when no element has
+	// interior nodes (as in 2D).
+	mesh_nodes = std::make_shared<MeshNodes>(mesh, has_polys, !is_geom_bases, nn, n_face_nodes * (is_geom_bases ? 2 : 1), std::max(n_cells_nodes, mmax <= 1 ? 1 : 0));
 	MeshNodes &nodes = *mesh_nodes;
 	std::vector<std::vector<int>> element_nodes_id, edge_virtual_nodes, face_virtual_nodes;
 	compute_nodes(mesh, discr_ordersp, discr_ordersq, edge_orders, face_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, face_virtual_nodes, element_nodes_id, local_boundary, poly_face_to_data);

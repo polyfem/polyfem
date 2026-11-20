@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/io/OutputWriter.hpp>
 #include <polyfem/varforms/BilaplacianVarForm.hpp>
 #include <polyfem/varforms/FluidVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
@@ -22,6 +23,7 @@ namespace polyfem::test
 		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
 		int n_bases = 0;
 		int n_obstacle_vertices = 0;
+		const mesh::MeshNodes *mesh_nodes = nullptr; ///< of the primary space
 	};
 
 	struct ElasticFormDebugData
@@ -76,6 +78,51 @@ namespace polyfem::test
 		static void prepare(varform::VarForm &form)
 		{
 			form.prepare();
+		}
+
+		static io::OutputFieldFunction snapshot_output_fields(const varform::VarForm &form, const Eigen::MatrixXd &solution)
+		{
+			const auto space = form.output_space();
+			return form.snapshot_output_fields(solution, form.export_options(space), space, 0.125, 0.01);
+		}
+
+		static void save_timestep(varform::VarForm &form, const Eigen::MatrixXd &solution, const bool asynchronous)
+		{
+			io::OutputWriter writer(asynchronous);
+			auto *previous = form.output_writer_;
+			form.output_writer_ = &writer;
+			try
+			{
+				writer.execute([&] { form.save_timestep(1.0, 1, 0.0, 1.0, solution); });
+				writer.finish();
+			}
+			catch (...)
+			{
+				form.output_writer_ = previous;
+				throw;
+			}
+			form.output_writer_ = previous;
+		}
+
+		static io::OutputFieldFunction snapshot_elastic_fields(
+			const varform::ElasticVarForm &form, const Eigen::MatrixXd &solution,
+			const time_integrator::ImplicitTimeIntegrator *integrator,
+			const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &forms)
+		{
+			const auto space = form.output_space();
+			return form.snapshot_elastic_output_fields(solution, form.export_options(space), nullptr, integrator, forms, nullptr);
+		}
+
+		/// The mesh of the form, also before prepare().
+		static const mesh::Mesh &mesh(const varform::VarForm &form)
+		{
+			return *form.mesh_;
+		}
+
+		/// Make the next prepare() rebuild everything, as a geometry update does.
+		static void invalidate(varform::VarForm &form)
+		{
+			form.set_args(form.args);
 		}
 
 		static ElasticFormDebugData elastic_form_data(varform::ElasticVarForm &form)
@@ -134,7 +181,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					elastic->space_.n_bases,
-					output_space.obstacle ? output_space.obstacle->n_vertices() : 0};
+					output_space.obstacle ? output_space.obstacle->n_vertices() : 0,
+					elastic->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *fluid = dynamic_cast<const varform::FluidVarForm *>(&form))
@@ -146,7 +194,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					fluid->space_.n_bases,
-					0};
+					0,
+					fluid->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *bilaplacian = dynamic_cast<const varform::BilaplacianVarForm *>(&form))
@@ -158,7 +207,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					bilaplacian->space_.n_bases,
-					0};
+					0,
+					bilaplacian->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *scalar = dynamic_cast<const varform::ScalarVarForm *>(&form))
@@ -170,7 +220,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					scalar->space_.n_bases,
-					0};
+					0,
+					scalar->space_.mesh_nodes.get()};
 			}
 
 			throw std::runtime_error("Unsupported VarForm test debug data request.");
