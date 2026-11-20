@@ -141,64 +141,26 @@ namespace polyfem::assembler
 		});
 	}
 
-	void MooneyRivlin3ParamSymbolic::assign_stress_tensor(const OutputData &data,
-														  const int all_size,
-														  const ElasticityTensorType &type,
-														  Eigen::MatrixXd &all,
-														  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool MooneyRivlin3ParamSymbolic::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+														   const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
-		const auto t = data.t;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			const Eigen::MatrixXd def_grad_T = def_grad.transpose();
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(def_grad);
-				continue;
-			}
-
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = elastic_energy<double>(vals.val.row(p), vals.element_id, def_grad);
-				continue;
-			}
-
-			const double t = 0;
-			const double c1 = c1_(local_pts.row(p), t, vals.element_id);
-			const double c2 = c2_(local_pts.row(p), t, vals.element_id);
-			const double c3 = c3_(local_pts.row(p), t, vals.element_id);
-			const double d1 = d1_(local_pts.row(p), t, vals.element_id);
-
-			Eigen::MatrixXd stress_tensor;
-			autogen::generate_gradient(c1, c2, c3, d1, def_grad_T, stress_tensor);
-
-			stress_tensor = 1.0 / def_grad.determinant() * stress_tensor * def_grad.transpose();
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, def_grad);
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, def_grad);
-
-			all.row(p) = fun(stress_tensor);
-		}
+		const auto &def_grad = output.deformation();
+		if (output.needs_energy)
+			output.energy = elastic_energy<double>(vals.val.row(p), vals.element_id, def_grad);
+		if (!output.needs_stress)
+			return true;
+		// Preserve the symbolic model's existing parameter time convention.
+		const double material_time = 0;
+		const double c1 = c1_(local_pts.row(p), material_time, vals.element_id);
+		const double c2 = c2_(local_pts.row(p), material_time, vals.element_id);
+		const double c3 = c3_(local_pts.row(p), material_time, vals.element_id);
+		const double d1 = d1_(local_pts.row(p), material_time, vals.element_id);
+		const Eigen::MatrixXd def_grad_T = def_grad.transpose();
+		Eigen::MatrixXd stress_tensor;
+		autogen::generate_gradient(c1, c2, c3, d1, def_grad_T, stress_tensor);
+		output.native = 1.0 / def_grad.determinant() * stress_tensor * def_grad.transpose();
+		return true;
 	}
 
 	void MooneyRivlin3ParamSymbolic::compute_stress_grad_multiply_mat(

@@ -126,82 +126,45 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 	}
 
-	void SaintVenantElasticity::assign_stress_tensor(
-		const OutputData &data,
-		const int all_size,
-		const ElasticityTensorType &type,
-		Eigen::MatrixXd &all,
-		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool SaintVenantElasticity::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+													  const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
-		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
-		const auto t = data.t;
+		MatrixNd strain = strain_from_disp_grad(displacement_grad);
+		MatrixNd stress_tensor(size(), size());
 
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-
-		for (long p = 0; p < local_pts.rows(); ++p)
+		if (size() == 2)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			std::array<double, 3> eps;
+			eps[0] = strain(0, 0);
+			eps[1] = strain(1, 1);
+			eps[2] = 2 * strain(0, 1);
 
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-				continue;
-			}
-
-			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
-			Eigen::MatrixXd stress_tensor(size(), size());
-
-			if (size() == 2)
-			{
-				std::array<double, 3> eps;
-				eps[0] = strain(0, 0);
-				eps[1] = strain(1, 1);
-				eps[2] = 2 * strain(0, 1);
-
-				stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 2),
-					stress(elasticity_tensor_, eps, 2), stress(elasticity_tensor_, eps, 1);
-			}
-			else
-			{
-				std::array<double, 6> eps;
-				eps[0] = strain(0, 0);
-				eps[1] = strain(1, 1);
-				eps[2] = strain(2, 2);
-				eps[3] = 2 * strain(1, 2);
-				eps[4] = 2 * strain(0, 2);
-				eps[5] = 2 * strain(0, 1);
-
-				stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 4),
-					stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 1), stress(elasticity_tensor_, eps, 3),
-					stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
-			}
-
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = 0.5 * (stress_tensor * strain).trace();
-				continue;
-			}
-
-			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
-
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
-
-			all.row(p) = fun(stress_tensor);
+			stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 2),
+				stress(elasticity_tensor_, eps, 2), stress(elasticity_tensor_, eps, 1);
 		}
+		else
+		{
+			std::array<double, 6> eps;
+			eps[0] = strain(0, 0);
+			eps[1] = strain(1, 1);
+			eps[2] = strain(2, 2);
+			eps[3] = 2 * strain(1, 2);
+			eps[4] = 2 * strain(0, 2);
+			eps[5] = 2 * strain(0, 1);
+
+			stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 4),
+				stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 1), stress(elasticity_tensor_, eps, 3),
+				stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
+		}
+
+		if (output.needs_energy)
+			output.energy = 0.5 * (stress_tensor * strain).trace();
+		if (!output.needs_stress)
+			return true;
+		stress_tensor = (MatrixNd::Identity(size(), size()) + displacement_grad) * stress_tensor;
+
+		output.native = stress_tensor;
+		return true;
 	}
 
 	double SaintVenantElasticity::compute_energy(const NonLinearAssemblerData &data) const

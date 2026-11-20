@@ -24,15 +24,20 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include "TestTempPath.hpp"
+#include "VarFormTestAccess.hpp"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <iterator>
 
 using namespace polyfem;
 
@@ -201,6 +206,42 @@ namespace
 		const auto dir = std::filesystem::temp_directory_path() / "polyfem_growth_law_test";
 		std::filesystem::create_directories(dir);
 		return dir;
+	}
+
+	Eigen::MatrixXd read_vtu_field(const std::filesystem::path &path, const std::string &name, const int components)
+	{
+		CAPTURE(path, name);
+		std::ifstream input(path, std::ios::binary);
+		REQUIRE(input.good());
+		const std::string bytes{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+		const std::string marker = "<AppendedData encoding=\"raw\">\n_";
+		const auto marker_pos = bytes.find(marker);
+		REQUIRE(marker_pos != std::string::npos);
+		const auto start = marker_pos + marker.size();
+		const auto metadata = bytes.substr(0, marker_pos);
+		const auto name_pos = metadata.find("Name=\"" + name + "\"");
+		REQUIRE(name_pos != std::string::npos);
+		const auto tag_start = metadata.rfind("<DataArray", name_pos);
+		REQUIRE(tag_start != std::string::npos);
+		const auto tag_end = metadata.find('>', name_pos);
+		REQUIRE(tag_end != std::string::npos);
+		const auto tag = metadata.substr(tag_start, tag_end - tag_start);
+		REQUIRE(tag.find("type=\"Float64\"") != std::string::npos);
+		REQUIRE(tag.find("NumberOfComponents=\"" + std::to_string(components) + "\"") != std::string::npos);
+		const std::string offset_key = "offset=\"";
+		const auto offset_pos = tag.find(offset_key);
+		REQUIRE(offset_pos != std::string::npos);
+		const uint64_t offset = std::stoull(tag.substr(offset_pos + offset_key.size()));
+		REQUIRE(offset <= bytes.size() - start);
+		REQUIRE(sizeof(uint64_t) <= bytes.size() - start - offset);
+		uint64_t size;
+		std::memcpy(&size, bytes.data() + start + offset, sizeof(size));
+		REQUIRE(size <= bytes.size() - start - offset - sizeof(size));
+		REQUIRE(size % (components * sizeof(double)) == 0);
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> values(size / (components * sizeof(double)), components);
+		if (size > 0)
+			std::memcpy(values.data(), bytes.data() + start + offset + sizeof(size), size);
+		return values;
 	}
 } // namespace
 
@@ -734,12 +775,21 @@ TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 	const int n = 2;
 	const int nv = (n + 1) * (n + 1) * (n + 1);
 	const int n_el = 6 * n * n * n;
-	const std::string mesh = write_cube_mesh(scratch_dir(), n);
+	const auto output_dir = test::unique_temp_path("polyfem_growth_stress_output");
+	std::filesystem::create_directories(output_dir);
+	const std::string mesh = write_cube_mesh(output_dir, n);
 	const double phi = 469.0, vstar = activation_stretch(phi);
 	const double lambda = std::sqrt(1.5);
 
 	State state;
-	state.init(cube_args(mesh, lambda, phi, 1, 1.0, "t"), /*strict_validation=*/true);
+	json args = cube_args(mesh, lambda, phi, 1, 1.0, "t");
+	args["output"]["directory"] = output_dir.string();
+	args["output"]["advanced"]["save_time_sequence"] = true;
+	args["output"]["paraview"]["file_name"] = "growth.pvd";
+	args["output"]["paraview"]["volume"] = true;
+	args["output"]["paraview"]["surface"] = false;
+	args["output"]["paraview"]["high_order_mesh"] = true;
+	state.init(args, /*strict_validation=*/true);
 	state.set_max_threads(1);
 	state.load_mesh();
 	Eigen::MatrixXd sol;
@@ -797,6 +847,35 @@ TEST_CASE("growth_law_stress_output", "[growth][growth_stress]")
 			check_close(tensor_at("F" + suffix, i), F, tol);
 			CHECK(field("von_mises" + suffix)(i, 0) == Catch::Approx(von_mises_stress_for_stress_tensor(s_ref)).epsilon(tol));
 			CHECK(field("energy" + suffix)(i, 0) == Catch::Approx(w_ref).epsilon(tol));
+		}
+	}
+
+	// Exercise the actual timestep dispatcher, including its deferred snapshot
+	// branch. The ordinary elastic snapshot loses the growth-specific fields.
+	state.set_max_threads(2);
+	for (const bool asynchronous : {false, true})
+	{
+		CAPTURE(asynchronous);
+		test::VarFormTestAccess::save_timestep(*vf, sol, asynchronous);
+		const auto path = output_dir / "step_1.vtu";
+		const auto exported_growth = read_vtu_field(path, "growth", 1);
+		const auto exported_activation = read_vtu_field(path, "growth_activation_step", 1);
+		const auto exported_energy = read_vtu_field(path, "energy", 1);
+		const auto exported_energy_avg = read_vtu_field(path, "energy_avg", 1);
+		const auto exported_stress = read_vtu_field(path, "cauchy_stess_3", 3);
+		REQUIRE(exported_growth.rows() > 0);
+		REQUIRE(exported_activation.rows() == exported_growth.rows());
+		REQUIRE(exported_energy.rows() == exported_growth.rows());
+		REQUIRE(exported_energy_avg.rows() == exported_growth.rows());
+		REQUIRE(exported_stress.rows() == exported_growth.rows());
+		for (int i = 0; i < exported_growth.rows(); ++i)
+		{
+			CHECK(exported_growth(i) == Catch::Approx(theta).epsilon(tol));
+			CHECK(exported_activation(i) == 1.0);
+			CHECK(exported_energy(i) == Catch::Approx(w_ref).epsilon(tol));
+			CHECK(exported_energy_avg(i) == Catch::Approx(w_ref).epsilon(tol));
+			CHECK((exported_stress.row(i).transpose() - s_ref.col(2)).cwiseAbs().maxCoeff()
+				  < tol * std::max(1.0, s_ref.cwiseAbs().maxCoeff()));
 		}
 	}
 }

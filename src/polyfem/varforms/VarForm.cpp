@@ -3,6 +3,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/OutputWriter.hpp>
 #include <polyfem/varforms/VarFormUtils.hpp>
 
 #include <polyfem/basis/LagrangeBasis2d.hpp>
@@ -22,6 +23,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
 
 #include <igl/Timer.h>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -211,6 +213,7 @@ namespace polyfem::varform
 		const json &args,
 		const std::string &out_path)
 	{
+		flush_output();
 		reset();
 
 		this->units = units;
@@ -229,6 +232,7 @@ namespace polyfem::varform
 
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)
 	{
+		flush_output();
 		set_obstacle(mesh::Obstacle());
 		mesh_ = std::move(mesh);
 		timings.loading_mesh_time = loading_mesh_time;
@@ -242,6 +246,7 @@ namespace polyfem::varform
 
 	void VarForm::set_geometry(mesh::LoadedGeometry geometry, const double loading_mesh_time)
 	{
+		flush_output();
 		set_obstacle(std::move(geometry.obstacle));
 		mesh_ = std::move(geometry.fem);
 		timings.loading_mesh_time = loading_mesh_time;
@@ -611,7 +616,31 @@ namespace polyfem::varform
 		prepare();
 		if (checkpoint_reader_)
 			deserialize_checkpoint(checkpoint_reader_->get(), sol);
-		solve_problem(sol, initial_condition_override, post_step);
+		bool asynchronous = args["output"]["advanced"]["save_time_sequence"].get<bool>()
+							&& args["output"]["paraview"].value("async", true);
+		if (asynchronous && args["output"]["paraview"]["options"]["use_hdf5"].get<bool>())
+		{
+			asynchronous = false;
+#ifdef PARAVIEWO_WITH_HDF5
+			hbool_t threadsafe = false;
+			if (H5is_library_threadsafe(&threadsafe) < 0)
+				log_and_throw_error("Unable to determine HDF5 library thread safety");
+			asynchronous = threadsafe;
+#endif
+		}
+		io::OutputWriter writer(asynchronous);
+		output_writer_ = &writer;
+		try
+		{
+			writer.execute([&] { solve_problem(sol, initial_condition_override, post_step); });
+			writer.finish();
+		}
+		catch (...)
+		{
+			output_writer_ = nullptr;
+			throw;
+		}
+		output_writer_ = nullptr;
 	}
 
 	void VarForm::build_node_mapping(
@@ -1059,6 +1088,47 @@ namespace polyfem::varform
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
 	{
+		if (output_writer_ && output_writer_->asynchronous())
+		{
+			if (!should_save_timestep(t))
+				return;
+			const io::OutputSpace current_space = output_space();
+			const int global_t = output_file_index(t);
+			const int skip_frame = args["output"]["paraview"]["skip_frame"].get<int>();
+			ensure_output_sampler();
+			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+			const std::string vtu_path = resolve_output_path(fmt::format(step_name + "{:d}.vtu", global_t));
+			const std::string vtm_path = resolve_output_path(fmt::format(step_name + "{:d}.vtm", global_t));
+			const std::string pvd_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+			const auto opts = export_options(current_space);
+			output_writer_->enqueue([&, current_space, opts, global_t, skip_frame, step_name, vtu_path, vtm_path, pvd_path] {
+				auto space = current_space;
+				auto obstacle = space.obstacle ? std::make_shared<mesh::Obstacle>(*space.obstacle) : nullptr;
+				space.obstacle = obstacle.get();
+				// Python-backed fields cannot acquire the GIL on the worker while
+				// its caller holds it and waits for the queue. Prepare owned arrays
+				// here in that case; their file writes still run asynchronously.
+				io::OutputFieldFunction fields;
+				if (!utils::python_gil_held())
+					fields = snapshot_output_fields(solution, opts, space, time, dt);
+				io::OutGeometryData::WriteJobs writes;
+				auto vtm = std::make_shared<paraviewo::VTMWriter>(time);
+				if (!fields)
+					output_geometry_.save_vtu(vtu_path, space, output_field_function(solution, opts), time, dt, opts, *vtm, "", &writes);
+				return [this, space, obstacle, fields = std::move(fields), writes = std::move(writes), vtm = std::move(vtm),
+						time, dt, t0, opts, global_t, skip_frame, step_name, vtu_path, vtm_path, pvd_path]() mutable {
+					if (fields)
+						output_geometry_.save_vtu(vtu_path, space, fields, time, dt, opts, *vtm, "");
+					else
+						for (const auto &write : writes)
+							write();
+					vtm->save(vtm_path);
+					if (!pvd_path.empty())
+						output_geometry_.save_pvd(pvd_path, [step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); }, global_t, t0, dt, skip_frame);
+				};
+			});
+			return;
+		}
 		paraviewo::VTMWriter vtm(time);
 		if (!save_timestep_to_vtm(time, t, dt, solution, vtm, ""))
 			return;
@@ -1073,17 +1143,28 @@ namespace polyfem::varform
 			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 	}
 
+	void VarForm::flush_output() const
+	{
+		if (output_writer_)
+			output_writer_->flush();
+	}
+
+	bool VarForm::should_save_timestep(const int step) const
+	{
+		return args["output"]["advanced"]["save_time_sequence"].get<bool>()
+			   && output_file_index(step) % args["output"]["paraview"]["skip_frame"].get<int>() == 0
+			   && output_space().mesh != nullptr;
+	}
+
 	bool VarForm::save_timestep_to_vtm(
 		const double time, const int t, const double dt,
 		const Eigen::MatrixXd &solution, paraviewo::VTMWriter &vtm,
-		const std::string &block_prefix) const
+		const std::string &block_prefix, io::OutGeometryData::WriteJobs *writes) const
 	{
+		if (!should_save_timestep(t))
+			return false;
 		const io::OutputSpace space = output_space();
-		if (!space.mesh || !args["output"]["advanced"]["save_time_sequence"])
-			return false;
 		const int global_t = output_file_index(t);
-		if (global_t % args["output"]["paraview"]["skip_frame"].get<int>())
-			return false;
 
 		ensure_output_sampler();
 		logger().trace("Saving VTU...");
@@ -1092,7 +1173,7 @@ namespace polyfem::varform
 		output_geometry_.save_vtu(
 			resolve_output_path(fmt::format(step_name + "{:d}.vtu", global_t)),
 			space, output_field_function(solution, opts), time, dt,
-			opts, vtm, block_prefix);
+			opts, vtm, block_prefix, writes);
 		return true;
 	}
 

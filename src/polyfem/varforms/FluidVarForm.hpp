@@ -46,6 +46,10 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
+		io::OutputFieldFunction snapshot_output_fields(
+			const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+			const io::OutputSpace &space, double time, double dt) const override;
+
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;

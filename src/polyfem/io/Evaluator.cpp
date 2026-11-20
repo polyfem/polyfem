@@ -683,6 +683,43 @@ namespace polyfem::io
 		}
 	}
 
+	StiffnessMatrix Evaluator::build_interpolation_matrix(
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const Eigen::MatrixXd &local_points,
+		const Eigen::VectorXi &element_ids)
+	{
+		assert(local_points.rows() == element_ids.size());
+		std::vector<Eigen::Triplet<double>> entries;
+		entries.reserve(local_points.rows());
+		std::vector<assembler::AssemblyValues> values;
+		for (int begin = 0; begin < element_ids.size();)
+		{
+			const int element = element_ids(begin);
+			int end = begin + 1;
+			while (end < element_ids.size() && element_ids(end) == element)
+				++end;
+			if (element >= 0)
+			{
+				const auto &bs = bases[element];
+				values.resize(bs.bases.size());
+				bs.evaluate_bases(local_points.middleRows(begin, end - begin), values);
+				for (int j = 0; j < bs.bases.size(); ++j)
+					for (const auto &global : bs.bases[j].global())
+						for (int row = begin; row < end; ++row)
+						{
+							const double weight = global.val * values[j].val(row - begin);
+							if (weight != 0)
+								entries.emplace_back(row, global.index, weight);
+						}
+			}
+			begin = end;
+		}
+		StiffnessMatrix interpolation(local_points.rows(), n_bases);
+		interpolation.setFromTriplets(entries.begin(), entries.end());
+		return interpolation;
+	}
+
 	void Evaluator::interpolate_at_local_vals(
 		const mesh::Mesh &mesh,
 		const bool is_problem_scalar,

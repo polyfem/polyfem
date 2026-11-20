@@ -214,61 +214,23 @@ namespace polyfem::assembler
 		});
 	}
 
-	void FixedCorotational::assign_stress_tensor(const OutputData &data,
-												 const int all_size,
-												 const ElasticityTensorType &type,
-												 Eigen::MatrixXd &all,
-												 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool FixedCorotational::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+												  const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
 		const auto t = data.t;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(def_grad);
-				continue;
-			}
-
-			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
-
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
-				continue;
-			}
-
-			Eigen::MatrixXd stress_tensor;
-			if (size() == 2)
-				stress_tensor = compute_stress_from_def_grad<2>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();
-			else
-				stress_tensor = compute_stress_from_def_grad<3>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, def_grad);
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, def_grad);
-
-			all.row(p) = fun(stress_tensor);
-		}
+		const auto &def_grad = output.deformation();
+		double lambda, mu;
+		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		if (output.needs_energy)
+			output.energy = size() == 2 ? compute_energy_from_def_grad<2>(def_grad, lambda, mu) : compute_energy_from_def_grad<3>(def_grad, lambda, mu);
+		if (!output.needs_stress)
+			return true;
+		if (size() == 2)
+			output.native = compute_stress_from_def_grad<2>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();
+		else
+			output.native = compute_stress_from_def_grad<3>(def_grad, lambda, mu) * def_grad.transpose() / def_grad.determinant();
+		return true;
 	}
 
 	double FixedCorotational::compute_energy(const NonLinearAssemblerData &data) const

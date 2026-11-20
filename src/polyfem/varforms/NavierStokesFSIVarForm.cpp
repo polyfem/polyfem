@@ -1,5 +1,7 @@
 #include "NavierStokesFSIVarForm.hpp"
 
+#include <polyfem/io/OutputWriter.hpp>
+
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/NavierStokesFSI.hpp>
@@ -1085,6 +1087,31 @@ namespace polyfem::varform
 		if (!has_solid_)
 		{
 			save_timestep(time, step, t0, dt, solution);
+			return;
+		}
+		if (!should_save_timestep(step) && !solid_varform_->should_save_timestep(step))
+			return;
+		if (output_writer_ && output_writer_->asynchronous())
+		{
+			const int global_t = output_file_index(step);
+			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+			const std::string vtm_path = resolve_output_path(fmt::format(step_name + "{:d}.vtm", global_t));
+			const std::string pvd_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+			const int skip_frame = args["output"]["paraview"]["skip_frame"];
+			output_writer_->enqueue([&] {
+				auto vtm = std::make_shared<paraviewo::VTMWriter>(time);
+				io::OutGeometryData::WriteJobs writes;
+				save_timestep_to_vtm(time, step, dt, solution, *vtm, "Fluid", &writes);
+				solid_varform_->save_timestep_for_embedding(time, step, dt,
+															solution.middleRows(solid_displacement_offset(), solid_displacement_ndof()), *vtm, "Solid", &writes);
+				return [this, vtm, writes = std::move(writes), global_t, step_name, vtm_path, pvd_path, skip_frame, t0 = t0, dt = dt] {
+					for (const auto &write : writes)
+						write();
+					vtm->save(vtm_path);
+					if (!pvd_path.empty())
+						output_geometry_.save_pvd(pvd_path, [step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); }, global_t, t0, dt, skip_frame);
+				};
+			});
 			return;
 		}
 

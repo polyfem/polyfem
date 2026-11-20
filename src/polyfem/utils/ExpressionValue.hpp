@@ -10,6 +10,10 @@ namespace polyfem
 {
 	namespace utils
 	{
+		/// Whether the caller holds Python's interpreter lock. False without Python.
+		/// Work that may invoke Python must stay on this thread until it releases the lock.
+		bool python_gil_held();
+
 		class ExpressionValue
 		{
 		public:

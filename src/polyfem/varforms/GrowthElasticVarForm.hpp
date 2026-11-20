@@ -82,6 +82,12 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
+		// The elastic snapshot bypasses the grown stresses, energy and growth
+		// fields in output_fields; prepare those fields before queueing the write.
+		io::OutputFieldFunction snapshot_output_fields(
+			const Eigen::MatrixXd &, const io::OutGeometryData::ExportOptions &,
+			const io::OutputSpace &, double, double) const override { return {}; }
+
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;

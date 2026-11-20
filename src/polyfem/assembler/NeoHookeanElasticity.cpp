@@ -248,60 +248,25 @@ namespace polyfem::assembler
 		});
 	}
 
-	void NeoHookeanElasticity::assign_stress_tensor(const OutputData &data,
-													const int all_size,
-													const ElasticityTensorType &type,
-													Eigen::MatrixXd &all,
-													const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	bool NeoHookeanElasticity::compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+													 const Eigen::Index p, const MatrixNd &displacement_grad, OutputStress &output) const
 	{
-		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
-		const auto &bs = data.bs;
-		const auto &gbs = data.gbs;
-		const auto el_id = data.el_id;
 		const auto t = data.t;
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		all.resize(local_pts.rows(), all_size);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
-		const auto I = Eigen::MatrixXd::Identity(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
-			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			if (type == ElasticityTensorType::F)
-			{
-				all.row(p) = fun(def_grad);
-				continue;
-			}
-			// const double J = def_grad.determinant();
-			const double J = polyfem::utils::determinant(def_grad);
-			const Eigen::MatrixXd b = def_grad * def_grad.transpose();
-
-			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
-
-			if (type == ElasticityTensorType::ENERGY)
-			{
-				all(p, 0) = elastic_energy_density<double>(local_pts.row(p), vals.val.row(p), t, vals.element_id, def_grad);
-				continue;
-			}
-
-			Eigen::MatrixXd stress_tensor = (lambda * std::log(J) * I + mu * (b - I)) / J;
-			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, def_grad);
-			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, def_grad);
-
-			all.row(p) = fun(stress_tensor);
-		}
+		const auto &def_grad = output.deformation();
+		double lambda, mu;
+		params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+		const double J = polyfem::utils::determinant(def_grad);
+		const double log_J = std::log(J);
+		if (output.needs_energy)
+			output.energy = (mu / 2.0) * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_J)
+							+ (lambda / 2.0) * log_J * log_J;
+		if (!output.needs_stress)
+			return true;
+		const MatrixNd b = def_grad * def_grad.transpose();
+		const auto I = MatrixNd::Identity(size(), size());
+		output.native = (lambda * log_J * I + mu * (b - I)) / J;
+		return true;
 	}
 
 	double NeoHookeanElasticity::compute_energy(const NonLinearAssemblerData &data) const

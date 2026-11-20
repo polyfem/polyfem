@@ -449,6 +449,63 @@ namespace polyfem::varform
 		return indices;
 	}
 
+	io::OutputFieldFunction ElasticVarForm::snapshot_elastic_output_fields(
+		const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts,
+		const mesh::Obstacle *obstacle,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator,
+		const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
+		const solver::Form *elastic_form, const solver::ContactForm *contact_form) const
+	{
+		auto state = std::make_shared<ElasticOutputState>();
+		const io::OutputFieldOptions options{opts.fields};
+		const auto &flags = args["output"]["paraview"]["options"];
+		if (problem->is_time_dependent())
+		{
+			if (flags["velocity"] && options.export_field("velocity"))
+				state->velocity = time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size());
+			if (flags["acceleration"] && options.export_field("acceleration"))
+				state->acceleration = time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size());
+		}
+		if (flags["forces"] && !problem->is_scalar())
+		{
+			const double scaling = time_integrator ? time_integrator->acceleration_scaling() : 1;
+			for (const auto &[name, form] : named_forms)
+			{
+				const std::string field_name = name + "_forces";
+				if (!options.export_field(field_name))
+					continue;
+				Eigen::VectorXd force;
+				if (form && form->enabled())
+				{
+					form->first_derivative(solution, force);
+					force *= -1.0 / scaling;
+				}
+				else
+					force.setZero(solution.size());
+				state->forces.push_back({field_name, std::move(force)});
+			}
+		}
+		if (!opts.fields.empty() && options.export_field("gradient_of_elastic_potential") && elastic_form)
+		{
+			Eigen::VectorXd gradient;
+			elastic_form->first_derivative(solution, gradient);
+			state->elastic_gradient = std::move(gradient);
+		}
+		if (!opts.fields.empty() && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
+		{
+			Eigen::VectorXd gradient;
+			contact_form->first_derivative(solution, gradient);
+			gradient *= -contact_form->barrier_stiffness() / contact_form->weight();
+			state->contact_gradient = std::move(gradient);
+		}
+		auto saved_solution = std::make_shared<Eigen::MatrixXd>(solution);
+		return [this, state, saved_solution, obstacle, fields = opts.fields](const io::OutputSample &sample) {
+			return elastic_output_fields(sample, *saved_solution,
+										 {sample.requested_fields.empty() ? fields : sample.requested_fields},
+										 obstacle, nullptr, {}, nullptr, nullptr, state.get());
+		};
+	}
+
 	std::vector<io::OutputField> ElasticVarForm::elastic_output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
@@ -457,7 +514,7 @@ namespace polyfem::varform
 		const time_integrator::ImplicitTimeIntegrator *time_integrator,
 		const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> &named_forms,
 		const solver::Form *elastic_form,
-		const solver::ContactForm *contact_form) const
+		const solver::ContactForm *contact_form, const ElasticOutputState *output_state) const
 	{
 		std::vector<io::OutputField> fields;
 		if (!mesh_ || !problem || solution.size() <= 0)
@@ -477,6 +534,13 @@ namespace polyfem::varform
 		const bool scalar_values = paraview_options["scalar_values"];
 		const bool use_spline = args["space"]["basis_type"] == "Spline";
 		const bool explicit_fields = !options.fields.empty();
+		StiffnessMatrix interpolation;
+		const auto get_interpolation = [&]() -> const StiffnessMatrix & {
+			if (interpolation.rows() != sample.local_points.rows())
+				interpolation = io::Evaluator::build_interpolation_matrix(
+					space_.n_bases, space_.basis_list(), sample.local_points, sample.element_ids);
+			return interpolation;
+		};
 
 		const auto resize_to_output_rows = [&](Eigen::MatrixXd &values) {
 			if (output_rows <= values.rows())
@@ -524,24 +588,7 @@ namespace polyfem::varform
 
 			if (has_element_samples)
 			{
-				values.resize(sample.local_points.rows(), field_dim);
-				for (int i = 0; i < sample.local_points.rows(); ++i)
-				{
-					const int element_id = sample.element_ids(i);
-					if (element_id < 0)
-					{
-						values.row(i).setZero();
-						continue;
-					}
-
-					Eigen::MatrixXd local_sol, local_grad;
-					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, field_dim, space_.basis_list(), space_.geometry_basis_list(),
-						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
-
-					for (int d = 0; d < field_dim; ++d)
-						values(i, d) = local_sol(d);
-				}
+				values = get_interpolation() * utils::unflatten(dof_values.topRows(space_.n_bases * field_dim), field_dim);
 
 				return append_obstacle_values(values, dof_values);
 			}
@@ -573,46 +620,76 @@ namespace polyfem::varform
 				fields.push_back({name, values, io::OutputField::Association::Point});
 		};
 
+		std::vector<std::pair<std::string, int>> raw_scalar_fields, raw_tensor_fields;
+		bool all_scalar_fields = false, all_tensor_fields = false;
+		const bool sample_scalar = scalar_values && !problem->is_scalar() && has_element_samples
+								   && (options.fields.empty() || options.export_field("von_mises"));
+		const bool sample_tensor = tensor_values && !problem->is_scalar() && has_element_samples
+								   && (options.fields.empty() || options.export_field("cauchy_stess") || options.export_field("pk1_stess")
+									   || options.export_field("pk2_stess") || options.export_field("F")
+									   || options.export_field("energy") || options.export_field("energy_avg"));
+		bool stress_sampled = false;
+		std::vector<assembler::Assembler::NamedMatrix> sampled_scalar, sampled_tensor;
+		const auto sample_stress_values = [&](const bool tensor) {
+			if (!stress_sampled)
+			{
+				const auto scatter_values = [&](const auto &local, auto &points, int begin, int count) {
+					if (points.empty())
+					{
+						points.resize(local.size());
+						for (size_t k = 0; k < local.size(); ++k)
+						{
+							points[k].first = local[k].first;
+							points[k].second.setZero(output_rows, local[k].second.cols());
+						}
+					}
+					for (size_t k = 0; k < local.size(); ++k)
+						points[k].second.middleRows(begin, count) = local[k].second;
+				};
+				std::vector<assembler::Assembler::NamedMatrix> local_scalar, local_tensor;
+				for (int begin = 0; begin < sample.local_points.rows();)
+				{
+					const int element_id = sample.element_ids(begin);
+					int end = begin + 1;
+					while (end < sample.local_points.rows() && sample.element_ids(end) == element_id)
+						++end;
+					if (element_id >= 0)
+					{
+						const Eigen::MatrixXd local_points = sample.local_points.middleRows(begin, end - begin);
+						const assembler::OutputData data(sample.time, element_id,
+														 space_.basis_list()[element_id], space_.geometry_basis_list()[element_id], local_points, solution);
+						primary_assembler_->compute_output_values(data,
+																  sample_scalar ? &local_scalar : nullptr, sample_tensor ? &local_tensor : nullptr);
+						scatter_values(local_scalar, sampled_scalar, begin, end - begin);
+						scatter_values(local_tensor, sampled_tensor, begin, end - begin);
+					}
+					begin = end;
+				}
+				stress_sampled = true;
+			}
+			return tensor ? std::move(sampled_tensor) : std::move(sampled_scalar);
+		};
+
 		const auto append_scalar_values = [&]() {
 			if (!scalar_values || problem->is_scalar() || !has_element_samples)
 				return;
 
-			const bool wants_scalar = options.fields.empty()
-									  || options.export_field("von_mises")
-									  || options.export_field("von_mises_avg");
+			const bool wants_scalar = options.fields.empty() || options.export_field("von_mises");
 			if (!wants_scalar)
 				return;
 
-			std::vector<assembler::Assembler::NamedMatrix> point_values;
-			for (int i = 0; i < sample.local_points.rows(); ++i)
-			{
-				const int element_id = sample.element_ids(i);
-				if (element_id < 0)
-					continue;
+			auto point_values = sample_stress_values(false);
 
-				std::vector<assembler::Assembler::NamedMatrix> local_values;
-				primary_assembler_->compute_scalar_value(
-					assembler::OutputData(sample.time, element_id, space_.basis_list()[element_id], space_.geometry_basis_list()[element_id], sample.local_points.row(i), solution),
-					local_values);
-
-				if (point_values.empty())
-				{
-					point_values.resize(local_values.size());
-					for (int k = 0; k < local_values.size(); ++k)
-					{
-						point_values[k].first = local_values[k].first;
-						point_values[k].second.setZero(output_rows, local_values[k].second.cols());
-					}
-				}
-
-				for (int k = 0; k < local_values.size(); ++k)
-					point_values[k].second.row(i) = local_values[k].second;
-			}
-
-			for (const auto &[name, values] : point_values)
+			all_scalar_fields = !point_values.empty();
+			for (auto &[name, values] : point_values)
 			{
 				if (options.export_field(name))
-					fields.push_back({name, values, io::OutputField::Association::Point});
+				{
+					raw_scalar_fields.emplace_back(name, fields.size());
+					fields.push_back({name, std::move(values), io::OutputField::Association::Point});
+				}
+				else
+					all_scalar_fields = false;
 			}
 		};
 
@@ -630,32 +707,9 @@ namespace polyfem::varform
 			if (!wants_tensor)
 				return;
 
-			std::vector<assembler::Assembler::NamedMatrix> point_values;
-			for (int i = 0; i < sample.local_points.rows(); ++i)
-			{
-				const int element_id = sample.element_ids(i);
-				if (element_id < 0)
-					continue;
+			auto point_values = sample_stress_values(true);
 
-				std::vector<assembler::Assembler::NamedMatrix> local_values;
-				primary_assembler_->compute_tensor_value(
-					assembler::OutputData(sample.time, element_id, space_.basis_list()[element_id], space_.geometry_basis_list()[element_id], sample.local_points.row(i), solution),
-					local_values);
-
-				if (point_values.empty())
-				{
-					point_values.resize(local_values.size());
-					for (int k = 0; k < local_values.size(); ++k)
-					{
-						point_values[k].first = local_values[k].first;
-						point_values[k].second.setZero(output_rows, local_values[k].second.cols());
-					}
-				}
-
-				for (int k = 0; k < local_values.size(); ++k)
-					point_values[k].second.row(i) = local_values[k].second;
-			}
-
+			all_tensor_fields = !point_values.empty();
 			for (const auto &[name, values] : point_values)
 			{
 				if (name == "energy")
@@ -691,8 +745,12 @@ namespace polyfem::varform
 				}
 
 				if (!options.export_field(name))
+				{
+					all_tensor_fields = false;
 					continue;
+				}
 
+				raw_tensor_fields.emplace_back(name, fields.size());
 				const int stride = mesh_->dimension();
 				assert(values.cols() % stride == 0);
 				for (int i = 0; i < values.cols(); i += stride)
@@ -720,6 +778,22 @@ namespace polyfem::varform
 			areas.setZero();
 			std::vector<assembler::Assembler::NamedMatrix> tmp_s, tmp_t;
 			std::vector<Eigen::MatrixXd> avg_scalar, avg_tensor;
+			// Reuse raw output only when its samples coincide with the averaging nodes.
+			std::vector<std::pair<int, int>> sample_ranges(space_.basis_list().size(), {-1, 0});
+			for (int begin = 0; begin < sample.element_ids.size();)
+			{
+				const int element = sample.element_ids(begin);
+				int end = begin + 1;
+				while (end < sample.element_ids.size() && sample.element_ids(end) == element)
+					++end;
+				if (element >= 0)
+				{
+					auto &range = sample_ranges[element];
+					range.first = range.second == 0 ? begin : -1;
+					range.second += end - begin;
+				}
+				begin = end;
+			}
 
 			for (int e = 0; e < int(space_.basis_list().size()); ++e)
 			{
@@ -754,10 +828,50 @@ namespace polyfem::varform
 				vals.compute(e, mesh_->is_volume(), bs, gbs);
 				const double area = (vals.det.array() * vals.quadrature.weights.array()).sum();
 
+				const auto [begin, count] = sample_ranges[e];
+				const bool sampled_at_nodes = begin >= 0 && count == local_pts.rows()
+											  && (sample.local_points.middleRows(begin, count).array() == local_pts.array()).all();
+				const bool reuse_scalar = sampled_at_nodes && all_scalar_fields;
+				const bool reuse_tensor = sampled_at_nodes && all_tensor_fields;
+				if ((scalar_values && !reuse_scalar) || (tensor_values && !reuse_tensor))
+				{
+					primary_assembler_->compute_output_values(
+						assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution),
+						scalar_values && !reuse_scalar ? &tmp_s : nullptr,
+						tensor_values && !reuse_tensor ? &tmp_t : nullptr);
+					// Energy uses the per-element mean assembled with the raw samples.
+					tmp_t.erase(std::remove_if(tmp_t.begin(), tmp_t.end(), [](const auto &field) {
+									return field.first == "energy";
+								}),
+								tmp_t.end());
+				}
 				if (scalar_values)
-					primary_assembler_->compute_scalar_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_s);
+				{
+					if (reuse_scalar)
+					{
+						tmp_s.resize(raw_scalar_fields.size());
+						for (int k = 0; k < raw_scalar_fields.size(); ++k)
+						{
+							tmp_s[k].first = raw_scalar_fields[k].first;
+							tmp_s[k].second = fields[raw_scalar_fields[k].second].values.middleRows(begin, count);
+						}
+					}
+				}
 				if (tensor_values)
-					primary_assembler_->compute_tensor_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_t);
+				{
+					if (reuse_tensor)
+					{
+						tmp_t.resize(raw_tensor_fields.size());
+						for (int k = 0; k < raw_tensor_fields.size(); ++k)
+						{
+							tmp_t[k].first = raw_tensor_fields[k].first;
+							tmp_t[k].second.resize(count, actual_dim * actual_dim);
+							for (int d = 0; d < actual_dim; ++d)
+								tmp_t[k].second.middleCols(d * actual_dim, actual_dim) =
+									fields[raw_tensor_fields[k].second + d].values.middleRows(begin, count);
+						}
+					}
+				}
 
 				if (avg_scalar.empty() && !tmp_s.empty())
 				{
@@ -1006,16 +1120,18 @@ namespace polyfem::varform
 			if (velocity && options.export_field("velocity"))
 				append_sampled_dof_field(
 					"velocity",
-					time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
+					output_state ? output_state->velocity : time_integrator ? time_integrator->v_prev()
+																			: Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 			if (acceleration && options.export_field("acceleration"))
 				append_sampled_dof_field(
 					"acceleration",
-					time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
+					output_state ? output_state->acceleration : time_integrator ? time_integrator->a_prev()
+																				: Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 		}
 
-		if (forces)
+		if (forces && !output_state)
 		{
 			const double s = time_integrator ? time_integrator->acceleration_scaling() : 1;
 			for (const auto &[name, form] : named_forms)
@@ -1038,16 +1154,28 @@ namespace polyfem::varform
 			}
 		}
 
-		append_traction_force();
+		if (output_state)
+			for (const auto &field : output_state->forces)
+				if (options.export_field(field.name))
+					append_sampled_dof_field(field.name, field.values, actual_dim);
 
-		if (explicit_fields && options.export_field("gradient_of_elastic_potential") && elastic_form)
+		append_traction_force();
+		if (output_state)
+		{
+			if (output_state->elastic_gradient.size() > 0 && options.export_field("gradient_of_elastic_potential"))
+				append_sampled_dof_field("gradient_of_elastic_potential", output_state->elastic_gradient, actual_dim);
+			if (output_state->contact_gradient.size() > 0 && options.export_field("gradient_of_contact_potential"))
+				append_sampled_dof_field("gradient_of_contact_potential", output_state->contact_gradient, actual_dim);
+		}
+
+		if (!output_state && explicit_fields && options.export_field("gradient_of_elastic_potential") && elastic_form)
 		{
 			Eigen::VectorXd potential_grad;
 			elastic_form->first_derivative(solution, potential_grad);
 			append_sampled_dof_field("gradient_of_elastic_potential", potential_grad, actual_dim);
 		}
 
-		if (explicit_fields && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
+		if (!output_state && explicit_fields && options.export_field("gradient_of_contact_potential") && contact_form && contact_form->weight() > 0)
 		{
 			Eigen::VectorXd potential_grad;
 			contact_form->first_derivative(solution, potential_grad);
@@ -1055,7 +1183,10 @@ namespace polyfem::varform
 			append_sampled_dof_field("gradient_of_contact_potential", potential_grad, actual_dim);
 		}
 
-		append_primary_output_fields(fields, sample, solution, options, obstacle);
+		append_primary_output_fields(fields, sample, solution, options, obstacle,
+									 has_element_samples && !(explicit_fields && options.export_field("solution_gradient"))
+										 ? &get_interpolation()
+										 : nullptr);
 		return fields;
 	}
 
@@ -1064,7 +1195,8 @@ namespace polyfem::varform
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options,
-		const mesh::Obstacle *obstacle) const
+		const mesh::Obstacle *obstacle,
+		const StiffnessMatrix *interpolation) const
 	{
 		if (!mesh_ || solution.size() <= 0)
 			return;
@@ -1079,28 +1211,39 @@ namespace polyfem::varform
 		Eigen::MatrixXd values, gradients;
 		if (has_element_samples)
 		{
-			values.resize(sample.local_points.rows(), dim);
-			if (export_solution_gradient)
-				gradients.resize(sample.local_points.rows(), dim * mesh_->dimension());
-			for (int i = 0; i < sample.local_points.rows(); ++i)
+			if (interpolation)
+				values = *interpolation * utils::unflatten(solution.topRows(space_.n_bases * dim), dim);
+			else
 			{
-				const int element_id = sample.element_ids(i);
-				if (element_id < 0)
+				values.resize(sample.local_points.rows(), dim);
+				if (export_solution_gradient)
+					gradients.resize(sample.local_points.rows(), dim * mesh_->dimension());
+				for (int i = 0; i < sample.local_points.rows();)
 				{
-					values.row(i).setZero();
-					if (gradients.rows() > 0)
-						gradients.row(i).setZero();
-					continue;
-				}
+					const int element_id = sample.element_ids(i);
+					int end = i + 1;
+					while (end < sample.local_points.rows() && sample.element_ids(end) == element_id)
+						++end;
+					const int count = end - i;
+					if (element_id < 0)
+					{
+						values.middleRows(i, count).setZero();
+						if (gradients.rows() > 0)
+							gradients.middleRows(i, count).setZero();
+						i = end;
+						continue;
+					}
 
-				Eigen::MatrixXd local_value, local_gradient;
-				io::Evaluator::interpolate_at_local_vals(
-					*mesh_, dim, space_.basis_list(), space_.geometry_basis_list(),
-					element_id, sample.local_points.row(i), solution,
-					local_value, local_gradient);
-				values.row(i) = local_value;
-				if (gradients.rows() > 0)
-					gradients.row(i) = local_gradient;
+					Eigen::MatrixXd local_value, local_gradient;
+					io::Evaluator::interpolate_at_local_vals(
+						*mesh_, dim, space_.basis_list(), space_.geometry_basis_list(),
+						element_id, sample.local_points.middleRows(i, count), solution,
+						local_value, local_gradient);
+					values.middleRows(i, count) = local_value;
+					if (gradients.rows() > 0)
+						gradients.middleRows(i, count) = local_gradient;
+					i = end;
+				}
 			}
 
 			if (obstacle && obstacle->n_vertices() > 0

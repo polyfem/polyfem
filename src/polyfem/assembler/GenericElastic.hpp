@@ -34,11 +34,8 @@ namespace polyfem::assembler
 		void assemble_hessian(const NonLinearAssemblerData &data, LocalHessian &hessian) const override;
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
-		void assign_stress_tensor(const OutputData &data,
-								  const int all_size,
-								  const ElasticityTensorType &type,
-								  Eigen::MatrixXd &all,
-								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		bool compute_output_stress(const OutputData &data, const ElementAssemblyValues &vals,
+								   Eigen::Index point, const MatrixNd &displacement_gradient, OutputStress &stress) const override;
 
 		void compute_stress_grad_multiply_mat(const OptAssemblerData &data,
 											  const Eigen::MatrixXd &mat,
