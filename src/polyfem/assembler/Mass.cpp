@@ -18,11 +18,15 @@ namespace polyfem::assembler
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Mass::assemble(const LinearAssemblerData &data) const
 	{
 		double tmp = 0;
+		const bool constant_density = density().is_constant();
+		const double rho_constant = constant_density && data.da.size() > 0
+										? density()(data.vals.quadrature.points.row(0), data.vals.val.row(0), data.t, data.vals.element_id)
+										: 0;
 
 		// loop over quadrature points
 		for (int q = 0; q < data.da.size(); ++q)
 		{
-			const double rho = density()(data.vals.quadrature.points.row(q), data.vals.val.row(q), data.t, data.vals.element_id);
+			const double rho = constant_density ? rho_constant : density()(data.vals.quadrature.points.row(q), data.vals.val.row(q), data.t, data.vals.element_id);
 			// phi_i * phi_j weighted by quadrature weights
 			tmp += rho * data.vals.basis_values[data.i].val(q) * data.vals.basis_values[data.j].val(q) * data.da(q);
 		}

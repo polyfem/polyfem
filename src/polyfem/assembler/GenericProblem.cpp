@@ -287,6 +287,25 @@ namespace polyfem
 			}
 		}
 
+		bool GenericTensorProblem::is_rhs_time_dependent(const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+				const auto *size = find_for_fe_space(rhs_size_, fe_space_id);
+				if (rhs && size)
+					for (int i = 0; i < *size; ++i)
+						if ((*rhs)[i].is_time_dependent())
+							return true;
+			}
+			for (const auto &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id))
+					for (int i = 0; i < entry.size; ++i)
+						if (entry.value[i].is_time_dependent())
+							return true;
+			return false;
+		}
+
 		bool GenericTensorProblem::is_rhs_zero(const int fe_space_id) const
 		{
 			const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
@@ -1278,6 +1297,20 @@ namespace polyfem
 				const double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
 				val(i) = body_rhs->value(x, y, z, t);
 			}
+		}
+
+		bool GenericScalarProblem::is_rhs_time_dependent(const int fe_space_id) const
+		{
+			if (body_rhs_.empty())
+			{
+				const auto *rhs = find_for_fe_space(rhs_, fe_space_id);
+				if (rhs && rhs->is_time_dependent())
+					return true;
+			}
+			for (const auto &entry : body_rhs_)
+				if (matches_fe_space(entry.fe_space_id, fe_space_id) && entry.value.is_time_dependent())
+					return true;
+			return false;
 		}
 
 		bool GenericScalarProblem::is_rhs_zero(const int fe_space_id) const

@@ -664,7 +664,7 @@ namespace polyfem
 											   const double t,
 											   Eigen::MatrixXd &rhs) const
 		{
-			if (problem_.is_constant_in_time())
+			if (problem_.is_constant_in_time() || !is_rhs_time_dependent(density))
 			{
 				rhs = final_rhs;
 			}
@@ -684,6 +684,17 @@ namespace polyfem
 
 				assert(rhs.size() == final_rhs.size());
 			}
+		}
+
+		double RhsAssembler::compute_energy_from_rhs(
+			const Eigen::VectorXd &displacement,
+			const Eigen::MatrixXd &rhs) const
+		{
+			const int n_obstacle_vertices = obstacle_ ? obstacle_->n_vertices() : 0;
+			const Eigen::Index ndof = (n_basis_ - n_obstacle_vertices) * size_;
+			assert(ndof >= 0 && ndof <= displacement.size());
+			assert(rhs.cols() == 1 && ndof <= rhs.rows());
+			return -displacement.head(ndof).dot(rhs.col(0).head(ndof));
 		}
 
 		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement,

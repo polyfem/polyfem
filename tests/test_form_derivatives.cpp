@@ -305,6 +305,135 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	test_form(form, *fixture);
 }
 
+TEST_CASE("cached body energy matches quadrature", "[form][body_form][energy]")
+{
+	const int dim = GENERATE(2, 3);
+	const int order = GENERATE(1, 2);
+	const bool transient = GENERATE(false, true);
+	const bool mixed = GENERATE(false, true);
+	const int volume_dependence = GENERATE(0, 1, 2);
+	const bool constant_volume = volume_dependence == 0;
+	const bool time_dependent_volume = volume_dependence == 2;
+	const int load = GENERATE(0, 1, 2, 3, 4);
+	CAPTURE(dim, order, transient, mixed, volume_dependence, load);
+	json args;
+	args["geometry"][0] = {{"mesh", ""}, {"surface_selection", 7}};
+	args["space"]["discr_order"] = order;
+	args["materials"] = {{"type", "NeoHookean"}, {"E", 1000}, {"nu", 0.3}, {"rho", "1000*(1+0.1*x+0.2*t)"}};
+	if (constant_volume)
+		args["materials"]["rho"] = 1000;
+	else if (!time_dependent_volume)
+		args["materials"]["rho"] = "1000*(1+0.1*x)";
+	args["contact"]["enabled"] = false;
+	args["output"]["log"]["quiet"] = true;
+	args["output"]["log"]["level"] = "error";
+	if (transient)
+		args["time"] = {{"dt", 0.1}, {"tend", 1.0}};
+	json rhs = json::array(), traction = json::array();
+	for (int d = 0; d < dim; ++d)
+	{
+		rhs.push_back(load == 4 ? json(0) : constant_volume ? json(d + 1)
+															: json(std::to_string(d + 1) + "+x+2*y" + (time_dependent_volume ? "+t" : "")));
+		traction.push_back(std::to_string(10 * (d + 1)) + "+x-t");
+	}
+	args["boundary_conditions"]["rhs"] = rhs;
+	if (load == 1)
+		args["boundary_conditions"]["neumann_boundary"] = json::array({{{"id", 7}, {"value", traction}}});
+	if (load == 2)
+		args["boundary_conditions"]["normal_aligned_neumann_boundary"] = json::array({{{"id", 7}, {"value", "10+x+t"}}});
+	if (load == 3)
+		args["boundary_conditions"]["nodal_neumann_boundary"] = json::array({{{"id", 17}, {"value", traction}}});
+	State state;
+	state.init(args, true);
+	state.set_max_threads(1);
+	Eigen::MatrixXd vertices = Eigen::MatrixXd::Zero(dim + 1, dim);
+	vertices.bottomRows(dim).setIdentity();
+	Eigen::MatrixXi elements(1, dim + 1);
+	for (int i = 0; i <= dim; ++i)
+		elements(i) = i;
+	state.set_mesh(vertices, elements);
+	auto &formulation = dynamic_cast<varform::ElasticVarForm &>(*state.variational_formulation);
+	auto &mesh = const_cast<mesh::Mesh &>(test::VarFormTestAccess::mesh(formulation));
+	mesh.set_boundary_ids(std::vector<int>(mesh.n_boundary_elements(), 7));
+	mesh.compute_node_ids([](const size_t node, const RowVectorNd &, bool) { return int(node) + 17; });
+	test::VarFormTestAccess::prepare(formulation);
+	const auto data = test::VarFormTestAccess::elastic_form_data(formulation);
+	CHECK(data.rhs_assembler->is_rhs_time_dependent(data.mass_assembler.density()) == time_dependent_volume);
+	if (transient)
+	{
+		// A distinct supplied RHS proves the flag controls reuse, rather than
+		// only checking equal numbers from a redundant assembly.
+		const Eigen::MatrixXd supplied_rhs = data.rhs.array() + 1234;
+		Eigen::MatrixXd actual, expected;
+		data.rhs_assembler->compute_energy_grad(data.boundary.local_boundary, data.boundary.boundary_nodes,
+												data.mass_assembler.density(), data.boundary_samples, data.boundary.local_neumann_boundary,
+												supplied_rhs, 0.2, actual);
+		if (!time_dependent_volume)
+			expected = supplied_rhs;
+		else
+		{
+			data.rhs_assembler->assemble(data.mass_assembler.density(), expected, 0.2);
+			expected *= -1;
+		}
+		CHECK(actual.isApprox(expected, 1e-12));
+	}
+	if (load == 1 || load == 2)
+		REQUIRE_FALSE(data.boundary.local_neumann_boundary.empty());
+	if (load == 3)
+		REQUIRE_FALSE(data.boundary.neumann_nodes.empty());
+	const int n_pressure = mixed ? 3 : 0;
+	const int ndof = data.space.n_bases * dim + n_pressure;
+	BodyForm form(ndof, n_pressure, data.boundary.boundary_nodes, data.boundary.local_boundary,
+				  data.boundary.local_neumann_boundary, data.boundary_samples, data.rhs,
+				  *data.rhs_assembler, data.mass_assembler.density(), mixed, transient);
+	for (const double t : {0.0, 0.2, 0.7})
+	{
+		CAPTURE(t);
+		Eigen::VectorXd previous(ndof);
+		for (int i = 0; i < ndof; ++i)
+			previous(i) = 0.02 * std::sin(i + t);
+		form.update_quantities(t, previous);
+		for (int trial = 0; trial < 3; ++trial)
+		{
+			CAPTURE(trial);
+			Eigen::VectorXd x(ndof);
+			for (int i = 0; i < ndof; ++i)
+				x(i) = trial == 0 ? 0 : 0.1 * trial * std::cos(i + 0.3);
+			const double reference = data.rhs_assembler->compute_energy(x, previous,
+																		data.boundary.local_neumann_boundary, data.mass_assembler.density(), data.boundary_samples, t);
+			CHECK(std::abs(form.value(x) - reference) <= 1e-11 * std::max(1.0, std::abs(reference)));
+		}
+	}
+}
+
+TEST_CASE("cached body energy excludes obstacle and pressure entries", "[form][body_form][energy]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto fixture = get_fixture(dim);
+	const auto &data = fixture->data;
+	const io::FileSystemIO resources(".");
+	mesh::Obstacle obstacle;
+	json displacement = json::array();
+	for (int d = 0; d < dim; ++d)
+		displacement.push_back("1+t");
+	obstacle.append_mesh(Eigen::MatrixXd::Constant(1, dim, 2), Eigen::VectorXi::Zero(1),
+						 Eigen::MatrixXi(0, 2), Eigen::MatrixXi(0, 3), {{"value", displacement}}, resources);
+	RhsAssembler rhs(data.assembler, data.mesh, data.space.mesh_nodes.get(), &obstacle,
+					 data.boundary.dirichlet_nodes, data.boundary.neumann_nodes,
+					 data.boundary.dirichlet_nodes_position, data.boundary.neumann_nodes_position,
+					 data.space.n_bases + 1, dim, data.bases, data.space.geometry_basis_list(), data.mass_assembly_cache,
+					 data.problem, resources, "sample", fixture->state.args["solver"]["linear"]);
+	const int physical_ndof = data.space.n_bases * dim;
+	Eigen::MatrixXd loads = Eigen::MatrixXd::Zero(physical_ndof + dim + 3, 1);
+	loads.topRows(physical_ndof) = data.rhs;
+	loads.bottomRows(dim + 3).setConstant(42);
+	Eigen::VectorXd x = Eigen::VectorXd::LinSpaced(loads.rows(), 0.1, 0.3);
+	const double expected = -x.head(physical_ndof).dot(data.rhs.col(0));
+	CHECK(rhs.compute_energy_from_rhs(x, loads) == expected);
+	x.tail(dim + 3).setConstant(100);
+	CHECK(rhs.compute_energy_from_rhs(x, loads) == expected);
+}
+
 TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
