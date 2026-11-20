@@ -120,7 +120,7 @@ var searchData=
   ['code_20walkthrough_117',['Simple Example / Code Walkthrough',['../index.html#autotoc_md10',1,'']]],
   ['codim_5fv_118',['codim_v',['../classpolyfem_1_1mesh_1_1_obstacle.html#aef7ebfe2a4ee186cbd7e306ce1e5ae7e',1,'polyfem::mesh::Obstacle']]],
   ['codim_5fv_5f_119',['codim_v_',['../classpolyfem_1_1mesh_1_1_obstacle.html#a78f476dc85aaecc66c046da879b060ec',1,'polyfem::mesh::Obstacle']]],
-  ['coefficients_120',['coefficients',['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#adb4785ce1573a8810815ade82b6602ea',1,'polyfem::assembler::IncompressibleOgdenElasticity::coefficients()'],['../classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html#a5f5ff818ae6b20f73972fe13fc6c493f',1,'polyfem::assembler::MultiSpacesNLAssemblerData::Coefficients']]],
+  ['coefficients_120',['coefficients',['../classpolyfem_1_1assembler_1_1_multi_spaces_n_l_assembler_data.html#a5f5ff818ae6b20f73972fe13fc6c493f',1,'polyfem::assembler::MultiSpacesNLAssemblerData::Coefficients'],['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#adb4785ce1573a8810815ade82b6602ea',1,'polyfem::assembler::IncompressibleOgdenElasticity::coefficients() const']]],
   ['coefficients_5f_121',['coefficients_',['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a52bca87f4eaa29bd78cefaab71f2a578',1,'polyfem::assembler::IncompressibleOgdenElasticity']]],
   ['coeffs_122',['coeffs',['../classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#a17afb3e821a98549e70927e2aa8c7700',1,'polyfem::utils::PiecewiseCubicInterpolation']]],
   ['coeffs_5f_123',['coeffs_',['../classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#ae63766a5451f35b38d4b3407e99794e6',1,'polyfem::utils::PiecewiseCubicInterpolation']]],

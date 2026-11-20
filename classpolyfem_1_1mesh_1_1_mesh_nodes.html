@@ -205,6 +205,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9458a71546bd55ea0649e7d73556371c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55ba14abe407e9bf4be20577977c43be" id="r_a55ba14abe407e9bf4be20577977c43be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a55ba14abe407e9bf4be20577977c43be">node_position</a> (int node_id) const</td></tr>
 <tr class="separator:a55ba14abe407e9bf4be20577977c43be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aea3c8860ede8eb768196783856d666" id="r_a3aea3c8860ede8eb768196783856d666"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a3aea3c8860ede8eb768196783856d666">finalize</a> ()</td></tr>
+<tr class="memdesc:a3aea3c8860ede8eb768196783856d666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once all the nodes are created (at the end of the basis construction): computes the node tags from the mesh.  <br /></td></tr>
+<tr class="separator:a3aea3c8860ede8eb768196783856d666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae512ea5dc850caf97c1dd0df14912ba5" id="r_ae512ea5dc850caf97c1dd0df14912ba5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#ae512ea5dc850caf97c1dd0df14912ba5">node_tag</a> (const int node_id) const</td></tr>
+<tr class="memdesc:ae512ea5dc850caf97c1dd0df14912ba5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-selection id of a node (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node.">Mesh::get_node_id</a> of its vertex): -1 for nodes that are not on a vertex, and for every node if the mesh has no node ids or <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a3aea3c8860ede8eb768196783856d666" title="Called once all the nodes are created (at the end of the basis construction): computes the node tags ...">finalize()</a> was not called.  <br /></td></tr>
+<tr class="separator:ae512ea5dc850caf97c1dd0df14912ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c213d9f5cde24c33d02c93c1410a13c" id="r_a0c213d9f5cde24c33d02c93c1410a13c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a0c213d9f5cde24c33d02c93c1410a13c">has_node_tags</a> () const</td></tr>
+<tr class="separator:a0c213d9f5cde24c33d02c93c1410a13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00c44c8c10d38f1b42be1a896d4a249c" id="r_a00c44c8c10d38f1b42be1a896d4a249c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a00c44c8c10d38f1b42be1a896d4a249c">is_boundary</a> (int node_id) const</td></tr>
 <tr class="separator:a00c44c8c10d38f1b42be1a896d4a249c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe94c802a30fe0afa3d51529d5b8ba40" id="r_afe94c802a30fe0afa3d51529d5b8ba40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#afe94c802a30fe0afa3d51529d5b8ba40">is_primitive_boundary</a> (int primitive) const</td></tr>
@@ -255,6 +263,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:afb21854a67cdea7ef2f688aac703caf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b40832e21d6efa2924c9d3d06ff5124" id="r_a6b40832e21d6efa2924c9d3d06ff5124"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a6b40832e21d6efa2924c9d3d06ff5124">in_ordered_vertices_</a></td></tr>
 <tr class="separator:a6b40832e21d6efa2924c9d3d06ff5124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa91c950d77391ff615ca294584f7abfd" id="r_aa91c950d77391ff615ca294584f7abfd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#aa91c950d77391ff615ca294584f7abfd">node_tags_</a></td></tr>
+<tr class="separator:aa91c950d77391ff615ca294584f7abfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -312,7 +322,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">67</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_8hpp_source.html#l00171">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00072">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00106">is_boundary_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh::is_boundary_edge()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a621933dae34168bbcde32aba1aae763c">polyfem::mesh::Mesh::is_boundary_vertex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">is_interface_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69">polyfem::mesh::Mesh::n_edges()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_8hpp_source.html#l00171">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00084">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00118">is_boundary_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh::is_boundary_edge()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a621933dae34168bbcde32aba1aae763c">polyfem::mesh::Mesh::is_boundary_vertex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00119">is_interface_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69">polyfem::mesh::Mesh::n_edges()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -337,9 +347,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">818</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00836">836</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00106">is_boundary_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00118">is_boundary_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -366,7 +376,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">809</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 
 </div>
 </div>
@@ -404,9 +414,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">833</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">851</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00055">num_cell_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00053">num_edge_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00054">num_face_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00052">num_vertex_nodes()</a>.</p>
 <div class="dynheader">
@@ -435,7 +445,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">795</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
 </div>
 </div>
@@ -457,7 +467,71 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">802</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
+
+</div>
+</div>
+<a id="a3aea3c8860ede8eb768196783856d666" name="a3aea3c8860ede8eb768196783856d666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3aea3c8860ede8eb768196783856d666">&#9670;&#160;</a></span>finalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::MeshNodes::finalize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Called once all the nodes are created (at the end of the basis construction): computes the node tags from the mesh. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">818</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00553">polyfem::mesh::Mesh::has_node_ids()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00047">is_vertex_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00125">node_tags_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_nodes_a3aea3c8860ede8eb768196783856d666_cgraph.svg" width="466" height="264"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a0c213d9f5cde24c33d02c93c1410a13c" name="a0c213d9f5cde24c33d02c93c1410a13c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c213d9f5cde24c33d02c93c1410a13c">&#9670;&#160;</a></span>has_node_tags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::MeshNodes::has_node_tags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00081">81</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00125">node_tags_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00139">polyfem::assembler::Problem::setup_nodal_bc()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_nodes_a0c213d9f5cde24c33d02c93c1410a13c_icgraph.svg" width="455" height="56"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -486,7 +560,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00066">66</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>.</p>
 
 </div>
 </div>
@@ -514,11 +588,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00072">72</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00084">84</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00106">is_boundary_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00118">is_boundary_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00080">is_boundary_or_interface()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">is_boundary_or_interface()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -551,9 +625,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00080">80</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">92</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00072">is_boundary()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00076">is_interface()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00084">is_boundary()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">is_interface()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -588,7 +662,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00050">50</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>.</p>
 
 </div>
 </div>
@@ -618,7 +692,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00048">48</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>.</p>
 
 </div>
 </div>
@@ -648,7 +722,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00049">49</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>.</p>
 
 </div>
 </div>
@@ -676,11 +750,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00076">76</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">88</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">is_interface_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00119">is_interface_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00080">is_boundary_or_interface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">is_boundary_or_interface()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -713,9 +787,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00073">73</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00085">85</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00106">is_boundary_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00118">is_boundary_</a>.</p>
 
 </div>
 </div>
@@ -743,9 +817,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00077">77</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">89</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">is_interface_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00119">is_interface_</a>.</p>
 
 </div>
 </div>
@@ -775,7 +849,14 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00047">47</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">finalize()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_nodes_a8c63d0581941389294d48687ed5e5a3f_icgraph.svg" width="466" height="56"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -804,9 +885,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">23</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">boundary_nodes()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00680">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01018">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00836">boundary_nodes()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00680">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01018">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">finalize()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -833,7 +914,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">781</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">max_nodes_per_cell_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">max_nodes_per_cell_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>.</p>
 <div class="dynheader">
@@ -867,7 +948,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00771">771</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -894,7 +975,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00776">776</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -921,7 +1002,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">159</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2">polyfem::mesh::Mesh::cell_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh::edge_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh::face_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2">polyfem::mesh::Mesh::cell_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh::edge_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh::face_barycenter()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">node_id_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00771">node_id_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00776">node_id_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00766">node_id_from_vertex()</a>.</p>
 <div class="dynheader">
@@ -992,7 +1073,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">634</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh3_d_8cpp_source.html#l00339">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00363">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00429">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00434">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00424">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">node_id_from_cell()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh3_d_8cpp_source.html#l00339">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00361">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00397">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00402">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00392">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">max_nodes_per_cell_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">node_id_from_cell()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1029,7 +1110,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">265</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00079">polyfem::mesh::Mesh3D::edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00079">polyfem::mesh::Mesh3D::edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1066,7 +1147,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">187</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a271d2c56756a44aace870d49d258f7aa">polyfem::mesh::Mesh2D::edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh::is_boundary_edge()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">polyfem::mesh::Mesh2D::switch_face()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a271d2c56756a44aace870d49d258f7aa">polyfem::mesh::Mesh2D::edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh::is_boundary_edge()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">polyfem::mesh::Mesh2D::switch_face()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1103,7 +1184,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">534</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00233">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00429">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00434">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00424">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D::switch_element()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00233">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00397">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_8cpp_source.html#l00402">polyfem::mesh::Mesh::is_pyramid()</a>, <a class="el" href="_mesh_8cpp_source.html#l00392">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D::switch_element()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1146,7 +1227,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">372</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00233">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00429">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D::next_around_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D::switch_element()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6">polyfem::mesh::Mesh3D::switch_face()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00233">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00397">polyfem::mesh::Mesh::is_prism()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D::next_around_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D::switch_element()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6">polyfem::mesh::Mesh3D::switch_face()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1183,7 +1264,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">320</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">connect_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a2ccf78e9ef92ad9f18d9660449772204">polyfem::mesh::Mesh2D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00424">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">connect_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a2ccf78e9ef92ad9f18d9660449772204">polyfem::mesh::Mesh2D::face_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00392">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">mesh_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1218,13 +1299,52 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">69</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">nodes_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">nodes_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_nodes_a55ba14abe407e9bf4be20577977c43be_icgraph.svg" width="466" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ae512ea5dc850caf97c1dd0df14912ba5" name="ae512ea5dc850caf97c1dd0df14912ba5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae512ea5dc850caf97c1dd0df14912ba5">&#9670;&#160;</a></span>node_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::mesh::MeshNodes::node_tag </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>node_id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Point-selection id of a node (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node.">Mesh::get_node_id</a> of its vertex): -1 for nodes that are not on a vertex, and for every node if the mesh has no node ids or <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html#a3aea3c8860ede8eb768196783856d666" title="Called once all the nodes are created (at the end of the basis construction): computes the node tags ...">finalize()</a> was not called. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00077">77</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00125">node_tags_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00689">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_out_data_8cpp_source.html#l02749">polyfem::io::OutGeometryData::save_points()</a>, and <a class="el" href="_problem_8cpp_source.html#l00139">polyfem::assembler::Problem::setup_nodal_bc()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_mesh_nodes_ae512ea5dc850caf97c1dd0df14912ba5_icgraph.svg" width="100%" height="458"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1254,7 +1374,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00065">65</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
 </div>
 </div>
@@ -1283,7 +1403,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00064">64</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">node_to_primitive_gid_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">node_to_primitive_gid_</a>.</p>
 
 </div>
 </div>
@@ -1312,7 +1432,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00055">55</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1346,7 +1466,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00053">53</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">count_nonnegative_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">count_nonnegative_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1380,7 +1500,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00054">54</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1414,7 +1534,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00052">52</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">count_nonnegative_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1449,7 +1569,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00045">45</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">cell_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">max_nodes_per_cell_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">cell_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">max_nodes_per_cell_</a>.</p>
 
 </div>
 </div>
@@ -1479,7 +1599,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00043">43</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">max_nodes_per_edge_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">max_nodes_per_edge_</a>.</p>
 
 </div>
 </div>
@@ -1509,7 +1629,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00044">44</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">face_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">max_nodes_per_face_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">face_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">max_nodes_per_face_</a>.</p>
 
 </div>
 </div>
@@ -1566,7 +1686,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00063">63</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">primitive_to_node_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">primitive_to_node_</a>.</p>
 
 </div>
 </div>
@@ -1588,7 +1708,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_nodes_8cpp_source.html#l00788">788</a> of file <a class="el" href="_mesh_nodes_8cpp_source.html">MeshNodes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">node_to_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">edge_offset_</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">node_to_primitive_</a>.</p>
 
 </div>
 </div>
@@ -1613,7 +1733,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00093">93</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">105</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">face_from_node_id()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00050">is_cell_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00049">is_face_node()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">node_id_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00055">num_cell_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00054">num_face_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00045">primitive_from_cell()</a>.</p>
 
@@ -1639,7 +1759,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">89</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">101</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
 
@@ -1665,7 +1785,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00091">91</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00103">103</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">edge_from_node_id()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00048">is_edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00047">is_vertex_node()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00771">node_id_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00053">num_edge_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00052">num_vertex_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00043">primitive_from_edge()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00788">vertex_from_node_id()</a>.</p>
 
@@ -1691,7 +1811,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00092">92</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00104">104</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">edge_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">face_from_node_id()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00048">is_edge_node()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00049">is_face_node()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00776">node_id_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00053">num_edge_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00054">num_face_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00044">primitive_from_face()</a>.</p>
 
@@ -1717,7 +1837,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00110">110</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00122">122</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00066">in_ordered_vertices()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
 
@@ -1743,9 +1863,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00106">106</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00118">118</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">boundary_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00072">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00073">is_primitive_boundary()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00836">boundary_nodes()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00084">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00085">is_primitive_boundary()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
 
 </div>
 </div>
@@ -1769,9 +1889,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">107</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00119">119</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00076">is_interface()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00077">is_primitive_interface()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">is_interface()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00089">is_primitive_interface()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>.</p>
 
 </div>
 </div>
@@ -1795,7 +1915,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00097">97</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00109">109</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00781">node_id_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00045">primitive_from_cell()</a>.</p>
 
@@ -1821,7 +1941,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00095">95</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00107">107</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">edge_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00771">node_id_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00043">primitive_from_edge()</a>.</p>
 
@@ -1847,7 +1967,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00096">96</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00108">108</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">face_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00776">node_id_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00044">primitive_from_face()</a>.</p>
 
@@ -1873,9 +1993,35 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">88</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">100</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">finalize()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>.</p>
+
+</div>
+</div>
+<a id="aa91c950d77391ff615ca294584f7abfd" name="aa91c950d77391ff615ca294584f7abfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa91c950d77391ff615ca294584f7abfd">&#9670;&#160;</a></span>node_tags_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::mesh::MeshNodes::node_tags_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00125">125</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">finalize()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00081">has_node_tags()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00077">node_tag()</a>.</p>
 
 </div>
 </div>
@@ -1899,9 +2045,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00101">101</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00113">113</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">edge_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">face_from_node_id()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00072">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00076">is_interface()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00065">node_to_primitive()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00788">vertex_from_node_id()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00795">edge_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00802">face_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">finalize()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00084">is_boundary()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00088">is_interface()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00023">n_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00065">node_to_primitive()</a>, and <a class="el" href="_mesh_nodes_8cpp_source.html#l00788">vertex_from_node_id()</a>.</p>
 
 </div>
 </div>
@@ -1925,7 +2071,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00102">102</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00114">114</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00064">node_to_primitive_gid()</a>.</p>
 
@@ -1951,7 +2097,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00105">105</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00117">117</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00069">node_position()</a>.</p>
 
@@ -1977,9 +2123,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00100">100</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_nodes_8hpp_source.html#l00112">112</a> of file <a class="el" href="_mesh_nodes_8hpp_source.html">MeshNodes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00818">boundary_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00833">count_nonnegative_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00055">num_cell_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00063">primitive_to_node()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_nodes_8cpp_source.html#l00836">boundary_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00809">cell_from_node_id()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00851">count_nonnegative_nodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00067">MeshNodes()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00159">node_id_from_primitive()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00634">node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00265">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00187">node_ids_from_edge()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00534">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00372">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00320">node_ids_from_face()</a>, <a class="el" href="_mesh_nodes_8hpp_source.html#l00055">num_cell_nodes()</a>, and <a class="el" href="_mesh_nodes_8hpp_source.html#l00063">primitive_to_node()</a>.</p>
 
 </div>
 </div>

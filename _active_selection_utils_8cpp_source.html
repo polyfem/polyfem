@@ -429,7 +429,7 @@ $(document).ready(function(){initNavTree('_active_selection_utils_8cpp_source.ht
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                }</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordtype">int</span> tag = varform-&gt;get_mesh().get_node_id(v);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordtype">int</span> tag = varform-&gt;primary_space().node_tag(v);</div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                <span class="keywordflow">if</span> (!varform-&gt;get_problem().is_nodal_dirichlet_boundary(v, tag))</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                {</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                    reason = fmt::format(<span class="stringliteral">&quot;Input vertex {} is not a nodal Dirichlet node&quot;</span>, v_in);</div>

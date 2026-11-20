@@ -5,6 +5,7 @@ var structpolyfem_1_1io_1_1_output_space =
     [ "dirichlet_nodes_position", "structpolyfem_1_1io_1_1_output_space.html#a869aee54585bf1d1e08a1dd11de61ddc", null ],
     [ "geometry_bases", "structpolyfem_1_1io_1_1_output_space.html#a7b40317af243aba4b9c091a868400820", null ],
     [ "mesh", "structpolyfem_1_1io_1_1_output_space.html#a01fd4b86c30e33d74c8f5649618adf6e", null ],
+    [ "mesh_nodes", "structpolyfem_1_1io_1_1_output_space.html#a25a0ba3a37f8ce41342b59f7d513e4d8", null ],
     [ "obstacle", "structpolyfem_1_1io_1_1_output_space.html#ae8c71448ceb9f168bec48419825f62bf", null ],
     [ "output_orders", "structpolyfem_1_1io_1_1_output_space.html#a226c380d13b5aba61732865b4a3d1dca", null ],
     [ "polys", "structpolyfem_1_1io_1_1_output_space.html#acffee47cff22012201358dfe37e18d0b", null ],

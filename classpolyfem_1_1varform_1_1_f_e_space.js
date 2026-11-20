@@ -5,6 +5,7 @@ var classpolyfem_1_1varform_1_1_f_e_space =
     [ "has_bases", "classpolyfem_1_1varform_1_1_f_e_space.html#a9c9e50ed54a6d82c80e65048c94426fb", null ],
     [ "is_iso_parametric", "classpolyfem_1_1varform_1_1_f_e_space.html#ad02758454253f96fe9a4f10972fb5b37", null ],
     [ "ndof", "classpolyfem_1_1varform_1_1_f_e_space.html#a6ff3c4b0d3ead9b5d287b2a3feae5e06", null ],
+    [ "node_tag", "classpolyfem_1_1varform_1_1_f_e_space.html#aeb2c47d052d9d08996852ac6303a732f", null ],
     [ "reset", "classpolyfem_1_1varform_1_1_f_e_space.html#a391f535adf611c5b3da429945468debf", null ],
     [ "bases", "classpolyfem_1_1varform_1_1_f_e_space.html#a0438695b9637ab1e2cadbf719d47a287", null ],
     [ "disc_orders", "classpolyfem_1_1varform_1_1_f_e_space.html#a1228aa751d9965fc7065dae7beb54242", null ],

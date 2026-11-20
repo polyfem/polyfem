@@ -1,21 +1,24 @@
 <map id="polyfem::solver::BCLagrangianForm" name="polyfem::solver::BCLagrangianForm">
-<area shape="rect" id="Node000001" title="Form of the augmented lagrangian for bc constraints." alt="" coords="710,143,964,170"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html" title="Form of the augmented lagrangian." alt="" coords="350,49,556,94"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="571,95,774,141,769,143,571,100"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_form.html" title=" " alt="" coords="15,5,180,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="195,31,351,54,347,58,196,36"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html" title=" " alt="" coords="377,169,528,214"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="544,180,712,167,707,169,544,186"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_assembler.html" title="abstract class" alt="" coords="22,57,173,102"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="188,92,257,108,327,129,412,168,407,169,325,134,255,113,189,98"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="16,125,179,153"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="194,148,326,166,379,176,374,178,325,171,195,153"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="5,177,190,205"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="205,189,379,189,375,193,206,194"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="17,229,178,274"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="192,233,325,211,379,204,374,206,326,216,194,238"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_problem.html" title=" " alt="" coords="22,298,173,343"/>
-<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="187,296,255,277,325,252,409,215,413,213,327,257,257,282,189,301"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="9,367,186,394"/>
-<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="196,360,261,340,324,311,357,289,386,262,432,215,436,213,390,266,360,293,327,316,263,345,198,365"/>
+<area shape="rect" id="Node000001" title="Form of the augmented lagrangian for bc constraints." alt="" coords="986,183,1241,210"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html" title="Form of the augmented lagrangian." alt="" coords="626,69,832,114"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="828,115,1063,182,1058,183,828,121"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_form.html" title=" " alt="" coords="282,5,446,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="461,29,603,54,653,68,647,69,601,59,462,35"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html" title=" " alt="" coords="654,209,805,254"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="820,220,989,207,983,209,821,226"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_assembler.html" title="abstract class" alt="" coords="289,57,440,102"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="455,83,529,96,567,108,603,122,635,141,664,163,711,209,705,208,661,167,632,145,601,127,565,113,528,102,456,88"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="5,160,168,188"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="182,161,192,161,308,156,398,158,488,168,603,189,668,208,663,209,601,194,488,173,398,163,308,161,192,166,185,166"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html" title=" " alt="" coords="263,191,466,218"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="183,182,264,192,260,195,184,187"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="482,210,656,225,651,227,482,216"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="272,243,456,270"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="472,255,602,250,655,245,650,246,602,255,472,260"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="284,294,444,339"/>
+<area shape="poly" id="edge9_Node000004_Node000009" title=" " alt="" coords="459,304,530,293,601,278,674,255,679,253,603,283,531,299,460,309"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_problem.html" title=" " alt="" coords="289,364,440,408"/>
+<area shape="poly" id="edge10_Node000004_Node000010" title=" " alt="" coords="455,368,528,350,601,322,656,288,701,255,706,253,660,292,603,327,529,355,456,373"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="276,432,453,460"/>
+<area shape="poly" id="edge11_Node000004_Node000011" title=" " alt="" coords="468,431,536,413,569,399,601,382,637,352,669,317,713,255,718,252,673,320,641,356,603,386,572,404,537,418,469,436"/>
 </map>

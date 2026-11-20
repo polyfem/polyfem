@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_rhs_assembler =
 [
-    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a622f3ec020538f314836ff6c1eedaf28", null ],
+    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ae792d0d91c9c2c2df2d203878722ee16", null ],
     [ "ass_vals_cache", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a24586fcdb60aabb348a29855e43cbe6e", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5", null ],
     [ "assembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a97719fe113df5d24a8993e19dad8cea5", null ],
@@ -28,6 +28,7 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "fe_space_id_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a03eb69fbf6b27f7dee2d04f6b32fbfec", null ],
     [ "gbases_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481", null ],
     [ "mesh_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0b1f0da3ae1cbbbd95b57cba673f6e8e", null ],
+    [ "mesh_nodes_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a7589effb76b4248a5ec56f0a6423a270", null ],
     [ "n_basis_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a39a825e996487157c35b072370d06373", null ],
     [ "neumann_nodes_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a69131e256e8d0f64a8f936430c528a7c", null ],
     [ "neumann_nodes_position_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4a6b5c08a73684306164df9f9ad2949e", null ],

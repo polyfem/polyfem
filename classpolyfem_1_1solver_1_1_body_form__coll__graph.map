@@ -1,21 +1,24 @@
 <map id="polyfem::solver::BodyForm" name="polyfem::solver::BodyForm">
-<area shape="rect" id="Node000001" title="Form representing body forces." alt="" coords="668,156,865,184"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_form.html" title=" " alt="" coords="350,96,514,124"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="529,125,644,145,691,156,686,156,644,150,529,130"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html" title=" " alt="" coords="356,148,508,193"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="523,168,671,170,665,171,523,173"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembler.html" title="abstract class" alt="" coords="22,5,173,50"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="188,28,225,33,261,43,296,58,327,79,338,93,341,107,343,121,352,134,367,147,362,147,348,137,338,123,336,108,333,95,324,83,293,63,259,48,223,39,190,33"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="16,74,179,102"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="193,97,260,109,326,125,380,147,375,148,325,130,259,114,194,102"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="5,126,190,154"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="205,147,358,162,354,165,205,152"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="17,177,178,222"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="193,193,325,183,358,182,353,183,326,189,194,198"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_problem.html" title=" " alt="" coords="22,247,173,291"/>
-<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="187,251,255,235,325,214,349,203,374,194,378,192,351,207,327,219,257,240,189,256"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="9,315,186,343"/>
-<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="201,320,266,303,297,288,324,268,334,253,336,238,338,221,348,203,362,195,366,192,352,207,343,222,341,238,339,255,328,272,299,292,268,308,202,326"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_density.html" title=" " alt="" coords="356,217,508,262"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="523,218,699,184,694,185,524,224"/>
+<area shape="rect" id="Node000001" title="Form representing body forces." alt="" coords="944,191,1142,219"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_form.html" title=" " alt="" coords="626,131,790,159"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="806,159,921,180,967,190,962,191,920,185,806,165"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html" title=" " alt="" coords="632,183,784,227"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="799,202,947,205,942,205,800,208"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembler.html" title="abstract class" alt="" coords="289,5,440,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="455,20,494,24,534,32,571,48,604,71,613,83,618,96,618,120,617,145,620,157,628,169,642,182,636,182,624,172,616,159,612,145,613,120,613,97,609,86,600,75,568,52,532,38,493,29,456,25"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes." alt="" coords="5,108,168,136"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="172,103,266,92,376,90,435,95,493,105,550,120,603,143,616,155,628,168,648,182,643,182,624,172,612,159,601,147,548,125,492,110,434,100,376,96,266,98,175,108"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html" title=" " alt="" coords="263,139,466,167"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="183,130,264,140,260,143,184,136"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="481,164,602,181,635,189,629,189,602,186,482,169"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="272,191,456,219"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="472,202,634,204,629,206,472,208"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="284,243,444,287"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="460,248,602,225,634,221,629,222,602,230,461,254"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_problem.html" title=" " alt="" coords="289,312,440,357"/>
+<area shape="poly" id="edge9_Node000003_Node000009" title=" " alt="" coords="454,320,529,300,566,285,600,267,612,253,624,238,642,229,647,227,628,242,616,256,604,271,568,290,530,305,456,325"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="276,380,453,408"/>
+<area shape="poly" id="edge10_Node000003_Node000010" title=" " alt="" coords="468,390,503,384,538,373,571,357,600,335,609,324,612,313,612,289,612,264,616,251,624,238,637,229,641,227,628,241,620,253,617,265,618,289,618,313,613,326,604,339,574,362,540,378,504,389,469,395"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_density.html" title=" " alt="" coords="632,252,784,297"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="799,253,970,220,975,219,800,258"/>
 </map>

@@ -181,7 +181,7 @@ $(document).ready(function(){initNavTree('_dirichlet_nodes_variable_to_simulatio
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> v_in = 0; v_in &lt; <a class="code hl_variable" href="classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html#a4e59edfd56b0c953be86358aaa8c400b">vertex_num_</a>; ++v_in)</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keywordtype">int</span> v = varform.primary_space().space_in_node_to_node(v_in);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordtype">int</span> tag = varform.get_mesh().get_node_id(v);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordtype">int</span> tag = varform.primary_space().node_tag(v);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keywordflow">if</span> (varform.get_problem().is_nodal_dirichlet_boundary(v, tag))</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                    tmp.push_back(v_in);</div>

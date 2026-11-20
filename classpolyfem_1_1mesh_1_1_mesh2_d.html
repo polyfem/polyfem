@@ -382,9 +382,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_af9990574a4f9f73a5931f333a1ae24d6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6">get_node_id</a> (const int node_id) const</td></tr>
 <tr class="memdesc:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the boundary selection of a node.  <br /></td></tr>
 <tr class="separator:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_a9a79b43d572291b2e13395d999ae96e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3">update_nodes</a> (const Eigen::VectorXi &amp;in_node_to_node)</td></tr>
-<tr class="memdesc:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.  <br /></td></tr>
-<tr class="separator:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0417a588019e24120727a6667d0cfcef inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_a0417a588019e24120727a6667d0cfcef"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef">get_body_id</a> (const int primitive) const</td></tr>
 <tr class="memdesc:a0417a588019e24120727a6667d0cfcef inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the volume selection of an element (cell in 3d, face in 2d)  <br /></td></tr>
 <tr class="separator:a0417a588019e24120727a6667d0cfcef inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -487,9 +484,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a182207daa473ce4978217c2afe8cf42b inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab29da97729942a2c025ecaa6fd3814b7 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ab29da97729942a2c025ecaa6fd3814b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab29da97729942a2c025ecaa6fd3814b7">transform_higher_order_data</a> (const <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
 <tr class="separator:ab29da97729942a2c025ecaa6fd3814b7 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ad0df51f945bc842ce713ee0f202986f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad0df51f945bc842ce713ee0f202986f0">reset_fe_node_ids</a> ()</td></tr>
-<tr class="memdesc:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forget the FE numbering of the node ids (the vertex ids or the topology changed).  <br /></td></tr>
-<tr class="separator:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1mesh_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td></tr>
 <tr class="memitem:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a1575362bfcf4556fb8f862f012e9278c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">ElementType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c">elements_tag_</a></td></tr>
 <tr class="memdesc:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of element types  <br /></td></tr>
@@ -497,12 +491,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a83ef5a403268a7ff1a84143cb57b18ae"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a83ef5a403268a7ff1a84143cb57b18ae">node_ids_</a></td></tr>
 <tr class="memdesc:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of node labels, one per vertex  <br /></td></tr>
 <tr class="separator:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a23c9f0c0012dfcdc7b209cb8847e792f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a23c9f0c0012dfcdc7b209cb8847e792f">fe_node_ids_</a></td></tr>
-<tr class="memdesc:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">node labels per FE node, built from node_ids_ by <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3" title="Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.">update_nodes()</a>  <br /></td></tr>
-<tr class="separator:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a237a370477fbdfe9b0126f9b1a0b8e34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a237a370477fbdfe9b0126f9b1a0b8e34">fe_node_ids_mapped_</a> = false</td></tr>
-<tr class="memdesc:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node.">get_node_id()</a> reads fe_node_ids_ (after <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3" title="Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.">update_nodes()</a>)  <br /></td></tr>
-<tr class="separator:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a78140f52fc2f13195f915a62825e30d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a78140f52fc2f13195f915a62825e30d9">boundary_ids_</a></td></tr>
 <tr class="memdesc:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of surface labels  <br /></td></tr>
 <tr class="separator:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -712,7 +700,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh2_d_8cpp_source.html#l00080">80</a> of file <a class="el" href="_mesh2_d_8cpp_source.html">Mesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00424">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00063">next_around_face()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00392">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00063">next_around_face()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -797,7 +785,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh2_d_8hpp_source.html#l00059">59</a> of file <a class="el" href="_mesh2_d_8hpp_source.html">Mesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00322">polyfem::mesh::Mesh::face_barycenters()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00320">polyfem::mesh::Mesh::face_barycenters()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -840,7 +828,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh2_d_8cpp_source.html#l00096">96</a> of file <a class="el" href="_mesh2_d_8cpp_source.html">Mesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00424">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00063">next_around_face()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00392">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00063">next_around_face()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -984,7 +972,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00063">next_around_face()</a>, <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00908">polyfem::mesh::NCMesh2D::compute_body_ids()</a>, and <a class="el" href="_elastic_variable_to_simulation_8cpp_source.html#l00115">polyfem::solver::ElasticVariableToSimulation::inverse_eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00907">polyfem::mesh::NCMesh2D::compute_body_ids()</a>, and <a class="el" href="_elastic_variable_to_simulation_8cpp_source.html#l00115">polyfem::solver::ElasticVariableToSimulation::inverse_eval()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

@@ -148,7 +148,7 @@ var searchData=
   ['setup_5fkey_145',['setup_key',['../classpolyfem_1_1_lazy_cubic_interpolator.html#a03b4bd1264034246f2639b4aa976fbe9',1,'polyfem::LazyCubicInterpolator']]],
   ['setup_5fmonomials_5fstrong_5f2d_146',['setup_monomials_strong_2d',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a0eb13d358aeff8c5c6a9e89a2c4b1291',1,'polyfem::basis::RBFWithQuadratic']]],
   ['setup_5fmonomials_5fvals_5f2d_147',['setup_monomials_vals_2d',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a699276b593b76cf2523f9e2c995b33b6',1,'polyfem::basis::RBFWithQuadratic']]],
-  ['setup_5fnodal_5fbc_148',['setup_nodal_bc',['../classpolyfem_1_1assembler_1_1_problem.html#ae6fd0188ff803d62924ab7d252a14195',1,'polyfem::assembler::Problem']]],
+  ['setup_5fnodal_5fbc_148',['setup_nodal_bc',['../classpolyfem_1_1assembler_1_1_problem.html#affdb431543d0502cd707636fccd2a73d',1,'polyfem::assembler::Problem']]],
   ['setvariablecount_149',['setVariableCount',['../struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7',1,'DiffScalarBase']]],
   ['shapevariabletosimulation_150',['ShapeVariableToSimulation',['../classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a400b2a7cf031676efc65135f95fd422f',1,'polyfem::solver::ShapeVariableToSimulation']]],
   ['show_5fmatrix_5fstats_151',['show_matrix_stats',['../namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b',1,'polyfem::utils']]],

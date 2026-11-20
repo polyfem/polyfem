@@ -453,9 +453,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_af9990574a4f9f73a5931f333a1ae24d6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6">get_node_id</a> (const int node_id) const</td></tr>
 <tr class="memdesc:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the boundary selection of a node.  <br /></td></tr>
 <tr class="separator:af9990574a4f9f73a5931f333a1ae24d6 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_a9a79b43d572291b2e13395d999ae96e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3">update_nodes</a> (const Eigen::VectorXi &amp;in_node_to_node)</td></tr>
-<tr class="memdesc:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.  <br /></td></tr>
-<tr class="separator:a9a79b43d572291b2e13395d999ae96e3 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab66149e5d692cf4b94a9f286b4aaa7b0 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ab66149e5d692cf4b94a9f286b4aaa7b0"><td class="memItemLeft" align="right" valign="top">virtual const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab66149e5d692cf4b94a9f286b4aaa7b0">get_body_ids</a> () const</td></tr>
 <tr class="memdesc:ab66149e5d692cf4b94a9f286b4aaa7b0 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the volume selection of all elements (cells in 3d, faces in 2d)  <br /></td></tr>
 <tr class="separator:ab66149e5d692cf4b94a9f286b4aaa7b0 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -596,9 +593,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a182207daa473ce4978217c2afe8cf42b inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab29da97729942a2c025ecaa6fd3814b7 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ab29da97729942a2c025ecaa6fd3814b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab29da97729942a2c025ecaa6fd3814b7">transform_higher_order_data</a> (const <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
 <tr class="separator:ab29da97729942a2c025ecaa6fd3814b7 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh" id="r_ad0df51f945bc842ce713ee0f202986f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad0df51f945bc842ce713ee0f202986f0">reset_fe_node_ids</a> ()</td></tr>
-<tr class="memdesc:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forget the FE numbering of the node ids (the vertex ids or the topology changed).  <br /></td></tr>
-<tr class="separator:ad0df51f945bc842ce713ee0f202986f0 inherit pro_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -642,12 +636,6 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a83ef5a403268a7ff1a84143cb57b18ae"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a83ef5a403268a7ff1a84143cb57b18ae">node_ids_</a></td></tr>
 <tr class="memdesc:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of node labels, one per vertex  <br /></td></tr>
 <tr class="separator:a83ef5a403268a7ff1a84143cb57b18ae inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a23c9f0c0012dfcdc7b209cb8847e792f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a23c9f0c0012dfcdc7b209cb8847e792f">fe_node_ids_</a></td></tr>
-<tr class="memdesc:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">node labels per FE node, built from node_ids_ by <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3" title="Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.">update_nodes()</a>  <br /></td></tr>
-<tr class="separator:a23c9f0c0012dfcdc7b209cb8847e792f inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a237a370477fbdfe9b0126f9b1a0b8e34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a237a370477fbdfe9b0126f9b1a0b8e34">fe_node_ids_mapped_</a> = false</td></tr>
-<tr class="memdesc:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node.">get_node_id()</a> reads fe_node_ids_ (after <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3" title="Number the node ids by FE node: afterwards get_node_id and has_node_ids refer to FE nodes.">update_nodes()</a>)  <br /></td></tr>
-<tr class="separator:a237a370477fbdfe9b0126f9b1a0b8e34 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh" id="r_a78140f52fc2f13195f915a62825e30d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a78140f52fc2f13195f915a62825e30d9">boundary_ids_</a></td></tr>
 <tr class="memdesc:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of surface labels  <br /></td></tr>
 <tr class="separator:a78140f52fc2f13195f915a62825e30d9 inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -840,11 +828,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">224</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">223</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -886,7 +874,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">all_to_valid_edgeMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00711">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00710">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -928,7 +916,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">all_to_valid_elemMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00773">switch_face()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00772">switch_face()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -970,7 +958,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">all_to_valid_vertexMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00711">get_index_from_face()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00710">get_index_from_face()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1018,9 +1006,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">575</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">574</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_mesh_8cpp_source.html#l00506">polyfem::mesh::Mesh::append()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00173">polyfem::mesh::NCMesh2D::ncElem::body_id</a>, <a class="el" href="_mesh_8hpp_source.html#l00738">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00127">polyfem::mesh::NCMesh2D::ncBoundary::boundary_id</a>, <a class="el" href="_mesh_8hpp_source.html#l00736">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00663">copy()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00165">polyfem::mesh::NCMesh2D::ncElem::geom_vertices</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00564">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_mesh_8cpp_source.html#l00474">polyfem::mesh::Mesh::append()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00173">polyfem::mesh::NCMesh2D::ncElem::body_id</a>, <a class="el" href="_mesh_8hpp_source.html#l00724">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00127">polyfem::mesh::NCMesh2D::ncBoundary::boundary_id</a>, <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00662">copy()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00165">polyfem::mesh::NCMesh2D::ncElem::geom_vertices</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00561">polyfem::mesh::Mesh::has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00557">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1074,7 +1062,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad1cc49ad1ae481001afbf52721dcfe49">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00147">147</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00146">146</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>.</p>
 <div class="dynheader">
@@ -1130,11 +1118,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00694">694</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00693">693</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00789">normalize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00788">normalize()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1166,9 +1154,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00380">380</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00379">379</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>.</p>
 <div class="dynheader">
@@ -1207,9 +1195,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00456">456</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00455">455</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00370">polyfem::mesh::find()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00445">polyfem::mesh::line_weight()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00369">polyfem::mesh::find()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00444">polyfem::mesh::line_weight()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>.</p>
 <div class="dynheader">
@@ -1240,7 +1228,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">531</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">530</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">all_to_valid_edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">all_to_valid_elemMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">all_to_valid_vertexMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">valid_to_all_edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">valid_to_all_elemMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">valid_to_all_vertexMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
@@ -1287,9 +1275,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a90a17facb1b8575dac0e480c8f437fa4">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">115</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">114</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00022">polyfem::mesh::MeshData::elements</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>, and <a class="el" href="_mesh_data_8hpp_source.html#l00021">polyfem::mesh::MeshData::vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_data_8hpp_source.html#l00022">polyfem::mesh::MeshData::elements</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00051">V</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>, and <a class="el" href="_mesh_data_8hpp_source.html#l00021">polyfem::mesh::MeshData::vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1374,7 +1362,7 @@ Here is the call graph for this function:</div>
 <p>Coarsens the parent of one element (full id). </p>
 <p>Low-level: leaves the id maps stale, call <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b" title="method used to finalize the mesh.">prepare_mesh()</a> before querying the mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">333</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">332</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
@@ -1419,9 +1407,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aef0a4a659699cafe4305044e5dd55c57">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00908">908</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00907">907</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00738">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00249">polyfem::mesh::Mesh::element_vertices()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00064">polyfem::mesh::Mesh2D::face_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00724">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00249">polyfem::mesh::Mesh::element_vertices()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00064">polyfem::mesh::Mesh2D::face_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1464,9 +1452,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a2a4475f23ee7fda09d4f1da0a90c4c76">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">921</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">920</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00736">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00823">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00822">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1502,9 +1490,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00809">809</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00808">808</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00725">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00718">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>.</p>
 <div class="dynheader">
@@ -1548,9 +1536,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9de3fd9e41a943ab65fbc3d5c1c5fdf3">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00663">663</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00662">662</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1594,11 +1582,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00823">823</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00822">822</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1647,7 +1635,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0d51b3e9aa1a6db8cf897a98ac7dc486">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00801">801</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00800">800</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, and <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>.</p>
 <div class="dynheader">
@@ -1700,9 +1688,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a271d2c56756a44aace870d49d258f7aa">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00153">153</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00152">152</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1761,7 +1749,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00823">edge_barycenter()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00801">edge_length()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00822">edge_barycenter()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00800">edge_length()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1809,7 +1797,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00508">508</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00507">507</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 </div>
 </div>
@@ -1948,9 +1936,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a2ccf78e9ef92ad9f18d9660449772204">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00162">162</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00161">161</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_f_s_i_8cpp_source.html#l00061">point</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2127,11 +2115,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00201">201</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00200">200</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2216,11 +2204,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00177">177</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00176">176</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00187">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00186">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2312,7 +2300,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00283">283</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00564">polyfem::mesh::Mesh::has_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00557">polyfem::mesh::Mesh::has_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2397,11 +2385,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">211</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">210</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00201">find_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">edgeMap</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00200">find_edge()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2451,7 +2439,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00711">711</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00710">710</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face_corner</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
@@ -2486,11 +2474,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00187">187</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00186">186</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00177">find_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00176">find_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">midpointMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2543,7 +2531,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00060">is_boundary_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00060">is_boundary_element()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2707,7 +2695,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">228</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00110">stale_index_error()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00109">stale_index_error()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2742,7 +2730,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">222</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00110">stale_index_error()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00109">stale_index_error()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2787,7 +2775,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">353</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00110">stale_index_error()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00109">stale_index_error()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00351">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>.</p>
 <div class="dynheader">
@@ -2818,7 +2806,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00413">413</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00412">412</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
@@ -2863,7 +2851,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">valid_to_all_edgeMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00898">set_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00897">set_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2985,7 +2973,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00147">attach_higher_order_nodes()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00908">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00809">compute_elements_tag()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00888">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00813">update_elements_tag()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00146">attach_higher_order_nodes()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00907">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00808">compute_elements_tag()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00887">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00812">update_elements_tag()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3020,7 +3008,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">236</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00110">stale_index_error()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00109">stale_index_error()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3061,7 +3049,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">valid_to_all_vertexMap</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3097,9 +3085,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6a0669fa090fe02438840545e6da8dc1">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00789">789</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00788">788</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00694">bounding_box()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00693">bounding_box()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3236,9 +3224,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">317</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00380">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00456">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00809">compute_elements_tag()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00413">mark_boundary()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00379">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00455">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00808">compute_elements_tag()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00412">mark_boundary()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00320">refine_elements()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00319">refine_elements()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3300,7 +3288,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">69</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00749">polyfem::mesh::Mesh::clear_higher_order_data()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_jacobian_8cpp_source.html#l00201">polyfem::utils::is_valid()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00715">polyfem::mesh::Mesh::clear_higher_order_data()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_jacobian_8cpp_source.html#l00201">polyfem::utils::is_valid()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3328,11 +3316,11 @@ Here is the call graph for this function:</div>
 <p>Refines one element (full id). </p>
 <p>Low-level: leaves the id maps stale, call <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b" title="method used to finalize the mesh.">prepare_mesh()</a> before querying the mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">254</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">253</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00056">edge_id</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00201">find_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00177">find_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00187">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">adj_prepared</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00056">edge_id</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00200">find_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00176">find_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00186">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">index_prepared</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">refineHistory</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00320">refine_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00319">refine_elements()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3364,9 +3352,9 @@ Here is the caller graph for this function:</div>
 
 <p>Refines the given elements (valid ids) and prepares the mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00320">320</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00319">319</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3405,7 +3393,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">13</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00736">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_8cpp_source.html#l00049">polyfem::mesh::Mesh::filter_element_data()</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00564">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00727">polyfem::mesh::Mesh::node_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_8cpp_source.html#l00049">polyfem::mesh::Mesh::filter_element_data()</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">polyfem::mesh::Mesh::get_default_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00557">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">n_elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00720">polyfem::mesh::Mesh::node_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3448,7 +3436,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00888">888</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00887">887</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00477">polyfem::mesh::Mesh::set_body_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
 <div class="dynheader">
@@ -3493,7 +3481,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeee997a3775b8eb3e7b764bebfc68520">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00898">898</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00897">897</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_mesh_8hpp_source.html#l00469">polyfem::mesh::Mesh::set_boundary_ids()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 <div class="dynheader">
@@ -3549,7 +3537,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a499a0ccaf891a28ab3563d45a184a124">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00818">818</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00817">817</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">vertices</a>.</p>
 <div class="dynheader">
@@ -3585,7 +3573,7 @@ Here is the call graph for this function:</div>
 
 <p>Throws: the id maps are stale (<a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b" title="method used to finalize the mesh.">prepare_mesh()</a> was not called after editing the mesh). </p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00110">110</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00109">109</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>.</p>
 
@@ -3629,11 +3617,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">748</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">747</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face_corner</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00370">polyfem::mesh::find()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face_corner</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00369">polyfem::mesh::find()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00162">face_node()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00161">face_node()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3673,7 +3661,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00773">773</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00772">772</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00351">all_to_valid_elem()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face_corner</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
@@ -3710,11 +3698,11 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">724</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">723</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face_corner</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00014">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00153">edge_node()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00162">face_node()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00152">edge_node()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00161">face_node()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3780,11 +3768,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">668</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">667</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00201">find_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00177">find_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00200">find_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00176">find_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00380">build_edge_follower_chain()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00379">build_edge_follower_chain()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3825,9 +3813,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a42eacd6c5a9ca45ff6c38e70351c1f8a">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00813">813</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00812">812</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00725">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00718">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668">polyfem::mesh::SIMPLEX</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3863,9 +3851,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">91</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00738">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00736">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00740">polyfem::mesh::Mesh::geometry_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00564">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00727">polyfem::mesh::Mesh::node_ids_</a>, <a class="el" href="_mesh_8cpp_source.html#l00405">polyfem::mesh::Mesh::reset_fe_node_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00724">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00722">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">elements</a>, <a class="el" href="_mesh_8hpp_source.html#l00726">polyfem::mesh::Mesh::geometry_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00561">polyfem::mesh::Mesh::has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00557">polyfem::mesh::Mesh::has_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00720">polyfem::mesh::Mesh::node_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00320">refine_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00319">refine_elements()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3907,7 +3895,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">valid_to_all_edgeMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00283">get_boundary_id()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00243">n_face_neighbors()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00898">set_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00773">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00283">get_boundary_id()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00243">n_face_neighbors()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00897">set_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00772">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3949,7 +3937,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">valid_to_all_elemMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00908">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00215">face_ref_level()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00288">get_body_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00711">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00320">refine_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00888">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00773">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00907">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00215">face_ref_level()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00288">get_body_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00710">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00319">refine_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00887">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00772">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3991,7 +3979,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">valid_to_all_vertexMap</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00247">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00268">point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00818">set_point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00247">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00268">point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00817">set_point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -4028,7 +4016,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00395">395</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00317">prepare_mesh()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -4054,7 +4042,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">413</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00349">all_to_valid_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>.</p>
 
 </div>
 </div>
@@ -4080,7 +4068,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">411</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00351">all_to_valid_elem()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00351">all_to_valid_elem()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>.</p>
 
 </div>
 </div>
@@ -4106,7 +4094,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">412</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00347">all_to_valid_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>.</p>
 
 </div>
 </div>
@@ -4132,7 +4120,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00409">409</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00201">find_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">get_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00200">find_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">get_edge()</a>.</p>
 
 </div>
 </div>
@@ -4158,7 +4146,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00406">406</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00380">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00456">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00921">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00283">get_boundary_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00211">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00413">mark_boundary()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00243">n_face_neighbors()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00898">set_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00773">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00668">traverse_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00379">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00455">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00920">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00245">face_neighbor()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00283">get_boundary_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00210">get_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00248">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00228">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00412">mark_boundary()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00243">n_face_neighbors()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00236">n_follower_edges()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00897">set_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00772">switch_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00667">traverse_edge()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 
 </div>
 </div>
@@ -4208,7 +4196,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00404">404</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00380">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00456">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00908">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00215">face_ref_level()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00288">get_body_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00711">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00888">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00748">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00724">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00379">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00455">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00907">compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00221">face_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00215">face_ref_level()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00288">get_body_id()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00710">get_index_from_face()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00069">refine()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00887">set_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00747">switch_edge()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00723">switch_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00091">update_labels_after_refinement()</a>.</p>
 
 </div>
 </div>
@@ -4237,7 +4225,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00394">394</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00353">map_id()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -4263,7 +4251,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00408">408</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00177">find_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00187">get_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00176">find_vertex()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00186">get_vertex()</a>.</p>
 
 </div>
 </div>
@@ -4289,7 +4277,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00389">389</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00188">n_faces()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>.</p>
 
 </div>
 </div>
@@ -4315,7 +4303,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00415">415</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -4341,7 +4329,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00413">413</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00191">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00350">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -4367,7 +4355,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00411">411</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00352">valid_to_all_elem()</a>.</p>
 
 </div>
 </div>
@@ -4393,7 +4381,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00412">412</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00348">valid_to_all_vertex()</a>.</p>
 
 </div>
 </div>
@@ -4419,7 +4407,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00405">405</a> of file <a class="el" href="_n_c_mesh2_d_8hpp_source.html">NCMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00224">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00575">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00694">bounding_box()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00456">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00531">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00115">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00333">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00187">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00247">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00413">mark_boundary()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00789">normalize()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00268">point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00254">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00818">set_point()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00223">add_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00574">append()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00693">bounding_box()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00455">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00530">build_index_mapping()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00114">build_topology()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">cell_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00332">coarsen_element()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00218">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00217">face_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00186">get_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00247">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00222">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00412">mark_boundary()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00201">n_vertices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00788">normalize()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00268">point()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00253">refine_element()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00013">remove_elements()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00817">set_point()</a>.</p>
 
 </div>
 </div>
