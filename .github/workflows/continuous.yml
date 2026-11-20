@@ -186,6 +186,7 @@ jobs:
     runs-on: windows-2022
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
+      SCCACHE_CACHE_SIZE: "1G"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
       CTEST_PARALLEL_LEVEL: 4
       # Pin OpenMP threads (only used with POLYFEM_WITH_OPENMP or by a dependency) so results are reproducible.
@@ -224,7 +225,6 @@ jobs:
 
       - name: Prepare sccache
         run: |
-          sccache --max-size=1.0G
           sccache -V && sccache --show-stats && sccache --zero-stats
 
       - name: Configure
