@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/io/OutputWriter.hpp>
 #include <polyfem/varforms/BilaplacianVarForm.hpp>
 #include <polyfem/varforms/FluidVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
@@ -83,6 +84,24 @@ namespace polyfem::test
 		{
 			const auto space = form.output_space();
 			return form.snapshot_output_fields(solution, form.export_options(space), space, 0.125, 0.01);
+		}
+
+		static void save_timestep(varform::VarForm &form, const Eigen::MatrixXd &solution, const bool asynchronous)
+		{
+			io::OutputWriter writer(asynchronous);
+			auto *previous = form.output_writer_;
+			form.output_writer_ = &writer;
+			try
+			{
+				writer.execute([&] { form.save_timestep(1.0, 1, 0.0, 1.0, solution); });
+				writer.finish();
+			}
+			catch (...)
+			{
+				form.output_writer_ = previous;
+				throw;
+			}
+			form.output_writer_ = previous;
 		}
 
 		static io::OutputFieldFunction snapshot_elastic_fields(
