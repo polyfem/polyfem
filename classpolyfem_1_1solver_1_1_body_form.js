@@ -12,6 +12,7 @@ var classpolyfem_1_1solver_1_1_body_form =
     [ "boundary_nodes_", "classpolyfem_1_1solver_1_1_body_form.html#a2f48eab3d14c4e2f999915cd4bf23028", null ],
     [ "current_rhs_", "classpolyfem_1_1solver_1_1_body_form.html#a97738990f0283d2565eb34b9ee5160b3", null ],
     [ "density_", "classpolyfem_1_1solver_1_1_body_form.html#a68df578bd1cb02193f22880fb21eb777", null ],
+    [ "energy_rhs_", "classpolyfem_1_1solver_1_1_body_form.html#a92c7d4390cb03fa05007722575d66879", null ],
     [ "is_formulation_mixed_", "classpolyfem_1_1solver_1_1_body_form.html#a2989697b8d56eefed718250b3ee2a3bd", null ],
     [ "local_boundary_", "classpolyfem_1_1solver_1_1_body_form.html#aab65645ca441d8e4ee9a8a565407a948", null ],
     [ "local_neumann_boundary_", "classpolyfem_1_1solver_1_1_body_form.html#a677914744dd2df3685e3399582fe7e3d", null ],

@@ -142,6 +142,11 @@ Collaboration diagram for polyfem::assembler::NoDensity:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a974037355f299ef97a8e7b4c49286c9c" id="r_a974037355f299ef97a8e7b4c49286c9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a974037355f299ef97a8e7b4c49286c9c">NoDensity</a> ()</td></tr>
 <tr class="separator:a974037355f299ef97a8e7b4c49286c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae381dd683c980f8a9c9e5bce922851c4" id="r_ae381dd683c980f8a9c9e5bce922851c4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#ae381dd683c980f8a9c9e5bce922851c4">is_constant</a> () const override</td></tr>
+<tr class="memdesc:ae381dd683c980f8a9c9e5bce922851c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Each material entry is independent of coordinates, time and index.  <br /></td></tr>
+<tr class="separator:ae381dd683c980f8a9c9e5bce922851c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae462e40260a45717086be40001c05a1b" id="r_ae462e40260a45717086be40001c05a1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#ae462e40260a45717086be40001c05a1b">is_time_dependent</a> () const override</td></tr>
+<tr class="separator:ae462e40260a45717086be40001c05a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a347db67bccf07c720339e2ea7d7e019f" id="r_a347db67bccf07c720339e2ea7d7e019f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a347db67bccf07c720339e2ea7d7e019f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources) override</td></tr>
 <tr class="separator:a347db67bccf07c720339e2ea7d7e019f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb23bdf63b0002e97df52013e57936fc" id="r_aeb23bdf63b0002e97df52013e57936fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#aeb23bdf63b0002e97df52013e57936fc">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t, int el_id) const override</td></tr>
@@ -156,7 +161,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00135">135</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00147">147</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a974037355f299ef97a8e7b4c49286c9c" name="a974037355f299ef97a8e7b4c49286c9c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a974037355f299ef97a8e7b4c49286c9c">&#9670;&#160;</a></span>NoDensity()</h2>
@@ -181,7 +186,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00140">140</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00152">152</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
 </div>
 </div>
@@ -234,7 +239,68 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab674627ad03ec0f4663fe67b86f49bda">polyfem::assembler::Density</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00142">142</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00156">156</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae381dd683c980f8a9c9e5bce922851c4" name="ae381dd683c980f8a9c9e5bce922851c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae381dd683c980f8a9c9e5bce922851c4">&#9670;&#160;</a></span>is_constant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::NoDensity::is_constant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Each material entry is independent of coordinates, time and index. </p>
+<p>Densities may differ between materials. Custom evaluators must override these queries. </p>
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ae313b3553fc0d3f70698e4666a01e897">polyfem::assembler::Density</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00153">153</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae462e40260a45717086be40001c05a1b" name="ae462e40260a45717086be40001c05a1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae462e40260a45717086be40001c05a1b">&#9670;&#160;</a></span>is_time_dependent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::NoDensity::is_time_dependent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a52ea5f9b29fb208bfa08e71013d6d532">polyfem::assembler::Density</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00154">154</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
 </div>
 </div>
@@ -310,7 +376,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab80a9220827c49f5c848b118dc242bfa">polyfem::assembler::Density</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00147">147</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00161">161</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
 </div>
 </div>

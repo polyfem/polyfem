@@ -1,21 +1,27 @@
 <map id="polyfem::assembler::RhsAssembler::compute_energy_grad" name="polyfem::assembler::RhsAssembler::compute_energy_grad">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,241,193,303"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5" title=" " alt="" coords="241,211,434,256"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,254,228,251,223,253,194,259"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_problem.html#ad9568d26c49d9dcafebf429cd1025d78" title=" " alt="" coords="255,280,420,342"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="193,285,242,295,237,295,193,290"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#aad4ba2656450d8ac56a241d61832774b" title="Returns cached values, or computes into scratch when the cache is empty." alt="" coords="484,91,644,152"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="383,208,484,161,489,159,386,213"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_problem.html#ac6a1e6b2a2656528cc03695db1bb6834" title=" " alt="" coords="482,176,646,221"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="434,216,469,213,464,214,435,221"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="483,246,645,290"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="434,246,470,253,465,254,434,251"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_problem.html#a74953bb445a5c9d10a4fe25ab5884d2c" title=" " alt="" coords="488,315,640,360"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="409,254,435,266,460,283,483,301,494,308,489,307,481,305,457,287,433,270,409,259"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5b45a78d0da5a10481b42bafbf6721ce" title=" " alt="" coords="694,5,855,67"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="641,88,685,72,680,74,643,93"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="Copies cached values into vals, or computes into vals when the cache is empty." alt="" coords="694,91,855,152"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="644,119,681,121,676,122,645,124"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd" title=" " alt="" coords="694,176,855,238"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="642,150,685,170,680,170,641,155"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,311,193,372"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5" title=" " alt="" coords="241,242,434,286"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,309,254,290,250,293,194,313"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_problem.html#ad9568d26c49d9dcafebf429cd1025d78" title=" " alt="" coords="255,311,420,372"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="192,339,242,340,237,343,194,344"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a832ed98f853bdb55f52f23a20fbe403d" title=" " alt="" coords="253,396,422,458"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="187,370,241,391,236,392,187,376"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#aad4ba2656450d8ac56a241d61832774b" title="Returns cached values, or computes into scratch when the cache is empty." alt="" coords="507,91,667,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="365,239,418,201,481,162,495,157,491,160,483,166,421,206,369,244"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_problem.html#ac6a1e6b2a2656528cc03695db1bb6834" title=" " alt="" coords="505,176,669,221"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="424,239,493,223,488,225,426,244"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="506,246,668,290"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="434,263,493,266,488,267,435,268"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_problem.html#a74953bb445a5c9d10a4fe25ab5884d2c" title=" " alt="" coords="512,315,663,360"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="416,284,499,310,494,312,416,290"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5b45a78d0da5a10481b42bafbf6721ce" title=" " alt="" coords="740,5,901,67"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="667,90,729,69,724,72,669,95"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="Copies cached values into vals, or computes into vals when the cache is empty." alt="" coords="740,91,901,152"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="667,119,728,121,722,122,669,124"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd" title=" " alt="" coords="740,176,901,238"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="668,148,729,172,724,173,668,154"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_problem.html#a686e8c619d75a19ac3a1748f775f7131" title="Whether volume loads may depend on time; unknown providers default to true." alt="" coords="504,392,670,454"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="422,423,491,424,486,425,422,428"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_density.html#a52ea5f9b29fb208bfa08e71013d6d532" title=" " alt="" coords="482,478,692,522"/>
+<area shape="poly" id="edge12_Node000011_Node000013" title=" " alt="" coords="422,449,497,473,492,473,422,454"/>
 </map>

@@ -143,6 +143,11 @@ Collaboration diagram for polyfem::assembler::ThermalMassDensity:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afe1d5ed59c79195ffbd3d2d2dcff07b0" id="r_afe1d5ed59c79195ffbd3d2d2dcff07b0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_thermal_mass_density.html#afe1d5ed59c79195ffbd3d2d2dcff07b0">ThermalMassDensity</a> ()</td></tr>
 <tr class="separator:afe1d5ed59c79195ffbd3d2d2dcff07b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05af2317d775b584610566cd030b3901" id="r_a05af2317d775b584610566cd030b3901"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a05af2317d775b584610566cd030b3901">is_constant</a> () const override</td></tr>
+<tr class="memdesc:a05af2317d775b584610566cd030b3901"><td class="mdescLeft">&#160;</td><td class="mdescRight">Each material entry is independent of coordinates, time and index.  <br /></td></tr>
+<tr class="separator:a05af2317d775b584610566cd030b3901"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a220373d6ed4dd88c025d45a6d4211495" id="r_a220373d6ed4dd88c025d45a6d4211495"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a220373d6ed4dd88c025d45a6d4211495">is_time_dependent</a> () const override</td></tr>
+<tr class="separator:a220373d6ed4dd88c025d45a6d4211495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5128a5274648f8d4b09918acac8e19a" id="r_ae5128a5274648f8d4b09918acac8e19a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_thermal_mass_density.html#ae5128a5274648f8d4b09918acac8e19a">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources) override</td></tr>
 <tr class="separator:ae5128a5274648f8d4b09918acac8e19a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fbfd2471595b97dc452f7bd9c479597" id="r_a6fbfd2471595b97dc452f7bd9c479597"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a6fbfd2471595b97dc452f7bd9c479597">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit, const std::string &amp;heat_capacity_unit, const <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html">io::ResourceIO</a> &amp;resources)</td></tr>
@@ -170,7 +175,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00153">153</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00167">167</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="afe1d5ed59c79195ffbd3d2d2dcff07b0" name="afe1d5ed59c79195ffbd3d2d2dcff07b0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afe1d5ed59c79195ffbd3d2d2dcff07b0">&#9670;&#160;</a></span>ThermalMassDensity()</h2>
@@ -187,7 +192,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00544">544</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00583">583</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 </div>
 </div>
@@ -240,11 +245,11 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab674627ad03ec0f4663fe67b86f49bda">polyfem::assembler::Density</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00549">549</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00598">598</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00549">add_multimaterial()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00598">add_multimaterial()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00549">add_multimaterial()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00598">add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -302,9 +307,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00554">554</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00603">603</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00078">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00169">heat_capacity_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00168">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00185">heat_capacity_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00184">rho_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -345,15 +350,90 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00575">575</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00624">624</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00169">heat_capacity_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00185">heat_capacity_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00560">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00609">operator()()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_thermal_mass_density_a51af81bee31f25ae818914c62d5d081d_icgraph.svg" width="394" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a05af2317d775b584610566cd030b3901" name="a05af2317d775b584610566cd030b3901"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05af2317d775b584610566cd030b3901">&#9670;&#160;</a></span>is_constant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::ThermalMassDensity::is_constant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Each material entry is independent of coordinates, time and index. </p>
+<p>Densities may differ between materials. Custom evaluators must override these queries. </p>
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ae313b3553fc0d3f70698e4666a01e897">polyfem::assembler::Density</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00588">588</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00185">heat_capacity_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00079">polyfem::assembler::GenericMatParam::is_constant()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00184">rho_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_thermal_mass_density_a05af2317d775b584610566cd030b3901_cgraph.svg" width="391" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a220373d6ed4dd88c025d45a6d4211495" name="a220373d6ed4dd88c025d45a6d4211495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a220373d6ed4dd88c025d45a6d4211495">&#9670;&#160;</a></span>is_time_dependent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::ThermalMassDensity::is_time_dependent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a52ea5f9b29fb208bfa08e71013d6d532">polyfem::assembler::Density</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00593">593</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00185">heat_capacity_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00084">polyfem::assembler::GenericMatParam::is_time_dependent()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00184">rho_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_thermal_mass_density_a220373d6ed4dd88c025d45a6d4211495_cgraph.svg" width="391" height="72"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -430,9 +510,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab80a9220827c49f5c848b118dc242bfa">polyfem::assembler::Density</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00560">560</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00609">609</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00575">heat_capacity()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00169">heat_capacity_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00570">rho()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00168">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00624">heat_capacity()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00185">heat_capacity_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00619">rho()</a>, <a class="el" href="_mat_params_8hpp_source.html#l00184">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -473,11 +553,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00570">570</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00619">619</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00168">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00184">rho_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00560">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00609">operator()()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -507,9 +587,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00169">169</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00185">185</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00554">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00575">heat_capacity()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00560">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00603">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00624">heat_capacity()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00588">is_constant()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00593">is_time_dependent()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00609">operator()()</a>.</p>
 
 </div>
 </div>
@@ -533,9 +613,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00168">168</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00184">184</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00554">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00560">operator()()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00570">rho()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00603">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00588">is_constant()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00593">is_time_dependent()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00609">operator()()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00619">rho()</a>.</p>
 
 </div>
 </div>

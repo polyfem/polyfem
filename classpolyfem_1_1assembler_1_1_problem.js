@@ -23,6 +23,7 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "is_nodal_dimension_dirichlet", "classpolyfem_1_1assembler_1_1_problem.html#aa157e22b747d279c1593d61f857cfffc", null ],
     [ "is_nodal_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_problem.html#afa6bd8aa7f321dbfdb6b630128c24291", null ],
     [ "is_nodal_neumann_boundary", "classpolyfem_1_1assembler_1_1_problem.html#ae8004bd5bbb34595f9f4661db6930eb5", null ],
+    [ "is_rhs_time_dependent", "classpolyfem_1_1assembler_1_1_problem.html#a686e8c619d75a19ac3a1748f775f7131", null ],
     [ "is_rhs_zero", "classpolyfem_1_1assembler_1_1_problem.html#ac6a1e6b2a2656528cc03695db1bb6834", null ],
     [ "is_scalar", "classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec", null ],
     [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923", null ],

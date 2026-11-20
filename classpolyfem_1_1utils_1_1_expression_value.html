@@ -161,6 +161,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad762696d2188a5d149b0b5f78141261f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab58a9fdaa5507a7773a5f448022daf4a" id="r_ab58a9fdaa5507a7773a5f448022daf4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#ab58a9fdaa5507a7773a5f448022daf4a">clear</a> ()</td></tr>
 <tr class="separator:ab58a9fdaa5507a7773a5f448022daf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0acb87a5647f164f1dcba879579cc4c9" id="r_a0acb87a5647f164f1dcba879579cc4c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a0acb87a5647f164f1dcba879579cc4c9">is_constant</a> () const</td></tr>
+<tr class="memdesc:a0acb87a5647f164f1dcba879579cc4c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent of coordinates, time and index.  <br /></td></tr>
+<tr class="separator:a0acb87a5647f164f1dcba879579cc4c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b7ab148f8df408b91ea3eb4959736b1" id="r_a1b7ab148f8df408b91ea3eb4959736b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a1b7ab148f8df408b91ea3eb4959736b1">is_time_dependent</a> () const</td></tr>
+<tr class="memdesc:a1b7ab148f8df408b91ea3eb4959736b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Potentially time-dependent: callbacks/time tables or a formula containing 't' (including conservative matches in function names).  <br /></td></tr>
+<tr class="separator:a1b7ab148f8df408b91ea3eb4959736b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9cc0294637e7eb6eb9cf43d839f49f35" id="r_a9cc0294637e7eb6eb9cf43d839f49f35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a9cc0294637e7eb6eb9cf43d839f49f35">is_zero</a> () const</td></tr>
 <tr class="separator:a9cc0294637e7eb6eb9cf43d839f49f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace633c6c0ab7f04b5fad3067041d2dec" id="r_ace633c6c0ab7f04b5fad3067041d2dec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#ace633c6c0ab7f04b5fad3067041d2dec">is_mat</a> () const</td></tr>
@@ -247,9 +253,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00239">239</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00087">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00092">index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00084">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00088">value_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00112">index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00108">value_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01816">polyfem::assembler::GenericScalarProblem::clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00234">ExpressionValue()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00250">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00257">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00409">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00416">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00422">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00428">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00436">init()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01849">polyfem::assembler::GenericScalarProblem::clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00234">ExpressionValue()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00250">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00257">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00409">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00416">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00422">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00428">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00436">init()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -281,9 +287,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00063">63</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00083">83</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00056">is_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00076">is_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -315,9 +321,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00077">77</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00097">97</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00088">value_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00108">value_</a>.</p>
 
 </div>
 </div>
@@ -339,7 +345,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00250">250</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_assembler_8cpp_source.html#l00272">val</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00088">value_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_assembler_8cpp_source.html#l00272">val</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00108">value_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -366,7 +372,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00257">257</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00272">val</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00272">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -403,9 +409,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00318">318</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00091">t_index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00095">unit_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00094">unit_type_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00096">unit_type_set_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00206">vals</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#aa7a8c805adcb928939a23e7a926819d4">polyfem::io::ResourceIO::materialize()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00111">t_index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00115">unit_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00114">unit_type_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00116">unit_type_set_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00206">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01625">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00201">polyfem::solver::TargetForm::set_reference()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01658">polyfem::assembler::GenericScalarProblem::set_parameters()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00201">polyfem::solver::TargetForm::set_reference()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -437,7 +443,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00409">409</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -464,7 +470,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00416">416</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -491,7 +497,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00422">422</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -528,7 +534,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00428">428</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00084">tfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00085">tfunc_coo_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00105">tfunc_coo_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -565,7 +571,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00436">436</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00084">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00085">tfunc_coo_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00105">tfunc_coo_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -602,12 +608,44 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00264">264</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00087">expr_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ac7c86a94847ab7c9211217dee8d27c2e">polyfem::io::ResourceIO::exists()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#afb2abb5479f8823f10c20e738f46f413">polyfem::io::ResourceIO::is_group()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="classpolyfem_1_1io_1_1_resource_i_o.html#ad6bab0dbdfb9e82d2158ac40eb4137b9">polyfem::io::ResourceIO::read_matrix()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_expression_value_a2fbb7b54df86183a3115fdd37d2d2bfb_cgraph.svg" width="612" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a0acb87a5647f164f1dcba879579cc4c9" name="a0acb87a5647f164f1dcba879579cc4c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0acb87a5647f164f1dcba879579cc4c9">&#9670;&#160;</a></span>is_constant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::ExpressionValue::is_constant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Independent of coordinates, time and index. </p>
+<p>Character checks on formulas are conservative (e.g. "exp" contains 'x'). </p>
+
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00054">54</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00111">t_index_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>.</p>
 
 </div>
 </div>
@@ -634,16 +672,47 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00056">56</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00076">76</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00087">expr_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8hpp_source.html#l00063">get_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00069">set_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8hpp_source.html#l00083">get_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00089">set_mat()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_expression_value_ace633c6c0ab7f04b5fad3067041d2dec_icgraph.svg" width="440" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a1b7ab148f8df408b91ea3eb4959736b1" name="a1b7ab148f8df408b91ea3eb4959736b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b7ab148f8df408b91ea3eb4959736b1">&#9670;&#160;</a></span>is_time_dependent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::ExpressionValue::is_time_dependent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Potentially time-dependent: callbacks/time tables or a formula containing 't' (including conservative matches in function names). </p>
+
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00062">62</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00111">t_index_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>.</p>
 
 </div>
 </div>
@@ -670,9 +739,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00052">52</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00072">72</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00087">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00084">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00088">value_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00108">value_</a>.</p>
 
 </div>
 </div>
@@ -722,7 +791,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00458">458</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00087">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00092">index_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00091">t_index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00084">tfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00085">tfunc_coo_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00095">unit_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00094">unit_type_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00088">value_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00107">expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00112">index_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00103">sfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00111">t_index_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00104">tfunc_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00105">tfunc_coo_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00115">unit_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00114">unit_type_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00108">value_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -757,7 +826,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00046">46</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00092">index_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00112">index_</a>.</p>
 
 </div>
 </div>
@@ -785,9 +854,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00069">69</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00089">89</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00056">is_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00076">is_mat()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -814,7 +883,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8cpp_source.html#l00444">444</a> of file <a class="el" href="_expression_value_8cpp_source.html">ExpressionValue.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00091">t_index_</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00109">mat_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00111">t_index_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -849,9 +918,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00022">22</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00090">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00094">unit_type_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00096">unit_type_set_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00110">mat_expr_</a>, <a class="el" href="_expression_value_8hpp_source.html#l00114">unit_type_</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00116">unit_type_set_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8hpp_source.html#l00034">polyfem::assembler::ScalarBCValue::set_unit_type()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01206">polyfem::assembler::GenericScalarProblem::set_units()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8hpp_source.html#l00034">polyfem::assembler::ScalarBCValue::set_unit_type()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01225">polyfem::assembler::GenericScalarProblem::set_units()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -881,9 +950,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00087">87</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00107">107</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00056">is_mat()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00076">is_mat()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00062">is_time_dependent()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
 </div>
 </div>
@@ -907,7 +976,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00092">92</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00112">112</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00046">set_index()</a>.</p>
 
@@ -933,9 +1002,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00089">89</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00109">109</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00063">get_mat()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00257">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00056">is_mat()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00069">set_mat()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00083">get_mat()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00257">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00264">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00076">is_mat()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00089">set_mat()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>.</p>
 
 </div>
 </div>
@@ -959,9 +1028,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00090">90</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00110">110</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00022">set_unit_type()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00062">is_time_dependent()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00022">set_unit_type()</a>.</p>
 
 </div>
 </div>
@@ -985,9 +1054,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00083">83</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00103">103</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00409">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00416">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00422">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00409">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00416">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00422">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00062">is_time_dependent()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
 </div>
 </div>
@@ -1011,9 +1080,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00091">91</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00111">111</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00062">is_time_dependent()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00444">set_t()</a>.</p>
 
 </div>
 </div>
@@ -1037,9 +1106,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00084">84</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00104">104</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00428">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00436">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00428">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00436">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00054">is_constant()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00062">is_time_dependent()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
 </div>
 </div>
@@ -1063,7 +1132,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00085">85</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00105">105</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00428">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00436">init()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
@@ -1089,7 +1158,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00095">95</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00115">115</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
@@ -1115,7 +1184,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00094">94</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00114">114</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00022">set_unit_type()</a>.</p>
 
@@ -1141,7 +1210,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00096">96</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00116">116</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00318">init()</a>, and <a class="el" href="_expression_value_8hpp_source.html#l00022">set_unit_type()</a>.</p>
 
@@ -1167,9 +1236,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00088">88</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_expression_value_8hpp_source.html#l00108">108</a> of file <a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00077">get_val()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00250">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00052">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_expression_value_8cpp_source.html#l00239">clear()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00097">get_val()</a>, <a class="el" href="_expression_value_8cpp_source.html#l00250">init()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00072">is_zero()</a>, and <a class="el" href="_expression_value_8cpp_source.html#l00458">operator()()</a>.</p>
 
 </div>
 </div>

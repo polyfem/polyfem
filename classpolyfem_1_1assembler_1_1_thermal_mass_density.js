@@ -4,6 +4,8 @@ var classpolyfem_1_1assembler_1_1_thermal_mass_density =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#ae5128a5274648f8d4b09918acac8e19a", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a6fbfd2471595b97dc452f7bd9c479597", null ],
     [ "heat_capacity", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a51af81bee31f25ae818914c62d5d081d", null ],
+    [ "is_constant", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a05af2317d775b584610566cd030b3901", null ],
+    [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a220373d6ed4dd88c025d45a6d4211495", null ],
     [ "operator()", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#ada9587f224a99813a7491a0581fb899b", null ],
     [ "rho", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#a2d1fd05e840d2d370c2702cfdbe67aa2", null ],
     [ "heat_capacity_", "classpolyfem_1_1assembler_1_1_thermal_mass_density.html#ab04416f23274ae66abfd64ed4f3dbd76", null ],

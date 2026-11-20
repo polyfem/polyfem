@@ -14,6 +14,7 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "is_constant_in_time", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a167e88b0e98fe31b0ffdf2b9e54beae9", null ],
     [ "is_nodal_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a5499569cb4c5d1d08d3c18d71dd5e41e", null ],
     [ "is_nodal_neumann_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a26785d5e38cc862cc40bb84cd062649d", null ],
+    [ "is_rhs_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aac7bf6ab0c9e8b90cdccd42e3942fd18", null ],
     [ "is_rhs_zero", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ac28b9dc33881f55429445bc5e6269bd7", null ],
     [ "is_scalar", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa86b35163129fcd063f7595c61d0c44a", null ],
     [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a61f7b9a0852a74c021d8b9b439c6b747", null ],

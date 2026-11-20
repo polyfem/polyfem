@@ -19,6 +19,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "is_nodal_dimension_dirichlet", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a7859f3d31696c898d114c71996029176", null ],
     [ "is_nodal_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ace05aaf077966a975b657b868284260d", null ],
     [ "is_nodal_neumann_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a93bbad6d7c55cf42bca52f8ccf308353", null ],
+    [ "is_rhs_time_dependent", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a958176ad7ae3c57c5914d6a70c8fe4e1", null ],
     [ "is_rhs_zero", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ab198009fb37259d547720c516d7419f2", null ],
     [ "is_scalar", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aed0d8c86e61fd17a1babac94d1a7d941", null ],
     [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a30afe0343101b8a07dada44478459309", null ],

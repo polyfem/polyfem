@@ -1,41 +1,7 @@
 <map id="polyfem::solver::BodyForm::value_unweighted" name="polyfem::solver::BodyForm::value_unweighted">
-<area shape="rect" id="Node000001" title="Compute the value of the body force form." alt="" coords="5,515,203,559"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a63e6e43bb7d2aa97e0d4f26a8f5650b8" title=" " alt="" coords="251,506,438,568"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="202,535,237,536,233,538,204,539"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a78db6a08b1deb5628dac7845fe58bebc" title=" " alt="" coords="494,144,716,189"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="348,505,362,443,387,364,405,321,427,280,453,241,484,207,504,195,500,199,488,211,457,245,431,283,410,324,392,365,367,445,353,507"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae" title=" " alt="" coords="525,221,685,266"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="352,504,368,455,396,393,434,330,457,301,484,276,513,262,509,265,488,280,461,305,438,333,400,396,373,457,356,507"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b" title=" " alt="" coords="523,291,687,335"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="359,504,379,467,407,425,443,382,484,345,511,333,507,337,488,350,446,386,411,428,383,470,363,507"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#aad4ba2656450d8ac56a241d61832774b" title="Returns cached values, or computes into scratch when the cache is empty." alt="" coords="525,360,685,421"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="380,504,428,466,485,431,513,420,508,423,487,435,431,471,384,508"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_problem.html#ac6a1e6b2a2656528cc03695db1bb6834" title=" " alt="" coords="523,445,687,490"/>
-<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="437,510,510,492,506,495,440,514"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="524,515,686,559"/>
-<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="438,534,511,536,506,538,439,540"/>
-<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c" title=" " alt="" coords="523,584,687,629"/>
-<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="438,559,510,580,505,581,439,565"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1assembler_1_1_problem.html#aa36c5fe73219642abb1862a095f36811" title=" " alt="" coords="518,653,692,698"/>
-<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="381,565,430,604,487,639,506,649,501,649,485,643,427,608,380,571"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1assembler_1_1_problem.html#a4ec17100d012815e0fb375cf9d0cb7d0" title=" " alt="" coords="486,723,724,767"/>
-<area shape="poly" id="edge17_Node000002_Node000018" title=" " alt="" coords="364,566,414,638,448,676,488,708,497,716,491,715,484,713,445,680,410,642,362,571"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#ae512ea5dc850caf97c1dd0df14912ba5" title="Point&#45;selection id of a node (Mesh::get_node_id of its vertex): &#45;1 for nodes that are not on a vertex..." alt="" coords="504,792,707,837"/>
-<area shape="poly" id="edge18_Node000002_Node000019" title=" " alt="" coords="356,566,375,614,403,671,440,729,462,755,488,778,494,784,489,783,484,782,459,758,436,732,398,674,370,616,354,571"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1assembler_1_1_problem.html#a74953bb445a5c9d10a4fe25ab5884d2c" title=" " alt="" coords="530,861,681,906"/>
-<area shape="poly" id="edge19_Node000002_Node000020" title=" " alt="" coords="352,566,367,627,393,703,410,742,432,780,458,816,488,847,518,867,512,866,484,851,454,819,427,783,406,744,388,705,362,629,350,571"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a626a35ec8d903d5f0862ee38f53b1508" title="Get the element&#39;s ID." alt="" coords="772,5,996,50"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="636,141,697,101,771,60,790,54,785,57,774,65,700,105,639,145"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa832a6de9bb5d595c5af621c1a7aca88" title="Get the i&#45;th boundary primitive&#39;s global ID." alt="" coords="772,75,996,119"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="697,141,779,122,774,125,699,146"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644" title="Number of boundary primitives for the element." alt="" coords="772,144,996,189"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="716,164,759,165,755,167,718,169"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b" title="Get the type of boundary for the element." alt="" coords="772,213,996,258"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="698,187,779,208,774,210,699,192"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5b45a78d0da5a10481b42bafbf6721ce" title=" " alt="" coords="804,282,964,344"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="685,366,791,338,787,341,687,371"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="Copies cached values into vals, or computes into vals when the cache is empty." alt="" coords="804,368,964,429"/>
-<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="685,390,791,395,786,397,686,395"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd" title=" " alt="" coords="804,453,964,514"/>
-<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="685,414,792,452,787,453,686,420"/>
+<area shape="rect" id="Node000001" title="Compute the value of the body force form." alt="" coords="5,14,203,58"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ac75cbf1299d4a13121494aa81767c98b" title=" " alt="" coords="251,5,438,67"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,34,238,36,233,36,203,39"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="486,14,670,58"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="438,34,473,36,468,36,438,39"/>
 </map>
