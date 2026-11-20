@@ -716,11 +716,11 @@ namespace polyfem::varform
 			mesh, assembler::BoundaryKind::Neumann, mesh_displacement_space_id_,
 			mesh_displacement_space_.basis_list(), mesh_displacement_boundary_.total_local_boundary,
 			mesh_displacement_boundary_.local_neumann_boundary, unused, mesh.dimension());
-		mesh_displacement_problem_->setup_nodal_bc(mesh, assembler::BoundaryKind::Dirichlet, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.dirichlet_nodes);
-		mesh_displacement_problem_->setup_nodal_bc(mesh, assembler::BoundaryKind::Neumann, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.neumann_nodes);
+		mesh_displacement_problem_->setup_nodal_bc(mesh_displacement_space_.mesh_nodes.get(), assembler::BoundaryKind::Dirichlet, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.dirichlet_nodes);
+		mesh_displacement_problem_->setup_nodal_bc(mesh_displacement_space_.mesh_nodes.get(), assembler::BoundaryKind::Neumann, mesh_displacement_space_id_, mesh_displacement_space_.n_bases, mesh_displacement_boundary_.neumann_nodes);
 		for (const int node : mesh_displacement_boundary_.dirichlet_nodes)
 		{
-			const int tag = mesh.get_node_id(node);
+			const int tag = mesh_displacement_space_.node_tag(node);
 			for (int d = 0; d < mesh.dimension(); ++d)
 				if (mesh_displacement_problem_->is_nodal_dimension_dirichlet(node, tag, d, mesh_displacement_space_id_))
 					mesh_displacement_boundary_.boundary_nodes.push_back(node * mesh.dimension() + d);
@@ -740,7 +740,7 @@ namespace polyfem::varform
 			solver_params["Pardiso"] = {};
 		solver_params["Pardiso"]["mtype"] = -2;
 		mesh_rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*mesh_elastic_assembler_, *mesh_, nullptr,
+			*mesh_elastic_assembler_, *mesh_, mesh_displacement_space_.mesh_nodes.get(), nullptr,
 			mesh_displacement_boundary_.dirichlet_nodes, mesh_displacement_boundary_.neumann_nodes,
 			mesh_displacement_boundary_.dirichlet_nodes_position, mesh_displacement_boundary_.neumann_nodes_position,
 			mesh_displacement_space_.n_bases, mesh_->dimension(),

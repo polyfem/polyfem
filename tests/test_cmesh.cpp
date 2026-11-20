@@ -1019,55 +1019,60 @@ TEST_CASE("obstacle mesh sequence interpolates nodal displacement", "[mesh_test]
 	CHECK(sol(3, 0) == Catch::Approx(2.0));
 }
 
-TEST_CASE("node ids follow the FE node numbering", "[mesh_test]")
+TEST_CASE("mesh nodes tag their vertex nodes with the node ids of the mesh", "[mesh_test]")
 {
 	Eigen::MatrixXd vertices(4, 2);
 	vertices << 0, 0, 1, 0, 1, 1, 0, 1;
 	Eigen::MatrixXi cells(2, 3);
 	cells << 0, 1, 2, 0, 2, 3;
 	auto mesh = Mesh::create(MeshData(vertices, cells));
+
+	// Without node ids there are no tags.
+	{
+		MeshNodes nodes(*mesh, false, true, 1, 0);
+		nodes.node_id_from_vertex(0);
+		nodes.finalize();
+		CHECK_FALSE(nodes.has_node_tags());
+		CHECK(nodes.node_tag(0) == -1);
+	}
+
 	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
 
-	// Higher-order numbering: vertex nodes interleaved with other nodes.
-	Eigen::VectorXi in_node_to_node(4);
-	in_node_to_node << 5, 0, 7, 2;
-	mesh->update_nodes(in_node_to_node);
-	CHECK(mesh->get_node_id(5) == 10);
-	CHECK(mesh->get_node_id(0) == 11);
-	CHECK(mesh->get_node_id(7) == 12);
-	CHECK(mesh->get_node_id(2) == 13);
-	for (const int other : {1, 3, 4, 6, 8, 100})
-		CHECK(mesh->get_node_id(other) == -1);
+	// FE nodes created in an order unrelated to the vertices, with edge
+	// nodes (as in P2) interleaved.
+	MeshNodes nodes(*mesh, false, true, 1, 0);
+	const int e0 = nodes.node_id_from_edge(0);
+	const int v2 = nodes.node_id_from_vertex(2);
+	const int e1 = nodes.node_id_from_edge(1);
+	const int v0 = nodes.node_id_from_vertex(0);
+	const int v3 = nodes.node_id_from_vertex(3);
+	const int v1 = nodes.node_id_from_vertex(1);
+	CHECK(nodes.node_tag(v0) == -1); // not finalized yet
+	nodes.finalize();
+	REQUIRE(nodes.has_node_tags());
+	CHECK(nodes.node_tag(v0) == 10);
+	CHECK(nodes.node_tag(v1) == 11);
+	CHECK(nodes.node_tag(v2) == 12);
+	CHECK(nodes.node_tag(v3) == 13);
+	for (const int other : {e0, e1, -1, nodes.n_nodes()})
+		CHECK(nodes.node_tag(other) == -1);
 
-	// Unreferenced input vertices map to -1.
-	auto mesh2 = Mesh::create(MeshData(vertices, cells));
-	mesh2->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 10 + int(v); });
-	Eigen::VectorXi partial(4);
-	partial << 1, -1, 0, 2;
-	mesh2->update_nodes(partial);
-	CHECK(mesh2->get_node_id(0) == 12);
-	CHECK(mesh2->get_node_id(1) == 10);
-	CHECK(mesh2->get_node_id(2) == 13);
-
-	// The per-vertex ids are kept: MeshData stays per vertex, a second
-	// numbering starts again from them, and new vertex ids drop the numbering.
+	// The mesh itself is not changed: its ids stay per vertex.
+	for (int v = 0; v < 4; ++v)
+		CHECK(mesh->get_node_id(v) == 10 + v);
 	CHECK(mesh->to_mesh_data().node_ids == std::vector<int>{10, 11, 12, 13});
-	Eigen::VectorXi other(4);
-	other << 3, 2, 1, 0;
-	mesh->update_nodes(other);
-	for (int v = 0; v < 4; ++v)
-		CHECK(mesh->get_node_id(other(v)) == 10 + v);
-	mesh->update_nodes(in_node_to_node);
-	CHECK(mesh->get_node_id(5) == 10);
-	CHECK(mesh->get_node_id(0) == 11);
+
+	// Finalizing again reads the current ids of the mesh.
 	mesh->compute_node_ids([](const size_t v, const RowVectorNd &, bool) { return 20 + int(v); });
-	for (int v = 0; v < 4; ++v)
-		CHECK(mesh->get_node_id(v) == 20 + v);
+	nodes.finalize();
+	CHECK(nodes.node_tag(v0) == 20);
+	CHECK(nodes.node_tag(v3) == 23);
 }
 
 TEST_CASE("node ids stay per vertex through prepare and checkpoints", "[mesh_test][checkpoint]")
 {
-	const int order = GENERATE(1, 2);
+	// P4 disables the input node ordering; the tags do not depend on it.
+	const int order = GENERATE(1, 2, 4);
 	CAPTURE(order);
 	io::LoadedInput loaded = io::load_json_input(std::string(POLYFEM_DATA_DIR) + "/standard/laplace_nodal_neumann.json");
 	json args = loaded.config;
@@ -1093,9 +1098,13 @@ TEST_CASE("node ids stay per vertex through prepare and checkpoints", "[mesh_tes
 		test::VarFormTestAccess::prepare(form);
 		const auto debug = test::VarFormTestAccess::debug_data(form);
 		REQUIRE(debug.mesh == &mesh);
+		REQUIRE(debug.mesh_nodes != nullptr);
 		std::vector<int> ids(debug.n_bases);
 		for (int n = 0; n < debug.n_bases; ++n)
-			ids[n] = mesh.get_node_id(n);
+			ids[n] = debug.mesh_nodes->node_tag(n);
+		// Building the basis does not change the mesh.
+		for (int v = 0; v < mesh.n_vertices(); ++v)
+			CHECK(mesh.get_node_id(v) == vertex_ids[v]);
 		return ids;
 	};
 	const std::vector<int> first = fe_ids();

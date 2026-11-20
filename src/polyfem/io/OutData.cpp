@@ -2791,7 +2791,7 @@ namespace polyfem::io
 		for (int i = 0; i < dirichlet_nodes_position.size(); ++i)
 		{
 			const int n_id = dirichlet_nodes[i];
-			const auto s_id = mesh.get_node_id(n_id);
+			const int s_id = space.mesh_nodes ? space.mesh_nodes->node_tag(n_id) : -1;
 			if (s_id > 0)
 			{
 				b_sidesets(i) = s_id;

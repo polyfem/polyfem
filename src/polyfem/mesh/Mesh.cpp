@@ -48,7 +48,6 @@ namespace polyfem::mesh
 
 	void Mesh::filter_element_data(const std::vector<bool> &keep)
 	{
-		reset_fe_node_ids(); // the FE numbering changes with the elements
 		const int kept = std::count(keep.begin(), keep.end(), true);
 
 		auto filter_vector = [&keep, kept](auto &values) {
@@ -148,7 +147,7 @@ namespace polyfem::mesh
 			data.body_ids = body_ids_;
 		if (has_geometry_ids())
 			data.geometry_ids = geometry_ids_;
-		if (!node_ids_.empty()) // per vertex, also after update_nodes()
+		if (has_node_ids())
 			data.node_ids = node_ids_;
 		if (has_boundary_ids())
 		{
@@ -265,7 +264,6 @@ namespace polyfem::mesh
 				input_to_vertex[in_ordered_vertices_[v]] = v;
 		}
 
-		reset_fe_node_ids();
 		if (!data.node_ids.empty())
 		{
 			if (is_conforming())
@@ -379,38 +377,8 @@ namespace polyfem::mesh
 			   || elements_tag_[el_id] == ElementType::BOUNDARY_POLYTOPE;
 	}
 
-	void Mesh::update_nodes(const Eigen::VectorXi &in_node_to_node)
-	{
-		// node_ids_ stays indexed by input vertex (it is what to_mesh_data and
-		// append need); fe_node_ids_ is rebuilt from it every time, so calling
-		// this again (e.g. after a geometry update) gives the same ids. Vertex
-		// nodes get the id of their vertex, the other nodes (edge, face and
-		// cell nodes, and nodes of unreferenced vertices) have none.
-		fe_node_ids_mapped_ = true;
-		fe_node_ids_.clear();
-		if (in_node_to_node.size() <= 0 || node_ids_.empty())
-			return;
-
-		const int n = std::min<int>(n_vertices(), in_node_to_node.size());
-		int n_nodes = 0;
-		for (int v = 0; v < n; ++v)
-			n_nodes = std::max(n_nodes, in_node_to_node[v] + 1);
-
-		fe_node_ids_.assign(n_nodes, -1);
-		for (int v = 0; v < n; ++v)
-			if (in_node_to_node[v] >= 0)
-				fe_node_ids_[in_node_to_node[v]] = node_ids_[v];
-	}
-
-	void Mesh::reset_fe_node_ids()
-	{
-		fe_node_ids_mapped_ = false;
-		fe_node_ids_.clear();
-	}
-
 	void Mesh::compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
 	{
-		reset_fe_node_ids();
 		node_ids_.resize(n_vertices());
 
 		for (int n = 0; n < n_vertices(); ++n)
@@ -576,7 +544,6 @@ namespace polyfem::mesh
 			else
 				node_ids_.insert(node_ids_.end(), mesh.node_ids_.begin(), mesh.node_ids_.end());
 		}
-		reset_fe_node_ids();
 
 		assert(node_ids_.empty() || node_ids_.size() == n_vertices + mesh.n_vertices());
 
@@ -737,7 +704,6 @@ namespace polyfem::mesh
 		boundary_ids_.clear();
 		body_ids_.clear();
 		node_ids_.clear();
-		reset_fe_node_ids();
 		geometry_ids_.clear();
 		orders_.resize(0, 0);
 		edge_nodes_.clear();

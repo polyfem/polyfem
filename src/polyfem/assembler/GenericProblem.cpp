@@ -507,10 +507,9 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
-			const int tag = mesh.get_node_id(node_id);
 
 			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -542,10 +541,9 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
-			const int tag = mesh.get_node_id(node_id);
 
 			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
 			{
@@ -1494,10 +1492,9 @@ namespace polyfem
 				}
 		}
 
-		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
-			const int tag = mesh.get_node_id(node_id);
 
 			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -1523,10 +1520,9 @@ namespace polyfem
 			assert(false);
 		}
 
-		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
+		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const int tag, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val, const int fe_space_id) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
-			const int tag = mesh.get_node_id(node_id);
 
 			if (const auto it = nodal_neumann_.find(tag); it != nodal_neumann_.end() && matches_fe_space(it->second.fe_space_id, fe_space_id))
 			{
