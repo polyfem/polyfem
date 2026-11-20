@@ -49,6 +49,26 @@ namespace polyfem
 
 			void clear();
 
+			/// Independent of coordinates, time and index. Character checks on
+			/// formulas are conservative (e.g. "exp" contains 'x').
+			bool is_constant() const
+			{
+				return expr_.find_first_of("xyzt") == std::string::npos && mat_.size() == 0 && mat_expr_.empty()
+					   && t_index_.empty() && !sfunc_ && !tfunc_;
+			}
+
+			/// Potentially time-dependent: callbacks/time tables or a formula
+			/// containing 't' (including conservative matches in function names).
+			bool is_time_dependent() const
+			{
+				if (!t_index_.empty() || sfunc_ || tfunc_ || expr_.find('t') != std::string::npos)
+					return true;
+				for (const auto &value : mat_expr_)
+					if (value.is_time_dependent())
+						return true;
+				return false;
+			}
+
 			bool is_zero() const
 			{
 				return expr_.empty() && mat_.size() == 0 && mat_expr_.empty() && !sfunc_ && !tfunc_ && fabs(value_) < 1e-10;

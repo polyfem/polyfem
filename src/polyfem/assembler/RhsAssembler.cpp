@@ -664,7 +664,7 @@ namespace polyfem
 											   const double t,
 											   Eigen::MatrixXd &rhs) const
 		{
-			if (problem_.is_constant_in_time())
+			if (problem_.is_constant_in_time() || !is_rhs_time_dependent(density))
 			{
 				rhs = final_rhs;
 			}

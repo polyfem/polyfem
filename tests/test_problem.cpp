@@ -101,6 +101,53 @@ json get_params()
 		{"mu", mu}};
 }
 
+TEST_CASE("generic rhs time dependence classification", "[problem][constant_inputs]")
+{
+	GenericTensorProblem tensor("tensor");
+	CHECK_FALSE(tensor.is_rhs_time_dependent());
+	tensor.set_parameters({{"is_time_dependent", true}, {"rhs", {1, 2}}}, test_resources());
+	CHECK_FALSE(tensor.is_constant_in_time());
+	CHECK_FALSE(tensor.is_rhs_time_dependent());
+	tensor.set_parameters({{"rhs", {"t", 2}}}, test_resources());
+	CHECK(tensor.is_rhs_time_dependent());
+	tensor.set_parameters({{"rhs", {"x", "y"}}}, test_resources());
+	CHECK_FALSE(tensor.is_rhs_time_dependent());
+	tensor.set_parameters({{"rhs", {3, 4}}}, test_resources());
+	CHECK_FALSE(tensor.is_rhs_time_dependent());
+	tensor.clear();
+	tensor.set_parameters({{"rhs", json::array({{{"fe_space", 0}, {"value", {1, 2}}},
+												{{"fe_space", 1}, {"value", {"x+t", 2}}}})}},
+						  test_resources());
+	CHECK_FALSE(tensor.is_rhs_time_dependent(0));
+	CHECK(tensor.is_rhs_time_dependent(1));
+	tensor.clear();
+	tensor.set_parameters({{"rhs", json::array({{{"id", 5}, {"fe_space", 0}, {"value", {1, 2}}},
+												{{"id", 8}, {"fe_space", 1}, {"value", {"t", 2}}}})}},
+						  test_resources());
+	CHECK_FALSE(tensor.is_rhs_time_dependent(0));
+	CHECK(tensor.is_rhs_time_dependent(1));
+	CHECK_FALSE(tensor.is_rhs_time_dependent(2)); // No load in this FE space.
+	CHECK(tensor.is_rhs_time_dependent());
+
+	GenericScalarProblem scalar("scalar");
+	CHECK_FALSE(scalar.is_rhs_time_dependent());
+	scalar.set_parameters({{"is_time_dependent", true}, {"rhs", 3}}, test_resources());
+	CHECK_FALSE(scalar.is_constant_in_time());
+	CHECK_FALSE(scalar.is_rhs_time_dependent());
+	scalar.set_parameters({{"rhs", "x+y"}}, test_resources());
+	CHECK_FALSE(scalar.is_rhs_time_dependent());
+	scalar.set_parameters({{"rhs", "t"}}, test_resources());
+	CHECK(scalar.is_rhs_time_dependent());
+	scalar.clear();
+	scalar.set_parameters({{"rhs", json::array({{{"id", 5}, {"fe_space", 0}, {"value", 3}},
+												{{"id", 8}, {"fe_space", 1}, {"value", "x+t"}}})}},
+						  test_resources());
+	CHECK_FALSE(scalar.is_rhs_time_dependent(0));
+	CHECK(scalar.is_rhs_time_dependent(1));
+	CHECK_FALSE(scalar.is_rhs_time_dependent(2));
+	CHECK(scalar.is_rhs_time_dependent());
+}
+
 TEST_CASE("boundary setup separates loads and constrained finite element spaces", "[problem][boundary]")
 {
 	const auto mesh = tagged_triangle_mesh();

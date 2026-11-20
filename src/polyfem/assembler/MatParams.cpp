@@ -5,6 +5,7 @@
 #include <polyfem/utils/StringUtils.hpp> // utils::resolve_path
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 namespace polyfem::assembler
 {
@@ -75,6 +76,16 @@ namespace polyfem::assembler
 	{
 	}
 
+	bool GenericMatParam::is_constant() const
+	{
+		return !param_.empty() && nonconstant_count_ == 0;
+	}
+
+	bool GenericMatParam::is_time_dependent() const
+	{
+		return param_.empty() || time_dependent_count_ != 0;
+	}
+
 	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type, const io::ResourceIO &resources)
 	{
 		for (int i = param_.size(); i <= index; ++i)
@@ -85,7 +96,13 @@ namespace polyfem::assembler
 
 		if (params.count(param_name_))
 		{
+			const bool was_constant = param_[index].is_constant();
+			const bool was_time_dependent = param_[index].is_time_dependent();
 			param_[index].init(params[param_name_], resources);
+			nonconstant_count_ -= !was_constant;
+			nonconstant_count_ += !param_[index].is_constant();
+			time_dependent_count_ -= was_time_dependent;
+			time_dependent_count_ += param_[index].is_time_dependent();
 			if (params.contains(MATERIAL_ELEMENT_INDEX))
 				param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
@@ -134,7 +151,13 @@ namespace polyfem::assembler
 				params_.at(i).param_.back().set_unit_type(unit_type);
 			}
 
+			const bool was_constant = params_.at(i).param_[index].is_constant();
+			const bool was_time_dependent = params_.at(i).param_[index].is_time_dependent();
 			params_.at(i).param_[index].init(params_array[i], resources);
+			params_.at(i).nonconstant_count_ -= !was_constant;
+			params_.at(i).nonconstant_count_ += !params_.at(i).param_[index].is_constant();
+			params_.at(i).time_dependent_count_ -= was_time_dependent;
+			params_.at(i).time_dependent_count_ += params_.at(i).param_[index].is_time_dependent();
 			if (params.contains(MATERIAL_ELEMENT_INDEX))
 				params_.at(i).param_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 		}
@@ -509,6 +532,16 @@ namespace polyfem::assembler
 		rho_.back().init(1.0);
 	}
 
+	bool Density::is_constant() const
+	{
+		return nonconstant_count_ == 0;
+	}
+
+	bool Density::is_time_dependent() const
+	{
+		return time_dependent_count_ != 0;
+	}
+
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
 	{
 		assert(rho_.size() == 1 || el_id < rho_.size());
@@ -527,6 +560,8 @@ namespace polyfem::assembler
 			rho_.emplace_back();
 		}
 
+		const bool was_constant = rho_[index].is_constant();
+		const bool was_time_dependent = rho_[index].is_time_dependent();
 		if (params.count("rho"))
 		{
 			rho_[index].init(params["rho"], resources);
@@ -539,11 +574,25 @@ namespace polyfem::assembler
 			rho_[index].set_index(params[MATERIAL_ELEMENT_INDEX]);
 
 		rho_[index].set_unit_type(density_unit);
+		nonconstant_count_ -= !was_constant;
+		nonconstant_count_ += !rho_[index].is_constant();
+		time_dependent_count_ -= was_time_dependent;
+		time_dependent_count_ += rho_[index].is_time_dependent();
 	}
 
 	ThermalMassDensity::ThermalMassDensity()
 		: rho_("rho"), heat_capacity_("heat_capacity")
 	{
+	}
+
+	bool ThermalMassDensity::is_constant() const
+	{
+		return rho_.is_constant() && heat_capacity_.is_constant();
+	}
+
+	bool ThermalMassDensity::is_time_dependent() const
+	{
+		return rho_.is_time_dependent() || heat_capacity_.is_time_dependent();
 	}
 
 	void ThermalMassDensity::add_multimaterial(const int index, const json &params, const std::string &density_unit, const io::ResourceIO &resources)

@@ -311,12 +311,19 @@ TEST_CASE("cached body energy matches quadrature", "[form][body_form][energy]")
 	const int order = GENERATE(1, 2);
 	const bool transient = GENERATE(false, true);
 	const bool mixed = GENERATE(false, true);
+	const int volume_dependence = GENERATE(0, 1, 2);
+	const bool constant_volume = volume_dependence == 0;
+	const bool time_dependent_volume = volume_dependence == 2;
 	const int load = GENERATE(0, 1, 2, 3, 4);
-	CAPTURE(dim, order, transient, mixed, load);
+	CAPTURE(dim, order, transient, mixed, volume_dependence, load);
 	json args;
 	args["geometry"][0] = {{"mesh", ""}, {"surface_selection", 7}};
 	args["space"]["discr_order"] = order;
 	args["materials"] = {{"type", "NeoHookean"}, {"E", 1000}, {"nu", 0.3}, {"rho", "1000*(1+0.1*x+0.2*t)"}};
+	if (constant_volume)
+		args["materials"]["rho"] = 1000;
+	else if (!time_dependent_volume)
+		args["materials"]["rho"] = "1000*(1+0.1*x)";
 	args["contact"]["enabled"] = false;
 	args["output"]["log"]["quiet"] = true;
 	args["output"]["log"]["level"] = "error";
@@ -325,7 +332,8 @@ TEST_CASE("cached body energy matches quadrature", "[form][body_form][energy]")
 	json rhs = json::array(), traction = json::array();
 	for (int d = 0; d < dim; ++d)
 	{
-		rhs.push_back(load == 4 ? json(0) : json(std::to_string(d + 1) + "+x+2*y+t"));
+		rhs.push_back(load == 4 ? json(0) : constant_volume ? json(d + 1)
+															: json(std::to_string(d + 1) + "+x+2*y" + (time_dependent_volume ? "+t" : "")));
 		traction.push_back(std::to_string(10 * (d + 1)) + "+x-t");
 	}
 	args["boundary_conditions"]["rhs"] = rhs;
@@ -350,6 +358,25 @@ TEST_CASE("cached body energy matches quadrature", "[form][body_form][energy]")
 	mesh.compute_node_ids([](const size_t node, const RowVectorNd &, bool) { return int(node) + 17; });
 	test::VarFormTestAccess::prepare(formulation);
 	const auto data = test::VarFormTestAccess::elastic_form_data(formulation);
+	CHECK(data.rhs_assembler->is_rhs_time_dependent(data.mass_assembler.density()) == time_dependent_volume);
+	if (transient)
+	{
+		// A distinct supplied RHS proves the flag controls reuse, rather than
+		// only checking equal numbers from a redundant assembly.
+		const Eigen::MatrixXd supplied_rhs = data.rhs.array() + 1234;
+		Eigen::MatrixXd actual, expected;
+		data.rhs_assembler->compute_energy_grad(data.boundary.local_boundary, data.boundary.boundary_nodes,
+												data.mass_assembler.density(), data.boundary_samples, data.boundary.local_neumann_boundary,
+												supplied_rhs, 0.2, actual);
+		if (!time_dependent_volume)
+			expected = supplied_rhs;
+		else
+		{
+			data.rhs_assembler->assemble(data.mass_assembler.density(), expected, 0.2);
+			expected *= -1;
+		}
+		CHECK(actual.isApprox(expected, 1e-12));
+	}
 	if (load == 1 || load == 2)
 		REQUIRE_FALSE(data.boundary.local_neumann_boundary.empty());
 	if (load == 3)

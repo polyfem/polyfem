@@ -41,6 +41,9 @@ namespace polyfem
 				rhs(assembler, pts, t, val, fe_space_id);
 			}
 			virtual bool is_rhs_zero(const int fe_space_id = -1) const = 0;
+			/// Whether volume loads may depend on time; unknown providers default to true.
+			/// Entries may differ by body/FE space; the mesh partition must stay fixed.
+			virtual bool is_rhs_time_dependent(const int fe_space_id = -1) const { return true; }
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val, const int fe_space_id = -1) const {}

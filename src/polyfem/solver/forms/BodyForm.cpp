@@ -78,7 +78,7 @@ namespace polyfem::solver
 			n_boundary_samples_, local_neumann_boundary_,
 			current_rhs_, x, t_);
 
-		if (rhs_assembler_.problem().is_constant_in_time())
+		if (rhs_assembler_.problem().is_constant_in_time() && rhs_assembler_.is_rhs_time_dependent(density_))
 		{
 			// The gradient's supplied static RHS may have been assembled at a
 			// different time. Match the energy's density/load evaluation at t_.

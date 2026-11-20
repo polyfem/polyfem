@@ -62,6 +62,11 @@ namespace polyfem
 				const double t = 1) const;
 
 			// compute body energy
+			bool is_rhs_time_dependent(const Density &density) const
+			{
+				return density.is_time_dependent() || problem_.is_rhs_time_dependent(fe_space_id_);
+			}
+
 			// Use loads assembled for the same time and previous displacement.
 			// Prescribed obstacle displacements and mixed pressure entries are not loads.
 			double compute_energy_from_rhs(
