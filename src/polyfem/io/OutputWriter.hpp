@@ -6,7 +6,8 @@
 namespace polyfem::io
 {
 	/// Ordered output with one pending frame in addition to the active frame.
-	/// Uses the configured CPP, TBB, or serial execution backend.
+	/// CPP and TBB use a dedicated consumer thread; TBB work is limited to a
+	/// one-thread arena. The serial backend runs writes on the caller.
 	class OutputWriter
 	{
 	public:

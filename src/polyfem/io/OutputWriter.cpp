@@ -4,7 +4,6 @@
 
 #include <condition_variable>
 #include <exception>
-#include <future>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
@@ -106,8 +105,6 @@ namespace polyfem::io
 			}
 			if (thread_.joinable())
 				thread_.join();
-			if (completed_.valid())
-				completed_.wait();
 			std::lock_guard<std::mutex> lock(state_->mutex);
 			check_error();
 		}
@@ -195,14 +192,16 @@ namespace polyfem::io
 
 		void start()
 		{
-#ifdef POLYFEM_WITH_CPP_THREADS
-			thread_ = std::thread([state = state_] { run(state); });
-#elif defined(POLYFEM_WITH_TBB)
-			auto completion = std::make_shared<std::promise<void>>();
-			completed_ = completion->get_future();
-			arena_.enqueue([state = state_, completion] {
+			// A blocking queue must not occupy a TBB scheduler worker while idle:
+			// other writers may need that worker to drain their queues.
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
+			thread_ = std::thread([state = state_] {
+#ifdef POLYFEM_WITH_TBB
+				tbb::task_arena output_arena(1);
+				output_arena.execute([&] { run(state); });
+#else
 				run(state);
-				completion->set_value();
+#endif
 			});
 #endif
 			started_ = true;
@@ -210,10 +209,6 @@ namespace polyfem::io
 
 		std::shared_ptr<State> state_ = std::make_shared<State>();
 		std::thread thread_;
-		std::future<void> completed_;
-#ifdef POLYFEM_WITH_TBB
-		tbb::task_arena arena_{1, 0};
-#endif
 		bool asynchronous_ = false;
 		bool started_ = false;
 	};

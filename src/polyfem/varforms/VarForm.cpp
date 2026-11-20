@@ -23,6 +23,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
 
 #include <igl/Timer.h>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -1104,7 +1105,12 @@ namespace polyfem::varform
 				auto space = current_space;
 				auto obstacle = space.obstacle ? std::make_shared<mesh::Obstacle>(*space.obstacle) : nullptr;
 				space.obstacle = obstacle.get();
-				auto fields = snapshot_output_fields(solution, opts, space, time, dt);
+				// Python-backed fields cannot acquire the GIL on the worker while
+				// its caller holds it and waits for the queue. Prepare owned arrays
+				// here in that case; their file writes still run asynchronously.
+				io::OutputFieldFunction fields;
+				if (!utils::python_gil_held())
+					fields = snapshot_output_fields(solution, opts, space, time, dt);
 				io::OutGeometryData::WriteJobs writes;
 				auto vtm = std::make_shared<paraviewo::VTMWriter>(time);
 				if (!fields)

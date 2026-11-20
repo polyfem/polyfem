@@ -35,6 +35,15 @@ namespace polyfem
 
 	namespace utils
 	{
+		bool python_gil_held()
+		{
+#ifdef POLYFEM_WITH_PYTHON
+			return Py_IsInitialized() && PyGILState_Check();
+#else
+			return false;
+#endif
+		}
+
 #ifdef POLYFEM_WITH_PYTHON
 		namespace py = pybind11;
 

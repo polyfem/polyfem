@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
@@ -12,8 +13,15 @@
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/par_for.hpp>
 #include <polyfem/varforms/VarForm.hpp>
+#include "TestTempPath.hpp"
 #include "VarFormTestAccess.hpp"
+
+#ifdef POLYFEM_WITH_TBB
+#include <tbb/task_arena.h>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -375,6 +383,112 @@ TEST_CASE("output writer preserves order and drains", "[output_writer]")
 	for (int i = 0; i < written.size(); ++i)
 		CHECK(written[i] == i);
 }
+
+TEST_CASE("idle output writer does not block another writer", "[output_writer]")
+{
+#ifdef POLYFEM_WITH_TBB
+	tbb::global_control limit(tbb::global_control::max_allowed_parallelism, 2);
+#endif
+	io::OutputWriter first;
+	if (!first.asynchronous())
+		return;
+	first.enqueue([] { return [] {}; });
+	first.flush(); // Keep its consumer alive but idle while the second writer runs.
+
+	std::promise<bool> completed;
+	auto future = completed.get_future();
+	io::OutputWriter second;
+	second.enqueue([&] {
+		return [&] {
+			bool serial = utils::get_n_threads() == 1;
+#ifdef POLYFEM_WITH_TBB
+			serial = serial && tbb::this_task_arena::max_concurrency() == 1;
+#endif
+			completed.set_value(serial);
+		};
+	});
+	const bool independent = future.wait_for(std::chrono::seconds(5)) == std::future_status::ready;
+	// Close the first writer before asserting, so even the old TBB implementation
+	// can release its scheduler worker and finish the test without hanging.
+	first.finish();
+	second.finish();
+	CHECK(independent);
+	CHECK(future.get());
+}
+
+#ifdef POLYFEM_WITH_PYTHON
+TEST_CASE("Python material fields are prepared before asynchronous output", "[output][output_python]")
+{
+	const std::string material = GENERATE("NeoHookean", "LinearElasticity");
+	const bool fail = GENERATE(false, true);
+	CAPTURE(material, fail);
+	const auto output_dir = test::unique_temp_path("polyfem_python_output_" + material + (fail ? "_failure" : ""));
+	std::filesystem::create_directories(output_dir);
+	const auto python_file = output_dir / "material.py";
+	{
+		std::ofstream file(python_file);
+		REQUIRE(file.good());
+		file << "import threading\n"
+			 << "caller = threading.get_ident()\n"
+			 << "def value(x, y, z, t, index):\n"
+			 << "    if threading.get_ident() != caller:\n"
+			 << "        raise RuntimeError('material evaluated on output worker')\n";
+		if (fail)
+			file << "    if t > 0.5:\n"
+				 << "        raise RuntimeError('material output failure')\n";
+		file << "    return 100000.0 * (1 + 0.1*x + 0.2*y + 0.03*t)\n";
+	}
+	json args;
+	args["geometry"][0]["mesh"] = "";
+	args["materials"] = {{"type", material}, {"E", {{"file_name", python_file.string()}, {"function_name", "value"}}}, {"nu", 0.3}};
+	args["contact"]["enabled"] = false;
+	args["output"]["log"]["quiet"] = true;
+	args["output"]["log"]["level"] = "error";
+	args["output"]["directory"] = output_dir.string();
+	args["output"]["advanced"]["save_time_sequence"] = true;
+	args["output"]["paraview"]["file_name"] = "out.pvd";
+	args["output"]["paraview"]["volume"] = true;
+	args["output"]["paraview"]["surface"] = false;
+	args["output"]["paraview"]["high_order_mesh"] = true;
+	State state;
+	state.init(args, true);
+	state.set_max_threads(1);
+	Eigen::MatrixXd vertices(3, 2);
+	vertices << 0, 0, 1, 0, 0, 1;
+	Eigen::MatrixXi elements(1, 3);
+	elements << 0, 1, 2;
+	state.set_mesh(vertices, elements);
+	auto &form = *state.variational_formulation;
+	test::VarFormTestAccess::prepare(form);
+	const auto debug = test::VarFormTestAccess::debug_data(form);
+	Eigen::MatrixXd solution(debug.n_bases * 2, 1);
+	for (int i = 0; i < solution.rows(); ++i)
+		solution(i) = 0.01 * std::sin(i * 0.37);
+	REQUIRE(utils::python_gil_held());
+	state.set_max_threads(2);
+	std::string synchronous_vtu;
+	for (const bool asynchronous : {false, true})
+	{
+		CAPTURE(asynchronous);
+		if (fail)
+		{
+			REQUIRE_THROWS_WITH(test::VarFormTestAccess::save_timestep(form, solution, asynchronous),
+								Catch::Matchers::ContainsSubstring("material output failure"));
+			continue;
+		}
+		test::VarFormTestAccess::save_timestep(form, solution, asynchronous);
+		std::ifstream file(output_dir / "step_1.vtu", std::ios::binary);
+		REQUIRE(file.good());
+		const std::string bytes{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+		REQUIRE(bytes.find("Name=\"energy\"") != std::string::npos);
+		REQUIRE(bytes.find("Name=\"cauchy_stess_1\"") != std::string::npos);
+		if (asynchronous)
+			CHECK(bytes == synchronous_vtu);
+		else
+			synchronous_vtu = bytes;
+	}
+}
+#endif
 
 TEST_CASE("output writer blocks preparation with one pending frame", "[output_writer]")
 {
