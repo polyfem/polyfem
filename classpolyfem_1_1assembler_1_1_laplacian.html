@@ -206,6 +206,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab6333f36f7611b228b532c93002734cf inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb328d80ebc6fdfe1642e31bbe5a9a7 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_adfb328d80ebc6fdfe1642e31bbe5a9a7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#adfb328d80ebc6fdfe1642e31bbe5a9a7">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const</td></tr>
 <tr class="separator:adfb328d80ebc6fdfe1642e31bbe5a9a7 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a49d98c32777f8fc3b0866b76153f7885"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a49d98c32777f8fc3b0866b76153f7885">compute_output_values</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; *scalar, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; *tensor) const</td></tr>
+<tr class="memdesc:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate requested output families together using element-local scratch.  <br /></td></tr>
+<tr class="separator:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35f1f3a973305afdc33e3d213ddef362 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a35f1f3a973305afdc33e3d213ddef362"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a35f1f3a973305afdc33e3d213ddef362">compute_dstress_dmu_dlambda</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_opt_assembler_data.html">OptAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
 <tr class="separator:a35f1f3a973305afdc33e3d213ddef362 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1379685184d2602dea3cfcd2a0e7ea36 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a1379685184d2602dea3cfcd2a0e7ea36"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a1379685184d2602dea3cfcd2a0e7ea36">compute_stress_grad_multiply_stress</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_opt_assembler_data.html">OptAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
@@ -577,7 +580,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac4d96c45f51580d6d96e356bc1b0abc4">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00360">360</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00372">372</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
 </div>
 </div>
@@ -695,7 +698,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00088">88</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00097">assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, and <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00097">assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00208">hessian</a>, and <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -868,7 +871,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00097">97</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00062">assemble()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00020">polyfem::assembler::LocalHessian::resize()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>.</p>
+<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00062">assemble()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00073">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_assembler_8cpp_source.html#l00208">hessian</a>, <a class="el" href="_local_hessian_8hpp_source.html#l00020">polyfem::assembler::LocalHessian::resize()</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00069">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00068">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_local_hessian_8hpp_source.html#l00041">polyfem::assembler::LocalHessian::visit()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_laplacian_8cpp_source.html#l00088">assemble_gradient()</a>, and <a class="el" href="_laplacian_8cpp_source.html#l00078">compute_energy()</a>.</p>
 <div class="dynheader">
@@ -950,7 +953,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00078">78</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00097">assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00045">hessian</a>, and <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00097">assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00208">hessian</a>, and <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1047,7 +1050,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00143">143</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00054">conductivity()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
+<p class="reference">References <a class="el" href="_laplacian_8cpp_source.html#l00054">conductivity()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00206">vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

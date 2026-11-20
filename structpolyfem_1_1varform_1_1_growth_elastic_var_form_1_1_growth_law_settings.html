@@ -174,7 +174,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Growth law (material "growth_law"): rate-independent, per-element threshold (given, or built from the state), irreversibility theta &gt;= theta_n enforced by a primal-dual active set (pinned DOFs are Dirichlet at theta_n through BCLagrangianForm; free DOFs are unconstrained). </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00228">228</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00234">234</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a6c2636c627c67e8277ca6a9e9b59df2b" name="a6c2636c627c67e8277ca6a9e9b59df2b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c2636c627c67e8277ca6a9e9b59df2b">&#9670;&#160;</a></span>active_set_tol</h2>
@@ -190,7 +190,7 @@ Public Attributes</h2></td></tr>
 
 <p>release a pin if dPi/dtheta &lt; -tol * scale_a (Pa) </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00234">234</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00240">240</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -208,7 +208,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00230">230</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00236">236</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00459">polyfem::varform::GrowthElasticVarForm::build_basis()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00935">polyfem::varform::GrowthElasticVarForm::build_forms()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00317">polyfem::varform::GrowthElasticVarForm::init()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01140">polyfem::varform::GrowthElasticVarForm::solve_problem()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00310">polyfem::varform::GrowthElasticVarForm::validate_time_dependence()</a>.</p>
 
@@ -228,7 +228,7 @@ Public Attributes</h2></td></tr>
 
 <p>pin a free DOF if theta &lt; theta_n - tol </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00235">235</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00241">241</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -248,7 +248,7 @@ Public Attributes</h2></td></tr>
 
 <p>&lt; 1: after the active set settles, one confirmation pass with the nonlinear gradient tolerance multiplied by this factor (1 = off) </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00250">250</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00256">256</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -269,7 +269,7 @@ Public Attributes</h2></td></tr>
 <p>threshold "from_state": phi_e = max(f_par, 0) + f_gamma at C_check of the current displacement, built by the solver and re-evaluated after every active-set pass (Aitken-relaxed) until it moves by less than relag_tol, or at most relag_max_updates times per increment (0 = no cap; the first update is on the elastic predictor). </p>
 <p>Otherwise the threshold is the given number or file, fixed for the run. </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00244">244</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00250">250</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01287">polyfem::varform::GrowthElasticVarForm::assemble_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01230">polyfem::varform::GrowthElasticVarForm::compute_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -287,7 +287,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00233">233</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00239">239</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -307,7 +307,7 @@ Public Attributes</h2></td></tr>
 
 <p>a failed increment is retried from its start as two half increments, recursively, up to this many levels (0 = abort on the first failure) </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00253">253</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00259">259</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01752">polyfem::varform::GrowthElasticVarForm::advance_increment()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>.</p>
 
@@ -327,7 +327,7 @@ Public Attributes</h2></td></tr>
 
 <p>pseudo-time increments over (0, t_end] </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00231">231</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00237">237</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01287">polyfem::varform::GrowthElasticVarForm::assemble_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01811">polyfem::varform::GrowthElasticVarForm::save_growth_increment()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01717">polyfem::varform::GrowthElasticVarForm::solve_growth_law()</a>.</p>
 
@@ -345,7 +345,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00247">247</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00253">253</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01287">polyfem::varform::GrowthElasticVarForm::assemble_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -365,7 +365,7 @@ Public Attributes</h2></td></tr>
 
 <p>from_state: per-pass threshold iteration tolerance [Pa] </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00246">246</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00252">252</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01578">polyfem::varform::GrowthElasticVarForm::solve_growth_increment()</a>.</p>
 
@@ -385,7 +385,7 @@ Public Attributes</h2></td></tr>
 
 <p>write growth_step_&lt;k&gt;.vtu + growth_steps.pvd per increment </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00237">237</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00243">243</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01717">polyfem::varform::GrowthElasticVarForm::solve_growth_law()</a>.</p>
 
@@ -405,7 +405,7 @@ Public Attributes</h2></td></tr>
 
 <p>pseudo-time at which DBC expressions reach their end state </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00232">232</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00238">238</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01287">polyfem::varform::GrowthElasticVarForm::assemble_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01811">polyfem::varform::GrowthElasticVarForm::save_growth_increment()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01717">polyfem::varform::GrowthElasticVarForm::solve_growth_law()</a>.</p>
 
@@ -425,7 +425,7 @@ Public Attributes</h2></td></tr>
 
 <p>C_check in-plane elastic area stretch (from_state; else optional, lag report) </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00245">245</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00251">251</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01287">polyfem::varform::GrowthElasticVarForm::assemble_growth_node_weights()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01329">polyfem::varform::GrowthElasticVarForm::evaluate_threshold_state()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>, <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01527">polyfem::varform::GrowthElasticVarForm::report_lag_residual()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l01717">polyfem::varform::GrowthElasticVarForm::solve_growth_law()</a>.</p>
 
@@ -445,7 +445,7 @@ Public Attributes</h2></td></tr>
 
 <p>positivity filter: theta &gt;= fraction * theta_n </p>
 
-<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00236">236</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_growth_elastic_var_form_8hpp_source.html#l00242">242</a> of file <a class="el" href="_growth_elastic_var_form_8hpp_source.html">GrowthElasticVarForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00935">polyfem::varform::GrowthElasticVarForm::build_forms()</a>, and <a class="el" href="_growth_elastic_var_form_8cpp_source.html#l00206">polyfem::varform::GrowthElasticVarForm::read_growth_law()</a>.</p>
 

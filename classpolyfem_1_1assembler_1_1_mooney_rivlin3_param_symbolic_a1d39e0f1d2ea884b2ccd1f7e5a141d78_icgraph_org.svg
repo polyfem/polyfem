@@ -21,11 +21,11 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#af5693acfc8336d6856f4e32ddfcda866" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="426.12,-494.25 255.62,-494.25 255.62,-448 426.12,-448 426.12,-494.25"/>
-<text xml:space="preserve" text-anchor="start" x="263.62" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text xml:space="preserve" text-anchor="start" x="263.62" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
-<text xml:space="preserve" text-anchor="middle" x="340.88" y="-455.25" font-family="Helvetica,sans-Serif" font-size="10.00">::assign_stress_tensor</text>
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a8356719f6983a4b155bf28c8f945b499" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="439.25,-494.25 242.5,-494.25 242.5,-448 439.25,-448 439.25,-494.25"/>
+<text xml:space="preserve" text-anchor="start" x="250.5" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text xml:space="preserve" text-anchor="start" x="250.5" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
+<text xml:space="preserve" text-anchor="middle" x="340.88" y="-455.25" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_energy_aux_gradient_fast</text>
 </a>
 </g>
 </g>
@@ -41,11 +41,12 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a8356719f6983a4b155bf28c8f945b499" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="439.25,-430.25 242.5,-430.25 242.5,-384 439.25,-384 439.25,-430.25"/>
-<text xml:space="preserve" text-anchor="start" x="250.5" y="-416.75" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text xml:space="preserve" text-anchor="start" x="250.5" y="-404" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
-<text xml:space="preserve" text-anchor="middle" x="340.88" y="-391.25" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_energy_aux_gradient_fast</text>
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a95fc7067a5db71d538342f516fa3e296" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="426.12,-429.62 255.62,-429.62 255.62,-370.62 426.12,-370.62 426.12,-429.62"/>
+<text xml:space="preserve" text-anchor="start" x="263.62" y="-416.12" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text xml:space="preserve" text-anchor="start" x="263.62" y="-403.38" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
+<text xml:space="preserve" text-anchor="start" x="263.62" y="-390.62" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_energy_hessian</text>
+<text xml:space="preserve" text-anchor="middle" x="340.88" y="-377.88" font-family="Helvetica,sans-Serif" font-size="10.00">_aux_fast</text>
 </a>
 </g>
 </g>
@@ -53,20 +54,19 @@
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M549.53,-266.32C526.76,-296.58 485.48,-345.94 439.25,-375.12 434.28,-378.26 428.98,-381.12 423.51,-383.72"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="552.23,-268.55 555.35,-258.43 546.6,-264.39 552.23,-268.55"/>
+<path fill="none" stroke="#63b8ff" d="M546.39,-265.53C522.41,-292.27 481.57,-334.15 439.25,-361.12 434.18,-364.35 428.8,-367.4 423.28,-370.25"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="548.85,-268.03 552.85,-258.22 543.6,-263.39 548.85,-268.03"/>
 </a>
 </g>
 </g>
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a95fc7067a5db71d538342f516fa3e296" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="426.12,-365.62 255.62,-365.62 255.62,-306.62 426.12,-306.62 426.12,-365.62"/>
-<text xml:space="preserve" text-anchor="start" x="263.62" y="-352.12" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text xml:space="preserve" text-anchor="start" x="263.62" y="-339.38" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
-<text xml:space="preserve" text-anchor="start" x="263.62" y="-326.62" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_energy_hessian</text>
-<text xml:space="preserve" text-anchor="middle" x="340.88" y="-313.88" font-family="Helvetica,sans-Serif" font-size="10.00">_aux_fast</text>
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a17855dd120770c6f546d1f5c35ad6369" target="_top" xlink:title="Return false to use a material&#39;s legacy assign_stress_tensor implementation.">
+<polygon fill="white" stroke="#666666" points="426.12,-352.25 255.62,-352.25 255.62,-306 426.12,-306 426.12,-352.25"/>
+<text xml:space="preserve" text-anchor="start" x="263.62" y="-338.75" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text xml:space="preserve" text-anchor="start" x="263.62" y="-326" font-family="Helvetica,sans-Serif" font-size="10.00">::MooneyRivlin3ParamSymbolic</text>
+<text xml:space="preserve" text-anchor="middle" x="340.88" y="-313.25" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_output_stress</text>
 </a>
 </g>
 </g>
@@ -74,8 +74,8 @@
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M517.12,-261.77C486.13,-274.92 446.13,-291.89 412.17,-306.3"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="518.44,-265.01 526.28,-257.88 515.71,-258.56 518.44,-265.01"/>
+<path fill="none" stroke="#63b8ff" d="M515.74,-261.54C492.37,-271.02 464.48,-282.24 439.25,-292.12 428.05,-296.51 416.1,-301.12 404.54,-305.53"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="516.78,-264.9 524.73,-257.89 514.15,-258.41 516.78,-264.9"/>
 </a>
 </g>
 </g>

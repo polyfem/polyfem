@@ -17,6 +17,7 @@ var namespacepolyfem_1_1io =
     [ "OutputFieldOptions", "structpolyfem_1_1io_1_1_output_field_options.html", "structpolyfem_1_1io_1_1_output_field_options" ],
     [ "OutputSample", "structpolyfem_1_1io_1_1_output_sample.html", "structpolyfem_1_1io_1_1_output_sample" ],
     [ "OutputSpace", "structpolyfem_1_1io_1_1_output_space.html", "structpolyfem_1_1io_1_1_output_space" ],
+    [ "OutputWriter", "classpolyfem_1_1io_1_1_output_writer.html", "classpolyfem_1_1io_1_1_output_writer" ],
     [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
     [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
     [ "ResourceIO", "classpolyfem_1_1io_1_1_resource_i_o.html", "classpolyfem_1_1io_1_1_resource_i_o" ],

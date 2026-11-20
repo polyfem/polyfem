@@ -1,27 +1,11 @@
 <map id="polyfem::compute_diplacement_grad" name="polyfem::compute_diplacement_grad">
-<area shape="rect" id="Node000001" title=" " alt="" coords="781,406,1046,434"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_fixed_corotational.html#a9f8b766502ad83a7e9345d81cf2c5ecf" title=" " alt="" coords="525,5,690,67"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="902,390,882,328,848,245,825,200,798,157,767,116,732,81,712,67,691,57,690,52,714,63,735,77,771,113,803,154,830,198,853,242,887,326,907,392"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a8e39b2fa1376df8ddcdaa09652f5b313" title=" " alt="" coords="522,91,693,152"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="897,392,873,345,837,284,789,221,762,192,732,166,693,145,693,139,735,162,765,188,793,217,841,281,878,342,903,393"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a60e20e2f9e48e07ccb73e137827db20c" title=" " alt="" coords="482,176,733,238"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="889,394,824,325,780,286,732,252,712,241,712,235,735,247,783,282,828,321,894,395"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_inversion_barrier.html#a41dc29cb0d4bc2a0b57e22f132fd2d05" title=" " alt="" coords="529,261,686,323"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="869,400,732,337,687,320,686,315,734,332,874,399"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_linear_elasticity.html#a73b0200a86f253dd7e1cb70bb696041f" title=" " alt="" coords="529,347,686,408"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="792,404,687,391,686,386,797,403"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#af5693acfc8336d6856f4e32ddfcda866" title=" " alt="" coords="494,432,721,494"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="792,438,723,449,721,444,797,436"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a924a4d34d3f3e07d952e32158a91519b" title=" " alt="" coords="522,517,694,579"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="874,440,734,508,695,523,693,518,732,503,869,442"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#ad9229f650690cd16f0e0eff90c5653f0" title=" " alt="" coords="524,603,691,664"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="894,444,828,519,783,559,735,593,693,613,691,608,732,589,780,554,824,515,889,447"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#affc7f6362343c3c2e1c3d432e99a7c61" title=" " alt="" coords="512,688,703,750"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="902,446,878,498,841,560,793,623,765,652,735,678,705,696,703,691,732,674,762,649,789,620,837,557,873,496,898,450"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a906d00bf6e4dc1a50226ea11dec44706" title="Grown&#45;material stresses and energy density (GrowthElasticity::grown_stresses) at local points of elem..." alt="" coords="512,773,703,835"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="907,447,887,514,853,598,830,643,803,687,771,727,735,764,704,783,702,778,732,759,767,724,798,683,825,640,848,596,882,512,903,451"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a7f650254bb6487338e3496f88e41727b" title="The elastic base evaluates von_mises, cauchy_stess_*, pk1_stess_*, pk2_stess_* (and the *_avg variant..." alt="" coords="244,773,434,835"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="494,804,434,807,434,802,500,804"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a16fae96d47838721f4cb65b32d9d14b0" title="Get the output fields of the variational formulation, for output purposes." alt="" coords="5,773,196,835"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="225,804,196,807,196,802,231,804"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="721,65,986,93"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#affc7f6362343c3c2e1c3d432e99a7c61" title=" " alt="" coords="482,5,673,67"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="742,62,674,54,674,48,747,62"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a906d00bf6e4dc1a50226ea11dec44706" title="Grown&#45;material stresses and energy density (GrowthElasticity::grown_stresses) at local points of elem..." alt="" coords="482,91,673,152"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="747,95,674,109,673,104,742,96"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a7f650254bb6487338e3496f88e41727b" title="The elastic base evaluates von_mises, cauchy_stess_*, pk1_stess_*, pk2_stess_* (and the *_avg variant..." alt="" coords="244,91,434,152"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="464,122,434,124,434,119,469,121"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a16fae96d47838721f4cb65b32d9d14b0" title="Get the output fields of the variational formulation, for output purposes." alt="" coords="5,91,196,152"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="225,122,196,124,196,119,231,121"/>
 </map>

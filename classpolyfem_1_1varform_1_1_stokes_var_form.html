@@ -197,6 +197,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2bb8e37a98fa8708c2a51c16b03d0b09 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a2bb8e37a98fa8708c2a51c16b03d0b09"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2bb8e37a98fa8708c2a51c16b03d0b09">is_contact_enabled</a> () const</td></tr>
 <tr class="memdesc:a2bb8e37a98fa8708c2a51c16b03d0b09 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if contact is enabled for the variational formulation, for output purposes.  <br /></td></tr>
 <tr class="separator:a2bb8e37a98fa8708c2a51c16b03d0b09 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a709c65e9022b7500011b21444beadb24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a709c65e9022b7500011b21444beadb24">should_save_timestep</a> (int step) const</td></tr>
+<tr class="memdesc:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the output index and frame selection include this timestep.  <br /></td></tr>
+<tr class="separator:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a2eaff77c791de961aef5b005b4fc6818"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">io::OutRuntimeData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2eaff77c791de961aef5b005b4fc6818">output_timings</a> () const</td></tr>
 <tr class="memdesc:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the runtime timings of the variational formulation, for output purposes.  <br /></td></tr>
 <tr class="separator:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,6 +219,9 @@ Private Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html">polyfem::varform::FluidVarForm</a></td></tr>
+<tr class="memitem:a0332f6fcef78ee8bec36b05837f93117 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form" id="r_a0332f6fcef78ee8bec36b05837f93117"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">io::OutputFieldFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html#a0332f6fcef78ee8bec36b05837f93117">snapshot_output_fields</a> (const Eigen::MatrixXd &amp;solution, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">io::OutGeometryData::ExportOptions</a> &amp;opts, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">io::OutputSpace</a> &amp;space, double time, double <a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html#aade39e0e35b44283511542d0c566b5a5">dt</a>) const override</td></tr>
+<tr class="memdesc:a0332f6fcef78ee8bec36b05837f93117 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture mutable timestep data for deferred field evaluation.  <br /></td></tr>
+<tr class="separator:a0332f6fcef78ee8bec36b05837f93117 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45e4f4d19d9f2e1de67a2c1a421efcd6 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form" id="r_a45e4f4d19d9f2e1de67a2c1a421efcd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html#a45e4f4d19d9f2e1de67a2c1a421efcd6">reset</a> () override</td></tr>
 <tr class="separator:a45e4f4d19d9f2e1de67a2c1a421efcd6 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afddeb23cdba7a701866f71d523f0fcf5 inherit pro_methods_classpolyfem_1_1varform_1_1_fluid_var_form" id="r_afddeb23cdba7a701866f71d523f0fcf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_fluid_var_form.html#afddeb23cdba7a701866f71d523f0fcf5">load_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ac0b26aef4fc50f8ce54ab37cdd5fd7f1">args</a>) override</td></tr>
@@ -281,8 +287,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ab87eb3bfdb267b524bd49a988d9e089b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abba5b9870e96ce5186322429099a4fc7 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_abba5b9870e96ce5186322429099a4fc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#abba5b9870e96ce5186322429099a4fc7">save_timestep</a> (const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &amp;solution) const</td></tr>
 <tr class="separator:abba5b9870e96ce5186322429099a4fc7 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac911a0828f86567a9a023510c909ead inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aac911a0828f86567a9a023510c909ead"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aac911a0828f86567a9a023510c909ead">save_timestep_to_vtm</a> (const double time, const int t, const double dt, const Eigen::MatrixXd &amp;solution, paraviewo::VTMWriter &amp;vtm, const std::string &amp;block_prefix) const</td></tr>
-<tr class="separator:aac911a0828f86567a9a023510c909ead inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de3a1f8680b1cb42a88cb4debe66530 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a8de3a1f8680b1cb42a88cb4debe66530"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a8de3a1f8680b1cb42a88cb4debe66530">save_timestep_to_vtm</a> (const double time, const int t, const double dt, const Eigen::MatrixXd &amp;solution, paraviewo::VTMWriter &amp;vtm, const std::string &amp;block_prefix, <a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#aced07963d46c92a65778326919164dc0">io::OutGeometryData::WriteJobs</a> *writes=nullptr) const</td></tr>
+<tr class="separator:a8de3a1f8680b1cb42a88cb4debe66530 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a788be52ab82d4d9ac4de029d5130b17b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a788be52ab82d4d9ac4de029d5130b17b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a788be52ab82d4d9ac4de029d5130b17b">save_subsolve</a> (const int i, const int t, const Eigen::MatrixXd &amp;solution) const</td></tr>
 <tr class="separator:a788be52ab82d4d9ac4de029d5130b17b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15e77b1708474f9bee1b61bb8fe91fd2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a15e77b1708474f9bee1b61bb8fe91fd2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a15e77b1708474f9bee1b61bb8fe91fd2">output_file_index</a> (const int t) const</td></tr>
@@ -295,6 +301,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a680d175625ed4b88833f95881e4b617d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a81492d606792c300663ccfb2ae377d28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">io::OutputFieldFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81492d606792c300663ccfb2ae377d28">output_field_function</a> (const Eigen::MatrixXd &amp;solution, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">io::OutGeometryData::ExportOptions</a> &amp;opts) const</td></tr>
 <tr class="separator:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad643fc7e130bb231931f7c14530d54ff inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ad643fc7e130bb231931f7c14530d54ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ad643fc7e130bb231931f7c14530d54ff">flush_output</a> () const</td></tr>
+<tr class="separator:ad643fc7e130bb231931f7c14530d54ff inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classpolyfem_1_1varform_1_1_var_form')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html">polyfem::varform::VarForm</a></td></tr>
 <tr class="memitem:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a25b2ecc05f22686e33c81a9ae03729f3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a25b2ecc05f22686e33c81a9ae03729f3">rebuild_node_positions</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; int &gt; &amp;node_ids, std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;positions)</td></tr>
 <tr class="separator:a25b2ecc05f22686e33c81a9ae03729f3 inherit pro_static_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -374,6 +382,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a6c1a49dde611f98fe2e2b9627dc6f034 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76c3561877fd82034b666a00df46c22b inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a76c3561877fd82034b666a00df46c22b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b">output_sampler_initialized_</a> = false</td></tr>
 <tr class="separator:a76c3561877fd82034b666a00df46c22b inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a621ca5931b2d6c4653b1365804e91ced inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a621ca5931b2d6c4653b1365804e91ced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1io_1_1_output_writer.html">io::OutputWriter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a621ca5931b2d6c4653b1365804e91ced">output_writer_</a> = nullptr</td></tr>
+<tr class="separator:a621ca5931b2d6c4653b1365804e91ced inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a81f258e8e3dd396ad29ecb70164ff060"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81f258e8e3dd396ad29ecb70164ff060">prepared_</a> = false</td></tr>
 <tr class="separator:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36b6dc70b99a307dc64745eebe993714 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a36b6dc70b99a307dc64745eebe993714"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a36b6dc70b99a307dc64745eebe993714">output_index_offset_</a> = 0</td></tr>
@@ -383,7 +393,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00104">104</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00108">108</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a91d7640579a9bb6f89852ba5a89aa359" name="a91d7640579a9bb6f89852ba5a89aa359"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a91d7640579a9bb6f89852ba5a89aa359">&#9670;&#160;</a></span>name()</h2>
@@ -413,7 +423,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a27a2d1bc03a19813a99f138389271e1d">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00108">108</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8hpp_source.html#l00112">112</a> of file <a class="el" href="_fluid_var_form_8hpp_source.html">FluidVarForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -459,7 +469,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a9b461af2bb4fe5af89f4b6976d3d798a">polyfem::varform::VarForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00955">955</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00966">966</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>.</p>
 <div class="dynheader">
@@ -494,7 +504,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00873">873</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00884">884</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">
@@ -529,7 +539,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00890">890</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fluid_var_form_8cpp_source.html#l00901">901</a> of file <a class="el" href="_fluid_var_form_8cpp_source.html">FluidVarForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00134">polyfem::time_integrator::ImplicitTimeIntegrator::construct_bdf_integrator()</a>, <a class="el" href="_var_form_utils_8hpp_source.html#l00079">polyfem::varform::internal::expand_primary_matrix()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00068">space_</a>.</p>
 <div class="dynheader">

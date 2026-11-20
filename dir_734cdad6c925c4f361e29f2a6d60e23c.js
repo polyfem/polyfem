@@ -18,6 +18,8 @@ var dir_734cdad6c925c4f361e29f2a6d60e23c =
     [ "OutData.cpp", "_out_data_8cpp.html", "_out_data_8cpp" ],
     [ "OutData.hpp", "_out_data_8hpp.html", "_out_data_8hpp" ],
     [ "OutputData.hpp", "_output_data_8hpp.html", "_output_data_8hpp" ],
+    [ "OutputWriter.cpp", "_output_writer_8cpp.html", "_output_writer_8cpp" ],
+    [ "OutputWriter.hpp", "_output_writer_8hpp.html", "_output_writer_8hpp" ],
     [ "OutStatsData.hpp", "_out_stats_data_8hpp.html", "_out_stats_data_8hpp" ],
     [ "ResourceIO.cpp", "_resource_i_o_8cpp.html", "_resource_i_o_8cpp" ],
     [ "ResourceIO.hpp", "_resource_i_o_8hpp.html", "_resource_i_o_8hpp" ],

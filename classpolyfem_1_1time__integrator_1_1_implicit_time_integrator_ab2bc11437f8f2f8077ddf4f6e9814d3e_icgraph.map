@@ -1,17 +1,23 @@
 <map id="polyfem::time_integrator::ImplicitTimeIntegrator::a_prev" name="polyfem::time_integrator::ImplicitTimeIntegrator::a_prev">
-<area shape="rect" id="Node000001" title="Get the most recent previous acceleration value." alt="" coords="502,133,686,195"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,5,454,67"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="530,125,453,81,431,70,431,65,455,76,535,124"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,91,454,152"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="484,146,454,142,454,137,489,145"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="259,176,443,238"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="484,184,444,193,443,188,489,182"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="254,262,448,306"/>
-<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="538,203,455,252,427,264,425,259,453,247,533,204"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,91,200,152"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="242,74,196,92,193,88,247,71"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="230,123,201,124,199,119,234,120"/>
-<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="242,171,195,156,194,150,247,170"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="10,176,195,238"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="240,208,195,209,195,204,245,206"/>
+<area shape="rect" id="Node000001" title="Get the most recent previous acceleration value." alt="" coords="514,176,698,238"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="260,5,466,67"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="564,165,519,123,465,81,446,70,446,65,467,77,522,119,569,165"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="260,91,466,152"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="499,171,453,156,453,150,505,170"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="271,176,455,238"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="496,207,456,209,455,204,501,206"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a89409f327e22cf1e1787695a5dd0d514" title=" " alt="" coords="267,261,459,323"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="505,242,454,263,452,258,500,244"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="266,347,460,392"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="570,248,523,296,467,337,443,349,442,344,465,333,520,292,565,250"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="11,91,206,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="253,74,204,92,201,88,257,71"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="241,123,207,124,205,119,246,120"/>
+<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="254,172,203,156,202,150,259,170"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="16,176,201,238"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="253,208,202,209,200,204,258,206"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1varform_1_1_linear_elastic_var_form.html#abe99ecc03b79cc665b5c2f76078b4ebd" title="Capture mutable timestep data for deferred field evaluation." alt="" coords="16,261,201,323"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="249,293,202,295,201,290,254,291"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#adf6593750cc088e55ecae4d094f579ff" title="Capture mutable timestep data for deferred field evaluation." alt="" coords="5,347,212,408"/>
+<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="257,328,204,349,202,343,252,329"/>
 </map>

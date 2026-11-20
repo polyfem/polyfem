@@ -6,6 +6,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a170fd8f2d527aa132ce70288b80c9b32", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_multi_model.html#ab242fe537541a4cfdb4698754a026fa0", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_multi_model.html#a752227101e924df55c7542b2d7e60e0d", null ],
+    [ "compute_output_values", "classpolyfem_1_1assembler_1_1_multi_model.html#a07929a91895144f64d68f8d3edd7f707", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_multi_model.html#a04885b411d242a2e7d5a8587e5e7740a", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_multi_model.html#acdfedffa2ba1301ba1da351dd23a0d53", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_multi_model.html#abc01d2a6415dac7ebc4475203344066a", null ],

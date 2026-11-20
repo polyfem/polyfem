@@ -238,6 +238,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e8e86b5349866a95738d5950732b4bd inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a6e8e86b5349866a95738d5950732b4bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a6e8e86b5349866a95738d5950732b4bd">problem_dimension</a> () const</td></tr>
 <tr class="memdesc:a6e8e86b5349866a95738d5950732b4bd inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the problem dimension of the variational formulation, for output purposes.  <br /></td></tr>
 <tr class="separator:a6e8e86b5349866a95738d5950732b4bd inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a709c65e9022b7500011b21444beadb24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a709c65e9022b7500011b21444beadb24">should_save_timestep</a> (int step) const</td></tr>
+<tr class="memdesc:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the output index and frame selection include this timestep.  <br /></td></tr>
+<tr class="separator:a709c65e9022b7500011b21444beadb24 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a2eaff77c791de961aef5b005b4fc6818"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">io::OutRuntimeData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a2eaff77c791de961aef5b005b4fc6818">output_timings</a> () const</td></tr>
 <tr class="memdesc:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the runtime timings of the variational formulation, for output purposes.  <br /></td></tr>
 <tr class="separator:a2eaff77c791de961aef5b005b4fc6818 inherit pub_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -384,8 +387,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:ab87eb3bfdb267b524bd49a988d9e089b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abba5b9870e96ce5186322429099a4fc7 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_abba5b9870e96ce5186322429099a4fc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#abba5b9870e96ce5186322429099a4fc7">save_timestep</a> (const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &amp;solution) const</td></tr>
 <tr class="separator:abba5b9870e96ce5186322429099a4fc7 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac911a0828f86567a9a023510c909ead inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_aac911a0828f86567a9a023510c909ead"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#aac911a0828f86567a9a023510c909ead">save_timestep_to_vtm</a> (const double time, const int t, const double dt, const Eigen::MatrixXd &amp;solution, paraviewo::VTMWriter &amp;vtm, const std::string &amp;block_prefix) const</td></tr>
-<tr class="separator:aac911a0828f86567a9a023510c909ead inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de3a1f8680b1cb42a88cb4debe66530 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a8de3a1f8680b1cb42a88cb4debe66530"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a8de3a1f8680b1cb42a88cb4debe66530">save_timestep_to_vtm</a> (const double time, const int t, const double dt, const Eigen::MatrixXd &amp;solution, paraviewo::VTMWriter &amp;vtm, const std::string &amp;block_prefix, <a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html#aced07963d46c92a65778326919164dc0">io::OutGeometryData::WriteJobs</a> *writes=nullptr) const</td></tr>
+<tr class="separator:a8de3a1f8680b1cb42a88cb4debe66530 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a788be52ab82d4d9ac4de029d5130b17b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a788be52ab82d4d9ac4de029d5130b17b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a788be52ab82d4d9ac4de029d5130b17b">save_subsolve</a> (const int i, const int t, const Eigen::MatrixXd &amp;solution) const</td></tr>
 <tr class="separator:a788be52ab82d4d9ac4de029d5130b17b inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15e77b1708474f9bee1b61bb8fe91fd2 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a15e77b1708474f9bee1b61bb8fe91fd2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a15e77b1708474f9bee1b61bb8fe91fd2">output_file_index</a> (const int t) const</td></tr>
@@ -398,6 +401,11 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a680d175625ed4b88833f95881e4b617d inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a81492d606792c300663ccfb2ae377d28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">io::OutputFieldFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81492d606792c300663ccfb2ae377d28">output_field_function</a> (const Eigen::MatrixXd &amp;solution, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">io::OutGeometryData::ExportOptions</a> &amp;opts) const</td></tr>
 <tr class="separator:a81492d606792c300663ccfb2ae377d28 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766c92e4c494241fb9f9417162d7e7a8 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_a766c92e4c494241fb9f9417162d7e7a8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem_1_1io.html#a9a21cecad478381d63cff4bed31016fc">io::OutputFieldFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a766c92e4c494241fb9f9417162d7e7a8">snapshot_output_fields</a> (const Eigen::MatrixXd &amp;solution, const <a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">io::OutGeometryData::ExportOptions</a> &amp;opts, const <a class="el" href="structpolyfem_1_1io_1_1_output_space.html">io::OutputSpace</a> &amp;space, double time, double dt) const</td></tr>
+<tr class="memdesc:a766c92e4c494241fb9f9417162d7e7a8 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture mutable timestep data for deferred field evaluation.  <br /></td></tr>
+<tr class="separator:a766c92e4c494241fb9f9417162d7e7a8 inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad643fc7e130bb231931f7c14530d54ff inherit pro_methods_classpolyfem_1_1varform_1_1_var_form" id="r_ad643fc7e130bb231931f7c14530d54ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#ad643fc7e130bb231931f7c14530d54ff">flush_output</a> () const</td></tr>
+<tr class="separator:ad643fc7e130bb231931f7c14530d54ff inherit pro_methods_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -466,6 +474,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a6c1a49dde611f98fe2e2b9627dc6f034 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76c3561877fd82034b666a00df46c22b inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a76c3561877fd82034b666a00df46c22b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b">output_sampler_initialized_</a> = false</td></tr>
 <tr class="separator:a76c3561877fd82034b666a00df46c22b inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a621ca5931b2d6c4653b1365804e91ced inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a621ca5931b2d6c4653b1365804e91ced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1io_1_1_output_writer.html">io::OutputWriter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a621ca5931b2d6c4653b1365804e91ced">output_writer_</a> = nullptr</td></tr>
+<tr class="separator:a621ca5931b2d6c4653b1365804e91ced inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a81f258e8e3dd396ad29ecb70164ff060"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a81f258e8e3dd396ad29ecb70164ff060">prepared_</a> = false</td></tr>
 <tr class="separator:a81f258e8e3dd396ad29ecb70164ff060 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36b6dc70b99a307dc64745eebe993714 inherit pro_attribs_classpolyfem_1_1varform_1_1_var_form" id="r_a36b6dc70b99a307dc64745eebe993714"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1varform_1_1_var_form.html#a36b6dc70b99a307dc64745eebe993714">output_index_offset_</a> = 0</td></tr>
@@ -552,7 +562,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00110">110</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00185">polyfem::varform::VarForm::n_boundary_samples()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00187">polyfem::varform::VarForm::n_boundary_samples()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -619,7 +629,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00038">38</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00271">polyfem::varform::VarForm::args</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00284">polyfem::varform::VarForm::args</a>.</p>
 
 </div>
 </div>
@@ -650,7 +660,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00037">37</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00271">polyfem::varform::VarForm::args</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00284">polyfem::varform::VarForm::args</a>.</p>
 
 </div>
 </div>
@@ -681,7 +691,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00040">40</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00281">polyfem::varform::VarForm::mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00294">polyfem::varform::VarForm::mesh_</a>.</p>
 
 </div>
 </div>
@@ -712,7 +722,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00269">polyfem::varform::VarForm::problem</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00282">polyfem::varform::VarForm::problem</a>.</p>
 
 </div>
 </div>
@@ -743,7 +753,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00046">46</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00269">polyfem::varform::VarForm::problem</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00282">polyfem::varform::VarForm::problem</a>.</p>
 
 </div>
 </div>
@@ -774,7 +784,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00063">63</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00270">polyfem::varform::VarForm::units</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00283">polyfem::varform::VarForm::units</a>.</p>
 
 </div>
 </div>
@@ -805,7 +815,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00093">93</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00286">polyfem::varform::VarForm::output_sampler_initialized_</a>, <a class="el" href="_var_form_8hpp_source.html#l00287">polyfem::varform::VarForm::prepared_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">polyfem::varform::ScalarVarForm::rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">polyfem::varform::ScalarVarForm::solve_data_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00093">polyfem::varform::ScalarVarForm::time_integrator</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00299">polyfem::varform::VarForm::output_sampler_initialized_</a>, <a class="el" href="_var_form_8hpp_source.html#l00301">polyfem::varform::VarForm::prepared_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">polyfem::varform::ScalarVarForm::rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">polyfem::varform::ScalarVarForm::solve_data_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00093">polyfem::varform::ScalarVarForm::time_integrator</a>.</p>
 
 </div>
 </div>
@@ -836,7 +846,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00102">102</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00287">polyfem::varform::VarForm::prepared_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">polyfem::varform::ScalarVarForm::rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">polyfem::varform::ScalarVarForm::solve_data_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00093">polyfem::varform::ScalarVarForm::time_integrator</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00301">polyfem::varform::VarForm::prepared_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00053">polyfem::varform::ScalarVarForm::rhs_assembler_</a>, <a class="el" href="_scalar_var_form_8hpp_source.html#l00062">polyfem::varform::ScalarVarForm::solve_data_</a>, and <a class="el" href="_scalar_var_form_8hpp_source.html#l00093">polyfem::varform::ScalarVarForm::time_integrator</a>.</p>
 
 </div>
 </div>
@@ -870,7 +880,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00064">64</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00116">polyfem::varform::VarForm::is_contact_enabled()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00121">polyfem::varform::VarForm::is_contact_enabled()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -999,7 +1009,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00087">87</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00281">polyfem::varform::VarForm::mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8hpp_source.html#l00294">polyfem::varform::VarForm::mesh_</a>.</p>
 
 </div>
 </div>
@@ -1070,7 +1080,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00058">58</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l01129">polyfem::varform::VarForm::resolve_output_path()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l01210">polyfem::varform::VarForm::resolve_output_path()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1106,7 +1116,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00019">19</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00266">polyfem::varform::VarForm::prepare()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00271">polyfem::varform::VarForm::prepare()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1227,7 +1237,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00024">24</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00066">polyfem::varform::ScalarVarForm::dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00834">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="_var_form_8cpp_source.html#l00848">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_var_form_8cpp_source.html#l00857">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00285">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00394">polyfem::varform::ScalarVarForm::output_space()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02327">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
+<p class="reference">References <a class="el" href="_scalar_var_form_8hpp_source.html#l00066">polyfem::varform::ScalarVarForm::dt</a>, <a class="el" href="_var_form_8cpp_source.html#l00863">polyfem::varform::VarForm::ensure_output_sampler()</a>, <a class="el" href="_var_form_8cpp_source.html#l00877">polyfem::varform::VarForm::export_options()</a>, <a class="el" href="_var_form_8cpp_source.html#l00886">polyfem::varform::VarForm::output_field_function()</a>, <a class="el" href="_var_form_8hpp_source.html#l00298">polyfem::varform::VarForm::output_geometry_</a>, <a class="el" href="_scalar_var_form_8cpp_source.html#l00394">polyfem::varform::ScalarVarForm::output_space()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02351">polyfem::io::OutGeometryData::save_vtu()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1286,7 +1296,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html#l00010">10</a> of file <a class="el" href="_differentiable_scalar_var_form_8cpp_source.html">DifferentiableScalarVarForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00606">polyfem::varform::VarForm::solve()</a>.</p>
+<p class="reference">References <a class="el" href="_var_form_8cpp_source.html#l00611">polyfem::varform::VarForm::solve()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

@@ -26,5 +26,6 @@ var searchData=
   ['output_5findex_5foffset_5f_23',['output_index_offset_',['../classpolyfem_1_1varform_1_1_var_form.html#a36b6dc70b99a307dc64745eebe993714',1,'polyfem::varform::VarForm']]],
   ['output_5forders_24',['output_orders',['../structpolyfem_1_1io_1_1_output_space.html#a226c380d13b5aba61732865b4a3d1dca',1,'polyfem::io::OutputSpace']]],
   ['output_5fpath_25',['output_path',['../classpolyfem_1_1varform_1_1_var_form.html#ab60cc205e46c8d92bd259685514cf45d',1,'polyfem::varform::VarForm']]],
-  ['output_5fsampler_5finitialized_5f_26',['output_sampler_initialized_',['../classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b',1,'polyfem::varform::VarForm']]]
+  ['output_5fsampler_5finitialized_5f_26',['output_sampler_initialized_',['../classpolyfem_1_1varform_1_1_var_form.html#a76c3561877fd82034b666a00df46c22b',1,'polyfem::varform::VarForm']]],
+  ['output_5fwriter_5f_27',['output_writer_',['../classpolyfem_1_1varform_1_1_var_form.html#a621ca5931b2d6c4653b1365804e91ced',1,'polyfem::varform::VarForm']]]
 ];

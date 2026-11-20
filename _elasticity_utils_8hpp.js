@@ -25,6 +25,7 @@ var _elasticity_utils_8hpp =
     [ "pk2_from_cauchy", "_elasticity_utils_8hpp.html#a2e0e4c0eef41d449e66abee527fc8e13", null ],
     [ "second_invariant", "_elasticity_utils_8hpp.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],
     [ "third_invariant", "_elasticity_utils_8hpp.html#a4d8e2f58cbf23bf646a53391b4fddf57", null ],
+    [ "von_mises_stress_for_stress_tensor", "_elasticity_utils_8hpp.html#a8439dc0b0d1687027f0e8be988ace28a", null ],
     [ "von_mises_stress_for_stress_tensor", "_elasticity_utils_8hpp.html#a99d54b5136c9fd5b53151e3ae47bad34", null ],
     [ "BIG_N", "_elasticity_utils_8hpp.html#a7e39c0bd50dd86944f79d8ddcad979a4", null ],
     [ "SMALL_N", "_elasticity_utils_8hpp.html#a2774a3b2b263711052f94245eb59bc04", null ]

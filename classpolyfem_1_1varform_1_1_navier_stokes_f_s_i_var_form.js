@@ -25,6 +25,7 @@ var classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form =
     [ "reset", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#ab30814831e610b491668cb32fd80c017", null ],
     [ "save_fsi_timestep", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a91eaf766fc2594f3e6a762bdd2edf243", null ],
     [ "serialize_checkpoint", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a42f24dc4b94157ec0fb595ee90daa3fd", null ],
+    [ "snapshot_output_fields", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a6986013857e9741f251c71888c45d206", null ],
     [ "solid_displacement_ndof", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#aedcf2d896bb766070ec925d75d45e1b3", null ],
     [ "solid_displacement_offset", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a0f53c58ad66be8bf61052b5c329ade94", null ],
     [ "solid_varform_args", "classpolyfem_1_1varform_1_1_navier_stokes_f_s_i_var_form.html#a16816d6941e54f323d8f09250794904e", null ],

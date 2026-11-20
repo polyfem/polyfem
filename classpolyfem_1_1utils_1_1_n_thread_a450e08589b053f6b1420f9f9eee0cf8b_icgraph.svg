@@ -58,8 +58,8 @@ var sectionId = 'dynsection-0';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="712,-109.12 559.5,-109.12 559.5,-88.38 712,-88.38 712,-109.12"/>
-<text xml:space="preserve" text-anchor="middle" x="635.75" y="-95.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::NThread::get</text>
+<polygon fill="#999999" stroke="#666666" points="712,-131.12 559.5,-131.12 559.5,-110.38 712,-110.38 712,-131.12"/>
+<text xml:space="preserve" text-anchor="middle" x="635.75" y="-117.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::NThread::get</text>
 </a>
 </g>
 </g>
@@ -67,9 +67,9 @@ var sectionId = 'dynsection-0';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="512.62,-160.5 407.38,-160.5 407.38,-127 512.62,-127 512.62,-160.5"/>
-<text xml:space="preserve" text-anchor="start" x="415.38" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::get</text>
-<text xml:space="preserve" text-anchor="middle" x="460" y="-134.25" font-family="Helvetica,sans-Serif" font-size="10.00">_n_threads</text>
+<polygon fill="white" stroke="#666666" points="512.62,-182.5 407.38,-182.5 407.38,-149 512.62,-149 512.62,-182.5"/>
+<text xml:space="preserve" text-anchor="start" x="415.38" y="-169" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::get</text>
+<text xml:space="preserve" text-anchor="middle" x="460" y="-156.25" font-family="Helvetica,sans-Serif" font-size="10.00">_n_threads</text>
 </a>
 </g>
 </g>
@@ -77,36 +77,17 @@ var sectionId = 'dynsection-0';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M582.01,-112.41C560.08,-118.09 534.69,-124.66 512.85,-130.32"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="582.86,-115.8 591.67,-109.91 581.11,-109.03 582.86,-115.8"/>
-</a>
-</g>
-</g>
-<!-- Node10 -->
-<g id="Node000010" class="node">
-<title>Node10</title>
-<g id="a_Node000010"><a xlink:href="classpolyfem_1_1_opt_state.html#a1bdd4da10abe6727d616a0028ec03884" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="523.5,-109.12 396.5,-109.12 396.5,-88.38 523.5,-88.38 523.5,-109.12"/>
-<text xml:space="preserve" text-anchor="middle" x="460" y="-95.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::OptState::init</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node10 -->
-<g id="edge9_Node000001_Node000010" class="edge">
-<title>Node1&#45;&gt;Node10</title>
-<g id="a_edge9_Node000001_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M547.74,-98.75C539.73,-98.75 531.71,-98.75 523.97,-98.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="547.53,-102.25 557.53,-98.75 547.53,-95.25 547.53,-102.25"/>
+<path fill="none" stroke="#63b8ff" d="M582.01,-134.41C560.08,-140.09 534.69,-146.66 512.85,-152.32"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="582.86,-137.8 591.67,-131.91 581.11,-131.03 582.86,-137.8"/>
 </a>
 </g>
 </g>
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="514.5,-70.5 405.5,-70.5 405.5,-37 514.5,-37 514.5,-70.5"/>
-<text xml:space="preserve" text-anchor="start" x="413.5" y="-57" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::set</text>
-<text xml:space="preserve" text-anchor="middle" x="460" y="-44.25" font-family="Helvetica,sans-Serif" font-size="10.00">_max_threads</text>
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1_opt_state.html#a1bdd4da10abe6727d616a0028ec03884" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="523.5,-131.12 396.5,-131.12 396.5,-110.38 523.5,-110.38 523.5,-131.12"/>
+<text xml:space="preserve" text-anchor="middle" x="460" y="-117.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::OptState::init</text>
 </a>
 </g>
 </g>
@@ -114,17 +95,37 @@ var sectionId = 'dynsection-0';
 <g id="edge10_Node000001_Node000011" class="edge">
 <title>Node1&#45;&gt;Node11</title>
 <g id="a_edge10_Node000001_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M582.01,-85.09C560.72,-79.58 536.18,-73.22 514.78,-67.68"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="581.11,-88.47 591.67,-87.59 582.86,-81.7 581.11,-88.47"/>
+<path fill="none" stroke="#63b8ff" d="M547.74,-120.75C539.73,-120.75 531.71,-120.75 523.97,-120.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="547.53,-124.25 557.53,-120.75 547.53,-117.25 547.53,-124.25"/>
+</a>
+</g>
+</g>
+<!-- Node12 -->
+<g id="Node000012" class="node">
+<title>Node12</title>
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="514.5,-92.5 405.5,-92.5 405.5,-59 514.5,-59 514.5,-92.5"/>
+<text xml:space="preserve" text-anchor="start" x="413.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::set</text>
+<text xml:space="preserve" text-anchor="middle" x="460" y="-66.25" font-family="Helvetica,sans-Serif" font-size="10.00">_max_threads</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node12 -->
+<g id="edge11_Node000001_Node000012" class="edge">
+<title>Node1&#45;&gt;Node12</title>
+<g id="a_edge11_Node000001_Node000012"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M582.01,-107.09C560.72,-101.58 536.18,-95.22 514.78,-89.68"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="581.11,-110.47 591.67,-109.59 582.86,-103.7 581.11,-110.47"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="351.12,-176.12 227.12,-176.12 227.12,-155.38 351.12,-155.38 351.12,-176.12"/>
-<text xml:space="preserve" text-anchor="middle" x="289.12" y="-162.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::par_for</text>
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1io_1_1_output_writer_1_1_impl.html#ad0aaccb41d058e599a3d5aba06443df6" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="359.38,-227.5 218.88,-227.5 218.88,-194 359.38,-194 359.38,-227.5"/>
+<text xml:space="preserve" text-anchor="start" x="226.88" y="-214" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutputWriter</text>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-201.25" font-family="Helvetica,sans-Serif" font-size="10.00">::Impl::execute</text>
 </a>
 </g>
 </g>
@@ -132,18 +133,17 @@ var sectionId = 'dynsection-0';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M395.6,-152.01C381.15,-153.89 365.84,-155.89 351.48,-157.76"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="395.99,-155.49 405.45,-150.73 395.08,-148.55 395.99,-155.49"/>
+<path fill="none" stroke="#63b8ff" d="M395.9,-182.57C382.48,-186.14 368.29,-189.92 354.81,-193.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="396.73,-185.97 405.49,-180.01 394.93,-179.2 396.73,-185.97"/>
 </a>
 </g>
 </g>
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3" target="_top" xlink:title="saves the output statistic to a json object">
-<polygon fill="white" stroke="#666666" points="360.5,-137.5 217.75,-137.5 217.75,-104 360.5,-104 360.5,-137.5"/>
-<text xml:space="preserve" text-anchor="start" x="225.75" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutStatsData</text>
-<text xml:space="preserve" text-anchor="middle" x="289.12" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">::save_json</text>
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="351.12,-176.12 227.12,-176.12 227.12,-155.38 351.12,-155.38 351.12,-176.12"/>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-162.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::par_for</text>
 </a>
 </g>
 </g>
@@ -151,121 +151,140 @@ var sectionId = 'dynsection-0';
 <g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
 <g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M395.8,-135.14C384.43,-133.59 372.51,-131.97 360.95,-130.4"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="395.07,-138.58 405.45,-136.46 396.02,-131.64 395.07,-138.58"/>
+<path fill="none" stroke="#63b8ff" d="M395.6,-165.75C381.15,-165.75 365.84,-165.75 351.48,-165.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="395.44,-169.25 405.44,-165.75 395.44,-162.25 395.44,-169.25"/>
 </a>
 </g>
 </g>
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a0cea4f98c7867ab16b0f36c4a72e1c70" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
-<polygon fill="white" stroke="#666666" points="171.62,-241.5 10.12,-241.5 10.12,-208 171.62,-208 171.62,-241.5"/>
-<text xml:space="preserve" text-anchor="start" x="18.12" y="-228" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Bilaplacian</text>
-<text xml:space="preserve" text-anchor="middle" x="90.88" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::save_json</text>
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1io_1_1_out_stats_data.html#abf8fd9a4e5461e535b11e6a470881db3" target="_top" xlink:title="saves the output statistic to a json object">
+<polygon fill="white" stroke="#666666" points="360.5,-137.5 217.75,-137.5 217.75,-104 360.5,-104 360.5,-137.5"/>
+<text xml:space="preserve" text-anchor="start" x="225.75" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutStatsData</text>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">::save_json</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node5 -->
-<g id="edge4_Node000004_Node000005" class="edge">
-<title>Node4&#45;&gt;Node5</title>
-<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M222.37,-143.43C220.78,-144.49 219.24,-145.6 217.75,-146.75 195.54,-163.97 204.57,-182.34 181.75,-198.75 177,-202.16 171.81,-205.13 166.4,-207.71"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="223.72,-146.7 230.57,-138.62 220.17,-140.66 223.72,-146.7"/>
+<!-- Node2&#45;&gt;Node5 -->
+<g id="edge4_Node000002_Node000005" class="edge">
+<title>Node2&#45;&gt;Node5</title>
+<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M395.9,-148.93C382.48,-145.36 368.29,-141.58 354.81,-137.99"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="394.93,-152.3 405.49,-151.49 396.73,-145.53 394.93,-152.3"/>
 </a>
 </g>
 </g>
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1varform_1_1_fluid_var_form.html#ab7d2123b87aee42428694eb082e6eda2" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
-<polygon fill="white" stroke="#666666" points="164.5,-189.5 17.25,-189.5 17.25,-156 164.5,-156 164.5,-189.5"/>
-<text xml:space="preserve" text-anchor="start" x="25.25" y="-176" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::FluidVar</text>
-<text xml:space="preserve" text-anchor="middle" x="90.88" y="-163.25" font-family="Helvetica,sans-Serif" font-size="10.00">Form::save_json</text>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1varform_1_1_bilaplacian_var_form.html#a0cea4f98c7867ab16b0f36c4a72e1c70" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
+<polygon fill="white" stroke="#666666" points="171.62,-241.5 10.12,-241.5 10.12,-208 171.62,-208 171.62,-241.5"/>
+<text xml:space="preserve" text-anchor="start" x="18.12" y="-228" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Bilaplacian</text>
+<text xml:space="preserve" text-anchor="middle" x="90.88" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::save_json</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node6 -->
-<g id="edge5_Node000004_Node000006" class="edge">
-<title>Node4&#45;&gt;Node6</title>
-<g id="a_edge5_Node000004_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M212.13,-140.89C193.85,-145.73 174.5,-150.86 156.77,-155.55"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="212.82,-144.33 221.59,-138.38 211.02,-137.56 212.82,-144.33"/>
+<!-- Node5&#45;&gt;Node6 -->
+<g id="edge5_Node000005_Node000006" class="edge">
+<title>Node5&#45;&gt;Node6</title>
+<g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M222.37,-143.43C220.78,-144.49 219.24,-145.6 217.75,-146.75 195.54,-163.97 204.57,-182.34 181.75,-198.75 177,-202.16 171.81,-205.13 166.4,-207.71"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="223.72,-146.7 230.57,-138.62 220.17,-140.66 223.72,-146.7"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a71e871ddf098f01260999a4a6c952617" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
-<polygon fill="white" stroke="#666666" points="181.75,-137.5 0,-137.5 0,-104 181.75,-104 181.75,-137.5"/>
-<text xml:space="preserve" text-anchor="start" x="8" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
-<text xml:space="preserve" text-anchor="middle" x="90.88" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::save_json</text>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1varform_1_1_fluid_var_form.html#ab7d2123b87aee42428694eb082e6eda2" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
+<polygon fill="white" stroke="#666666" points="164.5,-189.5 17.25,-189.5 17.25,-156 164.5,-156 164.5,-189.5"/>
+<text xml:space="preserve" text-anchor="start" x="25.25" y="-176" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::FluidVar</text>
+<text xml:space="preserve" text-anchor="middle" x="90.88" y="-163.25" font-family="Helvetica,sans-Serif" font-size="10.00">Form::save_json</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node7 -->
-<g id="edge6_Node000004_Node000007" class="edge">
-<title>Node4&#45;&gt;Node7</title>
-<g id="a_edge6_Node000004_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M205.89,-120.75C198.03,-120.75 190.03,-120.75 182.1,-120.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="205.76,-124.25 215.76,-120.75 205.76,-117.25 205.76,-124.25"/>
+<!-- Node5&#45;&gt;Node7 -->
+<g id="edge6_Node000005_Node000007" class="edge">
+<title>Node5&#45;&gt;Node7</title>
+<g id="a_edge6_Node000005_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M212.13,-140.89C193.85,-145.73 174.5,-150.86 156.77,-155.55"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="212.82,-144.33 221.59,-138.38 211.02,-137.56 212.82,-144.33"/>
 </a>
 </g>
 </g>
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a1dfde857c6ef83067e22f035d10f0346" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
-<polygon fill="white" stroke="#666666" points="166.75,-85.5 15,-85.5 15,-52 166.75,-52 166.75,-85.5"/>
-<text xml:space="preserve" text-anchor="start" x="23" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
-<text xml:space="preserve" text-anchor="middle" x="90.88" y="-59.25" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::save_json</text>
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1varform_1_1_incompressible_elastic_var_form.html#a71e871ddf098f01260999a4a6c952617" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
+<polygon fill="white" stroke="#666666" points="181.75,-137.5 0,-137.5 0,-104 181.75,-104 181.75,-137.5"/>
+<text xml:space="preserve" text-anchor="start" x="8" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Incompressible</text>
+<text xml:space="preserve" text-anchor="middle" x="90.88" y="-111.25" font-family="Helvetica,sans-Serif" font-size="10.00">ElasticVarForm::save_json</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node8 -->
-<g id="edge7_Node000004_Node000008" class="edge">
-<title>Node4&#45;&gt;Node8</title>
-<g id="a_edge7_Node000004_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M212.13,-100.61C193.85,-95.77 174.5,-90.64 156.77,-85.95"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="211.02,-103.94 221.59,-103.12 212.82,-97.17 211.02,-103.94"/>
+<!-- Node5&#45;&gt;Node8 -->
+<g id="edge7_Node000005_Node000008" class="edge">
+<title>Node5&#45;&gt;Node8</title>
+<g id="a_edge7_Node000005_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M205.89,-120.75C198.03,-120.75 190.03,-120.75 182.1,-120.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="205.76,-124.25 215.76,-120.75 205.76,-117.25 205.76,-124.25"/>
 </a>
 </g>
 </g>
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a0b197f68194c3373dda953cb87d45dc8" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1varform_1_1_operator_splitting_var_form.html#a1dfde857c6ef83067e22f035d10f0346" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
+<polygon fill="white" stroke="#666666" points="166.75,-85.5 15,-85.5 15,-52 166.75,-52 166.75,-85.5"/>
+<text xml:space="preserve" text-anchor="start" x="23" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Operator</text>
+<text xml:space="preserve" text-anchor="middle" x="90.88" y="-59.25" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingVarForm::save_json</text>
+</a>
+</g>
+</g>
+<!-- Node5&#45;&gt;Node9 -->
+<g id="edge8_Node000005_Node000009" class="edge">
+<title>Node5&#45;&gt;Node9</title>
+<g id="a_edge8_Node000005_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M212.13,-100.61C193.85,-95.77 174.5,-90.64 156.77,-85.95"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="211.02,-103.94 221.59,-103.12 212.82,-97.17 211.02,-103.94"/>
+</a>
+</g>
+</g>
+<!-- Node10 -->
+<g id="Node000010" class="node">
+<title>Node10</title>
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1varform_1_1_scalar_var_form.html#a0b197f68194c3373dda953cb87d45dc8" target="_top" xlink:title="Save the solution to a JSON file, for output purposes.">
 <polygon fill="white" stroke="#666666" points="159.62,-33.5 22.12,-33.5 22.12,0 159.62,0 159.62,-33.5"/>
 <text xml:space="preserve" text-anchor="start" x="30.12" y="-20" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::varform::Scalar</text>
 <text xml:space="preserve" text-anchor="middle" x="90.88" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">VarForm::save_json</text>
 </a>
 </g>
 </g>
-<!-- Node4&#45;&gt;Node9 -->
-<g id="edge8_Node000004_Node000009" class="edge">
-<title>Node4&#45;&gt;Node9</title>
-<g id="a_edge8_Node000004_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M252.15,-97.18C240.97,-89.6 228.7,-81.02 217.75,-72.75 201.13,-60.2 200.14,-52.52 181.75,-42.75 174.86,-39.09 167.4,-35.89 159.82,-33.11"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="250.13,-100.04 260.38,-102.71 254.03,-94.23 250.13,-100.04"/>
+<!-- Node5&#45;&gt;Node10 -->
+<g id="edge9_Node000005_Node000010" class="edge">
+<title>Node5&#45;&gt;Node10</title>
+<g id="a_edge9_Node000005_Node000010"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M222.37,-98.07C220.78,-97.01 219.24,-95.9 217.75,-94.75 195.54,-77.53 204.57,-59.16 181.75,-42.75 175.16,-38.01 167.71,-34.13 160,-30.95"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="220.17,-100.84 230.57,-102.88 223.72,-94.8 220.17,-100.84"/>
 </a>
 </g>
 </g>
-<!-- Node12 -->
-<g id="Node000012" class="node">
-<title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classpolyfem_1_1_state.html#ad12cc749a55ca2f8ac62e6f1b869e33d" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="344,-64.12 234.25,-64.12 234.25,-43.38 344,-43.38 344,-64.12"/>
-<text xml:space="preserve" text-anchor="middle" x="289.12" y="-50.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
+<!-- Node13 -->
+<g id="Node000013" class="node">
+<title>Node13</title>
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1_state.html#ad12cc749a55ca2f8ac62e6f1b869e33d" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="344,-86.12 234.25,-86.12 234.25,-65.38 344,-65.38 344,-86.12"/>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-72.62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
 </a>
 </g>
 </g>
-<!-- Node11&#45;&gt;Node12 -->
-<g id="edge11_Node000011_Node000012" class="edge">
-<title>Node11&#45;&gt;Node12</title>
-<g id="a_edge11_Node000011_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M393.96,-53.75C377.58,-53.75 360.17,-53.75 344.38,-53.75"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="393.59,-57.25 403.59,-53.75 393.59,-50.25 393.59,-57.25"/>
+<!-- Node12&#45;&gt;Node13 -->
+<g id="edge12_Node000012_Node000013" class="edge">
+<title>Node12&#45;&gt;Node13</title>
+<g id="a_edge12_Node000012_Node000013"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M393.96,-75.75C377.58,-75.75 360.17,-75.75 344.38,-75.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="393.59,-79.25 403.59,-75.75 393.59,-72.25 393.59,-79.25"/>
 </a>
 </g>
 </g>

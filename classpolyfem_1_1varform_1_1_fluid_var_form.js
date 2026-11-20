@@ -18,6 +18,7 @@ var classpolyfem_1_1varform_1_1_fluid_var_form =
     [ "reset", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a45e4f4d19d9f2e1de67a2c1a421efcd6", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_fluid_var_form.html#ab7d2123b87aee42428694eb082e6eda2", null ],
     [ "serialize_checkpoint", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a108d1f7797f4c2bc3692aaac2f1946b7", null ],
+    [ "snapshot_output_fields", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a0332f6fcef78ee8bec36b05837f93117", null ],
     [ "solve_linear_system", "classpolyfem_1_1varform_1_1_fluid_var_form.html#ad3c0b18fdf24ad9c9459ff620fd774f6", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a795641aecb60fe8ee5c0cda17e52bda2", null ],
     [ "stacked_ndof", "classpolyfem_1_1varform_1_1_fluid_var_form.html#a642b892745fd4170d050e5d60ba6ba19", null ],

@@ -187,6 +187,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab6333f36f7611b228b532c93002734cf inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb328d80ebc6fdfe1642e31bbe5a9a7 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_adfb328d80ebc6fdfe1642e31bbe5a9a7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#adfb328d80ebc6fdfe1642e31bbe5a9a7">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const</td></tr>
 <tr class="separator:adfb328d80ebc6fdfe1642e31bbe5a9a7 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a49d98c32777f8fc3b0866b76153f7885"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a49d98c32777f8fc3b0866b76153f7885">compute_output_values</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; *scalar, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; *tensor) const</td></tr>
+<tr class="memdesc:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate requested output families together using element-local scratch.  <br /></td></tr>
+<tr class="separator:a49d98c32777f8fc3b0866b76153f7885 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28bf2e9527dd0578a6023d1f46bccafd inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a28bf2e9527dd0578a6023d1f46bccafd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a28bf2e9527dd0578a6023d1f46bccafd">compute_stiffness_value</a> (const double t, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:a28bf2e9527dd0578a6023d1f46bccafd inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35f1f3a973305afdc33e3d213ddef362 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a35f1f3a973305afdc33e3d213ddef362"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a35f1f3a973305afdc33e3d213ddef362">compute_dstress_dmu_dlambda</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_opt_assembler_data.html">OptAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
@@ -236,7 +239,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00053">53</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00050">50</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a2a13b8c5fcfba431b2a3ca3d1f266de2" name="a2a13b8c5fcfba431b2a3ca3d1f266de2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2a13b8c5fcfba431b2a3ca3d1f266de2">&#9670;&#160;</a></span>add_multimaterial()</h2>
@@ -286,9 +289,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ab2531a796830dab9bc2f6761cd53c4f4">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00172">172</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00134">134</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00455">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00076">disp_size_</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00075">params_</a>, and <a class="el" href="_units_8hpp_source.html#l00027">polyfem::Units::stress()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00455">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00073">disp_size_</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00072">params_</a>, and <a class="el" href="_units_8hpp_source.html#l00027">polyfem::Units::stress()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -401,9 +404,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">polyfem::assembler::LinearAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00180">180</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00142">142</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00093">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_mat_params_8cpp_source.html#l00420">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00075">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00091">polyfem::assembler::LinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00089">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00093">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_mat_params_8cpp_source.html#l00420">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00072">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00091">polyfem::assembler::LinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00089">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -467,7 +470,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00065">65</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00062">62</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
 </div>
 </div>
@@ -496,7 +499,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00066">66</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00063">63</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
 </div>
 </div>
@@ -524,9 +527,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00063">63</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00060">60</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00075">params_</a>.</p>
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00072">params_</a>.</p>
 
 </div>
 </div>
@@ -556,9 +559,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#aaa2c54aec247b0afd91f9fa242764c8a">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00068">68</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00065">65</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00076">disp_size_</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00207">polyfem::assembler::Assembler::size_</a>.</p>
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00073">disp_size_</a>, <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00219">polyfem::assembler::Assembler::size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -588,9 +591,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00076">76</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00073">73</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00172">add_multimaterial()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00068">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00134">add_multimaterial()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00065">set_size()</a>.</p>
 
 </div>
 </div>
@@ -614,9 +617,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00075">75</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00072">72</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00172">add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00180">assemble()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00063">set_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00134">add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00142">assemble()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00060">set_params()</a>.</p>
 
 </div>
 </div>

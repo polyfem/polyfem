@@ -44,5 +44,5 @@ var searchData=
   ['volumepenalty2d_5fhessian_41',['VolumePenalty2d_hessian',['../namespacepolyfem_1_1autogen.html#a524ae82cbee9e601fbdff2d3b8013739',1,'polyfem::autogen']]],
   ['volumepenalty3d_5fgradient_42',['VolumePenalty3d_gradient',['../namespacepolyfem_1_1autogen.html#a879911e45f1b8fdcbc0941ad4b31fca2',1,'polyfem::autogen']]],
   ['volumepenalty3d_5fhessian_43',['VolumePenalty3d_hessian',['../namespacepolyfem_1_1autogen.html#aa2e754f9deee182ba2152e5c130d21d7',1,'polyfem::autogen']]],
-  ['von_5fmises_5fstress_5ffor_5fstress_5ftensor_44',['von_mises_stress_for_stress_tensor',['../namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34',1,'polyfem']]]
+  ['von_5fmises_5fstress_5ffor_5fstress_5ftensor_44',['von_mises_stress_for_stress_tensor',['../namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34',1,'polyfem::von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &amp;stress)'],['../namespacepolyfem.html#a8439dc0b0d1687027f0e8be988ace28a',1,'polyfem::von_mises_stress_for_stress_tensor(const Eigen::MatrixBase&lt; Derived &gt; &amp;stress)']]]
 ];

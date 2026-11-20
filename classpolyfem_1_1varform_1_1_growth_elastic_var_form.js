@@ -48,6 +48,7 @@ var classpolyfem_1_1varform_1_1_growth_elastic_var_form =
     [ "save_growth_increment", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a2c4ede3567e25b8e8009b4c72883c318", null ],
     [ "serialize_checkpoint", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ad942a54007599e03d89bfafc144e8126", null ],
     [ "set_threshold", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a212fc3d48f35fe26cee44246f39cfd81", null ],
+    [ "snapshot_output_fields", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#ac030fef2b346251f914c4c823a10cd06", null ],
     [ "solve_growth_increment", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a850978799112dc4f1aae2903b2565e9a", null ],
     [ "solve_growth_law", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a74140ade00b36abf7d6775cd5e507298", null ],
     [ "solve_nonlinear_step", "classpolyfem_1_1varform_1_1_growth_elastic_var_form.html#a11f328f157c3946fb9a82d826c0ef569", null ],

@@ -163,6 +163,7 @@ var namespacepolyfem =
     [ "solve_adjoint_cached", "namespacepolyfem.html#a9edd859250ccfba122602151e1bca0c9", null ],
     [ "tertrahedralize_star_shaped_surface", "namespacepolyfem.html#ac611f09144ce9acf9f55c714b4dad9b8", null ],
     [ "third_invariant", "namespacepolyfem.html#a4d8e2f58cbf23bf646a53391b4fddf57", null ],
+    [ "von_mises_stress_for_stress_tensor", "namespacepolyfem.html#a8439dc0b0d1687027f0e8be988ace28a", null ],
     [ "von_mises_stress_for_stress_tensor", "namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34", null ],
     [ "BIG_N", "namespacepolyfem.html#a7e39c0bd50dd86944f79d8ddcad979a4", null ],
     [ "SMALL_N", "namespacepolyfem.html#a2774a3b2b263711052f94245eb59bc04", null ]

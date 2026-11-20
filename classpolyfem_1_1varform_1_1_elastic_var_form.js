@@ -1,6 +1,7 @@
 var classpolyfem_1_1varform_1_1_elastic_var_form =
 [
-    [ "append_primary_output_fields", "classpolyfem_1_1varform_1_1_elastic_var_form.html#add61ef288978f6120c8e62657ca3612d", null ],
+    [ "ElasticOutputState", "structpolyfem_1_1varform_1_1_elastic_var_form_1_1_elastic_output_state.html", "structpolyfem_1_1varform_1_1_elastic_var_form_1_1_elastic_output_state" ],
+    [ "append_primary_output_fields", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a3259b1f706869b0ea6d71d9bcf6231e1", null ],
     [ "assemble_mass_mat", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a374ff1dc4f6f26c87756e140cc464391", null ],
     [ "assemble_rhs", "classpolyfem_1_1varform_1_1_elastic_var_form.html#acfa0b8da140d260ab53317c4e0517ffd", null ],
     [ "build_basis", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a0c38477ea5ba3f898623028d83e43e5c", null ],
@@ -12,7 +13,7 @@ var classpolyfem_1_1varform_1_1_elastic_var_form =
     [ "displaced_output_normals", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a44bddaf0db4a81cd26a128e624ad7874", null ],
     [ "elastic_boundary_samples", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a5a06379a11a9913f6d4bf87db504ae38", null ],
     [ "elastic_node_to_primitive", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a503b0e401d3b1fc3c06e73c25356b759", null ],
-    [ "elastic_output_fields", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a7ae83b9a29866453230fa0e7445b52c4", null ],
+    [ "elastic_output_fields", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a5ec4cd338567178af75b7e21e4f77d7b", null ],
     [ "elastic_primitive_to_node", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a315484c05672257dacc05d71fa684f03", null ],
     [ "export_data", "classpolyfem_1_1varform_1_1_elastic_var_form.html#afda018390b13508e6c84f9cd58ee8729", null ],
     [ "init", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a3e2f168df3b17008b4db88beedcda9e0", null ],
@@ -26,6 +27,7 @@ var classpolyfem_1_1varform_1_1_elastic_var_form =
     [ "save_elastic_step_state", "classpolyfem_1_1varform_1_1_elastic_var_form.html#aa304babf83d46736c20376545e7e4dda", null ],
     [ "save_json", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a1ae4771f6a074ba8f244f537a0e9a7f2", null ],
     [ "serialize_checkpoint", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a13f16b183b3f015cebf14678c069a82b", null ],
+    [ "snapshot_elastic_output_fields", "classpolyfem_1_1varform_1_1_elastic_var_form.html#a89409f327e22cf1e1787695a5dd0d514", null ],
     [ "VarForm", "classpolyfem_1_1varform_1_1_elastic_var_form.html#ac58047f021bd54209752b5b191bfc4d8", null ],
     [ "NavierStokesFSIVarForm", "classpolyfem_1_1varform_1_1_elastic_var_form.html#aa44d1aa2a6765e37239189db19a551c8", null ],
     [ "polyfem::test::VarFormTestAccess", "classpolyfem_1_1varform_1_1_elastic_var_form.html#ad17e1540d6687d998c9f8fd5f4696c62", null ],

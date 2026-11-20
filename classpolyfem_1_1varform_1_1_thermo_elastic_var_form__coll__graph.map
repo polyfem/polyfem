@@ -1,36 +1,38 @@
 <map id="polyfem::varform::ThermoElasticVarForm" name="polyfem::varform::ThermoElasticVarForm">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1844,262,2038,307"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html" title=" " alt="" coords="1589,188,1795,232"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1784,234,1866,262,1861,261,1783,240"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html" title=" " alt="" coords="1180,188,1367,232"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1382,207,1591,210,1586,210,1383,212"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_var_form.html" title=" " alt="" coords="786,109,983,137"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="999,126,1075,138,1151,158,1176,173,1205,187,1199,187,1173,178,1149,163,1074,143,999,132"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1844,288,2038,332"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html" title=" " alt="" coords="1589,213,1795,258"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1784,260,1866,287,1861,287,1783,265"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html" title=" " alt="" coords="1180,213,1367,258"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1382,233,1591,235,1586,235,1383,238"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1varform_1_1_var_form.html" title=" " alt="" coords="786,135,983,162"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="999,152,1075,163,1151,183,1176,198,1205,213,1199,212,1173,203,1149,188,1074,168,999,157"/>
 <area shape="rect" id="Node000005" href="$classpolyfem_1_1_units.html" title=" " alt="" coords="444,5,562,33"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="577,23,667,37,762,61,786,73,856,109,851,109,784,78,760,66,665,42,578,29"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="576,15,621,19,670,27,718,41,763,64,772,72,776,81,780,90,787,99,814,117,845,134,840,134,812,122,783,102,775,93,771,84,767,75,759,68,716,46,668,32,621,24,578,20"/>
 <area shape="rect" id="Node000006" href="$classpolyfem_1_1io_1_1_out_stats_data.html" title="all stats from polyfem" alt="" coords="408,57,598,85"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="613,79,761,98,813,108,808,109,761,103,614,85"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="613,81,762,107,846,134,841,134,760,112,613,86"/>
 <area shape="rect" id="Node000007" href="$classpolyfem_1_1io_1_1_out_runtime_data.html" title="timers from polyfem." alt="" coords="397,109,609,137"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="624,121,788,122,783,124,625,126"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="624,129,788,141,782,143,625,134"/>
 <area shape="rect" id="Node000008" href="$classpolyfem_1_1io_1_1_out_geometry_data.html" title="Utilies related to export of geometry." alt="" coords="392,161,614,189"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="629,160,761,143,811,137,806,138,761,148,630,165"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="629,168,761,160,788,160,783,161,761,165,630,174"/>
 <area shape="rect" id="Node000009" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html" title=" " alt="" coords="5,153,201,198"/>
 <area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="216,173,393,173,389,177,217,178"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="414,213,592,241"/>
-<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="606,214,683,200,760,180,813,159,856,139,861,137,815,163,762,185,684,206,608,219"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_f_e_space.html" title="A finite&#45;element space for one scalar&#45; or vector&#45;valued field." alt="" coords="785,36,983,64"/>
-<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="998,37,1117,31,1260,32,1414,44,1491,56,1565,73,1633,92,1685,112,1735,137,1796,173,1862,217,1916,262,1911,261,1859,221,1794,177,1732,142,1683,117,1632,97,1564,78,1490,61,1413,49,1260,37,1117,36,999,42"/>
-<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="973,65,1077,92,1122,108,1152,125,1162,138,1165,150,1168,162,1176,173,1194,188,1189,187,1172,177,1163,164,1160,152,1157,140,1149,129,1119,113,1075,97,973,70"/>
-<area shape="rect" id="Node000012" href="$structpolyfem_1_1varform_1_1_var_form_boundary_state.html" title="Temporary compatibility wrapper for boundary data belonging to one FE space." alt="" coords="786,217,983,262"/>
-<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="932,267,969,286,1008,299,1047,306,1078,305,1150,299,1846,287,1841,288,1150,304,1078,310,1047,311,1007,304,967,291,931,272"/>
-<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="943,208,1007,187,1051,182,1096,181,1183,191,1177,191,1096,186,1051,187,1008,192,944,213"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="804,342,964,387"/>
-<area shape="poly" id="edge18_Node000001_Node000013" title=" " alt="" coords="980,380,1098,398,1244,412,1405,416,1485,412,1564,403,1654,384,1743,358,1884,308,1890,307,1744,363,1656,389,1565,408,1486,417,1405,421,1244,417,1098,403,980,386"/>
-<area shape="poly" id="edge12_Node000003_Node000013" title=" " alt="" coords="979,348,1066,322,1109,303,1149,278,1156,270,1160,261,1164,252,1173,242,1190,234,1195,232,1176,247,1169,255,1165,264,1161,273,1152,282,1112,308,1068,327,980,353"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="1181,67,1366,94"/>
-<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="1381,91,1472,109,1566,137,1615,159,1659,187,1654,187,1613,164,1564,142,1471,114,1381,97"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_macro_strain_value.html" title=" " alt="" coords="1198,118,1349,163"/>
-<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="1365,153,1591,193,1586,193,1364,158"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_solve_data.html" title="class to store time stepping data" alt="" coords="1174,256,1373,284"/>
-<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="1388,254,1564,230,1586,229,1591,228,1565,235,1388,259"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_output_writer.html" title="Ordered output with one pending frame in addition to the active frame." alt="" coords="409,213,596,241"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="611,215,685,205,760,190,851,162,846,164,762,195,686,210,612,220"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1io_1_1_resource_i_o.html" title="Read&#45;only interface to a hierarchical collection of simulation resources." alt="" coords="414,265,592,293"/>
+<area shape="poly" id="edge10_Node000004_Node000011" title=" " alt="" coords="606,270,683,257,760,234,791,218,821,198,865,164,870,162,824,203,794,222,762,239,684,263,607,275"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1varform_1_1_f_e_space.html" title="A finite&#45;element space for one scalar&#45; or vector&#45;valued field." alt="" coords="785,61,983,89"/>
+<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="998,62,1117,56,1260,57,1414,69,1491,81,1565,98,1633,118,1685,138,1735,163,1796,198,1862,242,1916,288,1911,286,1859,247,1794,203,1732,167,1683,142,1632,123,1564,103,1490,87,1413,75,1260,63,1117,62,999,67"/>
+<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="973,90,1077,117,1122,133,1152,150,1162,163,1165,176,1168,187,1176,199,1194,213,1189,212,1172,202,1163,190,1160,177,1157,165,1149,155,1119,138,1075,122,973,95"/>
+<area shape="rect" id="Node000013" href="$structpolyfem_1_1varform_1_1_var_form_boundary_state.html" title="Temporary compatibility wrapper for boundary data belonging to one FE space." alt="" coords="786,242,983,287"/>
+<area shape="poly" id="edge18_Node000001_Node000013" title=" " alt="" coords="932,292,969,311,1008,325,1047,331,1078,330,1150,325,1846,312,1841,313,1150,330,1078,336,1047,336,1007,330,967,316,931,298"/>
+<area shape="poly" id="edge12_Node000003_Node000013" title=" " alt="" coords="943,233,1007,213,1051,207,1096,206,1183,216,1177,216,1096,211,1051,212,1008,218,944,238"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="804,368,964,412"/>
+<area shape="poly" id="edge19_Node000001_Node000014" title=" " alt="" coords="980,406,1098,423,1244,437,1405,441,1485,437,1564,428,1654,409,1743,383,1884,333,1890,332,1744,388,1656,414,1565,433,1486,442,1405,447,1244,443,1098,429,980,411"/>
+<area shape="poly" id="edge13_Node000003_Node000014" title=" " alt="" coords="979,373,1066,348,1109,328,1149,303,1156,295,1160,287,1164,277,1173,268,1190,259,1195,257,1176,272,1169,280,1165,289,1161,298,1152,308,1112,333,1068,353,980,378"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="1181,92,1366,120"/>
+<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="1381,117,1472,134,1566,162,1615,185,1659,213,1654,212,1613,189,1564,167,1471,140,1381,122"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1assembler_1_1_macro_strain_value.html" title=" " alt="" coords="1198,144,1349,188"/>
+<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="1365,178,1591,218,1586,218,1364,183"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_solve_data.html" title="class to store time stepping data" alt="" coords="1174,281,1373,309"/>
+<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="1388,279,1564,255,1586,254,1591,253,1565,260,1388,284"/>
 </map>

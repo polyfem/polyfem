@@ -1,17 +1,23 @@
 <map id="polyfem::time_integrator::ImplicitTimeIntegrator::acceleration_scaling" name="polyfem::time_integrator::ImplicitTimeIntegrator::acceleration_scaling">
-<area shape="rect" id="Node000001" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="848,74,1033,136"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#a68287568ee8c4891cadb578c4ecef7eb" title="Compute the first derivative of the value wrt x." alt="" coords="546,9,790,54"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="831,76,754,57,754,52,836,76"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a1dfba4096256877e82eb12fd4f4ac43a" title=" " alt="" coords="560,83,777,127"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="830,105,778,108,777,102,835,105"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#aa90ac06ab23b857efe11f6c5517ed3ed" title="Compute the second derivative of the value wrt x." alt="" coords="536,152,800,197"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="836,132,759,154,758,149,831,133"/>
+<area shape="rect" id="Node000001" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="848,121,1033,182"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#a68287568ee8c4891cadb578c4ecef7eb" title="Compute the first derivative of the value wrt x." alt="" coords="546,16,790,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="865,113,799,85,743,64,744,59,801,80,870,113"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a1dfba4096256877e82eb12fd4f4ac43a" title=" " alt="" coords="560,95,777,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="830,138,778,134,777,128,835,138"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#aa90ac06ab23b857efe11f6c5517ed3ed" title="Compute the second derivative of the value wrt x." alt="" coords="536,164,800,209"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="830,166,801,172,800,167,835,165"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1varform_1_1_elastic_var_form.html#a89409f327e22cf1e1787695a5dd0d514" title=" " alt="" coords="572,245,764,306"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="868,189,801,223,748,247,746,242,799,219,863,191"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_f_s_i_interface_form.html#a7e4bbdaeac2a076b983e13e1a40b295f" title="Compute the value of the form." alt="" coords="275,5,484,50"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="528,30,484,32,484,26,533,29"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="528,34,485,34,483,29,533,32"/>
 <area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a25e946b2a14adeae27519f715d8e8c47" title="Compute the first derivative of the value wrt x." alt="" coords="271,74,488,136"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="541,105,489,108,488,102,546,105"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="542,113,489,112,488,107,547,111"/>
 <area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#affcb47fc6c4af5991485cc0fcca704dd" title="Compute the second derivative of the value wrt x." alt="" coords="271,160,488,221"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="566,131,537,142,475,162,473,156,535,137,561,132"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="560,145,489,165,488,160,565,143"/>
 <area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_navier_stokes_f_s_i_form.html#a4d26e863596534540184f70a20ff866f" title="Compute the value of the form." alt="" coords="5,83,223,127"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="252,106,224,108,223,102,257,104"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="252,106,224,107,222,103,257,104"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1varform_1_1_linear_elastic_var_form.html#abe99ecc03b79cc665b5c2f76078b4ebd" title="Capture mutable timestep data for deferred field evaluation." alt="" coords="287,245,472,306"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="554,276,473,278,472,273,559,275"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1varform_1_1_nonlinear_elastic_var_form.html#adf6593750cc088e55ecae4d094f579ff" title="Capture mutable timestep data for deferred field evaluation." alt="" coords="276,330,482,392"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="560,308,484,333,482,328,554,309"/>
 </map>

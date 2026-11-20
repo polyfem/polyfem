@@ -7,5 +7,6 @@ var _assembler_8hpp =
     [ "polyfem::assembler::LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", "classpolyfem_1_1assembler_1_1_linear_assembler" ],
     [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
     [ "polyfem::assembler::ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", "classpolyfem_1_1assembler_1_1_elasticity_assembler" ],
+    [ "polyfem::assembler::ElasticityAssembler::OutputStress", "classpolyfem_1_1assembler_1_1_elasticity_assembler_1_1_output_stress.html", "classpolyfem_1_1assembler_1_1_elasticity_assembler_1_1_output_stress" ],
     [ "polyfem::assembler::ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", null ]
 ];

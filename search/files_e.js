@@ -20,5 +20,7 @@ var searchData=
   ['outdata_2ecpp_17',['OutData.cpp',['../_out_data_8cpp.html',1,'']]],
   ['outdata_2ehpp_18',['OutData.hpp',['../_out_data_8hpp.html',1,'']]],
   ['outputdata_2ehpp_19',['OutputData.hpp',['../_output_data_8hpp.html',1,'']]],
-  ['outstatsdata_2ehpp_20',['OutStatsData.hpp',['../_out_stats_data_8hpp.html',1,'']]]
+  ['outputwriter_2ecpp_20',['OutputWriter.cpp',['../_output_writer_8cpp.html',1,'']]],
+  ['outputwriter_2ehpp_21',['OutputWriter.hpp',['../_output_writer_8hpp.html',1,'']]],
+  ['outstatsdata_2ehpp_22',['OutStatsData.hpp',['../_out_stats_data_8hpp.html',1,'']]]
 ];

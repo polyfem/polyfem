@@ -14,6 +14,8 @@ var searchData=
   ['outputfieldoptions_11',['OutputFieldOptions',['../structpolyfem_1_1io_1_1_output_field_options.html',1,'polyfem::io']]],
   ['outputsample_12',['OutputSample',['../structpolyfem_1_1io_1_1_output_sample.html',1,'polyfem::io']]],
   ['outputspace_13',['OutputSpace',['../structpolyfem_1_1io_1_1_output_space.html',1,'polyfem::io']]],
-  ['outruntimedata_14',['OutRuntimeData',['../classpolyfem_1_1io_1_1_out_runtime_data.html',1,'polyfem::io']]],
-  ['outstatsdata_15',['OutStatsData',['../classpolyfem_1_1io_1_1_out_stats_data.html',1,'polyfem::io']]]
+  ['outputstress_14',['OutputStress',['../classpolyfem_1_1assembler_1_1_elasticity_assembler_1_1_output_stress.html',1,'polyfem::assembler::ElasticityAssembler']]],
+  ['outputwriter_15',['OutputWriter',['../classpolyfem_1_1io_1_1_output_writer.html',1,'polyfem::io']]],
+  ['outruntimedata_16',['OutRuntimeData',['../classpolyfem_1_1io_1_1_out_runtime_data.html',1,'polyfem::io']]],
+  ['outstatsdata_17',['OutStatsData',['../classpolyfem_1_1io_1_1_out_stats_data.html',1,'polyfem::io']]]
 ];

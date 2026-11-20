@@ -20,6 +20,7 @@ var classpolyfem_1_1varform_1_1_thermo_elastic_var_form =
     [ "read_material_space_ids", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ae65c196faad269e9080e6b292db5d5bd", null ],
     [ "reset", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a7ad2c0687359bdb9eb2041ac0172b263", null ],
     [ "serialize_checkpoint", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a2a26c0ae243cf9cce625808e091afdc6", null ],
+    [ "snapshot_output_fields", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ae8b76519d39297e5d29ae9663b663107", null ],
     [ "solve_nonlinear_step", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#a6fd50b63bce27dbe12ea5109bdde8826", null ],
     [ "solve_problem", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#ae763078f09979b00c1599fcfb8c80fff", null ],
     [ "split_solution", "classpolyfem_1_1varform_1_1_thermo_elastic_var_form.html#aa3cadfc2748f817c9e8aefa7f8d6c732", null ],

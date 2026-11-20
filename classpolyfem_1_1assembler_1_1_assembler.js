@@ -10,6 +10,7 @@ var classpolyfem_1_1assembler_1_1_assembler =
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_assembler.html#a9a642ff7af46139d5097c853e20770a4", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_assembler.html#abee5f6717dfe53dfb6adc153a96c1512", null ],
     [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_assembler.html#a35f1f3a973305afdc33e3d213ddef362", null ],
+    [ "compute_output_values", "classpolyfem_1_1assembler_1_1_assembler.html#a49d98c32777f8fc3b0866b76153f7885", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70", null ],
     [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_assembler.html#ab6333f36f7611b228b532c93002734cf", null ],
     [ "compute_stiffness_value", "classpolyfem_1_1assembler_1_1_assembler.html#a28bf2e9527dd0578a6023d1f46bccafd", null ],
