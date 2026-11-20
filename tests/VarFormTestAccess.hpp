@@ -22,6 +22,7 @@ namespace polyfem::test
 		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
 		int n_bases = 0;
 		int n_obstacle_vertices = 0;
+		const mesh::MeshNodes *mesh_nodes = nullptr; ///< of the primary space
 	};
 
 	struct ElasticFormDebugData
@@ -146,7 +147,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					elastic->space_.n_bases,
-					output_space.obstacle ? output_space.obstacle->n_vertices() : 0};
+					output_space.obstacle ? output_space.obstacle->n_vertices() : 0,
+					elastic->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *fluid = dynamic_cast<const varform::FluidVarForm *>(&form))
@@ -158,7 +160,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					fluid->space_.n_bases,
-					0};
+					0,
+					fluid->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *bilaplacian = dynamic_cast<const varform::BilaplacianVarForm *>(&form))
@@ -170,7 +173,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					bilaplacian->space_.n_bases,
-					0};
+					0,
+					bilaplacian->space_.mesh_nodes.get()};
 			}
 
 			if (const auto *scalar = dynamic_cast<const varform::ScalarVarForm *>(&form))
@@ -182,7 +186,8 @@ namespace polyfem::test
 					output_space.geometry_bases,
 					output_space.total_local_boundary,
 					scalar->space_.n_bases,
-					0};
+					0,
+					scalar->space_.mesh_nodes.get()};
 			}
 
 			throw std::runtime_error("Unsupported VarForm test debug data request.");

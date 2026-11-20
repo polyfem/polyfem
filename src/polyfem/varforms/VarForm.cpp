@@ -434,6 +434,11 @@ namespace polyfem::varform
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
+		// The nodes are complete: give them the point-selection ids of the
+		// mesh (the mesh itself is not changed).
+		if (space.mesh_nodes)
+			space.mesh_nodes->finalize();
+
 		logger().info("n_bases {}", space.n_bases);
 
 		timings.building_basis_time += timer.getElapsedTime();

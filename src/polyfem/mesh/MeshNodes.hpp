@@ -68,6 +68,18 @@ namespace polyfem
 			// Node position from node id
 			RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
 
+			/// Called once all the nodes are created (at the end of the basis
+			/// construction): computes the node tags from the mesh.
+			void finalize();
+			/// Point-selection id of a node (Mesh::get_node_id of its vertex):
+			/// -1 for nodes that are not on a vertex, and for every node if the
+			/// mesh has no node ids or finalize() was not called.
+			int node_tag(const int node_id) const
+			{
+				return node_id >= 0 && node_id < int(node_tags_.size()) ? node_tags_[node_id] : -1;
+			}
+			bool has_node_tags() const { return !node_tags_.empty(); }
+
 			// Whether a node is on the mesh boundary or not
 			bool is_boundary(int node_id) const { return is_boundary_[node_to_primitive_[node_id]]; }
 			bool is_primitive_boundary(int primitive) const { return is_boundary_[primitive]; }
@@ -108,6 +120,9 @@ namespace polyfem
 
 			// Store the input nodes ids
 			std::vector<int> in_ordered_vertices_;
+
+			// Point-selection ids per node (see node_tag)
+			std::vector<int> node_tags_;
 		};
 	} // namespace mesh
 } // namespace polyfem

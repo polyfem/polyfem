@@ -21,6 +21,7 @@ namespace polyfem
 			RhsAssembler(
 				const Assembler &assembler,
 				const mesh::Mesh &mesh,
+				const mesh::MeshNodes *mesh_nodes, ///< nodes of the FE space, for the node tags (may be null)
 				const mesh::Obstacle *obstacle,
 				const std::vector<int> &dirichlet_nodes,
 				const std::vector<int> &neumann_nodes,
@@ -130,6 +131,7 @@ namespace polyfem
 
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
+			const mesh::MeshNodes *mesh_nodes_;
 			const mesh::Obstacle *obstacle_;
 			const int n_basis_;
 			const int size_;                                 ///< dimension of problem

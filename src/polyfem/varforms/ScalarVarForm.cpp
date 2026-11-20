@@ -181,7 +181,6 @@ namespace polyfem::varform
 		boundary_.clear_boundary_conditions();
 
 		problem->update_nodes(space_.space_in_node_to_node);
-		mesh.update_nodes(space_.space_in_node_to_node);
 
 		problem->setup_bc(
 			mesh,
@@ -204,13 +203,13 @@ namespace polyfem::varform
 			/*value_dim=*/1);
 
 		problem->setup_nodal_bc(
-			mesh,
+			space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Dirichlet,
 			/*fe_space_id=*/-1,
 			space_.n_bases,
 			boundary_.dirichlet_nodes);
 		problem->setup_nodal_bc(
-			mesh,
+			space_.mesh_nodes.get(),
 			assembler::BoundaryKind::Neumann,
 			/*fe_space_id=*/-1,
 			space_.n_bases,
@@ -218,7 +217,7 @@ namespace polyfem::varform
 
 		for (const int n_id : boundary_.dirichlet_nodes)
 		{
-			const int tag = mesh.get_node_id(n_id);
+			const int tag = space_.node_tag(n_id);
 			if (problem->is_nodal_dimension_dirichlet(n_id, tag, 0))
 				boundary_.boundary_nodes.push_back(n_id);
 		}
@@ -264,7 +263,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		rhs_assembler_ = std::make_shared<assembler::RhsAssembler>(
-			*primary_assembler_, *mesh_, nullptr,
+			*primary_assembler_, *mesh_, space_.mesh_nodes.get(), nullptr,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, /*size=*/1, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
@@ -414,7 +413,8 @@ namespace polyfem::varform
 			nullptr,
 			nullptr,
 			&boundary_.dirichlet_nodes,
-			&boundary_.dirichlet_nodes_position};
+			&boundary_.dirichlet_nodes_position,
+			space_.mesh_nodes.get()};
 	}
 
 	io::OutStatsData ScalarVarForm::compute_errors(const Eigen::MatrixXd &solution)

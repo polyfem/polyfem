@@ -815,6 +815,24 @@ namespace polyfem::mesh
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	void MeshNodes::finalize()
+	{
+		node_tags_.clear();
+		if (!mesh_.has_node_ids())
+			return;
+
+		// The mesh labels vertices; a node on a vertex carries its label.
+		node_tags_.assign(n_nodes(), -1);
+		for (int n = 0; n < n_nodes(); ++n)
+		{
+			const int primitive = node_to_primitive_[n];
+			if (is_vertex_node(primitive))
+				node_tags_[n] = mesh_.get_node_id(primitive);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+
 	std::vector<int> MeshNodes::boundary_nodes() const
 	{
 		std::vector<int> res;

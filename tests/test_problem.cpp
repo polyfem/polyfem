@@ -1,4 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
+#include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
@@ -167,6 +168,20 @@ TEST_CASE("boundary setup separates loads and constrained finite element spaces"
 	CHECK(all_boundary.front().size() == 3);
 }
 
+namespace
+{
+	// Mesh nodes with node n on vertex n, finalized: their tags are the
+	// node ids of the mesh.
+	std::unique_ptr<mesh::MeshNodes> vertex_nodes(const mesh::Mesh &mesh)
+	{
+		auto nodes = std::make_unique<mesh::MeshNodes>(mesh, false, true, 0, 0);
+		for (int v = 0; v < mesh.n_vertices(); ++v)
+			nodes->node_id_from_vertex(v);
+		nodes->finalize();
+		return nodes;
+	}
+} // namespace
+
 TEST_CASE("nodal boundary setup gives Dirichlet conditions precedence", "[problem][boundary]")
 {
 	const auto mesh = tagged_triangle_mesh();
@@ -176,11 +191,11 @@ TEST_CASE("nodal boundary setup gives Dirichlet conditions precedence", "[proble
 		 {"nodal_neumann_boundary", {{{"id", 1}, {"fe_space", 7}, {"value", {1, 2}}, {"interpolation", json::array()}}, {{"id", 2}, {"fe_space", 7}, {"value", {1, 2}}, {"interpolation", json::array()}}}}},
 		test_resources());
 	std::vector<int> nodes;
-	problem.setup_nodal_bc(*mesh, BoundaryKind::Dirichlet, 7, 3, nodes);
+	problem.setup_nodal_bc(vertex_nodes(*mesh).get(), BoundaryKind::Dirichlet, 7, 3, nodes);
 	CHECK(nodes == std::vector<int>{0});
-	problem.setup_nodal_bc(*mesh, BoundaryKind::Neumann, 7, 3, nodes);
+	problem.setup_nodal_bc(vertex_nodes(*mesh).get(), BoundaryKind::Neumann, 7, 3, nodes);
 	CHECK(nodes == std::vector<int>{1});
-	problem.setup_nodal_bc(*mesh, BoundaryKind::Neumann, 8, 3, nodes);
+	problem.setup_nodal_bc(vertex_nodes(*mesh).get(), BoundaryKind::Neumann, 8, 3, nodes);
 	CHECK(nodes.empty());
 }
 
@@ -280,12 +295,12 @@ TEST_CASE("generic tensor problem evaluates explicit nodal neumann data by finit
 	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
 
 	Eigen::MatrixXd values, normal;
-	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->get_node_id(tagged_node), mesh->point(tagged_node), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 2);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(4, 5)));
 
-	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	problem.neumann_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), normal, 0, values, 1);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 2);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(7, 11)));
@@ -312,12 +327,12 @@ TEST_CASE("generic tensor problem evaluates nodal neumann matrix data", "[proble
 	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
 
 	Eigen::MatrixXd values, normal;
-	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, 1, mesh->get_node_id(1), mesh->point(1), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 2);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
 
-	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 2);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(14, 15)));
@@ -470,7 +485,7 @@ TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[proble
 	CHECK(problem.is_nodal_dimension_dirichlet(1, mesh->get_node_id(1), 0, 0));
 
 	Eigen::MatrixXd values;
-	problem.dirichlet_nodal_value(*mesh, 1, mesh->point(1), 0, values, 0);
+	problem.dirichlet_nodal_value(*mesh, 1, mesh->get_node_id(1), mesh->point(1), 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 2);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
@@ -478,7 +493,7 @@ TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[proble
 	Eigen::VectorXi node_map(3);
 	node_map << 0, 2, 1;
 	problem.update_nodes(node_map);
-	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), 0, values, 0);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(12, 13)));
 
 	Eigen::VectorXi node_ids(1);
@@ -486,14 +501,14 @@ TEST_CASE("generic tensor problem updates nodal dirichlet matrix data", "[proble
 	Eigen::MatrixXd updated(1, 2);
 	updated << 21, 22;
 	problem.update_dirichlet_nodes(node_map, node_ids, updated);
-	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), 0, values, 0);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
 
 	// Second update_nodes call is intentionally a no-op after the first remapping.
 	Eigen::VectorXi second_map(3);
 	second_map << 2, 1, 0;
 	problem.update_nodes(second_map);
-	problem.dirichlet_nodal_value(*mesh, 2, mesh->point(2), 0, values, 0);
+	problem.dirichlet_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), 0, values, 0);
 	CHECK(values.row(0).isApprox(Eigen::RowVector2d(21, 22)));
 
 	std::filesystem::remove(nodal_dirichlet_path);
@@ -550,12 +565,12 @@ TEST_CASE("generic scalar problem selects finite element space nodal data", "[pr
 	CHECK_FALSE(problem.is_nodal_neumann_boundary(tagged_node, mesh->get_node_id(tagged_node), 1));
 
 	Eigen::MatrixXd normal;
-	problem.neumann_nodal_value(*mesh, tagged_node, mesh->point(tagged_node), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, tagged_node, mesh->get_node_id(tagged_node), mesh->point(tagged_node), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 3);
 
-	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 1);
+	problem.neumann_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), normal, 0, values, 1);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 9);
@@ -614,12 +629,12 @@ TEST_CASE("generic scalar problem evaluates nodal neumann matrix data", "[proble
 	CHECK(problem.is_nodal_neumann_boundary(1, mesh->get_node_id(1), 0));
 
 	Eigen::MatrixXd values, normal;
-	problem.neumann_nodal_value(*mesh, 1, mesh->point(1), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, 1, mesh->get_node_id(1), mesh->point(1), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 12);
 
-	problem.neumann_nodal_value(*mesh, 2, mesh->point(2), normal, 0, values, 0);
+	problem.neumann_nodal_value(*mesh, 2, mesh->get_node_id(2), mesh->point(2), normal, 0, values, 0);
 	REQUIRE(values.rows() == 1);
 	REQUIRE(values.cols() == 1);
 	CHECK(values(0) == 14);

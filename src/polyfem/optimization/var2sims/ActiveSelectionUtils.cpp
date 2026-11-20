@@ -289,7 +289,7 @@ namespace polyfem::solver
 					return false;
 				}
 
-				int tag = varform->get_mesh().get_node_id(v);
+				int tag = varform->primary_space().node_tag(v);
 				if (!varform->get_problem().is_nodal_dirichlet_boundary(v, tag))
 				{
 					reason = fmt::format("Input vertex {} is not a nodal Dirichlet node", v_in);

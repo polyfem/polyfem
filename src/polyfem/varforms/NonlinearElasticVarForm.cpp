@@ -306,7 +306,7 @@ namespace polyfem::varform
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
 		solve_data_.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-			*primary_assembler_, *mesh_, &obstacle,
+			*primary_assembler_, *mesh_, space_.mesh_nodes.get(), &obstacle,
 			boundary_.dirichlet_nodes, boundary_.neumann_nodes,
 			boundary_.dirichlet_nodes_position, boundary_.neumann_nodes_position,
 			space_.n_bases, size, space_.basis_list(), space_.geometry_basis_list(), mass_ass_vals_cache_, *problem, resources_,
