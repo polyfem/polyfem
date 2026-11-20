@@ -538,7 +538,8 @@ TEST_CASE("Bernstein contact falls back on nonconforming volume meshes", "[colli
 	V << 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
 	Eigen::MatrixXi F(1, 4);
 	F << 0, 1, 2, 3;
-	state.set_mesh(V, F, true);
+	state.variational_formulation->set_mesh(
+		polyfem::mesh::Mesh::create(polyfem::mesh::MeshData(V, F))->to_nonconforming());
 	REQUIRE_NOTHROW(polyfem::test::VarFormTestAccess::prepare(*state.variational_formulation));
 	const auto output = state.variational_formulation->output_space();
 	REQUIRE(output.collision_mesh != nullptr);

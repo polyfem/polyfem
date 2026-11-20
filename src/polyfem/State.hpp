@@ -109,14 +109,12 @@ namespace polyfem
 		//---------------------------------------------------
 
 		/// loads the mesh from the json arguments
-		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		void load_mesh(bool non_conforming = false);
+		void load_mesh();
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim
 		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quad mesh if dim is 2)
-		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		void set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false);
+		void set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 
 	private:
 		std::unique_ptr<const io::ResourceIO> resources_;

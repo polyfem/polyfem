@@ -105,10 +105,13 @@ namespace polyfem
 
 		public:
 			/// Construct a runtime mesh from format-independent decoded data.
-			static std::unique_ptr<Mesh> create(MeshData data, bool non_conforming = false);
+			static std::unique_ptr<Mesh> create(MeshData data);
+
+			/// Return an NC copy suitable for local refinement of linear simplex geometry.
+			std::unique_ptr<Mesh> to_nonconforming() const;
 
 			/// Capture the complete runtime mesh in the canonical, format-independent representation.
-			MeshData to_mesh_data() const;
+			virtual MeshData to_mesh_data() const;
 
 			/// @brief Create a copy of the mesh
 			/// @return pointer to the new copy mesh

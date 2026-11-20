@@ -27,16 +27,13 @@ namespace polyfem::mesh
 		LoadedGeometry load(
 			const json &geometry,
 			const std::vector<json> &obstacle_displacements,
-			const std::vector<json> &dirichlet_conditions,
-			bool non_conforming = false) const;
+			const std::vector<json> &dirichlet_conditions) const;
 
 		/// Load and combine the enabled FEM entries in a geometry configuration.
 		std::unique_ptr<Mesh> load_fem(
-			const json &geometry,
-			bool non_conforming = false) const;
+			const json &geometry) const;
 		std::unique_ptr<Mesh> load_fem_entry(
-			const json &geometry,
-			bool non_conforming = false) const;
+			const json &geometry) const;
 
 		/// Load and prepare one configured surface/codimensional geometry entry.
 		SurfaceMesh load_surface(
@@ -47,8 +44,7 @@ namespace polyfem::mesh
 			const json &geometry,
 			const std::vector<json> &obstacle_displacements,
 			const std::vector<json> &dirichlet_conditions,
-			int dimension,
-			bool non_conforming = false) const;
+			int dimension) const;
 
 		/// Apply configured geometry IDs to an already constructed mesh.
 		void apply_geometry_selection(

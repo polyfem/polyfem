@@ -1,4 +1,5 @@
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/MeshData.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -12,6 +13,7 @@ namespace polyfem
 	{
 		void NCMesh2D::remove_elements(const std::vector<bool> &keep)
 		{
+			capture_labels();
 			assert(keep.size() == n_faces());
 
 			std::vector<int> old_node_ids(vertices.size(), -1);
@@ -37,6 +39,7 @@ namespace polyfem
 				--n_elements;
 			}
 			filter_element_data(keep);
+			index_prepared = adj_prepared = false;
 			prepare_mesh();
 
 			if (!node_ids_.empty())
@@ -111,8 +114,72 @@ namespace polyfem
 			log_and_throw_error("NCMesh2D: the mesh was modified without calling prepare_mesh().");
 		}
 
+		bool NCMesh2D::restore_nc_data(const MeshData &data)
+		{
+			const auto &n = *data.nc;
+			const int d = data.dimension();
+			elements.clear();
+			vertices.clear();
+			edges.clear();
+			edgeMap.clear();
+			midpointMap.clear();
+
+			index_prepared = adj_prepared = false;
+			n_elements = 0;
+			body_ids_.clear();
+			geometry_ids_.clear();
+			node_ids_.clear();
+			boundary_ids_.clear();
+			for (int i = 0; i < n.vertices.rows(); ++i)
+				vertices.emplace_back(n.vertices.row(i).transpose());
+			for (int i = 0; i < n.edges.rows(); ++i)
+			{
+				const int id = get_edge(n.edges.row(i).head(2).transpose());
+				if (id != i)
+					log_and_throw_error("Duplicate NC edge.");
+				edges[id].boundary_id = n.edges(i, 2);
+			}
+			for (int i = 0; i < n.cells.rows(); ++i)
+			{
+				elements.emplace_back(d, n.cells.row(i).transpose(), n.element_state(i, 0), n.element_state(i, 1));
+				auto &e = elements.back();
+				e.vertices = n.ordered_cells.row(i).transpose();
+				e.edges = n.cell_edges.row(i).transpose();
+				e.faces = n.cell_faces.row(i).transpose();
+				e.children = n.children.row(i).transpose();
+				e.is_refined = n.element_state(i, 2);
+				e.is_ghost = n.element_state(i, 3);
+				e.body_id = n.element_state(i, 4);
+				if (e.is_valid())
+				{
+					++n_elements;
+					for (int v : e.vertices)
+					{
+						++vertices[v].n_elem;
+					}
+					for (int edge : e.edges)
+						edges[edge].add_element(i);
+				}
+			}
+			for (int i = 0; i < n.midpoints.rows(); ++i)
+				midpointMap.emplace(Eigen::Vector2i(n.midpoints(i, 0), n.midpoints(i, 1)), n.midpoints(i, 2));
+			label_flags_ = n.label_flags;
+			full_node_ids_ = n.node_ids;
+			full_geometry_ids_.resize(n.cells.rows());
+			for (int i = 0; i < n.cells.rows(); ++i)
+				full_geometry_ids_[i] = n.element_state(i, 5);
+			refineHistory = n.refinement_history;
+			prepare_mesh();
+			return true;
+		}
+
 		bool NCMesh2D::build_topology(const MeshData &data)
 		{
+			if (data.nc)
+				return restore_nc_data(data);
+			label_flags_ = 0;
+			full_node_ids_.clear();
+			full_geometry_ids_.clear();
 			const Eigen::MatrixXd &V = data.vertices;
 			const Eigen::MatrixXi &F = data.elements;
 			if (F.cols() != 3 || F.minCoeff() < 0)
@@ -252,6 +319,7 @@ namespace polyfem
 
 		void NCMesh2D::refine_element(int id_full)
 		{
+			capture_labels();
 			auto &elem = elements[id_full];
 			if (elem.is_not_valid())
 				throw std::runtime_error("Cannot refine an invalid element!");
@@ -331,6 +399,9 @@ namespace polyfem
 
 		void NCMesh2D::coarsen_element(int id_full)
 		{
+			capture_labels();
+			if (id_full < 0 || id_full >= int(elements.size()) || elements[id_full].parent < 0)
+				log_and_throw_error("Cannot coarsen an NC root or invalid element.");
 			const int parent_id = elements[id_full].parent;
 			if (parent_id < 0)
 				log_and_throw_error("NCMesh2D: cannot coarsen element {}, it has no parent.", id_full);

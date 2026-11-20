@@ -6,6 +6,8 @@ set(SOURCES
 	InputLoader.hpp
 	MatrixIO.cpp
 	MatrixIO.hpp
+	MeshWriter.cpp
+	MeshWriter.hpp
 	MshReader.cpp
 	MshReader.hpp
 	MshWriter.cpp

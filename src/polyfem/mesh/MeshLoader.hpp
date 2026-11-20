@@ -7,7 +7,7 @@
 namespace polyfem::mesh
 {
 	/// The canonical typed mesh schema shared by HDF5 bundles and checkpoints.
-	inline constexpr long MESH_SCHEMA_VERSION = 1;
+	inline constexpr long MESH_SCHEMA_VERSION = 2;
 
 	using SurfaceMesh = SurfaceMeshData;
 
@@ -18,7 +18,7 @@ namespace polyfem::mesh
 		explicit MeshLoader(const io::ResourceIO &resources)
 			: resources_(resources) {}
 
-		std::unique_ptr<Mesh> load_fem(const std::string &path, bool non_conforming = false) const;
+		std::unique_ptr<Mesh> load_fem(const std::string &path) const;
 		/// @param keep_volume Keep a 3D tet mesh's tets; see MeshReader::read_msh_surface.
 		SurfaceMesh load_surface(const std::string &path, bool keep_volume = false) const;
 

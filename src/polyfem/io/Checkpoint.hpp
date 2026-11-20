@@ -74,7 +74,7 @@ namespace polyfem::io
 		const CheckpointMetadata &metadata() const { return metadata_; }
 		const json &config() const { return config_; }
 		const ResourceIO &resources() const { return *resources_; }
-		std::unique_ptr<mesh::Mesh> read_mesh(const std::string &path, bool non_conforming = false) const;
+		std::unique_ptr<mesh::Mesh> read_mesh(const std::string &path) const;
 
 		Eigen::MatrixXd read_matrix(const std::string &path) const;
 		Eigen::MatrixXi read_int_matrix(const std::string &path) const;

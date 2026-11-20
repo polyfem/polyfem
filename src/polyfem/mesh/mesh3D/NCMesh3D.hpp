@@ -193,6 +193,9 @@ namespace polyfem
 				bool is_ghost = false;
 			};
 
+			MeshData to_mesh_data() const override;
+			void update_nodes(const Eigen::VectorXi &in_node_to_node) override;
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override;
 			NCMesh3D() = default;
 			virtual ~NCMesh3D() = default;
 			NCMesh3D(NCMesh3D &&) = default;
@@ -376,6 +379,7 @@ namespace polyfem
 
 			void prepare_mesh() override
 			{
+				capture_labels();
 				build_edge_follower_chain();
 				build_face_follower_chain();
 				build_element_vertex_adjacency();
@@ -383,6 +387,7 @@ namespace polyfem
 				compute_elements_tag();
 				mark_boundary();
 				adj_prepared = true;
+				restore_labels();
 			}
 
 			void build_index_mapping();
@@ -411,6 +416,9 @@ namespace polyfem
 			};
 
 		protected:
+			bool restore_nc_data(const MeshData &data);
+			void capture_labels();
+			void restore_labels();
 			void remove_elements(const std::vector<bool> &keep) override;
 
 			// Maps between the valid ids and the full ids (see the class comment).
@@ -493,6 +501,8 @@ namespace polyfem
 			std::vector<int> all_to_valid_faceMap, valid_to_all_faceMap;
 
 			std::vector<int> refineHistory;
+			std::vector<int> full_node_ids_, full_geometry_ids_;
+			int label_flags_ = 0;
 
 			// elementAdj(i, j) = 1 iff element i touches element j
 			Eigen::SparseMatrix<bool, Eigen::RowMajor> elementAdj;
